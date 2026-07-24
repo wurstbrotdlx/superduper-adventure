@@ -246,25 +246,132 @@ const floorCanvas = document.createElement('canvas');
 floorCanvas.width = MW * TS; floorCanvas.height = MH * TS;
 const floorCtx = floorCanvas.getContext('2d', {alpha: false});
 
-// --- Sprite-Atlas (CC0: Kenney Tiny Dungeon + Kenney Roguelike/RPG Pack) ---
-const ATLAS_B64 = "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";
-const ATLAS = new Image();
-ATLAS.src = "data:image/png;base64," + ATLAS_B64;
-let atlasReady = false;
-ATLAS.onload = () => { atlasReady = true; if(typeof initFloorGraphics === 'function') initFloorGraphics(); };
-const FRAMES = {"grass": [1, 1, 16, 16], "path": [18, 1, 16, 16], "rockfloor": [35, 1, 16, 16], "sand": [52, 1, 16, 16], "snow": [69, 1, 16, 16], "water": [86, 1, 16, 16], "tree": [103, 1, 16, 16], "pine": [120, 1, 16, 16], "cactus": [1, 18, 16, 16], "chest": [18, 18, 16, 16], "gold": [35, 18, 16, 16], "player": [52, 18, 16, 16], "dagger": [69, 18, 16, 16], "sword": [86, 18, 16, 16], "doubleaxe": [103, 18, 16, 16], "shield": [120, 18, 16, 16], "armor": [1, 35, 16, 16], "potion": [18, 35, 16, 16], "slime": [35, 35, 16, 16], "goblin": [52, 35, 16, 16], "crab": [69, 35, 16, 16], "mummy": [86, 35, 16, 16], "golem": [103, 35, 16, 16], "ghost": [120, 35, 16, 16], "spider": [1, 52, 16, 16], "bat": [18, 52, 16, 16], "stalfos": [35, 52, 16, 16], "boss": [52, 52, 16, 16], "greenmage": [69, 52, 16, 16], "frostmage": [86, 52, 16, 16], "sandmage": [103, 52, 16, 16], "mage": [120, 52, 16, 16], "scorpion": [1, 69, 16, 16], "frostgolem": [18, 69, 16, 16], "shadow_grass": [35, 69, 16, 16], "shadow_path": [52, 69, 16, 16], "shadow_tree": [69, 69, 16, 16], "shadow_slime": [86, 69, 16, 16], "shadow_demon": [103, 69, 16, 16], "shadowghost": [120, 69, 16, 16], "shadowmage": [1, 86, 16, 16], "boss_shadow": [18, 86, 16, 16], "hero_leather": [35, 86, 16, 16], "hero_chain": [52, 86, 16, 16], "hero_plate": [69, 86, 16, 16]};
-function drawFrame(name, dx, dy, dw, dh, flip=false){
-  const f = FRAMES[name]; if(!f || !atlasReady) return;
+// ===========================================================================
+//  Sprite-Engine — Sunnyside World (danieldiggle.itch.io/sunnyside)
+//  Frei nutzbar inkl. kommerziell, Weiterverkauf der Assets untersagt.
+//
+//  Alle Charakter-Sheets nutzen ein festes 96x64-Frameraster, row-major.
+//  ACHTUNG: die "stripN"-Zahl im Dateinamen ist teils FALSCH (z.B. Goblin
+//  idle_strip9 hat real 8 Frames) — die echte Zahl steht unten im Manifest.
+// ===========================================================================
+const FW = 96, FH = 64;            // Frameraster der Charaktere
+const ANCH_X = 48, ANCH_Y = 40;    // Figurmitte (x) / Fußlinie (y) im Frame
+const ASSETS = 'assets/';
+const HAIRS = ['bowlhair','curlyhair','longhair','mophair','shorthair','spikeyhair'];
+
+const SHEETS = {};                 // key -> {img, cols, n, fw, fh, ax, ay}
+const SHEET_LIST = [];             // [key, url, n, mode]
+let assetsReady = false, assetsLoaded = 0;
+
+// mode: 'char' = 96x64-Raster, Anker Fußmitte | 'strip' = n Frames nebeneinander,
+//       Anker Fußmitte | 'raw' = ein Bild, Anker oben links (Tileset)
+function addSheet(key, path, n, mode){ SHEET_LIST.push([key, ASSETS + path, n, mode || 'char']); }
+
+// --- Held: base + Haar-Ebene (deckungsgleiches Raster, wird drübergezeichnet) ---
+// [anim, Ordner, Dateikürzel, stripN im Dateinamen, echte Frames]
+const HERO_ANIMS = [
+  ['idle','IDLE','idle',9,9], ['walk','WALKING','walk',8,8], ['run','RUN','run',8,8],
+  ['attack','ATTACK','attack',10,10], ['cast','CASTING','casting',15,15],
+  ['hurt','HURT','hurt',8,8], ['death','DEATH','death',13,13],
+];
+for(const [anim, dir, file, strip, n] of HERO_ANIMS){
+  addSheet('hero_'+anim, `Characters/Human/${dir}/base_${file}_strip${strip}.png`, n);
+  for(const h of HAIRS)
+    addSheet(`hair_${h}_${anim}`, `Characters/Human/${dir}/${h}_${file}_strip${strip}.png`, n);
+}
+
+// --- Gegner-Rig A: Goblin (einziges Rig mit Zauber-Animation) ---
+for(const [anim, file, strip, n] of [['idle','idle',9,8], ['walk','walk',8,8], ['run','run',8,8],
+    ['attack','attack',10,9], ['cast','casting',15,15], ['hurt','hurt',8,8], ['death','death',13,9]])
+  addSheet('goblin_'+anim, `Characters/Goblin/PNG/spr_${file}_strip${strip}.png`, n);
+
+// --- Gegner-Rig B: Skelett (kein cast, kein run -> walk als Ersatz) ---
+for(const [anim, file, strip, n] of [['idle','idle',6,6], ['walk','walk',8,8],
+    ['attack','attack',7,7], ['hurt','hurt',7,7], ['death','death',10,10]])
+  addSheet('skel_'+anim, `Characters/Skeleton/PNG/skeleton_${file}_strip${strip}.png`, n);
+addSheet('skel_run', 'Characters/Skeleton/PNG/skeleton_walk_strip8.png', 8);
+
+// --- Welt: Tileset, Deko, VFX ---
+addSheet('tileset', 'Tileset/spr_tileset_sunnysideworld_16px.png', 1, 'raw');
+addSheet('tree1', 'Elements/Plants/spr_deco_tree_01_strip4.png', 4, 'strip');
+addSheet('tree2', 'Elements/Plants/spr_deco_tree_02_strip4.png', 4, 'strip');
+addSheet('mush_blue1', 'Elements/Plants/spr_deco_mushroom_blue_01_strip4.png', 4, 'strip');
+addSheet('mush_blue2', 'Elements/Plants/spr_deco_mushroom_blue_02_strip4.png', 4, 'strip');
+addSheet('mush_blue3', 'Elements/Plants/spr_deco_mushroom_blue_03_strip4.png', 4, 'strip');
+addSheet('mush_red', 'Elements/Plants/spr_deco_mushroom_red_01_strip4.png', 4, 'strip');
+addSheet('windmill', 'Elements/Other/spr_deco_windmill_withshadow_strip9.png', 9, 'strip');
+addSheet('chicken', 'Elements/Animals/spr_deco_chicken_01_strip4.png', 4, 'strip');
+addSheet('sheep', 'Elements/Animals/spr_deco_sheep_01_strip4.png', 4, 'strip');
+addSheet('cow', 'Elements/Animals/spr_deco_cow_strip4.png', 4, 'strip');
+addSheet('pig', 'Elements/Animals/spr_deco_pig_01_strip4.png', 4, 'strip');
+addSheet('bird', 'Elements/Animals/spr_deco_bird_01_strip4.png', 4, 'strip');
+addSheet('fire1', 'Elements/VFX/Fire/spr_deco_fire_01_strip4.png', 4, 'strip');
+addSheet('fire2', 'Elements/VFX/Fire/spr_deco_fire_02_strip4.png', 4, 'strip');
+addSheet('glint', 'Elements/VFX/Glint/spr_deco_glint_01_strip6.png', 6, 'strip');
+addSheet('rock', 'Elements/Crops/rock.png', 1, 'strip');
+addSheet('wood', 'Elements/Crops/wood.png', 1, 'strip');
+addSheet('alert', 'UI/expression_alerted.png', 1, 'strip');
+
+function loadAssets(){
+  return Promise.all(SHEET_LIST.map(([key, url, n, mode]) => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      let fw, fh, cols, ax, ay;
+      if(mode === 'char'){ fw = FW; fh = FH; cols = Math.max(1, Math.round(img.width/FW)); ax = ANCH_X; ay = ANCH_Y; }
+      else if(mode === 'raw'){ fw = img.width; fh = img.height; cols = 1; ax = 0; ay = 0; }
+      else { fw = img.width/n; fh = img.height; cols = n; ax = fw/2; ay = fh; }
+      SHEETS[key] = {img, cols, n, fw, fh, ax, ay};
+      assetsLoaded++; resolve();
+    };
+    img.onerror = () => { console.warn('Sprite fehlt:', url); assetsLoaded++; resolve(); };
+    img.src = url;
+  })));
+}
+
+// Eingefärbte Kopie eines Sheets — einmalig gebacken, danach aus dem Cache.
+// source-atop färbt nur sichtbare Pixel, alpha<1 lässt die Schattierung durch.
+const TINT_CACHE = {};
+function tintedSheet(key, color, alpha){
+  const ck = key + '|' + color + '|' + alpha;
+  if(TINT_CACHE[ck]) return TINT_CACHE[ck];
+  const s = SHEETS[key]; if(!s) return null;
+  const c = document.createElement('canvas');
+  c.width = s.img.width; c.height = s.img.height;
+  const cc = c.getContext('2d');
+  cc.drawImage(s.img, 0, 0);
+  cc.globalCompositeOperation = 'source-atop';
+  cc.globalAlpha = alpha;
+  cc.fillStyle = color;
+  cc.fillRect(0, 0, c.width, c.height);
+  TINT_CACHE[ck] = c;
+  return c;
+}
+
+// Zeichnet Frame mit Anker im aktuellen Transform-Ursprung (für exotische Skalierung).
+function drawSpriteAt(key, frame, tint, tintA){
+  const s = SHEETS[key]; if(!s) return;
+  const n = s.n, i = ((frame|0) % n + n) % n;
+  const src = tint ? (tintedSheet(key, tint, tintA == null ? 0.55 : tintA) || s.img) : s.img;
+  ctx.drawImage(src, (i % s.cols)*s.fw, ((i/s.cols)|0)*s.fh, s.fw, s.fh, -s.ax, -s.ay, s.fw, s.fh);
+}
+
+function drawSprite(key, frame, x, y, scale, flip, tint, tintA){
+  const s = SHEETS[key]; if(!s) return;
   ctx.save();
-  if(flip){ ctx.translate(dx*2+dw, 0); ctx.scale(-1,1); }
-  ctx.drawImage(ATLAS, f[0], f[1], f[2], f[3], dx, dy, dw, dh);
+  ctx.translate(x, y);
+  if(scale && scale !== 1) ctx.scale(scale, scale);
+  if(flip) ctx.scale(-1, 1);
+  drawSpriteAt(key, frame, tint, tintA);
   ctx.restore();
 }
-function iconCSS(name, px){
-  const f = FRAMES[name]; if(!f) return '';
-  const scale = px/16;
-  return `width:${px}px;height:${px}px;background-image:url(data:image/png;base64,${ATLAS_B64});background-position:-${f[0]*scale}px -${f[1]*scale}px;background-size:${137*scale}px ${103*scale}px;image-rendering:pixelated;display:inline-block;vertical-align:middle;`;
+
+// Frameindex aus Laufzeit. loop=false klemmt am letzten Frame fest.
+function animFrame(key, t, fps, loop){
+  const s = SHEETS[key]; if(!s) return 0;
+  const f = Math.floor(t * fps);
+  return (loop === false) ? Math.min(f, s.n - 1) : f % s.n;
 }
+function animLen(key, fps){ const s = SHEETS[key]; return s ? s.n / fps : 0; }
 
 
 const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
@@ -414,27 +521,76 @@ function circleWalkable(x,y,r){ return walkPx(x-r,y-r)&&walkPx(x+r,y-r)&&walkPx(
 const SPAWN = {x:12.5*TS, y:40.5*TS};
 const ARENA = {x:68, y:40};
 let trees = [];
+const decos = [];      // Pilze, Windmühle — reine Optik, keine Kollision
+const critters = [];   // Hühner/Schafe/Kühe, wandern im Grasland
 
 function makeCanvas(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
 
-// Initialisiert und zeichnet die Boden-Ebene nur einmal auf floorCanvas
-function drawTileTo(targetCtx, name, px, py, size){
-  const f = FRAMES[name]; if(!f) return;
-  targetCtx.drawImage(ATLAS, f[0], f[1], f[2], f[3], px, py, size, size);
+// --- Boden aus dem Sunnyside-Tileset ---------------------------------------
+// Pixelkoordinaten der reinen (kantenlosen) Flächen-Tiles im 1024er Sheet.
+const TILE_UV = {
+  grass:     [[16,16],[32,16]],                       // zwei fast gleiche Grundtöne
+  grassDeco: [[16,32],[48,32],[64,32]],               // Blüten/Klee — nur sparsam einstreuen
+  dirt:  [[48,16]],
+  sand:  [[80,16]],
+  water: [[64,16]],
+  ice:   [[176,288],[192,288],[176,304],[192,304]],   // Wellen-Textur, weiß getönt = Eisfläche
+};
+// Biome ohne eigene Tiles entstehen als eingefärbte Kopien (einmal gebacken).
+const TILE_TINT = {
+  snow:       ['#eaf6ff', 0.82],
+  ice:        ['#f2fbff', 0.74],
+  shadow:     ['#4a1866', 0.74],
+  shadowDirt: ['#2e0f42', 0.74],
+  dead:       ['#c9a06a', 0.45],
+};
+
+const TILE_CACHE = {};
+function bakeTile(uv, tintName){
+  const ck = uv[0] + ',' + uv[1] + ',' + (tintName || '-');
+  if(TILE_CACHE[ck]) return TILE_CACHE[ck];
+  const sheet = SHEETS.tileset; if(!sheet) return null;
+  const c = makeCanvas(TS, TS), cc = c.getContext('2d');
+  cc.imageSmoothingEnabled = false;
+  cc.drawImage(sheet.img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
+  const t = tintName && TILE_TINT[tintName];
+  if(t){
+    cc.globalCompositeOperation = 'source-atop';
+    cc.globalAlpha = t[1]; cc.fillStyle = t[0];
+    cc.fillRect(0, 0, TS, TS);
+  }
+  TILE_CACHE[ck] = c;
+  return c;
 }
+
+// Stabiler Pseudo-Zufall pro Zelle: Neubacken (Levelwechsel) ergibt dasselbe Bild.
+const tileHash = (x,y)=> (Math.imul(x, 73856093) ^ Math.imul(y, 19349663)) >>> 0;
+
 function initFloorGraphics(){
+  if(!assetsReady) return;                       // wird nach dem Laden nachgeholt
+  floorCtx.imageSmoothingEnabled = false;
   for(let y=0;y<MH;y++){
     for(let x=0;x<MW;x++){
       const t = T(x,y), px = x*TS, py = y*TS;
-      const biome = y<26 ? 'snow' : (y>54 ? 'sand' : 'grass');
-      if(currentLevel === 1){
-        if(t===G_PATH) drawTileTo(floorCtx, 'path', px, py, TS);
-        else if(t===G_ROCK) drawTileTo(floorCtx, 'rockfloor', px, py, TS);
-        else drawTileTo(floorCtx, biome, px, py, TS);
+      // ~1 von 6 Zellen bekommt ein Deko-Tile — sonst entsteht ein Schachbrettmuster
+      const gh = tileHash(x,y);
+      const gv = (gh % 6 === 0) ? TILE_UV.grassDeco[(gh >>> 4) % TILE_UV.grassDeco.length]
+                                : TILE_UV.grass[(gh >>> 4) & 1];
+      let tile;
+      if(currentLevel === 2){
+        tile = bakeTile(t===G_PATH ? TILE_UV.dirt[0] : gv, t===G_PATH ? 'shadowDirt' : 'shadow');
+      } else if(t === G_PATH){
+        tile = bakeTile(TILE_UV.dirt[0], null);
+      } else if(t === G_ICE){
+        tile = bakeTile(TILE_UV.ice[tileHash(x,y) % TILE_UV.ice.length], 'ice');
+      } else if(y < 26){
+        tile = bakeTile(gv, 'snow');             // Schneeband: eingefärbtes Gras
+      } else if(y > 54){
+        tile = bakeTile(TILE_UV.sand[0], null);
       } else {
-        if(t===G_PATH) drawTileTo(floorCtx, 'shadow_path', px, py, TS);
-        else drawTileTo(floorCtx, 'shadow_grass', px, py, TS);
+        tile = bakeTile(gv, null);
       }
+      if(tile) floorCtx.drawImage(tile, px, py);
     }
   }
 }
@@ -459,14 +615,55 @@ function genMap(){
     for(let x=2;x<MW-2;x++){
       const t = T(x,y); if(t===G_PATH) continue;
       const r = rng();
-      if(y < 26){ if(r < 0.08) setT(x,y,G_ICE_TREE); else if(r < 0.12) setT(x,y,G_ICE); }
+      if(y < 26){ if(r < 0.08) setT(x,y,G_ICE_TREE); }
       else if(y > 54){ if(r < 0.06) setT(x,y,G_CACTUS); else if(r < 0.10) setT(x,y,G_ROCK); }
       else { if(r < 0.08) setT(x,y,G_TREE); else if(r < 0.22) setT(x,y,G_TALL); else if(r < 0.25) setT(x,y,G_ROCK); }
     }
   }
+  // Gefrorene Teiche: zusammenhängende Flecken statt einzelner Kacheln (nur Optik, begehbar)
+  for(let n=0;n<26;n++){
+    const cx = ri(5, MW-6), cy = ri(4, 23), rad = rr(1.6, 3.2);
+    for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
+      for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
+        if(!inB(x,y) || y >= 26) continue;
+        if(T(x,y) !== G_SNOW && T(x,y) !== G_ICE_TREE) continue;   // Bäume weichen dem Teich
+        if(Math.hypot(x-cx, y-cy) > rad - rng()*0.7) continue;
+        setT(x,y,G_ICE);
+      }
+    }
+  }
   for(let i=0;i<MW;i++){ for(let b=0;b<2;b++){ setT(i,b,G_TREE); setT(i,MH-1-b,G_TREE); setT(b,i,G_TREE); setT(MW-1-b,i,G_TREE); } }
   for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) {
-    const t = T(x,y); if(t===G_TREE || t===G_ICE_TREE || t===G_CACTUS) trees.push({x:x*TS+TS/2, y:y*TS+TS-2, type:t});
+    const t = T(x,y);
+    if(t===G_TREE || t===G_ICE_TREE || t===G_CACTUS || t===G_ROCK)
+      trees.push({x:x*TS+TS/2, y:y*TS+TS-2, type:t, phase:rng()*10, variant:(x+y)&1});
+  }
+
+  // --- Deko: Pilze auf begehbarem Grund, rein optisch (keine Kollision) ---
+  decos.length = 0;
+  for(let y=3;y<MH-3;y++) for(let x=3;x<MW-3;x++){
+    if(!walkT(x,y) || T(x,y)===G_PATH) continue;
+    if(rng() > 0.022) continue;
+    const snow = y < 26, sand = y > 54;
+    if(sand) continue;                                     // Wüste bleibt karg
+    const kinds = snow ? ['mush_blue1','mush_blue2','mush_blue3'] : ['mush_red','mush_blue1'];
+    decos.push({x:x*TS+TS/2, y:y*TS+TS-4, sheet:kinds[Math.floor(rng()*kinds.length)],
+                phase:rng()*10, scale:1.4});
+  }
+  // Windmühle als Landmarke nahe dem Startpunkt
+  decos.push({x:19*TS, y:36*TS, sheet:'windmill', phase:0, scale:1, big:true});
+
+  // --- Ambiente-Tiere im Grasland (nur Optik, kollidieren mit nichts) ---
+  critters.length = 0;
+  const CRITTERS = ['chicken','sheep','cow','pig','chicken'];
+  for(let i=0;i<5;i++){
+    for(let tries=0; tries<40; tries++){
+      const tx = ri(8, MW-9), ty = ri(30, 50);
+      if(!walkT(tx,ty)) continue;
+      critters.push({x:tx*TS+16, y:ty*TS+16, sheet:CRITTERS[i], flip:false,
+                     vx:0, vy:0, restT:rr(0,3), phase:rr(0,10)});
+      break;
+    }
   }
   initFloorGraphics();
 }
@@ -516,9 +713,11 @@ function rollItem(tier, highRarity){
 }
 
 const keysDown = {w:false, a:false, s:false, d:false};
+const PLAYER_SC = 1.8;                                   // Sunnyside-Held auf ~34 px Höhe
 const player = {
   x:SPAWN.x, y:SPAWN.y, r:10, hp:70, mana:40, maxMana:40, level:1, xp:0, gold:0, potions:2,
   dir:0, faceLeft:false, attackCd:0, swingT:0, swingDir:0, attackMode:'sword', hurtT:0, dead:false,
+  anim:'idle', animT:0, castT:0, hair:HAIRS[Math.floor(Math.random()*HAIRS.length)],
   skills:{str:0, vit:0, agi:0, int:0}, skillPoints:0,
   spellPoints:0, spellsKnown:{}, spellCd:0,
   equip:{weapon:null, armor:null, shield:null},
@@ -602,42 +801,66 @@ function spellAimWorld(){                          // Weltziel folgt dem Spieler
 }
 function enterTouchMode(){ touchMode = true; document.body.classList.add('touch'); }
 
+// Optik-Felder: rig ('goblin'|'skel'), tint/tintA (eingefärbte Sheet-Kopie),
+// sc (Skalierung), scx (extra Breite), alpha, fly (Schwebe-Bob statt Lauf-Bob).
+// Das Skelett-Rig hat KEINE Zauber-Animation -> jeder Magier läuft auf Goblin.
 const MONDEF = {
   // --- Grasland (Wald) ---
-  slime:     {name:'Chuchu',      frame:'slime',     r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
-  goblin:    {name:'Grünhaut',    frame:'goblin',    r:11, hp:22, dmg:[4,7],  xp:16, speed:78, aggro:160, atkCd:0.9, atkRange:26, gold:[6,14]},
-  greenmage: {name:'Waldschamane',frame:'greenmage', r:11, hp:18, dmg:[6,10], xp:26, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[10,20],
+  slime:     {name:'Chuchu',      rig:'goblin', tint:'#7dff5a', tintA:0.55, sc:1.15, r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
+  goblin:    {name:'Grünhaut',    rig:'goblin', sc:1.5, r:11, hp:22, dmg:[4,7],  xp:16, speed:78, aggro:160, atkCd:0.9, atkRange:26, gold:[6,14]},
+  greenmage: {name:'Waldschamane',rig:'goblin', tint:'#2f8f4a', tintA:0.5, sc:1.5, r:11, hp:18, dmg:[6,10], xp:26, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[10,20],
               ranged:true, bolt:{dmg:[6,10], speed:190, color:'#6aff8f', r:7}},
 
   // --- Schnee ---
-  ghost:      {name:'Frostgeist', frame:'ghost',      r:10, hp:20, dmg:[3,6],  xp:18, speed:52, aggro:150, atkCd:1.0, atkRange:24, gold:[6,14]},
-  frostgolem: {name:'Frostgolem', frame:'frostgolem', r:14, hp:60, dmg:[8,14], xp:34, speed:30, aggro:150, atkCd:1.4, atkRange:30, gold:[14,26]},
-  frostmage:  {name:'Eismagier',  frame:'frostmage',  r:11, hp:20, dmg:[5,9],  xp:28, speed:42, aggro:180, atkCd:1.8, atkRange:140, gold:[10,22],
+  ghost:      {name:'Frostgeist', rig:'skel', tint:'#8fd8ff', tintA:0.6, alpha:0.62, fly:true, sc:1.45, r:10, hp:20, dmg:[3,6],  xp:18, speed:52, aggro:150, atkCd:1.0, atkRange:24, gold:[6,14]},
+  frostgolem: {name:'Frostgolem', rig:'skel', tint:'#4ab5e8', tintA:0.62, sc:2.1, r:14, hp:60, dmg:[8,14], xp:34, speed:30, aggro:150, atkCd:1.4, atkRange:30, gold:[14,26]},
+  frostmage:  {name:'Eismagier',  rig:'goblin', tint:'#5ac8ff', tintA:0.62, sc:1.5, r:11, hp:20, dmg:[5,9],  xp:28, speed:42, aggro:180, atkCd:1.8, atkRange:140, gold:[10,22],
               ranged:true, bolt:{dmg:[5,9], speed:220, color:'#7ad6ff', r:7}},
 
   // --- Wüste ---
-  crab:      {name:'Klippkrabbe', frame:'crab',      r:12, hp:34, dmg:[5,10], xp:24, speed:36, aggro:140, atkCd:1.1, atkRange:28, gold:[10,20]},
-  scorpion:  {name:'Sandskorpion',frame:'scorpion',  r:10, hp:20, dmg:[4,8],  xp:20, speed:88, aggro:170, atkCd:0.8, atkRange:24, gold:[8,16]},
-  sandmage:  {name:'Dünenpriester',frame:'sandmage',  r:11, hp:22, dmg:[6,11], xp:30, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[12,24],
+  crab:      {name:'Klippkrabbe', rig:'goblin', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, r:12, hp:34, dmg:[5,10], xp:24, speed:36, aggro:140, atkCd:1.1, atkRange:28, gold:[10,20]},
+  scorpion:  {name:'Sandskorpion',rig:'goblin', tint:'#e8c46a', tintA:0.6, sc:1.3, r:10, hp:20, dmg:[4,8],  xp:20, speed:88, aggro:170, atkCd:0.8, atkRange:24, gold:[8,16]},
+  sandmage:  {name:'Dünenpriester',rig:'goblin', tint:'#ff9f2a', tintA:0.55, sc:1.5, r:11, hp:22, dmg:[6,11], xp:30, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[12,24],
               ranged:true, bolt:{dmg:[6,11], speed:200, color:'#ffb04a', r:7}},
 
   // --- Schattenland (Horde) ---
-  shadow:      {name:'Schattenling',  frame:'shadow_slime', r:10, hp:12, dmg:[1,3], xp:5,  speed:95, aggro:600, atkCd:1.5, atkRange:22, gold:[1,3]},
-  demon:       {name:'Schattenhund',  frame:'shadow_demon', r:12, hp:24, dmg:[3,6], xp:10, speed:110,aggro:600, atkCd:1.2, atkRange:26, gold:[2,6]},
-  shadowghost: {name:'Schattenspukt', frame:'shadowghost',  r:11, hp:18, dmg:[2,5], xp:8,  speed:120,aggro:600, atkCd:1.3, atkRange:24, gold:[2,6]},
-  shadowmage:  {name:'Schattenrufer', frame:'shadowmage',   r:11, hp:20, dmg:[5,9], xp:14, speed:70, aggro:600, atkCd:1.6, atkRange:130, gold:[3,8],
+  shadow:      {name:'Schattenling',  rig:'goblin', tint:'#3a0d5c', tintA:0.72, sc:1.2, r:10, hp:12, dmg:[1,3], xp:5,  speed:95, aggro:600, atkCd:1.5, atkRange:22, gold:[1,3]},
+  demon:       {name:'Schattenhund',  rig:'goblin', tint:'#8a0f2a', tintA:0.68, sc:1.5, r:12, hp:24, dmg:[3,6], xp:10, speed:110,aggro:600, atkCd:1.2, atkRange:26, gold:[2,6]},
+  shadowghost: {name:'Schattenspukt', rig:'skel', tint:'#a855f7', tintA:0.62, alpha:0.6, fly:true, sc:1.45, r:11, hp:18, dmg:[2,5], xp:8,  speed:120,aggro:600, atkCd:1.3, atkRange:24, gold:[2,6]},
+  shadowmage:  {name:'Schattenrufer', rig:'goblin', tint:'#c77dff', tintA:0.62, sc:1.5, r:11, hp:20, dmg:[5,9], xp:14, speed:70, aggro:600, atkCd:1.6, atkRange:130, gold:[3,8],
               ranged:true, bolt:{dmg:[5,9], speed:230, color:'#c77dff', r:7}},
-  boss:        {name:'Schattenfürst', frame:'boss_shadow',  r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
+  boss:        {name:'Schattenfürst', rig:'skel', tint:'#6b1fa8', tintA:0.6, sc:4.5, glow:'#c77dff', r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
+
+  // --- Reserve für spätere Level: fertig definiert, aktuell in keinem Roster ---
+  mummy:       {name:'Mumie',        rig:'skel', tint:'#d8c9a0', tintA:0.55, sc:1.5, reserved:true, r:11, hp:40, dmg:[6,11], xp:30, speed:26, aggro:150, atkCd:1.5, atkRange:28, gold:[12,24]},
+  golem:       {name:'Steingolem',   rig:'skel', tint:'#8a8a8a', tintA:0.7, sc:2.4, reserved:true, r:16, hp:90, dmg:[10,18],xp:45, speed:26, aggro:150, atkCd:1.6, atkRange:34, gold:[20,40]},
+  spider:      {name:'Höhlenspinne', rig:'goblin', tint:'#2a0f3a', tintA:0.7, sc:1.1, reserved:true, r:9,  hp:16, dmg:[3,7],  xp:18, speed:120,aggro:180, atkCd:0.7, atkRange:22, gold:[6,14]},
+  bat:         {name:'Fledermaus',   rig:'goblin', tint:'#6b5a4a', tintA:0.65, sc:1.0, fly:true, reserved:true, r:9, hp:12, dmg:[2,5], xp:12, speed:135,aggro:200, atkCd:0.9, atkRange:20, gold:[3,9]},
+  stalfos:     {name:'Knochenritter',rig:'skel', sc:1.6, reserved:true, r:11, hp:35, dmg:[7,12], xp:32, speed:70, aggro:170, atkCd:1.0, atkRange:28, gold:[14,28]},
+  mage:        {name:'Irrlichtmagier',rig:'goblin', tint:'#8fa8c9', tintA:0.6, sc:1.5, reserved:true, r:11, hp:24, dmg:[7,12], xp:34, speed:46, aggro:180, atkCd:1.6, atkRange:140, gold:[14,28],
+              ranged:true, bolt:{dmg:[7,12], speed:210, color:'#bcd8ff', r:7}},
+  bossgeneric: {name:'Alter Schrecken', rig:'skel', tint:'#c9a227', tintA:0.55, sc:4.0, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
 };
+
+// Animationssatz je Rig — Skelett kennt weder 'cast' noch 'run'.
+const RIG_ANIM = {
+  goblin: {idle:'goblin_idle', walk:'goblin_walk', run:'goblin_run', attack:'goblin_attack', cast:'goblin_cast', hurt:'goblin_hurt', death:'goblin_death'},
+  skel:   {idle:'skel_idle',   walk:'skel_walk',   run:'skel_run',   attack:'skel_attack',   cast:'skel_attack', hurt:'skel_hurt',   death:'skel_death'},
+};
+const monAnim = (d, name)=> RIG_ANIM[d.rig || 'goblin'][name];
 
 function makeMon(type,x,y){
   const d = MONDEF[type];
   const m = { type, def: d, x, y, r: d.r, hp: d.hp, maxHp: d.hp, aggro: false, atkT: rr(0,0.5), flash: 0, dead: false, kx: 0, ky: 0,
-    bobPhase: rr(0, Math.PI*2), wanderT: rr(0,2), wanderDx:0, wanderDy:0, slowT: 0, facingLeft:false };
+    bobPhase: rr(0, Math.PI*2), wanderT: rr(0,2), wanderDx:0, wanderDy:0, slowT: 0, facingLeft:false,
+    animT: rr(0,1), anim:'idle', actT:0, alertT:0, moving:false };
   monsters.push(m);
   if(d.boss) boss=m;
   return m;
 }
+
+// Leichen spielen die Sterbe-Animation zu Ende und verschwinden dann.
+const corpses = [];
 
 // Biom-Rosters: je min. 3 Typen (Nahkampf schwach/stark + 1 Fernkämpfer/Magier)
 const BIOME_MOBS = {
@@ -738,7 +961,11 @@ function hurtMon(m, d, crit, hitAngle){
 }
 
 function killMon(m){
-  m.dead = true; stats.kills++; 
+  m.dead = true; stats.kills++;
+  // Leiche spielt die Sterbe-Animation zu Ende und blendet dann aus
+  const dKey = monAnim(m.def, 'death');
+  corpses.push({x:m.x, y:m.y, def:m.def, key:dKey, t:0, dur:animLen(dKey, 11) + 1.4, flip:m.facingLeft});
+  if(corpses.length > 24) corpses.shift();
   if(currentLevel === 2) shadowKills++;
   sfx.die();
   spawnImpactParticles(m.x, m.y, 40, null);
@@ -907,7 +1134,9 @@ function castSpell(sp){
   if(player.spellCd > 0) return;
   if(player.mana < sp.mana){ floaters.push({x:player.x, y:player.y-30, txt:'Zu wenig Mana', col:'#7da0ff', t:0.7}); return; }
   player.mana -= sp.mana; player.spellCd = 0.28;
+  player.castT = 0.42;                                   // Zauber-Animation des Helden
   const dir = Math.atan2(mouse.wy - player.y, mouse.wx - player.x);
+  player.faceLeft = Math.cos(dir) < 0;
 
   if(sp.type === 'bolt'){
     sfx.magic();
@@ -927,6 +1156,9 @@ function castSpell(sp){
     sfx.magic(); addShake(12,0.35);
     const tx=mouse.wx, ty=mouse.wy;
     magicEffects.push({type:'ring', x:tx, y:ty, rad:sp.radius, color:sp.color, t:0.5, maxT:0.5});
+    if(sp.branch === 0)   // Feuer-Zweig: echte Flammen-Sprites im Einschlag
+      for(let i=0;i<7;i++) magicEffects.push({type:'flame', x:tx+rr(-sp.radius*0.6, sp.radius*0.6),
+        y:ty+rr(-sp.radius*0.45, sp.radius*0.45), sc:rr(2.2,4), t:rr(0.45,0.8), maxT:0.8});
     spawnImpactParticles(tx, ty, 30, null);
     for(const m of monsters){ if(!m.dead && dist2(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sp.dmg, true, Math.atan2(m.y-ty,m.x-tx)); } }
   } else if(sp.type === 'slow_field'){
@@ -1033,7 +1265,7 @@ function renderInventory(){
   for(const key in eqTypes){
     const el = document.getElementById(eqTypes[key]);
     const item = player.equip[key];
-    el.innerHTML = item ? `<span class="lbl">${key==='weapon'?'Waffe':key==='armor'?'Rüstung':'Schild'}</span><span style="${iconCSS(item.base.iconFrame, 34)}"></span>` : `<span class="lbl">${key}</span>`;
+    el.innerHTML = item ? `<span class="lbl">${key==='weapon'?'Waffe':key==='armor'?'Rüstung':'Schild'}</span><span style="font-size:26px;line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${key}</span>`;
     el.className = 'eqSlot ' + (item ? `rar${item.rar}` : '');
     bindTooltip(el, item, true, () => { player.equip[key] = null; dropItemToFloor(item); recalc(); renderInventory(); }, () => unequipItem(key));
   }
@@ -1043,7 +1275,7 @@ function renderInventory(){
     const slot = document.createElement('div'); slot.className = 'bagSlot';
     const item = player.bag[i];
     if(item){
-      slot.classList.add(`rar${item.rar}`); slot.innerHTML = `<span style="${iconCSS(item.base.iconFrame, 28)}"></span>`;
+      slot.classList.add(`rar${item.rar}`); slot.innerHTML = `<span style="font-size:22px;line-height:1;">${item.base.icon || '❔'}</span>`;
       bindTooltip(slot, item, false, () => { player.bag[i] = null; dropItemToFloor(item); renderInventory(); }, () => equipItemFromBag(i));
     }
     bagGrid.appendChild(slot);
@@ -1056,7 +1288,7 @@ document.getElementById('btnStr').onclick = () => addSkill('str');
 document.getElementById('btnVit').onclick = () => addSkill('vit');
 document.getElementById('btnAgi').onclick = () => addSkill('agi');
 document.getElementById('btnInt').onclick = () => addSkill('int');
-document.getElementById('potionBtn').innerHTML = `<span style="${iconCSS('potion', 22)}"></span> <span id="potCount">0</span>`;
+document.getElementById('potionBtn').innerHTML = `<span style="font-size:19px;line-height:1;">🧪</span> <span id="potCount">0</span>`;
 document.getElementById('potionBtn').onclick = drinkPotion;
 document.getElementById('spellBtn').onclick = castActiveSpell;
 document.getElementById('ultBtn').onclick = castUltimate;
@@ -1074,7 +1306,18 @@ function update(dt){
   if(player.attackCd > 0) player.attackCd -= dt;
   if(player.swingT > 0) player.swingT -= dt;
   if(player.hurtT > 0) player.hurtT -= dt;
+  if(player.castT > 0) player.castT -= dt;
   if(player.spellCd > 0) player.spellCd -= dt;
+
+  // Held-Animation: Angriff/Zauber schlagen alles, dann Treffer, dann Laufen
+  {
+    const a = player.dead ? 'death'
+            : player.swingT > 0 ? 'attack'
+            : player.castT  > 0 ? 'cast'
+            : player.hurtT  > 0 ? 'hurt'
+            : player.moving ? 'run' : 'idle';
+    if(a !== player.anim){ player.anim = a; player.animT = 0; } else player.animT += dt;
+  }
   if(attackTouch && !player.dead) touchAttack(attackTouch.sx, attackTouch.sy); // Finger halten = Auto-Attack (Cooldown-gated)
   else if(atkBtnHeld && !player.dead) attackBtnFire();                         // Attack-Button halten = Dauerfeuer (Lock > Priority)
   validateLock();                                                              // Auto-Unlock: tot oder >350px (no-op auf Desktop)
@@ -1184,6 +1427,7 @@ function update(dt){
   for(let i=monsters.length-1; i>=0; i--){
     const m = monsters[i];
     if(m.dead){ monsters.splice(i, 1); continue; }
+    const mx0 = m.x, my0 = m.y, wasAggro = m.aggro;
 
     if(Math.abs(m.kx) > 0.1 || Math.abs(m.ky) > 0.1){
       moveEnt(m, m.kx * dt, m.ky * dt);
@@ -1219,12 +1463,12 @@ function update(dt){
         moveEnt(m, Math.cos(a)*spd*dt, Math.sin(a)*spd*dt);
         m.facingLeft = player.x < m.x;
       } else if(m.atkT <= 0){
-        m.atkT = m.def.atkCd; enemyCast(m);
+        m.atkT = m.def.atkCd; m.actT = 0.55; enemyCast(m);
       }
       if(pd < 900) m.facingLeft = player.x < m.x;
     } else {
       if(pd <= m.def.atkRange){
-        if(m.atkT <= 0){ m.atkT = m.def.atkCd; hurtPlayer(rri(m.def.dmg[0], m.def.dmg[1])); }
+        if(m.atkT <= 0){ m.atkT = m.def.atkCd; m.actT = 0.45; hurtPlayer(rri(m.def.dmg[0], m.def.dmg[1])); }
       } else {
         const a = Math.atan2(player.y - m.y, player.x - m.x);
         // Soft Avoidance für Horde-Verhalten
@@ -1237,6 +1481,36 @@ function update(dt){
         moveEnt(m, (Math.cos(a)*spd + sepX*2)*dt, (Math.sin(a)*spd + sepY*2)*dt);
         m.facingLeft = player.x < m.x;
       }
+    }
+
+    // --- Animationszustand ---
+    if(!wasAggro && m.aggro) m.alertT = 0.9;              // "!" beim Entdecken
+    if(m.alertT > 0) m.alertT -= dt;
+    if(m.actT > 0) m.actT -= dt;
+    m.moving = Math.abs(m.x - mx0) + Math.abs(m.y - my0) > 0.4;
+    let na;
+    if(m.actT > 0)        na = m.def.ranged ? 'cast' : 'attack';
+    else if(m.flash > 0)  na = 'hurt';
+    else if(m.moving)     na = m.aggro ? 'run' : 'walk';
+    else                  na = 'idle';
+    if(na !== m.anim){ m.anim = na; m.animT = 0; } else m.animT += dt;
+  }
+
+  // Leichen ausblenden
+  for(let i = corpses.length-1; i>=0; i--){ corpses[i].t += dt; if(corpses[i].t >= corpses[i].dur) corpses.splice(i,1); }
+
+  // Ambiente-Tiere: gemütlich wandern, keine Kollision mit Spielinhalten
+  for(const c of critters){
+    c.restT -= dt;
+    if(c.restT <= 0){
+      c.restT = rr(1.5, 5);
+      if(Math.random() < 0.45){ c.vx = 0; c.vy = 0; }
+      else { const a = rr(0, Math.PI*2); c.vx = Math.cos(a)*18; c.vy = Math.sin(a)*18; c.flip = c.vx < 0; }
+    }
+    if(c.vx || c.vy){
+      const nx = c.x + c.vx*dt, ny = c.y + c.vy*dt;
+      if(walkPx(nx, c.y)) c.x = nx; else c.vx = -c.vx;
+      if(walkPx(c.x, ny)) c.y = ny; else c.vy = -c.vy;
     }
   }
 
@@ -1263,12 +1537,22 @@ function render(){
 
   for(const d of drops){
     const bob = Math.sin(gameT*3 + d.x*0.1) * 2;
-    if(d.kind === 'gold'){ drawFrame('gold', d.x-9, d.y-9+bob, 18, 18); }
-    else if(d.kind === 'potion'){ drawFrame('potion', d.x-8, d.y-14+bob, 16, 16); }
-    else if(d.kind === 'item'){
-      drawFrame(d.item.base.iconFrame || 'chest', d.x-9, d.y-18+bob, 18, 18);
-      ctx.fillStyle = RARITY[d.item.rar].col; ctx.font = 'bold 11px Courier New'; ctx.fillText(d.item.name, d.x - 20, d.y+14);
+    const gf = animFrame('glint', gameT + d.x*0.017, 9);
+    ctx.save(); ctx.textAlign = 'center'; ctx.font = '17px serif';
+    if(d.kind === 'gold'){
+      ctx.fillText('💰', d.x, d.y+6+bob);
+      drawSprite('glint', gf, d.x, d.y-6+bob, 1.6);
+    } else if(d.kind === 'potion'){
+      ctx.fillText('🧪', d.x, d.y+6+bob);
+    } else if(d.kind === 'item'){
+      ctx.shadowColor = RARITY[d.item.rar].col; ctx.shadowBlur = d.item.rar >= 2 ? 12 : 5;
+      ctx.fillText(d.item.base.icon || '📦', d.x, d.y+4+bob);
+      ctx.shadowBlur = 0;
+      drawSprite('glint', gf, d.x, d.y-10+bob, 1.6);
+      ctx.fillStyle = RARITY[d.item.rar].col; ctx.font = 'bold 11px Courier New';
+      ctx.fillText(d.item.name, d.x, d.y+18);
     }
+    ctx.restore();
   }
 
   for(const p of particles){
@@ -1300,20 +1584,38 @@ function render(){
       ctx.globalAlpha = 1 - p; ctx.strokeStyle = eff.color || '#c77dff'; ctx.lineWidth = 5;
       ctx.beginPath(); ctx.arc(eff.x, eff.y, eff.rad * p, 0, Math.PI*2); ctx.stroke();
       ctx.globalAlpha = 1.0;
+    } else if(eff.type === 'flame'){
+      ctx.globalAlpha = Math.min(1, eff.t / 0.3);
+      drawSprite('fire2', animFrame('fire2', eff.maxT - eff.t, 12), eff.x, eff.y, eff.sc);
+      ctx.globalAlpha = 1.0;
     }
   }
 
   const drawables = [];
+  const cullL = cam.x - 80, cullR = cam.x + canvas.width + 80;
+  const cullT = cam.y - 120, cullB = cam.y + canvas.height + 80;
+  const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
+
   for(const t of trees){
-    let frame = 'tree';
-    if(currentLevel === 1){
-      if(t.type === G_ICE_TREE) frame = 'pine';
-      else if(t.type === G_CACTUS) frame = 'cactus';
-    } else frame = 'shadow_tree';
-    const size = frame === 'cactus' ? 30 : 40;
-    drawables.push({y:t.y, draw:()=>drawFrame(frame, t.x - size/2, t.y - size + 6, size, size)});
+    if(!vis(t.x, t.y)) continue;
+    drawables.push({y:t.y, draw:()=>drawProp(t)});
   }
-  for(const m of monsters) if(!m.dead) drawables.push({y:m.y, draw:()=>drawMon(m)});
+  for(const d of decos){
+    if(!vis(d.x, d.y)) continue;
+    drawables.push({y:d.y, draw:()=>drawSprite(d.sheet, animFrame(d.sheet, gameT + d.phase, d.big?9:4), d.x, d.y, d.scale)});
+  }
+  for(const c of critters){
+    if(currentLevel !== 1 || !vis(c.x, c.y)) continue;   // Hoftiere gibt es nur im Wald
+    drawables.push({y:c.y, draw:()=>{
+      drawShadowEllipse(c.x, c.y+2, 8);
+      drawSprite(c.sheet, animFrame(c.sheet, gameT + c.phase, (c.vx||c.vy) ? 7 : 3), c.x, c.y+4, 1, c.flip);
+    }});
+  }
+  for(const c of corpses){
+    if(!vis(c.x, c.y)) continue;
+    drawables.push({y:c.y - 1, draw:()=>drawCorpse(c)});
+  }
+  for(const m of monsters) if(!m.dead && vis(m.x, m.y)) drawables.push({y:m.y, draw:()=>drawMon(m)});
   drawables.push({y:player.y, draw:drawPlayer});
   drawables.sort((a,b)=>a.y - b.y);
   for(const d of drawables) d.draw();
@@ -1414,31 +1716,25 @@ function drawPlayer(){
   }
 
   drawShadowEllipse(player.x, player.y + 12, 12);
-  const bob = player.moving ? Math.sin(gameT*11) * 2 : 0;
 
-  // Wehendes Cape hinter dem Helden
-  ctx.save(); ctx.translate(player.x, player.y + bob);
-  const flap = Math.sin(gameT*7) * 4 + (player.moving ? 3 : 0);
-  const capeDir = player.faceLeft ? 1 : -1;
-  const capeGrad = ctx.createLinearGradient(0,-10,0,16);
-  capeGrad.addColorStop(0, '#f4d97a'); capeGrad.addColorStop(1, '#b3202a');
-  ctx.fillStyle = capeGrad;
-  ctx.beginPath();
-  ctx.moveTo(capeDir*-6, -10);
-  ctx.quadraticCurveTo(capeDir*(-14+flap), 2, capeDir*(-9+flap*1.4), 17);
-  ctx.quadraticCurveTo(capeDir*-6, 6, capeDir*-3, -8);
-  ctx.closePath(); ctx.fill();
-  ctx.restore();
-
-  // Held selbst – Sprite je nach Rüstungs-Tier (0 nackt / 1 Leder / 2 Kette / 3 Platte)
+  // Held: Sunnyside-Sprite, base + Haar-Ebene im selben Frame-Raster.
+  // Rüstungs-Tier färbt nicht das Sprite, sondern leuchtet als Aura (Bronze/Silber/Gold).
   const armorTier = player.equip.armor ? (player.equip.armor.base.tier || 0) : 0;
-  const heroSprite = armorTier>=3 ? 'hero_plate'
-                   : armorTier===2 ? 'hero_chain'
-                   : armorTier===1 ? 'hero_leather'
-                   : 'player';
-  ctx.save(); ctx.translate(player.x, player.y + bob);
-  if(player.hurtT > 0) ctx.filter = 'brightness(3) sepia(1)';
-  drawFrame(heroSprite, -16, -24, 32, 32, player.faceLeft);
+  const a = player.anim, key = 'hero_' + a, hairKey = `hair_${player.hair}_${a}`;
+  const fps = a==='idle' ? 7 : (a==='attack' ? 22 : a==='cast' ? 20 : a==='run' ? 12 : 10);
+  const loop = !(a==='attack' || a==='cast' || a==='hurt' || a==='death');
+  const f = animFrame(key, player.animT, fps, loop);
+
+  ctx.save();
+  ctx.translate(player.x, player.y + 11);
+  ctx.scale(PLAYER_SC * (player.faceLeft ? -1 : 1), PLAYER_SC);
+  if(player.hurtT > 0) ctx.filter = 'brightness(2.6) sepia(1)';
+  else if(armorTier > 0){
+    ctx.shadowColor = armorTier>=3 ? '#f4d97a' : armorTier===2 ? '#dfe6f0' : '#c98a4a';
+    ctx.shadowBlur = 4 + armorTier*2;
+  }
+  drawSpriteAt(key, f);
+  drawSpriteAt(hairKey, f);
   ctx.restore();
 
   // Schwebende Waffe neben dem Helden
@@ -1448,8 +1744,9 @@ function drawPlayer(){
     const side = player.faceLeft ? -1 : 1;
     const wx = player.x + side*20, wy = player.y - 6 + Math.sin(gameT*3.4)*3;
     ctx.save(); ctx.translate(wx, wy); ctx.rotate(Math.sin(gameT*2)*0.25 + side*0.3);
-    ctx.shadowColor = style.col2; ctx.shadowBlur = 6;
-    drawFrame(style.icon, -8, -8, 16, 16);
+    ctx.shadowColor = style.col2; ctx.shadowBlur = 8;
+    ctx.textAlign = 'center'; ctx.font = '15px serif';
+    ctx.fillText(w.base.icon || '⚔️', 0, 5);
     ctx.shadowBlur = 0;
     ctx.restore();
   }
@@ -1489,14 +1786,62 @@ function drawPlayer(){
   }
 }
 
-function drawMon(m){
-  const size = m.def.boss ? 110 : 30;
-  drawShadowEllipse(m.x, m.y + m.r*0.7, m.r*0.9);
-  const bob = Math.sin(gameT*6 + m.bobPhase) * (m.def.boss ? 2.5 : 1.5);
-  ctx.save(); ctx.translate(m.x, m.y + bob);
-  if(m.flash > 0) ctx.filter = 'brightness(4)';
-  drawFrame(m.def.frame, -size/2, -size/2 - 6, size, size, m.facingLeft);
+// Bäume / Felsen — feste Hindernisse, y-sortiert über dem Boden
+function drawProp(t){
+  if(currentLevel === 2){
+    drawSprite(t.variant ? 'tree2' : 'tree1', animFrame('tree1', gameT*0.5 + t.phase, 3),
+               t.x, t.y+4, 1.5, false, '#4a1866', 0.72);
+    return;
+  }
+  if(t.type === G_ROCK){
+    const ty = t.y / TS;
+    drawShadowEllipse(t.x, t.y, 11);
+    // Felsen nehmen die Farbe ihres Bandes an: Sandstein in der Wüste, Reif im Schnee
+    const tint = ty > 54 ? '#d9b070' : (ty < 26 ? '#dfeeff' : null);
+    drawSprite('rock', 0, t.x, t.y+2, 2.2, (t.phase|0) & 1, tint, 0.5);
+    return;
+  }
+  const sway = animFrame('tree1', gameT*0.5 + t.phase, 3);
+  if(t.type === G_ICE_TREE)      drawSprite('tree1', sway, t.x, t.y+4, 1.5, false, '#cfe9ff', 0.5);
+  else if(t.type === G_CACTUS)   drawSprite('tree2', sway, t.x, t.y+4, 1.25, false, '#b5872f', 0.82);
+  else                           drawSprite(t.variant ? 'tree2' : 'tree1', sway, t.x, t.y+4, 1.5);
+}
+
+function drawCorpse(c){
+  const d = c.def, sc = d.sc || 1.5;
+  const fade = Math.min(1, Math.max(0, (c.dur - c.t) / 1.2));
+  ctx.save();
+  ctx.globalAlpha = (d.alpha || 1) * fade;
+  ctx.translate(c.x, c.y + d.r*0.7);
+  ctx.scale(sc * (d.scx||1) * (c.flip ? -1 : 1), sc);
+  drawSpriteAt(c.key, animFrame(c.key, c.t, 11, false), d.tint, d.tintA);
   ctx.restore();
+}
+
+function drawMon(m){
+  const d = m.def, sc = d.sc || 1.5;
+  drawShadowEllipse(m.x, m.y + m.r*0.7, m.r*0.9);
+  const bob = d.fly ? Math.sin(gameT*3.5 + m.bobPhase) * 4 - 4 : 0;
+  const key = monAnim(d, m.anim);
+  const fps = m.anim==='idle' ? 7 : (m.anim==='attack' ? 16 : m.anim==='cast' ? 20 : m.anim==='run' ? 12 : 10);
+  const loop = !(m.anim==='attack' || m.anim==='cast' || m.anim==='hurt');
+
+  ctx.save();
+  ctx.translate(m.x, m.y + m.r*0.7 + bob);
+  ctx.scale(sc * (d.scx||1) * (m.facingLeft ? -1 : 1), sc);
+  if(m.flash > 0) ctx.filter = 'brightness(4)';
+  if(d.alpha) ctx.globalAlpha = d.alpha;
+  if(d.glow){ ctx.shadowColor = d.glow; ctx.shadowBlur = 20; }
+  drawSpriteAt(key, animFrame(key, m.animT, fps, loop), d.tint, d.tintA);
+  ctx.restore();
+
+  if(d.boss){   // Boss lodert
+    for(let i=0;i<4;i++)
+      drawSprite('fire2', animFrame('fire2', gameT*1.5 + i*0.27, 11),
+                 m.x + (i-1.5)*30, m.y + m.r*0.8, 5, i&1, d.glow, 0.55);
+  }
+  if(m.alertT > 0)   // "!" beim Entdecken des Spielers
+    drawSprite('alert', 0, m.x, m.y - m.r - 14 - (0.9-m.alertT)*6, 1.6);
 
   if(m.hp < m.maxHp && !m.def.boss){
     ctx.fillStyle = '#1a0505'; ctx.fillRect(m.x - 12, m.y - m.r - 12, 24, 4);
@@ -1506,9 +1851,16 @@ function drawMon(m){
 
 function renderMinimap(){
   const mctx = document.getElementById('minimap').getContext('2d');
-  mctx.fillStyle = currentLevel === 1 ? '#3fa04a' : '#1e0c29';
-  mctx.fillRect(0,0,128,128);
+  if(assetsReady){                       // echte Karte statt Farbfläche
+    mctx.imageSmoothingEnabled = true;
+    mctx.drawImage(floorCanvas, 0, 0, 128, 128);
+  } else {
+    mctx.fillStyle = currentLevel === 1 ? '#3fa04a' : '#1e0c29';
+    mctx.fillRect(0,0,128,128);
+  }
   const scale = 128 / MW;
+  mctx.fillStyle = 'rgba(255,80,80,.85)';
+  for(const m of monsters) if(!m.dead) mctx.fillRect((m.x/TS)*scale - 1, (m.y/TS)*scale - 1, 2, 2);
   mctx.fillStyle = '#5c86ff'; mctx.fillRect((player.x/TS)*scale - 1, (player.y/TS)*scale - 1, 3, 3);
   if(portal){ mctx.fillStyle = '#ff00ff'; mctx.fillRect((portal.x/TS)*scale - 2, (portal.y/TS)*scale - 2, 4, 4); }
 }
@@ -1835,7 +2187,27 @@ function loop(now){
   lastT = now; update(dt); render(); requestAnimationFrame(loop);
 }
 
-showStartScreen(); requestAnimationFrame(loop);
+// Ladebildschirm, bis alle Sprite-Sheets da sind — erst dann Boden backen und starten.
+function showLoading(){
+  document.getElementById('ovPanel').innerHTML = `
+    <h1>SuperDuper Adventure</h1>
+    <h3>Lade Grafiken…</h3>
+    <p id="loadTxt" style="font-size:13px;color:#9a8a5f;">0 / ${SHEET_LIST.length}</p>`;
+  document.getElementById('overlay').style.display = 'flex';
+}
+showLoading();
+const loadTick = setInterval(() => {
+  const el = document.getElementById('loadTxt');
+  if(el) el.innerText = `${assetsLoaded} / ${SHEET_LIST.length}`;
+}, 60);
+
+loadAssets().then(() => {
+  clearInterval(loadTick);
+  assetsReady = true;
+  initFloorGraphics();
+  showStartScreen();
+  requestAnimationFrame(loop);
+});
 </script>
 </body>
 </html>
