@@ -88,6 +88,27 @@
   #overlay button{margin-top:18px;font-family:inherit;font-weight:bold;font-size:18px;padding:12px 34px;cursor:pointer;color:#1a1206;background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
   #overlay button:hover{filter:brightness(1.1);}
 
+  /* --- Touch-Modus UI (nur body.touch, Desktop unverändert) --- */
+  .touchOnly{display:none;}
+  body.touch .touchOnly{display:flex;}
+  #touchCluster{display:none;}
+  body.touch #touchCluster{display:block;position:fixed;right:0;bottom:0;width:230px;height:250px;z-index:11;pointer-events:none;}
+  #touchCluster .tBtn{position:absolute;pointer-events:auto;border:3px solid #6b5a3a;border-radius:50%;
+    background:rgba(23,19,13,.85);color:#e8d9a8;display:flex;align-items:center;justify-content:center;
+    touch-action:none;-webkit-user-select:none;user-select:none;}
+  #attackBtn{width:78px;height:78px;right:14px;bottom:118px;font-size:30px;}
+  #attackBtn.locked{border-color:#ff5a5a;box-shadow:0 0 10px rgba(255,90,90,.6);}
+  /* Daumen-Fächer: Kampf-Buttons aus dem Belt um den Attack-Button gruppieren.
+     position:fixed nimmt sie aus dem Flex-Flow; Rest des Belts (Menü-Buttons) bleibt zentriert. */
+  body.touch #potionBtn, body.touch #spellBtn, body.touch #ultBtn{
+    position:fixed;z-index:11;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;touch-action:none;}
+  body.touch #spellBtn{right:102px;bottom:128px;}    /* ~180° vom Attack-Button, Radius ~88px */
+  body.touch #ultBtn{right:84px;bottom:194px;}       /* ~135° */
+  body.touch #potionBtn{right:18px;bottom:212px;}    /* ~90°  */
+  body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
+  body.touch #spellBtn.cancelHot{border-color:#ff5a5a;background:#2a0d0d;}
+  body.touch #spellBtn.cancelHot #spellBtnTxt::after{content:' ✖';color:#ff5a5a;}
+
   /* --- Mobile / kleine Screens --- */
   @media (max-width: 480px){
     .orbWrap{width:60px;height:60px;border-width:2px;}
@@ -136,6 +157,7 @@
       <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒 Inv <span id="skillBadge" style="color:#f4d97a;display:none;">(★)</span></div>
       <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
       <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke" style="pointer-events:auto;width:80px;accent-color:#c9a227;">
+      <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯 <span id="prioTxt">Nah</span></div>
     </div>
   </div>
   <div class="orbWrap"><div id="manaFill"></div><div class="orbTxt" id="manaTxt">40</div></div>
@@ -144,6 +166,7 @@
     <span id="goldTxt">💰 0</span>
   </div>
 </div>
+<div id="touchCluster"><div class="tBtn" id="attackBtn">⚔️</div></div>
 
 <div id="inv">
   <h2>INVENTAR & SKILLS <span style="cursor:pointer" id="closeInvBtn">✖</span></h2>
@@ -506,6 +529,43 @@ const touchMove = {x:0, y:0, active:false};              // analoger Stick-Vekto
 const joy = {id:null, baseX:0, baseY:0, curX:0, curY:0, R:60, DEAD:8};
 let attackTouch = null;                                   // {id, sx, sy} Screen-Koordinaten
 
+// --- Touch-Kampf (Wild-Rift-Stil) ---
+let targetPriority = 'closest';                    // 'closest' | 'lowhp'
+try{ const v = localStorage.getItem('sda_targetPriority');
+     if(v === 'lowhp' || v === 'closest') targetPriority = v; }catch(_){}
+let lockedTarget = null;                           // Monster-Referenz oder null
+let atkBtnHeld = false;                            // Attack-Button gehalten (Dauerfeuer)
+const spellAim = {active:false, sp:null, nx:1, ny:0, d:0, cancel:false}; // Richtung+Distanz, Weltziel wird live berechnet
+const lockAim  = {active:false, wx:0, wy:0};       // Fadenkreuz beim Lock-Drag (absolute Weltposition)
+
+function pickTarget(prio, maxRange, fx = player.x, fy = player.y){
+  let best = null, bestV = Infinity;
+  for(const m of monsters){
+    if(m.dead) continue;
+    const d = dist2(fx, fy, m.x, m.y);
+    if(d > maxRange) continue;
+    const v = (prio === 'lowhp') ? m.hp : d;       // absolute HP vs. Distanz
+    if(v < bestV){ bestV = v; best = m; }
+  }
+  return best;
+}
+function validateLock(){
+  if(lockedTarget && (lockedTarget.dead || dist2(player.x, player.y, lockedTarget.x, lockedTarget.y) > 350))
+    lockedTarget = null;
+  return lockedTarget;
+}
+function spellReach(sp){                           // Aim-/Preview-Reichweite pro Typ
+  if(!sp) return 0;
+  if(sp.type === 'bolt')       return sp.speed * 0.9;   // Lifetime 2s -> ~speed*0.9 als ehrliche Ziellinie
+  if(sp.type === 'aoe_target') return 320;              // Touch-Cap (Desktop-Maus bleibt unbegrenzt)
+  if(sp.type === 'chain')      return sp.range;         // 270, auto-target
+  return sp.radius || 0;                                // nova / slow_field
+}
+function spellAimWorld(){                          // Weltziel folgt dem Spieler (Joystick + Aim gleichzeitig)
+  return {x: player.x + spellAim.nx * spellAim.d, y: player.y + spellAim.ny * spellAim.d};
+}
+function enterTouchMode(){ touchMode = true; document.body.classList.add('touch'); }
+
 const MONDEF = {
   // --- Grasland (Wald) ---
   slime:     {name:'Chuchu',      frame:'slime',     r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
@@ -551,7 +611,7 @@ const BIOME_MOBS = {
 };
 
 function placeMonsters(){
-  monsters.length = 0; boss = null;
+  monsters.length = 0; boss = null; lockedTarget = null;
   if(currentLevel === 1){
     for(let i=0;i<55;i++){
       const tx=ri(4,MW-5), ty=ri(4,MH-5);
@@ -568,7 +628,7 @@ function loadLevel2(){
   currentLevel = 2; schattenlandActive = true;
   sfx.warp(); addShake(25, 1.0);
   player.x = ARENA.x * TS; player.y = ARENA.y * TS;
-  monsters.length = 0; drops.length = 0;
+  monsters.length = 0; drops.length = 0; lockedTarget = null;
   initFloorGraphics(); // Map ändert sich optisch in Schatten-Biom
   floaters.push({x:player.x, y:player.y-40, txt:'HORDEN DES SCHATTENS!', col:'#ff0055', t:4.0, big:true});
 }
@@ -980,6 +1040,8 @@ function update(dt){
   if(player.hurtT > 0) player.hurtT -= dt;
   if(player.spellCd > 0) player.spellCd -= dt;
   if(attackTouch && !player.dead) touchAttack(attackTouch.sx, attackTouch.sy); // Finger halten = Auto-Attack (Cooldown-gated)
+  else if(atkBtnHeld && !player.dead) attackBtnFire();                         // Attack-Button halten = Dauerfeuer (Lock > Priority)
+  validateLock();                                                              // Auto-Unlock: tot oder >350px (no-op auf Desktop)
 
   if(schattenlandActive){
     document.getElementById('zone').innerHTML = `📍 Schattenland | 💀 ${shadowKills} / 500`;
@@ -1220,6 +1282,49 @@ function render(){
   drawables.sort((a,b)=>a.y - b.y);
   for(const d of drawables) d.draw();
 
+  // --- Touch: Zauber-Preview + Lock-Marker (World-Space) ---
+  if(spellAim.active && spellAim.sp){
+    const sp = spellAim.sp, w = spellAimWorld();
+    ctx.save();
+    ctx.globalAlpha = spellAim.cancel ? 0.15 : 0.55;       // Cancel dimmt Preview
+    ctx.strokeStyle = sp.color; ctx.lineWidth = 2;
+    if(sp.type === 'bolt'){
+      ctx.setLineDash([6,6]);
+      ctx.beginPath(); ctx.moveTo(player.x, player.y); ctx.lineTo(w.x, w.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(w.x, w.y, 14, 0, Math.PI*2); ctx.stroke();       // Reticle
+      ctx.beginPath(); ctx.moveTo(w.x-20, w.y); ctx.lineTo(w.x+20, w.y);
+      ctx.moveTo(w.x, w.y-20); ctx.lineTo(w.x, w.y+20); ctx.stroke();
+    } else if(sp.type === 'aoe_target'){
+      ctx.setLineDash([6,6]);
+      ctx.beginPath(); ctx.moveTo(player.x, player.y); ctx.lineTo(w.x, w.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(w.x, w.y, sp.radius, 0, Math.PI*2); ctx.stroke();
+      ctx.globalAlpha *= 0.3; ctx.fillStyle = sp.color;
+      ctx.beginPath(); ctx.arc(w.x, w.y, sp.radius, 0, Math.PI*2); ctx.fill();
+    } else {                                                // nova / slow_field / chain: statischer Ring um Spieler
+      ctx.beginPath(); ctx.arc(player.x, player.y, spellReach(sp), 0, Math.PI*2); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  if(lockAim.active){                                       // Fadenkreuz beim Lock-Drag
+    ctx.save(); ctx.strokeStyle = '#ff5a5a'; ctx.lineWidth = 2; ctx.globalAlpha = 0.8;
+    ctx.beginPath(); ctx.arc(lockAim.wx, lockAim.wy, 16, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(lockAim.wx-24, lockAim.wy); ctx.lineTo(lockAim.wx+24, lockAim.wy);
+    ctx.moveTo(lockAim.wx, lockAim.wy-24); ctx.lineTo(lockAim.wx, lockAim.wy+24); ctx.stroke();
+    ctx.restore();
+  }
+  if(lockedTarget && !lockedTarget.dead){                   // Marker über gelocktem Ziel
+    const lt = lockedTarget;
+    ctx.save(); ctx.textAlign = 'center';
+    ctx.fillStyle = '#000'; ctx.font = '900 16px Courier New';
+    ctx.fillText('▼', lt.x+1, lt.y - lt.r - 21);
+    ctx.fillStyle = '#ff5a5a'; ctx.fillText('▼', lt.x, lt.y - lt.r - 22);
+    ctx.strokeStyle = 'rgba(255,90,90,.8)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(lt.x, lt.y, lt.r + 6, 0, Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
+
   for(const f of floaters){
     ctx.fillStyle = '#000'; ctx.font = f.big ? '900 18px Courier New' : 'bold 12px Courier New';
     ctx.fillText(f.txt, f.x+1, f.y+1); ctx.fillStyle = f.col; ctx.fillText(f.txt, f.x, f.y);
@@ -1406,6 +1511,7 @@ function updateHUD(){
     document.getElementById('ultBtnTxt').innerText = '🔒 Ult (R)';
   }
   document.getElementById('xpFill').style.width = Math.min(100, (player.xp / (35 * Math.pow(player.level, 1.35))) * 100) + '%';
+  if(touchMode) document.getElementById('attackBtn').classList.toggle('locked', !!lockedTarget);
 }
 
 function showStartScreen(){
@@ -1489,7 +1595,7 @@ canvas.addEventListener('mousedown', e => {
 });
 
 // --- TOUCH-STEUERUNG (mobil) ---
-document.addEventListener('touchstart', () => { initAudio(); touchMode = true; }, {passive:true}); // Audio-Unlock
+document.addEventListener('touchstart', () => { initAudio(); enterTouchMode(); }, {passive:true}); // Audio-Unlock
 
 function updateJoyVec(){
   const dx = joy.curX - joy.baseX, dy = joy.curY - joy.baseY, len = Math.hypot(dx, dy);
@@ -1509,6 +1615,7 @@ function touchAttack(sx, sy){
   // Auto-Aim: Tap nahe Monster (<=90px) snappt aufs Monster
   let best = null, bd = 90;
   for(const m of monsters){ if(m.dead) continue; const d = dist2(tx, ty, m.x, m.y); if(d < bd){ bd = d; best = m; } }
+  if(!best) best = pickTarget(targetPriority, 200);   // kein Snap-Kandidat am Tap-Punkt -> Priority-Ziel um den Spieler
   if(best){ tx = best.x; ty = best.y; }
   tryAttack(Math.atan2(ty - player.y, tx - player.x));
 }
@@ -1551,6 +1658,140 @@ function endTouch(e){
 canvas.addEventListener('touchend', endTouch, {passive:false});
 canvas.addEventListener('touchcancel', endTouch, {passive:false});
 canvas.addEventListener('contextmenu', e => e.preventDefault());   // Long-Press-Menü nur auf Canvas unterdrücken
+
+// ===== Touch: Spell-Drag-Aim (#spellBtn) =====
+const spellBtnEl = document.getElementById('spellBtn');
+const sDrag = {id:null, sx:0, sy:0, cx:0, cy:0, t0:0, maxD:0};
+const TAP_PX = 12, TAP_MS = 250, CANCEL_R = 52, DRAG_MAX = 110;
+
+spellBtnEl.addEventListener('touchstart', e => {
+  enterTouchMode();
+  const sp = SPELLS.find(s => s.id === activeSpellId);
+  if(state !== 'play' || player.dead || !sp || !spellKnown(sp.id)) return;  // disabled/kein Spruch: kein preventDefault, nichts passiert
+  e.preventDefault();                       // unterdrückt emulierten click -> onclick feuert auf Touch nie doppelt
+  if(sDrag.id !== null) return;             // nur ein Finger zaubert
+  const t = e.changedTouches[0], r = spellBtnEl.getBoundingClientRect();
+  sDrag.id = t.identifier; sDrag.sx = t.clientX; sDrag.sy = t.clientY;
+  sDrag.cx = r.left + r.width/2; sDrag.cy = r.top + r.height/2;
+  sDrag.t0 = performance.now(); sDrag.maxD = 0;
+  spellAim.active = true; spellAim.sp = sp; spellAim.cancel = false;
+  applySpellAim(t.clientX, t.clientY);
+  spellBtnEl.classList.add('aiming');
+}, {passive:false});
+
+function applySpellAim(cx, cy){
+  const dx = cx - sDrag.sx, dy = cy - sDrag.sy, len = Math.hypot(dx, dy);
+  sDrag.maxD = Math.max(sDrag.maxD, len);
+  const sp = spellAim.sp, reach = spellReach(sp);
+  if(len < 8){ spellAim.nx = Math.cos(player.dir); spellAim.ny = Math.sin(player.dir); spellAim.d = reach*0.5; }
+  else {
+    spellAim.nx = dx/len; spellAim.ny = dy/len;
+    spellAim.d  = (sp.type === 'aoe_target') ? Math.min(1, len/DRAG_MAX) * reach : reach;
+  }
+  // Cancel-Zone = zurück über den Button, aber erst nachdem wirklich gezogen wurde
+  spellAim.cancel = sDrag.maxD > 30 && Math.hypot(cx - sDrag.cx, cy - sDrag.cy) < CANCEL_R;
+  spellBtnEl.classList.toggle('cancelHot', spellAim.cancel);
+}
+
+spellBtnEl.addEventListener('touchmove', e => {
+  if(sDrag.id === null) return;
+  e.preventDefault();
+  for(const t of e.changedTouches) if(t.identifier === sDrag.id) applySpellAim(t.clientX, t.clientY);
+}, {passive:false});
+
+function spellDragEnd(e){
+  if(sDrag.id === null) return;
+  let ended = null;
+  for(const t of e.changedTouches) if(t.identifier === sDrag.id) ended = t;
+  if(!ended) return;
+  e.preventDefault();
+  const sp = spellAim.sp;
+  const isTap = sDrag.maxD < TAP_PX && (performance.now() - sDrag.t0) < TAP_MS;
+  if(e.type !== 'touchcancel' && sp){
+    if(isTap){                                       // Quick-Cast: Priority-Autoaim statt stale mouse.wx/wy
+      const tgt = pickTarget(targetPriority, 300);
+      if(tgt){ mouse.wx = tgt.x; mouse.wy = tgt.y; }
+      else { const rc = Math.min(200, spellReach(sp));
+             mouse.wx = player.x + Math.cos(player.dir)*rc; mouse.wy = player.y + Math.sin(player.dir)*rc; }
+      castSpell(sp);
+    } else if(!spellAim.cancel){                     // Drag-Release = Cast auf Zielpunkt
+      const w = spellAimWorld();
+      mouse.wx = w.x; mouse.wy = w.y;
+      castSpell(sp);                                 // liest mouse.wx/wy — null Refactor
+    }                                                // Cancel: castSpell wird nie gerufen -> kein Mana, kein CD
+  }
+  sDrag.id = null; spellAim.active = false; spellAim.sp = null; spellAim.cancel = false;
+  spellBtnEl.classList.remove('aiming','cancelHot');
+}
+spellBtnEl.addEventListener('touchend', spellDragEnd, {passive:false});
+spellBtnEl.addEventListener('touchcancel', spellDragEnd, {passive:false});
+
+// ===== Touch: Attack-Button (Tap/Hold = Angriff, Drag = Target-Lock) =====
+const attackBtnEl = document.getElementById('attackBtn');
+const aDrag = {id:null, sx:0, sy:0, maxD:0};
+
+function attackBtnFire(){
+  const tgt = validateLock() || pickTarget(targetPriority, 200);  // Lock schlägt Priority
+  tryAttack(tgt ? Math.atan2(tgt.y - player.y, tgt.x - player.x) : player.dir);
+}
+
+attackBtnEl.addEventListener('touchstart', e => {
+  enterTouchMode();
+  if(state !== 'play' || player.dead) return;
+  e.preventDefault();
+  if(aDrag.id !== null) return;
+  const t = e.changedTouches[0];
+  aDrag.id = t.identifier; aDrag.sx = t.clientX; aDrag.sy = t.clientY; aDrag.maxD = 0;
+  atkBtnHeld = true;
+  attackBtnFire();                                   // erster Schlag sofort (tryAttack ist CD-gated)
+}, {passive:false});
+
+attackBtnEl.addEventListener('touchmove', e => {
+  if(aDrag.id === null) return;
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  for(const t of e.changedTouches){
+    if(t.identifier !== aDrag.id) continue;
+    aDrag.maxD = Math.max(aDrag.maxD, Math.hypot(t.clientX - aDrag.sx, t.clientY - aDrag.sy));
+    if(aDrag.maxD > TAP_PX){                         // Drag -> Fadenkreuz, Dauerfeuer pausiert
+      atkBtnHeld = false;
+      lockAim.active = true;
+      lockAim.wx = (t.clientX - rect.left) + cam.x;  // Finger zeigt direkt in die Welt
+      lockAim.wy = (t.clientY - rect.top) + cam.y;
+    }
+  }
+}, {passive:false});
+
+function attackDragEnd(e){
+  if(aDrag.id === null) return;
+  let ended = null;
+  for(const t of e.changedTouches) if(t.identifier === aDrag.id) ended = t;
+  if(!ended) return;
+  e.preventDefault();
+  if(lockAim.active && e.type !== 'touchcancel'){
+    let best = null, bd = Infinity;
+    for(const m of monsters){                        // Snap: nächstes lebendes Monster nahe Fadenkreuz
+      if(m.dead) continue;
+      const d = dist2(lockAim.wx, lockAim.wy, m.x, m.y);
+      if(d < m.r + 60 && d < bd){ bd = d; best = m; }
+    }
+    lockedTarget = best;                             // Release über leerem Boden = Lock lösen
+  }
+  aDrag.id = null; atkBtnHeld = false; lockAim.active = false;
+}
+attackBtnEl.addEventListener('touchend', attackDragEnd, {passive:false});
+attackBtnEl.addEventListener('touchcancel', attackDragEnd, {passive:false});
+
+// ===== Priority-Toggle =====
+function refreshPrioBtn(){
+  document.getElementById('prioTxt').innerText = targetPriority === 'closest' ? 'Nah' : 'Schwach';
+}
+document.getElementById('prioBtn').onclick = () => {   // simpler onclick reicht: kein Drag-Semantik, emulierter Click ok
+  targetPriority = targetPriority === 'closest' ? 'lowhp' : 'closest';
+  try{ localStorage.setItem('sda_targetPriority', targetPriority); }catch(_){}
+  refreshPrioBtn();
+};
+refreshPrioBtn();
 
 let lastT = performance.now();
 function loop(now){
