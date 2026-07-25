@@ -117,6 +117,24 @@
   #kladdeBox .klEmpty{color:#9a8a5f;font-style:italic;}
   #zutBox h4{margin:10px 0 6px;color:#f4d97a;font-size:12px;}
 
+  /* Ton-Steuerung sitzt unten im Inventar, nicht mehr im Gürtel */
+  #musikBox{margin-top:12px;padding-top:8px;border-top:1px solid #4c4030;}
+  #musikBox h4{margin:0 0 6px;color:#f4d97a;font-size:12px;}
+  #musikRow{display:flex;align-items:center;gap:10px;}
+  #musikRow #musicBtn{flex:0 0 auto;}
+  #musicVol{flex:1;min-width:80px;accent-color:#c9a227;cursor:pointer;}
+
+  /* --- Symbolschloss (Kammer-Modul, Phase 2) --- */
+  #schloss{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(320px,calc(100vw - 32px));z-index:22;display:none;
+       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
+  #schloss h2{margin:0 0 10px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #schlossAnz{text-align:center;font-size:26px;letter-spacing:6px;color:#f4d97a;background:#141009;border:2px solid #4c4030;border-radius:6px;padding:8px 0;margin-bottom:10px;}
+  #schlossTasten{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .symBtn{min-height:48px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;color:#e8d9a8;
+          display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;}
+  .symBtn:hover{border-color:#c9a227;background:#241c10;}
+  #schlossMsg{margin-top:9px;font-size:11px;color:#9a8a5f;font-style:italic;text-align:center;}
+
   #overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(5,3,10,.88);}
   #overlay .panel{text-align:center;color:#e8d9a8;max-width:580px;padding:30px;}
   #overlay h1{font-size:26px;margin:0 0 10px;color:#f4d97a;letter-spacing:2px;text-shadow:0 3px 0 #7a5a10,0 6px 18px #000;text-transform:uppercase;}
@@ -142,6 +160,10 @@
   body.touch #spellBtn{right:102px;bottom:128px;}    /* ~180° vom Attack-Button, Radius ~88px */
   body.touch #ultBtn{right:84px;bottom:194px;}       /* ~135° */
   body.touch #potionBtn{right:18px;bottom:212px;}    /* ~90°  */
+  /* Kontext- und Abbruch-Button nach vorn: rechts unten liegt der Daumen-Fächer
+     und würde die beiden Neuzugänge sonst überdecken. */
+  body.touch #aktionBtn, body.touch #kamExitBtn{order:-1;}
+  body.touch #beltRow{justify-content:flex-start;}   /* linksbündig, damit keine Zeile unter dem Fächer endet */
   body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
   body.touch #spellBtn.cancelHot{border-color:#ff5a5a;background:#2a0d0d;}
   body.touch #spellBtn.cancelHot #spellBtnTxt::after{content:' ✖';color:#ff5a5a;}
@@ -154,7 +176,7 @@
     #hud{height:auto;min-height:96px;gap:8px;padding:14px 6px 8px;}
     #beltRow{flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 140px);}
     .beltSlot{min-width:44px;height:44px;font-size:12px;padding:0 6px;}
-    #musicVol{width:56px;}
+    #musikRow{gap:8px;}
     #statCol{min-width:0;font-size:11px;}
     #minimap{width:88px;height:88px;top:8px;right:8px;}
     #zone{font-size:13px;top:8px;left:8px;max-width:55vw;}
@@ -186,6 +208,15 @@
       max-height:calc(100vh - 341px);
       max-height:max(240px, calc(100dvh - 341px));
       background:rgba(20,14,24,.93);
+    }
+    #schloss{
+      top:56px; left:8px; transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px); background:rgba(20,14,24,.93);
+    }
+    #closeSchlossBtn{
+      display:flex; align-items:center; justify-content:center;
+      width:44px; height:44px; margin:-13px -14px -13px 0;
+      font-size:20px; border-radius:8px; flex:0 0 auto;
     }
     #zutGrid, #invZutGrid{grid-template-columns:repeat(3,1fr);}
     .zutTile .zn{font-size:9px;}
@@ -243,8 +274,8 @@
       <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨ Zauber <span id="spBadge" style="color:#c77dff;display:none;">(★)</span></div>
       <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒 Inv <span id="skillBadge" style="color:#f4d97a;display:none;">(★)</span></div>
       <div class="beltSlot" id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel</div>
-      <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
-      <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke" style="pointer-events:auto;width:80px;accent-color:#c9a227;">
+      <div class="beltSlot" id="aktionBtn" title="Benutzen (F)" style="display:none;">🖐️ <span id="aktionTxt">Benutzen</span></div>
+      <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;">🏳️ Abbruch</div>
       <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯 <span id="prioTxt">Nah</span></div>
     </div>
   </div>
@@ -280,6 +311,13 @@
     <h4>🧺 ZUTATEN <span id="zutTotal" style="color:#9a8a5f;font-weight:normal;"></span></h4>
     <div id="invZutGrid"></div>
   </div>
+  <div id="musikBox">
+    <h4>🎵 TON</h4>
+    <div id="musikRow">
+      <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
+      <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke">
+    </div>
+  </div>
 </div>
 
 <div id="kessel">
@@ -296,6 +334,13 @@
     <div id="zutGrid"></div>
   </div>
   <div id="kladdePane" style="display:none;"><div id="kladdeBox"></div></div>
+</div>
+
+<div id="schloss">
+  <h2>🔐 SYMBOLSCHLOSS <span style="cursor:pointer" id="closeSchlossBtn">✖</span></h2>
+  <div id="schlossAnz">_  _  _</div>
+  <div id="schlossTasten"></div>
+  <div id="schlossMsg">Drei Symbole. Der Code steht im Raum.</div>
 </div>
 
 <div id="spellTree">
@@ -601,6 +646,13 @@ const sfx = {
 };
 
 const G_GRASS=0, G_PATH=1, G_WATER=2, G_TREE=3, G_ROCK=4, G_TALL=5, G_SAND=6, G_SNOW=7, G_ICE=8, G_CACTUS=9, G_ICE_TREE=10;
+// Nur in Kammern (Phase 2): Wand, geschobener Block, eingebrochene Bodenplatte.
+// Alle drei sind nicht begehbar — WALKABLE ist eine Whitelist, sie stehen einfach nicht drin.
+const G_WALL=11, G_BLOCK=12, G_GAP=13;
+// Kammer-Zustand steht bewusst hier oben: initFloorGraphics() läuft schon beim
+// Kartenbau und fragt `kammer` ab — eine spätere let-Deklaration wäre ein TDZ-Fehler.
+let kammer = null;      // aktive Kammer oder null (Oberwelt)
+let owSave = null;      // eingefrorene Oberwelt, solange eine Kammer läuft
 const map = new Uint8Array(MW*MH);
 const inB = (x,y)=> x>=0 && y>=0 && x<MW && y<MH;
 const T = (x,y)=> map[x+y*MW];
@@ -639,6 +691,8 @@ const TILE_TINT = {
   shadow:     ['#4a1866', 0.74],
   shadowDirt: ['#2e0f42', 0.74],
   dead:       ['#c9a06a', 0.45],
+  kammer:     ['#2f2a48', 0.74],   // Kammerboden: kühles Kellergrau
+  kammerWand: ['#171226', 0.86],   // Kammerwand: fast schwarz, Felsen stehen davor
 };
 
 const TILE_CACHE = {};
@@ -673,7 +727,9 @@ function initFloorGraphics(){
       const gv = (gh % 6 === 0) ? TILE_UV.grassDeco[(gh >>> 4) % TILE_UV.grassDeco.length]
                                 : TILE_UV.grass[(gh >>> 4) & 1];
       let tile;
-      if(currentLevel === 2){
+      if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
+        tile = bakeTile(TILE_UV.dirt[0], t === G_WALL ? 'kammerWand' : 'kammer');
+      } else if(currentLevel === 2){
         tile = bakeTile(t===G_PATH ? TILE_UV.dirt[0] : gv, t===G_PATH ? 'shadowDirt' : 'shadow');
       } else if(t === G_PATH){
         tile = bakeTile(TILE_UV.dirt[0], null);
@@ -1014,7 +1070,7 @@ const keysDown = {w:false, a:false, s:false, d:false};
 const PLAYER_SC = 1.8;                                   // Sunnyside-Held auf ~34 px Höhe
 const player = {
   x:SPAWN.x, y:SPAWN.y, r:10, hp:70, mana:40, maxMana:40, level:1, xp:0, gold:0, potions:2,
-  dir:0, faceLeft:false, attackCd:0, swingT:0, swingDir:0, attackMode:'sword', hurtT:0, dead:false,
+  dir:0, faceLeft:false, mvx:0, mvy:0, attackCd:0, swingT:0, swingDir:0, attackMode:'sword', hurtT:0, dead:false,
   anim:'idle', animT:0, castT:0, hair:HAIRS[Math.floor(Math.random()*HAIRS.length)],
   skills:{str:0, vit:0, agi:0, int:0}, skillPoints:0,
   spellPoints:0, spellsKnown:{}, spellCd:0,
@@ -1178,7 +1234,8 @@ function makeMon(type,x,y){
   const d = MONDEF[type];
   const m = { type, def: d, x, y, r: d.r, hp: d.hp, maxHp: d.hp, aggro: false, atkT: rr(0,0.5), flash: 0, dead: false, kx: 0, ky: 0,
     bobPhase: rr(0, Math.PI*2), wanderT: rr(0,2), wanderDx:0, wanderDy:0, slowT: 0, facingLeft:false,
-    animT: rr(0,1), anim:'idle', actT:0, alertT:0, moving:false };
+    animT: rr(0,1), anim:'idle', actT:0, alertT:0, moving:false,
+    regel: null, faceAng: 0 };        // regel: Kammer-Sonderregel (Phase 2), sonst null
   monsters.push(m);
   if(d.boss) boss=m;
   return m;
@@ -1267,7 +1324,7 @@ function tryAttack(dir){
       // Wirkung 'Genauigkeit': kein Würfeln mehr, immer der obere Wert
       const dmg = FX.exact ? Math.round(derived.dmgMax * (1 + (FX.exact-1)*0.1))
                            : rri(derived.dmgMin, derived.dmgMax);
-      hurtMon(m, dmg, Math.random() < derived.crit, mAngle);
+      hurtMon(m, dmg, Math.random() < derived.crit, mAngle, 'nah');
       hitCount++;
     }
   }
@@ -1279,9 +1336,19 @@ function tryAttack(dir){
   }
 }
 
-let lastCritSfx = -1, lastDieSfx = -1;
-function hurtMon(m, d, crit, hitAngle){
+let lastCritSfx = -1, lastDieSfx = -1, lastAbprallSfx = -1;
+// quelle: 'nah' (Waffe), 0..2 (Zauberzweig) oder 'ult'. Nur Kammerwachen mit
+// Sonderregel schauen überhaupt hin, alle anderen Aufrufe ignorieren das Feld.
+function hurtMon(m, d, crit, hitAngle, quelle){
   if(m.dead) return;          // Cleave + AoE im selben Frame trafen sonst doppelt: doppelte Beute, doppeltes XP
+  if(m.regel && !kamTrefferOk(m, quelle === undefined ? 'nah' : quelle, hitAngle)){
+    m.flash = 0.1; m.aggro = true;
+    if(gameT - lastAbprallSfx > 0.3){                     // gleiche Bremse wie bei Crit/Sterbe-Sound
+      lastAbprallSfx = gameT;
+      floaters.push({x: m.x, y: m.y - m.r - 10, txt: m.regel.txt, col:'#9a8a5f', t: 0.9});
+    }
+    return;
+  }
   if(crit) d = Math.round(d * 1.7);
   m.hp -= d; m.flash = 0.15; m.aggro = true;
   if(FX.slow) m.slowT = Math.max(m.slowT, 0.5 + FX.slow*0.4);      // Wirkung 'Verlangsamung'
@@ -1298,6 +1365,7 @@ function hurtMon(m, d, crit, hitAngle){
 
 // Biom für die Adjektiv-Gewichtung: gleiche Bänder wie genMap/Zonenanzeige.
 function zutatBiome(y){
+  if(kammer) return kammer.biome;      // in der Kammer zählt das Biom der Tür, nicht das y-Band
   if(currentLevel === 2) return 'shadow';
   const ty = y / TS;
   return ty < 26 ? 'snow' : (ty > 54 ? 'sand' : 'grass');
@@ -1362,7 +1430,9 @@ function killMon(m){
     }
   }
 
-  if(m.def.boss){ el('bossbar').style.display='none'; setTimeout(()=>{ if(state==='play') winGame(); }, 2000); }
+  // Nur der Schattenfürst beendet das Spiel. Der Alte Schrecken bewacht bloß eine
+  // Schatzkammer und darf keinen Siegesbildschirm auslösen.
+  if(m.def.boss && !kammer){ el('bossbar').style.display='none'; setTimeout(()=>{ if(state==='play') winGame(); }, 2000); }
 }
 
 function gainXP(x){
@@ -1506,38 +1576,42 @@ function castSpell(sp, target){                          // target: optionaler W
   player.dir = dir;
   player.faceLeft = Math.cos(dir) < 0;
 
+  const zweig = sp.ultimate ? 'ult' : sp.branch;         // Kammer-Sonderregeln lesen das mit
   if(sp.type === 'bolt'){
     sfx.magic();
-    projectiles.push({isSpell:true, x:player.x, y:player.y, vx:Math.cos(dir)*sp.speed, vy:Math.sin(dir)*sp.speed,
+    projectiles.push({isSpell:true, zweig, x:player.x, y:player.y, vx:Math.cos(dir)*sp.speed, vy:Math.sin(dir)*sp.speed,
       dmg:sp.dmg, t:2.0, color:sp.color, r:sp.r||7, aoe:sp.aoe||0, slow:sp.slow||0});
   } else if(sp.type === 'nova'){
     sfx.magic(); addShake(8,0.25);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.4, maxT:0.4});
-    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sp.dmg, true, Math.atan2(m.y-player.y,m.x-player.x)); } }
+    kamFlamme(player.x, player.y, sp.radius, zweig);
+    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sp.dmg, true, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
   } else if(sp.type === 'chain'){
     sfx.zap(); addShake(8,0.2);
     let targets = monsters.filter(m=>!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.range)
                           .sort((a,b)=>dist2(player.x,player.y,a.x,a.y)-dist2(player.x,player.y,b.x,b.y)).slice(0, sp.chain);
     let px=player.x, py=player.y;
-    for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sp.dmg, true, 0); px=t.x; py=t.y; }
+    for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sp.dmg, true, Math.atan2(t.y-py, t.x-px), zweig); px=t.x; py=t.y; }
   } else if(sp.type === 'aoe_target'){
     sfx.magic(); addShake(12,0.35);
     const tx=aim.wx, ty=aim.wy;
+    kamFlamme(tx, ty, sp.radius, zweig);
     magicEffects.push({type:'ring', x:tx, y:ty, rad:sp.radius, color:sp.color, t:0.5, maxT:0.5});
     if(sp.branch === 0)   // Feuer-Zweig: echte Flammen-Sprites im Einschlag
       for(let i=0;i<7;i++) magicEffects.push({type:'flame', x:tx+rr(-sp.radius*0.6, sp.radius*0.6),
         y:ty+rr(-sp.radius*0.45, sp.radius*0.45), sc:rr(2.2,4), t:rr(0.45,0.8), maxT:0.8});
     spawnImpactParticles(tx, ty, 30, null);
-    for(const m of monsters){ if(!m.dead && dist2(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sp.dmg, true, Math.atan2(m.y-ty,m.x-tx)); } }
+    for(const m of monsters){ if(!m.dead && dist2(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sp.dmg, true, Math.atan2(m.y-ty,m.x-tx), zweig); } }
   } else if(sp.type === 'slow_field'){
     sfx.magic(); addShake(6,0.3);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.6, maxT:0.6});
-    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ m.slowT = sp.slow; hurtMon(m, sp.dmg, false, Math.atan2(m.y-player.y,m.x-player.x)); } }
+    kamFlamme(player.x, player.y, sp.radius, zweig);
+    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ m.slowT = sp.slow; hurtMon(m, sp.dmg, false, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
   } else if(sp.type === 'ultimate'){
     sfx.warp(); sfx.crit(); addShake(35, 1.2); addHitStop(0.12);
     floaters.push({x:player.x, y:player.y-60, txt:'KONFETTI-KATAKLYSMUS!', col:'#ffd54a', t:2.5, big:true});
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:900, color:'#ffffff', t:0.7, maxT:0.7});
-    for(const m of [...monsters]){ if(m.dead) continue; if(dist2(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sp.dmg, true, Math.atan2(m.y-player.y,m.x-player.x)); } }
+    for(const m of [...monsters]){ if(m.dead) continue; if(dist2(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sp.dmg, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
     for(let i=0;i<160;i++){ const a=rr(0,Math.PI*2), d=rr(40,700); spawnImpactParticles(player.x+Math.cos(a)*d, player.y+Math.sin(a)*d, 3, null); }
   }
   updateHUD();
@@ -1549,6 +1623,855 @@ function enemyCast(m){
   sfx.shoot();
   enemyBolts.push({x:m.x, y:m.y, vx:Math.cos(dir)*b.speed, vy:Math.sin(dir)*b.speed, dmg:rri(b.dmg[0],b.dmg[1]), t:2.4, color:b.color, r:b.r||7});
 }
+
+// ===========================================================================
+//  KAMMERN MIT PREISSCHILD  (Phase 2)
+//
+//  Versiegelte Rätselräume im offenen Land. Vor der Tür hängt ein Schild mit
+//  Schwierigkeit 1..5 und dem Zutaten-Tier dahinter: die Entscheidung, ob sich
+//  der Aufwand lohnt, fällt VOR dem Betreten und ohne Überraschung.
+//
+//  Aufbau einer Kammer: Vorraum -> 1 bis 4 Rätselräume -> Schatzkammer.
+//  Zwischen zwei Räumen sitzt ein Tor, das erst aufgeht, wenn das Modul davor
+//  gelöst ist. Welche Module drankommen, entscheidet ein Schwierigkeitsbudget.
+//
+//  Die Kammer läuft auf derselben Karte wie die Oberwelt: `map` wird über-
+//  schrieben, die Oberwelt liegt solange in `owSave` und kommt beim Verlassen
+//  Kachel für Kachel zurück. Das spart eine zweite Karte samt zweitem
+//  Boden-Canvas und hält den Renderpfad unverändert.
+//
+//  Beute richtet sich NUR nach der Kammerschwierigkeit, nie nach Monsterlevel.
+//  Schwere Kammern sind damit der einzige verlässliche Weg zu seltenen Zutaten.
+// ===========================================================================
+
+const CONFIG = {
+  kammerTueren: 2,          // Türen je Biom (Phase 4: Dorf-Ausbau erhöht das)
+  kammerNachwachsen: 120,   // Sekunden, bis eine geleerte Kammer neu versiegelt ist
+};
+
+const KAM_W = 13, KAM_H = 15;      // Raumkantenlänge in Kacheln, Wände eingerechnet
+const KAM_X0 = 3, KAM_Y0 = 33;     // linke obere Ecke des Korridors (6 Räume passen in MW=80)
+const KAM_TY = KAM_Y0 + 7;         // Zeile, in der alle Tore sitzen (Raummitte)
+const KAM_SYM = ['◆','●','▲','■','✦','✚'];
+const KAM_ZWEIG_COL = ['#ff9f4a', '#7ad6ff', '#c77dff'];
+// Die sieben bisher unverdrahteten Monstertypen bekommen hier ihren Dienst.
+const KAM_WAECHTER = ['mummy','golem','spider','bat','stalfos','mage'];
+
+const kammerTueren = [];           // Türen in der Oberwelt
+let schlossOpen = false;
+
+const tileMid = t => t*TS + TS/2;
+const spielerTx = ()=> Math.floor(player.x / TS);
+const spielerTy = ()=> Math.floor(player.y / TS);
+
+// --- Türen in der Oberwelt --------------------------------------------------
+function wuerfleTuer(t){
+  t.diff = rri(1, 5);
+  t.tier = clamp(t.diff - 1, 0, 4);   // Schild und Beute lesen dasselbe Feld
+  t.cd = 0;
+}
+
+function setzeKammerTueren(){
+  kammerTueren.length = 0;
+  const baender = [['snow', 4, 24], ['grass', 28, 52], ['sand', 56, 76]];
+  for(const b of baender){
+    for(let n = 0; n < CONFIG.kammerTueren; n++){
+      for(let versuch = 0; versuch < 300; versuch++){
+        const tx = ri(5, MW-6), ty = ri(b[1], b[2]);
+        if(!walkT(tx, ty) || !walkT(tx, ty+1)) continue;                    // davor muss man stehen können
+        if(sqDist(tx*TS, ty*TS, SPAWN.x, SPAWN.y) < (12*TS)*(12*TS)) continue;
+        let zuNah = false;
+        for(const d of kammerTueren) if(sqDist(tx, ty, d.tx, d.ty) < 144){ zuNah = true; break; }
+        if(zuNah) continue;
+        const t = {tx, ty, x: tileMid(tx), y: ty*TS + TS - 2, biome: b[0], diff:1, tier:0, cd:0};
+        wuerfleTuer(t);
+        kammerTueren.push(t);
+        break;
+      }
+    }
+  }
+}
+
+// --- Modulauswahl nach Schwierigkeitsbudget ---------------------------------
+// kosten = Budgetanteil, moeglich() = darf das Modul überhaupt vorkommen
+// (Fackeln brauchen beide Elementarzweige, sonst wäre der Raum unlösbar).
+const KAM_MOD = {
+  platten:  {kosten:1, bau:bauPlatten,  auf:aufPlatten},
+  fackeln:  {kosten:1, bau:bauFackeln,  auf:aufFackeln,
+             moeglich:()=> kenntZweig(0) && kenntZweig(1)},
+  schloss:  {kosten:1, bau:bauSchloss},
+  bloecke:  {kosten:2, bau:bauBloecke,  auf:aufBloecke},
+  welle:    {kosten:2, bau:bauWelle,    auf:aufWelle},
+  brechen:  {kosten:2, bau:bauBrechen,  auf:aufBrechen},
+  schalter: {kosten:2, bau:bauSchalter, auf:aufSchalter},
+  spiegel:  {kosten:3, bau:bauSpiegel},
+};
+
+function kenntZweig(b){
+  for(const s of SPELLS) if(s.branch === b && !s.ultimate && player.spellsKnown[s.id]) return true;
+  return false;
+}
+
+function waehleModule(diff){
+  let budget = [1, 2, 4, 6, 8][diff-1];
+  const alle = Object.keys(KAM_MOD).filter(k => !KAM_MOD[k].moeglich || KAM_MOD[k].moeglich());
+  const out = [];
+  while(out.length < 4 && budget > 0){
+    // Jede Rätselart höchstens einmal je Kammer: zwei gleiche Räume hintereinander
+    // sind kein Korridor, sondern eine Wiederholung.
+    const passt = alle.filter(k => KAM_MOD[k].kosten <= budget && out.indexOf(k) < 0);
+    if(!passt.length) break;
+    const k = passt[Math.floor(Math.random() * passt.length)];
+    out.push(k); budget -= KAM_MOD[k].kosten;
+  }
+  if(!out.length) out.push('platten');
+  return out;
+}
+
+// --- Kammer bauen -----------------------------------------------------------
+function betreteKammer(tuer){
+  if(kammer || currentLevel !== 1 || tuer.cd > 0) return;
+  owSave = {mapCopy: map.slice(), trees, decos: decos.slice(), critters: critters.slice(),
+            monsters: monsters.slice(), drops: drops.slice(), boss, portal,
+            level: currentLevel, px: player.x, py: player.y};
+
+  const kinds = waehleModule(tuer.diff);
+  const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome,
+             mods: [], raeume: [], tore: [], props: [], idx: 0, geleert: false, truhe: null};
+  kammer = k;
+  currentLevel = 3;
+  // Muss vor dem Modulbau passieren: der ruft makeMon, und die Oberwelt-Mobs
+  // säßen sonst mit ihren alten Koordinaten in den frischen Kammerwänden fest.
+  monsters.length = 0; boss = null; lockedTarget = null;
+
+  map.fill(G_WALL);
+  const anzahl = kinds.length + 2;                       // Vorraum + Module + Schatzkammer
+  for(let i = 0; i < anzahl; i++){
+    const x0 = KAM_X0 + i*(KAM_W-1);
+    const r = {x0, y0: KAM_Y0, x1: x0 + KAM_W - 1, y1: KAM_Y0 + KAM_H - 1};
+    for(let y = r.y0+1; y < r.y1; y++) for(let x = r.x0+1; x < r.x1; x++) setT(x, y, G_PATH);
+    k.raeume.push(r);
+  }
+  for(let i = 0; i < anzahl-1; i++){
+    const tor = {kt:'tor', tx: k.raeume[i].x1, ty: KAM_TY, offen: false,
+                 x: tileMid(k.raeume[i].x1), y: (KAM_TY+1)*TS};
+    k.tore.push(tor); k.props.push(tor);
+  }
+  oeffneTor(0, true);                                    // Vorraum -> erstes Modul ist immer offen
+
+  for(let i = 0; i < kinds.length; i++){
+    const mod = {kind: kinds[i], raum: k.raeume[i+1], nr: i, fertig: false, begonnen: false, hinweis: ''};
+    KAM_MOD[kinds[i]].bau(mod, k.raeume[i+1], k);
+    k.mods.push(mod);
+    if(!mod.keineWaechter) setzeWaechter(k.raeume[i+1], 1 + (k.diff >> 1), k);
+  }
+
+  // Schatzkammer: Truhe in der Mitte, ab Schwierigkeit 5 bewacht der Alte Schrecken sie
+  const sk = k.raeume[anzahl-1];
+  k.truhe = {kt:'truhe', x: tileMid(sk.x0+6), y: tileMid(sk.y0+7), auf: false};
+  k.props.push(k.truhe);
+  if(k.diff >= 5) makeMon('bossgeneric', tileMid(sk.x0+9), tileMid(sk.y0+7));
+
+  // Ausgangsrune im Vorraum: der Weg zurück steht von Anfang an offen
+  k.ausgang = {kt:'rune', x: tileMid(KAM_X0+2), y: tileMid(KAM_TY)};
+  k.props.push(k.ausgang);
+  k.start = {x: tileMid(KAM_X0+5), y: tileMid(KAM_TY)};   // Abstand zur Rune, sonst reist man beim ersten F zurück
+
+  // Wandfelsen nur auf den Wänden, die an begehbaren Boden grenzen — das ist der
+  // sichtbare Innenring. Der Rest der Karte bleibt gebackene Dunkelheit.
+  baueWandProps();
+  decos.length = 0; critters.length = 0;
+  drops.length = 0; corpses.length = 0; floaters.length = 0;
+  projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
+  portal = null;
+
+  player.x = k.start.x; player.y = k.start.y;
+  cam.x = player.x - canvas.width/2; cam.y = player.y - canvas.height/2;
+  initFloorGraphics();
+  aktSperre = 0.5;                          // Tastenwiederholung soll nicht sofort zurückreisen
+  sfx.warp(); addShake(12, 0.5);
+  floaters.push({x: player.x, y: player.y - 46, txt: 'KAMMER · SCHWIERIGKEIT ' + k.diff, col:'#f4d97a', t: 3.0, big: true});
+}
+
+function baueWandProps(){
+  const t2 = [];
+  const r0 = kammer.raeume[0], rn = kammer.raeume[kammer.raeume.length-1];
+  for(let y = r0.y0; y <= r0.y1; y++){
+    for(let x = r0.x0; x <= rn.x1; x++){
+      if(T(x,y) !== G_WALL) continue;
+      if(!(walkT(x-1,y) || walkT(x+1,y) || walkT(x,y-1) || walkT(x,y+1))) continue;
+      t2.push({x: tileMid(x), y: y*TS + TS - 2, type: G_ROCK, phase: rr(0,10), variant: (x+y)&1, tint:'#6d6a8c'});
+    }
+  }
+  t2.sort((a,b)=>a.y-b.y);
+  trees = t2;
+}
+
+function setzeWaechter(r, n, k){
+  for(let i = 0; i < n; i++){
+    const tx = rri(r.x0+2, r.x1-2), ty = rri(r.y0+2, r.y1-2);
+    if(!walkT(tx, ty)) continue;
+    makeMon(KAM_WAECHTER[Math.floor(Math.random()*KAM_WAECHTER.length)], tileMid(tx), tileMid(ty));
+  }
+}
+
+// Boden einer einzelnen Kachel nachbacken — ein Tor darf keinen Komplettbake
+// auslösen, das wären 6400 drawImage mitten im Spiel.
+function malBoden(x, y){
+  const tile = bakeTile(TILE_UV.dirt[0], T(x,y) === G_WALL ? 'kammerWand' : 'kammer');
+  if(tile) floorCtx.drawImage(tile, x*TS, y*TS);
+}
+
+function oeffneTor(i, still){
+  const tor = kammer.tore[i]; if(!tor || tor.offen) return;
+  tor.offen = true;
+  for(let dy = -1; dy <= 1; dy++){ setT(tor.tx, tor.ty+dy, G_PATH); malBoden(tor.tx, tor.ty+dy); }
+  const tmx = tileMid(tor.tx), tmy = tor.ty*TS + TS - 2;
+  trees = trees.filter(p => !(Math.abs(p.x - tmx) < 2 && Math.abs(p.y - tmy) < TS*1.6));
+  bakeMinimap();
+  if(!still){ sfx.level(); addShake(8, 0.35); }
+}
+
+// --- Verlassen --------------------------------------------------------------
+function verlasseKammer(){
+  if(!kammer || !owSave) return;
+  const tuer = kammer.tuer;
+  map.set(owSave.mapCopy);
+  trees = owSave.trees;
+  decos.length = 0; for(const d of owSave.decos) decos.push(d);
+  critters.length = 0; for(const c of owSave.critters) critters.push(c);
+  monsters.length = 0; for(const m of owSave.monsters) monsters.push(m);
+  drops.length = 0; for(const d of owSave.drops) drops.push(d);
+  corpses.length = 0; floaters.length = 0;
+  projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
+  boss = owSave.boss; portal = owSave.portal;
+  currentLevel = owSave.level; lockedTarget = null;
+  player.x = tuer.x; player.y = tuer.y + TS;             // vor der Tür, nicht in ihr
+  kammer = null; owSave = null; aktSperre = 0.5;
+  if(schlossOpen) schlossZu();
+  setStyle('bossbar', 'display', boss && !boss.dead ? 'block' : 'none');
+  initFloorGraphics();
+  sfx.warp();
+}
+
+// --- Belohnung: hängt ausschließlich am Tier des Schildes --------------------
+function rollKammerZutat(tier, biome){
+  const pool = BIOME_MOBS[biome].concat(KAM_WAECHTER);
+  if(tier >= 4) pool.push('bossgeneric');
+  for(let i = 0; i < 40; i++){
+    const z = {noun: pool[Math.floor(Math.random()*pool.length)], adj: pickAdj(biome, Math.min(3, tier))};
+    if(zutatRar(z) >= tier) return z;
+  }
+  // Notnagel, damit das Preisschild nie mehr verspricht als die Truhe hergibt:
+  // seltenstes Substantiv des Pools plus seltenstes zulässiges Adjektiv. Der Pool
+  // ist so gewählt, dass diese Kombination jedes Tier sicher erreicht.
+  let noun = pool[0];
+  for(const n of pool) if(ZUTAT_NOUNS[n].rar > ZUTAT_NOUNS[noun].rar) noun = n;
+  let adj = null;
+  for(const a of ZUTAT_ADJ) if(a.minMon <= Math.min(3, tier) && (!adj || a.rar > adj.rar)) adj = a;
+  return {noun, adj: adj.a};
+}
+
+function truheOeffnen(){
+  const k = kammer; if(!k || k.truhe.auf) return;
+  k.truhe.auf = true; k.geleert = true;
+  k.tuer.cd = CONFIG.kammerNachwachsen;
+  const gold = rri(40, 80) * (1 + k.diff);
+  player.gold += Math.round(gold * (1 + FX.gold*0.25));
+  sfx.gold(); addShake(10, 0.5);
+  floaters.push({x: k.truhe.x, y: k.truhe.y - 40, txt: '+ ' + gold + ' Gold', col:'#f4d97a', t: 2.2, big: true});
+  const n = 2 + k.diff;
+  for(let i = 0; i < n; i++){
+    const z = rollKammerZutat(k.tier, k.biome);
+    addZutat(z.noun, z.adj, 1);
+    floaters.push({x: k.truhe.x + rr(-30,30), y: k.truhe.y - 56 - i*16, txt: '+ ' + zutatName(z),
+                   col: RARITY[zutatRar(z)].col, t: 2.6});
+  }
+  if(invOpen) renderInventory();
+  if(kesselOpen) renderKesselPane();
+  updateHUD();
+}
+
+// ===========================================================================
+//  DIE ACHT RÄTSELMODULE
+//  Jedes baut nur in seinen Raum, meldet über mod.fertig und rührt nichts an,
+//  was außerhalb liegt. Kein Physikrätsel: alles ist Rasterlogik.
+// ===========================================================================
+
+// 1) Druckplatten in der richtigen Reihenfolge -------------------------------
+function bauPlatten(mod, r){
+  const syms = KAM_SYM.slice().sort(()=> Math.random()-0.5).slice(0,4);
+  const orte = [[3,3],[9,3],[3,11],[9,11]];
+  mod.platten = [];
+  for(let i = 0; i < 4; i++)
+    mod.platten.push({kt:'platte', tx: r.x0+orte[i][0], ty: r.y0+orte[i][1],
+                      x: tileMid(r.x0+orte[i][0]), y: tileMid(r.y0+orte[i][1]), sym: syms[i], an: false});
+  mod.folge = [0,1,2,3].sort(()=> Math.random()-0.5);
+  mod.schritt = 0; mod.steht = -1;
+  for(const p of mod.platten) kammer.props.push(p);
+  mod.tafel = tafel(r, mod, 'Reihenfolge', mod.folge.map(i => mod.platten[i].sym).join(' '));
+  mod.hinweis = 'Vier Platten. Die Tafel kennt die Reihenfolge.';
+}
+function aufPlatten(mod){
+  const tx = spielerTx(), ty = spielerTy();
+  let auf = -1;
+  for(let i = 0; i < 4; i++) if(mod.platten[i].tx === tx && mod.platten[i].ty === ty){ auf = i; break; }
+  if(auf === mod.steht) return;
+  mod.steht = auf;
+  if(auf < 0) return;
+  if(auf === mod.folge[mod.schritt]){
+    mod.platten[auf].an = true; mod.schritt++;
+    sfx.gold();
+    if(mod.schritt >= 4) mod.fertig = true;
+  } else {
+    for(const p of mod.platten) p.an = false;
+    mod.schritt = 0; sfx.hurt();
+    floaters.push({x: player.x, y: player.y - 30, txt: 'Klemmt.', col:'#9a8a5f', t: 1.0});
+  }
+}
+
+// 2) Schiebeblöcke auf Zielfelder (reine Rasterlogik, keine Physik) ----------
+function bauBloecke(mod, r){
+  mod.bloecke = []; mod.ziele = []; mod.cd = 0;
+  const reihen = [r.y0+4, r.y0+10];
+  for(let i = 0; i < 2; i++){
+    const bx = r.x0 + 3, by = reihen[i], weit = rri(2,4);
+    const b = {kt:'block', tx: bx, ty: by, sx: bx, sy: by, x: tileMid(bx), y: tileMid(by)};
+    mod.bloecke.push(b); kammer.props.push(b);
+    setT(bx, by, G_BLOCK);
+    mod.ziele.push({tx: bx + weit, ty: by, x: tileMid(bx+weit), y: tileMid(by)});   // liegt flach im Bodenlayer
+  }
+  mod.rune = {kt:'reset', x: tileMid(r.x0+1), y: tileMid(r.y0+1)};
+  kammer.props.push(mod.rune);
+  mod.hinweis = 'Blöcke auf die Markierungen schieben. Rune links oben setzt zurück.';
+}
+function bloeckeZurueck(mod){
+  for(const b of mod.bloecke){
+    if(T(b.tx, b.ty) === G_BLOCK) setT(b.tx, b.ty, G_PATH);
+  }
+  for(const b of mod.bloecke){
+    b.tx = b.sx; b.ty = b.sy; b.x = tileMid(b.tx); b.y = tileMid(b.ty);
+    setT(b.tx, b.ty, G_BLOCK);
+  }
+  // Wer beim Zurücksetzen genau auf einem Startfeld steht, säße sonst im Block fest
+  if(!circleWalkable(player.x, player.y, player.r)){ player.x = mod.rune.x; player.y = mod.rune.y; }
+  sfx.warp();
+}
+function aufBloecke(mod, dt){
+  if(mod.cd > 0) mod.cd -= dt;
+  // Schieben: die dominante Laufrichtung entscheidet, damit diagonal nichts rutscht
+  if(mod.cd <= 0 && player.moving){
+    let dx = 0, dy = 0;
+    if(Math.abs(player.mvx) > Math.abs(player.mvy)) dx = player.mvx > 0 ? 1 : -1;
+    else if(player.mvy !== 0) dy = player.mvy > 0 ? 1 : -1;
+    if(dx || dy){
+      const tx = spielerTx() + dx, ty = spielerTy() + dy;
+      if(T(tx, ty) === G_BLOCK){
+        const nx = tx + dx, ny = ty + dy;
+        if(walkT(nx, ny)){
+          for(const b of mod.bloecke) if(b.tx === tx && b.ty === ty){
+            setT(tx, ty, G_PATH); setT(nx, ny, G_BLOCK);
+            b.tx = nx; b.ty = ny; b.x = tileMid(nx); b.y = tileMid(ny);
+            mod.cd = 0.22; sfx.hit(false);
+          }
+        }
+      }
+    }
+  }
+  let gut = 0;
+  for(const z of mod.ziele) for(const b of mod.bloecke) if(b.tx === z.tx && b.ty === z.ty){ gut++; break; }
+  if(gut >= mod.ziele.length) mod.fertig = true;
+}
+
+// 3) Fackeln: Feuer zündet, Frost löscht ------------------------------------
+function bauFackeln(mod, r){
+  const orte = [[3,3],[9,3],[3,11],[9,11]];
+  mod.fackeln = [];
+  for(const o of orte){
+    const f = {kt:'fackel', x: tileMid(r.x0+o[0]), y: tileMid(r.y0+o[1]), an: false, soll: false};
+    mod.fackeln.push(f); kammer.props.push(f);
+  }
+  do { for(const f of mod.fackeln) f.soll = Math.random() < 0.5; }
+  while(mod.fackeln.every(f=>!f.soll) || mod.fackeln.every(f=>f.soll));
+  mod.tafel = tafel(r, mod, 'Soll-Bild', mod.fackeln.map(f => f.soll ? '●' : '○').join(' '));
+  mod.hinweis = 'Feuer zündet, Frost löscht. Die Tafel zeigt das Soll-Bild.';
+}
+function aufFackeln(mod){
+  for(const f of mod.fackeln) if(f.an !== f.soll) return;
+  mod.fertig = true;
+}
+// Aufruf aus dem Zauberpfad. Rückgabe true = Geschoss hat sich verbraucht.
+function kamFlamme(x, y, rad, zweig){
+  if(!kammer || (zweig !== 0 && zweig !== 1)) return false;
+  const mod = kammer.mods[kammer.idx];
+  if(!mod || mod.kind !== 'fackeln' || mod.fertig) return false;
+  const rr2 = (rad + 20) * (rad + 20);
+  let traf = false;
+  for(const f of mod.fackeln){
+    if(sqDist(x, y, f.x, f.y - 10) > rr2) continue;
+    if(zweig === 0 && !f.an){ f.an = true; traf = true; }
+    else if(zweig === 1 && f.an){ f.an = false; traf = true; }
+  }
+  if(traf) sfx.magic();
+  return traf;
+}
+
+// 4) Lichtstrahl über drehbare Spiegel --------------------------------------
+function bauSpiegel(mod, r, k){
+  // Aufbau ist konstruktiv lösbar: Strahl fällt von oben in Spalte A, wird nach
+  // rechts umgelenkt, in Spalte B nach unten — beide Spiegel auf '\'.
+  const ax = r.x0 + 2, bx = r.x0 + 9, zy = rri(r.y0+3, r.y0+11);
+  mod.quelle = {kt:'quelle', tx: ax, ty: r.y0, x: tileMid(ax), y: tileMid(r.y0), dx: 0, dy: 1};
+  mod.ziel   = {kt:'lziel', tx: bx, ty: r.y1, x: tileMid(bx), y: tileMid(r.y1)};
+  mod.spiegel = [];
+  const legeSpiegel = (tx, ty)=>{
+    const s = {kt:'spiegel', tx, ty, x: tileMid(tx), y: tileMid(ty), st: rri(0,1), mod};
+    mod.spiegel.push(s); kammer.props.push(s); return s;
+  };
+  legeSpiegel(ax, zy); legeSpiegel(bx, zy);
+  if(k.diff >= 4){
+    // Blender: darf auf keinem Abschnitt des Lösungswegs liegen, sonst ist der
+    // konstruktiv garantierte Weg plötzlich blockiert.
+    for(let versuch = 0; versuch < 40; versuch++){
+      const tx = rri(r.x0+3, r.x1-3), ty = rri(r.y0+2, r.y1-2);
+      if(tx === ax || tx === bx || ty === zy) continue;
+      legeSpiegel(tx, ty); break;
+    }
+  }
+  kammer.props.push(mod.quelle); kammer.props.push(mod.ziel);
+  mod.pfad = [];
+  strahlRechnen(mod);
+  if(mod.fertig){ mod.spiegel[0].st ^= 1; strahlRechnen(mod); }   // nie schon gelöst starten
+  mod.hinweis = 'Den Strahl mit den Spiegeln ins Ziel lenken. [F] dreht.';
+}
+function strahlRechnen(mod){
+  const p = mod.pfad; p.length = 0;
+  mod.fertig = false;
+  let x = mod.quelle.tx, y = mod.quelle.ty, dx = mod.quelle.dx, dy = mod.quelle.dy;
+  p.push(tileMid(x), tileMid(y));
+  for(let i = 0; i < 80; i++){
+    x += dx; y += dy;
+    if(x === mod.ziel.tx && y === mod.ziel.ty){ p.push(tileMid(x), tileMid(y)); mod.fertig = true; return; }
+    if(T(x, y) === G_WALL || !inB(x, y)){ p.push(tileMid(x), tileMid(y)); return; }
+    let s = null;
+    for(const sp of mod.spiegel) if(sp.tx === x && sp.ty === y){ s = sp; break; }
+    if(s){
+      p.push(tileMid(x), tileMid(y));
+      if(s.st === 1){ const t = dx; dx = dy; dy = t; }        // '\' : rechts<->runter, links<->hoch
+      else          { const t = dx; dx = -dy; dy = -t; }      // '/' : rechts<->hoch,  links<->runter
+    }
+  }
+  p.push(tileMid(x), tileMid(y));
+}
+
+// 5) Gegnerwelle mit Sonderregel --------------------------------------------
+function bauWelle(mod, r, k){
+  const zweige = [0,1,2].filter(kenntZweig);
+  const nutzeZweig = zweige.length > 0 && Math.random() < 0.5;
+  const regel = nutzeZweig
+    ? {typ:'zweig', zweig: zweige[Math.floor(Math.random()*zweige.length)], txt:'Prallt ab.'}
+    : {typ:'ruecken', txt:'Nicht von vorn.'};
+  regel.name = nutzeZweig ? 'nur ' + SPELL_BRANCHES[regel.zweig] : 'nur von hinten';
+  mod.regel = regel; mod.mobs = []; mod.keineWaechter = true;
+  const n = 3 + k.diff;
+  for(let i = 0; i < n; i++){
+    const tx = rri(r.x0+2, r.x1-2), ty = rri(r.y0+2, r.y1-2);
+    if(!walkT(tx, ty)) continue;
+    const m = makeMon(KAM_WAECHTER[Math.floor(Math.random()*KAM_WAECHTER.length)], tileMid(tx), tileMid(ty));
+    m.regel = regel; m.faceAng = Math.PI;
+    mod.mobs.push(m);
+  }
+  mod.hinweis = 'Wache mit Sonderregel: ' + regel.name + '.';
+}
+function aufWelle(mod){
+  for(const m of mod.mobs) if(!m.dead) return;
+  mod.fertig = true;
+}
+// Prüfung sitzt in hurtMon, direkt hinter dem Tot-Guard.
+function kamTrefferOk(m, quelle, hitAngle){
+  const r = m.regel;
+  if(!r || quelle === 'ult') return true;
+  if(r.typ === 'zweig') return quelle === r.zweig;
+  if(r.typ === 'ruecken') return angDiff(hitAngle, m.faceAng) < 1.05;
+  return true;
+}
+
+// 6) Symbolschloss -----------------------------------------------------------
+function bauSchloss(mod, r){
+  mod.code = [];
+  for(let i = 0; i < 3; i++) mod.code.push(KAM_SYM[rri(0, KAM_SYM.length-1)]);
+  mod.schloss = {kt:'schloss', x: tileMid(r.x1-1), y: tileMid(KAM_TY)};
+  kammer.props.push(mod.schloss);
+  mod.tafel = tafel(r, mod, 'Notiz der Aufsicht', mod.code.join(' '));
+  mod.hinweis = 'Am Ausgang hängt ein Symbolschloss. Der Code steht irgendwo im Raum.';
+}
+
+// 7) Einbrechende Bodenplatten ----------------------------------------------
+function bauBrechen(mod, r){
+  // Der Plattengang ist der einzige Weg nach Osten: darüber und darunter Wand.
+  const fx0 = r.x0+2, fx1 = r.x0+8, fy0 = r.y0+5, fy1 = r.y0+9;
+  for(let x = fx0; x <= fx1; x++){
+    for(let y = r.y0+1; y < fy0; y++) setT(x, y, G_WALL);
+    for(let y = fy1+1; y < r.y1; y++) setT(x, y, G_WALL);
+  }
+  mod.fx0 = fx0; mod.fx1 = fx1; mod.fy0 = fy0; mod.fy1 = fy1;
+  mod.pfad = [];
+  let reihe = 2;
+  for(let i = 0; i <= fx1-fx0; i++){
+    mod.pfad.push(reihe);
+    reihe = clamp(reihe + rri(-1, 1), 0, 4);
+  }
+  mod.start = {x: tileMid(fx0-1), y: tileMid(fy0 + mod.pfad[0])};
+  mod.zeigT = 0; mod.kaputt = [];
+  mod.keineWaechter = true;          // im Merkgang blockieren Wachen die einzige Spur
+  mod.hinweis = 'Nur eine Spur trägt. Einprägen, dann laufen.';
+}
+function aufBrechen(mod, dt){
+  if(mod.zeigT > 0) mod.zeigT -= dt;
+  const tx = spielerTx(), ty = spielerTy();
+  if(tx > mod.fx1){ mod.fertig = true; return; }
+  if(tx < mod.fx0 || ty < mod.fy0 || ty > mod.fy1) return;
+  if(mod.fy0 + mod.pfad[tx - mod.fx0] === ty) return;              // trägt
+  setT(tx, ty, G_GAP);
+  mod.kaputt.push({x: tileMid(tx), y: tileMid(ty)});
+  player.x = mod.start.x; player.y = mod.start.y;
+  mod.zeigT = 1.8;
+  hurtPlayer(8 + kammer.diff*3);
+  sfx.warp();
+  floaters.push({x: player.x, y: player.y - 30, txt: 'Bricht ein.', col:'#9a8a5f', t: 1.2});
+}
+
+// 8) Schalterpaar mit Zeitfenster -------------------------------------------
+function bauSchalter(mod, r, k){
+  mod.fenster = Math.max(2.6, 5.2 - k.diff*0.4);
+  mod.a = {kt:'hebel', x: tileMid(r.x0+2), y: tileMid(r.y0+2), an: false, mod};
+  mod.b = {kt:'hebel', x: tileMid(r.x1-2), y: tileMid(r.y1-2), an: false, mod};
+  kammer.props.push(mod.a); kammer.props.push(mod.b);
+  mod.t = 0;
+  mod.hinweis = 'Zwei Hebel, ein Zeitfenster von ' + mod.fenster.toFixed(1) + ' Sekunden.';
+}
+function hebelZiehen(h){
+  const mod = h.mod;
+  if(mod.fertig || h.an) return;
+  h.an = true; sfx.hit(false);
+  const anderer = h === mod.a ? mod.b : mod.a;
+  if(anderer.an){ mod.fertig = true; return; }
+  mod.t = mod.fenster;
+}
+function aufSchalter(mod, dt){
+  if(mod.t > 0){
+    mod.t -= dt;
+    if(mod.t <= 0){
+      mod.a.an = false; mod.b.an = false;
+      sfx.hurt();
+      floaters.push({x: player.x, y: player.y - 30, txt: 'Zu langsam.', col:'#9a8a5f', t: 1.2});
+    }
+  }
+}
+
+// Hinweistafel: steht an der Nordwand des Raums und ist nur aus der Nähe lesbar.
+function tafel(r, mod, titel, txt){
+  const t = {kt:'tafel', x: tileMid(r.x0+6), y: tileMid(r.y0+1), titel, txt};
+  kammer.props.push(t);
+  return t;
+}
+
+// Die Kammer ist deutlich kleiner als die Oberwelt. Ohne Begrenzung zeigt die
+// Kamera an den Rändern nur gebackenes Schwarz; passt der Korridor komplett ins
+// Bild, wird er stattdessen mittig gehalten.
+function kammerKamera(){
+  const k = kammer;
+  const oben = KAM_Y0*TS - 24, unten = (KAM_Y0 + KAM_H)*TS + 24;
+  const links = KAM_X0*TS - 24, rechts = (k.raeume[k.raeume.length-1].x1 + 1)*TS + 24;
+  cam.y = (unten - oben) <= canvas.height ? (oben + unten - canvas.height)/2
+                                          : clamp(cam.y, oben, unten - canvas.height);
+  cam.x = (rechts - links) <= canvas.width ? (links + rechts - canvas.width)/2
+                                           : clamp(cam.x, links, rechts - canvas.width);
+}
+
+// --- Kammer-Update ----------------------------------------------------------
+function updateKammer(dt){
+  const k = kammer;
+  const mod = k.mods[k.idx];
+  if(!mod) return;
+  if(!mod.fertig){
+    if(!mod.begonnen && player.x > mod.raum.x0*TS){
+      mod.begonnen = true;
+      if(mod.kind === 'brechen') mod.zeigT = 2.8;
+      floaters.push({x: player.x, y: player.y - 44, txt: mod.hinweis, col:'#c9b98a', t: 4.0});
+    }
+    const f = KAM_MOD[mod.kind].auf;
+    if(f && mod.begonnen) f(mod, dt);
+  }
+  // Getrennt geprüft: Spiegel und Symbolschloss melden ihr Ergebnis von außerhalb
+  // des Update-Zweigs, ein verschachteltes if hätte sie nie abgeholt.
+  if(mod.fertig) modulGeloest(k, mod);
+}
+function modulGeloest(k, mod){
+  oeffneTor(mod.nr + 1);
+  k.idx++;
+  floaters.push({x: player.x, y: player.y - 44,
+                 txt: k.idx >= k.mods.length ? 'Die Schatzkammer öffnet sich.' : 'Das Tor gibt nach.',
+                 col:'#6aff8f', t: 2.4, big: true});
+}
+
+// --- Aktionen (Taste F / Kontext-Button) ------------------------------------
+// Kein Closure-Bau pro Frame: der beste Kandidat landet in drei festen Feldern.
+let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7;
+function aktBiete(x, y, art, obj, txt){
+  const d = sqDist(player.x, player.y, x, y);
+  if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
+}
+function scanAktion(dt){
+  if(aktSperre > 0) aktSperre -= dt;
+  aktArt = 0; aktObj = null; aktD2 = 58*58;
+  if(state !== 'play' || player.dead || aktSperre > 0) return;
+  if(!kammer){
+    if(currentLevel !== 1) return;
+    for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
+    return;
+  }
+  const k = kammer;
+  aktBiete(k.ausgang.x, k.ausgang.y, AKT_AUSGANG, null, 'Verlassen');
+  if(k.truhe) aktBiete(k.truhe.x, k.truhe.y, k.truhe.auf ? AKT_AUSGANG : AKT_TRUHE, null,
+                       k.truhe.auf ? 'Verlassen' : 'Öffnen');
+  const mod = k.mods[k.idx];
+  if(!mod || mod.fertig) return;
+  if(mod.kind === 'spiegel') for(const s of mod.spiegel) aktBiete(s.x, s.y, AKT_SPIEGEL, s, 'Drehen');
+  if(mod.kind === 'schalter'){ aktBiete(mod.a.x, mod.a.y, AKT_HEBEL, mod.a, 'Hebel'); aktBiete(mod.b.x, mod.b.y, AKT_HEBEL, mod.b, 'Hebel'); }
+  if(mod.kind === 'schloss') aktBiete(mod.schloss.x, mod.schloss.y, AKT_SCHLOSS, mod, 'Schloss');
+  if(mod.kind === 'bloecke') aktBiete(mod.rune.x, mod.rune.y, AKT_RESET, mod, 'Zurück');
+}
+function fuehreAktion(){
+  if(state !== 'play') return;
+  switch(aktArt){
+    case AKT_TUER:    betreteKammer(aktObj); break;
+    case AKT_SPIEGEL: aktObj.st ^= 1; sfx.hit(false); strahlRechnen(aktObj.mod); break;
+    case AKT_HEBEL:   hebelZiehen(aktObj); break;
+    case AKT_SCHLOSS: schlossAuf(aktObj); break;
+    case AKT_TRUHE:   truheOeffnen(); break;
+    case AKT_AUSGANG: verlasseKammer(); break;
+    case AKT_RESET:   bloeckeZurueck(aktObj); break;
+  }
+}
+
+// --- Symbolschloss-Panel ----------------------------------------------------
+let schlossMod = null;
+const schlossEin = [];
+function schlossAuf(mod){
+  schlossMod = mod; schlossOpen = true; schlossEin.length = 0;
+  el('schloss').style.display = 'block';
+  renderSchloss();
+}
+function schlossZu(){ schlossOpen = false; schlossMod = null; el('schloss').style.display = 'none'; }
+function schlossTippe(s){
+  if(!schlossMod) return;
+  schlossEin.push(s);
+  if(schlossEin.length >= 3){
+    const ok = schlossEin.every((v, i) => v === schlossMod.code[i]);
+    if(ok){ schlossMod.fertig = true; sfx.level(); schlossZu(); return; }
+    schlossEin.length = 0; sfx.hurt();
+    el('schlossMsg').textContent = 'Abgelehnt.';
+  }
+  renderSchloss();
+}
+function renderSchloss(){
+  el('schlossAnz').textContent = [0,1,2].map(i => schlossEin[i] || '_').join('  ');
+  const g = el('schlossTasten');
+  if(g.childElementCount === 0){
+    for(const s of KAM_SYM){
+      const b = document.createElement('div');
+      b.className = 'symBtn'; b.textContent = s;
+      b.onclick = () => schlossTippe(s);
+      g.appendChild(b);
+    }
+  }
+}
+
+// --- Zeichnen ---------------------------------------------------------------
+// Bodenmarkierungen liegen flach unter allem und laufen nicht über den y-Pool.
+function drawKammerBoden(){
+  const k = kammer, mod = k.mods[k.idx];
+  ctx.save();
+  if(mod && !mod.fertig){
+    if(mod.kind === 'brechen'){
+      for(const g of mod.kaputt){
+        ctx.fillStyle = '#0a0812';
+        ctx.fillRect(g.x - TS/2, g.y - TS/2, TS, TS);
+      }
+      if(mod.zeigT > 0){
+        ctx.globalAlpha = Math.min(1, mod.zeigT) * 0.6;
+        ctx.fillStyle = '#6aff8f';
+        for(let i = 0; i < mod.pfad.length; i++)
+          ctx.fillRect((mod.fx0+i)*TS + 3, (mod.fy0 + mod.pfad[i])*TS + 3, TS-6, TS-6);
+        ctx.globalAlpha = 1;
+      }
+      ctx.strokeStyle = 'rgba(150,140,190,.35)'; ctx.lineWidth = 1;
+      for(let x = mod.fx0; x <= mod.fx1; x++)
+        for(let y = mod.fy0; y <= mod.fy1; y++) ctx.strokeRect(x*TS+2, y*TS+2, TS-4, TS-4);
+    }
+    if(mod.kind === 'bloecke'){
+      ctx.strokeStyle = '#f4d97a'; ctx.lineWidth = 2; ctx.setLineDash([5,4]);
+      for(const z of mod.ziele) ctx.strokeRect(z.x - 13, z.y - 13, 26, 26);
+      ctx.setLineDash([]);
+    }
+    if(mod.kind === 'spiegel' && mod.pfad.length >= 4){
+      ctx.strokeStyle = '#ffe14d'; ctx.lineWidth = 3;
+      ctx.shadowColor = '#ffe14d'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.moveTo(mod.pfad[0], mod.pfad[1]);
+      for(let i = 2; i < mod.pfad.length; i += 2) ctx.lineTo(mod.pfad[i], mod.pfad[i+1]);
+      ctx.stroke(); ctx.shadowBlur = 0;
+    }
+  }
+  ctx.restore();
+}
+
+function drawKammerObj(o){
+  const nah = sqDist(player.x, player.y, o.x, o.y) < 9000;
+  ctx.save();
+  ctx.textAlign = 'center';
+  switch(o.kt){
+    case 'tor':
+      if(o.offen) break;
+      ctx.fillStyle = '#1b1526'; ctx.fillRect(o.x - TS/2, o.y - TS*2, TS, TS*3);
+      ctx.strokeStyle = '#8a7bb8'; ctx.lineWidth = 3;
+      for(let i = 0; i < 4; i++){
+        ctx.beginPath(); ctx.moveTo(o.x - 12 + i*8, o.y - TS*2); ctx.lineTo(o.x - 12 + i*8, o.y + TS); ctx.stroke();
+      }
+      ctx.fillStyle = '#c77dff'; ctx.font = '13px serif';
+      ctx.fillText('🔒', o.x, o.y - TS*0.6);
+      break;
+    case 'platte':
+      ctx.fillStyle = o.an ? '#2c5c34' : '#241d33';
+      ctx.fillRect(o.x - 14, o.y - 14, 28, 28);
+      ctx.strokeStyle = o.an ? '#6aff8f' : '#7a6ea8'; ctx.lineWidth = 2;
+      ctx.strokeRect(o.x - 14, o.y - 14, 28, 28);
+      ctx.fillStyle = o.an ? '#6aff8f' : '#c9b98a'; ctx.font = 'bold 15px serif';
+      ctx.fillText(o.sym, o.x, o.y + 6);
+      break;
+    case 'block':
+      drawShadowEllipse(o.x, o.y + 12, 13);
+      ctx.fillStyle = '#5a4630'; ctx.fillRect(o.x - 15, o.y - 18, 30, 30);
+      ctx.strokeStyle = '#2b2016'; ctx.lineWidth = 3; ctx.strokeRect(o.x - 15, o.y - 18, 30, 30);
+      ctx.beginPath(); ctx.moveTo(o.x - 15, o.y - 18); ctx.lineTo(o.x + 15, o.y + 12);
+      ctx.moveTo(o.x + 15, o.y - 18); ctx.lineTo(o.x - 15, o.y + 12); ctx.stroke();
+      break;
+    case 'ziel': break;                                   // liegt flach im Bodenlayer
+    case 'fackel':
+      if(o.an) drawSprite('fire1', animFrame('fire1', gameT + o.x*0.01, 10), o.x, o.y - 14, 1.2);
+      ctx.fillStyle = '#3a2f22'; ctx.fillRect(o.x - 3, o.y - 14, 6, 18);
+      ctx.strokeStyle = o.an ? '#ffb04a' : '#5c5470'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(o.x, o.y - 18, 6, 0, Math.PI*2); ctx.stroke();
+      break;
+    case 'spiegel':
+      drawShadowEllipse(o.x, o.y + 8, 11);
+      ctx.strokeStyle = '#dff2ff'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath();
+      if(o.st === 1){ ctx.moveTo(o.x - 11, o.y - 11); ctx.lineTo(o.x + 11, o.y + 11); }
+      else          { ctx.moveTo(o.x - 11, o.y + 11); ctx.lineTo(o.x + 11, o.y - 11); }
+      ctx.stroke(); ctx.lineCap = 'butt';
+      break;
+    case 'quelle':
+      ctx.fillStyle = '#ffe14d'; ctx.shadowColor = '#ffe14d'; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.arc(o.x, o.y, 8, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0;
+      break;
+    case 'lziel':
+      ctx.strokeStyle = '#ffe14d'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(o.x, o.y, 11, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(o.x, o.y, 5, 0, Math.PI*2); ctx.stroke();
+      break;
+    case 'hebel':
+      drawShadowEllipse(o.x, o.y + 8, 9);
+      ctx.strokeStyle = '#8a7bb8'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(o.x, o.y + 8); ctx.lineTo(o.x + (o.an ? 10 : -10), o.y - 14); ctx.stroke();
+      ctx.fillStyle = o.an ? '#6aff8f' : '#ff9f4a';
+      ctx.beginPath(); ctx.arc(o.x + (o.an ? 10 : -10), o.y - 16, 5, 0, Math.PI*2); ctx.fill();
+      if(o.mod && o.mod.t > 0){
+        ctx.fillStyle = '#241d33'; ctx.fillRect(o.x - 18, o.y - 34, 36, 5);
+        ctx.fillStyle = '#ffe14d'; ctx.fillRect(o.x - 18, o.y - 34, 36 * (o.mod.t / o.mod.fenster), 5);
+      }
+      break;
+    case 'schloss':
+      ctx.fillStyle = '#241d33'; ctx.fillRect(o.x - 15, o.y - 18, 30, 30);
+      ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 2; ctx.strokeRect(o.x - 15, o.y - 18, 30, 30);
+      ctx.fillStyle = '#f4d97a'; ctx.font = '15px serif'; ctx.fillText('🔐', o.x, o.y + 2);
+      break;
+    case 'reset':
+      ctx.strokeStyle = '#7ad6ff'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(o.x, o.y, 12 + Math.sin(gameT*3)*1.5, 0, Math.PI*2); ctx.stroke();
+      ctx.fillStyle = '#7ad6ff'; ctx.font = '13px serif'; ctx.fillText('↺', o.x, o.y + 5);
+      break;
+    case 'rune':
+      ctx.strokeStyle = '#6aff8f'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(o.x, o.y, 14 + Math.sin(gameT*2.4)*2, 0, Math.PI*2); ctx.stroke();
+      ctx.fillStyle = '#6aff8f'; ctx.font = '15px serif'; ctx.fillText('🚪', o.x, o.y + 6);
+      break;
+    case 'tafel':
+      ctx.fillStyle = '#2b2338'; ctx.fillRect(o.x - 26, o.y - 20, 52, 34);
+      ctx.strokeStyle = '#8a7bb8'; ctx.lineWidth = 2; ctx.strokeRect(o.x - 26, o.y - 20, 52, 34);
+      ctx.fillStyle = '#c9b98a'; ctx.font = 'bold 13px serif';
+      ctx.fillText('📜', o.x, o.y + 4);
+      if(nah){
+        ctx.font = 'bold 10px Courier New';
+        ctx.fillStyle = '#000';    ctx.fillText(o.titel, o.x+1, o.y - 27);
+        ctx.fillStyle = '#9a8a5f'; ctx.fillText(o.titel, o.x, o.y - 28);
+        ctx.font = 'bold 17px serif';
+        ctx.fillStyle = '#000';    ctx.fillText(o.txt, o.x+1, o.y - 41);
+        ctx.fillStyle = '#f4d97a'; ctx.fillText(o.txt, o.x, o.y - 42);
+      }
+      break;
+    case 'truhe':
+      drawShadowEllipse(o.x, o.y + 10, 16);
+      ctx.fillStyle = o.auf ? '#3a2f22' : '#5a4630';
+      ctx.fillRect(o.x - 18, o.y - 14, 36, 24);
+      ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 3; ctx.strokeRect(o.x - 18, o.y - 14, 36, 24);
+      if(!o.auf){
+        ctx.fillStyle = '#f4d97a';
+        ctx.fillRect(o.x - 3, o.y - 6, 6, 8);
+        drawSprite('glint', animFrame('glint', gameT, 9), o.x, o.y - 22, 2);
+      }
+      break;
+  }
+  ctx.restore();
+}
+
+// Das Preisschild: Schwierigkeit und Beute-Tier stehen vor dem Betreten fest.
+function drawKammerTuer(t){
+  drawShadowEllipse(t.x, t.y, 16);
+  ctx.save();
+  ctx.fillStyle = '#231c2e';
+  ctx.fillRect(t.x - 17, t.y - 40, 34, 40);
+  ctx.strokeStyle = '#6d6a8c'; ctx.lineWidth = 3;
+  ctx.strokeRect(t.x - 17, t.y - 40, 34, 40);
+  ctx.fillStyle = t.cd > 0 ? '#3a3350' : '#120e1c';
+  ctx.fillRect(t.x - 11, t.y - 33, 22, 33);
+  if(t.cd <= 0){
+    ctx.fillStyle = '#c77dff'; ctx.font = '13px serif'; ctx.textAlign = 'center';
+    ctx.fillText('🔒', t.x, t.y - 14);
+  }
+  // Schild
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#3b2f1c'; ctx.fillRect(t.x - 34, t.y - 78, 68, 34);
+  ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 2; ctx.strokeRect(t.x - 34, t.y - 78, 68, 34);
+  ctx.font = 'bold 9px Courier New';
+  ctx.fillStyle = '#c9b98a'; ctx.fillText('KAMMER', t.x, t.y - 68);
+  if(t.cd > 0){
+    ctx.fillStyle = '#9a8a5f'; ctx.font = 'bold 10px Courier New';
+    ctx.fillText('geleert', t.x, t.y - 57);
+    ctx.fillText(Math.ceil(t.cd) + 's', t.x, t.y - 47);
+  } else {
+    let bar = '';
+    for(let i = 1; i <= 5; i++) bar += i <= t.diff ? '▮' : '▯';
+    ctx.fillStyle = '#f4d97a'; ctx.font = 'bold 11px Courier New';
+    ctx.fillText(bar, t.x, t.y - 57);
+    ctx.fillStyle = RARITY[t.tier].col; ctx.font = 'bold 9px Courier New';
+    ctx.fillText(RARITY[t.tier].name, t.x, t.y - 47);
+  }
+  ctx.restore();
+}
+
+setzeKammerTueren();
 
 // --- QoL INVENTORY SYSTEM ---
 function buildTooltip(item, isEquipped){
@@ -1869,6 +2792,9 @@ el('tabKladde').onclick = () => switchKesselTab('kladde');
 el('brewBtn').onclick = brew;
 el('closeKesselBtn').onclick = toggleKessel;
 el('kesselBtn').onclick = toggleKessel;
+el('closeSchlossBtn').onclick = schlossZu;
+el('aktionBtn').onclick = fuehreAktion;
+el('kamExitBtn').onclick = verlasseKammer;
 
 document.getElementById('closeInvBtn').onclick = toggleInventory;
 document.getElementById('closeSpellBtn').onclick = toggleSpellTree;
@@ -1912,6 +2838,14 @@ function update(dt){
   else if(atkBtnHeld && !player.dead) attackBtnFire();                         // Attack-Button halten = Dauerfeuer (Lock > Priority)
   validateLock();                                                              // Auto-Unlock: tot oder >350px (no-op auf Desktop)
 
+  if(kammer){
+    updateKammer(dt);
+    setTxt('zone', `📍 Kammer · Schwierigkeit ${kammer.diff} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}`);
+  } else {
+    for(const t of kammerTueren) if(t.cd > 0){ t.cd -= dt; if(t.cd <= 0) wuerfleTuer(t); }
+  }
+  scanAktion(dt);
+
   if(schattenlandActive){
     setTxt('zone', `📍 Schattenland | 💀 ${shadowKills} / 500`);
     // Horde Spawner
@@ -1925,7 +2859,7 @@ function update(dt){
         makeMon(type, sx, sy);
       }
     }
-  } else {
+  } else if(!kammer){
     const ty = player.y / TS;                       // Biom-Anzeige statt statischem "Grasland"
     setTxt('zone', ty < 26 ? '📍 Frostkamm (Stufe ' + player.level + ')'
                  : ty > 54 ? '📍 Aschewüste (Stufe ' + player.level + ')'
@@ -1983,10 +2917,12 @@ function update(dt){
     const len = Math.hypot(dirX, dirY);
     moveEnt(player, (dirX / len) * derived.speed * moveMag * dt, (dirY / len) * derived.speed * moveMag * dt);
     player.faceLeft = dirX < 0;
+    player.mvx = dirX; player.mvy = dirY;      // Schieberichtung für Kammerblöcke
   }
 
   cam.x = lerp(cam.x, player.x - canvas.width / 2, 0.1);
   cam.y = lerp(cam.y, player.y - canvas.height / 2, 0.1);
+  if(kammer) kammerKamera();      // Korridor mittig halten statt halbes Bild Leere zu zeigen
 
   // Projektile / Partikel Update
   for(let i=particles.length-1; i>=0; i--){
@@ -1998,14 +2934,19 @@ function update(dt){
   for(let i = projectiles.length - 1; i >= 0; i--){
     const p = projectiles[i]; p.x += p.vx * dt; p.y += p.vy * dt; p.t -= dt;
     if(p.t <= 0){ projectiles.splice(i, 1); continue; }
+    // Kammer-Fackeln: Feuer zündet, Frost löscht. Das Geschoss ist danach verbraucht.
+    if(kammer && kamFlamme(p.x, p.y, p.r || 8, p.zweig)){
+      spawnImpactParticles(p.x, p.y, 12, p.color || '#ff6600');
+      projectiles.splice(i, 1); continue;
+    }
     for(const m of monsters){
       if(!m.dead && dist2(p.x, p.y, m.x, m.y) < m.r + (p.r||15)){
-        hurtMon(m, p.dmg, true, Math.atan2(p.vy, p.vx));
+        hurtMon(m, p.dmg, true, Math.atan2(p.vy, p.vx), p.zweig);
         if(p.slow) m.slowT = p.slow;
         spawnImpactParticles(p.x, p.y, 20, p.color || '#ff6600');
         if(p.aoe){
           magicEffects.push({type:'ring', x:p.x, y:p.y, rad:p.aoe, color:p.color||'#ff9f4a', t:0.3, maxT:0.3});
-          for(const m2 of monsters){ if(m2!==m && !m2.dead && dist2(p.x,p.y,m2.x,m2.y) < p.aoe) hurtMon(m2, Math.round(p.dmg*0.6), false, Math.atan2(m2.y-p.y,m2.x-p.x)); }
+          for(const m2 of monsters){ if(m2!==m && !m2.dead && dist2(p.x,p.y,m2.x,m2.y) < p.aoe) hurtMon(m2, Math.round(p.dmg*0.6), false, Math.atan2(m2.y-p.y,m2.x-p.x), p.zweig); }
         }
         projectiles.splice(i, 1); break;
       }
@@ -2025,8 +2966,11 @@ function update(dt){
 
   for(let i=magicEffects.length-1; i>=0; i--){ magicEffects[i].t -= dt; if(magicEffects[i].t <= 0) magicEffects.splice(i,1); }
 
-  if(boss && !boss.dead){
+  // Leiste erst, wenn der Boss den Spieler bemerkt hat: der Kammerwächter soll
+  // nicht schon aus Raum 1 heraus angekündigt werden. Name kommt aus MONDEF.
+  if(boss && !boss.dead && boss.aggro){
     setStyle('bossbar', 'display', 'block');
+    setTxt('bossname', boss.def.name);
     setStyle('bossfill', 'width', Math.max(0, (boss.hp / boss.maxHp) * 100) + '%');
   } else setStyle('bossbar', 'display', 'none');
 
@@ -2046,6 +2990,17 @@ function update(dt){
 
     const pd = dist2(m.x, m.y, player.x, player.y);
     if(!m.aggro && pd < m.def.aggro) m.aggro = true;
+
+    // Kammerwache mit Rückenregel: dreht sich nur begrenzt schnell zum Spieler,
+    // sonst wäre "von hinten" nie erreichbar.
+    if(m.regel && m.regel.typ === 'ruecken'){
+      const soll = Math.atan2(player.y - m.y, player.x - m.x);
+      let d = soll - m.faceAng;
+      while(d > Math.PI) d -= Math.PI*2;
+      while(d < -Math.PI) d += Math.PI*2;
+      const max = 2.1 * dt;
+      m.faceAng += clamp(d, -max, max);
+    }
 
     if(!m.aggro){
       // Herumwandern, wenn kein Ziel in Sicht
@@ -2131,7 +3086,8 @@ let frameNo = 0;
 
 // Zeichenliste: feste Einträge aus einem Pool, damit pro Frame weder Objekte noch
 // Closures anfallen (das war bei voller Horde der größte GC-Verursacher).
-const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5, DRAW_KESSEL=6;
+const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5, DRAW_KESSEL=6,
+      DRAW_KAMOBJ=7, DRAW_KAMTUER=8;
 const drawPool = [], drawList = [];
 let drawCount = 0;
 const byY = (a,b)=> a.y - b.y;
@@ -2157,6 +3113,8 @@ function render(){
 
   // Caching Layer zeichnen (Super schnell, mit dauerhaftem Blut!)
   ctx.drawImage(floorCanvas, 0, 0);
+
+  if(kammer) drawKammerBoden();          // Zielfelder, Plattenspur, Lichtstrahl liegen flach
 
   if(portal){
     ctx.save(); ctx.translate(portal.x, portal.y); ctx.rotate(gameT * 2);
@@ -2243,9 +3201,12 @@ function render(){
     const d = decos[i];
     if(d.x > cullL && d.x < cullR) pushDraw(d.y, DRAW_DECO, d);
   }
-  if(currentLevel === 1){                               // Hoftiere und Kessel gibt es nur im Wald
+  if(currentLevel === 1){                               // Hoftiere, Kessel und Kammertüren gibt es nur im Wald
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
     if(vis(KESSEL.x, KESSEL.y)) pushDraw(KESSEL.y, DRAW_KESSEL, null);
+    for(const t of kammerTueren) if(vis(t.x, t.y)) pushDraw(t.y, DRAW_KAMTUER, t);
+  } else if(kammer){
+    for(const p of kammer.props) if(vis(p.x, p.y)) pushDraw(p.y, DRAW_KAMOBJ, p);
   }
   for(const c of corpses) if(vis(c.x, c.y)) pushDraw(c.y - 1, DRAW_CORPSE, c);
   for(const m of monsters) if(!m.dead && vis(m.x, m.y)) pushDraw(m.y, DRAW_MON, m);
@@ -2263,6 +3224,8 @@ function render(){
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
       case DRAW_KESSEL:  drawKessel(); break;
+      case DRAW_KAMOBJ:  drawKammerObj(o); break;
+      case DRAW_KAMTUER: drawKammerTuer(o); break;
       default:           drawPlayer();
     }
   }
@@ -2471,9 +3434,10 @@ function drawProp(t){
   if(t.type === G_ROCK){
     const ty = t.y / TS;
     drawShadowEllipse(t.x, t.y, 11);
-    // Felsen nehmen die Farbe ihres Bandes an: Sandstein in der Wüste, Reif im Schnee
-    const tint = ty > 54 ? '#d9b070' : (ty < 26 ? '#dfeeff' : null);
-    drawSprite('rock', 0, t.x, t.y+2, 2.2, (t.phase|0) & 1, tint, 0.5);
+    // Felsen nehmen die Farbe ihres Bandes an: Sandstein in der Wüste, Reif im
+    // Schnee. Kammerwände bringen ihre Färbung als t.tint selbst mit.
+    const tint = t.tint || (ty > 54 ? '#d9b070' : (ty < 26 ? '#dfeeff' : null));
+    drawSprite('rock', 0, t.x, t.y+2, 2.2, (t.phase|0) & 1, tint, t.tint ? 0.66 : 0.5);
     return;
   }
   const sway = animFrame('tree1', gameT*0.5 + t.phase, 3);
@@ -2496,6 +3460,22 @@ function drawCorpse(c){
 function drawMon(m){
   const d = m.def, sc = d.sc || 1.5;
   drawShadowEllipse(m.x, m.y + m.r*0.7, m.r*0.9);
+  // Kammer-Sonderregel wird gezeigt, nicht erklärt: farbiger Ring = nur dieser
+  // Zweig wirkt, Schild vor dem Gesicht = von vorn prallt alles ab.
+  if(m.regel){
+    ctx.save();
+    if(m.regel.typ === 'zweig'){
+      ctx.strokeStyle = KAM_ZWEIG_COL[m.regel.zweig]; ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.5 + Math.sin(gameT*3)*0.2;
+      ctx.beginPath(); ctx.ellipse(m.x, m.y + m.r*0.7, m.r+7, (m.r+7)*0.45, 0, 0, Math.PI*2); ctx.stroke();
+    } else {
+      ctx.strokeStyle = '#ff9f4a'; ctx.lineWidth = 3; ctx.globalAlpha = 0.7;
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.r + 9, m.faceAng - 0.85, m.faceAng + 0.85);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
   const bob = d.fly ? Math.sin(gameT*3.5 + m.bobPhase) * 4 - 4 : 0;
   const key = monAnim(d, m.anim);
   const fps = m.anim==='idle' ? 7 : (m.anim==='attack' ? 16 : m.anim==='cast' ? 20 : m.anim==='run' ? 12 : 10);
@@ -2577,6 +3557,10 @@ function updateHUD(){
     el('ultBtn').classList.add('disabled');
     setHTML('ultBtnTxt', '🔒 Ult (R)');
   }
+  // Kontext-Button und Kammer-Abbruch: gleiche Dirty-Check-Regel wie der Rest des HUD
+  setStyle('aktionBtn', 'display', aktArt ? 'flex' : 'none');
+  if(aktArt) setTxt('aktionTxt', aktTxt);
+  setStyle('kamExitBtn', 'display', kammer ? 'flex' : 'none');
   setStyle('xpFill', 'width', Math.min(100, (player.xp / (35 * Math.pow(player.level, 1.35))) * 100) + '%');
   if(touchMode) el('attackBtn').classList.toggle('locked', !!lockedTarget);
 }
@@ -2586,12 +3570,13 @@ function showStartScreen(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>SuperDuper Adventure</h1>
     <h3>✨ Looten, leveln und Monster wegschellen!</h3>
-    <p>Metzle dich durch drei Biome, sammle Zutaten und lerne Zaubersprüche. Ausrüstung fällt nicht mehr vom Himmel: die kochst du am <b>Kessel</b> aus drei Zutaten selbst zusammen. Wie das genau zusammenhängt, findest du beim Kochen heraus. Irgendwo zwischen Stufe 5 und 11 öffnet sich außerdem zufällig ein <b>Schatten-Portal</b>: 500 Gegner gleichzeitig.</p>
+    <p>Metzle dich durch drei Biome, sammle Zutaten und lerne Zaubersprüche. Ausrüstung fällt nicht mehr vom Himmel: die kochst du am <b>Kessel</b> aus drei Zutaten selbst zusammen. Wie das genau zusammenhängt, findest du beim Kochen heraus. In jedem Biom stehen versiegelte <b>Kammern</b>: das Schild an der Tür nennt Schwierigkeit und Beute vorab, drinnen warten Rätsel und Wachen. Irgendwo zwischen Stufe 5 und 11 öffnet sich außerdem zufällig ein <b>Schatten-Portal</b>: 500 Gegner gleichzeitig.</p>
     <div style="text-align:left; background:rgba(0,0,0,.5); padding:10px; border-radius:8px; font-size:12px; margin-bottom:15px; border:1px solid #5a4a2d;">
       <b>Steuerung:</b> W A S D = Bewegen | Klick / Leer = Angreifen<br>
       <b>Zauber:</b> (E) aktiver Spruch | (R) Ultimate | (T) Zauberbaum<br>
       <b>Inventar (I):</b> Links-Klick: Ausrüsten | Rechts-Klick: Wegwerfen<br>
       <b>Kessel (K):</b> drei Zutaten kochen, Kladde lesen<br>
+      <b>Benutzen (F):</b> Kammer betreten, Hebel, Spiegel, Truhe<br>
       <b>Trank (Q):</b> heilen<br>
       <b>📱 Touch:</b> linke Hälfte = Joystick | rechte Hälfte = Angreifen (halten = Dauerfeuer)
     </div>
@@ -2602,16 +3587,19 @@ function showStartScreen(){
 
 function showDead(){
   const wasShadowland = currentLevel === 2;
+  const wasKammer = !!kammer;
   document.getElementById('ovPanel').innerHTML = `
     <h1 style="color:#ff5a5a">ÜBERRANNT</h1>
     <p>Monster getötet: <b>${stats.kills}</b> · Stufe <b>${player.level}</b></p>
-    <p style="font-size:12px;color:#9a8a5f;">${wasShadowland ? 'Das Schattenland hat dich zurück in den Wald geschleudert.' : 'Du wachst am Waldrand wieder auf.'} Level, Ausrüstung und Beute bleiben erhalten.</p>
+    <p style="font-size:12px;color:#9a8a5f;">${wasKammer ? 'Die Kammer hat dich ausgespuckt. Sie bleibt versiegelt und wartet.'
+      : wasShadowland ? 'Das Schattenland hat dich zurück in den Wald geschleudert.' : 'Du wachst am Waldrand wieder auf.'} Level, Ausrüstung und Beute bleiben erhalten.</p>
     <button onclick="respawnPlayer()">ZURÜCK IN DEN WALD</button>
   `;
   document.getElementById('overlay').style.display = 'flex';
 }
 
 function respawnPlayer(){
+  if(kammer) verlasseKammer();      // Tod in der Kammer: erst die Oberwelt zurückholen, dann respawnen
   currentLevel = 1; schattenlandActive = false; shadowKills = 0; boss = null; portal = null;
   monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   particles.length = 0; corpses.length = 0; floaters.length = 0;
@@ -2649,8 +3637,13 @@ window.addEventListener('keydown', e => {
   if(k === 'r') castUltimate();
   if(k === 'i') toggleInventory(); if(k === 't') toggleSpellTree(); if(k === 'm') toggleMusic();
   if(k === 'k') toggleKessel();
+  if(k === 'f') fuehreAktion();
   if(k === 'escape'){                          // Panels schließen ohne Tastenraten
-    if(invOpen) toggleInventory(); else if(spellTreeOpen) toggleSpellTree(); else if(kesselOpen) toggleKessel();
+    if(invOpen) toggleInventory();
+    else if(spellTreeOpen) toggleSpellTree();
+    else if(kesselOpen) toggleKessel();
+    else if(schlossOpen) schlossZu();
+    else if(kammer) verlasseKammer();          // Abbruch der Kammer, ohne Beute, ohne Softlock
   }
 });
 
