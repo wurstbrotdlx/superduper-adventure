@@ -23,6 +23,9 @@
   .beltSlot{pointer-events:auto;cursor:pointer;min-width:54px;height:44px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;color:#e8d9a8;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;padding:0 8px;gap:4px;}
   .beltSlot:hover{border-color:#c9a227;}
   .beltSlot.disabled{opacity:0.4;filter:grayscale(1);cursor:not-allowed;}
+  /* Beschriftungen sind für Touch unsichtbar: Ziel eines Drags ist immer der Button
+     selbst, nie ein Kind-Span, der beim HUD-Refresh ausgetauscht werden könnte. */
+  .beltSlot *{pointer-events:none;}
   #statCol{color:#e8d9a8;font-weight:bold;font-size:13px;text-shadow:0 1px 2px #000;display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:130px;}
   #zone{position:fixed;left:12px;top:12px;color:#f4e6b8;font-size:16px;font-weight:bold;text-shadow:0 2px 4px #000;z-index:10;pointer-events:none;}
   #minimap{position:fixed;top:12px;right:12px;width:128px;height:128px;border:3px solid #6b5a3a;border-radius:4px;z-index:10;background:#000;image-rendering:pixelated;opacity:.92;}
@@ -246,6 +249,11 @@ const floorCanvas = document.createElement('canvas');
 floorCanvas.width = MW * TS; floorCanvas.height = MH * TS;
 const floorCtx = floorCanvas.getContext('2d', {alpha: false});
 
+// Minimap-Hintergrund: ändert sich nur bei Levelwechsel, wird einmal auf 128px
+// gebacken statt jeden Frame aus dem 2560x2560-Boden heruntergerechnet.
+const miniBg = document.createElement('canvas');
+miniBg.width = miniBg.height = 128;
+
 // ===========================================================================
 //  Sprite-Engine — Sunnyside World (danieldiggle.itch.io/sunnyside)
 //  Frei nutzbar inkl. kommerziell, Weiterverkauf der Assets untersagt.
@@ -374,9 +382,22 @@ function animFrame(key, t, fps, loop){
 function animLen(key, fps){ const s = SHEETS[key]; return s ? s.n / fps : 0; }
 
 
+// DOM-Cache: getElementById war im Renderloop einer der teuersten Posten.
+const DOM = {};
+const el = id => DOM[id] || (DOM[id] = document.getElementById(id));
+// Schreibt nur bei echter Änderung — spart Style-Recalcs und, wichtiger, verhindert
+// dass Kindknoten während einer laufenden Touch-Geste ausgetauscht werden.
+const LAST = {};
+function setTxt(id, v){ if(LAST[id] === v) return; LAST[id] = v; el(id).textContent = v; }
+function setHTML(id, v){ if(LAST[id] === v) return; LAST[id] = v; el(id).innerHTML = v; }
+function setStyle(id, prop, v){ const k = id+'|'+prop; if(LAST[k] === v) return; LAST[k] = v; el(id).style[prop] = v; }
+
 const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
 const lerp = (a,b,t)=> a+(b-a)*t;
-const dist2 = (ax,ay,bx,by)=> Math.hypot(ax-bx,ay-by);
+// Math.hypot ist wegen Overflow-Schutz ~5x langsamer als der direkte Weg und läuft
+// hier zehntausendfach pro Frame. sqDist vermeidet die Wurzel ganz, wo nur verglichen wird.
+const dist2 = (ax,ay,bx,by)=>{ const dx=ax-bx, dy=ay-by; return Math.sqrt(dx*dx+dy*dy); };
+const sqDist = (ax,ay,bx,by)=>{ const dx=ax-bx, dy=ay-by; return dx*dx+dy*dy; };
 const angDiff = (a,b)=>{ let d=(a-b)%(Math.PI*2); if(d>Math.PI)d-=Math.PI*2; if(d<-Math.PI)d+=Math.PI*2; return Math.abs(d); };
 
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -593,6 +614,7 @@ function initFloorGraphics(){
       if(tile) floorCtx.drawImage(tile, px, py);
     }
   }
+  bakeMinimap();
 }
 
 function genMap(){
@@ -652,6 +674,8 @@ function genMap(){
   }
   // Windmühle als Landmarke nahe dem Startpunkt
   decos.push({x:19*TS, y:36*TS, sheet:'windmill', phase:0, scale:1, big:true});
+  // Nach y sortiert halten — der Renderer sucht das sichtbare Band binär statt linear.
+  trees.sort((a,b)=>a.y-b.y); decos.sort((a,b)=>a.y-b.y);
 
   // --- Ambiente-Tiere im Grasland (nur Optik, kollidieren mit nichts) ---
   critters.length = 0;
@@ -756,7 +780,19 @@ recalc(); player.hp = derived.maxHp;
 
 const monsters=[], drops=[], floaters=[], projectiles=[], magicEffects=[], particles=[], enemyBolts=[];
 let boss=null, state='menu', gameT=0, invOpen=false;
-const cam={x:0,y:0}, mouse={x:0,y:0, wx:0, wy:0};
+const cam={x:0,y:0}, mouse={x:0,y:0, wx:0, wy:0, moved:false};
+
+// Zielpunkt für Tastatur/Klick: solange die Maus nie bewegt wurde (reines WASD-Spiel),
+// zielt das Spiel automatisch auf den nächsten Gegner statt in die Bildschirmecke.
+// Weltkoordinaten werden hier frisch aus der Kamera gerechnet — sonst zeigt das Ziel
+// beim Laufen dorthin, wo der Cursor vor der Kamerafahrt war.
+function aimPoint(){
+  if(mouse.moved){ mouse.wx = mouse.x + cam.x; mouse.wy = mouse.y + cam.y; return mouse; }
+  const t = pickTarget('closest', 420);
+  if(t) return {wx:t.x, wy:t.y};
+  return {wx: player.x + Math.cos(player.dir)*100, wy: player.y + Math.sin(player.dir)*100};
+}
+const aimAngle = ()=>{ const a = aimPoint(); return Math.atan2(a.wy - player.y, a.wx - player.x); };
 
 // --- TOUCH STATE (mobil) ---
 let touchMode = false;
@@ -902,8 +938,10 @@ const CONFETTI = ['#ffd54a','#4ad6ff','#6aff8f','#c77dff','#ff9f4a','#4affd6','#
 const confettiCol = ()=> CONFETTI[Math.floor(Math.random()*CONFETTI.length)];
 
 // color=null => pro Partikel eine zufällige Konfettifarbe (mit Rotation + Schwerkraft)
+const MAX_PARTICLES = 900;               // Ultimate + Horde erzeugten sonst tausende Sprites
 function spawnImpactParticles(x, y, count=12, color='#ffd700'){
   const confetti = color === null;
+  count = Math.min(count, MAX_PARTICLES - particles.length);
   for(let i=0; i<count; i++){
     const angle = rr(0, Math.PI*2), speed = rr(80, 280);
     particles.push({x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed - (confetti?60:0),
@@ -949,13 +987,17 @@ function tryAttack(dir){
   }
 }
 
+let lastCritSfx = -1, lastDieSfx = -1;
 function hurtMon(m, d, crit, hitAngle){
+  if(m.dead) return;          // Cleave + AoE im selben Frame trafen sonst doppelt: doppelte Beute, doppeltes XP
   if(crit) d = Math.round(d * 1.7);
   m.hp -= d; m.flash = 0.15; m.aggro = true;
   m.kx = Math.cos(hitAngle) * (crit?180:100); m.ky = Math.sin(hitAngle) * (crit?180:100);
   spawnImpactParticles(m.x, m.y, crit ? 25 : 10, null);
 
-  if(crit) sfx.crit();
+  // Flächenzauber markieren jeden Treffer als Crit — ohne Bremse wären das dutzende
+  // Oszillatoren im selben Frame (hörbares Knacken, unnötige Last).
+  if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); }
   floaters.push({x:m.x+rr(-8,8), y:m.y-m.r-10, txt:String(d), col:crit?'#ffe14d':'#ffffff', t:0.8, big:crit});
   if(m.hp <= 0) killMon(m);
 }
@@ -967,7 +1009,7 @@ function killMon(m){
   corpses.push({x:m.x, y:m.y, def:m.def, key:dKey, t:0, dur:animLen(dKey, 11) + 1.4, flip:m.facingLeft});
   if(corpses.length > 24) corpses.shift();
   if(currentLevel === 2) shadowKills++;
-  sfx.die();
+  if(gameT - lastDieSfx > 0.07){ lastDieSfx = gameT; sfx.die(); }   // Massensterben nicht 30x gleichzeitig
   spawnImpactParticles(m.x, m.y, 40, null);
   splatConfetti(m.x, m.y, currentLevel===2);
   gainXP(m.def.xp);
@@ -989,15 +1031,22 @@ function killMon(m){
   if(currentLevel === 1 && !portal && player.level >= 5){
     const chance = player.level >= 11 ? 1 : 0.05 + (player.level-5)*0.03;
     if(Math.random() < chance){
-      portal = {x: player.x, y: player.y - 100};
-      if(!walkPx(portal.x, portal.y)) { portal.x = player.x; portal.y = player.y; }
+      // Immer mit Abstand: früher landete das Portal im Fallback exakt auf dem Spieler,
+      // der dann ungefragt im selben Frame ins Schattenland gesogen wurde.
+      portal = null;
+      for(let a=0; a<12 && !portal; a++){
+        const ang = a * (Math.PI/6) - Math.PI/2;
+        const cx = player.x + Math.cos(ang)*100, cy = player.y + Math.sin(ang)*100;
+        if(walkPx(cx, cy)) portal = {x:cx, y:cy};
+      }
+      if(!portal) portal = {x: player.x, y: player.y - 100};   // notfalls trotzdem auf Abstand
       addShake(15, 1.0);
       sfx.warp();
       floaters.push({x:portal.x, y:portal.y-40, txt:'SCHATTEN-PORTAL ERSCHIENEN', col:'#c77dff', t:5.0, big:true});
     }
   }
 
-  if(m.def.boss){ document.getElementById('bossbar').style.display='none'; setTimeout(winGame,2000); }
+  if(m.def.boss){ el('bossbar').style.display='none'; setTimeout(()=>{ if(state==='play') winGame(); }, 2000); }
 }
 
 function gainXP(x){
@@ -1024,7 +1073,7 @@ function hurtPlayer(raw){
 }
 
 function drinkPotion(){
-  if(player.potions<=0 || player.dead || player.hp>=derived.maxHp) return;
+  if(state !== 'play' || player.potions<=0 || player.dead || player.hp>=derived.maxHp) return;
   player.potions--; player.hp=Math.min(derived.maxHp, player.hp+60);
   sfx.potion(); updateHUD();
 }
@@ -1129,13 +1178,15 @@ function renderSpellTree(){
 }
 function castUltimate(){ const sp = SPELLS.find(s=>s.ultimate); if(sp) castSpell(sp); }
 
-function castSpell(sp){
+function castSpell(sp, target){                          // target: optionaler Weltpunkt {wx,wy} (Touch-Drag)
   if(state!=='play' || player.dead || !spellKnown(sp.id)) return;
   if(player.spellCd > 0) return;
   if(player.mana < sp.mana){ floaters.push({x:player.x, y:player.y-30, txt:'Zu wenig Mana', col:'#7da0ff', t:0.7}); return; }
   player.mana -= sp.mana; player.spellCd = 0.28;
   player.castT = 0.42;                                   // Zauber-Animation des Helden
-  const dir = Math.atan2(mouse.wy - player.y, mouse.wx - player.x);
+  const aim = target || aimPoint();
+  const dir = Math.atan2(aim.wy - player.y, aim.wx - player.x);
+  player.dir = dir;
   player.faceLeft = Math.cos(dir) < 0;
 
   if(sp.type === 'bolt'){
@@ -1154,7 +1205,7 @@ function castSpell(sp){
     for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sp.dmg, true, 0); px=t.x; py=t.y; }
   } else if(sp.type === 'aoe_target'){
     sfx.magic(); addShake(12,0.35);
-    const tx=mouse.wx, ty=mouse.wy;
+    const tx=aim.wx, ty=aim.wy;
     magicEffects.push({type:'ring', x:tx, y:ty, rad:sp.radius, color:sp.color, t:0.5, maxT:0.5});
     if(sp.branch === 0)   // Feuer-Zweig: echte Flammen-Sprites im Einschlag
       for(let i=0;i<7;i++) magicEffects.push({type:'flame', x:tx+rr(-sp.radius*0.6, sp.radius*0.6),
@@ -1323,7 +1374,7 @@ function update(dt){
   validateLock();                                                              // Auto-Unlock: tot oder >350px (no-op auf Desktop)
 
   if(schattenlandActive){
-    document.getElementById('zone').innerHTML = `📍 Schattenland | 💀 ${shadowKills} / 500`;
+    setTxt('zone', `📍 Schattenland | 💀 ${shadowKills} / 500`);
     // Horde Spawner
     if(monsters.length < 130 && (!boss || boss.dead)){
       const a = Math.random() * Math.PI * 2;
@@ -1335,6 +1386,13 @@ function update(dt){
         makeMon(type, sx, sy);
       }
     }
+  } else {
+    const ty = player.y / TS;                       // Biom-Anzeige statt statischem "Grasland"
+    setTxt('zone', ty < 26 ? '📍 Frostkamm (Stufe ' + player.level + ')'
+                 : ty > 54 ? '📍 Aschewüste (Stufe ' + player.level + ')'
+                           : '📍 Grasland (Stufe ' + player.level + ')');
+  }
+  if(schattenlandActive){
     if(shadowKills >= 500 && !boss){
       makeMon('boss', player.x, player.y - 150);
       floaters.push({x:player.x, y:player.y-80, txt:'ABADDON ERWACHT!', col:'#ff0000', t:5.0, big:true});
@@ -1419,9 +1477,9 @@ function update(dt){
   for(let i=magicEffects.length-1; i>=0; i--){ magicEffects[i].t -= dt; if(magicEffects[i].t <= 0) magicEffects.splice(i,1); }
 
   if(boss && !boss.dead){
-    document.getElementById('bossbar').style.display = 'block';
-    document.getElementById('bossfill').style.width = Math.max(0, (boss.hp / boss.maxHp) * 100) + '%';
-  } else document.getElementById('bossbar').style.display = 'none';
+    setStyle('bossbar', 'display', 'block');
+    setStyle('bossfill', 'width', Math.max(0, (boss.hp / boss.maxHp) * 100) + '%');
+  } else setStyle('bossbar', 'display', 'none');
 
   // Monster Update & Löschen von Toten
   for(let i=monsters.length-1; i>=0; i--){
@@ -1471,12 +1529,14 @@ function update(dt){
         if(m.atkT <= 0){ m.atkT = m.def.atkCd; m.actT = 0.45; hurtPlayer(rri(m.def.dmg[0], m.def.dmg[1])); }
       } else {
         const a = Math.atan2(player.y - m.y, player.x - m.x);
-        // Soft Avoidance für Horde-Verhalten
+        // Soft Avoidance für Horde-Verhalten. Bei 130 Mobs sind das 17k Paarprüfungen
+        // pro Frame — deshalb erst zwei Achsenvergleiche, Wurzel gar nicht.
         let sepX = 0, sepY = 0;
         for(const other of monsters){
             if(other === m || other.dead) continue;
-            const od = dist2(m.x, m.y, other.x, other.y);
-            if(od < 15) { sepX += (m.x-other.x); sepY += (m.y-other.y); }
+            const dx = m.x - other.x; if(dx > 15 || dx < -15) continue;
+            const dy = m.y - other.y; if(dy > 15 || dy < -15) continue;
+            if(dx*dx + dy*dy < 225){ sepX += dx; sepY += dy; }
         }
         moveEnt(m, (Math.cos(a)*spd + sepX*2)*dt, (Math.sin(a)*spd + sepY*2)*dt);
         m.facingLeft = player.x < m.x;
@@ -1514,7 +1574,28 @@ function update(dt){
     }
   }
 
+  if(floaters.length > 70) floaters.splice(0, floaters.length - 70);   // Schadenszahlen der Horde deckeln
   for(let i = floaters.length - 1; i >= 0; i--){ const f = floaters[i]; f.y -= 24 * dt; f.t -= dt; if(f.t <= 0) floaters.splice(i, 1); }
+}
+
+let frameNo = 0;
+
+// Zeichenliste: feste Einträge aus einem Pool, damit pro Frame weder Objekte noch
+// Closures anfallen (das war bei voller Horde der größte GC-Verursacher).
+const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5;
+const drawPool = [], drawList = [];
+let drawCount = 0;
+const byY = (a,b)=> a.y - b.y;
+function pushDraw(y, kind, o){
+  const e = drawPool[drawCount] || (drawPool[drawCount] = {y:0, kind:0, o:null});
+  e.y = y; e.kind = kind; e.o = o;
+  drawList[drawCount++] = e;
+}
+// Erster Index mit arr[i].y >= y (arr ist nach y sortiert).
+function firstAtY(arr, y){
+  let lo = 0, hi = arr.length;
+  while(lo < hi){ const mid = (lo + hi) >> 1; if(arr[mid].y < y) lo = mid + 1; else hi = mid; }
+  return lo;
 }
 
 function render(){
@@ -1591,34 +1672,41 @@ function render(){
     }
   }
 
-  const drawables = [];
   const cullL = cam.x - 80, cullR = cam.x + canvas.width + 80;
   const cullT = cam.y - 120, cullB = cam.y + canvas.height + 80;
   const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
 
-  for(const t of trees){
-    if(!vis(t.x, t.y)) continue;
-    drawables.push({y:t.y, draw:()=>drawProp(t)});
+  drawCount = 0;
+  // trees/decos entstehen zeilenweise und sind damit nach y sortiert: statt aller
+  // ~2000 Props nur das sichtbare Band anfassen.
+  for(let i = firstAtY(trees, cullT); i < trees.length && trees[i].y < cullB; i++){
+    const t = trees[i];
+    if(t.x > cullL && t.x < cullR) pushDraw(t.y, DRAW_TREE, t);
   }
-  for(const d of decos){
-    if(!vis(d.x, d.y)) continue;
-    drawables.push({y:d.y, draw:()=>drawSprite(d.sheet, animFrame(d.sheet, gameT + d.phase, d.big?9:4), d.x, d.y, d.scale)});
+  for(let i = firstAtY(decos, cullT); i < decos.length && decos[i].y < cullB; i++){
+    const d = decos[i];
+    if(d.x > cullL && d.x < cullR) pushDraw(d.y, DRAW_DECO, d);
   }
-  for(const c of critters){
-    if(currentLevel !== 1 || !vis(c.x, c.y)) continue;   // Hoftiere gibt es nur im Wald
-    drawables.push({y:c.y, draw:()=>{
-      drawShadowEllipse(c.x, c.y+2, 8);
-      drawSprite(c.sheet, animFrame(c.sheet, gameT + c.phase, (c.vx||c.vy) ? 7 : 3), c.x, c.y+4, 1, c.flip);
-    }});
+  if(currentLevel === 1)                                // Hoftiere gibt es nur im Wald
+    for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
+  for(const c of corpses) if(vis(c.x, c.y)) pushDraw(c.y - 1, DRAW_CORPSE, c);
+  for(const m of monsters) if(!m.dead && vis(m.x, m.y)) pushDraw(m.y, DRAW_MON, m);
+  pushDraw(player.y, DRAW_PLAYER, null);
+
+  drawList.length = drawCount;
+  drawList.sort(byY);
+  for(const e of drawList){
+    const o = e.o;
+    switch(e.kind){
+      case DRAW_TREE:    drawProp(o); break;
+      case DRAW_DECO:    drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, o.big?9:4), o.x, o.y, o.scale); break;
+      case DRAW_CRITTER: drawShadowEllipse(o.x, o.y+2, 8);
+                         drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, (o.vx||o.vy) ? 7 : 3), o.x, o.y+4, 1, o.flip); break;
+      case DRAW_CORPSE:  drawCorpse(o); break;
+      case DRAW_MON:     drawMon(o); break;
+      default:           drawPlayer();
+    }
   }
-  for(const c of corpses){
-    if(!vis(c.x, c.y)) continue;
-    drawables.push({y:c.y - 1, draw:()=>drawCorpse(c)});
-  }
-  for(const m of monsters) if(!m.dead && vis(m.x, m.y)) drawables.push({y:m.y, draw:()=>drawMon(m)});
-  drawables.push({y:player.y, draw:drawPlayer});
-  drawables.sort((a,b)=>a.y - b.y);
-  for(const d of drawables) d.draw();
 
   // --- Touch: Zauber-Preview + Lock-Marker (World-Space) ---
   if(spellAim.active && spellAim.sp){
@@ -1680,7 +1768,9 @@ function render(){
     ctx.beginPath(); ctx.arc(joy.baseX + jdx/jlen*jcl, joy.baseY + jdy/jlen*jcl, 24, 0, Math.PI*2); ctx.fill();
     ctx.globalAlpha = 1;
   }
-  renderMinimap(); updateHUD();
+  // Minimap braucht keine 60 Hz — alle 4 Frames reicht optisch und spart spürbar.
+  if((frameNo++ & 3) === 0) renderMinimap();
+  updateHUD();
 }
 
 function drawShadowEllipse(x, y, rx){
@@ -1728,13 +1818,13 @@ function drawPlayer(){
   ctx.save();
   ctx.translate(player.x, player.y + 11);
   ctx.scale(PLAYER_SC * (player.faceLeft ? -1 : 1), PLAYER_SC);
-  if(player.hurtT > 0) ctx.filter = 'brightness(2.6) sepia(1)';
-  else if(armorTier > 0){
+  const hurt = player.hurtT > 0;
+  if(!hurt && armorTier > 0){
     ctx.shadowColor = armorTier>=3 ? '#f4d97a' : armorTier===2 ? '#dfe6f0' : '#c98a4a';
     ctx.shadowBlur = 4 + armorTier*2;
   }
-  drawSpriteAt(key, f);
-  drawSpriteAt(hairKey, f);
+  drawSpriteAt(key, f, hurt ? '#ffb060' : null, 0.8);       // Treffer-Aufblitzen ohne ctx.filter
+  drawSpriteAt(hairKey, f, hurt ? '#ffb060' : null, 0.8);
   ctx.restore();
 
   // Schwebende Waffe neben dem Helden
@@ -1829,10 +1919,12 @@ function drawMon(m){
   ctx.save();
   ctx.translate(m.x, m.y + m.r*0.7 + bob);
   ctx.scale(sc * (d.scx||1) * (m.facingLeft ? -1 : 1), sc);
-  if(m.flash > 0) ctx.filter = 'brightness(4)';
   if(d.alpha) ctx.globalAlpha = d.alpha;
   if(d.glow){ ctx.shadowColor = d.glow; ctx.shadowBlur = 20; }
-  drawSpriteAt(key, animFrame(key, m.animT, fps, loop), d.tint, d.tintA);
+  // Trefferblitz als gecachte weiße Tint-Kopie statt ctx.filter — der Filterpfad
+  // kostet pro Draw ein eigenes Compositing und trifft bei Cleave dutzende Mobs.
+  if(m.flash > 0) drawSpriteAt(key, animFrame(key, m.animT, fps, loop), '#ffffff', 0.72);
+  else            drawSpriteAt(key, animFrame(key, m.animT, fps, loop), d.tint, d.tintA);
   ctx.restore();
 
   if(d.boss){   // Boss lodert
@@ -1849,15 +1941,17 @@ function drawMon(m){
   }
 }
 
+function bakeMinimap(){
+  const c = miniBg.getContext('2d');
+  if(assetsReady){ c.imageSmoothingEnabled = true; c.drawImage(floorCanvas, 0, 0, 128, 128); }
+  else { c.fillStyle = currentLevel === 1 ? '#3fa04a' : '#1e0c29'; c.fillRect(0,0,128,128); }
+}
+
+let miniCtx = null;
 function renderMinimap(){
-  const mctx = document.getElementById('minimap').getContext('2d');
-  if(assetsReady){                       // echte Karte statt Farbfläche
-    mctx.imageSmoothingEnabled = true;
-    mctx.drawImage(floorCanvas, 0, 0, 128, 128);
-  } else {
-    mctx.fillStyle = currentLevel === 1 ? '#3fa04a' : '#1e0c29';
-    mctx.fillRect(0,0,128,128);
-  }
+  if(!miniCtx){ miniCtx = el('minimap').getContext('2d'); miniCtx.imageSmoothingEnabled = false; }
+  const mctx = miniCtx;
+  mctx.drawImage(miniBg, 0, 0);
   const scale = 128 / MW;
   mctx.fillStyle = 'rgba(255,80,80,.85)';
   for(const m of monsters) if(!m.dead) mctx.fillRect((m.x/TS)*scale - 1, (m.y/TS)*scale - 1, 2, 2);
@@ -1865,41 +1959,40 @@ function renderMinimap(){
   if(portal){ mctx.fillStyle = '#ff00ff'; mctx.fillRect((portal.x/TS)*scale - 2, (portal.y/TS)*scale - 2, 4, 4); }
 }
 
+const ULT_SPELL = SPELLS.find(s => s.ultimate);
+
 function updateHUD(){
-  document.getElementById('hpFill').style.height = Math.max(0, (player.hp / derived.maxHp) * 100) + '%';
-  document.getElementById('hpTxt').innerText = Math.ceil(player.hp) + ' / ' + derived.maxHp;
-  document.getElementById('manaFill').style.height = Math.max(0, (player.mana / derived.maxMana) * 100) + '%';
-  document.getElementById('manaTxt').innerText = Math.ceil(player.mana) + ' / ' + derived.maxMana;
-  document.getElementById('potCount').innerText = player.potions;
-  document.getElementById('goldTxt').innerText = '💰 ' + player.gold;
-  document.getElementById('lvlTxt').innerText = 'Stufe ' + player.level;
-  document.getElementById('skillBadge').style.display = player.skillPoints > 0 ? 'inline' : 'none';
-  document.getElementById('spBadge').style.display = player.spellPoints > 0 ? 'inline' : 'none';
+  setStyle('hpFill', 'height', Math.max(0, (player.hp / derived.maxHp) * 100) + '%');
+  setTxt('hpTxt', Math.ceil(player.hp) + ' / ' + derived.maxHp);
+  setStyle('manaFill', 'height', Math.max(0, (player.mana / derived.maxMana) * 100) + '%');
+  setTxt('manaTxt', Math.ceil(player.mana) + ' / ' + derived.maxMana);
+  setTxt('potCount', player.potions);
+  setTxt('goldTxt', '💰 ' + player.gold);
+  setTxt('lvlTxt', 'Stufe ' + player.level);
+  setStyle('skillBadge', 'display', player.skillPoints > 0 ? 'inline' : 'none');
+  setStyle('spBadge', 'display', player.spellPoints > 0 ? 'inline' : 'none');
 
   // Aktiver Zauber
-  const spellBtn = document.getElementById('spellBtn');
   const as = SPELLS.find(s=>s.id===activeSpellId);
   if(as && player.spellsKnown[as.id]){
-    spellBtn.classList.remove('disabled');
-    document.getElementById('spellBtnTxt').innerHTML = `${as.icon} <span style="font-size:9px">${as.mana}⦿</span>`;
-    spellBtn.title = `${as.name} (E) — ${as.mana} Mana`;
+    el('spellBtn').classList.remove('disabled');
+    setHTML('spellBtnTxt', `${as.icon} <span style="font-size:9px">${as.mana}⦿</span>`);
+    el('spellBtn').title = `${as.name} (E) — ${as.mana} Mana`;
   } else {
-    spellBtn.classList.add('disabled');
-    document.getElementById('spellBtnTxt').innerText = '— (E)';
+    el('spellBtn').classList.add('disabled');
+    setHTML('spellBtnTxt', '— (E)');
   }
   // Ultimate
-  const ultBtn = document.getElementById('ultBtn');
-  const ult = SPELLS.find(s=>s.ultimate);
-  if(player.spellsKnown[ult.id]){
-    ultBtn.classList.remove('disabled');
-    document.getElementById('ultBtnTxt').innerHTML = `${ult.icon} Ult (R)`;
-    ultBtn.title = `${ult.name} (R) — ${ult.mana} Mana`;
+  if(player.spellsKnown[ULT_SPELL.id]){
+    el('ultBtn').classList.remove('disabled');
+    setHTML('ultBtnTxt', `${ULT_SPELL.icon} Ult (R)`);
+    el('ultBtn').title = `${ULT_SPELL.name} (R) — ${ULT_SPELL.mana} Mana`;
   } else {
-    ultBtn.classList.add('disabled');
-    document.getElementById('ultBtnTxt').innerText = '🔒 Ult (R)';
+    el('ultBtn').classList.add('disabled');
+    setHTML('ultBtnTxt', '🔒 Ult (R)');
   }
-  document.getElementById('xpFill').style.width = Math.min(100, (player.xp / (35 * Math.pow(player.level, 1.35))) * 100) + '%';
-  if(touchMode) document.getElementById('attackBtn').classList.toggle('locked', !!lockedTarget);
+  setStyle('xpFill', 'width', Math.min(100, (player.xp / (35 * Math.pow(player.level, 1.35))) * 100) + '%');
+  if(touchMode) el('attackBtn').classList.toggle('locked', !!lockedTarget);
 }
 
 function showStartScreen(){
@@ -1933,12 +2026,16 @@ function showDead(){
 
 function respawnPlayer(){
   currentLevel = 1; schattenlandActive = false; shadowKills = 0; boss = null; portal = null;
-  monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0; particles.length = 0;
+  monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
+  particles.length = 0; corpses.length = 0; floaters.length = 0;
   player.x = SPAWN.x; player.y = SPAWN.y; player.dead = false; player.hurtT = 0;
+  player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
   player.hp = Math.max(1, Math.round(derived.maxHp * 0.5)); player.mana = derived.maxMana;
-  document.getElementById('bossbar').style.display = 'none';
+  resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;   // Eingaben, die den Tod überlebt haben
+  attackTouch = null; lockedTarget = null;
+  el('bossbar').style.display = 'none';
   initFloorGraphics(); placeMonsters();
-  document.getElementById('overlay').style.display = 'none';
+  el('overlay').style.display = 'none';
   state = 'play'; updateHUD();
 }
 
@@ -1958,11 +2055,14 @@ window.addEventListener('keydown', e => {
   initAudio(); const k = e.key.toLowerCase();
   if(k === 'w') keysDown.w = true; if(k === 'a') keysDown.a = true;
   if(k === 's') keysDown.s = true; if(k === 'd') keysDown.d = true;
-  if(e.code === 'Space'){ e.preventDefault(); if(state==='play') tryAttack(Math.atan2(mouse.wy - player.y, mouse.wx - player.x)); }
+  if(e.code === 'Space'){ e.preventDefault(); if(state==='play') tryAttack(aimAngle()); }
   if(k === 'q' || k === '1') drinkPotion();
   if(k === 'e') castActiveSpell();
   if(k === 'r') castUltimate();
   if(k === 'i') toggleInventory(); if(k === 't') toggleSpellTree(); if(k === 'm') toggleMusic();
+  if(k === 'escape'){                          // Panels schließen ohne Tastenraten
+    if(invOpen) toggleInventory(); else if(spellTreeOpen) toggleSpellTree();
+  }
 });
 
 window.addEventListener('keyup', e => {
@@ -1975,11 +2075,12 @@ canvas.addEventListener('mousemove', e => {
   const rect = canvas.getBoundingClientRect();
   mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
   mouse.wx = mouse.x + cam.x; mouse.wy = mouse.y + cam.y;
+  mouse.moved = true;
 });
 
 canvas.addEventListener('mousedown', e => {
   initAudio(); if(state !== 'play' || e.button !== 0) return;
-  tryAttack(Math.atan2(mouse.wy - player.y, mouse.wx - player.x));
+  tryAttack(aimAngle());
 });
 
 // --- TOUCH-STEUERUNG (mobil) ---
@@ -1995,6 +2096,7 @@ function updateJoyVec(){
 function setAimFromScreen(sx, sy){                 // spiegelt den mousemove-Handler
   mouse.x = sx; mouse.y = sy;
   mouse.wx = sx + cam.x; mouse.wy = sy + cam.y;
+  mouse.moved = true;
 }
 
 function touchAttack(sx, sy){
@@ -2081,11 +2183,18 @@ function applySpellAim(cx, cy){
   spellBtnEl.classList.toggle('cancelHot', spellAim.cancel);
 }
 
-spellBtnEl.addEventListener('touchmove', e => {
+// Bewegung/Ende hängen bewusst am window, nicht am Button: wird das Touch-Target
+// mitten in der Geste aus dem DOM genommen, bubbeln die Folge-Events nicht mehr zum
+// Button — der Drag bliebe für immer offen (Fadenkreuz klebt, Zaubern tot).
+window.addEventListener('touchmove', e => {
   if(sDrag.id === null) return;
-  e.preventDefault();
-  for(const t of e.changedTouches) if(t.identifier === sDrag.id) applySpellAim(t.clientX, t.clientY);
+  for(const t of e.changedTouches) if(t.identifier === sDrag.id){ e.preventDefault(); applySpellAim(t.clientX, t.clientY); }
 }, {passive:false});
+
+function resetSpellDrag(){
+  sDrag.id = null; spellAim.active = false; spellAim.sp = null; spellAim.cancel = false;
+  spellBtnEl.classList.remove('aiming','cancelHot');
+}
 
 function spellDragEnd(e){
   if(sDrag.id === null) return;
@@ -2095,24 +2204,22 @@ function spellDragEnd(e){
   e.preventDefault();
   const sp = spellAim.sp;
   const isTap = sDrag.maxD < TAP_PX && (performance.now() - sDrag.t0) < TAP_MS;
+  let cast = null;
   if(e.type !== 'touchcancel' && sp){
-    if(isTap){                                       // Quick-Cast: Priority-Autoaim statt stale mouse.wx/wy
+    if(isTap){                                       // Quick-Cast: Priority-Autoaim statt Zielpunkt vom Vorframe
       const tgt = pickTarget(targetPriority, 300);
-      if(tgt){ mouse.wx = tgt.x; mouse.wy = tgt.y; }
+      if(tgt) cast = {wx:tgt.x, wy:tgt.y};
       else { const rc = Math.min(200, spellReach(sp));
-             mouse.wx = player.x + Math.cos(player.dir)*rc; mouse.wy = player.y + Math.sin(player.dir)*rc; }
-      castSpell(sp);
+             cast = {wx: player.x + Math.cos(player.dir)*rc, wy: player.y + Math.sin(player.dir)*rc}; }
     } else if(!spellAim.cancel){                     // Drag-Release = Cast auf Zielpunkt
-      const w = spellAimWorld();
-      mouse.wx = w.x; mouse.wy = w.y;
-      castSpell(sp);                                 // liest mouse.wx/wy — null Refactor
-    }                                                // Cancel: castSpell wird nie gerufen -> kein Mana, kein CD
+      const w = spellAimWorld(); cast = {wx:w.x, wy:w.y};
+    }                                                // Cancel: cast bleibt null -> kein Mana, kein CD
   }
-  sDrag.id = null; spellAim.active = false; spellAim.sp = null; spellAim.cancel = false;
-  spellBtnEl.classList.remove('aiming','cancelHot');
+  resetSpellDrag();                                  // ZUERST aufräumen: wirft castSpell, bleibt der Drag sonst offen
+  if(cast) castSpell(sp, cast);
 }
-spellBtnEl.addEventListener('touchend', spellDragEnd, {passive:false});
-spellBtnEl.addEventListener('touchcancel', spellDragEnd, {passive:false});
+window.addEventListener('touchend', spellDragEnd, {passive:false});
+window.addEventListener('touchcancel', spellDragEnd, {passive:false});
 
 // ===== Touch: Attack-Button (Tap/Hold = Angriff, Drag = Target-Lock) =====
 const attackBtnEl = document.getElementById('attackBtn');
@@ -2134,12 +2241,12 @@ attackBtnEl.addEventListener('touchstart', e => {
   attackBtnFire();                                   // erster Schlag sofort (tryAttack ist CD-gated)
 }, {passive:false});
 
-attackBtnEl.addEventListener('touchmove', e => {
+window.addEventListener('touchmove', e => {
   if(aDrag.id === null) return;
-  e.preventDefault();
   const rect = canvas.getBoundingClientRect();
   for(const t of e.changedTouches){
     if(t.identifier !== aDrag.id) continue;
+    e.preventDefault();
     aDrag.maxD = Math.max(aDrag.maxD, Math.hypot(t.clientX - aDrag.sx, t.clientY - aDrag.sy));
     if(aDrag.maxD > TAP_PX){                         // Drag -> Fadenkreuz, Dauerfeuer pausiert
       atkBtnHeld = false;
@@ -2167,8 +2274,26 @@ function attackDragEnd(e){
   }
   aDrag.id = null; atkBtnHeld = false; lockAim.active = false;
 }
-attackBtnEl.addEventListener('touchend', attackDragEnd, {passive:false});
-attackBtnEl.addEventListener('touchcancel', attackDragEnd, {passive:false});
+window.addEventListener('touchend', attackDragEnd, {passive:false});
+window.addEventListener('touchcancel', attackDragEnd, {passive:false});
+
+// Watchdog: sollte trotz allem ein Finger "verloren" gehen (iOS-Gestenübernahme,
+// Tab-Wechsel, entferntes Target), räumen wir auf, sobald die ID nicht mehr lebt.
+const liveTouches = new Set();
+function trackTouches(e){
+  if(e.type === 'touchstart'){ for(const t of e.changedTouches) liveTouches.add(t.identifier); }
+  else { for(const t of e.changedTouches) liveTouches.delete(t.identifier); }
+}
+for(const ev of ['touchstart','touchend','touchcancel'])
+  window.addEventListener(ev, trackTouches, {passive:true, capture:true});
+
+function touchWatchdog(){
+  if(sDrag.id !== null && !liveTouches.has(sDrag.id)) resetSpellDrag();
+  if(aDrag.id !== null && !liveTouches.has(aDrag.id)){ aDrag.id = null; atkBtnHeld = false; lockAim.active = false; }
+  if(attackTouch && !liveTouches.has(attackTouch.id)) attackTouch = null;
+  if(joy.id !== null && !liveTouches.has(joy.id)){ joy.id = null; touchMove.active = false; touchMove.x = 0; touchMove.y = 0; }
+}
+document.addEventListener('visibilitychange', () => { if(document.hidden){ liveTouches.clear(); touchWatchdog(); } });
 
 // ===== Priority-Toggle =====
 function refreshPrioBtn(){
@@ -2184,7 +2309,7 @@ refreshPrioBtn();
 let lastT = performance.now();
 function loop(now){
   const dt = Math.min(0.1, (now - lastT) / 1000);
-  lastT = now; update(dt); render(); requestAnimationFrame(loop);
+  lastT = now; touchWatchdog(); update(dt); render(); requestAnimationFrame(loop);
 }
 
 // Ladebildschirm, bis alle Sprite-Sheets da sind — erst dann Boden backen und starten.
