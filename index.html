@@ -195,7 +195,18 @@
   /* Rundverlauf ist für eine Kugel gemalt, in der Röhre wirkt ein Querverlauf */
   body.touch #hpFill{background:linear-gradient(90deg,#7a0a0a,#ff6a5a 45%,#b31414);}
   body.touch #manaFill{background:linear-gradient(90deg,#0a207a,#5a9eff 45%,#144cb3);}
-  body.touch .orbTxt{writing-mode:vertical-rl;font-size:10px;letter-spacing:1px;}
+  /* Statt Zahlen zeigen die Röhren Segmente. Die Anzahl wächst mit der Stufe
+     (siehe segmentZahl() im Skript), die Kachelhöhe setzt updateHUD über
+     background-size. Auf dem Desktop bleiben die Kugeln bei ihren Zahlen. */
+  .orbTicks{position:absolute;inset:0;pointer-events:none;display:none;}
+  body.touch .orbTicks{
+    display:block;
+    /* Gravur: dunkle Kerbe mit heller Oberkante — liest sich auf der Füllung
+       genauso wie auf dem leeren, fast schwarzen Teil der Röhre. */
+    background-image:linear-gradient(to top, rgba(0,0,0,.85) 0 3px, rgba(232,217,168,.45) 3px 4px, transparent 4px);
+    background-repeat:repeat-y;background-position:bottom;background-size:100% 100%;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);border-radius:12px;}
+  body.touch .orbTxt{display:none;}
   body.touch #spBadge, body.touch #skillBadge{
     position:absolute;top:-2px;right:-2px;font-size:15px;line-height:1;text-shadow:0 1px 3px #000;}
   body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
@@ -298,7 +309,7 @@
 <canvas id="minimap" width="128" height="128"></canvas>
 <div id="bossbar"><span id="bossname">Schattenfürst Abaddon</span><div id="bossback"><div id="bossfill"></div></div></div>
 <div id="hud">
-  <div class="orbWrap hpOrb"><div id="hpFill"></div><div class="orbTxt" id="hpTxt">60</div></div>
+  <div class="orbWrap hpOrb"><div id="hpFill"></div><div class="orbTicks" id="hpTicks"></div><div class="orbTxt" id="hpTxt">60</div></div>
   <div id="midHud">
     <div id="xpBar"><div id="xpFill"></div></div>
     <div id="beltRow">
@@ -312,7 +323,7 @@
       <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯<span class="bl" id="prioTxt">Nah</span></div>
     </div>
   </div>
-  <div class="orbWrap manaOrb"><div id="manaFill"></div><div class="orbTxt" id="manaTxt">40</div></div>
+  <div class="orbWrap manaOrb"><div id="manaFill"></div><div class="orbTicks" id="manaTicks"></div><div class="orbTxt" id="manaTxt">40</div></div>
   <div id="statCol">
     <span id="lvlTxt">Stufe 1</span>
     <span id="goldTxt">💰 0</span>
@@ -3565,11 +3576,19 @@ function renderMinimap(){
 
 const ULT_SPELL = SPELLS.find(s => s.ultimate);
 
+// Segmente der mobilen Röhren: eins zu Beginn, ab jeder vollen Stufenschwelle
+// eins dazu, bei fünf ist Schluss. Leben zählt in Fünfer-, Mana in Siebenerschritten.
+const HP_SEG_STUFE = 5, MANA_SEG_STUFE = 7, SEG_MAX = 5;
+const segmentZahl = (schritt)=> Math.min(SEG_MAX, 1 + Math.floor(player.level / schritt));
+
 function updateHUD(){
   setStyle('hpFill', 'height', Math.max(0, (player.hp / derived.maxHp) * 100) + '%');
   setTxt('hpTxt', Math.ceil(player.hp) + ' / ' + derived.maxHp);
   setStyle('manaFill', 'height', Math.max(0, (player.mana / derived.maxMana) * 100) + '%');
   setTxt('manaTxt', Math.ceil(player.mana) + ' / ' + derived.maxMana);
+  // Kachelhöhe = eine Segmentbreite; der Verlauf zeichnet die Trennlinie selbst
+  setStyle('hpTicks', 'backgroundSize', '100% ' + (100 / segmentZahl(HP_SEG_STUFE)) + '%');
+  setStyle('manaTicks', 'backgroundSize', '100% ' + (100 / segmentZahl(MANA_SEG_STUFE)) + '%');
   setTxt('potCount', player.potions);
   setTxt('goldTxt', '💰 ' + player.gold);
   setTxt('lvlTxt', 'Stufe ' + player.level);
