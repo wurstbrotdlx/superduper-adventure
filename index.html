@@ -117,6 +117,14 @@
   #kladdeBox .klEmpty{color:#9a8a5f;font-style:italic;}
   #zutBox h4{margin:10px 0 6px;color:#f4d97a;font-size:12px;}
 
+  /* Kessel sitzt oben im Inventar, nicht mehr im Gürtel. Der Kessel ist das
+     Herzstück der Ausrüstung, also steht er über den Skills. */
+  #kesselBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:46px;margin-bottom:10px;
+    border:2px solid #6aff8f;border-radius:6px;background:#132014;color:#e8d9a8;font-weight:bold;font-size:14px;cursor:pointer;}
+  #kesselBtn:hover{background:#1b2e1d;border-color:#9dffb8;}
+  #kesselHint{color:#6aff8f;font-size:11px;font-weight:normal;}
+  #kesselBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
+
   /* Ton-Steuerung sitzt unten im Inventar, nicht mehr im Gürtel */
   #musikBox{margin-top:12px;padding-top:8px;border-top:1px solid #4c4030;}
   #musikBox h4{margin:0 0 6px;color:#f4d97a;font-size:12px;}
@@ -164,6 +172,15 @@
      und würde die beiden Neuzugänge sonst überdecken. */
   body.touch #aktionBtn, body.touch #kamExitBtn{order:-1;}
   body.touch #beltRow{justify-content:flex-start;}   /* linksbündig, damit keine Zeile unter dem Fächer endet */
+  /* Auf Touch tragen die Menü-Knöpfe nur ihr Symbol: rund statt beschriftet passt
+     die doppelte Anzahl in eine Zeile. Der Kontext-Knopf behält seinen Text, der
+     Text ist dort die eigentliche Information (Hebel / Schloss / Öffnen). */
+  body.touch .beltSlot .bl{display:none;}
+  body.touch #spellsBtn, body.touch #invBtn, body.touch #kamExitBtn, body.touch #prioBtn{
+    width:52px;height:52px;min-width:0;padding:0;border-radius:50%;font-size:22px;gap:0;position:relative;}
+  body.touch #aktionBtn{height:52px;border-radius:26px;padding:0 14px;}   /* gleiche Höhe wie die runden */
+  body.touch #spBadge, body.touch #skillBadge{
+    position:absolute;top:-2px;right:-2px;font-size:15px;line-height:1;text-shadow:0 1px 3px #000;}
   body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
   body.touch #spellBtn.cancelHot{border-color:#ff5a5a;background:#2a0d0d;}
   body.touch #spellBtn.cancelHot #spellBtnTxt::after{content:' ✖';color:#ff5a5a;}
@@ -271,12 +288,11 @@
       <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)">🧪 <span id="potCount">0</span></div>
       <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:11px;">— (E)</span></div>
       <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:11px;">🔒 Ult (R)</span></div>
-      <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨ Zauber <span id="spBadge" style="color:#c77dff;display:none;">(★)</span></div>
-      <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒 Inv <span id="skillBadge" style="color:#f4d97a;display:none;">(★)</span></div>
-      <div class="beltSlot" id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel</div>
+      <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨<span class="bl">Zauber</span><span id="spBadge" style="color:#c77dff;display:none;">★</span></div>
+      <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒<span class="bl">Inv</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span></div>
       <div class="beltSlot" id="aktionBtn" title="Benutzen (F)" style="display:none;">🖐️ <span id="aktionTxt">Benutzen</span></div>
-      <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;">🏳️ Abbruch</div>
-      <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯 <span id="prioTxt">Nah</span></div>
+      <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;">🏳️<span class="bl">Abbruch</span></div>
+      <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯<span class="bl" id="prioTxt">Nah</span></div>
     </div>
   </div>
   <div class="orbWrap"><div id="manaFill"></div><div class="orbTxt" id="manaTxt">40</div></div>
@@ -289,6 +305,7 @@
 
 <div id="inv">
   <h2>INVENTAR & SKILLS <span style="cursor:pointer" id="closeInvBtn">✖</span></h2>
+  <div id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
   <div id="skillBox">
     <h4>SKILL PUNKTE: <span id="spCount">0</span></h4>
     <div class="skillRow"><span>💪 Stärke (+Dmg): <span id="skStr">0</span></span> <button class="skillBtn" id="btnStr">+</button></div>
@@ -2783,7 +2800,11 @@ function switchKesselTab(t){
 function toggleKessel(){
   kesselOpen = !kesselOpen;
   el('kessel').style.display = kesselOpen ? 'block' : 'none';
-  if(kesselOpen){ el('kesselResult').style.display = 'none'; switchKesselTab(kesselTab); }
+  if(kesselOpen){
+    if(invOpen) toggleInventory();          // der Knopf sitzt im Inventar: nicht zwei Panels stapeln
+    el('kesselResult').style.display = 'none';
+    switchKesselTab(kesselTab);
+  }
   else clearPot();
 }
 
