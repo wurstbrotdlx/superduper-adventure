@@ -83,6 +83,40 @@
   #tooltip .aff{color:#8fb0ff;}
   #tooltip .hint{margin-top:8px;font-size:10px;color:#9a8a5f;font-style:italic;}
 
+  /* --- Kessel & Kladde (K) --- */
+  #kessel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 32px));max-height:86vh;overflow-y:auto;z-index:21;display:none;
+       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
+  #kessel h2{margin:0 0 2px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #kesselSub{font-size:10px;color:#9a8a5f;margin-bottom:10px;font-style:italic;line-height:1.4;}
+  #kesselTabs{display:flex;gap:6px;margin-bottom:10px;}
+  .kTab{flex:1;text-align:center;padding:8px 4px;border:2px solid #4c4030;border-radius:6px;background:#141009;color:#c9b98a;
+        cursor:pointer;font-size:12px;font-weight:bold;min-height:40px;display:flex;align-items:center;justify-content:center;}
+  .kTab.on{border-color:#c9a227;background:#241c10;color:#f4d97a;}
+  #potRow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+  .potSlot{height:64px;border:2px dashed #6b5a3a;border-radius:6px;background:#17130d;display:flex;flex-direction:column;
+           align-items:center;justify-content:center;cursor:pointer;padding:3px;overflow:hidden;}
+  .potSlot.full{border-style:solid;}
+  .potSlot .pi{font-size:18px;line-height:1.1;}
+  .potSlot .pn{font-size:8px;line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
+  #brewBtn{width:100%;font-family:inherit;font-weight:bold;font-size:15px;padding:11px;cursor:pointer;color:#1a1206;
+           background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;margin-bottom:10px;}
+  #brewBtn:disabled{background:#4a3e20;color:#7a6e50;cursor:default;}
+  #kesselResult{display:none;border:2px solid #6b5a3a;border-radius:6px;background:#1a140b;padding:8px 10px;margin-bottom:10px;font-size:12px;line-height:1.5;}
+  #kesselResult .rname{font-weight:bold;font-size:13px;margin-bottom:3px;}
+  #zutGrid,#invZutGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .zutTile{position:relative;min-height:54px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;
+           flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:3px 2px;overflow:hidden;}
+  .zutTile:hover{background:#241c10;}
+  .zutTile .zi{font-size:17px;line-height:1;}
+  .zutTile .zn{font-size:7px;line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
+  .zutTile .zc{position:absolute;top:1px;right:3px;font-size:9px;font-weight:bold;color:#f4d97a;text-shadow:0 1px 2px #000;}
+  .zutEmpty{grid-column:1 / -1;font-size:11px;color:#9a8a5f;font-style:italic;padding:6px 2px;}
+  #kladdeBox{font-size:12px;line-height:1.6;}
+  #kladdeBox .kl{margin-bottom:7px;padding-left:14px;text-indent:-14px;}
+  #kladdeBox .klHead{color:#f4d97a;font-weight:bold;font-size:11px;letter-spacing:1px;margin:10px 0 5px;}
+  #kladdeBox .klEmpty{color:#9a8a5f;font-style:italic;}
+  #zutBox h4{margin:10px 0 6px;color:#f4d97a;font-size:12px;}
+
   #overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(5,3,10,.88);}
   #overlay .panel{text-align:center;color:#e8d9a8;max-width:580px;padding:30px;}
   #overlay h1{font-size:26px;margin:0 0 10px;color:#f4d97a;letter-spacing:2px;text-shadow:0 3px 0 #7a5a10,0 6px 18px #000;text-transform:uppercase;}
@@ -145,13 +179,27 @@
       background:rgba(20,14,24,.93);
     }
 
+    /* Kessel bleibt zentriert breit, aber top-verankert wie die anderen Panels */
+    #kessel{
+      top:56px; left:8px; transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px);
+      max-height:calc(100vh - 341px);
+      max-height:max(240px, calc(100dvh - 341px));
+      background:rgba(20,14,24,.93);
+    }
+    #zutGrid, #invZutGrid{grid-template-columns:repeat(3,1fr);}
+    .zutTile .zn{font-size:9px;}
+    .zutTile .zi{font-size:19px;}
+    .potSlot .pn{font-size:9px;}
+    .kTab{font-size:13px;}
+
     /* --- Close-Buttons: 44px Tap-Target --- */
-    #closeInvBtn, #closeSpellBtn{
+    #closeInvBtn, #closeSpellBtn, #closeKesselBtn{
       display:flex; align-items:center; justify-content:center;
       width:44px; height:44px; margin:-13px -14px -13px 0;
       font-size:20px; border-radius:8px; flex:0 0 auto;
     }
-    #closeInvBtn:active, #closeSpellBtn:active{background:rgba(201,162,39,.25);}
+    #closeInvBtn:active, #closeSpellBtn:active, #closeKesselBtn:active{background:rgba(201,162,39,.25);}
 
     /* --- Zauberbaum: eine Spalte, horizontale Nodes --- */
     #spellCols{grid-template-columns:1fr; gap:0;}
@@ -194,6 +242,7 @@
       <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:11px;">🔒 Ult (R)</span></div>
       <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨ Zauber <span id="spBadge" style="color:#c77dff;display:none;">(★)</span></div>
       <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒 Inv <span id="skillBadge" style="color:#f4d97a;display:none;">(★)</span></div>
+      <div class="beltSlot" id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel</div>
       <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
       <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke" style="pointer-events:auto;width:80px;accent-color:#c9a227;">
       <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯 <span id="prioTxt">Nah</span></div>
@@ -224,8 +273,29 @@
     <div class="eqSlot" id="eqWeapon"><span class="lbl">Waffe</span></div>
     <div class="eqSlot" id="eqArmor"><span class="lbl">Rüstung</span></div>
     <div class="eqSlot" id="eqShield"><span class="lbl">Schild</span></div>
+    <div class="eqSlot" id="eqBoots"><span class="lbl">Stiefel</span></div>
   </div>
   <div id="bagGrid"></div>
+  <div id="zutBox" style="display:none;">
+    <h4>🧺 ZUTATEN <span id="zutTotal" style="color:#9a8a5f;font-weight:normal;"></span></h4>
+    <div id="invZutGrid"></div>
+  </div>
+</div>
+
+<div id="kessel">
+  <h2>🍲 KESSEL <span style="cursor:pointer" id="closeKesselBtn">✖</span></h2>
+  <div id="kesselSub">Amtlich zugelassener Feldkessel. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
+  <div id="kesselTabs">
+    <div class="kTab on" id="tabKessel">🍲 Kochen</div>
+    <div class="kTab" id="tabKladde">📓 Kladde</div>
+  </div>
+  <div id="kesselPane">
+    <div id="potRow"></div>
+    <button id="brewBtn" disabled>KOCHEN</button>
+    <div id="kesselResult"></div>
+    <div id="zutGrid"></div>
+  </div>
+  <div id="kladdePane" style="display:none;"><div id="kladdeBox"></div></div>
 </div>
 
 <div id="spellTree">
@@ -526,7 +596,8 @@ const sfx = {
   shoot: ()=> playTone(500, 'triangle', 0.06, 0.3, 0.01, 150),
   magic: ()=> playTone(800, 'sine', 0.25, 0.5, 0.01, 300),
   zap:   ()=> playTone(1000, 'sawtooth', 0.15, 0.4, 0.01, 200),
-  warp:  ()=> { playTone(150, 'sawtooth', 0.6, 1.0, 0.01, 800); setTimeout(()=>playTone(800, 'sine', 0.8, 1.0, 0.01, 200), 200); }
+  warp:  ()=> { playTone(150, 'sawtooth', 0.6, 1.0, 0.01, 800); setTimeout(()=>playTone(800, 'sine', 0.8, 1.0, 0.01, 200), 200); },
+  brew:  ()=> { playTone(170, 'triangle', 0.3, 0.45, 0.01, 90); setTimeout(()=>playTone(520, 'sine', 0.3, 0.4, 0.01, 980), 170); }
 };
 
 const G_GRASS=0, G_PATH=1, G_WATER=2, G_TREE=3, G_ROCK=4, G_TALL=5, G_SAND=6, G_SNOW=7, G_ICE=8, G_CACTUS=9, G_ICE_TREE=10;
@@ -541,6 +612,10 @@ function circleWalkable(x,y,r){ return walkPx(x-r,y-r)&&walkPx(x+r,y-r)&&walkPx(
 
 const SPAWN = {x:12.5*TS, y:40.5*TS};
 const ARENA = {x:68, y:40};
+// Kessel am Dorfanger neben dem Startpunkt. Reine Landmarke: bedienbar ist er
+// über die Taste K, damit niemand mit vollem Beutel zurücklaufen muss.
+const KESSEL_T = {x:15, y:41};
+const KESSEL = {x:KESSEL_T.x*TS + TS/2, y:KESSEL_T.y*TS + TS - 4};
 let trees = [];
 const decos = [];      // Pilze, Windmühle — reine Optik, keine Kollision
 const critters = [];   // Hühner/Schafe/Kühe, wandern im Grasland
@@ -654,6 +729,9 @@ function genMap(){
       }
     }
   }
+  // Dorfanger um den Kessel freiräumen, sonst wächst ihm ein Baum in den Topf
+  for(let y=KESSEL_T.y-2; y<=KESSEL_T.y+1; y++)
+    for(let x=KESSEL_T.x-2; x<=KESSEL_T.x+2; x++) setT(x,y,G_PATH);
   for(let i=0;i<MW;i++){ for(let b=0;b<2;b++){ setT(i,b,G_TREE); setT(i,MH-1-b,G_TREE); setT(b,i,G_TREE); setT(MW-1-b,i,G_TREE); } }
   for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) {
     const t = T(x,y);
@@ -700,6 +778,8 @@ const RARITY = [
   {key:3, name:'Episch',      col:'#c77dff'},
   {key:4, name:'Einzigartig', col:'#ff9f4a'},
 ];
+// Altbestand: Ausrüstung, die es vor der Kessel-Umstellung gab. Fällt nicht mehr
+// als Beute an, bleibt aber tragbar (Startwaffe, alte Fundstücke).
 const BASES = [
   {t:'weapon', mode:'dagger',    name:'Dolch',          tier:1, dmg:[3,6],   aps:1.8,  icon:'🗡️', iconFrame:'dagger'},
   {t:'weapon', mode:'sword',     name:'Kurzschwert',    tier:1, dmg:[5,9],   aps:1.3,  icon:'🗡️', iconFrame:'sword'},
@@ -715,26 +795,220 @@ const AFFIXES = [
   {k:'hp',    min:20, max:50, fmt:v=>`+${v} Leben`},
 ];
 
-function rollItem(tier, highRarity){
-  const base = BASES[Math.floor(Math.random()*BASES.length)];
-  let rar;
-  if(highRarity){
-    // Schattenland-Loot: fast immer episch, ganz selten einzigartig
-    rar = Math.random()<0.12 ? 4 : 3;
-  } else {
-    const r = Math.random();
-    rar = r<0.55 ? 0 : (r<0.88 ? 1 : 2);
+// ===========================================================================
+//  ZUTATEN-GRAMMATIK  (Phase 1)
+//
+//  Monster droppen keine fertige Ausrüstung mehr, nur noch Zutaten.
+//  Eine Zutat ist Adjektiv + Substantiv:
+//      Substantiv  <- Monstertyp. Bestimmt den Ausrüstungs-Slot.
+//      Adjektiv    <- beim Drop gewürfelt (Biom + Monster-Seltenheit).
+//                     Bestimmt die Wirkung.
+//  Am Kessel ergeben drei Zutaten ein Ausrüstungsteil:
+//      Slot     = häufigstes Substantiv, bei Gleichstand die seltenste Zutat
+//      Wirkung  = häufigstes Adjektiv; 2x gleich verstärkt, 3x gleich = Unikat
+//      Qualität = Summe der Zutaten-Seltenheiten
+//
+//  Diese Regeln stehen absichtlich NIRGENDS im Spiel. Kein Rezeptbuch, keine
+//  Vorschau. Die Kladde füllt sich nur mit dem, was wirklich beobachtet wurde.
+//  Ablauf-Code liest ausschließlich Felder aus diesen Tabellen und kennt keinen
+//  einzigen Namen; neue Zutaten sind reine Tabellenarbeit.
+// ===========================================================================
+
+const SLOT_DE = {weapon:'Waffe', armor:'Rüstung', shield:'Schild', boots:'Stiefel'};
+// Fugenform für die Kladde: "im Waffen-Slot" statt "im Waffe-Slot"
+const SLOT_FUGE = {weapon:'Waffen', armor:'Rüstungs', shield:'Schild', boots:'Stiefel'};
+
+// Alle 21 Monstertypen aus MONDEF haben genau ein Substantiv.
+//   g    = Genus, nur für die Adjektiv-Endung (klebriger / klebrige / klebriges)
+//   slot = Ausrüstungs-Slot, den dieses Substantiv mitbringt
+//   rar  = Grundseltenheit der Zutat
+const ZUTAT_NOUNS = {
+  // Grasland
+  slime:       {n:'Chuchu-Gallert',    g:'n', slot:'shield', rar:0, icon:'🫧'},
+  goblin:      {n:'Goblin-Zeh',        g:'m', slot:'boots',  rar:0, icon:'🦶'},
+  greenmage:   {n:'Schamanenbart',     g:'m', slot:'weapon', rar:1, icon:'🌿'},
+  // Frostkamm
+  ghost:       {n:'Geisterschleier',   g:'m', slot:'armor',  rar:1, icon:'👻'},
+  frostgolem:  {n:'Frostgolem-Brocken',g:'m', slot:'shield', rar:2, icon:'🧊'},
+  frostmage:   {n:'Schneemagier-Auge', g:'n', slot:'weapon', rar:2, icon:'❄️'},
+  // Aschewüste
+  crab:        {n:'Krabbenschere',     g:'f', slot:'weapon', rar:1, icon:'🦀'},
+  scorpion:    {n:'Skorpionstachel',   g:'m', slot:'weapon', rar:1, icon:'🦂'},
+  sandmage:    {n:'Priesterquaste',    g:'f', slot:'armor',  rar:2, icon:'🏵️'},
+  // Schattenland
+  shadow:      {n:'Schattenfetzen',    g:'m', slot:'armor',  rar:0, icon:'🕸️'},
+  demon:       {n:'Hundszahn',         g:'m', slot:'weapon', rar:1, icon:'🦷'},
+  shadowghost: {n:'Spuknebel',         g:'m', slot:'boots',  rar:1, icon:'💨'},
+  shadowmage:  {n:'Ruferzunge',        g:'f', slot:'weapon', rar:2, icon:'👅'},
+  boss:        {n:'Fürstenkrone',      g:'f', slot:'armor',  rar:4, icon:'👑'},
+  // Kammerwächter (Phase 2 verdrahtet die Roster)
+  mummy:       {n:'Mumienbinde',       g:'f', slot:'armor',  rar:2, icon:'🧻'},
+  golem:       {n:'Golem-Splitter',    g:'m', slot:'shield', rar:3, icon:'🪨'},
+  spider:      {n:'Spinnenbein',       g:'n', slot:'boots',  rar:1, icon:'🕷️'},
+  bat:         {n:'Fledermausflügel',  g:'m', slot:'boots',  rar:1, icon:'🦇'},
+  stalfos:     {n:'Skelettknöchel',    g:'m', slot:'boots',  rar:2, icon:'🦴'},
+  mage:        {n:'Irrlicht-Funke',    g:'m', slot:'weapon', rar:2, icon:'🔹'},
+  bossgeneric: {n:'Schreckensklaue',   g:'f', slot:'shield', rar:4, icon:'🦅'},
+};
+
+// Wirkungen: name = wie die Kladde sie nennt, fx = Aggregat-Schlüssel für die
+// Code-Hooks, satz = Anzeigetext je Stufe (1x / 2x verstärkt / Unikat).
+// In der Anzeige stehen nur ganze Sätze. Gerechnet wird intern.
+const WIRKUNG = {
+  zaeh:         {name:'Verlangsamung', fx:'slow',   unikat:'Amtssiegel der Zähflüssigkeit',
+    satz:['Deine Treffer machen Gegner zäh.', 'Getroffene Gegner werden auffällig schwerfällig.', 'Was du triffst, kommt praktisch nicht mehr vorwärts.']},
+  wucht:        {name:'Wucht', fx:'crit', unikat:'Beschwerdehammer',
+    satz:['Ab und zu triffst du unangemessen hart.', 'Du triffst oft unangemessen hart.', 'Fast jeder Schlag ist eine Zumutung.']},
+  zorn:         {name:'Nachdruck', fx:'dmg', unikat:'Dienstanweisung mit Stiel',
+    satz:['Deine Schläge tragen mehr Nachdruck.', 'Deine Schläge tragen deutlich mehr Nachdruck.', 'Deine Schläge sind reiner Nachdruck.']},
+  panzer:       {name:'Panzerung', fx:'armor', unikat:'Schutzvorschrift in Blech',
+    satz:['Du steckst mehr weg.', 'Du steckst erheblich mehr weg.', 'An dir beißt sich alles die Zähne aus.']},
+  flink:        {name:'Eile', fx:'speed', unikat:'Kurierschuhe der Fristwahrung',
+    satz:['Du bist schneller unterwegs.', 'Du bist deutlich schneller unterwegs.', 'Du huschst, statt zu gehen.']},
+  gemurmel:     {name:'Manafluss', fx:'mana', unikat:'Murmelnde Aktenmappe',
+    satz:['Dein Mana kehrt schneller zurück.', 'Dein Mana kehrt spürbar schneller zurück.', 'Mana sprudelt beinahe von selbst.']},
+  quelle:       {name:'Selbstheilung', fx:'regen', unikat:'Feuchte Bescheinigung',
+    satz:['Kleine Wunden schließen sich von selbst.', 'Wunden schließen sich zügig von selbst.', 'Du heilst, als hätte es nie wehgetan.']},
+  genau:        {name:'Genauigkeit', fx:'exact', unikat:'Pedantenknüppel',
+    satz:['Dein Schaden schwankt nicht mehr.', 'Dein Schaden schwankt nicht und liegt höher.', 'Dein Schaden ist auf die Zweitstelle genau und ziemlich hoch.']},
+  amtsschimmel: {name:'Goldsegen', fx:'gold', unikat:'Beglaubigter Geldbeutel',
+    satz:['Gold fällt reichlicher an.', 'Gold fällt deutlich reichlicher an.', 'Gold fällt an, als wäre Haushaltsende.']},
+  aktenkunde:   {name:'Aktenkunde', fx:'xp', unikat:'Laufmappe der Erkenntnis',
+    satz:['Du lernst schneller aus Vorfällen.', 'Du lernst deutlich schneller aus Vorfällen.', 'Jeder Vorfall ist eine Fortbildung.']},
+  rueckstoss:   {name:'Rückstoß', fx:'knock', unikat:'Zugluftkeule',
+    satz:['Getroffene Gegner fliegen weiter.', 'Getroffene Gegner fliegen erheblich weiter.', 'Getroffene Gegner verlassen die Gegend.']},
+  trankgueltig: {name:'Trankwirkung', fx:'potion', unikat:'Gestempelte Feldflasche',
+    satz:['Tränke wirken kräftiger.', 'Tränke wirken deutlich kräftiger.', 'Ein Schluck genügt für alles.']},
+  weitschweifig:{name:'Reichweite', fx:'arc', unikat:'Ausschweifende Stange',
+    satz:['Dein Hieb greift weiter aus.', 'Dein Hieb greift deutlich weiter aus.', 'Dein Hieb nimmt den halben Vorplatz mit.']},
+  beutelaune:   {name:'Beutelaune', fx:'beute', unikat:'Festliche Sammelbüchse',
+    satz:['Monster lassen häufiger Zutaten liegen.', 'Monster lassen deutlich häufiger Zutaten liegen.', 'Monster hinterlassen fast immer etwas Brauchbares.']},
+};
+
+// Adjektive: w = Biom-Gewicht, minMon = nötige Monster-Seltenheit (0..3).
+// Mehrere Adjektive dürfen auf dieselbe Wirkung zeigen; genau das macht die
+// Kladde interessant.
+const ZUTAT_ADJ = [
+  {a:'klebrig',            wirk:'zaeh',         rar:0, minMon:0, w:{grass:6,   snow:1,   sand:2,   shadow:2}},
+  {a:'durchgefroren',      wirk:'zaeh',         rar:1, minMon:0, w:{grass:0.5, snow:6,   sand:0.2, shadow:1}},
+  {a:'empört',             wirk:'wucht',        rar:0, minMon:0, w:{grass:3,   snow:2,   sand:2,   shadow:3}},
+  {a:'leicht verkohlt',    wirk:'zorn',         rar:0, minMon:0, w:{grass:1,   snow:0.3, sand:4,   shadow:2}},
+  {a:'glühend',            wirk:'zorn',         rar:1, minMon:1, w:{grass:1,   snow:0.5, sand:5,   shadow:2}},
+  {a:'störrisch',          wirk:'panzer',       rar:0, minMon:0, w:{grass:3,   snow:3,   sand:2,   shadow:1}},
+  {a:'übermütig',          wirk:'flink',        rar:0, minMon:0, w:{grass:4,   snow:1,   sand:2,   shadow:3}},
+  {a:'zugig',              wirk:'rueckstoss',   rar:0, minMon:0, w:{grass:2,   snow:4,   sand:2,   shadow:1}},
+  {a:'unangenehm feucht',  wirk:'quelle',       rar:1, minMon:0, w:{grass:3,   snow:2,   sand:0.4, shadow:1}},
+  {a:'murmelnd',           wirk:'gemurmel',     rar:1, minMon:1, w:{grass:2,   snow:2,   sand:1,   shadow:3}},
+  {a:'frisch gestempelt',  wirk:'trankgueltig', rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:1}},
+  {a:'ausschweifend',      wirk:'weitschweifig',rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2}},
+  {a:'pedantisch',         wirk:'genau',        rar:2, minMon:2, w:{grass:2,   snow:2,   sand:2,   shadow:2}},
+  {a:'amtlich beglaubigt', wirk:'amtsschimmel', rar:2, minMon:2, w:{grass:2,   snow:1,   sand:1,   shadow:1}},
+  {a:'verwaltungserfahren',wirk:'aktenkunde',   rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:2}},
+  {a:'feierlich',          wirk:'beutelaune',   rar:2, minMon:3, w:{grass:1,   snow:1,   sand:1,   shadow:2}},
+];
+const ADJ_BY_KEY = {};
+for(const d of ZUTAT_ADJ) ADJ_BY_KEY[d.a] = d;
+
+// Ausrüstung, die am Kessel entsteht. Index = Qualitätsstufe 0..4.
+// Zahlen sind interne Rechengrößen und tauchen in keinem Tooltip auf.
+const CRAFT_BASE = {
+  weapon: [
+    {name:'Behelfsklinge',      mode:'dagger',    dmg:[4,7],   aps:1.7,  icon:'🗡️'},
+    {name:'Amtsklinge',         mode:'sword',     dmg:[8,13],  aps:1.35, icon:'🗡️'},
+    {name:'Dienstschwert',      mode:'sword',     dmg:[15,23], aps:1.3,  icon:'⚔️'},
+    {name:'Vorschriftsspalter', mode:'doubleaxe', dmg:[28,46], aps:0.8,  icon:'🪓'},
+    {name:'Siegelbrecher',      mode:'doubleaxe', dmg:[42,66], aps:0.9,  icon:'🪓'},
+  ],
+  armor: [
+    {name:'Dienstkittel',   armor:3,  icon:'👕'},
+    {name:'Aktenweste',     armor:7,  icon:'👕'},
+    {name:'Amtsharnisch',   armor:13, icon:'🧥'},
+    {name:'Bearbeitungspanzer', armor:20, icon:'🧥'},
+    {name:'Ordnungsrüstung',armor:29, icon:'🧥'},
+  ],
+  shield: [
+    {name:'Deckelschild',      armor:2,  icon:'🛡️'},
+    {name:'Klemmbrett',        armor:5,  icon:'🛡️'},
+    {name:'Amtsschild',        armor:9,  icon:'🛡️'},
+    {name:'Prüfsiegelschild',  armor:15, icon:'🛡️'},
+    {name:'Widerspruchsschild',armor:22, icon:'🛡️'},
+  ],
+  boots: [
+    {name:'Filzlatschen',  spd:8,  armor:1, icon:'🥾'},
+    {name:'Dienststiefel', spd:14, armor:2, icon:'🥾'},
+    {name:'Kurierstiefel', spd:20, armor:3, icon:'🥾'},
+    {name:'Eilstiefel',    spd:27, armor:5, icon:'🥾'},
+    {name:'Botenstiefel',  spd:34, armor:7, icon:'🥾'},
+  ],
+};
+
+// --- Zutaten: Namen, Beutel, Würfeln ---------------------------------------
+// Starke Adjektivbeugung im Nominativ: der/die/das -> er/e/es am letzten Wort.
+const adjForm = (a, g)=> a + (g === 'm' ? 'er' : g === 'f' ? 'e' : 'es');
+function zutatName(z){ const nd = ZUTAT_NOUNS[z.noun]; return adjForm(z.adj, nd.g) + ' ' + nd.n; }
+function zutatRar(z){ return clamp(ZUTAT_NOUNS[z.noun].rar + ADJ_BY_KEY[z.adj].rar, 0, 4); }
+const zutatIcon = z => ZUTAT_NOUNS[z.noun].icon;
+
+// Monster-Seltenheit aus der bestehenden MONDEF-Tabelle ableiten, damit ein
+// neuer Monstertyp keine zweite Pflegestelle bekommt.
+function monRar(d){ return d.boss ? 3 : (d.xp >= 30 ? 2 : (d.xp >= 18 ? 1 : 0)); }
+
+function pickAdj(biome, mr){
+  let total = 0;
+  for(const d of ZUTAT_ADJ){ if(d.minMon <= mr) total += (d.w[biome] || 0.5); }
+  let roll = Math.random() * total;
+  for(const d of ZUTAT_ADJ){
+    if(d.minMon > mr) continue;
+    roll -= (d.w[biome] || 0.5);
+    if(roll <= 0) return d.a;
   }
-  const item = {base, rar, affixes:[], name: (rar>=3 ? RARITY[rar].name+'er ' : '') + base.name};
-  const affixCount = rar>=4 ? 3 : (rar>=3 ? 2 : (rar>=2 ? 2 : 1));
-  const pool = [...AFFIXES];
-  for(let i=0; i<affixCount && pool.length; i++){
-    const idx = Math.floor(Math.random()*pool.length);
-    const def = pool.splice(idx,1)[0];
-    item.affixes.push({k:def.k, v:rri(def.min, def.max) * (rar>=3?2:1), def});
-  }
-  return item;
+  return ZUTAT_ADJ[0].a;
 }
+
+function pouchTotal(){ let s = 0; for(const z of player.pouch) s += z.count; return s; }
+function addZutat(noun, adj, n){
+  for(const z of player.pouch) if(z.noun === noun && z.adj === adj){ z.count += n; return z; }
+  const z = {noun, adj, count:n}; player.pouch.push(z); return z;
+}
+function takeZutat(noun, adj){
+  for(let i=0; i<player.pouch.length; i++){
+    const z = player.pouch[i];
+    if(z.noun === noun && z.adj === adj){
+      if(--z.count <= 0) player.pouch.splice(i, 1);
+      return true;
+    }
+  }
+  return false;
+}
+
+// ===========================================================================
+//  KESSEL-KLADDE
+//  Füllt sich ausschließlich mit beobachteten Zusammenhängen. Regeln, die noch
+//  nie ausgelöst haben, stehen nicht drin. Überlebt bewusst schon jetzt jeden
+//  Neustart (localStorage): in Phase 4 ist Wissen der eigentliche Fortschritt.
+// ===========================================================================
+const KLADDE_KEY = 'sda_kladde_v1';
+const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}};
+(function loadKladde(){
+  try{
+    const raw = localStorage.getItem(KLADDE_KEY); if(!raw) return;
+    const o = JSON.parse(raw);
+    if(o && typeof o === 'object'){
+      kladde.crafts = o.crafts | 0;
+      if(o.adj) kladde.adj = o.adj;
+      if(o.noun) kladde.noun = o.noun;
+      if(o.unikate) kladde.unikate = o.unikate;
+    }
+  }catch(_){}
+})();
+function saveKladde(){ try{ localStorage.setItem(KLADDE_KEY, JSON.stringify(kladde)); }catch(_){} }
+function noteKladde(bucket, key, value){
+  const b = kladde[bucket];
+  const e = b[key] || (b[key] = {});
+  e[value] = (e[value] | 0) + 1;
+}
+const MAL = ['', 'einmal', 'zweimal', 'dreimal', 'viermal', 'fünfmal'];
+const malWort = n => MAL[n] || (n + '-mal');
 
 const keysDown = {w:false, a:false, s:false, d:false};
 const PLAYER_SC = 1.8;                                   // Sunnyside-Held auf ~34 px Höhe
@@ -744,35 +1018,50 @@ const player = {
   anim:'idle', animT:0, castT:0, hair:HAIRS[Math.floor(Math.random()*HAIRS.length)],
   skills:{str:0, vit:0, agi:0, int:0}, skillPoints:0,
   spellPoints:0, spellsKnown:{}, spellCd:0,
-  equip:{weapon:null, armor:null, shield:null},
+  equip:{weapon:null, armor:null, shield:null, boots:null},
   bag:new Array(24).fill(null),
+  pouch:[],                      // Zutaten stapeln sich hier: [{noun, adj, count}]
 };
 player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
 
 const stats = {kills:0, goldTotal:0};
 let derived = {};
 
+// Aggregierte Wirkungen der getragenen Kessel-Ausrüstung. Schlüssel = fx-Feld der
+// Wirkung, Wert = Summe der Stufen. Wird nur in recalc() neu gerechnet, nie pro
+// Frame; die Hooks unten lesen bloß Zahlen aus diesem festen Objekt.
+const FX = {slow:0, crit:0, dmg:0, armor:0, speed:0, mana:0, regen:0, exact:0,
+            gold:0, xp:0, knock:0, potion:0, arc:0, beute:0};
+
 function recalc(){
   const e=player.equip, w=e.weapon;
   player.attackMode = w ? w.base.mode : 'sword';
-  let dmgBonus = 0, armorBonus = 0, hpBonus = 0;
+  let dmgBonus = 0, armorBonus = 0, hpBonus = 0, spdBonus = 0;
+  for(const k in FX) FX[k] = 0;
   for(const k in e){
     const item = e[k];
     if(item){
       if(item.base.armor) armorBonus += item.base.armor;
+      if(item.base.spd) spdBonus += item.base.spd;
       for(const aff of item.affixes){
         if(aff.k === 'dmg') dmgBonus += aff.v;
         if(aff.k === 'armor') armorBonus += aff.v;
         if(aff.k === 'hp') hpBonus += aff.v;
       }
+      // Kessel-Ausrüstung trägt genau eine Wirkung, deren Stufe sich aufsummiert
+      if(item.effect){ const wk = WIRKUNG[item.effect.k]; if(wk) FX[wk.fx] += item.effect.stufe; }
     }
   }
-  let dmgMin = (w? w.base.dmg[0] : 1) + player.skills.str*3 + dmgBonus; 
-  let dmgMax = (w? w.base.dmg[1] : 2) + player.skills.str*4 + dmgBonus;
+  let dmgMin = (w? w.base.dmg[0] : 1) + player.skills.str*3 + dmgBonus + FX.dmg*4;
+  let dmgMax = (w? w.base.dmg[1] : 2) + player.skills.str*4 + dmgBonus + FX.dmg*6;
   let aps = (w? w.base.aps : 1.3) * (1 + player.skills.agi*0.05);
   let hpB = player.skills.vit*20 + hpBonus;
   const maxHp = 70 + (player.level-1)*12 + hpB;
-  derived = {dmgMin, dmgMax, aps, armor:armorBonus, maxHp, maxMana: 40 + (player.level-1)*8 + player.skills.int*15, speed:135 + player.skills.agi*5, range:70};
+  derived = {dmgMin, dmgMax, aps, armor:armorBonus + FX.armor*5, maxHp,
+             maxMana: 40 + (player.level-1)*8 + player.skills.int*15,
+             speed:135 + player.skills.agi*5 + spdBonus + FX.speed*10,
+             range:70 + FX.arc*14, arc:1.6 + FX.arc*0.16,
+             crit:Math.min(0.75, 0.25 + FX.crit*0.07)};
   player.hp = Math.min(player.hp, maxHp);
   player.maxMana = derived.maxMana;
 }
@@ -973,9 +1262,12 @@ function tryAttack(dir){
     if(m.dead) continue;
     const dToMon = dist2(player.x, player.y, m.x, m.y);
     const mAngle = Math.atan2(m.y - player.y, m.x - player.x);
-    // Erweiteter Cleave Arc (1.6 Rad = sehr breit)
-    if(dToMon < derived.range && angDiff(mAngle, dir) < 1.6){
-      hurtMon(m, rri(derived.dmgMin, derived.dmgMax), Math.random()<0.25, mAngle);
+    // Erweiteter Cleave Arc (1.6 Rad = sehr breit), Wirkung 'Reichweite' öffnet ihn weiter
+    if(dToMon < derived.range && angDiff(mAngle, dir) < derived.arc){
+      // Wirkung 'Genauigkeit': kein Würfeln mehr, immer der obere Wert
+      const dmg = FX.exact ? Math.round(derived.dmgMax * (1 + (FX.exact-1)*0.1))
+                           : rri(derived.dmgMin, derived.dmgMax);
+      hurtMon(m, dmg, Math.random() < derived.crit, mAngle);
       hitCount++;
     }
   }
@@ -992,7 +1284,9 @@ function hurtMon(m, d, crit, hitAngle){
   if(m.dead) return;          // Cleave + AoE im selben Frame trafen sonst doppelt: doppelte Beute, doppeltes XP
   if(crit) d = Math.round(d * 1.7);
   m.hp -= d; m.flash = 0.15; m.aggro = true;
-  m.kx = Math.cos(hitAngle) * (crit?180:100); m.ky = Math.sin(hitAngle) * (crit?180:100);
+  if(FX.slow) m.slowT = Math.max(m.slowT, 0.5 + FX.slow*0.4);      // Wirkung 'Verlangsamung'
+  const kn = (crit?180:100) * (1 + FX.knock*0.5);                  // Wirkung 'Rückstoß'
+  m.kx = Math.cos(hitAngle) * kn; m.ky = Math.sin(hitAngle) * kn;
   spawnImpactParticles(m.x, m.y, crit ? 25 : 10, null);
 
   // Flächenzauber markieren jeden Treffer als Crit — ohne Bremse wären das dutzende
@@ -1000,6 +1294,21 @@ function hurtMon(m, d, crit, hitAngle){
   if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); }
   floaters.push({x:m.x+rr(-8,8), y:m.y-m.r-10, txt:String(d), col:crit?'#ffe14d':'#ffffff', t:0.8, big:crit});
   if(m.hp <= 0) killMon(m);
+}
+
+// Biom für die Adjektiv-Gewichtung: gleiche Bänder wie genMap/Zonenanzeige.
+function zutatBiome(y){
+  if(currentLevel === 2) return 'shadow';
+  const ty = y / TS;
+  return ty < 26 ? 'snow' : (ty > 54 ? 'sand' : 'grass');
+}
+// name/rar werden beim Drop einmal gebacken: der Renderpfad zeichnet sie jeden
+// Frame und darf dafür keine Strings zusammensetzen.
+function dropZutat(m, x, y){
+  const noun = ZUTAT_NOUNS[m.type] ? m.type : 'goblin';
+  const z = {kind:'zutat', noun, adj:pickAdj(zutatBiome(m.y), monRar(m.def)), x, y};
+  z.name = zutatName(z); z.rar = zutatRar(z);
+  drops.push(z);
 }
 
 function killMon(m){
@@ -1014,18 +1323,25 @@ function killMon(m){
   splatConfetti(m.x, m.y, currentLevel===2);
   gainXP(m.def.xp);
   
+  // Beute: Gold, Tränke und Zutaten. Fertige Ausrüstung fällt nicht mehr an,
+  // die entsteht ausschließlich am Kessel.
   if(currentLevel === 2){
-    // Schattenland: fast nur Gold + Tränke, ganz selten hochwertige Items
     if(Math.random()<0.55) drops.push({kind:'gold', amt:rri(m.def.gold[0], m.def.gold[1])*2, x:m.x, y:m.y});
     if(Math.random()<0.14) drops.push({kind:'potion', x:m.x, y:m.y});
-    if(Math.random()<0.02) drops.push({kind:'item', item:rollItem(3, true), x:m.x, y:m.y});
   } else {
     if(Math.random()<0.4) drops.push({kind:'gold', amt:rri(m.def.gold[0], m.def.gold[1]), x:m.x, y:m.y});
-    if(Math.random()<0.1) drops.push({kind:'item', item:rollItem(1, false), x:m.x, y:m.y});
     if(Math.random()<0.05) drops.push({kind:'potion', x:m.x, y:m.y});
   }
+  const mr = monRar(m.def);
+  // Horde im Schattenland fällt reihenweise, deshalb dort deutlich seltener
+  let zCount = m.def.boss ? 3
+             : (Math.random() < (currentLevel === 2 ? 0.22 : 0.5) + mr*0.06 + FX.beute*0.08 ? 1 : 0);
+  if(zCount && mr >= 2 && Math.random() < 0.25) zCount++;
+  for(let i=0; i<zCount; i++) dropZutat(m, m.x + rr(-10,10), m.y + rr(-10,10));
 
-  if(drops.length > 80) drops.shift(); // Performance limit
+  // Performance-Limit. while, nicht if: ein Kill lässt jetzt bis zu 5 Sachen fallen
+  // (Gold, Trank, mehrere Zutaten), ein einzelnes shift() hielte die Liste nicht.
+  while(drops.length > 90) drops.shift();
 
   // Portal Event Logic: erscheint zufällig irgendwann zwischen Spieler-Level 5 und 11
   if(currentLevel === 1 && !portal && player.level >= 5){
@@ -1050,7 +1366,7 @@ function killMon(m){
 }
 
 function gainXP(x){
-  player.xp += x;
+  player.xp += Math.round(x * (1 + FX.xp*0.2));                      // Wirkung 'Aktenkunde'
   let need = 35 * Math.pow(player.level, 1.35);
   while(player.xp >= need){
     player.xp -= need; player.level++; player.skillPoints += 2; player.spellPoints += 1;
@@ -1074,7 +1390,8 @@ function hurtPlayer(raw){
 
 function drinkPotion(){
   if(state !== 'play' || player.potions<=0 || player.dead || player.hp>=derived.maxHp) return;
-  player.potions--; player.hp=Math.min(derived.maxHp, player.hp+60);
+  player.potions--;
+  player.hp = Math.min(derived.maxHp, player.hp + Math.round(60 * (1 + FX.potion*0.35)));  // Wirkung 'Trankwirkung'
   sfx.potion(); updateHUD();
 }
 
@@ -1237,18 +1554,36 @@ function enemyCast(m){
 function buildTooltip(item, isEquipped){
   if(!item) return "";
   let html = `<div class="tname rar${item.rar}">${item.name}</div>`;
-  if(item.base.dmg) html += `<div>⚔️ Schaden: ${item.base.dmg[0]}-${item.base.dmg[1]}</div>`;
-  if(item.base.armor) html += `<div>🛡️ Rüstung: ${item.base.armor}</div>`;
-  item.affixes.forEach(a => html += `<div class="aff">${a.def.fmt(a.v)}</div>`);
+  if(item.effect){
+    // Kessel-Ausrüstung trägt Verben, keine Zahlen. Gerechnet wird intern.
+    const wk = WIRKUNG[item.effect.k];
+    html += `<div style="color:#9a8a5f;font-size:10px;margin:-2px 0 5px;">${SLOT_DE[item.base.t]} · ${RARITY[item.rar].name}${item.effect.stufe >= 3 ? ' · Unikat' : ''}</div>`;
+    html += `<div class="aff">${wk.satz[Math.min(2, item.effect.stufe - 1)]}</div>`;
+  } else {
+    if(item.base.dmg) html += `<div>⚔️ Schaden: ${item.base.dmg[0]}-${item.base.dmg[1]}</div>`;
+    if(item.base.armor) html += `<div>🛡️ Rüstung: ${item.base.armor}</div>`;
+    item.affixes.forEach(a => html += `<div class="aff">${a.def.fmt(a.v)}</div>`);
+  }
   html += `<div class="hint">Links-Klick: ${isEquipped?'Ablegen':'Ausrüsten'}<br>Rechts-Klick: Wegwerfen</div>`;
   return html;
 }
 
-function bindTooltip(el, item, isEquipped, dropAction, clickAction){
+// Zutaten-Tooltip: Name, Slot-Hinweis gibt es absichtlich keinen. Die Kladde ist
+// der einzige Ort, an dem Zusammenhänge auftauchen, und nur beobachtete.
+function buildZutatTooltip(z){
+  const zr = zutatRar(z);
+  return `<div class="tname rar${zr}">${zutatName(z)}</div>`
+       + `<div style="color:#9a8a5f;font-size:10px;margin:-2px 0 5px;">Zutat · ${RARITY[zr].name} · ${z.count} im Beutel</div>`
+       + `<div class="hint">Gehört in den Kessel (K).</div>`;
+}
+
+// htmlFn erlaubt anderen Inhalt (Zutaten) ohne die Touch-Logik zu duplizieren.
+function bindTooltip(el, item, isEquipped, dropAction, clickAction, htmlFn){
+  const ttHTML = () => htmlFn ? htmlFn() : buildTooltip(item, isEquipped);
   el.onmouseenter = (e) => {
     if(!item) return;
     const tt = document.getElementById('tooltip');
-    tt.style.display = 'block'; tt.innerHTML = buildTooltip(item, isEquipped);
+    tt.style.display = 'block'; tt.innerHTML = ttHTML();
   };
   el.onmousemove = (e) => {
     const tt = document.getElementById('tooltip');
@@ -1261,7 +1596,7 @@ function bindTooltip(el, item, isEquipped, dropAction, clickAction){
   el.addEventListener('touchstart', (e) => {
     if(!item || !touchMode) return;
     const tt = document.getElementById('tooltip');
-    tt.style.display = 'block'; tt.innerHTML = buildTooltip(item, isEquipped);
+    tt.style.display = 'block'; tt.innerHTML = ttHTML();
     const t = e.touches[0];
     tt.style.left = Math.min(t.clientX + 12, window.innerWidth - 200) + 'px';
     tt.style.top  = Math.max(8, t.clientY - 120) + 'px';
@@ -1312,11 +1647,11 @@ function renderInventory(){
   document.getElementById('stHp').innerText = derived.maxHp;
   document.getElementById('stMana').innerText = derived.maxMana;
 
-  const eqTypes = {weapon:'eqWeapon', armor:'eqArmor', shield:'eqShield'};
+  const eqTypes = {weapon:'eqWeapon', armor:'eqArmor', shield:'eqShield', boots:'eqBoots'};
   for(const key in eqTypes){
     const el = document.getElementById(eqTypes[key]);
     const item = player.equip[key];
-    el.innerHTML = item ? `<span class="lbl">${key==='weapon'?'Waffe':key==='armor'?'Rüstung':'Schild'}</span><span style="font-size:26px;line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${key}</span>`;
+    el.innerHTML = item ? `<span class="lbl">${SLOT_DE[key]}</span><span style="font-size:26px;line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${SLOT_DE[key]}</span>`;
     el.className = 'eqSlot ' + (item ? `rar${item.rar}` : '');
     bindTooltip(el, item, true, () => { player.equip[key] = null; dropItemToFloor(item); recalc(); renderInventory(); }, () => unequipItem(key));
   }
@@ -1331,7 +1666,209 @@ function renderInventory(){
     }
     bagGrid.appendChild(slot);
   }
+
+  // Zutaten liegen im eigenen Beutel, nicht in den 24 Taschenplätzen: sonst wäre
+  // die Tasche nach zwei Biomen voll und Ausrüstung hätte keinen Platz mehr.
+  document.getElementById('zutBox').style.display = player.pouch.length ? 'block' : 'none';
+  if(player.pouch.length){
+    document.getElementById('zutTotal').innerText = `(${pouchTotal()})`;
+    fillZutatGrid(document.getElementById('invZutGrid'), z => { addToPot(z); });
+  }
 }
+
+// Gemeinsames Zutaten-Raster für Inventar und Kessel. onPick bekommt den Stapel.
+function fillZutatGrid(grid, onPick){
+  // Beim Neubau verliert der alte Knoten sein mouseleave: Tooltip von Hand schließen.
+  // Auf Touch nicht, dort räumt der transiente Timeout aus bindTooltip auf.
+  if(!touchMode) document.getElementById('tooltip').style.display = 'none';
+  grid.innerHTML = '';
+  if(!player.pouch.length){
+    grid.innerHTML = '<div class="zutEmpty">Beutel leer. Monster hinterlassen Zutaten.</div>';
+    return;
+  }
+  const sorted = player.pouch.slice().sort((a,b)=> zutatRar(b) - zutatRar(a) || a.noun.localeCompare(b.noun));
+  for(const z of sorted){
+    const tile = document.createElement('div');
+    tile.className = 'zutTile rar' + zutatRar(z);
+    tile.innerHTML = `<span class="zc">${z.count}</span><span class="zi">${zutatIcon(z)}</span><span class="zn">${zutatName(z)}</span>`;
+    bindTooltip(tile, z, false, ()=>{}, () => onPick(z), () => buildZutatTooltip(z));
+    tile.oncontextmenu = e => e.preventDefault();     // Zutaten wirft man nicht weg
+    grid.appendChild(tile);
+  }
+}
+
+// ===========================================================================
+//  KESSEL (Taste K)
+//  Drei Zutaten hinein, ein Ausrüstungsteil heraus. Keine Vorschau, kein
+//  Rezeptbuch, keine Regelerklärung. Was der Kessel tut, steht danach in der
+//  Kladde, und zwar nur das, was tatsächlich passiert ist.
+// ===========================================================================
+let kesselOpen = false, kesselTab = 'kessel';
+const potSlots = [null, null, null];               // je {noun, adj}
+
+function addToPot(z){
+  if(!z) return;                                   // Stapel kann zwischen Klick und Neubau leergelaufen sein
+  const free = potSlots.indexOf(null);
+  if(free === -1){ floaters.push({x:player.x, y:player.y-30, txt:'Kessel ist voll', col:'#f4d97a', t:0.9}); return; }
+  if(!takeZutat(z.noun, z.adj)) return;
+  potSlots[free] = {noun:z.noun, adj:z.adj};
+  if(kesselOpen) renderKesselPane();
+  if(invOpen) renderInventory();
+}
+function removeFromPot(i){
+  const s = potSlots[i]; if(!s) return;
+  addZutat(s.noun, s.adj, 1); potSlots[i] = null;
+  if(kesselOpen) renderKesselPane();
+  if(invOpen) renderInventory();
+}
+function clearPot(){                                // nichts im kalten Kessel vergessen
+  let back = false;
+  for(let i=0;i<3;i++) if(potSlots[i]){ addZutat(potSlots[i].noun, potSlots[i].adj, 1); potSlots[i] = null; back = true; }
+  if(back && invOpen) renderInventory();
+}
+
+function brew(){
+  if(potSlots.indexOf(null) !== -1) return;
+  const zs = [potSlots[0], potSlots[1], potSlots[2]];
+
+  // Seltenste Zutat entscheidet jeden Gleichstand
+  let rarest = zs[0];
+  const nCount = {}, aCount = {};
+  for(const z of zs){
+    nCount[z.noun] = (nCount[z.noun] | 0) + 1;
+    aCount[z.adj]  = (aCount[z.adj]  | 0) + 1;
+    if(zutatRar(z) > zutatRar(rarest)) rarest = z;
+  }
+  // Slot = häufigstes Substantiv
+  let topNoun = null, topN = 0, nTie = false;
+  for(const k in nCount){
+    if(nCount[k] > topN){ topN = nCount[k]; topNoun = k; nTie = false; }
+    else if(nCount[k] === topN) nTie = true;
+  }
+  if(nTie) topNoun = rarest.noun;
+  const slot = ZUTAT_NOUNS[topNoun].slot;
+  // Wirkung = häufigstes Adjektiv, seine Anzahl ist die Stufe
+  let topAdj = null, topA = 0, aTie = false;
+  for(const k in aCount){
+    if(aCount[k] > topA){ topA = aCount[k]; topAdj = k; aTie = false; }
+    else if(aCount[k] === topA) aTie = true;
+  }
+  if(aTie) topAdj = rarest.adj;
+  const stufe = aTie ? 1 : topA;                    // 1 = einfach, 2 = verstärkt, 3 = Unikat
+  const wirkKey = ADJ_BY_KEY[topAdj].wirk, wk = WIRKUNG[wirkKey];
+  // Qualität = Summe der Seltenheiten
+  const qual = zutatRar(zs[0]) + zutatRar(zs[1]) + zutatRar(zs[2]);
+  let rar = qual <= 1 ? 0 : qual <= 3 ? 1 : qual <= 5 ? 2 : qual <= 8 ? 3 : 4;
+  if(stufe >= 3) rar = Math.max(rar, 3);
+
+  const base = Object.assign({t:slot, tier:rar}, CRAFT_BASE[slot][rar]);
+  const item = {base, rar, affixes:[], effect:{k:wirkKey, stufe},
+                name: stufe >= 3 ? wk.unikat : base.name, crafted:true};
+
+  const idx = player.bag.indexOf(null);
+  if(idx !== -1) player.bag[idx] = item;
+  else { dropItemToFloor(item); floaters.push({x:player.x, y:player.y-44, txt:'Tasche voll, liegt am Boden', col:'#f4d97a', t:1.6}); }
+
+  // Kladde notiert nur die beiden Zutatenteile, die wirklich entschieden haben
+  noteKladde('adj', topAdj, wirkKey);
+  noteKladde('noun', topNoun, slot);
+  if(stufe >= 3) kladde.unikate[wirkKey] = wk.unikat;
+  kladde.crafts++; saveKladde();
+
+  potSlots[0] = potSlots[1] = potSlots[2] = null;
+  sfx.brew(); addShake(6, 0.25);
+  spawnImpactParticles(player.x, player.y - 10, 24, null);
+  floaters.push({x:player.x, y:player.y-40, txt:'Fertig: ' + item.name, col:RARITY[rar].col, t:2.0, big:true});
+
+  const res = el('kesselResult');
+  res.style.display = 'block';
+  res.innerHTML = `<div class="rname rar${rar}">${item.base.icon} ${item.name}</div>`
+    + `<div style="color:#9a8a5f;font-size:10px;">${SLOT_DE[slot]} · ${RARITY[rar].name}${stufe>=3?' · Unikat':''}</div>`
+    + `<div class="aff" style="color:#8fb0ff;">${wk.satz[Math.min(2, stufe-1)]}</div>`;
+  renderKesselPane();
+  if(invOpen) renderInventory();
+  updateHUD();
+}
+
+function renderKesselPane(){
+  const row = el('potRow'); row.innerHTML = '';
+  for(let i=0;i<3;i++){
+    const s = potSlots[i];
+    const d = document.createElement('div');
+    d.className = 'potSlot' + (s ? ' full rar' + zutatRar(s) : '');
+    d.innerHTML = s ? `<span class="pi">${zutatIcon(s)}</span><span class="pn">${zutatName(s)}</span>`
+                    : `<span class="pi">＋</span><span class="pn">leer</span>`;
+    d.onclick = () => removeFromPot(i);
+    row.appendChild(d);
+  }
+  const missing = (potSlots[0]?0:1) + (potSlots[1]?0:1) + (potSlots[2]?0:1);
+  const b = el('brewBtn');
+  b.disabled = missing > 0;
+  b.innerText = missing === 0 ? 'KOCHEN' : missing === 1 ? 'NOCH EINE ZUTAT' : `NOCH ${missing} ZUTATEN`;
+  fillZutatGrid(el('zutGrid'), addToPot);
+}
+
+function renderKladde(){
+  const parts = [];
+  const adjKeys = Object.keys(kladde.adj).sort();
+  if(adjKeys.length){
+    parts.push('<div class="klHead">ADJEKTIVE</div>');
+    for(const a of adjKeys){
+      const obs = kladde.adj[a];
+      const list = Object.keys(obs).map(k => ({k, n:obs[k]})).sort((x,y)=> y.n - x.n);
+      const wn = k => WIRKUNG[k] ? WIRKUNG[k].name : k;
+      if(list.length === 1)
+        parts.push(`<div class="kl">«${a}» hat ${malWort(list[0].n)} ${wn(list[0].k)} erzeugt.</div>`);
+      else
+        parts.push(`<div class="kl">«${a}» erzeugte bisher ${list.map(i=>`${wn(i.k)} (${i.n}x)`).join(' und ')}.</div>`);
+    }
+  }
+  const nounKeys = Object.keys(kladde.noun);
+  if(nounKeys.length){
+    parts.push('<div class="klHead">SUBSTANTIVE</div>');
+    for(const n of nounKeys){
+      const nd = ZUTAT_NOUNS[n]; if(!nd) continue;
+      const obs = kladde.noun[n];
+      const list = Object.keys(obs).map(k => ({k, n:obs[k]})).sort((x,y)=> y.n - x.n);
+      if(list.length === 1){
+        const total = list[0].n;
+        parts.push(`<div class="kl">«${nd.n}» landete bisher ${total >= 2 ? 'immer' : 'einmal'} im ${SLOT_FUGE[list[0].k]}-Slot.</div>`);
+      } else {
+        parts.push(`<div class="kl">«${nd.n}» landete ${list.map(i=>`${i.n}x im ${SLOT_FUGE[i.k]}-Slot`).join(' und ')}.</div>`);
+      }
+    }
+  }
+  const uKeys = Object.keys(kladde.unikate);
+  if(uKeys.length){
+    parts.push('<div class="klHead">UNIKATE</div>');
+    for(const u of uKeys) parts.push(`<div class="kl">${kladde.unikate[u]} ist schon aus dem Kessel gekommen.</div>`);
+  }
+  if(!parts.length) parts.push('<div class="klEmpty">Noch keine Beobachtungen. Der Kessel schweigt.</div>');
+  else parts.unshift(`<div style="font-size:10px;color:#9a8a5f;font-style:italic;margin-bottom:6px;">${malWort(kladde.crafts)} gekocht. Notiert wird nur, was wirklich passiert ist.</div>`);
+  el('kladdeBox').innerHTML = parts.join('');
+}
+
+function switchKesselTab(t){
+  kesselTab = t;
+  el('tabKessel').classList.toggle('on', t === 'kessel');
+  el('tabKladde').classList.toggle('on', t === 'kladde');
+  el('kesselPane').style.display = t === 'kessel' ? 'block' : 'none';
+  el('kladdePane').style.display = t === 'kladde' ? 'block' : 'none';
+  if(t === 'kladde') renderKladde(); else renderKesselPane();
+}
+
+function toggleKessel(){
+  kesselOpen = !kesselOpen;
+  el('kessel').style.display = kesselOpen ? 'block' : 'none';
+  if(kesselOpen){ el('kesselResult').style.display = 'none'; switchKesselTab(kesselTab); }
+  else clearPot();
+}
+
+el('tabKessel').onclick = () => switchKesselTab('kessel');
+el('tabKladde').onclick = () => switchKesselTab('kladde');
+el('brewBtn').onclick = brew;
+el('closeKesselBtn').onclick = toggleKessel;
+el('kesselBtn').onclick = toggleKessel;
 
 document.getElementById('closeInvBtn').onclick = toggleInventory;
 document.getElementById('closeSpellBtn').onclick = toggleSpellTree;
@@ -1353,7 +1890,9 @@ function update(dt){
   if(hitStopT > 0){ hitStopT -= dt; return; } // Freeze-Frame Effekt
   gameT += dt; if(shakeT > 0) shakeT -= dt;
 
-  player.mana = Math.min(derived.maxMana, player.mana + 8 * dt);
+  player.mana = Math.min(derived.maxMana, player.mana + (8 + FX.mana*4) * dt);   // Wirkung 'Manafluss'
+  if(FX.regen && player.hp > 0)                                                  // Wirkung 'Selbstheilung'
+    player.hp = Math.min(derived.maxHp, player.hp + FX.regen*1.6*dt);
   if(player.attackCd > 0) player.attackCd -= dt;
   if(player.swingT > 0) player.swingT -= dt;
   if(player.hurtT > 0) player.hurtT -= dt;
@@ -1403,8 +1942,18 @@ function update(dt){
   // Items aufsammeln
   for(let i = drops.length - 1; i >= 0; i--){
     if(dist2(player.x, player.y, drops[i].x, drops[i].y) < 26){
-      if(drops[i].kind === 'gold'){ player.gold += drops[i].amt; sfx.gold(); }
+      if(drops[i].kind === 'gold'){
+        player.gold += Math.round(drops[i].amt * (1 + FX.gold*0.25));   // Wirkung 'Goldsegen'
+        sfx.gold();
+      }
       else if(drops[i].kind === 'potion'){ player.potions++; sfx.potion(); }
+      else if(drops[i].kind === 'zutat'){
+        const z = drops[i];
+        addZutat(z.noun, z.adj, 1); sfx.gold();
+        floaters.push({x:player.x, y:player.y-20, txt:'+ ' + (z.name || zutatName(z)), col:RARITY[z.rar != null ? z.rar : zutatRar(z)].col, t:1.2});
+        if(invOpen) renderInventory();
+        if(kesselOpen) renderKesselPane();
+      }
       else if(drops[i].kind === 'item'){
         const emptyIdx = player.bag.findIndex(slot => slot === null);
         if(emptyIdx !== -1){
@@ -1582,7 +2131,7 @@ let frameNo = 0;
 
 // Zeichenliste: feste Einträge aus einem Pool, damit pro Frame weder Objekte noch
 // Closures anfallen (das war bei voller Horde der größte GC-Verursacher).
-const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5;
+const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5, DRAW_KESSEL=6;
 const drawPool = [], drawList = [];
 let drawCount = 0;
 const byY = (a,b)=> a.y - b.y;
@@ -1625,6 +2174,13 @@ function render(){
       drawSprite('glint', gf, d.x, d.y-6+bob, 1.6);
     } else if(d.kind === 'potion'){
       ctx.fillText('🧪', d.x, d.y+6+bob);
+    } else if(d.kind === 'zutat'){
+      ctx.shadowColor = RARITY[d.rar].col; ctx.shadowBlur = d.rar >= 2 ? 12 : 5;
+      ctx.fillText(ZUTAT_NOUNS[d.noun].icon, d.x, d.y+4+bob);
+      ctx.shadowBlur = 0;
+      if(d.rar >= 1) drawSprite('glint', gf, d.x, d.y-10+bob, 1.3);
+      ctx.fillStyle = RARITY[d.rar].col; ctx.font = 'bold 10px Courier New';
+      ctx.fillText(d.name, d.x, d.y+18);
     } else if(d.kind === 'item'){
       ctx.shadowColor = RARITY[d.item.rar].col; ctx.shadowBlur = d.item.rar >= 2 ? 12 : 5;
       ctx.fillText(d.item.base.icon || '📦', d.x, d.y+4+bob);
@@ -1687,8 +2243,10 @@ function render(){
     const d = decos[i];
     if(d.x > cullL && d.x < cullR) pushDraw(d.y, DRAW_DECO, d);
   }
-  if(currentLevel === 1)                                // Hoftiere gibt es nur im Wald
+  if(currentLevel === 1){                               // Hoftiere und Kessel gibt es nur im Wald
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
+    if(vis(KESSEL.x, KESSEL.y)) pushDraw(KESSEL.y, DRAW_KESSEL, null);
+  }
   for(const c of corpses) if(vis(c.x, c.y)) pushDraw(c.y - 1, DRAW_CORPSE, c);
   for(const m of monsters) if(!m.dead && vis(m.x, m.y)) pushDraw(m.y, DRAW_MON, m);
   pushDraw(player.y, DRAW_PLAYER, null);
@@ -1704,6 +2262,7 @@ function render(){
                          drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, (o.vx||o.vy) ? 7 : 3), o.x, o.y+4, 1, o.flip); break;
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
+      case DRAW_KESSEL:  drawKessel(); break;
       default:           drawPlayer();
     }
   }
@@ -1771,6 +2330,32 @@ function render(){
   // Minimap braucht keine 60 Hz — alle 4 Frames reicht optisch und spart spürbar.
   if((frameNo++ & 3) === 0) renderMinimap();
   updateHUD();
+}
+
+// Kessel: Topf aus Canvas-Primitiven plus vorhandenes Feuer-Sheet, kein neues Asset.
+function drawKessel(){
+  const x = KESSEL.x, y = KESSEL.y;
+  drawSprite('fire1', animFrame('fire1', gameT, 10), x, y + 3, 1.5);
+  drawShadowEllipse(x, y + 2, 15);
+  ctx.save();
+  ctx.strokeStyle = '#0d0a10'; ctx.lineWidth = 2; ctx.fillStyle = '#241c22';
+  ctx.beginPath(); ctx.moveTo(x-15, y-15); ctx.quadraticCurveTo(x, y+8, x+15, y-15); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(x, y-15, 15, 6, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#6aff8f';
+  ctx.beginPath(); ctx.ellipse(x, y-15, 12, 4.2, 0, 0, Math.PI*2); ctx.fill();
+  for(let i=0;i<3;i++){                              // Blubbern
+    const t = (gameT*0.8 + i*0.37) % 1;
+    ctx.globalAlpha = 1 - t;
+    ctx.beginPath(); ctx.arc(x + Math.sin(i*2.1 + gameT)*7, y - 17 - t*14, 2 + t*1.6, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  const dx = player.x - x, dy = player.y - y;        // Hinweis nur in der Nähe (kein hypot)
+  if(dx*dx + dy*dy < 10000){
+    ctx.textAlign = 'center'; ctx.font = 'bold 11px Courier New';
+    ctx.fillStyle = '#000';    ctx.fillText('Kessel [K]', x+1, y-33);
+    ctx.fillStyle = '#f4d97a'; ctx.fillText('Kessel [K]', x, y-34);
+  }
+  ctx.restore();
 }
 
 function drawShadowEllipse(x, y, rx){
@@ -1955,6 +2540,7 @@ function renderMinimap(){
   const scale = 128 / MW;
   mctx.fillStyle = 'rgba(255,80,80,.85)';
   for(const m of monsters) if(!m.dead) mctx.fillRect((m.x/TS)*scale - 1, (m.y/TS)*scale - 1, 2, 2);
+  if(currentLevel === 1){ mctx.fillStyle = '#6aff8f'; mctx.fillRect((KESSEL.x/TS)*scale - 1, (KESSEL.y/TS)*scale - 1, 3, 3); }
   mctx.fillStyle = '#5c86ff'; mctx.fillRect((player.x/TS)*scale - 1, (player.y/TS)*scale - 1, 3, 3);
   if(portal){ mctx.fillStyle = '#ff00ff'; mctx.fillRect((portal.x/TS)*scale - 2, (portal.y/TS)*scale - 2, 4, 4); }
 }
@@ -2000,11 +2586,12 @@ function showStartScreen(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>SuperDuper Adventure</h1>
     <h3>✨ Looten, leveln und Monster wegschellen!</h3>
-    <p>Metzle dich durch drei Biome, sammle Beute und lerne Zaubersprüche. Irgendwo zwischen Stufe 5 und 11 öffnet sich zufällig ein <b>Schatten-Portal</b> — wage dich hinein und stelle dich 500 Gegnern gleichzeitig!</p>
+    <p>Metzle dich durch drei Biome, sammle Zutaten und lerne Zaubersprüche. Ausrüstung fällt nicht mehr vom Himmel: die kochst du am <b>Kessel</b> aus drei Zutaten selbst zusammen. Wie das genau zusammenhängt, findest du beim Kochen heraus. Irgendwo zwischen Stufe 5 und 11 öffnet sich außerdem zufällig ein <b>Schatten-Portal</b>: 500 Gegner gleichzeitig.</p>
     <div style="text-align:left; background:rgba(0,0,0,.5); padding:10px; border-radius:8px; font-size:12px; margin-bottom:15px; border:1px solid #5a4a2d;">
       <b>Steuerung:</b> W A S D = Bewegen | Klick / Leer = Angreifen<br>
       <b>Zauber:</b> (E) aktiver Spruch | (R) Ultimate | (T) Zauberbaum<br>
       <b>Inventar (I):</b> Links-Klick: Ausrüsten | Rechts-Klick: Wegwerfen<br>
+      <b>Kessel (K):</b> drei Zutaten kochen, Kladde lesen<br>
       <b>Trank (Q):</b> heilen<br>
       <b>📱 Touch:</b> linke Hälfte = Joystick | rechte Hälfte = Angreifen (halten = Dauerfeuer)
     </div>
@@ -2031,6 +2618,7 @@ function respawnPlayer(){
   player.x = SPAWN.x; player.y = SPAWN.y; player.dead = false; player.hurtT = 0;
   player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
   player.hp = Math.max(1, Math.round(derived.maxHp * 0.5)); player.mana = derived.maxMana;
+  if(kesselOpen) toggleKessel();                                                   // gibt auch die Zutaten aus dem Topf zurück
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;   // Eingaben, die den Tod überlebt haben
   attackTouch = null; lockedTarget = null;
   el('bossbar').style.display = 'none';
@@ -2060,8 +2648,9 @@ window.addEventListener('keydown', e => {
   if(k === 'e') castActiveSpell();
   if(k === 'r') castUltimate();
   if(k === 'i') toggleInventory(); if(k === 't') toggleSpellTree(); if(k === 'm') toggleMusic();
+  if(k === 'k') toggleKessel();
   if(k === 'escape'){                          // Panels schließen ohne Tastenraten
-    if(invOpen) toggleInventory(); else if(spellTreeOpen) toggleSpellTree();
+    if(invOpen) toggleInventory(); else if(spellTreeOpen) toggleSpellTree(); else if(kesselOpen) toggleKessel();
   }
 });
 
