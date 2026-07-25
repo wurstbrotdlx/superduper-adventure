@@ -98,7 +98,7 @@ Zutaten droppen, stapeln sich im Inventar, Kessel funktioniert, Kladde füllt si
 * `rollItem()` ist entfallen. `BASES`/`AFFIXES` bleiben für den Altbestand (Startwaffe, alte Fundstücke) stehen.
 * `drops` wird jetzt mit `while(drops.length > 90) drops.shift()` gedeckelt: ein Kill lässt bis zu fünf Sachen fallen, ein einzelnes `shift()` hielt die Liste nicht mehr.
 
-## Phase 2: Kammern mit Preisschild
+## Phase 2: Kammern mit Preisschild — ERLEDIGT
 
 Versiegelte Rätselräume im offenen Land. Vor der Tür hängt ein Schild mit Schwierigkeit 1 bis 5 und dem Zutaten-Tier dahinter. Die Spieler entscheiden also informiert, ob sich der Aufwand lohnt.
 
@@ -128,6 +128,23 @@ Loot-Tier folgt der Kammerschwierigkeit, nicht dem Monsterlevel. Schwere Kammern
 ### Abnahme Phase 2
 
 Kammern erscheinen in allen 3 Biomen, Schild ist korrekt, jedes Modul einzeln lösbar und in Kombination stabil, Abbruch per Esc möglich ohne Softlock, Wächter aus dem 7er-Pool tauchen auf.
+
+### Umsetzungsnotizen aus Phase 2 (für die Folgephasen wichtig)
+
+* Die Kammer läuft auf **derselben** Karte wie die Oberwelt. `betreteKammer()` sichert `map`, `trees`, `decos`, `critters`, `monsters`, `drops`, `boss`, `portal` und die Spielerposition in `owSave` und überschreibt danach `map`. `verlasseKammer()` spielt alles kachelgenau zurück. Es gibt bewusst keine zweite Karte und kein zweites Boden-Canvas.
+* `let kammer` und `let owSave` stehen **ganz oben** bei den Kachel-Konstanten, nicht im Kammerblock: `initFloorGraphics()` läuft schon beim Kartenbau und fragt `kammer` ab. Weiter unten deklariert wäre es ein TDZ-Fehler, genau wie bei den Tabellen aus Phase 1.
+* `currentLevel === 3` bedeutet Kammer (1 = Oberwelt, 2 = Schattenland). Alle bestehenden `currentLevel`-Abfragen wurden daraufhin durchgesehen.
+* Neue Kacheltypen `G_WALL`, `G_BLOCK`, `G_GAP`. `WALKABLE` ist eine Whitelist, sie stehen einfach nicht drin.
+* Geometrie: `KAM_W`/`KAM_H` (13 x 15 Kacheln je Raum, Wände eingerechnet), Korridor ab `KAM_X0`/`KAM_Y0`, alle Tore in Zeile `KAM_TY` (Raummitte). Maximal 6 Räume, das passt in `MW = 80`. **Modul-Layouts rechnen relativ zu `r.y0`** — wer `KAM_H` ändert, muss die Offsets in den `bau*`-Funktionen mitziehen.
+* `kammerKamera()` hält den Korridor mittig, sonst zeigt die Kamera an den Rändern nur gebackenes Schwarz.
+* Tore backen beim Öffnen **nur ihre drei Kacheln** nach (`malBoden`), nie das ganze Boden-Canvas. Ein Komplettbake wären 6400 `drawImage` mitten im Spiel.
+* Module sind eine Tabelle `KAM_MOD[kind] = {kosten, bau, auf, moeglich}`. `moeglich()` gatet Module, die Voraussetzungen brauchen (Fackeln verlangen einen Feuer- und einen Frostzauber). Die Modulwahl passiert erst beim **Betreten**, nicht beim Türsetzen — sonst wüsste sie nichts vom Zauberbaum. Schwierigkeit und Tier stehen dagegen schon an der Tür fest, das ist das Preisschild.
+* `hurtMon()` hat einen fünften Parameter `quelle` (`'nah'`, Zweig 0..2 oder `'ult'`). Er wird nur von Kammerwachen mit `m.regel` ausgewertet, die Prüfung sitzt direkt **hinter** dem Tot-Guard. Phase 3 kann denselben Parameter für Flüche nutzen, die die Schadensquelle betreffen.
+* Kontextaktionen (`F`, Button `#aktionBtn`) laufen über drei feste Modulvariablen statt über Closures pro Frame: `aktArt` / `aktObj` / `aktTxt`, gefüllt von `aktBiete()`. `aktSperre` verhindert, dass Tastenwiederholung sofort wieder ein- oder austritt.
+* `CONFIG` existiert jetzt (`kammerTueren`, `kammerNachwachsen`). Phase 4 hängt `schichtModus` und die Dorf-Ausbauten dort ein; „mehr Kammertüren pro Biom" ist bereits `CONFIG.kammerTueren`.
+* `rollKammerZutat(tier, biome)` hat einen Notnagel-Zweig, damit das Schild nie mehr verspricht als die Truhe hergibt. Gegen 45.000 Stichproben geprüft: kein Wert unter dem angeschriebenen Tier.
+* Der Alte Schrecken (`bossgeneric`) setzt wie jeder Boss `boss`. In `killMon()` löst nur ein Boss **außerhalb** einer Kammer `winGame()` aus, sonst würde eine Schatzkammer das Spiel gewinnen. Die Bossleiste erscheint erst bei `boss.aggro` und liest den Namen aus `MONDEF`.
+* Musik-Button und Lautstärkeregler sind aus dem Gürtel ins Inventar gewandert (`#musikBox`, ganz unten). Der Gürtel hatte sonst auf dem Handy drei Zeilen und lief unter den Daumen-Fächer.
 
 ## Phase 3: Fluch-Ökonomie
 
