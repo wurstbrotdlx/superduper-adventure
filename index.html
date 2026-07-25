@@ -171,7 +171,7 @@
   /* Kontext- und Abbruch-Button nach vorn: rechts unten liegt der Daumen-Fächer
      und würde die beiden Neuzugänge sonst überdecken. */
   body.touch #aktionBtn, body.touch #kamExitBtn{order:-1;}
-  body.touch #beltRow{justify-content:flex-start;}   /* linksbündig, damit keine Zeile unter dem Fächer endet */
+  body.touch #beltRow{justify-content:flex-start;max-width:calc(100vw - 32px);}   /* linksbündig, volle Breite ohne Kugeln */
   /* Auf Touch tragen die Menü-Knöpfe nur ihr Symbol: rund statt beschriftet passt
      die doppelte Anzahl in eine Zeile. Der Kontext-Knopf behält seinen Text, der
      Text ist dort die eigentliche Information (Hebel / Schloss / Öffnen). */
@@ -179,6 +179,23 @@
   body.touch #spellsBtn, body.touch #invBtn, body.touch #kamExitBtn, body.touch #prioBtn{
     width:52px;height:52px;min-width:0;padding:0;border-radius:50%;font-size:22px;gap:0;position:relative;}
   body.touch #aktionBtn{height:52px;border-radius:26px;padding:0 14px;}   /* gleiche Höhe wie die runden */
+
+  /* Mobil stehen Leben und Mana als senkrechte Thermometer an den Bildschirm-
+     rändern statt als Kugeln im Gürtel: links Leben, rechts Mana. Beide sind
+     aus dem Flex-Fluss genommen, dadurch bekommt der Gürtel unten die volle
+     Breite. Die Füllung läuft schon vorher über die Höhe, deshalb braucht das
+     HUD-Update dafür keine einzige Zeile. Sie liegen im oberen Bildschirm-
+     drittel, damit sie weder dem Daumen-Fächer noch dem Gürtel in die Quere
+     kommen; pointer-events erben sie von #hud, der Joystick greift durch. */
+  body.touch .orbWrap{
+    position:fixed;top:15vh;width:26px;height:46vh;border-radius:14px;border:2px solid #6b5a3a;
+    box-shadow:0 0 10px rgba(0,0,0,.85) inset,0 2px 8px rgba(0,0,0,.6);z-index:12;}
+  body.touch .hpOrb{left:8px;}
+  body.touch .manaOrb{right:8px;}
+  /* Rundverlauf ist für eine Kugel gemalt, in der Röhre wirkt ein Querverlauf */
+  body.touch #hpFill{background:linear-gradient(90deg,#7a0a0a,#ff6a5a 45%,#b31414);}
+  body.touch #manaFill{background:linear-gradient(90deg,#0a207a,#5a9eff 45%,#144cb3);}
+  body.touch .orbTxt{writing-mode:vertical-rl;font-size:10px;letter-spacing:1px;}
   body.touch #spBadge, body.touch #skillBadge{
     position:absolute;top:-2px;right:-2px;font-size:15px;line-height:1;text-shadow:0 1px 3px #000;}
   body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
@@ -281,7 +298,7 @@
 <canvas id="minimap" width="128" height="128"></canvas>
 <div id="bossbar"><span id="bossname">Schattenfürst Abaddon</span><div id="bossback"><div id="bossfill"></div></div></div>
 <div id="hud">
-  <div class="orbWrap"><div id="hpFill"></div><div class="orbTxt" id="hpTxt">60</div></div>
+  <div class="orbWrap hpOrb"><div id="hpFill"></div><div class="orbTxt" id="hpTxt">60</div></div>
   <div id="midHud">
     <div id="xpBar"><div id="xpFill"></div></div>
     <div id="beltRow">
@@ -295,7 +312,7 @@
       <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯<span class="bl" id="prioTxt">Nah</span></div>
     </div>
   </div>
-  <div class="orbWrap"><div id="manaFill"></div><div class="orbTxt" id="manaTxt">40</div></div>
+  <div class="orbWrap manaOrb"><div id="manaFill"></div><div class="orbTxt" id="manaTxt">40</div></div>
   <div id="statCol">
     <span id="lvlTxt">Stufe 1</span>
     <span id="goldTxt">💰 0</span>
