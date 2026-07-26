@@ -208,6 +208,28 @@ Setze ein Flag `CONFIG.schichtModus = true`. Auf `false` gilt wieder die alte To
 
 Schicht startet, endet, Übertrag stimmt, Kladde überlebt garantiert jeden Tod, Dorf-Ausbauten wirken, Flag schaltet sauber zurück auf das alte Verhalten.
 
+### Umsetzungsnotizen aus Phase 4 (für die Folgephasen wichtig)
+
+* `startShift()` ist der **einzige** Reset-Pfad, sowohl für die allererste Schicht (aus `startGame()`) als auch für jede folgende (aus dem Amt-Panel). Das ist Absicht, ein getesteter Pfad statt zweier. Wer etwas ausschließlich beim allerersten Spielstart braucht, darf es deshalb **nicht** dort einhängen, sondern in `startGame()`. Bei `CONFIG.schichtModus = false` läuft `startShift()` nie.
+* `endShift(reason)` kennt `'tod'` und `'zeit'`. Es erhöht `amt.schichten` selbst, bevor das Panel steht. Der Wert zählt also **abgeschlossene** Schichten, die laufende Nummer ist `amt.schichten + 1`. `showDorf()` liest ihn entsprechend als „Schicht N abgeschlossen".
+* Neuer `state`-Wert `'feierabend'` neben `'menu'`, `'play'` und `'win'`, gesetzt an drei Stellen (Tod, Zeitablauf, `showDorf()`). Jede neue Abfrage auf `state !== 'play'` muss ihn mitdenken.
+* Die Kladde wird in `endShift()` bewusst **nicht** angefasst. Sie speichert sich schon beim Kochen über `saveKladde()` und ist dadurch strukturell unabhängig vom Reset. Das ist die Garantie aus Phase 1, kein Sonderfall im Schichtcode. So muss es bleiben.
+* `AMT_KEY = 'sda_amt_v1'` wird ganz oben geladen, bevor Kammertüren oder HUD danach fragen. Gleiche Reihenfolge-Regel wie die Tabellen aus Phase 1.
+* Übergabe zwischen zwei Schichten läuft über `pendingCarryGold` und `pendingCarryPouch`. `startGame()` leert beide für die allererste Schicht.
+* Überstunden: bei Zeitablauf setzt `shiftEndPending`, danach läuft `overtimeT` weiter, bis kein Gegner nah ist und weder Kammer noch Symbolschloss offen sind, spätestens aber 60 Sekunden. Kein Abbruch mitten im Kampf.
+* Zutaten-Übertrag sortiert nach `zutatRar()` absteigend und kappt auf `CONFIG.zutatenMitnahmeBasis + amt.ausbauten.kontingent*2`. Stapel werden dabei geteilt, der Rest gilt als eingezogen.
+* `shiftKillsByType` und `shiftKillsTotal` werden **nur** bei `CONFIG.schichtModus === true` gefüllt. Außerhalb des Schichtmodus liest man dort 0.
+* `stats.goldTotal` ist deklariert, aber tot: es wird nirgends erhöht. Gold läuft direkt über zwei `player.gold +=`-Stellen (Truhe und Drop-Aufnahme). Nicht darauf aufbauen, ohne es vorher zu verdrahten.
+* Jahresgespräch bei `amt.schichten % 10 === 0`, Bonus über `(Math.floor(amt.schichten/10) - 1) % JAHRES_BONI.length`. Läuft im Kreis, geht also nie aus.
+* **Falle:** Der Jahresbonus „Dienstsiegel" schreibt in `CONFIG.kammerNachwachsen`, aber `saveAmt()` serialisiert nur `amt`, nicht `CONFIG`. Der Bonus überlebt den Reload nicht und wird bei jedem fünften Jahresgespräch erneut vergeben. Die vier anderen Boni liegen als `amt.bonus*` richtig. Wer das repariert, muss den Wert nach `amt` ziehen.
+* `CONFIG.kammerTueren` wird an zwei Stellen gesetzt: einmal beim Laden des Amt-Stands (`+=`, damit der Ausbau schon in der allerersten Schicht wirkt) und einmal pro Schicht in `startShift()` als Zuweisung `2 + amt.ausbauten.tueren`. Die Zuweisung verhindert, dass sich der Ausbau über die Schichten aufaddiert. Nicht in ein `+=` ändern.
+* `STARTFLUCH_WAHL` enthält bewusst nur milde Flüche. Ein harter Fluch könnte eine Schicht schon beim Antritt unspielbar machen.
+* Die Startwaffe steht hart in `startShift()` (`BASES[1]` plus `AFFIXES[0]`), der gekaufte Startfluch hängt sich als `player.equip.weapon.fluch` daran.
+* `player.hair` wird pro Schicht neu gewürfelt: jede Schicht ein anderer Sachbearbeiter.
+* Das Amt ist ein `#ovPanel`-Screen wie Start, Tod und Sieg, **kein begehbarer Ort**. Ein Dorf existiert im Code weiterhin nicht, die einzige Landmarke ist nach wie vor der Kessel-Prop am Spawn.
+* Die Schichtuhr hängt über `schichtHudSuffix()` im Zonen-HUD.
+* Bewusst offen gelassen: die Ausbau-Kosten in `AUSBAU_DEFS` sind eine erste vernünftige Schätzung, keine durchgespielte Zahl.
+
 ## Phase 5: Amtsrat a. D. Knöterich — Onboarding ohne Tutorial
 
 Ersetzt den Erklärtext im Startbildschirm durch eine Figur, die ereignisgesteuert kurze Hinweise gibt. Kein Tutorial-Modus, keine Hinweisketten, keine Wall of Text.
