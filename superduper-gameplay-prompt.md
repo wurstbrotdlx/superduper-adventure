@@ -169,6 +169,21 @@ Das eigentliche Spiel entsteht daraus, dass sich Flüche gegenseitig aufheben od
 
 Keine Zahl mehr im Item-Tooltip, nur Sätze. Alle 48 Hooks greifen. Kein Fluch kann das Spiel in einen unspielbaren Zustand bringen (harter Test: alle Slots mit den fiesesten Flüchen gleichzeitig).
 
+### Umsetzungsnotizen aus Phase 3 (für die Folgephasen wichtig)
+
+* Die Tabellen aus Phase 1 sind gewachsen: `WIRKUNG` von 14 auf **24**, `ZUTAT_ADJ` von 16 auf **26**, dazu neu `FLUCH` mit **24** Einträgen. Jedes Adjektiv trägt jetzt beides, `wirk` für den Vorteil und `fl` für den Fluch. Die Grammatik aus Phase 1 bestimmt also weiterhin alles; der Fluch hängt am selben Adjektiv wie die Wirkung und ist keine zweite Würfelquelle.
+* `CFX` ist das Gegenstück zu `FX`: aggregierte Flüche, aber nur **0 oder 1**. Derselbe Fluch auf zwei Slots wirkt nicht doppelt. Alle Fluch-Hooks lesen ausschließlich aus `CFX`, so wie die Wirkungs-Hooks nur aus `FX` lesen. Berechnet wird beides in derselben Schleife in `recalc()`.
+* **Fluchbudget:** höchstens **zwei harte Flüche** gleichzeitig wirksam, der Rest ruht als `item.fluchRuht` und zeigt im Tooltip „Dieser Fluch ruht. Zwei sind genug." Hart sind sechs: Grußpflicht, Zappeln, Standpflicht, Blutmagie, Manastopp, Nüchternheitsgebot. Das Budget verhindert gezielt die Kombination aus Stumpfheit, Nüchternheitsgebot, Blutmagie und Manastopp, die keine Nachfüllquelle mehr übrig ließe. Wer einen neuen harten Fluch ergänzt, muss das Budget mitdenken.
+* `item.fluchRuht` wird in `recalc()` bei **jedem** Aufruf neu gesetzt. Nicht anderswo zwischenspeichern, sonst hängt ein ruhender Fluch fest.
+* Derselbe Fluch auf zwei Slots belastet das Budget nur einmal (`schonAktiv`-Prüfung). Sonst hätte zweimal dieselbe Standpflicht einen Platz verschenkt.
+* Die **sechs bewussten Wechselwirkungen** stehen als Kommentarblock direkt über `FLUCH`. Wer die Tabelle anfasst, hält den Block aktuell, er ist die einzige Dokumentation dieser Absicht.
+* `hurtMon(m, d, crit, hitAngle, quelle)`: der `quelle`-Parameter aus Phase 2 wird jetzt zweifach ausgewertet, von den Kammerwachen mit `m.regel` und von der Grußpflicht. `CFX.gruss` greift nur bei `quelle === 'nah'`, Kammerwachen mit Sonderregel sind davon ausgenommen.
+* **Falle Grußpflicht:** `AKT_GRUSS` wird in `scanAktion()` auf der **Spielerposition** angeboten und gewinnt damit jeden Distanzvergleich in `aktBiete()` (Distanz 0). Deshalb steht dort ein Guard, der nur anbietet, wenn wirklich ein ungegrüßtes Ziel in der Nähe ist. Ohne ihn überstimmt der Fluch dauerhaft jede Tür- und Truheninteraktion. Nicht wegoptimieren.
+* Die Unterscheidung `hart:true` benutzt Phase 4 weiter: `STARTFLUCH_WAHL` im Amt bietet ausschließlich milde Flüche an, damit eine Schicht nicht schon beim Antritt unspielbar startet.
+* Einzelne Flüche greifen bewusst nur unter Bedingungen, damit sie nicht in Sackgassen führen: das Nüchternheitsgebot sperrt den Trank nur im Kampf und nur oberhalb 30 Prozent Leben, die Standpflicht setzt die Rüstung nur während der Bewegung auf 0.
+* `CFX.schweigen` (Amtsschweigen) sperrt das Lernen der Kladde, solange das Stück getragen wird. Das ist der einzige Fluch, der den Fortschritt selbst betrifft, und er ist absichtlich nur ein Pausenknopf, kein Löschen. Er darf nie dazu führen, dass bereits Notiertes verschwindet.
+* Altbestand bleibt tragbar: Items ohne `fluch` laufen unverändert weiter.
+
 ## Phase 4: Dienst nach Vorschrift — ERLEDIGT
 
 Achtung, das ist ein struktureller Umbau, kein Anbau. Er ersetzt die bisherige Todesregel („Rückkehr in den Wald mit halbem HP, kein Reset").
