@@ -269,7 +269,7 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 
 Der Build inliniert **alles** unter `assets/`, statt die benutzte Teilmenge zu erraten — `SHEET_LIST` entsteht in Schleifen, jede statische Analyse wäre eine Fehlerquelle, und der Unterschied ist klein (341 Dateien, 615 KB roh). Ergebnis 1,1 MB, ein HTTP-Request statt 97. Fehlt der Marker, bricht der Build ab, statt still eine Datei ohne Grafik zu schreiben.
 
-Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**, Kammer identisch zur Serverfassung. `file://` sollte laufen (kein `fetch`, keine Module, kein `getImageData`, alle `localStorage`-Zugriffe in `try/catch`), ist aber **nicht empirisch geprüft**.
+Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**, Kammer identisch zur Serverfassung. **`file://` läuft** (von Matthias per Doppelklick bestätigt) — das Spiel nutzt kein `fetch`, keine Module und kein `getImageData`, alle `localStorage`-Zugriffe stehen in `try/catch`. Damit ist `dist/index.html` als einzelne Datei versendbar, ohne Hosting.
 
 ### G2
 
