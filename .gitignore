@@ -1,3 +1,21 @@
 serve.py
 .DS_Store
+
+# Rohbibliothek Cute Fantasy (Kenmi) — Premium-Lizenz verbietet Weiterverteilung
 Graphics/
+
+# Kuratierte Cute-Fantasy-Grafik. Aus demselben Grund nicht im Repo: die Lizenz
+# untersagt die Weitergabe der Dateien, auch modifiziert. Erlaubt ist, sie im
+# fertigen Spiel auszuliefern — das macht `node tools/build-single.mjs`, der sie
+# als data:-URIs in eine einzelne dist/index.html einbackt.
+# Wer das Repo klont, braucht Graphics/ selbst lizenziert und kopiert daraus nach
+# assets/cf/ (Dateiliste siehe assets/cf/README.md).
+assets/cf/dungeon/
+assets/cf/player/
+assets/cf/enemies/
+assets/cf/tiles/
+assets/cf/deco/
+assets/cf/ui/
+
+# Build-Artefakt, enthält die eingebackene Grafik
+dist/

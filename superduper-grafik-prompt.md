@@ -211,9 +211,65 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 
 **Verifikation:** `git diff -- index.html` leer. Spiel unter `http://localhost:8378/adventure/index.html` gestartet, Konsole ohne Fehler (siehe unten).
 
-### G1
+### G1 — Kammern-Interieur (erledigt)
 
-(noch offen)
+**Korrekturen am Prompt-Kontext oben (wichtig für G2–G5):**
+
+1. **Das G0-Manifest ist bei Animationssheets nicht belastbar.** `Dungeon_1_Gate_anim.png` steht dort als 16×16 mit 104 Frames — real sind es **26 Frames à 32×32**, denn `Gate_Closed.png` ist 32×32, und das Tor ist genau ein Frame breit. Die Heuristik hat den kleinsten gemeinsamen Teiler gefunden, nicht das Animationsraster. Regel für G2–G5: **Framegröße immer am zugehörigen Einzelbild-Sheet festmachen** (`*_Closed`, `*_SingleFrame`), nie an der Anim-Datei allein, und Bilddatei-Breite / Framebreite als Frameanzahl gegenrechnen.
+2. Die Dungeon-Tilesets sind **kein durchgehendes 13×13-Raster**. Belegt sind nur einzelne Blöcke, dazwischen liegt Leerraum, und die beiden Beispielräume oben links (bei 6,8 und 16,48) sind **nicht kachelausgerichtet** — das sind Illustrationen des Künstlers, keine Tiles. Wer sie mitzählt, verschiebt das ganze Raster.
+3. `Dungeon_2.png` ist **208×192**, nicht 208×208 wie Dungeon_1. Die unterste Bodenzeile (Zeile 8) existiert dort nicht. UVs, die für beide Sets gelten sollen, dürfen nur die Zeilen 6–7 benutzen.
+4. **Ausliefern statt committen — gilt für alle Folgephasen.** Die Bild-Unterordner von `assets/cf/` stehen in der `.gitignore` (wie `Graphics/`), weil Kenmis Lizenz Weiterverteilung der Dateien untersagt, auch modifiziert. Erlaubt ist, die Grafik **im fertigen Spiel** auszuliefern — das ist der gekaufte Anwendungsfall. Dafür gibt es `tools/build-single.mjs`: der Build backt alle Grafiken als `data:`-URIs in eine einzige `dist/index.html`. **G2–G5 kopieren weiter nach `assets/cf/`, committen dort aber nichts** und tragen neue Unterordner in `.gitignore` und in die Dateiliste in `assets/cf/README.md` ein. Ausgeliefert wird ausschließlich `dist/index.html`.
+
+**Entscheidungen:**
+
+- **Set-Mapping: Schwierigkeit 1–2 → Dungeon_1, 3–5 → Dungeon_2** (`k.set` in `betreteKammer`). Dungeon_3 existiert nicht (G0-Korrektur). Dungeon_1 ist der grobe Kopfstein mit breiten Bodenziegeln, Dungeon_2 der feinere, dunklere Mauerziegel — die härtere Optik zeigt sich damit ab Stufe 3 oft genug, um als Steigerung zu wirken.
+- **Requisiten nur getauscht, wo es ein echtes CF-Pendant gibt.** Auf CF umgestellt: Boden, Wände, Tore zwischen Räumen, Oberwelt-Kammertür, Druckplatten, Schiebeblöcke, Truhe, Ein- und Ausgangstreppe, Wanddeko. **Bewusst Vektor geblieben:** Spiegel, Lichtquelle, Lichtziel, Hebel, Symbolschloss, Hinweistafel, Reset-Rune, Block-Zielfelder — dafür gibt das Pack nichts Passendes her, und Tafel/Symbole müssen lesbar bleiben.
+
+**Umgesetzt (alles in `index.html`, Mechanik unangetastet):**
+
+- **Lademodus `'grid'`** in `addSheet`/`loadAssets`: fünfter Parameter `opt` mit `{fw, fh, ax, ay}`. Die Sunnyside-Modi `char`/`strip`/`raw` bleiben unverändert. Alle CF-Sheets sind als geschlossene Tabelle direkt unter den Sunnyside-Blöcken registriert, Framezahlen hart im Code (Regressionsregel 7/12).
+- **`DUN_SET`-Tabelle + `bakeDunTile`/`dunWallTile`/`dunFloorTile`.** Gemessenes Layout, für beide Sets identisch: Spalten 4–6 / Zeilen 0–2 = 3×3-Wandring mit **durchsichtiger Mitte** (die 9-Slice-Wand), Spalte 8 / Zeile 4 = massiver Wandblock, Spalten 4–6 / Zeilen 6–7 = Bodenziegel. `dunWallTile` wählt über die 4 Nachbarn: genau eine begehbare Orthogonalseite → Kantenstück, nur eine begehbare Diagonale → Eckstück, sonst Vollblock. Bei rechteckigen Räumen mit 1 Kachel dickem Rand deckt das alle vorkommenden Fälle ab. **Benennung ist absichtlich „wo liegt der Boden", nicht „wo im Ring":** die Ringoberkante heißt `edgeS`, weil der Raum unter ihr liegt.
+- **Erster Anlauf war invertiert** und ist es wert, festgehalten zu werden: ich hatte den hellen Ziegel (160,0) als Wand und den dunklen als Boden genommen. Ergebnis war ein durchgehendes Ziegelfeld, in dem begehbar und nicht begehbar optisch nicht zu trennen waren. Merksatz fürs Tileset: **der dunkle Kopfstein ist die Wand, der Ziegel ist der Boden** — die hellere Fläche ist immer das, worauf man läuft.
+- **`malBodenUmfeld(x,y)`** neu: `oeffneTor` backt jetzt 3×3 statt einer Kachel nach, weil die Kantenmaske der umliegenden Wände von der Begehbarkeit abhängt. Gemessen 0,1 ms — der Komplettbake (6400 Kacheln) bleibt aus.
+- **`baueWandProps`** ersetzt die getönten Sunnyside-Felsen durch Pillars, Tonkrüge und Spinnweben, gestreut über `tileHash` (jede 6./11./13. Wandkachel). **73 statt ~400 Props** — die Wandkachel trägt ihre Optik jetzt selbst, die Requisiten sind nur noch Würze. `drawProp` bekommt die drei Zweige vor dem `G_ROCK`-Zweig; der `t.tint`-Pfad dort ist entfallen, den nutzte nur die Kammer.
+- **Tor zwischen Räumen:** Die Durchfahrt ist 1 Kachel breit und 3 hoch, dafür gibt es im Pack kein passendes Format (Gate/Door sind 2×2 für eine Durchfahrt nach Norden). Gelöst mit `Gate_Closed` bei 2× mittig auf der Durchfahrt; beim Öffnen läuft `Gate_anim` einmal über `tor.openT = gameT` ab und verschwindet danach. Rein optisch, `oeffneTor` behält seine Logik.
+- **Oberwelt-Kammertür:** `Gate_Closed`/`Gate_anim` bei 2×, Set nach `t.diff` wie beim Betreten. Das Gitter fährt hoch, sobald der Spieler in Aktionsreichweite (58 px) ist, und wieder herunter beim Weggehen — der Fortschritt `t.gateT` läuft im bestehenden Türen-Loop mit dem Cooldown mit. Geleerte Türen nutzen eine über `tintedSheet()` gebackene abgedunkelte Kopie, **kein `ctx.filter`**. Das Holzschild ist in Text, Balkenanzeige und Tier-Farbe unverändert.
+- **Druckplatten** nutzen `Pressure_Plate.png` (3 Varianten × 2 Zustände à 16×16, nicht die 59-Frame-Anim — die statische Datei hat genau die zwei gebrauchten Zustände). Das Rätselsymbol bleibt als Text obenauf, sonst wäre die Reihenfolge nicht mehr ablesbar.
+- **Schiebeblöcke** = Holzkiste, **Wanddeko** = Tonkrug. Bewusst verschiedene Sprites: mit Kisten an beiden Stellen sah im Block-Raum jede Deko nach schiebbarem Block aus.
+- **Truhe** `Chest_anim` Frame 0/7, Glint bleibt. **Ausgangsrune** bekommt `Stairs_Down` plus den bisherigen pulsierenden Ring (der Ring muss bleiben, er ist die einzige Anzeige, dass hier ein Kontaktpunkt ist). **Eingang** bekommt eine zusätzliche `treppe`-Prop an `k.start` — reine Bodendecke, taucht in `scanAktion` nicht auf.
+
+**Bewusst nicht gemacht:**
+
+- **`G_GAP` (eingebrochene Bodenplatten) blieb das schwarze Rechteck** aus `drawKammerBoden`. Der Grubenring des Tilesets hat eine durchsichtige Mitte, gerendert käme also ohnehin Schwarz heraus — der Austausch hätte Code gekostet und pixelgleich ausgesehen. `Floor_spikes` wurde deshalb gar nicht erst kopiert.
+- **Kein Nachbake bei `G_GAP`**: `aufBrechen` setzt die Kachel, ruft aber kein `malBoden`. Bleibt so, das schwarze Rechteck liegt darüber.
+- **Kammerwächter laufen weiter auf den Sunnyside-Rigs** (Stilbruch bis G3 ausdrücklich erlaubt, Übergangsregel 13). Ebenso die Fackel-Flamme (`fire1`).
+- **Sewer-, Arch-, Door-, Stairs- und Floor_spikes-Dateien nicht kopiert** — nicht geladen, also nicht im Repo.
+
+**Verifikation (alles am laufenden Spiel unter `http://localhost:8378/adventure/index.html`):**
+
+| Prüfung | Ergebnis |
+|---|---|
+| Ladeliste | 96/96 Sheets geladen, keine `Sprite fehlt`-Warnung, Konsole leer |
+| Sheet-Metadaten | alle 15 CF-Sheets gegen die echten Bildmaße gegengeprüft (Raster, Spalten, Frames, Anker) |
+| Autotiling | Nordwand/Südwand/Ecke/Innenwand liefern 4 verschiedene Kacheln |
+| Alle 8 Module | `platten, bloecke, fackeln, brechen, spiegel, schalter, schloss, welle` in beiden Sets gebaut und gezeichnet, keine Exception |
+| Tor öffnen | 3 Kacheln begehbar, Umfeld korrekt nachgebacken (0,1 ms) |
+| Truhe | öffnet, Gold + Zutaten, Tür-Cooldown gesetzt |
+| Oberwelt-Wiederherstellung | map-Hash, floor-Hash, trees/decos/critters/monsters/Türen **bitgleich** vor und nach der Kammer |
+| Esc-Abbruch | zurück auf Level 1, `kammer === null`, 1165 Bäume zurück |
+| Tod in der Kammer | `respawnPlayer()` holt die Oberwelt zurück, Boden wieder Gras |
+| Kammertür Stufe 1/5/geleert | Schild lesbar, Balken und Tier korrekt, geleert sichtbar abgedunkelt |
+| Frame-Budget | Kammer mit 80er Horde **0,198 ms/Frame** gegen **0,169 ms** Oberwelt mit gleicher Horde — Referenz 0,6 ms gehalten |
+| 300-Frame-Soak | mit Dauerzaubern, 0 Exceptions, Ø 0,816 ms (update+render), max 5,4 ms; Partikel 255 / Floater 6, Caps unberührt |
+| Bake-Zeit | Kammer 7,3 ms gegen Oberwelt 5,3 ms (einmalig beim Betreten, hinter Warp-Sound und Shake) |
+
+**Für G2/G3 zum Mitnehmen:** Der `'grid'`-Lademodus ist der Weg für alle weiteren CF-Sheets — Framegröße und Anker gehören ins `opt`-Objekt, nicht in eine Heuristik. Und die Anker aus `manifest.json` (`anchorSuggested`) sind nur ein Startwert; bei jedem hier eingebauten Sprite musste der y-Anker von Hand nachgezogen werden, damit der Fuß auf der Kachelunterkante sitzt.
+
+**Einzeldatei-Build (in G1 nachgezogen, gilt ab jetzt):** `node tools/build-single.mjs` schreibt `dist/index.html` mit allen Grafiken als `data:`-URIs. Der Loader nimmt sie über `ASSET_BLOBS` (Platzhalterzeile mit Marker `/*BUILD:ASSET_BLOBS*/` direkt unter `const ASSETS`); ist die Tabelle `null`, lädt das Spiel wie bisher aus `assets/`. Beides läuft, Entwicklung ändert sich nicht.
+
+Der Build inliniert **alles** unter `assets/`, statt die benutzte Teilmenge zu erraten — `SHEET_LIST` entsteht in Schleifen, jede statische Analyse wäre eine Fehlerquelle, und der Unterschied ist klein (341 Dateien, 615 KB roh). Ergebnis 1,1 MB, ein HTTP-Request statt 97. Fehlt der Marker, bricht der Build ab, statt still eine Datei ohne Grafik zu schreiben.
+
+Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**, Kammer identisch zur Serverfassung. `file://` sollte laufen (kein `fetch`, keine Module, kein `getImageData`, alle `localStorage`-Zugriffe in `try/catch`), ist aber **nicht empirisch geprüft**.
 
 ### G2
 

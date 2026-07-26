@@ -455,13 +455,21 @@ const ANCH_X = 48, ANCH_Y = 40;    // Figurmitte (x) / Fußlinie (y) im Frame
 const ASSETS = 'assets/';
 const HAIRS = ['bowlhair','curlyhair','longhair','mophair','shorthair','spikeyhair'];
 
+// Einzeldatei-Build: `node tools/build-single.mjs` ersetzt genau die nächste Zeile
+// durch eine Tabelle Pfad -> data:-URI und schreibt das Ergebnis nach dist/.
+// Im Quellbaum bleibt sie null, dann lädt das Spiel wie bisher aus assets/.
+// Grund: Cute Fantasy darf nicht als Dateisammlung weitergegeben werden, wohl aber
+// im fertigen Spiel stecken — der Build ist ein Spiel, kein Asset-Paket.
+const ASSET_BLOBS = null; /*BUILD:ASSET_BLOBS*/
+
 const SHEETS = {};                 // key -> {img, cols, n, fw, fh, ax, ay}
 const SHEET_LIST = [];             // [key, url, n, mode]
 let assetsReady = false, assetsLoaded = 0;
 
 // mode: 'char' = 96x64-Raster, Anker Fußmitte | 'strip' = n Frames nebeneinander,
-//       Anker Fußmitte | 'raw' = ein Bild, Anker oben links (Tileset)
-function addSheet(key, path, n, mode){ SHEET_LIST.push([key, ASSETS + path, n, mode || 'char']); }
+//       Anker Fußmitte | 'raw' = ein Bild, Anker oben links (Tileset) |
+//       'grid' = festes fw/fh aus opt, freier Anker (Cute-Fantasy-Dungeon-Sheets)
+function addSheet(key, path, n, mode, opt){ SHEET_LIST.push([key, ASSETS + path, n, mode || 'char', opt]); }
 
 // --- Held: base + Haar-Ebene (deckungsgleiches Raster, wird drübergezeichnet) ---
 // [anim, Ordner, Dateikürzel, stripN im Dateinamen, echte Frames]
@@ -508,19 +516,40 @@ addSheet('rock', 'Elements/Crops/rock.png', 1, 'strip');
 addSheet('wood', 'Elements/Crops/wood.png', 1, 'strip');
 addSheet('alert', 'UI/expression_alerted.png', 1, 'strip');
 
+// ===========================================================================
+//  Kammer-Interieur — Cute Fantasy Dungeons (Kenmi, itch.io), Phase G1.
+//  Werte per Alpha-Bounding-Box/Komponentenanalyse am PNG gemessen (nicht aus
+//  Dateinamen geraten, Regressionsregel 7/12). Dungeon_3 existiert nicht (G0-
+//  Korrektur) — 2 Sets, Schwierigkeit 1-2 nutzt Set 0, 3-5 nutzt Set 1.
+// ===========================================================================
+for(const n of [1, 2]){
+  addSheet(`dun${n}_tiles`, `cf/dungeon/Dungeon_${n}/Dungeon_${n}.png`, 1, 'raw');
+  addSheet(`dun${n}_gate`, `cf/dungeon/Dungeon_${n}/Dungeon_${n}_Gate_Closed.png`, 1, 'grid', {fw:32, fh:32, ax:16, ay:32});
+  addSheet(`dun${n}_gateAnim`, `cf/dungeon/Dungeon_${n}/Dungeon_${n}_Gate_anim.png`, 26, 'grid', {fw:32, fh:32, ax:16, ay:32});
+  addSheet(`dun${n}_pillar`, `cf/dungeon/Dungeon_${n}/Dungeon_${n}_Pillars.png`, 3, 'grid', {fw:16, fh:48, ax:8, ay:46});
+  addSheet(`dun${n}_plate`, `cf/dungeon/Dungeon_${n}/Dungeon_${n}_Pressure_Plate.png`, 6, 'grid', {fw:16, fh:16, ax:8, ay:8});
+}
+addSheet('dun1_stairsDown', 'cf/dungeon/Dungeon_1/Stairs_Down_SingleFrame.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
+addSheet('dun2_stairsDown', 'cf/dungeon/Dungeon_2/Dungeon_2_Stairs_Down.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
+addSheet('dun_chest', 'cf/dungeon/Objects/Chest_anim.png', 8, 'grid', {fw:32, fh:32, ax:16, ay:30});
+addSheet('dun_crate', 'cf/dungeon/Objects/crate.png', 1, 'grid', {fw:20, fh:26, ax:10, ay:25});
+addSheet('dun_pot', 'cf/dungeon/Objects/pot.png', 1, 'grid', {fw:14, fh:16, ax:7, ay:15});
+addSheet('dun_cobweb', 'cf/dungeon/Objects/cobweb.png', 1, 'grid', {fw:18, fh:16, ax:9, ay:0});
+
 function loadAssets(){
-  return Promise.all(SHEET_LIST.map(([key, url, n, mode]) => new Promise(resolve => {
+  return Promise.all(SHEET_LIST.map(([key, url, n, mode, opt]) => new Promise(resolve => {
     const img = new Image();
     img.onload = () => {
       let fw, fh, cols, ax, ay;
       if(mode === 'char'){ fw = FW; fh = FH; cols = Math.max(1, Math.round(img.width/FW)); ax = ANCH_X; ay = ANCH_Y; }
       else if(mode === 'raw'){ fw = img.width; fh = img.height; cols = 1; ax = 0; ay = 0; }
+      else if(mode === 'grid'){ fw = opt.fw; fh = opt.fh; cols = Math.max(1, Math.round(img.width/fw)); ax = opt.ax; ay = opt.ay; }
       else { fw = img.width/n; fh = img.height; cols = n; ax = fw/2; ay = fh; }
       SHEETS[key] = {img, cols, n, fw, fh, ax, ay};
       assetsLoaded++; resolve();
     };
     img.onerror = () => { console.warn('Sprite fehlt:', url); assetsLoaded++; resolve(); };
-    img.src = url;
+    img.src = (ASSET_BLOBS && ASSET_BLOBS[url]) || url;
   })));
 }
 
@@ -1179,8 +1208,6 @@ const TILE_TINT = {
   shadow:     ['#4a1866', 0.74],
   shadowDirt: ['#2e0f42', 0.74],
   dead:       ['#c9a06a', 0.45],
-  kammer:     ['#2f2a48', 0.74],   // Kammerboden: kühles Kellergrau
-  kammerWand: ['#171226', 0.86],   // Kammerwand: fast schwarz, Felsen stehen davor
 };
 
 const TILE_CACHE = {};
@@ -1201,6 +1228,59 @@ function bakeTile(uv, tintName){
   return c;
 }
 
+// --- Kammerboden aus Cute-Fantasy-Dungeon-Sets (Phase G1) -------------------
+// UVs per Rasteranalyse am PNG gemessen. Beide Sets teilen dasselbe Layout:
+// Spalten 4-6 / Zeilen 0-2 sind ein 3x3-Wandring aus dunklem Kopfstein mit
+// durchsichtiger Mitte (das ist die 9-Slice-Wand), Spalte 8 / Zeile 4 ist der
+// freistehende Wandblock, Spalten 4-6 / Zeilen 6-7 sind Ziegelboden. Nur die
+// Zeilen 6-7 nehmen, nicht 6-8: Dungeon_2 ist 208x192 und hat Zeile 8 nicht.
+//
+// edgeN/E/S/W und die Ecken benennen, wo der begehbare Boden liegt, nicht die
+// Position im Ring — die Ringoberkante ist edgeS, weil unter ihr der Raum liegt.
+const DUN_SET = [1, 2].map(n => ({
+  key: `dun${n}_tiles`,
+  floor: [[64,96], [80,112], [96,96], [80,96], [64,112]],
+  wall:  [[128,64]],                                    // massiver Block, deutlich dunkler als der Boden
+  edgeS: [80,0],  edgeN: [80,32], edgeE: [64,16], edgeW: [96,16],
+  eckSE: [64,0],  eckSW: [96,0],  eckNE: [64,32], eckNW: [96,32],
+}));
+
+const DUN_CACHE = {};
+function bakeDunTile(set, uv){
+  const ck = 'd' + set + ',' + uv[0] + ',' + uv[1];
+  if(DUN_CACHE[ck]) return DUN_CACHE[ck];
+  const sheet = SHEETS[DUN_SET[set].key]; if(!sheet) return null;
+  const c = makeCanvas(TS, TS), cc = c.getContext('2d');
+  cc.imageSmoothingEnabled = false;
+  cc.drawImage(sheet.img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
+  DUN_CACHE[ck] = c;
+  return c;
+}
+
+// Wandkachel: Ringstück je nach Seite mit begehbarem Boden. Die Räume sind
+// Rechtecke mit 1 Kachel dickem Rand, deshalb hat eine Wandkachel entweder
+// genau eine begehbare Orthogonalseite (Kante) oder nur eine begehbare
+// Diagonale (Ecke). Alles andere ist Innenwand und bekommt den Vollblock.
+function dunWallTile(set, x, y){
+  const ds = DUN_SET[set];
+  const n = walkT(x,y-1), e = walkT(x+1,y), s = walkT(x,y+1), w = walkT(x-1,y);
+  if(s && !n && !e && !w) return bakeDunTile(set, ds.edgeS);
+  if(n && !s && !e && !w) return bakeDunTile(set, ds.edgeN);
+  if(e && !n && !s && !w) return bakeDunTile(set, ds.edgeE);
+  if(w && !n && !s && !e) return bakeDunTile(set, ds.edgeW);
+  if(!n && !e && !s && !w){
+    if(walkT(x+1,y+1)) return bakeDunTile(set, ds.eckSE);
+    if(walkT(x-1,y+1)) return bakeDunTile(set, ds.eckSW);
+    if(walkT(x+1,y-1)) return bakeDunTile(set, ds.eckNE);
+    if(walkT(x-1,y-1)) return bakeDunTile(set, ds.eckNW);
+  }
+  return bakeDunTile(set, ds.wall[tileHash(x,y) % ds.wall.length]);
+}
+function dunFloorTile(set, x, y){
+  const ds = DUN_SET[set];
+  return bakeDunTile(set, ds.floor[tileHash(x,y) % ds.floor.length]);
+}
+
 // Stabiler Pseudo-Zufall pro Zelle: Neubacken (Levelwechsel) ergibt dasselbe Bild.
 const tileHash = (x,y)=> (Math.imul(x, 73856093) ^ Math.imul(y, 19349663)) >>> 0;
 
@@ -1216,7 +1296,7 @@ function initFloorGraphics(){
                                 : TILE_UV.grass[(gh >>> 4) & 1];
       let tile;
       if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
-        tile = bakeTile(TILE_UV.dirt[0], t === G_WALL ? 'kammerWand' : 'kammer');
+        tile = t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
       } else if(currentLevel === 2){
         tile = bakeTile(t===G_PATH ? TILE_UV.dirt[0] : gv, t===G_PATH ? 'shadowDirt' : 'shadow');
       } else if(t === G_PATH){
@@ -2829,7 +2909,7 @@ function betreteKammer(tuer){
             level: currentLevel, px: player.x, py: player.y};
 
   const kinds = waehleModule(tuer.diff);
-  const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome,
+  const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome, set: tuer.diff <= 2 ? 0 : 1,
              mods: [], raeume: [], tore: [], props: [], idx: 0, geleert: false, truhe: null};
   kammer = k;
   currentLevel = 3;
@@ -2869,6 +2949,7 @@ function betreteKammer(tuer){
   k.ausgang = {kt:'rune', x: tileMid(KAM_X0+2), y: tileMid(KAM_TY)};
   k.props.push(k.ausgang);
   k.start = {x: tileMid(KAM_X0+5), y: tileMid(KAM_TY)};   // Abstand zur Rune, sonst reist man beim ersten F zurück
+  k.props.push({kt:'treppe', x: k.start.x, y: k.start.y});   // reine Bodendecke, kein Kontaktpunkt
 
   // Wandfelsen nur auf den Wänden, die an begehbaren Boden grenzen — das ist der
   // sichtbare Innenring. Der Rest der Karte bleibt gebackene Dunkelheit.
@@ -2886,6 +2967,11 @@ function betreteKammer(tuer){
   floaters.push({x: player.x, y: player.y - 46, txt: 'KAMMER · SCHWIERIGKEIT ' + k.diff, col:'#f4d97a', t: 3.0, big: true});
 }
 
+// Requisiten am sichtbaren Innenring: Pillars und vereinzelte Objekte stehen auf
+// der Wandkachel selbst (Fuß auf ihrer Unterkante), Spinnweben hängen oben in
+// die Kachel hinein. Bewusst sparsam (nur jede 5.-7. Kachel) — die Wandkachel
+// trägt jetzt selbst echte Dungeon-Optik, anders als beim alten Felsenersatz,
+// der die einzige Wanddarstellung war.
 function baueWandProps(){
   const t2 = [];
   const r0 = kammer.raeume[0], rn = kammer.raeume[kammer.raeume.length-1];
@@ -2893,7 +2979,13 @@ function baueWandProps(){
     for(let x = r0.x0; x <= rn.x1; x++){
       if(T(x,y) !== G_WALL) continue;
       if(!(walkT(x-1,y) || walkT(x+1,y) || walkT(x,y-1) || walkT(x,y+1))) continue;
-      t2.push({x: tileMid(x), y: y*TS + TS - 2, type: G_ROCK, phase: rr(0,10), variant: (x+y)&1, tint:'#6d6a8c'});
+      const h = tileHash(x,y);
+      if(h % 6 === 0)
+        t2.push({kt:'pillar', x: tileMid(x), y: y*TS + TS - 2, variant: (h>>>3) % 3});
+      else if(h % 11 === 0)
+        t2.push({kt:'pot', x: tileMid(x), y: y*TS + TS - 4});   // bewusst kein Kistensprite: Kisten sind die schiebbaren Blöcke
+      else if(h % 13 === 0)
+        t2.push({kt:'cobweb', x: tileMid(x), y: y*TS - TS/2});
     }
   }
   t2.sort((a,b)=>a.y-b.y);
@@ -2911,14 +3003,21 @@ function setzeWaechter(r, n, k){
 // Boden einer einzelnen Kachel nachbacken — ein Tor darf keinen Komplettbake
 // auslösen, das wären 6400 drawImage mitten im Spiel.
 function malBoden(x, y){
-  const tile = bakeTile(TILE_UV.dirt[0], T(x,y) === G_WALL ? 'kammerWand' : 'kammer');
+  const t = T(x,y);
+  const tile = t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
   if(tile) floorCtx.drawImage(tile, x*TS, y*TS);
+}
+// Wandkacheln lesen ihre Nachbarn für die Kantenmaske — wer begehbar wird,
+// ändert also auch die Optik der Wände ringsum, nicht nur die eigene Kachel.
+function malBodenUmfeld(x, y){
+  for(let dy = -1; dy <= 1; dy++) for(let dx = -1; dx <= 1; dx++) malBoden(x+dx, y+dy);
 }
 
 function oeffneTor(i, still){
   const tor = kammer.tore[i]; if(!tor || tor.offen) return;
   tor.offen = true;
-  for(let dy = -1; dy <= 1; dy++){ setT(tor.tx, tor.ty+dy, G_PATH); malBoden(tor.tx, tor.ty+dy); }
+  tor.openT = gameT;
+  for(let dy = -1; dy <= 1; dy++){ setT(tor.tx, tor.ty+dy, G_PATH); malBodenUmfeld(tor.tx, tor.ty+dy); }
   const tmx = tileMid(tor.tx), tmy = tor.ty*TS + TS - 2;
   trees = trees.filter(p => !(Math.abs(p.x - tmx) < 2 && Math.abs(p.y - tmy) < TS*1.6));
   bakeMinimap();
@@ -3001,7 +3100,7 @@ function bauPlatten(mod, r){
   mod.platten = [];
   for(let i = 0; i < 4; i++)
     mod.platten.push({kt:'platte', tx: r.x0+orte[i][0], ty: r.y0+orte[i][1],
-                      x: tileMid(r.x0+orte[i][0]), y: tileMid(r.y0+orte[i][1]), sym: syms[i], an: false});
+                      x: tileMid(r.x0+orte[i][0]), y: tileMid(r.y0+orte[i][1]), sym: syms[i], symIdx: i%3, an: false});
   mod.folge = [0,1,2,3].sort(()=> Math.random()-0.5);
   mod.schritt = 0; mod.steht = -1;
   for(const p of mod.platten) kammer.props.push(p);
@@ -3447,30 +3546,24 @@ function drawKammerObj(o){
   ctx.save();
   ctx.textAlign = 'center';
   switch(o.kt){
-    case 'tor':
-      if(o.offen) break;
-      ctx.fillStyle = '#1b1526'; ctx.fillRect(o.x - TS/2, o.y - TS*2, TS, TS*3);
-      ctx.strokeStyle = '#8a7bb8'; ctx.lineWidth = 3;
-      for(let i = 0; i < 4; i++){
-        ctx.beginPath(); ctx.moveTo(o.x - 12 + i*8, o.y - TS*2); ctx.lineTo(o.x - 12 + i*8, o.y + TS); ctx.stroke();
+    case 'tor': {
+      const dk = `dun${kammer.set+1}`;
+      if(o.offen){
+        const t = gameT - o.openT;
+        if(t < 26/18) drawSprite(dk+'_gateAnim', Math.floor(t*18), o.x, o.y, 2);
+        break;
       }
-      ctx.fillStyle = '#c77dff'; ctx.font = '13px serif';
-      ctx.fillText('🔒', o.x, o.y - TS*0.6);
+      drawSprite(dk+'_gate', 0, o.x, o.y, 2);
       break;
+    }
     case 'platte':
-      ctx.fillStyle = o.an ? '#2c5c34' : '#241d33';
-      ctx.fillRect(o.x - 14, o.y - 14, 28, 28);
-      ctx.strokeStyle = o.an ? '#6aff8f' : '#7a6ea8'; ctx.lineWidth = 2;
-      ctx.strokeRect(o.x - 14, o.y - 14, 28, 28);
-      ctx.fillStyle = o.an ? '#6aff8f' : '#c9b98a'; ctx.font = 'bold 15px serif';
+      drawSprite(`dun${kammer.set+1}_plate`, o.symIdx + (o.an ? 3 : 0), o.x, o.y, 2);
+      ctx.fillStyle = o.an ? '#6aff8f' : '#f4d97a'; ctx.font = 'bold 15px serif';
       ctx.fillText(o.sym, o.x, o.y + 6);
       break;
     case 'block':
       drawShadowEllipse(o.x, o.y + 12, 13);
-      ctx.fillStyle = '#5a4630'; ctx.fillRect(o.x - 15, o.y - 18, 30, 30);
-      ctx.strokeStyle = '#2b2016'; ctx.lineWidth = 3; ctx.strokeRect(o.x - 15, o.y - 18, 30, 30);
-      ctx.beginPath(); ctx.moveTo(o.x - 15, o.y - 18); ctx.lineTo(o.x + 15, o.y + 12);
-      ctx.moveTo(o.x + 15, o.y - 18); ctx.lineTo(o.x - 15, o.y + 12); ctx.stroke();
+      drawSprite('dun_crate', 0, o.x, o.y + 4, 1.5);
       break;
     case 'ziel': break;                                   // liegt flach im Bodenlayer
     case 'fackel':
@@ -3520,7 +3613,10 @@ function drawKammerObj(o){
     case 'rune':
       ctx.strokeStyle = '#6aff8f'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.arc(o.x, o.y, 14 + Math.sin(gameT*2.4)*2, 0, Math.PI*2); ctx.stroke();
-      ctx.fillStyle = '#6aff8f'; ctx.font = '15px serif'; ctx.fillText('🚪', o.x, o.y + 6);
+      drawSprite(`dun${kammer.set+1}_stairsDown`, 0, o.x, o.y, 2);
+      break;
+    case 'treppe':                                        // Einstieg: reine Bodendecke, kein Kontaktpunkt
+      drawSprite(`dun${kammer.set+1}_stairsDown`, 0, o.x, o.y, 2);
       break;
     case 'tafel':
       ctx.fillStyle = '#2b2338'; ctx.fillRect(o.x - 26, o.y - 20, 52, 34);
@@ -3538,14 +3634,8 @@ function drawKammerObj(o){
       break;
     case 'truhe':
       drawShadowEllipse(o.x, o.y + 10, 16);
-      ctx.fillStyle = o.auf ? '#3a2f22' : '#5a4630';
-      ctx.fillRect(o.x - 18, o.y - 14, 36, 24);
-      ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 3; ctx.strokeRect(o.x - 18, o.y - 14, 36, 24);
-      if(!o.auf){
-        ctx.fillStyle = '#f4d97a';
-        ctx.fillRect(o.x - 3, o.y - 6, 6, 8);
-        drawSprite('glint', animFrame('glint', gameT, 9), o.x, o.y - 22, 2);
-      }
+      drawSprite('dun_chest', o.auf ? 7 : 0, o.x, o.y, 1.3);
+      if(!o.auf) drawSprite('glint', animFrame('glint', gameT, 9), o.x, o.y - 26, 2);
       break;
   }
   ctx.restore();
@@ -3555,16 +3645,14 @@ function drawKammerObj(o){
 function drawKammerTuer(t){
   drawShadowEllipse(t.x, t.y, 16);
   ctx.save();
-  ctx.fillStyle = '#231c2e';
-  ctx.fillRect(t.x - 17, t.y - 40, 34, 40);
-  ctx.strokeStyle = '#6d6a8c'; ctx.lineWidth = 3;
-  ctx.strokeRect(t.x - 17, t.y - 40, 34, 40);
-  ctx.fillStyle = t.cd > 0 ? '#3a3350' : '#120e1c';
-  ctx.fillRect(t.x - 11, t.y - 33, 22, 33);
-  if(t.cd <= 0){
-    ctx.fillStyle = '#c77dff'; ctx.font = '13px serif'; ctx.textAlign = 'center';
-    ctx.fillText('🔒', t.x, t.y - 14);
-  }
+  // Set-Wahl wie beim Betreten (diff 1-2 -> Set 0), damit Tür und Innenraum
+  // zusammenpassen. Geleerte Türen sind über eine gebackene Tint-Kopie
+  // abgedunkelt — kein ctx.filter im Frame-Pfad.
+  const dk = `dun${t.diff <= 2 ? 1 : 2}`;
+  const g = t.gateT || 0;
+  if(g > 0.02) drawSprite(dk+'_gateAnim', Math.min(25, Math.floor(g*25)), t.x, t.y, 2,
+                          false, t.cd > 0 ? '#120e1c' : null, 0.55);
+  else         drawSprite(dk+'_gate', 0, t.x, t.y, 2, false, t.cd > 0 ? '#120e1c' : null, 0.55);
   // Schild
   ctx.textAlign = 'center';
   ctx.fillStyle = '#3b2f1c'; ctx.fillRect(t.x - 34, t.y - 78, 68, 34);
@@ -4055,7 +4143,13 @@ function update(dt){
     updateKammer(dt);
     setTxt('zone', `📍 Kammer · Schwierigkeit ${kammer.diff} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}${schichtHudSuffix()}`);
   } else {
-    for(const t of kammerTueren) if(t.cd > 0){ t.cd -= dt; if(t.cd <= 0) wuerfleTuer(t); }
+    // 6 Türen, also billig genug für den Frame: Cooldown und die reine Optik
+    // des Torgitters (fährt hoch, wenn der Spieler in Aktionsreichweite kommt).
+    for(const t of kammerTueren){
+      if(t.cd > 0){ t.cd -= dt; if(t.cd <= 0) wuerfleTuer(t); }
+      const zu = t.cd > 0 || sqDist(player.x, player.y, t.x, t.y) > 58*58;
+      t.gateT = clamp((t.gateT || 0) + (zu ? -dt*2.2 : dt*2.2), 0, 1);
+    }
   }
   scanAktion(dt);
   knTick(dt);
@@ -4684,6 +4778,9 @@ function drawPlayer(){
 
 // Bäume / Felsen — feste Hindernisse, y-sortiert über dem Boden
 function drawProp(t){
+  if(t.kt === 'pillar'){ drawSprite(`dun${kammer.set+1}_pillar`, t.variant, t.x, t.y); return; }
+  if(t.kt === 'pot'){ drawShadowEllipse(t.x, t.y + 3, 8); drawSprite('dun_pot', 0, t.x, t.y, 1.6); return; }
+  if(t.kt === 'cobweb'){ drawSprite('dun_cobweb', 0, t.x, t.y, 1.4); return; }
   if(currentLevel === 2){
     drawSprite(t.variant ? 'tree2' : 'tree1', animFrame('tree1', gameT*0.5 + t.phase, 3),
                t.x, t.y+4, 1.5, false, '#4a1866', 0.72);
