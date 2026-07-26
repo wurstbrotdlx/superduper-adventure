@@ -277,7 +277,144 @@ Der Build inliniert **alles** unter `assets/`, statt die benutzte Teilmenge zu e
 
 Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**, Kammer identisch zur Serverfassung. **`file://` läuft** (von Matthias per Doppelklick bestätigt) — das Spiel nutzt kein `fetch`, keine Module und kein `getImageData`, alle `localStorage`-Zugriffe stehen in `try/catch`. Damit ist `dist/index.html` als einzelne Datei versendbar, ohne Hosting.
 
-### G2
+### G2 — Held modular (erledigt)
+
+**Korrekturen am Prompt-Kontext oben (wichtig für G3–G5):**
+
+1. **Der Cute-Fantasy-Player-Rig ist ein Farming-Sim-Rig, kein Kampf-Rig.** Alle 56
+   Zeilen von `Player_Base_animations.png` per Alpha-Bounding-Box-Metrik (Schwerpunkt-
+   Drift, Höhenverlauf, Loop-Schluss) durchsucht, die Kandidaten dann gegen das
+   echte PNG gecroppt und vergrößert angesehen (wie in G0/G1): Idle (2 Varianten),
+   Walk, Run, Sprung, Rolle und ein gutes Dutzend Werkzeug-Idle-Wiederholungen sind
+   vorhanden — **Angriffs-Hieb, Zauber-Geste, Treffer-Taumel und Sterbe-Animation
+   fehlen vollständig.** Das war beim G0-Audit nicht aufgefallen, weil G0 bewusst
+   nur Cast-fähig/nicht-cast-fähig für die 29 Kammer-/Monster-Rigs geprüft hat, nicht
+   den Helden. Ersatzregel (siehe `CF_HERO_ANIMS`-Kommentar in `index.html`): Attacke
+   nutzt die Seitenreihe der Rolle (einziger echter Armausschlag im ganzen Blatt),
+   Zauber die kleine 5-Frame-Gestenreihe, Treffer/Tod teilen sich die einzige echte
+   Stolperbewegung. Der tatsächliche Kampf-Eindruck kommt weiterhin vom Klingenbogen-
+   und Partikeleffekt, die beide unabhängig vom Body-Frame gezeichnet werden — das
+   war schon vor G2 so und trägt jetzt die fehlenden Anims mit.
+2. **Der Held hat keine „Seiten"-Richtung im landläufigen Sinn, sondern eine feine
+   Kopf-Profil-Variante** unter den 3 Down/Side/Up-Reihen jeder Animation (Nase/Haar-
+   Silhouette leicht asymmetrisch). Diese mittlere Reihe ist die, die zum bestehenden
+   Links/Rechts-Flip passt und wurde für alle 6 Anims verwendet (idle=1, walk=9,
+   run=45, attack=18, cast=24, hurt=15).
+3. **Ausrüstungs-Layer sind winzig, nicht bugged.** `Chest`/`Legs`/`Feet` liefern pro
+   Frame nur 2–6 opake Pixel (Bounding-Box-Messung), weil der ganze Chibi-Körper nur
+   ~17 px hoch ist. Erst am 8×-Crop wird sichtbar, dass Hemd/Hose/Schuh trotzdem
+   sauber sitzen. Wer hier Nullen oder Fast-Nullen in einer Pixel-Auszählung sieht,
+   hat kein Bug gefunden, sondern misst einen sehr kleinen Charakter — erst optisch
+   gegenprüfen, bevor man an der Zuordnung zweifelt.
+4. **Tools-Layer (Waffen) hat ein inkompatibles Kleinraster.** `Iron_Sword.png` ist
+   ein eigenständiges 4×9-Sheet (256×576), nicht auf dem 9×56-Raster von Player_Base.
+   Für G3 relevant, falls Monster-Waffen aus demselben Tools-Ordner kommen sollen:
+   diese Dateien lassen sich nicht wie Chest/Legs/Feet einfach per `rowStart` in den
+   Körper-Bake einklinken.
+
+**Entscheidungen:**
+
+- **Anim-Baking statt Live-Layering.** Neuer Mechanismus `bakeHeroSheet()`: bei jedem
+  `recalc()` (Ausrüstungswechsel, Skillpunkt, Schichtstart) wird — falls sich
+  Rüstungs-/Stiefel-Stufe oder Frisur seit dem letzten Bake geändert haben
+  (Dirty-Check über einen `"tier|tier|hair"`-Schlüssel) — ein Offscreen-Canvas mit
+  allen 36 benötigten Frames (6 Anims) neu zusammengesetzt: Legs → Feet → Body →
+  Chest → Haar → Hände, in dieser Reihenfolge. Ergebnis landet als ganz normaler
+  Eintrag `SHEETS['hero_baked']`, `drawPlayer()` blittet daraus nur noch **ein**
+  Sprite pro Frame (Regressionsregel 4/10). Gemessen: Bake ~23 ms (einmalig, wie
+  G1s Kammer-Bake), `drawPlayer()` danach 0,0044 ms — schneller als die alte Fassung
+  mit zwei Einzel-Sprites plus Aura-Gradient.
+- **4 Kessel-Slots → Layer:** `armor` treibt Chest **und** Legs gemeinsam (5 Stufen:
+  Dienstkittel=OG_Shirt/OG_Pants Rot, Aktenweste=Farmer Grün, Amtsharnisch=Royal
+  Blau, Bearbeitungspanzer=Plate Iron, Ordnungsrüstung=Plate Gold). `boots` treibt
+  Feet (5 Stufen, Farben Orange/Schwarz/Blau/Lila/Pink — Braun und Weiß fielen bei
+  der Handprüfung gegen Hautton bzw. Schatten-Ellipse zu schwach aus, siehe Korrektur
+  3). Kein Slot belegt → kein Layer gezeichnet (nackter Chibi-Körper), keine
+  Sonderbehandlung nötig.
+- **Waffe (`Tools`) und Schild bleiben schwebende Icons**, wie es die Waffe schon vor
+  G2 war — mit Begründung (Korrektur 4 für Waffe; für Schild gibt es im ganzen Pack
+  **kein einziges Schild-Sprite für den Helden**, nur Boden-Requisiten in den
+  Dungeon-Sets). Die Waffe zeigt neu das echte `Iron_Sword`-Frame statt Emoji-Text,
+  eingefärbt nach Waffengattung (`WEAPON_STYLE`); alle drei Gattungen (Dolch/Schwert/
+  Kriegsaxt) teilen sich dieselbe Klinge, weil es keine anderen Waffen-Sprites gibt.
+  Weil zwei Qualitätsstufen derselben Gattung sonst identisch aussähen (z. B.
+  Amtsklinge/Dienstschwert, beide `sword`), skalieren Größe und Leuchten zusätzlich
+  mit der Stufe — sonst hätte die Abnahme „jede Slot-Belegung sichtbar" für die
+  Waffe nicht gestimmt. Das Schild-Icon bekommt dieselbe Behandlung (Größe/Glanz
+  nach Bronze/Silber/Gold-Schwelle, wie vordem die jetzt entfernte Rüstungs-Aura).
+- **Aura-Glow-Code vollständig entfernt** (Regenbogen-Radialverlauf, umlaufende
+  Funken, Rüstungs-Tier-Shadow-Blur ums Sprite) — Aufgabenstellung Phase G2.
+  Rüstung/Stiefel färben jetzt das Sprite selbst, kein Ersatz nötig.
+- **Frisuren:** `HAIRS`/`CF_HAIR` von 6 Sunnyside-Namen auf 6 Cute-Fantasy-Kombis
+  (`Hair_1_Brown` … `Hair_6_Brown`, je eine Farbe pro Style) umgestellt — deckt die
+  Zufallsvielfalt ab, ohne alle 30 Style×Farbe-Kombis zu laden. `KN_HAAR` (Knöterich)
+  auf `h5` (Grau) gesetzt, passend zum Amtsrat a. D.
+- **Knöterich (`drawAlter`)** zeigt weiterhin nur Body+Haar grau getönt, jetzt aus
+  `cfbody_idle`/`cfhair_*_idle` statt `hero_idle`/`hair_*_idle` — bewusst ohne
+  Rüstungs-Layer, war vor G2 genauso unbewaffnet/ungerüstet.
+- **Fluch-Optik unverändert:** `item.fluchRuht` ändert nichts an den Layern, das
+  regelt weiterhin ausschließlich der Tooltip — es gibt keinen neuen Fluch-Visual-
+  Code, also auch keine Reibung mit G2.
+
+**Umgesetzt (alles in `index.html`):**
+
+- `addSheet`/`loadAssets`/`drawSpriteAt`: neuer optionaler `rowStart` für `'grid'`-
+  Sheets — Framegröße bleibt fix, aber ein Sheet kann jetzt eine beliebige Zeile
+  eines größeren Blatts als „Zeile 0" behandeln. Rückwärtskompatibel (Default 0),
+  bestehende Dungeon-Sheets unverändert.
+- `CF_HERO_ANIMS`, `CF_ANCHOR`, `addCfHeroLayer()`: registriert Player_Base + alle
+  Ausrüstungs-Layer-Dateien je 6-mal (einmal pro Anim), harte Zeilennummern,
+  keine Namens-Heuristik (Regressionsregel 7).
+- `CF_ARMOR_FILES` (5 Chest+Legs-Paare), `CF_BOOT_FILES` (5 Feet-Dateien),
+  `cftool_sword` (Waffen-Icon-Sheet).
+- `bakeHeroSheet()`, `blitLayerFrame()`, `BAKED_HERO_ANIM`, `bakedFor`
+  (Dirty-Check) — neuer Abschnitt direkt nach `animLen()`. Aufruf in `recalc()`
+  (Ende) und einmalig nach `assetsReady = true` (deckt den Nicht-Schichtmodus-Pfad
+  ab, der `startShift()`/`recalc()` beim reinen `startGame()` nicht durchläuft).
+- `drawPlayer()`: Aura-Block raus, liest `BAKED_HERO_ANIM[player.anim]` und blittet
+  `hero_baked`; Waffe zeichnet `cftool_sword` getönt+stufenskaliert; neuer Schild-
+  Icon-Block (nur wenn `player.equip.shield` gesetzt).
+- `drawAlter()`: Sprite-Keys auf `cfbody_idle`/`cfhair_h5_idle` umgestellt.
+- `assets/cf/player/` angelegt und befüllt (24 Dateien, Liste in
+  `assets/cf/README.md`), `assets/cf/README.md` ergänzt. `.gitignore` brauchte
+  keine Änderung — `assets/cf/player/` stand seit G0 schon drin.
+
+**Bewusst nicht gemacht:**
+
+- **Kein echtes Tools-Layer im Bake** (Waffe bleibt schwebendes Icon, siehe
+  Korrektur 4 und Entscheidungen oben) — eine Kleinraster-Integration hätte pro
+  Anim eine eigene Offset-Tabelle gebraucht, für ein Icon, das ohnehin schon einen
+  funktionierenden Hieb-Effekt daneben hat.
+- **Accessories (`Farmer_Hat_1.png`) nicht eingebunden** — nur eine einzige Datei
+  im ganzen Ordner, keine Zufallsvielfalt zu holen. Bleibt Reserve.
+- **Keine Direction-Vielfalt über Down/Up** — der Held zeigt (wie vorher bei
+  Sunnyside) nur eine Blickrichtung plus Spiegelung. Down/Up-Zeilen wurden vermessen,
+  aber nicht verdrahtet; wären reiner Mehraufwand ohne Spielwert, solange die
+  Steuerung selbst nur links/rechts kennt.
+
+**Verifikation (`http://localhost:8378/adventure/index.html` und `dist/index.html`):**
+
+| Prüfung | Ergebnis |
+|---|---|
+| Ladeliste | 187/187 Sheets geladen (Server und Build), keine „Sprite fehlt"-Warnung |
+| Bake-Korrektheit | Chest/Legs/Feet-Farbe im gebackenen Frame per `getImageData` gegen erwartete Stufe geprüft (0/2/3/4), stimmt exakt mit `bakedFor`-Schlüssel überein |
+| Slot-Sichtbarkeit | Rüstung 0/2/3/4, Stiefel 0/2/4, Schild 1/2/4, Waffe (Stufen-Glanz) einzeln durchgeschaltet und am 4×-Zoom-Crop angesehen — jede Stufe sichtbar verschieden |
+| Anim-Durchlauf | Alle 7 `player.anim`-Werte (inkl. `death`) einzeln erzwungen, `drawPlayer()` je einmal aufgerufen — 0 Exceptions |
+| 300-Frame-Soak | `update()+render()` 300× in Folge, 0 Exceptions, `drawAlter()` danach ebenfalls fehlerfrei |
+| Frame-Budget | `drawPlayer()` Ø 0,0044 ms über 1000 Aufrufe (vorher: 2 Sprite-Draws + Radialverlauf + 2 Funken-Kreise pro Frame) — Referenz 0,6 ms deutlich gehalten |
+| Bake-Zeit | ~23 ms pro Ausrüstungswechsel (einmalig, hinter dem Klick auf Ausrüsten/Ablegen) |
+| Build | `node tools/build-single.mjs` → 365 Dateien, 1675 KB; `dist/index.html` im Browser: `assetsReady`, `SHEETS['hero_baked']` vorhanden, 187/187 geladen, Konsole leer |
+| Touch/HUD | Unverändert, nicht angefasst — kein Diff außerhalb der oben genannten Funktionen |
+
+**Für G3 zum Mitnehmen:** Der `rowStart`-Mechanismus ist jetzt der Weg für jedes
+Sheet, das eine bestimmte Zeile aus einem größeren Blatt braucht — Monster-Rigs mit
+mehreren Waffen-/Rüstungsvarianten können ihn genauso nutzen. Und: vor jeder neuen
+Cast/Attack/Hurt/Death-Zuordnung erst mit der Bounding-Box-Metrik durchsuchen, dann
+gegen das PNG gegenprüfen — der Player-Rig hat gezeigt, dass „sieht aus wie Zeile X"
+ohne Metrik in die Irre führt (Rolle vs. Attacke, Sprung vs. Zauber sahen im
+Daumennagel-Vorschaubild anfangs sehr ähnlich aus).
+
+### G3
 
 (noch offen)
 

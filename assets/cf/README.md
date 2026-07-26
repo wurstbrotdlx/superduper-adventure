@@ -4,8 +4,8 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach G1: nur `dungeon/` ist gefüllt (Kammer-Interieur). `player/`, `enemies/`,
-`tiles/`, `deco/`, `ui/` folgen in G2–G5.
+Stand nach G2: `dungeon/` (Kammer-Interieur) und `player/` (Held) sind gefüllt.
+`enemies/`, `tiles/`, `deco/`, `ui/` folgen in G3–G5.
 
 ## Diese Unterordner sind nicht im Repo
 
@@ -38,6 +38,34 @@ Aus `Graphics/Cute_Fantasy_Dungeons/`, Originalnamen behalten:
 | `dungeon/Dungeon_1/` | `Dungeon_1.png`, `Dungeon_1_Gate_Closed.png`, `Dungeon_1_Gate_anim.png`, `Dungeon_1_Pillars.png`, `Dungeon_1_Pressure_Plate.png`, `Stairs_Down_SingleFrame.png` |
 | `dungeon/Dungeon_2/` | dieselben mit Präfix `Dungeon_2_`, dazu `Dungeon_2_Stairs_Down.png` |
 | `dungeon/Objects/` | `Chest_anim.png` |
+
+### Von G2 gebraucht (`player/`)
+
+Aus `Graphics/Cute_Fantasy/Player/`, Originalnamen behalten. Alle Dateien teilen
+sich ein 9×56-Raster à 64×64 (Player_Base und jeder Layer sind pixelidentisch
+gerastert) — nur 6 Zeilen daraus werden genutzt (idle=1, walk=9, run=45,
+attack=18, cast=24, hurt=15, siehe `CF_HERO_ANIMS` in `index.html` für die
+Begründung, insbesondere die Ersatzregel für die fehlenden Kampfanimationen).
+
+| Zielordner | Dateien |
+|---|---|
+| `player/Player_Base/` | `Player_Base_animations.png` |
+| `player/Hands/` | `Hands_1_Bare.png` |
+| `player/Head/Hair_1..6/` | je eine Farbe: `Hair_1_Brown`, `Hair_2_Blonde`, `Hair_3_Black`, `Hair_4_Ginger`, `Hair_5_Grey`, `Hair_6_Brown` |
+| `player/Chest/OG_Shirt/` | `Shirt_1_Red.png` (Rüstungsstufe 0) |
+| `player/Chest/Farmer_Shirt/` | `Farmer_Shirt_1_Green.png` (Stufe 1) |
+| `player/Chest/Royal_Shirt/` | `Royal_Shirt_1_Blue.png` (Stufe 2) |
+| `player/Chest/Plate_Chest/` | `Plate_Chest_Iron.png` (Stufe 3), `Plate_Chest_Gold.png` (Stufe 4) |
+| `player/Legs/OG_Pants/` | `Pants_1_Red.png` (Stufe 0) |
+| `player/Legs/Farmer_Pants/` | `Farmer_Pants_1_Green.png` (Stufe 1) |
+| `player/Legs/Royal_Pants/` | `Royal_Pants_1_Blue.png` (Stufe 2) |
+| `player/Legs/Plate_Legs/` | `Plate_Legs_Iron.png` (Stufe 3), `Plate_Legs_Gold.png` (Stufe 4) |
+| `player/Feet/` | `Shoes_1_Orange/Black/Blue/Purple/Pink.png` (Stufe 0–4; Braun/Weiß fielen bei der Handprüfung gegen Hautton/Schatten zu schwach aus) |
+| `player/Tools/Iron/` | `Iron_Sword.png` (schwebendes Waffen-Icon, ersetzt das alte Emoji) |
+
+**Bewusst nicht kopiert:** `Accessories/Farmer_Hat_1.png` (nur eine einzige Datei,
+keine sinnvolle Zufallsvielfalt) und alle weiteren Hair-Farben (6 Style-Slots
+reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `index.html`).
 
 ## Kopierkonvention
 

@@ -453,7 +453,17 @@ miniBg.width = miniBg.height = 128;
 const FW = 96, FH = 64;            // Frameraster der Charaktere
 const ANCH_X = 48, ANCH_Y = 40;    // Figurmitte (x) / Fußlinie (y) im Frame
 const ASSETS = 'assets/';
-const HAIRS = ['bowlhair','curlyhair','longhair','mophair','shorthair','spikeyhair'];
+// Cute-Fantasy-Frisuren (Phase G2): 6 Style x 1 Farbe, damit die Zufallsvielfalt
+// der 6 Sunnyside-Frisuren erhalten bleibt, ohne alle 30 Style/Farb-Kombis zu laden.
+const CF_HAIR = [
+  {key:'h1', file:'Head/Hair_1/Hair_1_Brown.png'},
+  {key:'h2', file:'Head/Hair_2/Hair_2_Blonde.png'},
+  {key:'h3', file:'Head/Hair_3/Hair_3_Black.png'},
+  {key:'h4', file:'Head/Hair_4/Hair_4_Ginger.png'},
+  {key:'h5', file:'Head/Hair_5/Hair_5_Grey.png'},
+  {key:'h6', file:'Head/Hair_6/Hair_6_Brown.png'},
+];
+const HAIRS = CF_HAIR.map(h => h.key);
 
 // Einzeldatei-Build: `node tools/build-single.mjs` ersetzt genau die nächste Zeile
 // durch eine Tabelle Pfad -> data:-URI und schreibt das Ergebnis nach dist/.
@@ -471,18 +481,68 @@ let assetsReady = false, assetsLoaded = 0;
 //       'grid' = festes fw/fh aus opt, freier Anker (Cute-Fantasy-Dungeon-Sheets)
 function addSheet(key, path, n, mode, opt){ SHEET_LIST.push([key, ASSETS + path, n, mode || 'char', opt]); }
 
-// --- Held: base + Haar-Ebene (deckungsgleiches Raster, wird drübergezeichnet) ---
-// [anim, Ordner, Dateikürzel, stripN im Dateinamen, echte Frames]
-const HERO_ANIMS = [
-  ['idle','IDLE','idle',9,9], ['walk','WALKING','walk',8,8], ['run','RUN','run',8,8],
-  ['attack','ATTACK','attack',10,10], ['cast','CASTING','casting',15,15],
-  ['hurt','HURT','hurt',8,8], ['death','DEATH','death',13,13],
+// ===========================================================================
+//  Held: Cute-Fantasy-Player-System (Phase G2). Player_Base + 130 Ausrüstungs-
+//  Layer teilen sich EIN 9x56-Raster à 64x64 (per Alpha-Bounding-Box-Analyse
+//  gegen die echten PNGs verifiziert, nicht aus dem G0-Manifest übernommen —
+//  die Heuristik tippt bei Animationssheets daneben, siehe G1-Lektion).
+//
+//  Row-Zuordnung (Regressionsregel 7: hart im Code, nie aus Dateinamen):
+//    idle=1, walk=9, run=45  echte Seitenreihen (mittlere von je 3 Richtungs-
+//    zeilen down/side/up, am Kopfprofil erkannt, gegen 6 Vergrößerungen geprüft).
+//    attack=18, cast=24, hurt=15: der Player-Rig ist ein Farming-Sim-Rig ohne
+//    Kampfanimation — im ganzen 56-Zeilen-Blatt existiert kein Hieb-, Zauber-,
+//    Treffer- oder Sterbe-Frame (nur Idle/Walk/Run/Sprung/Rolle/Werkzeug-Idles).
+//    Ersatzregel (dokumentiert, nicht stillschweigend improvisiert):
+//      attack nutzt die Seitenreihe der Rolle (18) — einzige Zeile mit echtem
+//        Armausschlag; der reale Treffereindruck kommt ohnehin vom Klingenbogen
+//        in drawPlayer(), der unabhängig vom Body-Frame gezeichnet wird.
+//      cast nutzt die kleine 5-Frame-Gestenreihe (24) — Zauberwirkung kommt vom
+//        Partikel-/Projektil-Effekt, nicht vom Körper-Sprite.
+//      hurt nutzt die einzige echte Stolper-/Rückweich-Bewegung im Blatt (15,
+//        nur eine Richtung vorhanden — gilt für beide Blickrichtungen).
+//      death hat keine eigene Zeile: showDead() blendet synchron mit hp<=0 auf
+//        den Overlay um, der Held ist im Death-Frame praktisch nie sichtbar;
+//        death teilt sich deshalb die hurt-Zeile (Cast/Hurt/Death laufen ohnehin
+//        nicht-loopend und klemmen aufs letzte Frame).
+const CF_HERO_ANIMS = [
+  ['idle', 1, 6], ['walk', 9, 4], ['run', 45, 9],
+  ['attack', 18, 8], ['cast', 24, 5], ['hurt', 15, 4],
 ];
-for(const [anim, dir, file, strip, n] of HERO_ANIMS){
-  addSheet('hero_'+anim, `Characters/Human/${dir}/base_${file}_strip${strip}.png`, n);
-  for(const h of HAIRS)
-    addSheet(`hair_${h}_${anim}`, `Characters/Human/${dir}/${h}_${file}_strip${strip}.png`, n);
+const CF_ANCHOR = {ax:32, ay:40};             // Fußlinie, per Bounding-Box gegen alle Anim-Reihen geprüft (botY≈40)
+function addCfHeroLayer(prefix, file){
+  for(const [anim, row, n] of CF_HERO_ANIMS)
+    addSheet(`${prefix}_${anim}`, `cf/player/${file}`, n, 'grid', {fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:row});
 }
+addCfHeroLayer('cfbody', 'Player_Base/Player_Base_animations.png');
+addCfHeroLayer('cfhands', 'Hands/Hands_1_Bare.png');
+for(const h of CF_HAIR) addCfHeroLayer(`cfhair_${h.key}`, h.file);
+
+// Rüstungs-Slot (5 Qualitätsstufen aus CRAFT_BASE.armor) -> Chest+Legs-Datei.
+// Blau/Grün/Braun bewusst amtlich-nüchtern gewählt, Plate-Varianten ab Stufe 3.
+const CF_ARMOR_FILES = [
+  {chest:'Chest/OG_Shirt/Shirt_1_Red.png',              legs:'Legs/OG_Pants/Pants_1_Red.png'},
+  {chest:'Chest/Farmer_Shirt/Farmer_Shirt_1_Green.png', legs:'Legs/Farmer_Pants/Farmer_Pants_1_Green.png'},
+  {chest:'Chest/Royal_Shirt/Royal_Shirt_1_Blue.png',    legs:'Legs/Royal_Pants/Royal_Pants_1_Blue.png'},
+  {chest:'Chest/Plate_Chest/Plate_Chest_Iron.png',      legs:'Legs/Plate_Legs/Plate_Legs_Iron.png'},
+  {chest:'Chest/Plate_Chest/Plate_Chest_Gold.png',      legs:'Legs/Plate_Legs/Plate_Legs_Gold.png'},
+];
+CF_ARMOR_FILES.forEach((t, i) => { addCfHeroLayer(`cfchest_${i}`, t.chest); addCfHeroLayer(`cflegs_${i}`, t.legs); });
+
+// Stiefel-Slot (5 Qualitätsstufen aus CRAFT_BASE.boots) -> Feet-Farbe. Braun/Weiß
+// verschwanden am winzigen Chibi-Fuß gegen Hautton bzw. Schatten-Ellipse (per
+// Nahaufnahme geprüft) — Orange/Pink ersetzen sie, Sichtbarkeit vor Farbthema.
+const CF_BOOT_FILES = [
+  'Feet/Shoes_1_Orange.png', 'Feet/Shoes_1_Black.png', 'Feet/Shoes_1_Blue.png',
+  'Feet/Shoes_1_Purple.png', 'Feet/Shoes_1_Pink.png',
+];
+CF_BOOT_FILES.forEach((f, i) => addCfHeroLayer(`cffeet_${i}`, f));
+
+// Waffen-Slot: das Pack liefert kein eigenes Anim-Rig fürs Tools-Layer (Iron_Sword.png
+// ist ein eigenständiges 4x9-Sheet, inkompatibles Raster zum Player_Base-Blatt) —
+// ein einzelnes Klingen-Frame ersetzt das bisherige Emoji-Icon, per Tint nach
+// Waffengattung eingefärbt (Dolch/Schwert/Kriegsaxt teilen sich dieselbe Klinge).
+addSheet('cftool_sword', 'cf/player/Tools/Iron/Iron_Sword.png', 1, 'grid', {fw:64, fh:64, ax:32, ay:32, rowStart:2});
 
 // --- Gegner-Rig A: Goblin (einziges Rig mit Zauber-Animation) ---
 for(const [anim, file, strip, n] of [['idle','idle',9,8], ['walk','walk',8,8], ['run','run',8,8],
@@ -541,11 +601,12 @@ function loadAssets(){
     const img = new Image();
     img.onload = () => {
       let fw, fh, cols, ax, ay;
+      let rowStart = 0;
       if(mode === 'char'){ fw = FW; fh = FH; cols = Math.max(1, Math.round(img.width/FW)); ax = ANCH_X; ay = ANCH_Y; }
       else if(mode === 'raw'){ fw = img.width; fh = img.height; cols = 1; ax = 0; ay = 0; }
-      else if(mode === 'grid'){ fw = opt.fw; fh = opt.fh; cols = Math.max(1, Math.round(img.width/fw)); ax = opt.ax; ay = opt.ay; }
+      else if(mode === 'grid'){ fw = opt.fw; fh = opt.fh; cols = Math.max(1, Math.round(img.width/fw)); ax = opt.ax; ay = opt.ay; rowStart = opt.rowStart || 0; }
       else { fw = img.width/n; fh = img.height; cols = n; ax = fw/2; ay = fh; }
-      SHEETS[key] = {img, cols, n, fw, fh, ax, ay};
+      SHEETS[key] = {img, cols, n, fw, fh, ax, ay, rowStart};
       assetsLoaded++; resolve();
     };
     img.onerror = () => { console.warn('Sprite fehlt:', url); assetsLoaded++; resolve(); };
@@ -577,7 +638,8 @@ function drawSpriteAt(key, frame, tint, tintA){
   const s = SHEETS[key]; if(!s) return;
   const n = s.n, i = ((frame|0) % n + n) % n;
   const src = tint ? (tintedSheet(key, tint, tintA == null ? 0.55 : tintA) || s.img) : s.img;
-  ctx.drawImage(src, (i % s.cols)*s.fw, ((i/s.cols)|0)*s.fh, s.fw, s.fh, -s.ax, -s.ay, s.fw, s.fh);
+  const row = (s.rowStart||0) + ((i/s.cols)|0);
+  ctx.drawImage(src, (i % s.cols)*s.fw, row*s.fh, s.fw, s.fh, -s.ax, -s.ay, s.fw, s.fh);
 }
 
 function drawSprite(key, frame, x, y, scale, flip, tint, tintA){
@@ -598,6 +660,55 @@ function animFrame(key, t, fps, loop){
 }
 function animLen(key, fps){ const s = SHEETS[key]; return s ? s.n / fps : 0; }
 
+// ===========================================================================
+//  Held-Komposit (Phase G2, Regressionsregel 10/12): Legs/Feet/Body/Chest/Haar/
+//  Hände werden EINMAL pro Ausrüstungswechsel auf ein Offscreen-Canvas gebacken
+//  (SHEETS['hero_baked']), damit drawPlayer() im Frame nur noch einen einzigen
+//  Sprite blittet statt 5 Layer einzeln zu zeichnen.
+// ===========================================================================
+let BAKED_HERO_ANIM = null;                 // {idle:{offset,n}, walk:{...}, ...}
+let bakedFor = null;                        // Dirty-Check: 'armorTier|bootsTier|hair'
+
+function blitLayerFrame(destCtx, key, frame, dx, dy){
+  const s = SHEETS[key]; if(!s || !s.img) return;
+  const i = ((frame|0) % s.n + s.n) % s.n;
+  const row = (s.rowStart||0) + ((i/s.cols)|0);
+  destCtx.drawImage(s.img, (i % s.cols)*s.fw, row*s.fh, s.fw, s.fh, dx, dy, s.fw, s.fh);
+}
+
+function bakeHeroSheet(){
+  if(!assetsReady) return;                  // Assets noch nicht da — recalc() bäckt nach dem Laden nach
+  const armorTier = player.equip.armor ? clamp(player.equip.armor.base.tier||0, 0, 4) : -1;
+  const bootsTier  = player.equip.boots ? clamp(player.equip.boots.base.tier||0, 0, 4)  : -1;
+  const dirtyKey = `${armorTier}|${bootsTier}|${player.hair}`;
+  if(dirtyKey === bakedFor) return;
+  bakedFor = dirtyKey;
+
+  const totalFrames = CF_HERO_ANIMS.reduce((s, [,,n]) => s+n, 0);
+  const canvas = document.createElement('canvas');
+  canvas.width = totalFrames * 64; canvas.height = 64;
+  const bctx = canvas.getContext('2d');
+
+  const anims = {};
+  let offset = 0;
+  for(const [anim, , n] of CF_HERO_ANIMS){
+    anims[anim] = {offset, n};
+    for(let f=0; f<n; f++){
+      const dx = (offset+f)*64;
+      if(armorTier >= 0) blitLayerFrame(bctx, `cflegs_${armorTier}_${anim}`, f, dx, 0);
+      if(bootsTier >= 0) blitLayerFrame(bctx, `cffeet_${bootsTier}_${anim}`, f, dx, 0);
+      blitLayerFrame(bctx, `cfbody_${anim}`, f, dx, 0);
+      if(armorTier >= 0) blitLayerFrame(bctx, `cfchest_${armorTier}_${anim}`, f, dx, 0);
+      blitLayerFrame(bctx, `cfhair_${player.hair}_${anim}`, f, dx, 0);
+      blitLayerFrame(bctx, `cfhands_${anim}`, f, dx, 0);
+    }
+    offset += n;
+  }
+  anims.death = anims.hurt;   // kein eigenes Sterbe-Frame, siehe CF_HERO_ANIMS-Kommentar oben
+  BAKED_HERO_ANIM = anims;
+  SHEETS['hero_baked'] = {img:canvas, cols:totalFrames, n:totalFrames, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
+  TINT_CACHE && Object.keys(TINT_CACHE).forEach(k => { if(k.startsWith('hero_baked|')) delete TINT_CACHE[k]; });
+}
 
 // DOM-Cache: getElementById war im Renderloop einer der teuersten Posten.
 const DOM = {};
@@ -1816,6 +1927,7 @@ function recalc(){
   derived.speed  = Math.max(60, derived.speed);
   player.hp = Math.min(player.hp, maxHp);
   player.maxMana = derived.maxMana;
+  bakeHeroSheet();
 }
 recalc(); player.hp = derived.maxHp;
 
@@ -2445,7 +2557,7 @@ CONFIG.kammerTueren += amt.ausbauten.tueren;   // Dorf-Ausbau wirkt schon auf di
 //  ist die Schichtbegrüßung, die pro Schicht neu feuert (siehe startShift()).
 // ===========================================================================
 const KN_KEY = 'sda_knoeterich_v1';
-const KN_HAAR = 'shorthair';                 // fest gewählt, nicht zufällig: Knöterich ist immer derselbe
+const KN_HAAR = 'h5';                        // fest gewählt, nicht zufällig: Knöterich ist immer derselbe (Grauhaar passt zum a.D.)
 // KN_T/KN_POS sind bereits weiter oben deklariert (neben KESSEL_T/KESSEL), siehe Kommentar dort.
 
 const kn = {
@@ -4641,13 +4753,14 @@ function drawKessel(){
   ctx.restore();
 }
 
-// Phase 5: Amtsrat a. D. Knöterich, aus Bestand: hero_idle + fest gewähltes Haar,
+// Phase 5: Amtsrat a. D. Knöterich, aus Bestand: cfbody_idle + fest gewähltes Haar,
 // grau getönt über tintedSheet() (Cache aus drawPlayer()). Ausdrücklich kein
 // ctx.filter, siehe die Kommentare bei drawPlayer()/drawMon() weiter unten.
+// Trägt bewusst keine Rüstungs-Layer (Knöterich war schon vor G2 unbewaffnet/-gerüstet).
 function drawAlter(){
   const x = KN_POS.x, y = KN_POS.y;
   drawShadowEllipse(x, y + 2, 10);
-  const key = 'hero_idle', hairKey = `hair_${KN_HAAR}_idle`;
+  const key = 'cfbody_idle', hairKey = `cfhair_${KN_HAAR}_idle`;
   const f = animFrame(key, gameT, 7);
   ctx.save();
   ctx.translate(x, y + 9);
@@ -4686,57 +4799,62 @@ const WEAPON_STYLE = {
 };
 
 function drawPlayer(){
-  const hue = (gameT*40) % 360; // "drüber"-Aura: langsam durch Regenbogen wandern
-  const auraR = 22 + Math.sin(gameT*2.2)*3;
-
-  // Pulsierende Aura hinterm Helden
-  ctx.save(); ctx.translate(player.x, player.y + 6);
-  const grad = ctx.createRadialGradient(0,0,2, 0,0, auraR);
-  grad.addColorStop(0, `hsla(${hue},95%,65%,0.55)`);
-  grad.addColorStop(1, `hsla(${hue},95%,60%,0)`);
-  ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0,0,auraR,0,Math.PI*2); ctx.fill();
-  ctx.restore();
-
-  // Umlaufende Funken (2 Motes, gegenläufig)
-  for(let i=0;i<2;i++){
-    const a = gameT*3.2 + i*Math.PI;
-    const ex = player.x + Math.cos(a)*18, ey = player.y + Math.sin(a)*10 - 6;
-    ctx.fillStyle = `hsla(${(hue+i*140)%360},95%,75%,0.9)`;
-    ctx.beginPath(); ctx.arc(ex, ey, 2.2, 0, Math.PI*2); ctx.fill();
-  }
-
   drawShadowEllipse(player.x, player.y + 12, 12);
 
-  // Held: Sunnyside-Sprite, base + Haar-Ebene im selben Frame-Raster.
-  // Rüstungs-Tier färbt nicht das Sprite, sondern leuchtet als Aura (Bronze/Silber/Gold).
-  const armorTier = player.equip.armor ? (player.equip.armor.base.tier || 0) : 0;
-  const a = player.anim, key = 'hero_' + a, hairKey = `hair_${player.hair}_${a}`;
+  // Held: Komposit aus bakeHeroSheet() (Legs/Feet/Body/Chest/Haar/Hände liegen
+  // dort schon übereinandergezeichnet). Rüstung/Stiefel stecken jetzt sichtbar
+  // im Sprite selbst statt im alten Regenbogen-Aura-Glow — der Glow-Code ist
+  // mit G2 ersatzlos raus (Aufgabenstellung Phase G2).
+  const a = player.anim;
+  const bi = BAKED_HERO_ANIM && BAKED_HERO_ANIM[a];
   const fps = a==='idle' ? 7 : (a==='attack' ? 22 : a==='cast' ? 20 : a==='run' ? 12 : 10);
   const loop = !(a==='attack' || a==='cast' || a==='hurt' || a==='death');
-  const f = animFrame(key, player.animT, fps, loop);
+  if(bi){
+    const raw = Math.floor(player.animT * fps);
+    const localF = loop ? (raw % bi.n) : Math.min(raw, bi.n - 1);
+    const f = bi.offset + localF;
+    const hurt = player.hurtT > 0;
 
-  ctx.save();
-  ctx.translate(player.x, player.y + 11);
-  ctx.scale(PLAYER_SC * (player.faceLeft ? -1 : 1), PLAYER_SC);
-  const hurt = player.hurtT > 0;
-  if(!hurt && armorTier > 0){
-    ctx.shadowColor = armorTier>=3 ? '#f4d97a' : armorTier===2 ? '#dfe6f0' : '#c98a4a';
-    ctx.shadowBlur = 4 + armorTier*2;
+    ctx.save();
+    ctx.translate(player.x, player.y + 11);
+    ctx.scale(PLAYER_SC * (player.faceLeft ? -1 : 1), PLAYER_SC);
+    drawSpriteAt('hero_baked', f, hurt ? '#ffb060' : null, 0.8);   // Treffer-Aufblitzen ohne ctx.filter
+    ctx.restore();
   }
-  drawSpriteAt(key, f, hurt ? '#ffb060' : null, 0.8);       // Treffer-Aufblitzen ohne ctx.filter
-  drawSpriteAt(hairKey, f, hurt ? '#ffb060' : null, 0.8);
-  ctx.restore();
 
-  // Schwebende Waffe neben dem Helden
+  // Schwebende Waffe neben dem Helden — echtes Klingen-Sprite (Iron_Sword) statt
+  // Emoji-Text, per Tint nach Waffengattung eingefärbt. Ersatzregel: das Pack
+  // hat kein eigenes Rig fürs Tools-Layer (inkompatibles Kleinraster, siehe
+  // CF_HERO_ANIMS-Kommentar weiter oben), alle drei Waffengattungen teilen
+  // sich deshalb dieselbe Klinge. Zwei Qualitätsstufen derselben Gattung sehen
+  // bei reiner Mode-Farbe gleich aus (z.B. Amtsklinge/Dienstschwert beide
+  // 'sword') — Größe und Glanz skalieren deshalb zusätzlich mit der Stufe.
   const w = player.equip.weapon;
   if(w){
     const style = WEAPON_STYLE[w.base.mode] || WEAPON_STYLE.sword;
+    const wTier = clamp(w.base.tier||0, 0, 4);
     const side = player.faceLeft ? -1 : 1;
     const wx = player.x + side*20, wy = player.y - 6 + Math.sin(gameT*3.4)*3;
     ctx.save(); ctx.translate(wx, wy); ctx.rotate(Math.sin(gameT*2)*0.25 + side*0.3);
-    ctx.shadowColor = style.col2; ctx.shadowBlur = 8;
-    ctx.textAlign = 'center'; ctx.font = '15px serif';
-    ctx.fillText(w.base.icon || '⚔️', 0, 5);
+    ctx.shadowColor = style.col2; ctx.shadowBlur = 6 + wTier*2.5;
+    drawSprite('cftool_sword', 0, 0, 0, 0.38 + wTier*0.045, side < 0, style.col2, 0.75);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  // Schwebendes Schild-Icon — das Pack liefert kein Schild-Rig für den Helden
+  // (Schilde kommen nur als Bodenrequisit in den Dungeon-Sets vor), das Icon
+  // bleibt darum schwebend wie zuvor die Waffe: Größe/Glanz zeigen die Stufe.
+  const sh = player.equip.shield;
+  if(sh){
+    const tier = clamp(sh.base.tier||0, 0, 4);
+    const col = tier>=3 ? '#f4d97a' : tier===2 ? '#dfe6f0' : '#c98a4a';
+    const side = player.faceLeft ? 1 : -1;
+    const sx = player.x + side*20, sy = player.y - 4 + Math.sin(gameT*2.6 + 1.5)*2;
+    ctx.save(); ctx.translate(sx, sy);
+    ctx.shadowColor = col; ctx.shadowBlur = 5 + tier*2;
+    ctx.textAlign = 'center'; ctx.font = `${13 + tier}px serif`;
+    ctx.fillText(sh.base.icon || '🛡️', 0, 5);
     ctx.shadowBlur = 0;
     ctx.restore();
   }
@@ -5497,6 +5615,7 @@ const loadTick = setInterval(() => {
 loadAssets().then(() => {
   clearInterval(loadTick);
   assetsReady = true;
+  bakeHeroSheet();
   initFloorGraphics();
   showStartScreen();
   requestAnimationFrame(loop);
