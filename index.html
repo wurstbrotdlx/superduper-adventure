@@ -132,6 +132,26 @@
   #musikRow{display:flex;align-items:center;gap:10px;}
   #musikRow #musicBtn{flex:0 0 auto;}
   #musicVol{flex:1;min-width:80px;accent-color:#c9a227;cursor:pointer;}
+  /* Phase 5: Knöterich-Regler, gleiche Zeile-Logik wie der Rest von #musikBox */
+  #knToneRow{margin-top:8px;display:flex;gap:6px;}
+  .knToneBtn{flex:1;text-align:center;font-size:10px;padding:6px 2px;border:2px solid #4c4030;
+    border-radius:6px;background:#141009;color:#c9b98a;cursor:pointer;}
+  .knToneBtn.on{border-color:#c9a227;background:#241c10;color:#f4d97a;}
+
+  /* Phase 5: Dienstzettel und Randnotiz — eigenes oberes Band, unterhalb von
+     #zone/#minimap/#bossbar. CSS-Transition statt JS-Frame fürs Ein-/Ausblenden. */
+  #knZettel,#knRandnotiz{position:fixed;left:50%;top:46px;
+    max-width:min(420px, calc(100vw - 200px));z-index:12;pointer-events:none;
+    background:rgba(20,14,10,.92);border:2px solid #8a6d3b;border-radius:8px;color:#f4e6c8;
+    padding:7px 14px;font-size:12px;line-height:1.5;text-align:center;
+    opacity:0;transform:translate(-50%,-6px);transition:opacity .25s ease, transform .25s ease, top .2s ease;}
+  #knZettel.show,#knRandnotiz.show{opacity:1;transform:translate(-50%,0);}
+  #knZettel{display:flex;align-items:center;gap:8px;}
+  #knZettelHead{font-size:17px;}
+  #knZettelZ1{font-weight:bold;}
+  #knZettelZ2{font-size:11px;color:#c9b98a;}
+  #knRandnotiz{font-style:italic;font-size:11px;}
+  body.bossvis #knZettel,body.bossvis #knRandnotiz{top:78px;}
 
   /* --- Symbolschloss (Kammer-Modul, Phase 2) --- */
   #schloss{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(320px,calc(100vw - 32px));z-index:22;display:none;
@@ -363,6 +383,11 @@
       <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
       <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke">
     </div>
+    <div id="knToneRow">
+      <div class="knToneBtn" data-v="gespraechig">Gesprächig</div>
+      <div class="knToneBtn" data-v="dienstlich">Dienstlich</div>
+      <div class="knToneBtn" data-v="schweigt">Schweigt</div>
+    </div>
   </div>
 </div>
 
@@ -396,6 +421,8 @@
 </div>
 
 <div id="tooltip"></div>
+<div id="knZettel"><span id="knZettelHead">🧑‍💼</span><div id="knZettelText"><div id="knZettelZ1"></div><div id="knZettelZ2"></div></div></div>
+<div id="knRandnotiz"><span id="knRandTxt"></span></div>
 <div id="overlay"><div class="panel" id="ovPanel"></div></div>
 
 <script>
@@ -714,6 +741,11 @@ const ARENA = {x:68, y:40};
 // über die Taste K, damit niemand mit vollem Beutel zurücklaufen muss.
 const KESSEL_T = {x:15, y:41};
 const KESSEL = {x:KESSEL_T.x*TS + TS/2, y:KESSEL_T.y*TS + TS - 4};
+// Phase 5: Knöterichs Standort, vorgezogen aus dem großen Knöterich-Block weiter unten
+// (sda_knoeterich_v1), weil placeMonsters() gleich beim Laden einmal synchron läuft
+// und die Kachel schon dabei aussparen muss (TDZ sonst bei const weiter unten).
+const KN_T = {x: KESSEL_T.x - 2, y: KESSEL_T.y};
+const KN_POS = {x: KN_T.x*TS + TS/2, y: KN_T.y*TS + TS - 4};
 let trees = [];
 const decos = [];      // Pilze, Windmühle — reine Optik, keine Kollision
 const critters = [];   // Hühner/Schafe/Kühe, wandern im Grasland
@@ -1149,6 +1181,7 @@ function pickAdj(biome, mr){
 
 function pouchTotal(){ let s = 0; for(const z of player.pouch) s += z.count; return s; }
 function addZutat(noun, adj, n){
+  if(!kn.pending.zutat1 && !kn.seen.zutat1){ kn.pending.zutat1 = true; saveKn(); }   // erste Zutat aufgenommen
   for(const z of player.pouch) if(z.noun === noun && z.adj === adj){ z.count += n; return z; }
   const z = {noun, adj, count:n}; player.pouch.push(z); return z;
 }
@@ -1430,6 +1463,7 @@ function placeMonsters(){
     for(let i=0;i<55;i++){
       const tx=ri(4,MW-5), ty=ri(4,MH-5);
       if(!walkT(tx,ty) || dist2(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
+      if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
       const biome = ty<26 ? 'snow' : (ty>54 ? 'sand' : 'grass');
       const roster = BIOME_MOBS[biome];
       makeMon(roster[Math.floor(rng()*roster.length)], tx*TS+16, ty*TS+16);
@@ -1552,7 +1586,7 @@ function hurtMon(m, d, crit, hitAngle, quelle){
 
   // Flächenzauber markieren jeden Treffer als Crit — ohne Bremse wären das dutzende
   // Oszillatoren im selben Frame (hörbares Knacken, unnötige Last).
-  if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); }
+  if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); knRandnotiz('crit'); }
   if(!CFX.stille) floaters.push({x:m.x+rr(-8,8), y:m.y-m.r-10, txt:String(d), col:crit?'#ffe14d':'#ffffff', t:0.8, big:crit});   // Fluch 'Stille Zahlen'
   if(m.hp <= 0) killMon(m);
 }
@@ -1574,7 +1608,7 @@ function dropZutat(m, x, y){
 }
 
 function killMon(m){
-  m.dead = true; stats.kills++;
+  m.dead = true; stats.kills++; knIdleT = 0;   // Kill zählt als "echte Aktion" (Steckenbleib/Untätigkeit)
   if(CONFIG.schichtModus){ shiftKillsByType[m.type] = (shiftKillsByType[m.type]||0) + 1; shiftKillsTotal++; }
   // Leiche spielt die Sterbe-Animation zu Ende und blendet dann aus
   const dKey = monAnim(m.def, 'death');
@@ -1629,6 +1663,7 @@ function killMon(m){
       addShake(15, 1.0);
       sfx.warp();
       floaters.push({x:portal.x, y:portal.y-40, txt:'SCHATTEN-PORTAL ERSCHIENEN', col:'#c77dff', t:5.0, big:true});
+      if(!kn.pending.portal1 && !kn.seen.portal1){ kn.pending.portal1 = true; saveKn(); }
     }
   }
 
@@ -1646,6 +1681,9 @@ function gainXP(x){
     floaters.push({x:player.x, y:player.y-30, txt:'LEVEL UP!', col:'#a855f7', t:1.5, big:true});
     floaters.push({x:player.x, y:player.y-52, txt:'+1 Zauberpunkt', col:'#c77dff', t:1.5});
     sfx.level(); addShake(10, 0.4);
+    kn.counters.levelUps = (kn.counters.levelUps||0) + 1;
+    if(kn.counters.levelUps >= 2) knRandnotiz('levelup');
+    saveKn();
     need = 35 * Math.pow(player.level, 1.35);
   }
 }
@@ -1681,6 +1719,9 @@ function drinkPotion(){
   player.hp = Math.min(derived.maxHp, player.hp + Math.max(15, Math.round(60 * (1 + FX.potion*0.35) * (CFX.duenn ? 0.5 : 1))));
   if(CFX.hektik){ player.hektikT = 3; spawnImpactParticles(player.x, player.y, 14, null); }   // Fluch 'Hektik'
   sfx.potion(); updateHUD();
+  kn.counters.traenke = (kn.counters.traenke||0) + 1;
+  if(KN_TRAENKE_GAGS[kn.counters.traenke]) knShowLineGated('traenke', KN_TRAENKE_GAGS[kn.counters.traenke]);
+  saveKn();
 }
 
 // ===================== MAGIE-SYSTEM =====================
@@ -1734,7 +1775,7 @@ function castActiveSpell(){ const sp = SPELLS.find(s=>s.id===activeSpellId); if(
 function toggleSpellTree(){
   spellTreeOpen = !spellTreeOpen;
   document.getElementById('spellTree').style.display = spellTreeOpen ? 'block' : 'none';
-  if(spellTreeOpen) renderSpellTree();
+  if(spellTreeOpen){ renderSpellTree(); knIdleT = 0; }
 }
 
 function spellNodeHTML(sp){
@@ -1799,6 +1840,7 @@ function castSpell(sp, target){                          // target: optionaler W
   if(CFX.goldz) player.gold = Math.max(0, player.gold - Math.min(player.gold, kosten));   // Fluch 'Verwaltungsgebühr'
   player.spellCd = CFX.zunge ? 0.75 : 0.28;                                                // Fluch 'Langsame Zunge'
   player.castT = 0.42;                                   // Zauber-Animation des Helden
+  if(!kn.flags.hatGezaubert){ kn.flags.hatGezaubert = true; saveKn(); }   // Wissenslücke 'nie gezaubert' geschlossen
   const aim = target || aimPoint();
   const dir = Math.atan2(aim.wy - player.y, aim.wx - player.x);
   player.dir = dir;
@@ -1843,6 +1885,9 @@ function castSpell(sp, target){                          // target: optionaler W
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:900, color:'#ffffff', t:0.7, maxT:0.7});
     for(const m of [...monsters]){ if(m.dead) continue; if(dist2(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
     for(let i=0;i<160;i++){ const a=rr(0,Math.PI*2), d=rr(40,700); spawnImpactParticles(player.x+Math.cos(a)*d, player.y+Math.sin(a)*d, 3, null); }
+    kn.counters.ultimates = (kn.counters.ultimates||0) + 1;
+    if(kn.counters.ultimates >= 2) knRandnotiz('ultimate');
+    saveKn();
   }
   updateHUD();
 }
@@ -1901,6 +1946,388 @@ const AMT_KEY = 'sda_amt_v1';
 })();
 function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }catch(_){} }
 CONFIG.kammerTueren += amt.ausbauten.tueren;   // Dorf-Ausbau wirkt schon auf die allererste Schicht
+
+// ===========================================================================
+//  PHASE 5: AMTSRAT A. D. KNÖTERICH — Onboarding ohne Tutorial
+//  Ersetzt den alten Erklärtext im Startbildschirm durch eine ereignisgesteuerte
+//  Figur. Persistenz in KN_KEY, todesimmun wie die Kladde: kein Schichtende,
+//  kein startShift(), kein respawnPlayer() darf sie anfassen. Einzige Ausnahme
+//  ist die Schichtbegrüßung, die pro Schicht neu feuert (siehe startShift()).
+// ===========================================================================
+const KN_KEY = 'sda_knoeterich_v1';
+const KN_HAAR = 'shorthair';                 // fest gewählt, nicht zufällig: Knöterich ist immer derselbe
+// KN_T/KN_POS sind bereits weiter oben deklariert (neben KESSEL_T/KESSEL), siehe Kommentar dort.
+
+const kn = {
+  seen:{}, pending:{}, varB:{}, escReady:{},
+  counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0},
+  flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false},
+  wissensluecke:{zauber:false, kochen:false, kammer:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
+  beats:{beat1:false, beat2:false, beat3:false},
+  regler:'gespraechig',            // 'gespraechig' | 'dienstlich' | 'schweigt' — Dienstzettel laufen in jeder Stellung
+  history:[],                      // {z1,z2} der letzten gezeigten Dienstzettel, neueste zuletzt, Cap 3 (für 'Nachfragen')
+};
+(function loadKn(){
+  try{
+    const raw = localStorage.getItem(KN_KEY); if(!raw) return;
+    const o = JSON.parse(raw); if(!o || typeof o !== 'object') return;
+    if(o.seen) kn.seen = o.seen;
+    if(o.pending) kn.pending = o.pending;
+    if(o.varB) kn.varB = o.varB;
+    if(o.escReady) kn.escReady = o.escReady;
+    if(o.counters) Object.assign(kn.counters, o.counters);
+    if(o.flags) Object.assign(kn.flags, o.flags);
+    if(o.wissensluecke) Object.assign(kn.wissensluecke, o.wissensluecke);
+    if(o.beats) Object.assign(kn.beats, o.beats);
+    if(typeof o.regler === 'string') kn.regler = o.regler;
+    if(Array.isArray(o.history)) kn.history = o.history.slice(-3);
+  }catch(_){}
+})();
+function saveKn(){ try{ localStorage.setItem(KN_KEY, JSON.stringify(kn)); }catch(_){} }
+
+// --- Dienstzettel-Katalog: einmalig über die Lebenszeit. `art` bestimmt die
+// Auswertung (siehe knEvaluateZettel). Text-Auswahl folgt dem Grundgesetz: eine
+// Taste je Hinweis, kein Verrat der Kesselgrammatik, kein Blut, keine Ketten.
+const HINWEISE = [
+  {id:'hp30', prio:90, art:'zustand',
+   wenn:()=> !player.dead && player.hp < derived.maxHp*0.3,
+   z1:'Sie verlieren Konfetti. Das ist selten gut.', z2:'Trank. Q.', z2t:'Das Fläschchen.'},
+  {id:'tuer1', prio:70, art:'zustand',
+   // "Sichtweite": grobe Nährungsdistanz übers Bildschirmband, kein Math.hypot
+   wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && dist2(player.x,player.y,t.x,t.y) < 202500),
+   z1:'Schild lesen. Steht alles dran.', z2:'F, wenn Sie sich trauen.', z2t:'Die Hand im Gürtel.'},
+  {id:'zutat3', prio:65, art:'zustand',
+   wenn:()=> player.pouch.length >= 3,
+   z1:'Drei Stück. Das gilt als Antrag.', z2:'Zum Kessel. K.', z2t:'Rucksack, dann Kessel.'},
+  {id:'zutat1', prio:60, art:'ereignis',
+   wenn:()=> !!kn.pending.zutat1,
+   z1:'Das ist kein Müll. Das ist Sachbestand.', z2:'Sammeln. Fragen später.', z2t:'Sammeln. Fragen später.'},
+  {id:'craft1', prio:55, art:'ereignis',
+   wenn:()=> !!kn.pending.craft1,
+   z1:'Notiert. Ich notiere alles.', z2:'Zweiter Reiter im Kessel.', z2t:'Zweiter Reiter im Kessel.'},
+  {id:'fluch1', prio:50, art:'ereignis',
+   wenn:()=> !!kn.pending.fluch1,
+   z1:'Jeder Vorteil hat eine Rückseite.', z2:'Nachlesen. I.', z2t:'Im Rucksack nachlesen.'},
+  {id:'kammer1', prio:45, art:'ereignis',
+   wenn:()=> !!kn.pending.kammer1,
+   z1:'Kammer erledigt. Kommt in die Akte.', z2:'Weiter im Dienst.', z2t:'Weiter im Dienst.'},
+  {id:'ult1', prio:40, art:'zustand',
+   wenn:()=> !!player.spellsKnown[ULT_SPELL.id],
+   z1:'Alles gelernt. Jetzt wird es albern.', z2:'R. Einmal reicht.', z2t:'Der Ult-Knopf. Einmal reicht.'},
+  {id:'portal1', prio:35, art:'ereignis',
+   wenn:()=> !!kn.pending.portal1,
+   z1:'Das Portal ist nicht mein Ressort.', z2:'Viel Glück.', z2t:'Viel Glück.'},
+  {id:'feierabend1', prio:30, art:'gelatcht',
+   // Auslöser fällt mit dem Öffnen von #overlay zusammen (eigene Sperrzone), erscheint
+   // deshalb erst 5s nach state==='play' in der Folgeschicht.
+   wenn:()=> !!kn.pending.feierabend1 && (gameT - knPlayStartT >= 5),
+   z1:'Erste Schicht überstanden.', z2:'Der Bericht liegt beim Amt.', z2t:'Der Bericht liegt beim Amt.'},
+  {id:'amt1', prio:25, art:'zustand',
+   // amt.bankGold ändert sich nur in endShift(), also faktisch beim Öffnen von #overlay:
+   // dieselbe Sperrzonen-Verzögerung wie feierabend1, deshalb dieselbe 5s-Wartezeit.
+   wenn:()=> (gameT - knPlayStartT >= 5) && AUSBAU_DEFS.some(d => amt.ausbauten[d.key] < d.max)
+             && amt.bankGold >= Math.min(...AUSBAU_DEFS.filter(d => amt.ausbauten[d.key] < d.max).map(d => d.cost(amt.ausbauten[d.key]))),
+   z1:'Sie sind flüssig. Das Amt hätte da was.', z2:'Nach Feierabend.', z2t:'Nach Feierabend.'},
+];
+
+// --- Eskalation zu Variante B: nur art:'zustand', genau eine Stufe, siehe
+// knOnZettelClosed(). Eigene Tabelle statt Zweitzeile in HINWEISE, weil beat3
+// (kein Katalogeintrag) mit eskalieren muss.
+const ESCALATE_DEFS = {
+  beat3:  {prio:40, wenn:()=> player.spellPoints > 0,
+           z1:'Der Punkt liegt immer noch da.', z2:'T.', z2t:'Der Stern im Gürtel.'},
+  hp30:   {prio:90, wenn:()=> !player.dead && player.hp < derived.maxHp*0.3,
+           z1:'Immer noch wenig Konfetti übrig.', z2:'Q.', z2t:'Das Fläschchen.'},
+  tuer1:  {prio:70, wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && dist2(player.x,player.y,t.x,t.y) < 202500),
+           z1:'Die Tür steht immer noch da.', z2:'F.', z2t:'Die Hand im Gürtel.'},
+  zutat3: {prio:65, wenn:()=> player.pouch.length >= 3,
+           z1:'Drei Stapel. Der Antrag wartet.', z2:'K.', z2t:'Kessel.'},
+  ult1:   {prio:40, wenn:()=> !!player.spellsKnown[ULT_SPELL.id],
+           z1:'Der Ult-Knopf wartet weiter.', z2:'R.', z2t:'Der Ult-Knopf.'},
+  amt1:   {prio:25, wenn:()=> AUSBAU_DEFS.some(d => amt.ausbauten[d.key] < d.max)
+             && amt.bankGold >= Math.min(...AUSBAU_DEFS.filter(d => amt.ausbauten[d.key] < d.max).map(d => d.cost(amt.ausbauten[d.key]))),
+           z1:'Immer noch flüssig. Amt wartet.', z2:'Nach Feierabend.', z2t:'Nach Feierabend.'},
+};
+
+// --- Randnotizen: reine Charakterzeilen, mindestens 4 je Anlass, nie zweimal
+// hintereinander dieselbe (siehe knRandnotiz()).
+const RANDNOTIZ = {
+  crit: ['Vermerkt.', 'Das war unnötig laut.', 'Aktenzeichen folgt.', 'Ich habe nichts gesehen.'],
+  ultimate: ['Konfetti. Die Reinigung kostet extra.', 'Das war Ihr Budget.', 'Ich war das nicht.', 'Bitte nicht nachmachen.'],
+  levelup: ['Aufstieg. Gehalt bleibt.', 'Gratuliere. Formlos.', 'Eine Stufe. Kein Titel.', 'Notiert, ohne Beförderung.'],
+  kammerAbbruch: ['Abbruch ohne Beute. Auch eine Entscheidung.', 'Rückzug ist zulässig.', 'Die Tür bleibt da.', 'Vermerkt als Rückzug.'],
+  fluch: ['Kleingedrucktes gelesen? Nein. Nie.', 'Sie unterschreiben viel.', 'Steht alles drin.', 'Mutig.'],
+  goldfund: ['Die Hälfte davon ist später meine.', 'Buchen Sie das ordentlich.', 'Kassenzeichen folgt.', 'Schöner Posten.'],
+  untaetigkeit: ['Sie stehen. Ich auch. Ich werde bezahlt.', 'Pause ist nicht beantragt.', 'Die Monster warten nicht ewig.', 'Ich notiere Stillstand.'],
+};
+
+function knOrdinal(n){
+  const W = ['Nullte','Erste','Zweite','Dritte','Vierte','Fünfte','Sechste','Siebte','Achte','Neunte','Zehnte'];
+  return W[n] || (n + '.');
+}
+const KN_TRAENKE_GAGS = {3:'Ihr dritter Trank.', 7:'Ihr siebter Trank. Ich führe Buch.',
+                          12:'Zwölf Tränke. Das ist ein Muster.', 20:'Zwanzig. Ich habe eine Spalte angelegt.'};
+
+// --- Zeichendeckel-Assertion: läuft einmal beim Start über alle Tabellen,
+// Touch-Fassungen und Beats inklusive, mit dem längstmöglichen Wert je Zeile.
+function knAssertCaps(){
+  const rows = [];
+  for(const h of HINWEISE) rows.push([h.z1,48],[h.z2,32],[h.z2t,32]);
+  for(const id in ESCALATE_DEFS){ const e = ESCALATE_DEFS[id]; rows.push([e.z1,48],[e.z2,32],[e.z2t,32]); }
+  rows.push(['Knöterich. Amt für Monsterangelegenheiten.',48],['Sie sind Außendienst. WASD.',32],['Außendienst. Daumen links.',32]);
+  rows.push(['Geht doch. Schellen zählt als Sachbearbeitung.',48],['Aufheben, was liegt.',32]);
+  rows.push(['Punkt gutgeschrieben. Hilft keinem im Sack.',48],['T. Aussuchen.',32],['Der Stern im Gürtel.',32]);
+  rows.push(['Sie schlagen nur. Es gibt auch Zauber.',48],['E.',32],['Der Zauberknopf.',32]);
+  rows.push(['Zutaten allein werden nichts.',48],['Zum Kessel. K.',32],['Rucksack, dann Kessel.',32]);
+  rows.push(['Da draußen stehen verschlossene Türen.',48],['Schild lesen. F.',32],['Die Hand im Gürtel.',32]);
+  for(const anlass in RANDNOTIZ) for(const l of RANDNOTIZ[anlass]) rows.push([l,44]);
+  for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
+  for(let n=1;n<=12;n++) rows.push([knOrdinal(n)+' Schicht. Die Akte wird dick.',44]);
+  let ok = true;
+  for(const [txt,cap] of rows){
+    if(txt && txt.length > cap){ ok = false; console.error('Knöterich Zeichendeckel verletzt:', JSON.stringify(txt), txt.length, '>', cap); }
+  }
+  console.assert(ok, 'Knöterich: Zeichendeckel-Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+knAssertCaps();
+
+// --- Laufzeitzustand (nicht persistiert, lebt nur für die Sitzung) ---------
+let knPlayStartT = -999;          // gameT beim letzten Wechsel nach state==='play'
+const knSessionStart = 0;         // gameT läuft ab Skriptstart bei 0, siehe let gameT weiter unten
+let knLastZettelT = -999, knBudgetShown = 0;
+let knLastRandnotizT = -999, knRandLastLine = {};
+let knIdleT = 0, knFrameCtr = 0, knClosingId = null, knNfIdx = -1, knBegruessungPending = null;
+let knCurseWasOn = false;
+const knBubble = {visible:false, text1:'', text2:'', wasIn:false, enterT:0};
+const knZettel = {active:false};
+const knRand = {active:false};
+let knZettelHideAt = 0, knRandHideAt = 0;
+
+function knAllDone(){
+  return HINWEISE.every(h => kn.seen[h.id]) && kn.beats.beat1 && kn.beats.beat2 && kn.beats.beat3
+    && kn.flags.hatGezaubert && kn.flags.hatGekocht && kn.flags.hatKammerBetreten;
+}
+
+// Sperrzonen gelten nur für Dienstzettel, nicht für Randnotizen und nicht für
+// die spielerausgelöste Wiederholung (Nachfragen).
+function knSperrzone(){
+  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen) return true;
+  if(document.getElementById('overlay').style.display === 'flex') return true;
+  if(kammer){ const mod = kammer.mods[kammer.idx]; if(mod && mod.begonnen && !mod.fertig) return true; }
+  if(boss && boss.aggro) return true;
+  for(const m of monsters){
+    if(m.dead || !m.aggro) continue;
+    const dx = m.x - player.x, dy = m.y - player.y;
+    if(dx*dx + dy*dy < 48400) return true;
+  }
+  return false;
+}
+
+function knStuckCandidate(){
+  if(knIdleT < 50) return null;
+  if(!kn.flags.hatGezaubert && !kn.wissensluecke.zauber) return {id:'stuck_zauber', prio:20, exempt:false, isStuck:'zauber',
+    z1:'Sie schlagen nur. Es gibt auch Zauber.', z2: touchMode ? 'Der Zauberknopf.' : 'E.'};
+  if(!kn.flags.hatGekocht && !kn.wissensluecke.kochen) return {id:'stuck_kochen', prio:20, exempt:false, isStuck:'kochen',
+    z1:'Zutaten allein werden nichts.', z2: touchMode ? 'Rucksack, dann Kessel.' : 'Zum Kessel. K.'};
+  if(!kn.flags.hatKammerBetreten && !kn.wissensluecke.kammer) return {id:'stuck_kammer', prio:20, exempt:false, isStuck:'kammer',
+    z1:'Da draußen stehen verschlossene Türen.', z2: touchMode ? 'Die Hand im Gürtel.' : 'Schild lesen. F.'};
+  return null;
+}
+
+function knDisplayZettel(cand){
+  setTxt('knZettelZ1', cand.z1);
+  if(cand.z2){ setStyle('knZettelZ2', 'display', 'block'); setTxt('knZettelZ2', cand.z2); }
+  else setStyle('knZettelZ2', 'display', 'none');
+  el('knZettel').classList.add('show');
+  knZettel.active = true; knZettelHideAt = gameT + 6;
+  knClosingId = (!cand.isVarB && ESCALATE_DEFS[cand.id]) ? cand.id : null;
+
+  if(!cand.exempt){
+    knLastZettelT = gameT;
+    if(gameT - knSessionStart < 120) knBudgetShown++;
+  }
+  if(cand.isVarB){ kn.varB[cand.id] = true; kn.escReady[cand.id] = false; }
+  else if(cand.isStuck){ kn.wissensluecke[cand.isStuck] = true; }
+  else if(cand.id === 'beat2'){ kn.beats.beat2 = true; }
+  else if(cand.id === 'beat3'){ kn.beats.beat3 = true; }
+  else if(cand.id === 'beat1fb'){ kn.beats.beat1 = true; kn.pending.beat1Fallback = false; }
+  else { kn.seen[cand.id] = true; }
+
+  kn.history.push({z1:cand.z1, z2:cand.z2 || ''}); if(kn.history.length > 3) kn.history.shift();
+  saveKn();
+}
+
+function knOnZettelClosed(){
+  const id = knClosingId; knClosingId = null;
+  if(!id) return;
+  const def = ESCALATE_DEFS[id]; if(!def) return;
+  if(kn.varB[id] || kn.escReady[id]) return;
+  if(def.wenn()){ kn.escReady[id] = true; saveKn(); }
+}
+
+// Reihenfolge im Hook ist Pflicht: erst der billige gameT-Vergleich, dann Pool-Auswahl.
+function knShowRandLine(line){
+  setTxt('knRandTxt', line);
+  el('knRandnotiz').classList.add('show');
+  knRand.active = true; knRandHideAt = gameT + 3;
+  knLastRandnotizT = gameT;
+}
+function knShowLineGated(anlass, line){
+  if(!line) return false;
+  if(kn.regler === 'schweigt') return false;
+  if(kn.regler === 'dienstlich' && anlass !== 'begruessung') return false;
+  if(state !== 'play' || player.dead) return false;
+  if(gameT - knLastRandnotizT < 40) return false;
+  if(knZettel.active) return false;
+  if(kammer){ const mod = kammer.mods[kammer.idx]; if(mod && mod.begonnen && !mod.fertig) return false; }
+  knShowRandLine(line);
+  return true;
+}
+function knRandnotiz(anlass){
+  const pool = RANDNOTIZ[anlass]; if(!pool || !pool.length) return;
+  let line = pool[Math.floor(Math.random()*pool.length)];
+  if(pool.length > 1){ let guard = 0; while(line === knRandLastLine[anlass] && guard++ < 8) line = pool[Math.floor(Math.random()*pool.length)]; }
+  if(knShowLineGated(anlass, line)) knRandLastLine[anlass] = line;
+}
+
+function knBegruessungLine(){
+  const n = amt.schichten + 1;
+  let line = knOrdinal(n) + ' Schicht. Die Akte wird dick.';
+  if(kn.counters.maxKillsSchicht > 0){
+    const alt = line + ' Rekord ' + kn.counters.maxKillsSchicht + '.';
+    if(alt.length <= 44) line = alt;
+  }
+  return line;
+}
+
+// Curse-Equip-Nachlauf: hinter jedem recalc(), das eine Ausrüstungsänderung
+// begleitet (siehe equipItemFromBag() und startShift()). Reine Zustandsprüfung,
+// löst nur auf der steigenden Flanke aus (Fluch neu angelegt, nicht weiter getragen).
+function knCheckFluchEquipped(){
+  const e = player.equip;
+  const hasCurse = !!((e.weapon && e.weapon.fluch) || (e.armor && e.armor.fluch) || (e.shield && e.shield.fluch) || (e.boots && e.boots.fluch));
+  if(hasCurse && !knCurseWasOn){
+    if(!kn.pending.fluch1 && !kn.seen.fluch1) kn.pending.fluch1 = true;
+    kn.counters.fluchAngelegt = (kn.counters.fluchAngelegt||0) + 1;
+    if(kn.counters.fluchAngelegt >= 2) knRandnotiz('fluch');
+    saveKn();
+  }
+  knCurseWasOn = hasCurse;
+}
+
+// Weltfigur-Blase: reine Modulvariablen, keine Closure und keine Allokation pro
+// Frame (siehe knBubble oben). Läuft jeden Frame, nicht nur alle 15, weil das
+// Betreten/Verlassen des 150-Pixel-Radius sofort reagieren muss.
+function knUpdateBubble(){
+  const knVisible = currentLevel === 1 && !kammer && state === 'play';
+  let inRange = false;
+  if(knVisible){
+    const dx = player.x - KN_POS.x, dy = player.y - KN_POS.y;
+    inRange = (dx*dx + dy*dy) < 22500;   // 150 Pixel, kein Math.hypot
+  }
+  if(inRange && !knBubble.wasIn) knBubble.enterT = gameT;
+  if(!inRange){
+    if(knBubble.wasIn && !kn.beats.beat1 && !kn.pending.beat1Fallback){
+      kn.pending.beat1Fallback = true; saveKn();   // Beat 1 wandert als Zettel hinterher
+    }
+    knBubble.visible = false; knBubble.wasIn = false;
+    return;
+  }
+  knBubble.wasIn = true;
+  if(!kn.beats.beat1 && !kn.pending.beat1Fallback){
+    knBubble.visible = true;
+    knBubble.text1 = 'Knöterich. Amt für Monsterangelegenheiten.';
+    knBubble.text2 = touchMode ? 'Außendienst. Daumen links.' : 'Sie sind Außendienst. WASD.';
+    if(gameT - knBubble.enterT >= 2){ kn.beats.beat1 = true; saveKn(); knBubble.visible = false; }   // gilt nach 2s als zugestellt
+  } else {
+    knBubble.visible = false;   // kein anderer Blaseninhalt vorgesehen
+  }
+}
+
+function knEvaluateZettel(){
+  if(state !== 'play' || player.dead) return;
+  if(currentLevel === 2) return;                 // Schattenland: Zettelkanal schweigt ganz
+  if(knZettel.active) return;
+  if(knAllDone()) return;                        // Verstummen: alles durch, Schweigen ist verdient
+
+  const cands = [];
+  if(!kn.beats.beat2 && stats.kills >= 1) cands.push({id:'beat2', prio:100, exempt:true,
+    z1:'Geht doch. Schellen zählt als Sachbearbeitung.', z2:'Aufheben, was liegt.'});
+  if(!kn.beats.beat3 && player.spellPoints > 0) cands.push({id:'beat3', prio:100, exempt:true,
+    z1:'Punkt gutgeschrieben. Hilft keinem im Sack.', z2: touchMode ? 'Der Stern im Gürtel.' : 'T. Aussuchen.'});
+  if(kn.pending.beat1Fallback && !kn.beats.beat1) cands.push({id:'beat1fb', prio:100, exempt:true,
+    z1:'Knöterich. Amt für Monsterangelegenheiten.', z2: touchMode ? 'Außendienst. Daumen links.' : 'Sie sind Außendienst. WASD.'});
+
+  for(const h of HINWEISE){
+    if(kn.seen[h.id]) continue;
+    if(!h.wenn()) continue;
+    cands.push({id:h.id, prio:h.prio, exempt:false, z1:h.z1, z2: (touchMode && h.z2t) ? h.z2t : h.z2});
+  }
+  for(const id in ESCALATE_DEFS){
+    if(!kn.escReady[id] || kn.varB[id]) continue;
+    const e = ESCALATE_DEFS[id];
+    if(!e.wenn()) continue;
+    cands.push({id, prio:e.prio, exempt:false, isVarB:true, z1:e.z1, z2: touchMode ? e.z2t : e.z2});
+  }
+  const stuck = knStuckCandidate(); if(stuck) cands.push(stuck);
+
+  if(!cands.length) return;
+  cands.sort((a,b) => b.prio - a.prio);
+  const winner = cands[0];
+
+  if(knSperrzone()) return;    // Verlierer werden verworfen, Gewinner an der Sperrzone auch
+  if(!winner.exempt){
+    if(gameT - knLastZettelT < 25) return;
+    if((gameT - knSessionStart < 120) && knBudgetShown >= 3) return;
+  }
+  knDisplayZettel(winner);
+}
+
+function knNachfragen(){
+  if(!kn.history.length) return;
+  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen) return;
+  if(document.getElementById('overlay').style.display === 'flex') return;
+  const n = kn.history.length;
+  knNfIdx = (knNfIdx + 1) % n;
+  const item = kn.history[n - 1 - knNfIdx];
+  setTxt('knZettelZ1', item.z1);
+  if(item.z2){ setStyle('knZettelZ2', 'display', 'block'); setTxt('knZettelZ2', item.z2); }
+  else setStyle('knZettelZ2', 'display', 'none');
+  el('knZettel').classList.add('show');
+  knZettel.active = true; knZettelHideAt = gameT + 6;
+}
+
+// Zentraler Takt: Blase und Ausblenden laufen jeden Frame (billig), die teure
+// Kandidatensuche nur alle 15 Frames (Vorbild: Minimap alle 4 Frames).
+function knTick(dt){
+  knIdleT = (state === 'play' && !player.dead) ? knIdleT + dt : 0;
+  knUpdateBubble();
+
+  if(knBegruessungPending && knShowLineGated('begruessung', knBegruessungPending)) knBegruessungPending = null;
+
+  if(knZettel.active && gameT >= knZettelHideAt){
+    knZettel.active = false; el('knZettel').classList.remove('show'); knOnZettelClosed();
+  }
+  if(knRand.active && gameT >= knRandHideAt){
+    knRand.active = false; el('knRandnotiz').classList.remove('show');
+  }
+
+  const bv = !!(boss && !boss.dead && boss.aggro);
+  document.body.classList.toggle('bossvis', bv);
+
+  if((knFrameCtr++ % 15) === 0) knEvaluateZettel();
+}
+
+// Regler im Inventar unter "Ton": Dienstzettel laufen in jeder Stellung, nur
+// Randnotizen (inklusive Schichtbegrüßung bei 'schweigt') reagieren darauf.
+function knApplyToneUI(){
+  document.querySelectorAll('.knToneBtn').forEach(b => b.classList.toggle('on', b.dataset.v === kn.regler));
+}
+document.querySelectorAll('.knToneBtn').forEach(b => {
+  b.onclick = () => { kn.regler = b.dataset.v; saveKn(); knApplyToneUI(); };
+});
+knApplyToneUI();
 
 const KAM_W = 13, KAM_H = 15;      // Raumkantenlänge in Kacheln, Wände eingerechnet
 const KAM_X0 = 3, KAM_Y0 = 33;     // linke obere Ecke des Korridors (6 Räume passen in MW=80)
@@ -1984,6 +2411,8 @@ function waehleModule(diff){
 // --- Kammer bauen -----------------------------------------------------------
 function betreteKammer(tuer){
   if(kammer || currentLevel !== 1 || tuer.cd > 0) return;
+  knIdleT = 0;
+  if(!kn.flags.hatKammerBetreten){ kn.flags.hatKammerBetreten = true; saveKn(); }
   owSave = {mapCopy: map.slice(), trees, decos: decos.slice(), critters: critters.slice(),
             monsters: monsters.slice(), drops: drops.slice(), boss, portal,
             level: currentLevel, px: player.x, py: player.y};
@@ -2132,6 +2561,8 @@ function truheOeffnen(){
   k.tuer.cd = CONFIG.kammerNachwachsen;
   const gold = rri(40, 80) * (1 + k.diff);
   player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
+  if(gold >= 60) knRandnotiz('goldfund');
+  if(!kn.pending.kammer1 && !kn.seen.kammer1){ kn.pending.kammer1 = true; saveKn(); }
   sfx.gold(); addShake(10, 0.5);
   floaters.push({x: k.truhe.x, y: k.truhe.y - 40, txt: '+ ' + gold + ' Gold', col:'#f4d97a', t: 2.2, big: true});
   const n = 2 + k.diff;
@@ -2472,7 +2903,7 @@ function modulGeloest(k, mod){
 // --- Aktionen (Taste F / Kontext-Button) ------------------------------------
 // Kein Closure-Bau pro Frame: der beste Kandidat landet in drei festen Feldern.
 let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -2498,6 +2929,8 @@ function scanAktion(dt){
       if(near) aktBiete(player.x, player.y, AKT_GRUSS, null, 'Grüßen');
     }
     if(currentLevel !== 1) return;
+    // Phase 5: Knöterich bietet "Nachfragen" nur, wenn schon einmal ein Zettel gezeigt wurde.
+    if(kn.history.length) aktBiete(KN_POS.x, KN_POS.y, AKT_NACHFRAGE, null, 'Nachfragen');
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
     return;
   }
@@ -2523,6 +2956,7 @@ function fuehreAktion(){
     case AKT_AUSGANG: verlasseKammer(); break;
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
+    case AKT_NACHFRAGE: knNachfragen(); break;
   }
 }
 
@@ -2805,7 +3239,7 @@ function bindTooltip(el, item, isEquipped, dropAction, clickAction, htmlFn){
   }, {passive:true});
 }
 
-function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen) renderInventory(); }
+function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen){ renderInventory(); knIdleT = 0; } }
 
 function addSkill(type){
   if(player.skillPoints > 0){ player.skillPoints--; player.skills[type]++; recalc(); updateHUD(); renderInventory(); }
@@ -2822,7 +3256,7 @@ function equipItemFromBag(idx){
   const currentEquipped = player.equip[slotType];
   player.equip[slotType] = item; player.bag[idx] = currentEquipped;
   document.getElementById('tooltip').style.display = 'none';
-  recalc(); updateHUD(); renderInventory();
+  recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory();
 }
 
 function unequipItem(slotType){
@@ -2980,6 +3414,8 @@ function brew(){
   noteKladde('fl', topAdj, fluchKey);
   if(stufe >= 3) kladde.unikate[wirkKey] = wk.unikat;
   kladde.crafts++; saveKladde();
+  if(!kn.pending.craft1 && !kn.seen.craft1){ kn.pending.craft1 = true; }
+  kn.flags.hatGekocht = true; saveKn();
 
   potSlots[0] = potSlots[1] = potSlots[2] = null;
   sfx.brew(); addShake(6, 0.25);
@@ -3097,6 +3533,7 @@ function toggleKessel(){
     if(invOpen) toggleInventory();          // der Knopf sitzt im Inventar: nicht zwei Panels stapeln
     el('kesselResult').style.display = 'none';
     switchKesselTab(kesselTab);
+    knIdleT = 0;
   }
   else clearPot();
 }
@@ -3108,7 +3545,13 @@ el('closeKesselBtn').onclick = toggleKessel;
 el('kesselBtn').onclick = toggleKessel;
 el('closeSchlossBtn').onclick = schlossZu;
 el('aktionBtn').onclick = fuehreAktion;
-el('kamExitBtn').onclick = verlasseKammer;
+function knAbbruchKammer(){
+  // Echter Abbruchpfad (nicht verlasseKammer() selbst, das läuft auch bei Truhe/Tod/Schichtstart):
+  // nur zählen, wenn die Truhe noch nicht geplündert ist.
+  if(kammer && !kammer.geleert){ kn.counters.kammerAbbrueche = (kn.counters.kammerAbbrueche||0) + 1; saveKn(); knRandnotiz('kammerAbbruch'); }
+  verlasseKammer();
+}
+el('kamExitBtn').onclick = knAbbruchKammer;
 
 document.getElementById('closeInvBtn').onclick = toggleInventory;
 document.getElementById('closeSpellBtn').onclick = toggleSpellTree;
@@ -3185,6 +3628,7 @@ function update(dt){
     for(const t of kammerTueren) if(t.cd > 0){ t.cd -= dt; if(t.cd <= 0) wuerfleTuer(t); }
   }
   scanAktion(dt);
+  knTick(dt);
 
   if(schattenlandActive){
     setTxt('zone', `📍 Schattenland | 💀 ${shadowKills} / 500${schichtHudSuffix()}`);
@@ -3216,9 +3660,11 @@ function update(dt){
   // Items aufsammeln. Wirkung 'Anziehung' vergrößert den Einzugsradius.
   for(let i = drops.length - 1; i >= 0; i--){
     if(dist2(player.x, player.y, drops[i].x, drops[i].y) < 26 + FX.magnet*14){
+      knIdleT = 0;   // Loot-Aufnahme zählt als "echte Aktion" (Steckenbleib/Untätigkeit)
       if(drops[i].kind === 'gold'){
         // Wirkung 'Goldsegen' erhöht, Fluch 'Fundsteuer' behält einen Anteil ein
         player.gold += Math.round(drops[i].amt * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));
+        if(drops[i].amt >= 60) knRandnotiz('goldfund');
         sfx.gold();
       }
       else if(drops[i].kind === 'potion'){ player.potions++; sfx.potion(); }
@@ -3435,7 +3881,7 @@ let frameNo = 0;
 // Zeichenliste: feste Einträge aus einem Pool, damit pro Frame weder Objekte noch
 // Closures anfallen (das war bei voller Horde der größte GC-Verursacher).
 const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5, DRAW_KESSEL=6,
-      DRAW_KAMOBJ=7, DRAW_KAMTUER=8;
+      DRAW_KAMOBJ=7, DRAW_KAMTUER=8, DRAW_ALTER=9;
 const drawPool = [], drawList = [];
 let drawCount = 0;
 const byY = (a,b)=> a.y - b.y;
@@ -3552,6 +3998,7 @@ function render(){
   if(currentLevel === 1){                               // Hoftiere, Kessel und Kammertüren gibt es nur im Wald
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
     if(vis(KESSEL.x, KESSEL.y)) pushDraw(KESSEL.y, DRAW_KESSEL, null);
+    if(vis(KN_POS.x, KN_POS.y)) pushDraw(KN_POS.y, DRAW_ALTER, null);
     for(const t of kammerTueren) if(vis(t.x, t.y)) pushDraw(t.y, DRAW_KAMTUER, t);
   } else if(kammer){
     for(const p of kammer.props) if(vis(p.x, p.y)) pushDraw(p.y, DRAW_KAMOBJ, p);
@@ -3572,6 +4019,7 @@ function render(){
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
       case DRAW_KESSEL:  drawKessel(); break;
+      case DRAW_ALTER:   drawAlter(); break;
       case DRAW_KAMOBJ:  drawKammerObj(o); break;
       case DRAW_KAMTUER: drawKammerTuer(o); break;
       default:           drawPlayer();
@@ -3667,6 +4115,38 @@ function drawKessel(){
     ctx.fillStyle = '#f4d97a'; ctx.fillText('Kessel [K]', x, y-34);
   }
   ctx.restore();
+}
+
+// Phase 5: Amtsrat a. D. Knöterich, aus Bestand: hero_idle + fest gewähltes Haar,
+// grau getönt über tintedSheet() (Cache aus drawPlayer()). Ausdrücklich kein
+// ctx.filter, siehe die Kommentare bei drawPlayer()/drawMon() weiter unten.
+function drawAlter(){
+  const x = KN_POS.x, y = KN_POS.y;
+  drawShadowEllipse(x, y + 2, 10);
+  const key = 'hero_idle', hairKey = `hair_${KN_HAAR}_idle`;
+  const f = animFrame(key, gameT, 7);
+  ctx.save();
+  ctx.translate(x, y + 9);
+  ctx.scale(PLAYER_SC * 0.92, PLAYER_SC * 0.92);
+  drawSpriteAt(key, f, '#8a8a8a', 0.82);
+  drawSpriteAt(hairKey, f, '#8a8a8a', 0.82);
+  ctx.restore();
+
+  if(knBubble.visible){
+    ctx.save();
+    ctx.textAlign = 'center'; ctx.font = 'bold 11px Courier New';
+    const by = y - 48;
+    const w = Math.max(ctx.measureText(knBubble.text1).width, ctx.measureText(knBubble.text2 || '').width) + 16;
+    const h = knBubble.text2 ? 34 : 20;
+    ctx.fillStyle = 'rgba(20,14,10,.85)'; ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(x - w/2, by - h + 8, w, h, 6); else ctx.rect(x - w/2, by - h + 8, w, h);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f4e6c8';
+    ctx.fillText(knBubble.text1, x, by - (knBubble.text2 ? 12 : 4));
+    if(knBubble.text2) ctx.fillText(knBubble.text2, x, by + 2);
+    ctx.restore();
+  }
 }
 
 function drawShadowEllipse(x, y, rx){
@@ -3932,16 +4412,7 @@ function showStartScreen(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>SuperDuper Adventure</h1>
     <h3>✨ Looten, leveln und Monster wegschellen!</h3>
-    <p>Metzle dich durch drei Biome, sammle Zutaten und lerne Zaubersprüche. Ausrüstung fällt nicht mehr vom Himmel: die kochst du am <b>Kessel</b> aus drei Zutaten selbst zusammen. Wie das genau zusammenhängt, findest du beim Kochen heraus. In jedem Biom stehen versiegelte <b>Kammern</b>: das Schild an der Tür nennt Schwierigkeit und Beute vorab, drinnen warten Rätsel und Wachen. Irgendwo zwischen Stufe 5 und 11 öffnet sich außerdem zufällig ein <b>Schatten-Portal</b>: 500 Gegner gleichzeitig.</p>
-    <div style="text-align:left; background:rgba(0,0,0,.5); padding:10px; border-radius:8px; font-size:12px; margin-bottom:15px; border:1px solid #5a4a2d;">
-      <b>Steuerung:</b> W A S D = Bewegen | Klick / Leer = Angreifen<br>
-      <b>Zauber:</b> (E) aktiver Spruch | (R) Ultimate | (T) Zauberbaum<br>
-      <b>Inventar (I):</b> Links-Klick: Ausrüsten | Rechts-Klick: Wegwerfen<br>
-      <b>Kessel (K):</b> drei Zutaten kochen, Kladde lesen<br>
-      <b>Benutzen (F):</b> Kammer betreten, Hebel, Spiegel, Truhe<br>
-      <b>Trank (Q):</b> heilen<br>
-      <b>📱 Touch:</b> linke Hälfte = Joystick | rechte Hälfte = Angreifen (halten = Dauerfeuer)
-    </div>
+    <p>Drei Biome, versiegelte Kammern, ein Kessel. Draufhauen mit Klick oder Leertaste, auf dem Handy rechte Bildschirmhälfte. Den Rest erklärt das Amt.</p>
     <button onclick="startGame()">LOSLEGEN</button>
   `;
   document.getElementById('overlay').style.display = 'flex';
@@ -3976,6 +4447,7 @@ function respawnPlayer(){
   initFloorGraphics(); placeMonsters();
   el('overlay').style.display = 'none';
   state = 'play'; updateHUD();
+  knPlayStartT = gameT;
 }
 
 function winGame(){
@@ -3991,7 +4463,7 @@ function winGame(){
 function startGame(){
   initAudio();
   if(CONFIG.schichtModus){ pendingCarryGold = 0; pendingCarryPouch = []; startShift(); }
-  else { document.getElementById('overlay').style.display = 'none'; state = 'play'; }
+  else { document.getElementById('overlay').style.display = 'none'; state = 'play'; knPlayStartT = gameT; }
 }
 
 // ===========================================================================
@@ -4073,6 +4545,7 @@ function startShift(){
   CONFIG.kammerTueren = 2 + amt.ausbauten.tueren; setzeKammerTueren();
 
   recalc(); player.hp = derived.maxHp; player.mana = derived.maxMana;
+  knCheckFluchEquipped();   // Startfluch-Ausbau kann ohne equipItemFromBag() einen Fluch anlegen
   initFloorGraphics(); placeMonsters();
 
   shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0; shiftElapsedT = 0;
@@ -4080,6 +4553,9 @@ function startShift(){
 
   document.getElementById('overlay').style.display = 'none';
   state = 'play'; updateHUD();
+  knPlayStartT = gameT;
+  // In der allerersten Schicht übernimmt Beat 1 die Einführung, keine Begrüßung.
+  if(amt.schichten >= 1) knBegruessungPending = knBegruessungLine();
 }
 
 // Schicht beenden: Übertrag berechnen (Gold anteilig, Zutaten gekappt nach Seltenheit
@@ -4103,6 +4579,13 @@ function endShift(reason){
   pendingCarryGold = carryGold; pendingCarryPouch = carryPouch;
   amt.bankGold += carryGold; amt.schichten++;
 
+  // Phase 5: Dienstzettel 'feierabend1' latcht hier (Auslöser = #overlay öffnet sich,
+  // seine eigene Sperrzone), erscheint deshalb erst in der Folgeschicht. maxKillsSchicht
+  // ist der einzige Rekordwert, den die Schichtbegrüßung nennen darf.
+  kn.pending.feierabend1 = true;
+  if(shiftKillsTotal > kn.counters.maxKillsSchicht) kn.counters.maxKillsSchicht = shiftKillsTotal;
+  saveKn();
+
   const killLines = Object.keys(shiftKillsByType).sort((a,b) => shiftKillsByType[b]-shiftKillsByType[a])
     .map(t => `${MONDEF[t] ? MONDEF[t].name : t}: ${shiftKillsByType[t]}`);
   const bemerkung = DIENST_BEMERKUNGEN[Math.floor(Math.random()*DIENST_BEMERKUNGEN.length)];
@@ -4119,7 +4602,7 @@ function endShift(reason){
     <h1>${titel}</h1>
     <p style="font-size:12px;color:#9a8a5f;">${anlass}</p>
     <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:13px;margin:14px 0;border:1px solid #5a4a2d;">
-      <b>Dienstbericht</b><br>
+      <b>🧑‍💼 Dienstbericht</b><br>
       Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
       Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
       Überstunden: ${ueberstunden}s<br>
@@ -4141,6 +4624,7 @@ function showJahresgespraech(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>JAHRESGESPRÄCH</h1>
     <p>Der Bürgermeister bedankt sich für ${amt.schichten} Schichten treuen Dienstes.</p>
+    <p style="font-size:12px;font-style:italic;color:#c9b98a;">🧑‍💼 „Ich habe alles mitgeschrieben."</p>
     <div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;margin:14px 0;border:1px solid #5a4a2d;">
       <b>${b.name}</b><br><span style="font-size:12px;color:#c9b98a;">${b.text}</span>
     </div>
@@ -4216,7 +4700,7 @@ window.addEventListener('keydown', e => {
     else if(spellTreeOpen) toggleSpellTree();
     else if(kesselOpen) toggleKessel();
     else if(schlossOpen) schlossZu();
-    else if(kammer) verlasseKammer();          // Abbruch der Kammer, ohne Beute, ohne Softlock
+    else if(kammer) knAbbruchKammer();          // Abbruch der Kammer, ohne Beute, ohne Softlock
   }
 });
 
