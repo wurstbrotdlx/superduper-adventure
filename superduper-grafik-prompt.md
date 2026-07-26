@@ -5,17 +5,18 @@ Arbeite die Phasen einzeln ab, nicht alle in einer Session. Ziel: kompletter Wec
 ## Modellstrategie (Hinweis für Matthias, nicht für Claude Code)
 
 * Diese Datei liegt im Repo-Root, wird nicht in den Chat gepastet.
-* Modell auf `opusplan` stellen. Pro Phase eine frische Session. Auftakt jeweils nur: „Lies superduper-grafik-prompt.md im Repo-Root. Setze ausschließlich Phase GN um. Halte dich strikt an den Regressionsschutz-Block. Erst committen, wenn die Abnahmekriterien erfüllt sind."
+* Modell auf `opusplan` stellen. Pro Phase eine frische Session. Auftakt jeweils nur: „Lies superduper-grafik-prompt.md im Repo-Root. Setze ausschließlich Phase GN um. Halte dich strikt an den Regressionsschutz-Block und an den Lizenz-Abschnitt. Lies vorher die Umsetzungsnotizen der abgeschlossenen Phasen unten. Erst committen, wenn die Abnahmekriterien erfüllt sind."
 * Plan-Modus pro Phase kurz nutzen, um den Phasenabschnitt auf den realen Code zu mappen, dann ausführen lassen.
 * Nach jeder Phase trägt Claude Code seine Umsetzungsnotizen unten in diese Datei ein (eigener Abschnitt pro Phase), damit Folgephasen davon lesen.
 
 ## Kontext
 
-Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurstbrotdlx/superduper-adventure`, public, Branch `main`, GitHub Pages aus dem Root). Direkt von hier committen und pushen.
+Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurstbrotdlx/superduper-adventure`, public, Branch `main`). Direkt von hier committen.
 
 * Hauptdatei: `index.html` (Canvas/JS, ein File, groß)
 * Aktuelle Grafik: `assets/` (Sunnyside World, danieldiggle), einheitliches 96x64-Frameraster, row-major, Framezahlen hart im Code hinterlegt
-* Neue Grafik-Quelle: `Graphics/` im Repo-Root (Cute Fantasy von Kenmi plus Add-ons). Das ist die **Rohbibliothek**, sie wird NIE committet (siehe Lizenz). Genutzte Dateien werden kuratiert nach `assets/cf/` kopiert.
+* Neue Grafik-Quelle: `Graphics/` im Repo-Root (Cute Fantasy von Kenmi plus Add-ons). Das ist die **Rohbibliothek**, sie wird NIE committet (siehe Lizenz). Genutzte Dateien werden kuratiert nach `assets/cf/` kopiert — **auch die sind gitignored**, siehe Lizenz-Abschnitt.
+* Ausgeliefert wird **nicht** der Repo-Inhalt, sondern ein Build: `node tools/build-single.mjs` schreibt `dist/index.html` mit allen Grafiken als `data:`-URIs (eine Datei, ~1,1 MB, läuft auch per `file://` ohne Server). Seit G1 so, Begründung im Lizenz-Abschnitt.
 * Dev-Server: `.claude/launch.json` (eine Ebene höher, `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://localhost:8378/adventure/index.html`
 * Gameplay-Doku: `superduper-gameplay-prompt.md` im selben Ordner. Dort stehen die Umsetzungsnotizen der Phasen 1 bis 6 (Zutaten-Grammatik, Kammern, Flüche, Schichtmodus, Knöterich, Soundtrack). Bei Berührungspunkten dort nachlesen.
 
@@ -25,7 +26,7 @@ Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurs
 |---|---|---|
 | `Cute_Fantasy/` | Basis: modularer Player (Player_Base, Chest, Feet, Hands, Head, Legs, Accessories, Tools, Player_Mounts), Enemies (Slime S/M/L, Skeleton + Bowman/Mage/Swordman, Bombschroom), Tiles (Grass, Beach, Cliff, Cave, Water, Waterfall, Bridge, Cobble_Road, FarmLand), Trees, Buildings, Animals, NPCs (Premade), Outdoor decoration, Weather effects, Crops, Icons | G2, G3, G4, G5 |
 | `Cute_Fantasy_Characters/` | Goblins, Knights, Orcs, Angels | G3 |
-| `Cute_Fantasy_Dungeons/` | 3 komplette Dungeon-Sets: Böden, Wände, Türen, Tore (mit Öffnungs-Animation), Druckplatten (mit Animation), Bodenstacheln, Treppen, Sewer, Pillars, Objects | G1 |
+| `Cute_Fantasy_Dungeons/` | **2** komplette Dungeon-Sets (`Dungeon_3/` ist leer): Böden, Wände, Türen, Tore (mit Öffnungs-Animation), Druckplatten (mit Animation), Bodenstacheln, Treppen, Sewer, Pillars, Objects | G1 (erledigt) |
 | `Cute_Fantasy_Volcano/` | Vulkan-Tiles, Gebäude, Props, Enemies (Cowling 1/2, Cowling Mage 1/2, Flying Skull) | G3, G4 |
 | `Cute_Fantasy_ShroomLands/` | Pilzland-Tiles, Häuser, Props, Shroomlings, Snails | G3, G4 |
 | `Cute_Fantasy_UI/` | UI-Elemente, Fonts | G5 |
@@ -36,11 +37,16 @@ Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurs
 
 ### Lizenz (gemessen an `read_me.txt` in den Packs)
 
-Kommerzielle Nutzung ja, Modifikation ja, Weiterverteilung/Weiterverkauf nein, auch nicht modifiziert. Konsequenzen:
+Kommerzielle Nutzung ja, Modifikation ja, Weiterverteilung/Weiterverkauf nein, auch nicht modifiziert.
 
-1. `Graphics/` kommt in die `.gitignore` und wird nie gepusht (Phase G0).
-2. Nach `assets/cf/` wandern nur Dateien, die das Spiel tatsächlich lädt, so wie es bei Sunnyside schon gehandhabt wird.
-3. `CREDITS.md` wird in G0 um Cute Fantasy (Kenmi, itch.io) ergänzt. Sunnyside bleibt dort stehen, bis G5 die letzten Sunnyside-Assets entfernt.
+**Die entscheidende Unterscheidung** (in G1 nachgeschärft, gilt ab jetzt für alle Phasen): Die Grafik **im fertigen Spiel auszuliefern** ist der gekaufte Anwendungsfall und erlaubt. Original benannte PNGs in ein öffentliches Repo zu legen ist es nicht — dort wären sie als Dateisammlung klonbar, und genau das verbietet die Lizenz. Konsequenzen:
+
+1. `Graphics/` liegt in der `.gitignore` und wird nie committet (G0).
+2. Nach `assets/cf/` wandern nur Dateien, die das Spiel tatsächlich lädt — **und auch diese Ordner sind gitignored** (`assets/cf/dungeon/`, `player/`, `enemies/`, `tiles/`, `deco/`, `ui/`). Getrackt bleiben nur `README.md`, `manifest.json` und `audit-report.md`: Dateinamen und Rastermaße, keine Bilddaten.
+3. **Jede Phase, die einen neuen `assets/cf/`-Unterordner anlegt, trägt ihn in `.gitignore` ein und ergänzt die Dateiliste in `assets/cf/README.md`** — sonst kann niemand mit eigener Lizenz das Repo wieder lauffähig machen.
+4. Vor jedem Commit prüfen: `git diff --cached --name-only | grep -i '\.png$'` muss leer sein.
+5. Ausgeliefert wird `dist/index.html` aus `node tools/build-single.mjs`. Der Loader nimmt die eingebackene Tabelle über `ASSET_BLOBS` entgegen (Platzhalterzeile mit Marker `/*BUILD:ASSET_BLOBS*/` direkt unter `const ASSETS`); ist sie `null`, lädt das Spiel wie im Quellbaum aus `assets/`. **Diese Zeile nicht umformulieren**, sonst bricht der Build ab.
+6. `CREDITS.md` nennt seit G0 Cute Fantasy (Kenmi, itch.io). Sunnyside bleibt dort stehen, bis G5 die letzten Sunnyside-Assets entfernt.
 
 ### Gemessene Fakten (Stichproben, ersetzt kein Audit)
 
