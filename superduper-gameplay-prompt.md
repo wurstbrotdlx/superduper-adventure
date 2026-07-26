@@ -1,4 +1,4 @@
-# SuperDuper Adventure, Gameplay-Umbau in 5 Phasen
+# SuperDuper Adventure, Gameplay-Umbau in 6 Phasen
 
 Arbeite die Phasen einzeln ab, nicht alle in einer Session.
 
@@ -494,8 +494,79 @@ Beachte den vorhandenen Kommentar über `CFX.gruss`: der Fluch Grußpflicht biet
   * `DRAW_ALTER` zeichnet nur, wenn `currentLevel === 1` (die Push-Stelle sitzt im selben `if(currentLevel === 1)`-Block wie `DRAW_KESSEL`). Ein künftiges "Dorf" oder ein zweiter Ort mit Kessel bräuchte eine explizite Sichtbarkeitsprüfung statt sich auf diese Verschachtelung zu verlassen.
   * `knAssertCaps()` deckt nur Texte, die im Skript selbst als Literal stehen. Wer neue Randnotiz- oder Hinweiszeilen ergänzt, muss sie in `knAssertCaps()` nachtragen, sonst prüft die Assertion sie nicht mit.
 
+## Phase 6: Soundtrack — ERLEDIGT
+
+Ersetzt die zwei prozeduralen Platzhaltertracks (ein Oberwelt-Loop, ein Metal-Loop für alles andere, per `setTimeout` getaktet) durch ein adaptives System nach Monkey-Island-Vorbild: **ein Motiv, sechs Arrangements.** Dieselbe Melodie wandert durch Modus, Tempo, Taktart und Instrumentierung und bleibt trotzdem als ein Thema erkennbar. Alles weiterhin zur Laufzeit synthetisiert, **0 Byte neue Assets.**
+
+### Aufbau
+
+Fünf Schichten, in dieser Reihenfolge im Code:
+
+* **Bus-Graph** (`AC`, `master`, `compressor`, `toFx`, `lowpass`, `dry`/`reverbSend`/`delaySend`). Quellen laufen in `toFx`, von dort durch einen `lowpass` (das ist der Muffle-Regler für Panels), dann parallel in trocken/Hall/Delay. Hall ist ein `ConvolverNode` mit **im Code erzeugter** Impulsantwort (`makeImpulse()`, Rauschen mit Exponentialabfall), kein Sample. Neu gegenüber vorher: ein `DynamicsCompressorNode` zwischen `master` und `AC.destination`, fängt Übersteuerung ab, wenn in der Kammer Chor, Timpani, Lead und Bass gleichzeitig stehen.
+* **Instrumente** (`pluck`, `harp`, `marimba`, `flute`, `bassoon`, `brass`, `choir`, `timpani`, `bassPatch`, plus die unbestimmten `noiseHit`/`shakerHit`/`snareHit`/`stampHit`). Jede Funktion synthetisiert einen einzelnen Ton zur Aufrufzeit, keine vorgebackenen Buffer.
+* **Song-Daten** (`ZONES`). Pro Zone: `bpm`, `meter`, `lead`/`bass` als `[startStep, note, oct, lengthSteps]`-Listen auf einem 16tel-Raster (`STEPS_PER_BEAT = 4`), `chords` (eine Akkordfolge pro Takt), `perc`-Flags (`shakerEvery`, `snareOffbeat`, `timpaniDownbeat`, `choirPad`, `harpArpeggio`, `bassOstinatoEvery`, `stampAt`), `reverbSend`/`delaySend`/`droneLevel` pro Zone. `prepareZone()` baut daraus einmalig Lookup-Tabellen (`_leadByStep` etc.), läuft beim Laden über `Object.keys(ZONES).forEach`.
+* **Scheduler**. Lookahead-Muster (25 ms Tick, 120 ms Horizont), plant über `AC.currentTime`, nicht über `setTimeout`-Wartezeiten. Das ersetzt den alten Takt, der über die Zeit hörbar driftete. Zonenwechsel werden nur an Taktgrenzen angewendet (`stepIdx % totalSteps === 0`), nie mitten im Takt.
+* **`MUS`**, die einzige nach außen sichtbare Schnittstelle: `goto(zone)`, `layer(name, on)`, `sting(name)`, `swell()`, `duck(ms)`, `muffle(on)`, `setOvertime(f)`.
+
+### Die sechs Zonen
+
+| Zone | Takt/Modus | Tempo | Lead-Instrument | Auslöser |
+|---|---|---|---|---|
+| `overworld` | 4/4, A-dorisch | 112 | Pluck | `currentLevel === 1`, Standardfall |
+| `shadowland` | 4/4, A-phrygisch (B→Bb) | 100 | Pluck | `currentLevel === 2` |
+| `chamber` | 4/4, A-äolisch, Oktave tiefer | 76 | Marimba | `currentLevel === 3` |
+| `village` | 3/4, F-Dur | 92 | Flöte | **keiner** (siehe unten) |
+| `office` | 2/4, F-Dur-Marsch | 104 | Fagott | `showDorf()`, `showJahresgespraech()` |
+| `boss` | 4/4, wie Kammer, Oktave tiefer | 140 | Blech | echter Schattenfürst-Kampf |
+
+### Zonenwahl: kein Hook pro Übergangsstelle
+
+`MUS.goto()` und `MUS.layer()` sind **idempotent**: `goto()` vergleicht gegen ein gemerktes `requestedZone`, `layer()` gegen `layerState[name]`, und brechen bei Gleichstand sofort ab, ohne die Audioparameter neu anzufassen. Deshalb genügt ein einziger Block in `update(dt)`, direkt hinter dem Schichtuhr-Block:
+
+```js
+const bossFight = !!(boss && !boss.dead && boss.aggro);
+MUS.layer('kampf', bossFight);
+MUS.goto(bossFight && currentLevel === 2 ? 'boss' : zoneForLevel(currentLevel));
+MUS.layer('gefahr', !player.dead && player.hp < derived.maxHp*0.3);
+MUS.setOvertime(...);
+```
+
+Läuft jeden Frame, kostet im Regelfall nur einen Stringvergleich. **`loadLevel2()`, `betreteKammer()`, `verlasseKammer()`, `respawnPlayer()`, `startShift()` mussten für die Zonenwahl selbst nicht angefasst werden** (sie ändern nur `currentLevel`, der Rest folgt automatisch). `zoneForLevel(level)`: 1 → `overworld`, 2 → `shadowland`, 3 → `chamber`.
+
+**Boss-Bedingung bewusst nicht einfach `boss.aggro`:** der Alte Schrecken in einer Schatzkammer (Phase 2, `bossgeneric` ab Kammerschwierigkeit 5) setzt ebenfalls `boss`. Ohne das `currentLevel === 2` in der Bedingung würde ein Kammer-Wächter fälschlich den Boss-Track auslösen. Kammer-Bosse bleiben auf dem Kammer-Track, bekommen aber denselben `kampf`-Layer wie der echte Schattenfürst.
+
+`update(dt)` läuft nur bei `state === 'play'`. Für Zonen außerhalb dieser Bedingung (Amt, Jahresgespräch) braucht es einen expliziten Aufruf, siehe unten.
+
+### `village` ist fertig, aber unerreichbar
+
+Die Zone liegt vollständig in `ZONES.village`, wird aber **von nirgends aufgerufen**. Es gibt kein begehbares Dorf im Code, nur das Amt-Overlay (Phase 4/5). Sobald ein Dorf entsteht: ein `MUS.goto('village')` an der richtigen Stelle genügt, keine neue Komposition nötig.
+
+### Panels: Muffle oder eigene Zone
+
+An allen sieben `#ovPanel`-Stellen (siehe Phase 5) hängt jetzt `MUS.muffle(true)` beim Öffnen (`display = 'flex'`) und `MUS.muffle(false)` beim Schließen (`display = 'none'`): Lowpass auf 600 Hz, Hall-Send hochskaliert, klingt wie "von nebenan". **Ausnahme Amt und Jahresgespräch:** die bekommen statt Muffle den eigenen `office`-Track, klar und ungedämpft.
+
+**Falle, die live auffiel:** `showDorf()` und `showJahresgespraech()` müssen `MUS.goto('office')` **und** `MUS.muffle(false)` aufrufen, in dieser Kombination. Kommt der Aufruf direkt nach einem gedämpften Dienstbericht (`endShift()` hatte `muffle(true)` gesetzt), bliebe der Muffle-Zustand sonst hängen und der Amtsmarsch klänge selbst gedämpft, obwohl er die aktuelle Szene ist, nicht der Nachhall einer vorherigen.
+
+### Knöterich-Stinger
+
+Drei Fagott-Töne über den laufenden Track, tonartgleich zur aktiven Zone (`MUS.sting()` transponiert über `z.tonic`/`z.scale`, nie hartcodierte Frequenzen). Varianten: `gespraechig` (fallend, an `knDisplayZettel()`), `dienstlich` (zwei gleiche Töne, ebenfalls `knDisplayZettel()`, abhängig von `kn.regler`), `spitz` (steigend, ausschließlich am echten Kammer-Abbruch in `knAbbruchKammer()`). Sting prüft selbst `muffled` (kein Sting bei offenem Panel) und `kn.regler !== 'schweigt'`. **Der Randnotiz-Kanal (`knShowRandLine()`) bekommt bewusst keinen Sting:** der feuert bis alle 40 Sekunden, ein Musik-Stinger dabei würde nach kurzer Zeit nerven. Nur die selteneren Dienstzettel und der Kammer-Abbruch bekommen ihn.
+
+### Abnahme Phase 6
+
+Alle sechs Zonen hörbar unterscheidbar und trotzdem als ein Thema erkennbar. Zonenwechsel folgt `currentLevel` ohne Schnitt mitten im Takt. Boss-Track läuft nur beim echten Schattenfürst, Kammer-Wächter bleiben auf dem Kammer-Track mit verstärkter Perkussion. Alle Panels dämpfen die laufende Musik, Amt und Jahresgespräch bekommen stattdessen den eigenen Marsch, klar und ungedämpft. Knöterich-Stinger transponiert korrekt in die jeweilige Zonentonart und schweigt bei Reglerstellung "Schweigt". `sfx.*` unverändert, kein bestehender Aufrufer angefasst. 300 Frames mit Zaubern und laufender Musik ohne Exception, lokal und live, alle sechs Zonen einzeln durchgehört.
+
+### Umsetzungsnotizen aus Phase 6
+
+* Ersetzt komplett den alten `// --- AUDIO SYSTEM ---`-Block. `sfx.*`-API zu 100 % unverändert (dieselben 13 Methoden, dieselben Parameter), kein einziger der 13 Aufrufer im Rest der Datei musste angefasst werden. `playTone()`s erster Parameter heißt jetzt `hz` statt `freq`, reine Namenskollision mit der neuen `freq(note, oct)`-Funktion, keine Verhaltensänderung.
+* Die 70ms-Bremse auf Crit- und Sterbe-Sound (Regressionsschutz Punkt 9) sitzt in `hurtMon()`/`killMon()`, also außerhalb des Audio-Blocks, und blieb unangetastet.
+* Notenraster ist `[startStep, note, oct, lengthSteps]` auf 16tel-Basis, kein Notenereignis für Pausen (die entstehen einfach als Lücke zwischen zwei Einträgen). Akkorde/Perkussion sind reine Flags in `perc`, `prepareZone()` expandiert sie einmalig zu absoluten Step-Listen (`everyN()`, `perBar()`), keine Berechnung pro Tick.
+* Gain-Stellschrauben, falls Balance nicht passt: `musicVolTarget` (Default 0.45, deckt sich mit dem HTML-Slider), `sfxBus.gain` (0.22), `master.gain` (0.85, vor dem Compressor). Musik- und SFX-Pfad sind seit dieser Phase unabhängige Busse, vorher liefen beide durch dieselbe `masterGain`.
+* `MUS.setOvertime(f)` koppelt an die Schichtuhr (`shiftEndPending`, `overtimeT`, `shiftT`): Tempo sinkt bis 14 % in der Überstunde, Lowpass-Cutoff sinkt parallel. Quantisiert auf 50 Stufen (`Math.round(f*50)/50`) gegen unnötige Automation-Events, da `update(dt)` das jeden Frame mit einem kontinuierlich wandernden Wert aufruft.
+* Musik-Button und -Regler bleiben an denselben DOM-Ids (`#musicBtn`, `#musicVol`) im Inventar unter "Ton" (siehe Phase 2). Verhalten unverändert erhalten: Regler ziehen entmutet automatisch.
+* Getestet live über `.claude/launch.json`-Testeintrag (temporär, wieder entfernt): alle sechs Zonen einzeln erzwungen (jedes Instrument dabei mindestens einmal ausgelöst), Boss-Auto-Wahl über Fake-Aggro bestätigt, alle drei Stinger, `swell()`, `muffle()` an/aus, Mute-Toggle, Lautstärkeregler, jeweils ohne Konsolenfehler. Zusätzlich der komplette Skriptinhalt einmal über `new Function(...)` geprüft (Syntaxcheck über die ganze Datei).
+
 ## Reihenfolge und Disziplin
 
-1 bis 5, in dieser Reihenfolge. Nach jeder Phase spielbar, getestet, committet, gepusht, live verifiziert. Wenn eine Phase größer wird als gedacht, sag es und liefere sie halb, statt sie ganz zu liefern und dabei den Renderpfad zu zerlegen.
+1 bis 6, in dieser Reihenfolge. Nach jeder Phase spielbar, getestet, committet, gepusht, live verifiziert. Wenn eine Phase größer wird als gedacht, sag es und liefere sie halb, statt sie ganz zu liefern und dabei den Renderpfad zu zerlegen.
 
 Am Ende jeder Phase: kurzer Bericht, was gebaut wurde, was bewusst weggelassen wurde, was noch offen ist.

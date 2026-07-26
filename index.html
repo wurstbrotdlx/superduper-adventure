@@ -610,96 +610,104 @@ function addShake(intensity, time){ shakeInt = Math.max(shakeInt, intensity); sh
 function addHitStop(time){ hitStopT = Math.max(hitStopT, time); }
 
 // --- AUDIO SYSTEM ---
-let AC = null, masterGain = null, musicGain = null;
-let musicMuted = false, musicPlaying = false, musicTimer = null;
+// Ein Motiv, sechs Arrangements (Oberwelt/Schattenland/Kammer/Dorf/Amt/Boss), zur Laufzeit
+// gebacken per Web Audio, 0 Byte Assets. Lookahead-Scheduler statt setTimeout-Takt (der driftet
+// hörbar). Zonen folgen currentLevel automatisch (siehe update(dt)); sfx.*-API unverändert,
+// jeder bestehende Aufrufer bleibt unangetastet.
 
-let musicVol = 0.45; // 0..1 (Regler); wird auf musicGain skaliert
-const MUSIC_GAIN_MAX = 2.6; // bei max sehr laut
+const SEMI = {C:-9,'C#':-8,Db:-8,D:-7,'D#':-6,Eb:-6,E:-5,F:-4,'F#':-3,Gb:-3,G:-2,'G#':-1,Ab:-1,A:0,'A#':1,Bb:1,B:2};
+function freq(name, oct){ return 440*Math.pow(2,(SEMI[name]+(oct-4)*12)/12); }
+const CHORD_IV = {'':[0,4,7], 'm':[0,3,7]};
+function chordToneFreq(chord, idx, octAdd=0){
+  const iv = CHORD_IV[chord.q][idx % 3];
+  const rootSemi = SEMI[chord.root] + (chord.oct + octAdd - 4)*12;
+  return 440*Math.pow(2,(rootSemi+iv)/12);
+}
 
-function applyMusicVol(){
-  if(musicGain) musicGain.gain.value = musicMuted ? 0 : musicVol * MUSIC_GAIN_MAX;
+// --- Bus-Graph: Quellen -> toFx -> lowpass(Muffle) -> {dry, reverbSend, delaySend} -> master
+let AC=null, master=null, compressor=null;
+let toFx=null, lowpass=null, dry=null, reverbSend=null, convolver=null, reverbWet=null;
+let delayNode=null, delayFeedback=null, delaySend=null, delayWet=null;
+let musicBus=null, sfxBus=null, kampfGain=null, gefahrGain=null, zoneDroneGain=null, swellGain=null;
+let musicMuted=false, musicVolTarget=0.45, muffled=false;
+
+function makeImpulse(duration, decay){
+  const rate=AC.sampleRate, len=Math.floor(rate*duration);
+  const buf=AC.createBuffer(2, len, rate);
+  for(let ch=0; ch<2; ch++){
+    const d=buf.getChannelData(ch);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len, decay);
+  }
+  return buf;
 }
 
 function initAudio(){
   if(!AC){
     try{
       AC = new (window.AudioContext||window.webkitAudioContext)();
-      masterGain = AC.createGain(); masterGain.gain.value = 0.18; masterGain.connect(AC.destination);
-      musicGain = AC.createGain(); musicGain.gain.value = musicVol * MUSIC_GAIN_MAX; musicGain.connect(masterGain);
-      startEpicMusic();
+      master = AC.createGain(); master.gain.value = 0.85;
+      compressor = AC.createDynamicsCompressor();
+      compressor.threshold.value=-18; compressor.knee.value=24; compressor.ratio.value=4;
+      compressor.attack.value=0.003; compressor.release.value=0.25;
+      master.connect(compressor); compressor.connect(AC.destination);
+
+      toFx = AC.createGain(); toFx.gain.value = 1;
+      lowpass = AC.createBiquadFilter(); lowpass.type='lowpass'; lowpass.frequency.value=20000;
+      toFx.connect(lowpass);
+
+      dry = AC.createGain(); dry.gain.value = 1; lowpass.connect(dry); dry.connect(master);
+
+      convolver = AC.createConvolver(); convolver.buffer = makeImpulse(2.4, 2.1);
+      reverbSend = AC.createGain(); reverbSend.gain.value = 0.1;
+      reverbWet = AC.createGain(); reverbWet.gain.value = 1;
+      lowpass.connect(reverbSend); reverbSend.connect(convolver); convolver.connect(reverbWet); reverbWet.connect(master);
+
+      delayNode = AC.createDelay(1.0); delayNode.delayTime.value = 0.3;
+      delayFeedback = AC.createGain(); delayFeedback.gain.value = 0.26;
+      delaySend = AC.createGain(); delaySend.gain.value = 0.12;
+      delayWet = AC.createGain(); delayWet.gain.value = 1;
+      lowpass.connect(delaySend); delaySend.connect(delayNode);
+      delayNode.connect(delayFeedback); delayFeedback.connect(delayNode);
+      delayNode.connect(delayWet); delayWet.connect(master);
+
+      musicBus = AC.createGain(); musicBus.gain.value = 0; musicBus.connect(toFx);
+      kampfGain = AC.createGain(); kampfGain.gain.value = 0; kampfGain.connect(toFx);
+      gefahrGain = AC.createGain(); gefahrGain.gain.value = 0; gefahrGain.connect(toFx);
+      zoneDroneGain = AC.createGain(); zoneDroneGain.gain.value = 0; zoneDroneGain.connect(toFx);
+      swellGain = AC.createGain(); swellGain.gain.value = 0; swellGain.connect(toFx);
+
+      sfxBus = AC.createGain(); sfxBus.gain.value = 0.22; sfxBus.connect(master);
+
+      startDrone();
+      applyZoneSends();
+      applyMusicGain();
+      scheduler.start();
     }catch(e){ AC = null; }
   }
   if(AC && AC.state === 'suspended') AC.resume();
 }
 
-function playTone(freq, type, duration, startVol=0.5, endVol=0.01, slideFreq=null){
+function applyMusicGain(){
   if(!AC) return;
-  const o = AC.createOscillator(), g = AC.createGain();
-  o.type = type; o.frequency.setValueAtTime(freq, AC.currentTime);
-  if(slideFreq) o.frequency.exponentialRampToValueAtTime(Math.max(20, slideFreq), AC.currentTime + duration);
-  g.gain.setValueAtTime(startVol, AC.currentTime);
-  g.gain.exponentialRampToValueAtTime(endVol, AC.currentTime + duration);
-  o.connect(g); g.connect(masterGain);
-  o.start(); o.stop(AC.currentTime + duration + 0.02);
+  const base = musicMuted ? 0 : musicVolTarget;
+  musicBus.gain.setTargetAtTime(muffled ? base*0.6 : base, AC.currentTime, 0.1);
 }
-
-const NOTES = {
-  C2:65.41, D2:73.42, E2:82.41, Fs2:92.50, G2:98.00, Ab2:103.83, A2:110.00, B2:123.47,
-  C3:130.81, D3:146.83, Eb3:155.56, E3:164.81, F3:174.61, G3:196.00, Ab3:207.65, A3:220.00, B3:246.94,
-  C4:261.63, D4:293.66, Eb4:311.13, E4:329.63, F4:349.23, Fs4:369.99, G4:392.00, Ab4:415.30, A4:440.00, Bb4:466.16, B4:493.88,
-  C5:523.25, D5:587.33, Eb5:622.25, E5:659.25, F5:698.46, Fs5:739.99, G5:783.99
-};
-
-const melodyLvl1 = [{n:'A4',d:0.4}, {n:'E4',d:0.2}, {n:'A4',d:0.2}, {n:'B4',d:0.4}, {n:'C5',d:0.4}, {n:'D5',d:0.2}, {n:'C5',d:0.2}, {n:'B4',d:0.4}, {n:'A4',d:0.4}, {n:'F4',d:0.2}, {n:'A4',d:0.2}, {n:'G4',d:0.8}];
-const bassLvl1 = ['A3', 'F3', 'C3', 'G3'];
-
-// Aggressive Fast Metal Track für die Horde
-const melodyLvl2 = [{n:'E3',d:0.12}, {n:'E3',d:0.12}, {n:'G3',d:0.12}, {n:'E3',d:0.12}, {n:'A3',d:0.18}, {n:'E3',d:0.12}, {n:'B3',d:0.18}];
-const bassLvl2 = ['E2','E2','E2','D2','E2','C2','E2','D2'];
-
-let noteIdx = 0, bassIdx = 0;
-function startEpicMusic(){
-  if(musicPlaying) return;
-  musicPlaying = true;
-  function nextStep(){
-    if(!musicMuted && AC){
-      const currentMelody = currentLevel === 1 ? melodyLvl1 : melodyLvl2;
-      const currentBass = currentLevel === 1 ? bassLvl1 : bassLvl2;
-      const m = currentMelody[noteIdx % currentMelody.length];
-      const freq = NOTES[m.n] || 300;
-      
-      const osc = AC.createOscillator(), g = AC.createGain();
-      osc.type = currentLevel === 1 ? 'square' : 'sawtooth';
-      osc.frequency.setValueAtTime(freq, AC.currentTime);
-      g.gain.setValueAtTime(currentLevel === 1 ? 0.12 : 0.18, AC.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.01, AC.currentTime + m.d * 0.9);
-      osc.connect(g); g.connect(musicGain);
-      osc.start(); osc.stop(AC.currentTime + m.d * 0.9);
-
-      if(noteIdx % 2 === 0){
-        const bFreq = NOTES[currentBass[bassIdx % currentBass.length]] || 80;
-        const bOsc = AC.createOscillator(), bG = AC.createGain();
-        bOsc.type = 'triangle';
-        bOsc.frequency.setValueAtTime(bFreq, AC.currentTime);
-        bG.gain.setValueAtTime(0.3, AC.currentTime);
-        bG.gain.exponentialRampToValueAtTime(0.01, AC.currentTime + (currentLevel===1 ? 0.4 : 0.15));
-        bOsc.connect(bG); bG.connect(musicGain);
-        bOsc.start(); bOsc.stop(AC.currentTime + (currentLevel===1 ? 0.4 : 0.15));
-        bassIdx++;
-      }
-      noteIdx++;
-      musicTimer = setTimeout(nextStep, m.d * 1000);
-    } else {
-      musicTimer = setTimeout(nextStep, 500);
-    }
-  }
-  nextStep();
-}
-
 function toggleMusic(){
   musicMuted = !musicMuted;
   document.getElementById('musicBtn').innerText = musicMuted ? '🔇 Aus' : '🎵 Musik';
-  applyMusicVol();
+  applyMusicGain();
+}
+
+// --- SFX: API unverändert, Ziel jetzt sfxBus statt masterGain ---
+function playTone(hz, type, duration, startVol=0.5, endVol=0.01, slideFreq=null){
+  if(!AC) return;
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(hz, AC.currentTime);
+  if(slideFreq) o.frequency.exponentialRampToValueAtTime(Math.max(20, slideFreq), AC.currentTime + duration);
+  g.gain.setValueAtTime(startVol, AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(endVol, AC.currentTime + duration);
+  o.connect(g); g.connect(sfxBus);
+  o.start(); o.stop(AC.currentTime + duration + 0.02);
 }
 
 const sfx = {
@@ -716,6 +724,408 @@ const sfx = {
   zap:   ()=> playTone(1000, 'sawtooth', 0.15, 0.4, 0.01, 200),
   warp:  ()=> { playTone(150, 'sawtooth', 0.6, 1.0, 0.01, 800); setTimeout(()=>playTone(800, 'sine', 0.8, 1.0, 0.01, 200), 200); },
   brew:  ()=> { playTone(170, 'triangle', 0.3, 0.45, 0.01, 90); setTimeout(()=>playTone(520, 'sine', 0.3, 0.4, 0.01, 980), 170); }
+};
+
+// --- Instrumente: alles gebacken zur Laufzeit ---
+function pluck(time, f, dur, dest, vel=0.5){
+  const o=AC.createOscillator(), g=AC.createGain(), fl=AC.createBiquadFilter();
+  o.type='sawtooth'; o.frequency.setValueAtTime(f,time);
+  fl.type='lowpass'; fl.Q.value=1.1;
+  fl.frequency.setValueAtTime(f*7, time);
+  fl.frequency.exponentialRampToValueAtTime(Math.max(f*1.1,80), time+dur*0.7);
+  g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(vel, time+0.006);
+  g.gain.exponentialRampToValueAtTime(0.001, time+dur*0.92);
+  o.connect(fl); fl.connect(g); g.connect(dest);
+  o.start(time); o.stop(time+dur+0.05);
+}
+function harp(time, f, dur, dest, vel=0.4){
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='triangle'; o.frequency.setValueAtTime(f,time);
+  g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(vel, time+0.01);
+  g.gain.exponentialRampToValueAtTime(0.001, time+dur*1.1);
+  o.connect(g); g.connect(dest);
+  o.start(time); o.stop(time+dur+0.15);
+}
+function marimba(time, f, dur, dest, vel=0.5){
+  const o1=AC.createOscillator(), o2=AC.createOscillator(), g=AC.createGain(), g2=AC.createGain();
+  o1.type='sine'; o1.frequency.value=f;
+  o2.type='sine'; o2.frequency.value=f*4; g2.gain.value=0.12;
+  g.gain.setValueAtTime(vel,time); g.gain.exponentialRampToValueAtTime(0.001, time+Math.min(dur,0.55));
+  o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(dest);
+  o1.start(time); o1.stop(time+dur+0.1); o2.start(time); o2.stop(time+0.2);
+}
+function flute(time, f, dur, dest, vel=0.32){
+  const o=AC.createOscillator(), g=AC.createGain(), lfo=AC.createOscillator(), lfoG=AC.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(f,time);
+  lfo.type='sine'; lfo.frequency.value=5.2; lfoG.gain.value=f*0.008;
+  lfo.connect(lfoG); lfoG.connect(o.frequency);
+  g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(vel, time+0.09);
+  g.gain.setValueAtTime(vel, time+Math.max(dur-0.12,0.09));
+  g.gain.linearRampToValueAtTime(0.001, time+dur+0.1);
+  o.connect(g); g.connect(dest);
+  lfo.start(time); lfo.stop(time+dur+0.15);
+  o.start(time); o.stop(time+dur+0.15);
+}
+function bassoon(time, f, dur, dest, vel=0.42){
+  const o=AC.createOscillator(), g=AC.createGain(), bp=AC.createBiquadFilter();
+  o.type='sawtooth'; o.frequency.setValueAtTime(f*0.98,time);
+  o.frequency.linearRampToValueAtTime(f, time+0.035);
+  bp.type='bandpass'; bp.frequency.value=f*2.2; bp.Q.value=3.2;
+  g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(vel, time+0.012);
+  g.gain.exponentialRampToValueAtTime(0.001, time+dur*0.75);
+  o.connect(bp); bp.connect(g); g.connect(dest);
+  o.start(time); o.stop(time+dur+0.05);
+}
+function brass(time, f, dur, dest, vel=0.5){
+  const o1=AC.createOscillator(), o2=AC.createOscillator(), g=AC.createGain(), bp=AC.createBiquadFilter();
+  o1.type='sawtooth'; o1.frequency.setValueAtTime(f,time);
+  o2.type='square'; o2.frequency.setValueAtTime(f*1.003,time);
+  bp.type='bandpass'; bp.frequency.value=f*3; bp.Q.value=1.4;
+  g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(vel, time+0.018);
+  g.gain.exponentialRampToValueAtTime(0.001, time+dur*0.8);
+  o1.connect(bp); o2.connect(bp); bp.connect(g); g.connect(dest);
+  o1.start(time); o1.stop(time+dur+0.05); o2.start(time); o2.stop(time+dur+0.05);
+}
+function choir(time, f, dur, dest, vel=0.28){
+  const detunes=[-6,0,7]; const g=AC.createGain();
+  g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(vel, time+0.3);
+  g.gain.setValueAtTime(vel, time+Math.max(dur-0.4,0.3));
+  g.gain.linearRampToValueAtTime(0.001, time+dur+0.4);
+  g.connect(dest);
+  detunes.forEach(ct=>{
+    const o=AC.createOscillator(); o.type='sawtooth';
+    o.frequency.setValueAtTime(f,time); o.detune.value=ct;
+    const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=f*3;
+    o.connect(lp); lp.connect(g);
+    o.start(time); o.stop(time+dur+0.5);
+  });
+}
+function timpani(time, f, dur, dest, vel=0.55){
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(f*1.6,time);
+  o.frequency.exponentialRampToValueAtTime(Math.max(f*0.85,20), time+0.18);
+  g.gain.setValueAtTime(vel,time); g.gain.exponentialRampToValueAtTime(0.001, time+dur);
+  o.connect(g); g.connect(dest);
+  o.start(time); o.stop(time+dur+0.1);
+  noiseHit(time, 0.04, vel*0.4, dest, 400, 'lowpass');
+}
+function bassPatch(time, f, dur, dest, vel=0.4){
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='triangle'; o.frequency.setValueAtTime(f,time);
+  g.gain.setValueAtTime(vel,time); g.gain.exponentialRampToValueAtTime(0.001, time+dur*0.88);
+  o.connect(g); g.connect(dest);
+  o.start(time); o.stop(time+dur+0.05);
+}
+function noiseHit(time, dur, vel, dest, filterFreq=1800, type='bandpass'){
+  const n = Math.max(1, Math.floor(AC.sampleRate*dur));
+  const buf = AC.createBuffer(1, n, AC.sampleRate);
+  const d = buf.getChannelData(0);
+  for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
+  const src=AC.createBufferSource(); src.buffer=buf;
+  const fl=AC.createBiquadFilter(); fl.type=type; fl.frequency.value=filterFreq;
+  const g=AC.createGain(); g.gain.value=vel;
+  src.connect(fl); fl.connect(g); g.connect(dest);
+  src.start(time);
+}
+function shakerHit(time, dest, vel=0.16){ noiseHit(time, 0.045, vel, dest, 6500, 'highpass'); }
+function snareHit(time, dest, vel=0.4){
+  noiseHit(time, 0.11, vel, dest, 1800, 'bandpass');
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='triangle'; o.frequency.value=190;
+  g.gain.setValueAtTime(vel*0.5,time); g.gain.exponentialRampToValueAtTime(0.001,time+0.05);
+  o.connect(g); g.connect(dest); o.start(time); o.stop(time+0.08);
+}
+function stampHit(time, dest, vel=0.6){
+  noiseHit(time, 0.05, vel, dest, 300, 'lowpass');
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(110,time); o.frequency.exponentialRampToValueAtTime(45,time+0.12);
+  g.gain.setValueAtTime(vel,time); g.gain.exponentialRampToValueAtTime(0.001,time+0.16);
+  o.connect(g); g.connect(dest); o.start(time); o.stop(time+0.2);
+}
+const INSTR = {pluck,harp,marimba,flute,bassoon,brass,choir,timpani,bass:bassPatch};
+
+// --- Song: ein Motiv, sechs Arrangements ---
+const STEPS_PER_BEAT = 4;
+function everyN(total,n,offset=0){ const out=[]; for(let s=offset;s<total;s+=n) out.push(s); return out; }
+function perBar(bars, stepsPerBar, offs){ const out=[]; for(let b=0;b<bars;b++) offs.forEach(o=>out.push(b*stepsPerBar+o)); return out; }
+
+const ZONES = {
+  overworld:{
+    label:'Oberwelt', bpm:112, meter:[4,4], bars:4,
+    leadInstr:'pluck', bassInstr:'bass',
+    lead:[[0,'A',4,4],[4,'E',5,4],[8,'D',5,2],[10,'C',5,2],[12,'B',4,4],
+          [16,'A',4,6],[24,'G',4,4],[28,'A',4,4],
+          [32,'A',4,4],[36,'E',5,4],[40,'D',5,2],[42,'C',5,2],[44,'D',5,4],
+          [48,'E',5,8]],
+    bass:[[0,'A',2,4],[4,'E',3,4],[8,'A',3,4],[12,'E',3,4],
+          [16,'G',2,4],[20,'D',3,4],[24,'G',3,4],[28,'D',3,4],
+          [32,'D',2,4],[36,'A',2,4],[40,'D',3,4],[44,'A',2,4],
+          [48,'A',2,4],[52,'E',3,4],[56,'A',3,4],[60,'E',3,4]],
+    chords:[{root:'A',oct:3,q:'m'},{root:'G',oct:3,q:''},{root:'D',oct:3,q:''},{root:'A',oct:3,q:'m'}],
+    chordStabOffsets:[2,6,10,14], chordInstr:'pluck',
+    perc:{shakerEvery:2},
+    reverbSend:0.10, delaySend:0.16, droneLevel:0,
+    tonic:'A', scale:[0,2,3,5,7,9,10]
+  },
+  shadowland:{
+    label:'Schattenland', bpm:100, meter:[4,4], bars:4,
+    leadInstr:'pluck', bassInstr:'bass',
+    lead:[[0,'A',4,4],[4,'E',5,4],[8,'D',5,2],[10,'C',5,2],[12,'Bb',4,4],
+          [16,'A',4,6],[24,'G',4,4],[28,'A',4,4],
+          [32,'A',4,4],[36,'E',5,4],[40,'D',5,2],[42,'C',5,2],[44,'D',5,4],
+          [48,'E',5,8]],
+    bass:[[0,'A',2,8],[16,'G',2,8],[32,'D',2,8],[48,'A',2,8]],
+    chords:[{root:'A',oct:3,q:'m'},{root:'G',oct:3,q:''},{root:'D',oct:3,q:''},{root:'A',oct:3,q:'m'}],
+    chordStabOffsets:[], chordInstr:'pluck',
+    perc:{shakerEvery:4},
+    reverbSend:0.22, delaySend:0.22, droneLevel:0.13,
+    tonic:'A', scale:[0,2,3,5,7,8,10]
+  },
+  chamber:{
+    label:'Kammer', bpm:76, meter:[4,4], bars:4,
+    leadInstr:'marimba', bassInstr:'bass',
+    lead:[[0,'A',3,4],[4,'E',4,4],[8,'D',4,2],[10,'C',4,2],[12,'B',3,4],
+          [16,'A',3,6],[24,'G',3,4],[28,'A',3,4],
+          [32,'A',3,4],[36,'E',4,4],[40,'D',4,2],[42,'C',4,2],[44,'D',4,4],
+          [48,'E',4,8]],
+    bass:[[0,'A',2,4],[8,'A',2,4],[16,'G',2,4],[24,'G',2,4],
+          [32,'D',2,4],[40,'D',2,4],[48,'A',2,4],[56,'A',2,4]],
+    chords:[{root:'A',oct:3,q:'m'},{root:'G',oct:3,q:''},{root:'D',oct:3,q:''},{root:'A',oct:3,q:'m'}],
+    chordStabOffsets:[], chordInstr:'pluck',
+    perc:{timpaniDownbeat:true, choirPad:true},
+    reverbSend:0.42, delaySend:0.05, droneLevel:0,
+    tonic:'A', scale:[0,2,3,5,7,8,10]
+  },
+  village:{
+    label:'Dorf', bpm:92, meter:[3,4], bars:4,
+    leadInstr:'flute', bassInstr:'bass',
+    lead:[[0,'F',4,4],[4,'C',5,4],[8,'Bb',4,2],[10,'A',4,2],[12,'G',4,4],[16,'F',4,8],
+          [24,'F',4,4],[28,'C',5,4],[32,'Bb',4,2],[34,'A',4,2],[36,'A',4,4],[40,'C',5,8]],
+    bass:[[0,'F',2,4],[12,'C',2,4],[24,'D',2,4],[36,'Bb',1,4]],
+    chords:[{root:'F',oct:3,q:''},{root:'C',oct:3,q:''},{root:'D',oct:3,q:'m'},{root:'Bb',oct:2,q:''}],
+    chordStabOffsets:[], chordInstr:'pluck',
+    perc:{harpArpeggio:true},
+    reverbSend:0.20, delaySend:0.10, droneLevel:0,
+    tonic:'F', scale:[0,2,4,5,7,9,11]
+  },
+  office:{
+    label:'Amt', bpm:104, meter:[2,4], bars:4,
+    leadInstr:'bassoon', bassInstr:'bass',
+    lead:[[0,'F',3,2],[2,'F',3,2],[4,'C',4,4],
+          [8,'Bb',3,2],[10,'A',3,2],[12,'G',3,4],
+          [16,'F',3,2],[18,'F',3,2],[20,'C',4,4],
+          [24,'A',3,2],[26,'Bb',3,2]],
+    bass:[[0,'F',1,4],[8,'Bb',1,4],[16,'F',1,4],[24,'A',1,4]],
+    chords:[{root:'F',oct:3,q:''},{root:'C',oct:3,q:''},{root:'D',oct:3,q:'m'},{root:'Bb',oct:2,q:''}],
+    chordStabOffsets:[], chordInstr:'pluck',
+    perc:{snareOffbeat:true, stampAt:[28]},
+    reverbSend:0.07, delaySend:0, droneLevel:0,
+    tonic:'F', scale:[0,2,4,5,7,9,11]
+  },
+  boss:{
+    label:'Boss', bpm:140, meter:[4,4], bars:4,
+    leadInstr:'brass', bassInstr:'bass',
+    lead:[[0,'A',2,4],[4,'E',3,4],[8,'D',3,2],[10,'C',3,2],[12,'B',2,4],
+          [16,'A',2,6],[24,'G',2,4],[28,'A',2,4],
+          [32,'A',2,4],[36,'E',3,4],[40,'D',3,2],[42,'C',3,2],[44,'D',3,4],
+          [48,'E',3,8]],
+    bass:[],
+    chords:[{root:'A',oct:3,q:'m'},{root:'G',oct:3,q:''},{root:'D',oct:3,q:''},{root:'A',oct:3,q:'m'}],
+    chordStabOffsets:[], chordInstr:'pluck',
+    perc:{timpaniEveryBeat:true, bassOstinatoEvery:2, snareOffbeat:true},
+    reverbSend:0.30, delaySend:0.08, droneLevel:0,
+    tonic:'A', scale:[0,2,3,5,7,8,10]
+  }
+};
+
+function prepareZone(z){
+  if(z._ready) return z;
+  z._stepsPerBar = z.meter[0]*STEPS_PER_BEAT;
+  z._totalSteps = z._stepsPerBar*z.bars;
+  z._leadByStep = {}; z.lead.forEach(([s,n,o,l])=>{ z._leadByStep[s]=[n,o,l]; });
+  z._bassByStep = {}; z.bass.forEach(([s,n,o,l])=>{ z._bassByStep[s]=[n,o,l]; });
+  z._chordStabs = z.chordStabOffsets.length ? perBar(z.bars, z._stepsPerBar, z.chordStabOffsets) : [];
+  z._shaker = z.perc.shakerEvery ? everyN(z._totalSteps, z.perc.shakerEvery) : [];
+  z._snare = z.perc.snareOffbeat ? everyN(z._totalSteps, STEPS_PER_BEAT, STEPS_PER_BEAT/2) : [];
+  z._timpani = z.perc.timpaniDownbeat ? everyN(z._totalSteps, z._stepsPerBar, 0)
+             : z.perc.timpaniEveryBeat ? everyN(z._totalSteps, STEPS_PER_BEAT, 0) : [];
+  z._stamp = z.perc.stampAt || [];
+  z._choir = z.perc.choirPad ? everyN(z._totalSteps, z._stepsPerBar, 0) : [];
+  z._harp = z.perc.harpArpeggio ? perBar(z.bars, z._stepsPerBar, [4,8]) : [];
+  z._bassOsti = z.perc.bassOstinatoEvery ? everyN(z._totalSteps, z.perc.bassOstinatoEvery) : [];
+  z._ready = true;
+  return z;
+}
+Object.keys(ZONES).forEach(k=>prepareZone(ZONES[k]));
+function barChord(z, step){ return z.chords[Math.floor(step/z._stepsPerBar) % z.chords.length]; }
+function zoneForLevel(level){ return level===2 ? 'shadowland' : level===3 ? 'chamber' : 'overworld'; }
+
+// --- Scheduler: Lookahead statt setTimeout, taktgenauer Zonenwechsel ---
+const LOOKAHEAD_MS = 25, HORIZON_SEC = 0.12;
+let currentZoneKey = 'overworld', requestedZone = 'overworld', overtimeFactor = 0;
+function currentZone(){ return ZONES[currentZoneKey]; }
+
+const scheduler = (function(){
+  let stepIdx=0, nextStepTime=0, timer=null, running=false, pendingZone=null;
+
+  function secPerStep(){
+    const z = currentZone();
+    const bpm = z.bpm * (1 - overtimeFactor*0.14);
+    return 60/bpm/STEPS_PER_BEAT;
+  }
+
+  function doStep(step, time){
+    const z = currentZone();
+    const local = step % z._totalSteps;
+
+    if(z._leadByStep[local]){
+      const [n,o,len] = z._leadByStep[local];
+      INSTR[z.leadInstr](time, freq(n,o), len*secPerStep(), musicBus, z.leadInstr==='flute'?0.34:0.5);
+    }
+    if(z._bassByStep[local]){
+      const [n,o,len] = z._bassByStep[local];
+      INSTR[z.bassInstr](time, freq(n,o), len*secPerStep(), musicBus, 0.38);
+    }
+    if(z._bassOsti.includes(local)){
+      const ch = barChord(z, local);
+      bassPatch(time, chordToneFreq(ch,0,-2), 2*secPerStep()*0.9, musicBus, 0.4);
+    }
+    if(z._chordStabs.includes(local)){
+      const ch = barChord(z, local);
+      for(let i=0;i<3;i++) INSTR[z.chordInstr](time, chordToneFreq(ch,i,0), 2*secPerStep(), musicBus, 0.20);
+    }
+    if(z._choir.includes(local)){
+      const ch = barChord(z, local);
+      for(let i=0;i<3;i++) choir(time, chordToneFreq(ch,i,-1), z._stepsPerBar*secPerStep(), musicBus, 0.22);
+    }
+    if(z._timpani.includes(local)){
+      const ch = barChord(z, local);
+      timpani(time, chordToneFreq(ch,0,-2), 0.5, musicBus, 0.5);
+    }
+    if(z._harp.includes(local)){
+      const ch = barChord(z, local);
+      [0,2,1,2].forEach((iv,i)=> harp(time+i*0.055, chordToneFreq(ch,iv,0), 0.5, musicBus, 0.28));
+    }
+    if(z._shaker.includes(local)) shakerHit(time, musicBus, 0.14);
+    if(z._snare.includes(local)) snareHit(time, kampfGain.gain.value>0.05?kampfGain:musicBus, 0.32);
+    if(z._stamp.includes(local)) stampHit(time, musicBus, 0.55);
+
+    // Kampf-Layer: eigener Bus, nur Lautstärke faded -> kein Trackwechsel beim Ein-/Ausblenden
+    if(local % STEPS_PER_BEAT === 0) snareHit(time, kampfGain, 0.3);
+    if(local % 2 === 0) shakerHit(time, kampfGain, 0.22);
+  }
+
+  function tick(){
+    if(!running) return;
+    while(nextStepTime < AC.currentTime + HORIZON_SEC){
+      const z = currentZone();
+      if(stepIdx % z._totalSteps === 0 && pendingZone){
+        currentZoneKey = pendingZone; pendingZone = null; stepIdx = 0;
+        duckToFx(180, 0.5);
+        applyZoneSends();
+      }
+      doStep(stepIdx, nextStepTime);
+      nextStepTime += secPerStep();
+      stepIdx++;
+    }
+    timer = setTimeout(tick, LOOKAHEAD_MS);
+  }
+
+  return {
+    start(){ if(running) return; running=true; stepIdx=0; nextStepTime=AC.currentTime+0.05; tick(); },
+    gotoZone(key){ pendingZone = key; }
+  };
+})();
+
+function applyZoneSends(){
+  if(!AC) return;
+  const z = currentZone();
+  const now = AC.currentTime;
+  reverbSend.gain.setTargetAtTime(muffled? z.reverbSend*2.2 : z.reverbSend, now, 0.2);
+  delaySend.gain.setTargetAtTime(z.delaySend, now, 0.2);
+  delayNode.delayTime.setTargetAtTime(Math.min(0.9, 60/z.bpm*0.75), now, 0.2);
+  zoneDroneGain.gain.setTargetAtTime(z.droneLevel, now, 0.4);
+}
+
+function duckToFx(ms=200, depth=0.45){
+  if(!AC) return;
+  const now = AC.currentTime;
+  toFx.gain.cancelScheduledValues(now);
+  toFx.gain.setValueAtTime(toFx.gain.value, now);
+  toFx.gain.linearRampToValueAtTime(depth, now+0.03);
+  toFx.gain.linearRampToValueAtTime(1, now + ms/1000);
+}
+
+// --- Dauer-Drone: läuft immer mit Gain 0, Layer regeln nur die Lautstärke ---
+function startDrone(){
+  const mk = (semi, dest)=>{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type='sawtooth'; o.frequency.value=freq('A',2)*Math.pow(2,semi/12);
+    g.gain.value=0; o.connect(g); g.connect(dest);
+    o.start();
+  };
+  mk(0, gefahrGain); mk(6, gefahrGain);   // Tritonus
+  mk(0, zoneDroneGain); mk(7, zoneDroneGain);
+}
+
+// --- MUS: öffentliche Steuerung, an bestehende Spiel-Hooks angeschlossen (siehe update(dt),
+// showDorf/showJahresgespraech, knDisplayZettel/knAbbruchKammer, die 10 #overlay-Stellen) ---
+const layerState = {kampf:false, gefahr:false};
+const MUS = {
+  goto(key){
+    if(!ZONES[key] || key === requestedZone) return;   // idempotent: pro Frame gefahrlos aufrufbar
+    requestedZone = key;
+    if(!AC){ currentZoneKey = key; return; }
+    scheduler.gotoZone(key);
+  },
+  layer(name, on){
+    if(layerState[name] === on) return;
+    layerState[name] = on;
+    if(!AC) return;
+    const g = name==='kampf'? kampfGain : name==='gefahr'? gefahrGain : null;
+    if(!g) return;
+    g.gain.setTargetAtTime(on?0.9:0, AC.currentTime, 0.35);
+  },
+  swell(){
+    if(!AC) return;
+    const z = currentZone();
+    const now = AC.currentTime;
+    swellGain.gain.cancelScheduledValues(now);
+    swellGain.gain.setValueAtTime(swellGain.gain.value, now);
+    swellGain.gain.linearRampToValueAtTime(0.8, now+1.4);
+    swellGain.gain.linearRampToValueAtTime(0, now+3.6);
+    const ch = {root:z.tonic, oct:4, q:''};
+    choir(now, chordToneFreq(ch,0,-1), 3.6, swellGain, 0.5);
+    choir(now, chordToneFreq(ch,2,-1), 3.6, swellGain, 0.4);
+  },
+  sting(name){
+    if(!AC || muffled) return;   // Knöterich bleibt stumm, während ein Panel offen ist
+    const z = currentZone();
+    const degs = name==='gespraechig' ? [6,5,3] : name==='dienstlich' ? [3,3] : [3,5,7];
+    const now = AC.currentTime;
+    let t = now;
+    degs.forEach(d=>{
+      const oct = 4 + Math.floor(d/z.scale.length);
+      const deg = z.scale[d % z.scale.length];
+      const semi = SEMI[z.tonic] + deg + (oct-4)*12;
+      bassoon(t, 440*Math.pow(2, semi/12), 0.32, master, 0.28);
+      t += name==='dienstlich' ? 0.34 : 0.19;
+    });
+    duckToFx(name==='dienstlich'?500:650, 0.55);
+  },
+  muffle(on){
+    muffled = on;
+    if(!AC) return;
+    lowpass.frequency.setTargetAtTime(on?600:20000, AC.currentTime, 0.15);
+    applyZoneSends();
+    applyMusicGain();
+  },
+  setOvertime(f){
+    const q = Math.round(f*50)/50;
+    if(q === overtimeFactor) return;
+    overtimeFactor = q;
+    if(AC) lowpass.frequency.setTargetAtTime(muffled?600:(20000-q*14000), AC.currentTime, 1.5);
+  }
 };
 
 const G_GRASS=0, G_PATH=1, G_WATER=2, G_TREE=3, G_ROCK=4, G_TALL=5, G_SAND=6, G_SNOW=7, G_ICE=8, G_CACTUS=9, G_ICE_TREE=10;
@@ -2136,6 +2546,7 @@ function knStuckCandidate(){
 }
 
 function knDisplayZettel(cand){
+  if(kn.regler !== 'schweigt') MUS.sting(kn.regler === 'dienstlich' ? 'dienstlich' : 'gespraechig');
   setTxt('knZettelZ1', cand.z1);
   if(cand.z2){ setStyle('knZettelZ2', 'display', 'block'); setTxt('knZettelZ2', cand.z2); }
   else setStyle('knZettelZ2', 'display', 'none');
@@ -3548,7 +3959,10 @@ el('aktionBtn').onclick = fuehreAktion;
 function knAbbruchKammer(){
   // Echter Abbruchpfad (nicht verlasseKammer() selbst, das läuft auch bei Truhe/Tod/Schichtstart):
   // nur zählen, wenn die Truhe noch nicht geplündert ist.
-  if(kammer && !kammer.geleert){ kn.counters.kammerAbbrueche = (kn.counters.kammerAbbrueche||0) + 1; saveKn(); knRandnotiz('kammerAbbruch'); }
+  if(kammer && !kammer.geleert){
+    kn.counters.kammerAbbrueche = (kn.counters.kammerAbbrueche||0) + 1; saveKn(); knRandnotiz('kammerAbbruch');
+    if(kn.regler !== 'schweigt') MUS.sting('spitz');
+  }
   verlasseKammer();
 }
 el('kamExitBtn').onclick = knAbbruchKammer;
@@ -3566,7 +3980,11 @@ document.getElementById('ultBtn').onclick = castUltimate;
 document.getElementById('spellsBtn').onclick = toggleSpellTree;
 document.getElementById('invBtn').onclick = toggleInventory;
 document.getElementById('musicBtn').onclick = toggleMusic;
-document.getElementById('musicVol').oninput = (e)=>{ musicVol = e.target.value/100; if(musicMuted && musicVol>0){ musicMuted=false; document.getElementById('musicBtn').innerText='🎵 Musik'; } applyMusicVol(); };
+document.getElementById('musicVol').oninput = (e)=>{
+  musicVolTarget = e.target.value/100;
+  if(musicMuted && musicVolTarget>0){ musicMuted=false; document.getElementById('musicBtn').innerText='🎵 Musik'; }
+  applyMusicGain();
+};
 
 function update(dt){
   if(state !== 'play') return;
@@ -3588,6 +4006,18 @@ function update(dt){
         state = 'feierabend'; endShift('zeit'); return;
       }
     }
+  }
+
+  // Musik folgt dem Spielzustand statt eigener Events: Zone/Layer sind Zustände, kein Trigger,
+  // MUS.goto/layer sind idempotent (siehe dort), pro Frame aufrufen ist also billig und selbstheilend.
+  {
+    const bossFight = !!(boss && !boss.dead && boss.aggro);
+    MUS.layer('kampf', bossFight);
+    MUS.goto(bossFight && currentLevel === 2 ? 'boss' : zoneForLevel(currentLevel));
+    MUS.layer('gefahr', !player.dead && player.hp < derived.maxHp*0.3);
+    MUS.setOvertime(CONFIG.schichtModus
+      ? (shiftEndPending ? Math.min(1, 0.5 + overtimeT/120) : Math.max(0, 1 - shiftT/30)*0.5)
+      : 0);
   }
 
   if(!CFX.manatot)                                                               // Fluch 'Manastopp'
@@ -4415,7 +4845,7 @@ function showStartScreen(){
     <p>Drei Biome, versiegelte Kammern, ein Kessel. Draufhauen mit Klick oder Leertaste, auf dem Handy rechte Bildschirmhälfte. Den Rest erklärt das Amt.</p>
     <button onclick="startGame()">LOSLEGEN</button>
   `;
-  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
 
 function showDead(){
@@ -4428,7 +4858,7 @@ function showDead(){
       : wasShadowland ? 'Das Schattenland hat dich zurück in den Wald geschleudert.' : 'Du wachst am Waldrand wieder auf.'} Level, Ausrüstung und Beute bleiben erhalten.</p>
     <button onclick="respawnPlayer()">ZURÜCK IN DEN WALD</button>
   `;
-  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
 
 function respawnPlayer(){
@@ -4445,7 +4875,7 @@ function respawnPlayer(){
   attackTouch = null; lockedTarget = null;
   el('bossbar').style.display = 'none';
   initFloorGraphics(); placeMonsters();
-  el('overlay').style.display = 'none';
+  el('overlay').style.display = 'none'; MUS.muffle(false);
   state = 'play'; updateHUD();
   knPlayStartT = gameT;
 }
@@ -4457,13 +4887,13 @@ function winGame(){
     <p>Der Schattenfürst ist gefallen! Eine wahre Schnetzel-Legende.</p>
     <button onclick="location.reload()">NOCHMAL METZELN</button>
   `;
-  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
 
 function startGame(){
   initAudio();
   if(CONFIG.schichtModus){ pendingCarryGold = 0; pendingCarryPouch = []; startShift(); }
-  else { document.getElementById('overlay').style.display = 'none'; state = 'play'; knPlayStartT = gameT; }
+  else { document.getElementById('overlay').style.display = 'none'; MUS.muffle(false); state = 'play'; knPlayStartT = gameT; }
 }
 
 // ===========================================================================
@@ -4551,7 +4981,7 @@ function startShift(){
   shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0; shiftElapsedT = 0;
   shiftKillsByType = {}; shiftKillsTotal = 0;
 
-  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none'; MUS.muffle(false);
   state = 'play'; updateHUD();
   knPlayStartT = gameT;
   // In der allerersten Schicht übernimmt Beat 1 die Einführung, keine Begrüßung.
@@ -4611,7 +5041,7 @@ function endShift(reason){
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
     <button onclick="nachSchicht()">WEITER</button>
   `;
-  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
 
 function nachSchicht(){
@@ -4619,6 +5049,7 @@ function nachSchicht(){
 }
 
 function showJahresgespraech(){
+  MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
   const idx = (Math.floor(amt.schichten/10) - 1) % JAHRES_BONI.length;
   const b = JAHRES_BONI[idx]; b.apply(); saveAmt();
   document.getElementById('ovPanel').innerHTML = `
@@ -4653,6 +5084,7 @@ function waehleStartFluch(k){ amt.ausbauten.startFluch = k; saveAmt(); showDorf(
 // Dorf-Hub "Amt für Monsterangelegenheiten" zwischen den Schichten. Wie die anderen
 // Overlay-Screens (Start/Tod/Sieg) ein reines innerHTML-Panel, keine neue Renderpath-Berührung.
 function showDorf(){
+  MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
   const rows = AUSBAU_DEFS.map(d => {
     const lvl = amt.ausbauten[d.key], maxed = lvl >= d.max, cost = maxed ? 0 : d.cost(lvl);
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #3a2f1a;">
@@ -4957,7 +5389,7 @@ function showLoading(){
     <h1>SuperDuper Adventure</h1>
     <h3>Lade Grafiken…</h3>
     <p id="loadTxt" style="font-size:13px;color:#9a8a5f;">0 / ${SHEET_LIST.length}</p>`;
-  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
 showLoading();
 const loadTick = setInterval(() => {
