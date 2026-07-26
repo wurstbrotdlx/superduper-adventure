@@ -432,7 +432,100 @@ function walkPngs(dir, baseDir, out) {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Main
+// 6. Rig-Verifikation (G3): per-Zeile Bounding-Box-Tabelle + ASCII-Render
+// ---------------------------------------------------------------------------
+//
+// Aufruf:
+//   node tools/sheet-audit.mjs --rig <Graphics/-relativer-Pfad> [--fw N --fh M]
+//   node tools/sheet-audit.mjs --rig <...> --ascii <row>[,<col>]
+//
+// Ohne --fw/--fh wird das Raster aus assets/cf/manifest.json übernommen (falls
+// vorhanden), sonst neu inferiert. --ascii rendert eine einzelne Zelle als
+// Alphakanal-ASCII (Regel: nie aus Dateinamen raten, hier: nie aus Thumbnail-
+// Eindruck raten, sondern am Pixel nachsehen).
+
+function parseArgs(argv) {
+  const args = {};
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i].startsWith('--')) {
+      const key = argv[i].slice(2);
+      const next = argv[i + 1];
+      if (next !== undefined && !next.startsWith('--')) { args[key] = next; i++; }
+      else args[key] = true;
+    }
+  }
+  return args;
+}
+
+function rowAggregateBBoxes(gridEval) {
+  const { rows, cols, bboxes } = gridEval;
+  const agg = new Array(rows).fill(null);
+  for (const { row, col, bbox } of bboxes) {
+    const a = agg[row] || (agg[row] = { n: 0, minX: bbox.x, minY: bbox.y, maxX: bbox.x + bbox.w, maxY: bbox.y + bbox.h, perFrame: [] });
+    a.n++;
+    a.minX = Math.min(a.minX, bbox.x); a.minY = Math.min(a.minY, bbox.y);
+    a.maxX = Math.max(a.maxX, bbox.x + bbox.w); a.maxY = Math.max(a.maxY, bbox.y + bbox.h);
+    a.perFrame[col] = bbox;
+  }
+  return agg;
+}
+
+function renderAsciiCell(alpha, width, cx, cy, fw, fh) {
+  const lines = [];
+  const x0 = cx * fw, y0 = cy * fh;
+  for (let y = 0; y < fh; y++) {
+    let line = '';
+    const rowOff = (y0 + y) * width + x0;
+    for (let x = 0; x < fw; x++) {
+      const a = alpha[rowOff + x];
+      line += a > ALPHA_EMPTY_THRESHOLD ? (a > 160 ? '#' : '+') : '.';
+    }
+    lines.push(line);
+  }
+  return lines.join('\n');
+}
+
+function auditRig(args) {
+  const relPath = args.rig;
+  const absPath = path.join(GRAPHICS_DIR, relPath);
+  const { width, height, alpha } = decodePNGAlpha(absPath);
+  const emptyLines = computeEmptyLines(alpha, width, height);
+
+  let fw = args.fw ? Number(args.fw) : null;
+  let fh = args.fh ? Number(args.fh) : null;
+  if (!fw || !fh) {
+    if (existsSync(MANIFEST_OUT)) {
+      const manifest = JSON.parse(readFileSync(MANIFEST_OUT, 'utf8'));
+      const entry = manifest.find(e => e.path === relPath);
+      if (entry) { fw = entry.fw; fh = entry.fh; }
+    }
+  }
+  if (!fw || !fh) {
+    const inferred = inferGrid(alpha, width, height);
+    fw = inferred.best.fw; fh = inferred.best.fh;
+    console.log(`(kein Manifest-/CLI-Raster, inferiert: ${fw}x${fh})`);
+  }
+
+  const gridEval = evaluateGrid(alpha, width, height, fw, fh, emptyLines);
+  console.log(`${relPath}  ${width}x${height}  Raster ${fw}x${fh}  ${gridEval.cols}x${gridEval.rows}  rowFrames=[${gridEval.rowFrames.join(',')}]`);
+
+  const agg = rowAggregateBBoxes(gridEval);
+  console.log('row  n   x0..x1     y0..y1     w   h');
+  agg.forEach((a, r) => {
+    if (!a) { console.log(`${String(r).padStart(3)}  0   (leer)`); return; }
+    console.log(`${String(r).padStart(3)}  ${String(a.n).padStart(2)}  ${String(a.minX).padStart(3)}..${String(a.maxX).padStart(3)}   ${String(a.minY).padStart(3)}..${String(a.maxY).padStart(3)}   ${String(a.maxX - a.minX).padStart(3)} ${String(a.maxY - a.minY).padStart(3)}`);
+  });
+
+  if (args.ascii) {
+    const [rowStr, colStr] = String(args.ascii).split(',');
+    const row = Number(rowStr), col = colStr !== undefined ? Number(colStr) : 0;
+    console.log(`\n-- ASCII row=${row} col=${col} --`);
+    console.log(renderAsciiCell(alpha, width, col, row, fw, fh));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 7. Main
 // ---------------------------------------------------------------------------
 
 function main() {
@@ -549,4 +642,6 @@ function main() {
   }
 }
 
-main();
+const cliArgs = parseArgs(process.argv.slice(2));
+if (cliArgs.rig) auditRig(cliArgs);
+else main();

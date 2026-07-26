@@ -414,13 +414,150 @@ gegen das PNG gegenprüfen — der Player-Rig hat gezeigt, dass „sieht aus wie
 ohne Metrik in die Irre führt (Rolle vs. Attacke, Sprung vs. Zauber sahen im
 Daumennagel-Vorschaubild anfangs sehr ähnlich aus).
 
-### G3
+### G3 — Monster auf echte Rigs (erledigt)
 
-(noch offen)
+**Korrekturen am Prompt-Kontext oben (wichtig für G4/G5):**
 
-### G3
+1. **`Skeleton.png` hat gar keine Angriffszeile**, nicht nur „kein Cast" wie G0
+   notierte. Per-Zeilen-Bounding-Box (10 Zeilen) zeigt: Zeilen 7–9 sind
+   pixelidentisch zu den Idle-Zeilen 0–2 (das sind Hurt-Posen), Zeile 6 zeigt ein
+   Zusammensacken (Death). Reihenfolge also idle(0–2)/walk(3–5)/death(6)/hurt(7–9)
+   — die 10-Zeilen-Familie lässt *attack* weg, nicht *hurt*. Deshalb in G3 **nicht
+   verwendet**; `mummy` läuft stattdessen auf `Skeleton_Bowman.png` (Merged).
+2. **`Skeleton_Swordman.png` hat kein sauberes 32px-Raster** (16 Zeilen à 64×32,
+   Inhalt wechselt zeilenweise zwischen oberer und unterer Bildhälfte — vermutlich
+   ein zusammengelegtes 64×64-Raster, das die Heuristik falsch aufgeteilt hat).
+   Das war als Basis für `stalfos` und den Alter-Schrecken-Boss vorgesehen; beide
+   laufen stattdessen auf `Knights/Swordman.png` bzw. `Knights/Archer.png`.
+3. **Die Cast-Seitenzeile bei allen drei Magier-Tripeln (Skeleton_Mage,
+   Cowling_Mage_1/2, Angel_1/2) ist Zeile 7, nicht Zeile 8** wie der G0-Cast-Table
+   vage vermutete. Zeile 8 ist die Rücken-Ansicht (kein Gesicht sichtbar, wie die
+   Idle-Zeile 2), Zeile 7 die Seiten-Ansicht — exakt das Gegenstück zur schmaleren
+   Seiten-Zeile 1/4/11 bei idle/walk/hurt. Per Screenshot-Krop am realen Bild
+   bestätigt (nicht nur Bounding-Box-Zahlen), siehe `tools/sheet-audit.overrides.json`
+   `_rigTable`. Damit ist auch Angel_1s „vor Einsatz final bestätigen"-Flag aus G0
+   aufgelöst: echter Zauber-Trail sichtbar, kein bloßes Idle-Item-Halten.
+4. **Universelle Seiten-Regel bestätigt** (2 Idle/Walk/Hurt-Triplets + 3
+   Cast-Triplets per Bildvergleich geprüft): in jedem Down/Side/Up-Dreier ist die
+   **mittlere** Zeile die Seitenansicht. Für die 13-Zeilen-Familie also fix
+   idle=1, walk=4, attack/cast=7, hurt=11, death=9 (Einzelzeile). Gilt für alle in
+   G3 verwendeten Humanoiden-Rigs identisch — nur Slime, Flying_Skull und Bat
+   weichen davon ab (siehe `CF_RIGS`-Kommentare in `index.html`).
+5. **`manifest.json` taugt nicht für Anker (`ax`/`ay`) und Pixelhöhe.** Seine
+   `unionBBox`/`anchorSuggested` sind über die Angriffszeile gebildet, in der
+   Waffe/Zauber weit über den Körper hinausragt — bis zu 13px/88% daneben gegen
+   die tatsächliche Idle-Seitenzeile. Alle `ax`/`ay` in `CF_RIGS` sind deshalb von
+   Hand an der Idle-Seitenzeile gemessen, nicht aus dem Manifest übernommen.
 
-(noch offen)
+**Entscheidungen:**
+
+- **Rig-Zuordnung** (19 Rigs für 21 `MONDEF`-Typen, Cast-Reserve ist null — 5
+  Magier auf 5 cast-bestätigten Rigs): siehe `CF_RIGS` in `index.html` und die
+  Tabelle in `assets/cf/README.md`. Boss-Rigs nach Nutzerentscheidung:
+  Schattenfürst = Knights_Templar (sicherstes Raster im Pack), Alter Schrecken =
+  Knights_Archer (Fallback für das kaputte Skeleton_Swordman-Raster).
+- **Witch verworfen als Magier-Rig.** Ihr Cast liegt in einer separaten Datei
+  (`Witch_Cauldron_Anim.png`) mit anderem Frameraster und zeigt einen Kessel statt
+  eines Körpers — ein Monster, das beim Zaubern zum Kessel-Sprite wechselt, ist
+  keine Zauber-Animation. `Witch.png` selbst hat außerdem weder death noch hurt.
+- **`psc`-Grundwert 1,2** (= `PLAYER_SC`/1,5) für alle Rigs, damit ein
+  `sc:1.5`-Monster effektiv wie der Held rendert (ein gemeinsames Pixelraster,
+  keine krummen Skalen). Bewusst **nicht** auf die alten Sunnyside-Silhouetten
+  zurückgerechnet — die CF-Rigs sind in denselben Chibi-Proportionen gezeichnet
+  wie der CF-Held aus G2, das zurückzudrehen hätte nur wieder inkonsistente,
+  rig-verschiedene Skalen erzeugt. Slime rendert dadurch bewusst klein (16×16-
+  natives Blob-Sprite) statt wie bisher aufgeblasen auf Goblin-Größe — das ist der
+  Rig-Vielfalt-Punkt der Phase, keine Regression.
+- **`deathFps` pro Rig** ersetzt die feste `11` in `killMon`/`drawCorpse`. CF-
+  Death-Zeilen haben 4 statt 9 Frames; mit der alten festen FPS liefe das
+  Zusammensacken doppelt so schnell und stünde dann lange still. Formel `n/0,8s`,
+  an beiden Stellen (Leichen-Dauer und Leichen-Animation) dieselbe Zahl.
+- **`tintedSheet()` zeilenweise gebacken statt ganzes PNG.** Bei 7 Anim-Keys pro
+  Rig auf teils sehr große CF-Sheets (bis 512×832) wäre ein Ganz-Sheet-Bake pro
+  Tint ~172 MB Canvas gewesen (statt vorher ~3 MB bei den kleinen Sunnyside-
+  Sheets) und ein Mehr-Millisekunden-Hänger beim ersten Treffer mitten im Frame.
+  Zeilenweise sind es ~16 MB, und alle Tints werden nach dem Laden einmalig
+  vorgewärmt (`prewarmMonsterTints()`), sodass im Kampf nichts mehr bäckt.
+- **`loadAssets()` dedupliziert jetzt nach URL.** ~19 Rig-Dateien tragen je 7
+  Anim-Keys; ohne Dedupe hätte der Browser (und im `dist/`-Build potenziell jedes
+  `Image`-Element einzeln) dasselbe PNG bis zu 7× dekodiert.
+- **Kammerwächter-Ersatz-Rigs, wo das Pack nichts Passenderes hergibt:** `spider`
+  auf `Blue_Shroomling.png` (kein Spinnen-Rig vorhanden), dokumentiert als
+  bewusster Kompromiss wie vom Prompt für Golem/Mumie vorgesehen.
+- **Zauber-Projektil:** `Skeleton_Mage_Projectile.png` ersetzt den gezeichneten
+  Farbkreis für alle 5 Magier, getönt nach `bolt.color`. Spieler-eigene
+  `projectiles` bleiben Kreise (nicht Teil des Auftrags).
+- **Hoftiere:** kein Down/Side/Up-Schema nötig (nur Idle/Lauf). Chicken folgt
+  einem anderen Zeilenlayout als Cow/Sheep/Pig (Verhaltens-Sheet statt Richtungs-
+  Sheet, 16 Zeilen = zwei identische 8-Zeilen-Blöcke) — Zeilen einzeln gemessen,
+  nicht aus dem Cow/Sheep/Pig-Muster übertragen.
+
+**Umgesetzt (alles in `index.html`, sofern nicht anders vermerkt):**
+
+- `tools/sheet-audit.mjs`: neuer `--rig <Pfad> [--fw --fh] [--ascii row,col]`-Modus
+  (per-Zeilen-Bounding-Box-Tabelle + ASCII-Render), nutzt den vorhandenen
+  Alpha-Decoder. `tools/sheet-audit.overrides.json`: `_castTable`-Korrektur für
+  Skeleton und die Cast-Zeile-7-Präzisierung, neue `_rigTable` mit den gemessenen
+  Zeilen/Ankern für alle 19 Rigs + 4 Tiere + Projektil.
+- `loadAssets()`: URL-Dedupe über eine `Map<src, Promise<Image>>`.
+- `tintedSheet()`/`drawSpriteAt()`: zeilenweises Backen (`rowStart`-Slice statt
+  ganzes Bild), Quell-y in `drawSpriteAt` entsprechend umgestellt.
+- `prewarmMonsterTints()`, `assertRigRegistrations()`: laufen einmalig nach
+  `assetsReady=true`, backen alle Tints vor und prüfen `RIG_ANIM`-Vollständigkeit
+  sowie `n <= cols` je Sheet (nur `console.warn`).
+- `CF_RIGS`: 19 Rig-Definitionen (Datei, Raster, Anker, sieben Anim-Zeilen),
+  Registrierungsschleife nach dem Muster von `addCfHeroLayer()` aus G2.
+- `RIG_ANIM` wird jetzt aus `CF_RIGS` generiert (keine Hand-Tabelle mehr, keine
+  Sunnyside-Einträge mehr).
+- `psc`/`deathFps` in `MONDEF`, verrechnet in `drawMon()`/`drawCorpse()`
+  (`ctx.scale(sc*psc*…, sc*psc)`) und `killMon()`/`drawCorpse()` (`deathFps` statt
+  fester `11`). Alle 21 `MONDEF`-Typen tragen jetzt ein CF-Rig-Feld.
+- `enemyBolts`-Zeichnung auf `cf_bolt`-Sprite umgestellt (getönt, `animFrame`
+  über die Bolt-Restlaufzeit).
+- Hoftiere: `CF_ANIMALS`-Tabelle + Registrierungsschleife, Critter-Objekte tragen
+  `sheetIdle`/`sheetWalk` (beide beim Spawn fest angelegt, nicht im Draw-Case
+  zusammengebaut), `DRAW_CRITTER` wählt nach Bewegungszustand.
+- Sunnyside-Gegner-Rigs (`goblin_*`/`skel_*`-Registrierung, alte `RIG_ANIM`-Tabelle)
+  vollständig entfernt. Toter `bird`-Sheet (registriert, nie gezeichnet) mit
+  entfernt.
+- `assets/cf/enemies/` (19 PNGs), `assets/cf/deco/Animals/` (4 PNGs),
+  `assets/cf/deco/Other/` (1 PNG) befüllt, `assets/cf/README.md` fortgeschrieben.
+  `.gitignore` brauchte keine Änderung — alle drei Ordner standen seit G0 schon drin.
+
+**Bewusst nicht gemacht:**
+
+- **Die Sunnyside-`assets/Characters/`-PNGs bleiben auf der Platte.** Ihre
+  endgültige Löschung ist ausdrücklich G5 („Sunnyside-Abschied"). Bis dahin
+  inliniert `build-single.mjs` sie weiterhin ungenutzt in `dist/index.html` —
+  das ist bekannt und keine vergessene Aufräumarbeit.
+- **`Orc_Chief/Grunt/Peon` nicht verwendet** — im G0-Audit niedrigste
+  Rasterkonfidenz im ganzen Prioritäts-Set (0,018 bei Orc_Chief), Inhalt berührt
+  beide Zellränder (Hinweis auf falsches Raster). Nicht ausprobiert, nicht
+  nachkorrigiert — hätte eigene Verifikation gebraucht, die dieser Umbau nicht
+  brauchte, weil genug andere Rigs zur Verfügung standen.
+- **Kein eigenes Rotations-/Ausrichtungs-System für Projektile** — `cf_bolt`
+  wird ungedreht gezeichnet, wie zuvor der Kreis.
+
+**Verifikation (`http://localhost:8378/adventure/index.html`, per Browser-Konsole
+und direkter `SHEETS`/`RIG_ANIM`-Introspektion statt nur Screenshots):**
+
+| Prüfung | Ergebnis |
+|---|---|
+| Ladeliste | 311/311 Sheets, keine „Sprite fehlt", `assertRigRegistrations()` meldet nur die vorbestehende (nicht G3-verursachte) `goblin_cast`-Warnung — die verschwand nach Schritt 7 vollständig |
+| Alle 21 Typen | einzeln erzwungen (`makeMon`), idle/walk/attack/cast/hurt/death durchgeschaltet, per Zoom-Screenshot und Pixel-Sampling einzeln angesehen |
+| Magier (5/5) | Skeleton_Mage, Cowling_Mage_1/2, Angel_1/2 — alle mit echtem Zauber-Trail auf Zeile 7, Projektil-Sprite fliegt und trifft |
+| Kammerwächter | über `betreteKammer()` in einer echten Schwierigkeit-5-Kammer gespawnt (`mummy, golem×3, stalfos×2, bat×2, mage, bossgeneric`), 300-Frame-Soak dort 0 Exceptions, Verlassen (`knAbbruchKammer()`) sauber |
+| Bosse | Schattenfürst (Bossbar, Name, Flammen, Glow) und Alter Schrecken einzeln erzwungen und angesehen |
+| Hoftiere | alle 4 Typen per Farb-Fingerprint verifiziert (Chicken: weiß/rot/orange, Sheep: grau/weiß, Cow: creme/braun, Pig: rosa) |
+| 300-Frame-Soak | Grasland/Schnee/Wüste/Schattenland je einzeln, dazu 130-Mob-Vollhorde mit gemischten Typen und Dauerzaubern — 0 Exceptions in allen Durchläufen |
+| Frame-Budget | Hintergrund allein 0,525 ms/Frame (unverändert, außerhalb G3-Scope); 130 Monster kosten **zusätzlich** ~0,57 ms (≈0,0044 ms/Mob — exakt der Wert, den G2 für `drawPlayer()` maß); Boss-Draw (Glow+Flammen) 0,0142 ms. Referenz „~0,6 ms" damit gehalten |
+| Oberwelt-Wiederherstellung | Kammer betreten/verlassen bitgleich (Mechanik von G1 unverändert, G3 hat sie nicht angefasst) |
+
+**Für G4/G5 zum Mitnehmen:** Der `--rig`-Audit-Modus in `tools/sheet-audit.mjs`
+ist der Weg für jede weitere Zeilen-Verifikation (Tiles, UI). Und: die
+„mittlere Zeile ist immer die Seitenansicht"-Regel hat sich über 5 unabhängig
+geprüfte Triplets bestätigt — bei neuen Rigs in G4 zuerst danach suchen, bevor
+man am Bild rätselt.
 
 ### G4
 

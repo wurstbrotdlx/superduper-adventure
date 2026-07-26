@@ -1,6 +1,6 @@
 # Cute Fantasy Sheet-Audit
 
-Erzeugt von `tools/sheet-audit.mjs`. 886 Sheets ausgewertet, 0 Fehler, Laufzeit 18.5s.
+Erzeugt von `tools/sheet-audit.mjs`. 886 Sheets ausgewertet, 0 Fehler, Laufzeit 17.9s.
 
 ## Nach Pack
 
@@ -75,8 +75,8 @@ Per Hand am PNG geprüft (`checked: true`) oder von einem geometrisch identische
 
 | Rig | Sheet | Cast? | Geprüft | Notiz |
 |---|---|---|---|---|
-| Skeleton | `Cute_Fantasy/Enemies/Skeleton/Skeleton.png` | nein | ja | Reiner Nahkampf, kein Glow. Bestaetigt bestehenden Engine-Kommentar (index.html:1803/1845: skel cast faellt auf skel_attack zurueck). |
-| Skeleton_Mage | `Cute_Fantasy/Enemies/Skeleton/Skeleton_Mage.png` | **ja** | ja | Lila Glutball-Effekt sichtbar in Zeilen ~7-9 (0-basiert 6-8) von 13. Cast-faehig. |
+| Skeleton | `Cute_Fantasy/Enemies/Skeleton/Skeleton.png` | nein | ja | KORRIGIERT in G3: hat GAR KEINE Angriffszeile, nicht 'reiner Nahkampf'. Per-Zeilen-BBox (10 Zeilen) zeigt Zeilen 7-9 pixelidentisch zu Zeilen 0-2 (idle) - das sind idle-artige hurt-Posen, keine Attacke. Zeile 6 (Kollaps, breiter/y-versetzt) ist death. Reihenfolge: idle(0-2)/walk(3-5)/death(6)/hurt(7-9). Ohne Angriffszeile in G3 nicht verwendet, siehe assets/cf/manifest.json rowFrames [6,6,6,6,6,6,4,4,4,4]. |
+| Skeleton_Mage | `Cute_Fantasy/Enemies/Skeleton/Skeleton_Mage.png` | **ja** | ja | Lila Glutball-Effekt sichtbar in Zeilen 6-8 von 13. Cast-faehig. G3-Praezisierung: die tatsaechlich nutzbare Seiten-Cast-Zeile ist Zeile 7 (nicht 8) - Bildvergleich zeigt Zeile 8 ist die Ruecken-Ansicht (kein Gesicht sichtbar, wie Zeile 2 der Idle-Ansicht), Zeile 7 ist die Seiten-Ansicht mit sichtbarem Zauberstab-Funken, exakt das Gegenstueck zur schmaleren Seiten-Zeile 1/4/11 bei idle/walk/hurt. |
 | Skeleton_Swordman | `Cute_Fantasy/Enemies/Skeleton/Skeleton_Swordman.png` | nein | ja | Klingen-Slash sichtbar, kein Magie-Effekt. |
 | Skeleton_Bowman | `Cute_Fantasy/Enemies/Skeleton/Skeleton_Bowman/Merged/Skeleton_Bowman.png` | nein | ja | Pfeil/Bogen sichtbar, physischer Fernkampf, kein Magie-Glow. Fernkampf ungleich Cast. |
 | Slime_Small | `Cute_Fantasy/Enemies/Slime/Slime_Small/Slime_Small_Blue.png` | nein | ja | Einfache Blob-Bewegung. |
@@ -95,15 +95,15 @@ Per Hand am PNG geprüft (`checked: true`) oder von einem geometrisch identische
 | Orc_Grunt | `Cute_Fantasy_Characters/Orcs/Orc_Grunt.png` | nein | nein (Geschwister übertragen) | Ungeprueft, identisches 16-Zeilen-Raster (512x512) wie Orc_Chief. |
 | Orc_Peon | `Cute_Fantasy_Characters/Orcs/Orc_Peon.png` | nein | nein (Geschwister übertragen) | Ungeprueft, aehnliches 16-Zeilen-Raster (384x512, 6 statt 8 Spalten). |
 | Orc_Archer | `Cute_Fantasy_Characters/Orcs/Orc_Archer.png` | nein | ja | Bogen sichtbar, physischer Fernkampf, kein Glow. |
-| Angel_1 | `Cute_Fantasy_Characters/Angels/Angel_1.png` | **ja** | ja | Cast-KANDIDAT: Stabschwung mit weissem Sternchen-Funkeln in Zeilen ~7-9 (0-basiert 6-8) von 13 sichtbar. Vor Einsatz in G3 am realen Bild final bestaetigen (Funkeleffekt ist bei Thumbnail-Aufloesung schwerer zu verifizieren als der Skeleton_Mage/Cowling_Mage-Glow). |
-| Angel_2 | `Cute_Fantasy_Characters/Angels/Angel_2.png` | **ja** | nein (Geschwister übertragen) | Ungeprueft, identisches Raster zu Angel_1 (512x832), gleiches Verhalten erwartet. |
+| Angel_1 | `Cute_Fantasy_Characters/Angels/Angel_1.png` | **ja** | ja | G3 final am realen Bild bestaetigt (nicht mehr nur Kandidat): Zeile 6 = Frontal-Cast (Stab schwingt nach unten, weisser Schweif), Zeile 7 = Seiten-Cast (gleicher Schwung seitlich, das ist die genutzte Zeile), Zeile 8 = Ruecken-Cast (Stab ueber Kopf). Echter Zauber-Trail sichtbar, kein blosses Idle-Item-Halten (das zeigen bereits die Idle-Zeilen 0-2 mit dem rotierenden Kreuz). |
+| Angel_2 | `Cute_Fantasy_Characters/Angels/Angel_2.png` | **ja** | ja | G3: Raster gegen Angel_1 gegengeprueft (512x832, identische rowFrames), gleiche Rollenverteilung uebernommen: Cast-Seitenzeile 7. |
 | Cowling_1 | `Cute_Fantasy_Volcano/Enemies/Cowling_1.png` | nein | ja | Physischer Nahkampf, kleine Slash-Striche, kein Glow. |
 | Cowling_2 | `Cute_Fantasy_Volcano/Enemies/Cowling_2.png` | nein | nein (Geschwister übertragen) | Ungeprueft, identisches Raster zu Cowling_1. |
-| Cowling_Mage_1 | `Cute_Fantasy_Volcano/Enemies/Cowling_Mage_1.png` | **ja** | ja | Orangenes Feuer-Glimmen deutlich sichtbar in Zeilen 4-9 (0-basiert 3-8) von 13. Cast-faehig. |
-| Cowling_Mage_2 | `Cute_Fantasy_Volcano/Enemies/Cowling_Mage_2.png` | **ja** | nein (Geschwister übertragen) | Ungeprueft, identisches Raster zu Cowling_Mage_1, gleiches Verhalten erwartet. |
+| Cowling_Mage_1 | `Cute_Fantasy_Volcano/Enemies/Cowling_Mage_1.png` | **ja** | ja | Orangenes Feuer-Glimmen deutlich sichtbar in Zeilen 6-8 von 13. Cast-faehig. G3: Seiten-Cast-Zeile ist 7 (schmalste der drei, konsistent mit dem generellen Seiten-Muster tripletStart+1). |
+| Cowling_Mage_2 | `Cute_Fantasy_Volcano/Enemies/Cowling_Mage_2.png` | **ja** | nein (Geschwister übertragen) | Ungeprueft, identisches Raster zu Cowling_Mage_1, gleiche Zeile 7 uebernommen. |
 | Flying_Skull | `Cute_Fantasy_Volcano/Enemies/Flying_Skull.png` | nein | ja | Reiner Flug-/Sturzangriff, kein Magie-Effekt. |
 | Shroomling_Blue | `Cute_Fantasy_ShroomLands/Shroomlings/Blue_Shroomling.png` | nein | ja | Einfache Huepf-/Laufbewegung, kein Glow. Gilt vermutlich fuer alle 4 Farbvarianten. |
 | Snail | `Cute_Fantasy_ShroomLands/Snails/Snail_1.png` | nein | ja | Keine Angriffsanimation ueberhaupt erkennbar (nur Ein-/Ausfahren aus dem Haus), harmlose Deko-Kreatur. |
-| Witch | `Cute_Fantasy_Halloween/Witch/Witch.png` | **ja** | ja | WICHTIG: Cast-Animation liegt NICHT in Witch.png (9 Zeilen dort sind reine Bewegungsposen ohne Magie-Effekt), sondern in der separaten Datei Cute_Fantasy_Halloween/Witch/Witch_Cauldron_Anim.png (gruen glimmender Kessel, 10 Frames). G3 muss beide Dateien fuer den Hexen-Rig einbinden. |
+| Witch | `Cute_Fantasy_Halloween/Witch/Witch.png` | **ja** | ja | WICHTIG: Cast-Animation liegt NICHT in Witch.png (9 Zeilen dort sind reine Bewegungsposen ohne Magie-Effekt), sondern in der separaten Datei Cute_Fantasy_Halloween/Witch/Witch_Cauldron_Anim.png (gruen glimmender Kessel, 10 vs. laut Manifest 12 Frames - Widerspruch ungeloest). G3-ENTSCHEIDUNG: Witch wird NICHT als Magier-Rig verwendet - ein Monster, das beim Zaubern zu einem Kessel-Sprite wechselt (anderes Frameraster, keine Koerper-Silhouette mehr), ist keine Zauber-Animation im Sinne der Abnahme. Witch.png hat zudem weder death noch hurt (nur 9 reine Bewegungs-Zeilen). G3 nutzt Witch nicht. |
 
 **Cast-fähige Rigs für G3 (Magier-Typen ausschließlich hierauf mappen):** Skeleton_Mage, Angel_1, Angel_2, Cowling_Mage_1, Cowling_Mage_2, Witch.

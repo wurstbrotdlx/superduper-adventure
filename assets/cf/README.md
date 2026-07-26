@@ -4,8 +4,9 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach G2: `dungeon/` (Kammer-Interieur) und `player/` (Held) sind gefüllt.
-`enemies/`, `tiles/`, `deco/`, `ui/` folgen in G3–G5.
+Stand nach G3: `dungeon/` (Kammer-Interieur), `player/` (Held), `enemies/` (alle 21
+Monster-Rigs) und `deco/` (Hoftiere, Zauber-Projektil) sind gefüllt. `tiles/`, `ui/`
+folgen in G4–G5.
 
 ## Diese Unterordner sind nicht im Repo
 
@@ -67,6 +68,34 @@ Begründung, insbesondere die Ersatzregel für die fehlenden Kampfanimationen).
 keine sinnvolle Zufallsvielfalt) und alle weiteren Hair-Farben (6 Style-Slots
 reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `index.html`).
 
+### Von G3 gebraucht (`enemies/`, `deco/`)
+
+19 Monster-Rigs für alle 21 `MONDEF`-Typen (Templar/Swordman/Archer teilen sich je
+zwei Typen, s. `CF_RIGS` in `index.html`), plus 4 Hoftiere und 1 Zauber-Projektil.
+Zeilen/Anker sind mit `tools/sheet-audit.mjs --rig <Pfad>` gegen die echten Bilder
+gemessen (nicht aus `manifest.json` — dessen `unionBBox`/`anchorSuggested` sind über
+die Angriffszeile gebildet und bis zu 13px/88% daneben, s. Umsetzungsnotizen G3).
+
+| Zielordner | Dateien | MONDEF-Typ(en) |
+|---|---|---|
+| `enemies/Goblins/` | `Goblin_Maceman.png`, `Goblin_Thief.png` | goblin, scorpion |
+| `enemies/Skeleton/` | `Skeleton_Mage.png` | frostmage |
+| `enemies/Skeleton_Bowman/` | `Skeleton_Bowman.png` (aus `.../Merged/`) | mummy |
+| `enemies/Knights/` | `Swordman.png`, `Spearman.png`, `Templar.png`, `Archer.png` | frostgolem+stalfos, golem, boss, bossgeneric |
+| `enemies/Volcano/` | `Cowling_1.png`, `Cowling_2.png`, `Cowling_Mage_1.png`, `Cowling_Mage_2.png`, `Flying_Skull.png` | demon, crab, sandmage, greenmage, ghost+shadowghost |
+| `enemies/Angels/` | `Angel_1.png`, `Angel_2.png` | mage, shadowmage |
+| `enemies/ShroomLands/` | `Blue_Shroomling.png` | spider (Ersatz-Rig) |
+| `enemies/Slime/` | `Slime_Small_Green.png`, `Slime_Small_Blue.png` | slime, shadow |
+| `enemies/Halloween/` | `Bat.png` | bat |
+| `deco/Animals/` | `Chicken_01.png`, `Sheep_01.png`, `Cow_01.png`, `Pig_01.png` | Hoftiere (Ambiente, kein MONDEF) |
+| `deco/Other/` | `Skeleton_Mage_Projectile.png` | enemyBolts-Sprite aller 5 Magier |
+
+**Bewusst nicht verwendet:** `Skeleton.png` (hat keine Angriffszeile, s.
+`_castTable`-Korrektur), `Witch.png`/`Witch_Cauldron_Anim.png` (Cast liegt in einer
+separaten Datei mit anderem Frameraster — ein Kessel ist keine Zauber-Animation),
+`Orc_Chief/Grunt/Peon.png` (Raster-Konfidenz zu niedrig, ungeprüft), alle übrigen
+Skeleton_Swordman-Verwendungen (kein sauberes 32px-Raster, Ersatz s. oben).
+
 ## Kopierkonvention
 
 - Originaldateinamen aus `Graphics/` behalten.
@@ -74,8 +103,8 @@ reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `index.html`).
   ```
   assets/cf/
     player/     Player_Base + Ausrüstungs-Layer
-    enemies/    alle Gegner-Rigs (Skeleton, Slime, Goblins, Knights, Orcs, Angels,
-                Cowlings, Flying_Skull, Shroomlings, Snails, Witch + Cauldron_Anim)
+    enemies/    alle Gegner-Rigs (Skeleton, Skeleton_Bowman, Slime, Goblins, Knights,
+                Angels, Volcano/Cowlings+Flying_Skull, ShroomLands, Halloween/Bat)
     dungeon/    Dungeon_1/Dungeon_2-Sets, Objects
     tiles/      Grass/Cliff/Water/Beach/Cobble_Road/FarmLand etc.
     deco/       Bäume, Tiere, Outdoor decoration, Weather effects

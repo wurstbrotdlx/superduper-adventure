@@ -544,16 +544,78 @@ CF_BOOT_FILES.forEach((f, i) => addCfHeroLayer(`cffeet_${i}`, f));
 // Waffengattung eingefärbt (Dolch/Schwert/Kriegsaxt teilen sich dieselbe Klinge).
 addSheet('cftool_sword', 'cf/player/Tools/Iron/Iron_Sword.png', 1, 'grid', {fw:64, fh:64, ax:32, ay:32, rowStart:2});
 
-// --- Gegner-Rig A: Goblin (einziges Rig mit Zauber-Animation) ---
-for(const [anim, file, strip, n] of [['idle','idle',9,8], ['walk','walk',8,8], ['run','run',8,8],
-    ['attack','attack',10,9], ['cast','casting',15,15], ['hurt','hurt',8,8], ['death','death',13,9]])
-  addSheet('goblin_'+anim, `Characters/Goblin/PNG/spr_${file}_strip${strip}.png`, n);
+// ===========================================================================
+//  G3: Monster-Rigs Cute Fantasy. Ein Eintrag pro Rig-PNG, sieben Anim-Keys
+//  (idle/walk/run/attack/cast/hurt/death) als [row,n] — Zeilen hart im Code
+//  (Regressionsregel 7), gemessen per `node tools/sheet-audit.mjs --rig <Pfad>`
+//  gegen die echten Bilder, NIE aus assets/cf/manifest.json übernommen: dessen
+//  unionBBox/anchorSuggested sind über die Angriffszeile gebildet (Waffe/Zauber
+//  ragt weit über den Körper hinaus) und bis zu 13px/88% daneben. ax/ay hier
+//  stammen ausschließlich aus der Idle-Seitenzeile, siehe G3-Umsetzungsnotizen.
+//  Bestätigte Seiten-Regel (2 Idle/Walk/Hurt-Triplets + 3 Cast-Triplets per
+//  Bildvergleich geprüft, siehe tools/sheet-audit.overrides.json _rigTable):
+//  in jedem Down/Side/Up-Dreier ist die MITTLERE Zeile die Seitenansicht —
+//  idle=1, walk=4, attack/cast=7, hurt=11 (death=9, Einzelzeile, kein Dreier).
+//  run hat kein eigenes Rig-Pendant, aliast auf walk (wie zuvor skel_run).
+//  Kein `psc`/`deathFps` hier — das ist Schritt 3, hier nur Registrierung.
+// ===========================================================================
+const CF_RIGS = {
+  goblin_maceman:    { file:'Goblins/Goblin_Maceman.png', fw:32, fh:32, ax:16, ay:25,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,4], death:[9,4] } },
+  goblin_thief:      { file:'Goblins/Goblin_Thief.png', fw:32, fh:32, ax:16, ay:25,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,4], death:[9,4] } },
+  skeleton_bowman:   { file:'Skeleton_Bowman/Skeleton_Bowman.png', fw:32, fh:32, ax:15, ay:25,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,4], death:[9,4] } },   // mummy
+  skeleton_mage:     { file:'Skeleton/Skeleton_Mage.png', fw:32, fh:32, ax:15, ay:25,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,8], cast:[7,8], hurt:[11,4], death:[9,4] } },   // frostmage
+  knights_swordman:  { file:'Knights/Swordman.png', fw:48, fh:48, ax:22, ay:41,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },   // frostgolem + stalfos
+  knights_spearman:  { file:'Knights/Spearman.png', fw:48, fh:48, ax:22, ay:33,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },   // golem
+  knights_templar:   { file:'Knights/Templar.png', fw:48, fh:48, ax:22, ay:33,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },   // boss Schattenfürst
+  knights_archer:    { file:'Knights/Archer.png', fw:48, fh:48, ax:22, ay:41,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },   // bossgeneric Alter Schrecken
+  cowling_1:         { file:'Volcano/Cowling_1.png', fw:48, fh:48, ax:24, ay:32,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,4], cast:[7,4], hurt:[11,2], death:[9,4] } },   // demon
+  cowling_2:         { file:'Volcano/Cowling_2.png', fw:48, fh:48, ax:24, ay:32,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,4], cast:[7,4], hurt:[11,2], death:[9,4] } },   // crab
+  cowling_mage_1:    { file:'Volcano/Cowling_Mage_1.png', fw:48, fh:48, ax:24, ay:32,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },   // sandmage
+  cowling_mage_2:    { file:'Volcano/Cowling_Mage_2.png', fw:48, fh:48, ax:24, ay:32,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },   // greenmage
+  angel_1:           { file:'Angels/Angel_1.png', fw:64, fh:64, ax:28, ay:41,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,8], cast:[7,8], hurt:[11,4], death:[9,4] } },   // mage (Irrlichtmagier)
+  angel_2:           { file:'Angels/Angel_2.png', fw:64, fh:64, ax:26, ay:41,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6], attack:[7,8], cast:[7,8], hurt:[11,4], death:[9,4] } },   // shadowmage
+  blue_shroomling:   { file:'ShroomLands/Blue_Shroomling.png', fw:16, fh:32, ax:8, ay:32,
+    anims:{ idle:[1,2], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,4], death:[9,4] } },   // spider (Ersatz-Rig)
+  slime_small_green: { file:'Slime/Slime_Small_Green.png', fw:16, fh:16, ax:8, ay:15,
+    // Nur 4 Zeilen: 0 idle-Bounce, 1 Sprung(8f)=walk/run, 2 fast idle-identisch=attack
+    // (Slime-Ramme), 3 Huelle-Flacker solid/hohl=hurt UND death (kein Extra-Frame).
+    anims:{ idle:[0,4], walk:[1,8], run:[1,8], attack:[2,4], cast:[2,4], hurt:[3,4], death:[3,4] } },    // slime
+  slime_small_blue:  { file:'Slime/Slime_Small_Blue.png', fw:16, fh:16, ax:8, ay:15,
+    anims:{ idle:[0,4], walk:[1,8], run:[1,8], attack:[2,4], cast:[2,4], hurt:[3,4], death:[3,4] } },    // shadow
+  flying_skull:      { file:'Volcano/Flying_Skull.png', fw:32, fh:16, ax:16, ay:16,
+    // Kein Down/Side/Up-Schema (8 Zeilen, Framezahl 6,6,3,3,2,2,6,6). Per Bildvergleich:
+    // 0 Flug-Idle, 2 Flatter-Variante, 4 kompakte Tauch-Pose, 6+7 Schädel-Bruchstücke
+    // auseinanderfliegend (hurt bzw. death). Kein cast (ghost/shadowghost sind Nahkampf).
+    anims:{ idle:[0,6], walk:[2,3], run:[2,3], attack:[4,2], cast:[4,2], hurt:[6,6], death:[7,6] } },    // ghost + shadowghost
+  bat:               { file:'Halloween/Bat.png', fw:16, fh:16, ax:8, ay:11,
+    // Nur eine Zeile im ganzen Sheet, alle 7 Anims aliasen darauf.
+    anims:{ idle:[0,6], walk:[0,6], run:[0,6], attack:[0,6], cast:[0,6], hurt:[0,6], death:[0,6] } },    // bat
+};
+for(const rig in CF_RIGS){
+  const r = CF_RIGS[rig];
+  for(const anim in r.anims){
+    const [row, n] = r.anims[anim];
+    addSheet(`${rig}_${anim}`, `cf/enemies/${r.file}`, n, 'grid', {fw:r.fw, fh:r.fh, ax:r.ax, ay:r.ay, rowStart:row});
+  }
+}
 
-// --- Gegner-Rig B: Skelett (kein cast, kein run -> walk als Ersatz) ---
-for(const [anim, file, strip, n] of [['idle','idle',6,6], ['walk','walk',8,8],
-    ['attack','attack',7,7], ['hurt','hurt',7,7], ['death','death',10,10]])
-  addSheet('skel_'+anim, `Characters/Skeleton/PNG/skeleton_${file}_strip${strip}.png`, n);
-addSheet('skel_run', 'Characters/Skeleton/PNG/skeleton_walk_strip8.png', 8);
+// Sunnyside-Gegner-Rigs (Goblin/Skelett) sind mit G3 entfernt — alle MONDEF-Typen
+// laufen jetzt auf CF_RIGS oben. Die PNGs bleiben bis G5 ("Sunnyside-Abschied")
+// auf der Platte, s. G3-Umsetzungsnotizen in superduper-grafik-prompt.md.
 
 // --- Welt: Tileset, Deko, VFX ---
 addSheet('tileset', 'Tileset/spr_tileset_sunnysideworld_16px.png', 1, 'raw');
@@ -564,17 +626,31 @@ addSheet('mush_blue2', 'Elements/Plants/spr_deco_mushroom_blue_02_strip4.png', 4
 addSheet('mush_blue3', 'Elements/Plants/spr_deco_mushroom_blue_03_strip4.png', 4, 'strip');
 addSheet('mush_red', 'Elements/Plants/spr_deco_mushroom_red_01_strip4.png', 4, 'strip');
 addSheet('windmill', 'Elements/Other/spr_deco_windmill_withshadow_strip9.png', 9, 'strip');
-addSheet('chicken', 'Elements/Animals/spr_deco_chicken_01_strip4.png', 4, 'strip');
-addSheet('sheep', 'Elements/Animals/spr_deco_sheep_01_strip4.png', 4, 'strip');
-addSheet('cow', 'Elements/Animals/spr_deco_cow_strip4.png', 4, 'strip');
-addSheet('pig', 'Elements/Animals/spr_deco_pig_01_strip4.png', 4, 'strip');
-addSheet('bird', 'Elements/Animals/spr_deco_bird_01_strip4.png', 4, 'strip');
+// G3 Schritt 6: Hoftiere auf Cute Fantasy (Animals), ersetzt die Sunnyside-Strips
+// oben. Kein Down/Side/Up-Schema nötig (nur Idle/Lauf) — Zeilen aus
+// tools/sheet-audit.overrides.json _rigTable (cf_animal_*), Ankerhöhe an der
+// jeweiligen Idle-Seitenzeile gemessen (Regel wie bei CF_RIGS oben).
+const CF_ANIMALS = {
+  chicken: {file:'Animals/Chicken_01.png', fw:32, fh:32, ax:16, ay:24, idle:[0,2], walk:[2,8]},
+  sheep:   {file:'Animals/Sheep_01.png',   fw:32, fh:32, ax:16, ay:24, idle:[1,2], walk:[4,8]},
+  cow:     {file:'Animals/Cow_01.png',     fw:32, fh:32, ax:16, ay:27, idle:[1,2], walk:[4,8]},
+  pig:     {file:'Animals/Pig_01.png',     fw:32, fh:32, ax:16, ay:24, idle:[1,2], walk:[4,8]},
+};
+for(const a in CF_ANIMALS){
+  const ad = CF_ANIMALS[a];
+  addSheet(`cf${a}_idle`, `cf/deco/${ad.file}`, ad.idle[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.idle[0]});
+  addSheet(`cf${a}_walk`, `cf/deco/${ad.file}`, ad.walk[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.walk[0]});
+}
 addSheet('fire1', 'Elements/VFX/Fire/spr_deco_fire_01_strip4.png', 4, 'strip');
 addSheet('fire2', 'Elements/VFX/Fire/spr_deco_fire_02_strip4.png', 4, 'strip');
 addSheet('glint', 'Elements/VFX/Glint/spr_deco_glint_01_strip6.png', 6, 'strip');
 addSheet('rock', 'Elements/Crops/rock.png', 1, 'strip');
 addSheet('wood', 'Elements/Crops/wood.png', 1, 'strip');
 addSheet('alert', 'UI/expression_alerted.png', 1, 'strip');
+// G3 Schritt 6: Zauber-Projektil für alle 5 Magier statt gezeichnetem Farbkreis,
+// getönt nach bolt.color. Zentrierter Anker (kein Fußpunkt, das Bolt-Objekt trägt
+// x/y als Mittelpunkt, s. enemyBolts-Draw).
+addSheet('cf_bolt', 'cf/deco/Other/Skeleton_Mage_Projectile.png', 8, 'grid', {fw:16, fh:16, ax:8, ay:8});
 
 // ===========================================================================
 //  Kammer-Interieur — Cute Fantasy Dungeons (Kenmi, itch.io), Phase G1.
@@ -596,10 +672,28 @@ addSheet('dun_crate', 'cf/dungeon/Objects/crate.png', 1, 'grid', {fw:20, fh:26, 
 addSheet('dun_pot', 'cf/dungeon/Objects/pot.png', 1, 'grid', {fw:14, fh:16, ax:7, ay:15});
 addSheet('dun_cobweb', 'cf/dungeon/Objects/cobweb.png', 1, 'grid', {fw:18, fh:16, ax:9, ay:0});
 
+// G3: mehrere SHEET_LIST-Eintraege (ein Anim je Rig-Zeile) zeigen oft auf dieselbe
+// Datei (rowStart unterscheidet sie) — ein Image pro url statt pro Key laden,
+// sonst dekodiert der Browser dasselbe PNG bis zu 7x.
 function loadAssets(){
-  return Promise.all(SHEET_LIST.map(([key, url, n, mode, opt]) => new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => {
+  const imgPromises = new Map(); // url -> Promise<Image|null>
+  function loadImage(src){
+    let p = imgPromises.get(src);
+    if(!p){
+      p = new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+      imgPromises.set(src, p);
+    }
+    return p;
+  }
+  return Promise.all(SHEET_LIST.map(([key, url, n, mode, opt]) => {
+    const src = (ASSET_BLOBS && ASSET_BLOBS[url]) || url;
+    return loadImage(src).then(img => {
+      if(!img){ console.warn('Sprite fehlt:', url); assetsLoaded++; return; }
       let fw, fh, cols, ax, ay;
       let rowStart = 0;
       if(mode === 'char'){ fw = FW; fh = FH; cols = Math.max(1, Math.round(img.width/FW)); ax = ANCH_X; ay = ANCH_Y; }
@@ -607,24 +701,28 @@ function loadAssets(){
       else if(mode === 'grid'){ fw = opt.fw; fh = opt.fh; cols = Math.max(1, Math.round(img.width/fw)); ax = opt.ax; ay = opt.ay; rowStart = opt.rowStart || 0; }
       else { fw = img.width/n; fh = img.height; cols = n; ax = fw/2; ay = fh; }
       SHEETS[key] = {img, cols, n, fw, fh, ax, ay, rowStart};
-      assetsLoaded++; resolve();
-    };
-    img.onerror = () => { console.warn('Sprite fehlt:', url); assetsLoaded++; resolve(); };
-    img.src = (ASSET_BLOBS && ASSET_BLOBS[url]) || url;
-  })));
+      assetsLoaded++;
+    });
+  }));
 }
 
 // Eingefärbte Kopie eines Sheets — einmalig gebacken, danach aus dem Cache.
 // source-atop färbt nur sichtbare Pixel, alpha<1 lässt die Schattierung durch.
+// G3: nur die Zeilen backen, die dieser Key tatsächlich benutzt (rowStart..+rows),
+// nicht das ganze PNG — bei den großen CF-Rig-Sheets (bis 512x832, 7 Anim-Keys pro
+// Datei) wäre ein Ganz-Sheet-Bake pro Tint ~172 MB Canvas und ein Mehr-ms-Hänger
+// beim ersten Treffer mitten im Frame. Zeilenweise sind es ~16 MB, siehe G3-Notizen.
 const TINT_CACHE = {};
 function tintedSheet(key, color, alpha){
   const ck = key + '|' + color + '|' + alpha;
   if(TINT_CACHE[ck]) return TINT_CACHE[ck];
   const s = SHEETS[key]; if(!s) return null;
+  const rows = Math.max(1, Math.ceil(s.n / s.cols));
+  const srcY = (s.rowStart||0) * s.fh;
   const c = document.createElement('canvas');
-  c.width = s.img.width; c.height = s.img.height;
+  c.width = s.img.width; c.height = rows * s.fh;
   const cc = c.getContext('2d');
-  cc.drawImage(s.img, 0, 0);
+  cc.drawImage(s.img, 0, srcY, c.width, c.height, 0, 0, c.width, c.height);
   cc.globalCompositeOperation = 'source-atop';
   cc.globalAlpha = alpha;
   cc.fillStyle = color;
@@ -637,8 +735,10 @@ function tintedSheet(key, color, alpha){
 function drawSpriteAt(key, frame, tint, tintA){
   const s = SHEETS[key]; if(!s) return;
   const n = s.n, i = ((frame|0) % n + n) % n;
+  const localRow = (i/s.cols)|0;
   const src = tint ? (tintedSheet(key, tint, tintA == null ? 0.55 : tintA) || s.img) : s.img;
-  const row = (s.rowStart||0) + ((i/s.cols)|0);
+  // Die getönte Kopie enthält nur die Zeilen ab rowStart, deshalb dort ohne Offset lesen.
+  const row = tint ? localRow : (s.rowStart||0) + localRow;
   ctx.drawImage(src, (i % s.cols)*s.fw, row*s.fh, s.fw, s.fh, -s.ax, -s.ay, s.fw, s.fh);
 }
 
@@ -1497,7 +1597,9 @@ function genMap(){
     for(let tries=0; tries<40; tries++){
       const tx = ri(8, MW-9), ty = ri(30, 50);
       if(!walkT(tx,ty)) continue;
-      critters.push({x:tx*TS+16, y:ty*TS+16, sheet:CRITTERS[i], flip:false,
+      // Beide Sheet-Keys beim Spawn fest anlegen (nicht im Draw-Case zusammenbauen,
+      // Regressionsregel 4 — 130-Mob-Horde-Lektion gilt auch für Ambiente-Tiere).
+      critters.push({x:tx*TS+16, y:ty*TS+16, sheetIdle:`cf${CRITTERS[i]}_idle`, sheetWalk:`cf${CRITTERS[i]}_walk`, flip:false,
                      vx:0, vy:0, restT:rr(0,3), phase:rr(0,10)});
       break;
     }
@@ -1990,53 +2092,71 @@ function spellAimWorld(){                          // Weltziel folgt dem Spieler
 }
 function enterTouchMode(){ touchMode = true; document.body.classList.add('touch'); }
 
-// Optik-Felder: rig ('goblin'|'skel'), tint/tintA (eingefärbte Sheet-Kopie),
-// sc (Skalierung), scx (extra Breite), alpha, fly (Schwebe-Bob statt Lauf-Bob).
+// Optik-Felder: rig ('goblin'|'skel' Sunnyside, oder ein CF_RIGS-Key ab G3),
+// tint/tintA (eingefärbte Sheet-Kopie), sc (Skalierung), scx (extra Breite),
+// alpha, fly (Schwebe-Bob statt Lauf-Bob).
 // Das Skelett-Rig hat KEINE Zauber-Animation -> jeder Magier läuft auf Goblin.
+// G3 (Schritt 3): psc skaliert zusätzlich zu sc, gleicht die CF-Rig-Pixelgröße
+// an den Helden an (psc=1.2 entspricht PLAYER_SC bei sc:1.5, s. drawMon/drawCorpse).
+// Fehlt psc, gilt 1 (Sunnyside-Rigs unverändert). deathFps ersetzt die feste 11
+// in killMon/drawCorpse, damit kurze CF-Death-Zeilen (4 statt 9 Frames) nicht
+// doppelt so schnell durchlaufen und dann einfrieren; fehlt deathFps, gilt 11.
 const MONDEF = {
   // --- Grasland (Wald) ---
-  slime:     {name:'Chuchu',      rig:'goblin', tint:'#7dff5a', tintA:0.55, sc:1.15, r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
-  goblin:    {name:'Grünhaut',    rig:'goblin', sc:1.5, r:11, hp:22, dmg:[4,7],  xp:16, speed:78, aggro:160, atkCd:0.9, atkRange:26, gold:[6,14]},
-  greenmage: {name:'Waldschamane',rig:'goblin', tint:'#2f8f4a', tintA:0.5, sc:1.5, r:11, hp:18, dmg:[6,10], xp:26, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[10,20],
+  // G3: psc:1.2 ist der Grundwert (PLAYER_SC/1.5), passt CF-Chibi-Proportionen an
+  // den Helden an, siehe MONDEF-Kommentar oben. deathFps aus der 4-Frame-Death-
+  // Zeile der jeweiligen CF-Rigs (4f / 0,8s = 5).
+  slime:     {name:'Chuchu',      rig:'slime_small_green', sc:1.15, psc:1.2, deathFps:5, r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
+  goblin:    {name:'Grünhaut',    rig:'goblin_maceman', sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[4,7],  xp:16, speed:78, aggro:160, atkCd:0.9, atkRange:26, gold:[6,14]},
+  greenmage: {name:'Waldschamane',rig:'cowling_mage_2', tint:'#2f8f4a', tintA:0.5, sc:1.5, psc:1.2, deathFps:5, r:11, hp:18, dmg:[6,10], xp:26, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[10,20],
               ranged:true, bolt:{dmg:[6,10], speed:190, color:'#6aff8f', r:7}},
 
   // --- Schnee ---
-  ghost:      {name:'Frostgeist', rig:'skel', tint:'#8fd8ff', tintA:0.6, alpha:0.62, fly:true, sc:1.45, r:10, hp:20, dmg:[3,6],  xp:18, speed:52, aggro:150, atkCd:1.0, atkRange:24, gold:[6,14]},
-  frostgolem: {name:'Frostgolem', rig:'skel', tint:'#4ab5e8', tintA:0.62, sc:2.1, r:14, hp:60, dmg:[8,14], xp:34, speed:30, aggro:150, atkCd:1.4, atkRange:30, gold:[14,26]},
-  frostmage:  {name:'Eismagier',  rig:'goblin', tint:'#5ac8ff', tintA:0.62, sc:1.5, r:11, hp:20, dmg:[5,9],  xp:28, speed:42, aggro:180, atkCd:1.8, atkRange:140, gold:[10,22],
+  ghost:      {name:'Frostgeist', rig:'flying_skull', tint:'#8fd8ff', tintA:0.6, alpha:0.62, fly:true, sc:1.45, psc:1.2, deathFps:7, r:10, hp:20, dmg:[3,6],  xp:18, speed:52, aggro:150, atkCd:1.0, atkRange:24, gold:[6,14]},
+  frostgolem: {name:'Frostgolem', rig:'knights_swordman', tint:'#4ab5e8', tintA:0.62, sc:2.1, psc:1.2, deathFps:5, r:14, hp:60, dmg:[8,14], xp:34, speed:30, aggro:150, atkCd:1.4, atkRange:30, gold:[14,26]},
+  frostmage:  {name:'Eismagier',  rig:'skeleton_mage', tint:'#5ac8ff', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:11, hp:20, dmg:[5,9],  xp:28, speed:42, aggro:180, atkCd:1.8, atkRange:140, gold:[10,22],
               ranged:true, bolt:{dmg:[5,9], speed:220, color:'#7ad6ff', r:7}},
 
   // --- Wüste ---
-  crab:      {name:'Klippkrabbe', rig:'goblin', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, r:12, hp:34, dmg:[5,10], xp:24, speed:36, aggro:140, atkCd:1.1, atkRange:28, gold:[10,20]},
-  scorpion:  {name:'Sandskorpion',rig:'goblin', tint:'#e8c46a', tintA:0.6, sc:1.3, r:10, hp:20, dmg:[4,8],  xp:20, speed:88, aggro:170, atkCd:0.8, atkRange:24, gold:[8,16]},
-  sandmage:  {name:'Dünenpriester',rig:'goblin', tint:'#ff9f2a', tintA:0.55, sc:1.5, r:11, hp:22, dmg:[6,11], xp:30, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[12,24],
+  crab:      {name:'Klippkrabbe', rig:'cowling_2', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, psc:1.2, deathFps:5, r:12, hp:34, dmg:[5,10], xp:24, speed:36, aggro:140, atkCd:1.1, atkRange:28, gold:[10,20]},
+  scorpion:  {name:'Sandskorpion',rig:'goblin_thief', tint:'#e8c46a', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10, hp:20, dmg:[4,8],  xp:20, speed:88, aggro:170, atkCd:0.8, atkRange:24, gold:[8,16]},
+  sandmage:  {name:'Dünenpriester',rig:'cowling_mage_1', tint:'#ff9f2a', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[6,11], xp:30, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[12,24],
               ranged:true, bolt:{dmg:[6,11], speed:200, color:'#ffb04a', r:7}},
 
   // --- Schattenland (Horde) ---
-  shadow:      {name:'Schattenling',  rig:'goblin', tint:'#3a0d5c', tintA:0.72, sc:1.2, r:10, hp:12, dmg:[1,3], xp:5,  speed:95, aggro:600, atkCd:1.5, atkRange:22, gold:[1,3]},
-  demon:       {name:'Schattenhund',  rig:'goblin', tint:'#8a0f2a', tintA:0.68, sc:1.5, r:12, hp:24, dmg:[3,6], xp:10, speed:110,aggro:600, atkCd:1.2, atkRange:26, gold:[2,6]},
-  shadowghost: {name:'Schattenspukt', rig:'skel', tint:'#a855f7', tintA:0.62, alpha:0.6, fly:true, sc:1.45, r:11, hp:18, dmg:[2,5], xp:8,  speed:120,aggro:600, atkCd:1.3, atkRange:24, gold:[2,6]},
-  shadowmage:  {name:'Schattenrufer', rig:'goblin', tint:'#c77dff', tintA:0.62, sc:1.5, r:11, hp:20, dmg:[5,9], xp:14, speed:70, aggro:600, atkCd:1.6, atkRange:130, gold:[3,8],
+  shadow:      {name:'Schattenling',  rig:'slime_small_blue', tint:'#3a0d5c', tintA:0.72, sc:1.2, psc:1.2, deathFps:5, r:10, hp:12, dmg:[1,3], xp:5,  speed:95, aggro:600, atkCd:1.5, atkRange:22, gold:[1,3]},
+  demon:       {name:'Schattenhund',  rig:'cowling_1', tint:'#8a0f2a', tintA:0.68, sc:1.5, psc:1.2, deathFps:5, r:12, hp:24, dmg:[3,6], xp:10, speed:110,aggro:600, atkCd:1.2, atkRange:26, gold:[2,6]},
+  shadowghost: {name:'Schattenspukt', rig:'flying_skull', tint:'#a855f7', tintA:0.62, alpha:0.6, fly:true, sc:1.45, psc:1.2, deathFps:7, r:11, hp:18, dmg:[2,5], xp:8,  speed:120,aggro:600, atkCd:1.3, atkRange:24, gold:[2,6]},
+  shadowmage:  {name:'Schattenrufer', rig:'angel_2', tint:'#c77dff', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:11, hp:20, dmg:[5,9], xp:14, speed:70, aggro:600, atkCd:1.6, atkRange:130, gold:[3,8],
               ranged:true, bolt:{dmg:[5,9], speed:230, color:'#c77dff', r:7}},
-  boss:        {name:'Schattenfürst', rig:'skel', tint:'#6b1fa8', tintA:0.6, sc:4.5, glow:'#c77dff', r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
+  boss:        {name:'Schattenfürst', rig:'knights_templar', tint:'#6b1fa8', tintA:0.6, sc:4.5, psc:1.2, deathFps:5, glow:'#c77dff', r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
 
   // --- Reserve für spätere Level: fertig definiert, aktuell in keinem Roster ---
-  mummy:       {name:'Mumie',        rig:'skel', tint:'#d8c9a0', tintA:0.55, sc:1.5, reserved:true, r:11, hp:40, dmg:[6,11], xp:30, speed:26, aggro:150, atkCd:1.5, atkRange:28, gold:[12,24]},
-  golem:       {name:'Steingolem',   rig:'skel', tint:'#8a8a8a', tintA:0.7, sc:2.4, reserved:true, r:16, hp:90, dmg:[10,18],xp:45, speed:26, aggro:150, atkCd:1.6, atkRange:34, gold:[20,40]},
-  spider:      {name:'Höhlenspinne', rig:'goblin', tint:'#2a0f3a', tintA:0.7, sc:1.1, reserved:true, r:9,  hp:16, dmg:[3,7],  xp:18, speed:120,aggro:180, atkCd:0.7, atkRange:22, gold:[6,14]},
-  bat:         {name:'Fledermaus',   rig:'goblin', tint:'#6b5a4a', tintA:0.65, sc:1.0, fly:true, reserved:true, r:9, hp:12, dmg:[2,5], xp:12, speed:135,aggro:200, atkCd:0.9, atkRange:20, gold:[3,9]},
-  stalfos:     {name:'Knochenritter',rig:'skel', sc:1.6, reserved:true, r:11, hp:35, dmg:[7,12], xp:32, speed:70, aggro:170, atkCd:1.0, atkRange:28, gold:[14,28]},
-  mage:        {name:'Irrlichtmagier',rig:'goblin', tint:'#8fa8c9', tintA:0.6, sc:1.5, reserved:true, r:11, hp:24, dmg:[7,12], xp:34, speed:46, aggro:180, atkCd:1.6, atkRange:140, gold:[14,28],
+  // stalfos/bossgeneric: Skeleton_Swordman.png hat kein sauberes 32px-Raster (Gate
+  // in Schritt 0 nicht bestanden, s. tools/sheet-audit.overrides.json _rigTable) —
+  // Ersatz Knights_Swordman bzw. Knights_Archer, wie im G3-Plan als Fallback vorgesehen.
+  mummy:       {name:'Mumie',        rig:'skeleton_bowman', tint:'#d8c9a0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:40, dmg:[6,11], xp:30, speed:26, aggro:150, atkCd:1.5, atkRange:28, gold:[12,24]},
+  golem:       {name:'Steingolem',   rig:'knights_spearman', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, reserved:true, r:16, hp:90, dmg:[10,18],xp:45, speed:26, aggro:150, atkCd:1.6, atkRange:34, gold:[20,40]},
+  spider:      {name:'Höhlenspinne', rig:'blue_shroomling', tint:'#2a0f3a', tintA:0.7, sc:1.1, psc:1.2, deathFps:5, reserved:true, r:9,  hp:16, dmg:[3,7],  xp:18, speed:120,aggro:180, atkCd:0.7, atkRange:22, gold:[6,14]},
+  bat:         {name:'Fledermaus',   rig:'bat', tint:'#6b5a4a', tintA:0.65, sc:1.0, psc:1.2, deathFps:7, fly:true, reserved:true, r:9, hp:12, dmg:[2,5], xp:12, speed:135,aggro:200, atkCd:0.9, atkRange:20, gold:[3,9]},
+  stalfos:     {name:'Knochenritter',rig:'knights_swordman', sc:1.6, psc:1.2, deathFps:5, reserved:true, r:11, hp:35, dmg:[7,12], xp:32, speed:70, aggro:170, atkCd:1.0, atkRange:28, gold:[14,28]},
+  mage:        {name:'Irrlichtmagier',rig:'angel_1', tint:'#8fa8c9', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:24, dmg:[7,12], xp:34, speed:46, aggro:180, atkCd:1.6, atkRange:140, gold:[14,28],
               ranged:true, bolt:{dmg:[7,12], speed:210, color:'#bcd8ff', r:7}},
-  bossgeneric: {name:'Alter Schrecken', rig:'skel', tint:'#c9a227', tintA:0.55, sc:4.0, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
+  bossgeneric: {name:'Alter Schrecken', rig:'knights_archer', tint:'#c9a227', tintA:0.55, sc:4.0, psc:1.2, deathFps:5, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
 };
 
-// Animationssatz je Rig — Skelett kennt weder 'cast' noch 'run'.
-const RIG_ANIM = {
-  goblin: {idle:'goblin_idle', walk:'goblin_walk', run:'goblin_run', attack:'goblin_attack', cast:'goblin_cast', hurt:'goblin_hurt', death:'goblin_death'},
-  skel:   {idle:'skel_idle',   walk:'skel_walk',   run:'skel_run',   attack:'skel_attack',   cast:'skel_attack', hurt:'skel_hurt',   death:'skel_death'},
-};
-const monAnim = (d, name)=> RIG_ANIM[d.rig || 'goblin'][name];
+// Animationssatz je Rig. G3: die Sunnyside-Rigs (goblin/skel) sind entfernt, alle
+// 21 MONDEF-Typen tragen jetzt ein explizites CF_RIGS-rig-Feld. Die Tabelle wird
+// aus CF_RIGS generiert (Key = Rigname, Wert = Sheet-Key je Anim) — monAnim()
+// bleibt eine reine Tabellensuche, im Frame-Pfad wird nie ein Key per Template-
+// String zusammengesetzt (130 Mobs x 60 fps, Regressionsregel 4).
+const RIG_ANIM = {};
+for(const rig in CF_RIGS){
+  const anims = {};
+  for(const anim in CF_RIGS[rig].anims) anims[anim] = `${rig}_${anim}`;
+  RIG_ANIM[rig] = anims;
+}
+const monAnim = (d, name)=> RIG_ANIM[d.rig][name];
 
 function makeMon(type,x,y){
   const d = MONDEF[type];
@@ -2214,7 +2334,7 @@ function killMon(m){
   if(CONFIG.schichtModus){ shiftKillsByType[m.type] = (shiftKillsByType[m.type]||0) + 1; shiftKillsTotal++; }
   // Leiche spielt die Sterbe-Animation zu Ende und blendet dann aus
   const dKey = monAnim(m.def, 'death');
-  corpses.push({x:m.x, y:m.y, def:m.def, key:dKey, t:0, dur:animLen(dKey, 11) + 1.4, flip:m.facingLeft});
+  corpses.push({x:m.x, y:m.y, def:m.def, key:dKey, t:0, dur:animLen(dKey, m.def.deathFps || 11) + 1.4, flip:m.facingLeft});
   if(corpses.length > 24) corpses.shift();
   if(currentLevel === 2) shadowKills++;
   if(gameT - lastDieSfx > 0.07){ lastDieSfx = gameT; sfx.die(); }   // Massensterben nicht 30x gleichzeitig
@@ -4596,10 +4716,9 @@ function render(){
     ctx.fillStyle = p.color || '#ff6600'; ctx.shadowColor = p.color || '#ff6600'; ctx.shadowBlur = 10;
     ctx.beginPath(); ctx.arc(p.x, p.y, p.r||6, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
   }
-  for(const p of enemyBolts){
-    ctx.fillStyle = p.color || '#c77dff'; ctx.shadowColor = p.color || '#c77dff'; ctx.shadowBlur = 10;
-    ctx.beginPath(); ctx.arc(p.x, p.y, p.r||6, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
-  }
+  // G3: Sprite statt Farbkreis, getönt nach bolt.color (ein Sheet für alle 5 Magier).
+  for(const p of enemyBolts)
+    drawSprite('cf_bolt', animFrame('cf_bolt', 2.4 - p.t, 14), p.x, p.y, 1, false, p.color || '#c77dff', 0.7);
   for(const eff of magicEffects){
     if(eff.type === 'lightning'){
       ctx.strokeStyle = '#c77dff'; ctx.lineWidth = 4; ctx.beginPath();
@@ -4650,8 +4769,10 @@ function render(){
     switch(e.kind){
       case DRAW_TREE:    drawProp(o); break;
       case DRAW_DECO:    drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, o.big?9:4), o.x, o.y, o.scale); break;
-      case DRAW_CRITTER: drawShadowEllipse(o.x, o.y+2, 8);
-                         drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, (o.vx||o.vy) ? 7 : 3), o.x, o.y+4, 1, o.flip); break;
+      case DRAW_CRITTER: { drawShadowEllipse(o.x, o.y+2, 8);
+                         const moving = !!(o.vx||o.vy);
+                         const ckey = moving ? o.sheetWalk : o.sheetIdle;
+                         drawSprite(ckey, animFrame(ckey, gameT + o.phase, moving ? 7 : 3), o.x, o.y+4, 1.15, o.flip); break; }
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
       case DRAW_KESSEL:  drawKessel(); break;
@@ -4920,18 +5041,18 @@ function drawProp(t){
 }
 
 function drawCorpse(c){
-  const d = c.def, sc = d.sc || 1.5;
+  const d = c.def, sc = d.sc || 1.5, psc = d.psc || 1;
   const fade = Math.min(1, Math.max(0, (c.dur - c.t) / 1.2));
   ctx.save();
   ctx.globalAlpha = (d.alpha || 1) * fade;
   ctx.translate(c.x, c.y + d.r*0.7);
-  ctx.scale(sc * (d.scx||1) * (c.flip ? -1 : 1), sc);
-  drawSpriteAt(c.key, animFrame(c.key, c.t, 11, false), d.tint, d.tintA);
+  ctx.scale(sc * psc * (d.scx||1) * (c.flip ? -1 : 1), sc * psc);
+  drawSpriteAt(c.key, animFrame(c.key, c.t, d.deathFps || 11, false), d.tint, d.tintA);
   ctx.restore();
 }
 
 function drawMon(m){
-  const d = m.def, sc = d.sc || 1.5;
+  const d = m.def, sc = d.sc || 1.5, psc = d.psc || 1;   // psc: G3-Pixelskala des CF-Rigs, s. MONDEF-Kommentar
   drawShadowEllipse(m.x, m.y + m.r*0.7, m.r*0.9);
   // Kammer-Sonderregel wird gezeigt, nicht erklärt: farbiger Ring = nur dieser
   // Zweig wirkt, Schild vor dem Gesicht = von vorn prallt alles ab.
@@ -4956,7 +5077,7 @@ function drawMon(m){
 
   ctx.save();
   ctx.translate(m.x, m.y + m.r*0.7 + bob);
-  ctx.scale(sc * (d.scx||1) * (m.facingLeft ? -1 : 1), sc);
+  ctx.scale(sc * psc * (d.scx||1) * (m.facingLeft ? -1 : 1), sc * psc);
   if(d.alpha) ctx.globalAlpha = d.alpha;
   if(d.glow){ ctx.shadowColor = d.glow; ctx.shadowBlur = 20; }
   // Trefferblitz als gecachte weiße Tint-Kopie statt ctx.filter — der Filterpfad
@@ -5612,10 +5733,43 @@ const loadTick = setInterval(() => {
   if(el) el.innerText = `${assetsLoaded} / ${SHEET_LIST.length}`;
 }, 60);
 
+// G3: alle Monster-Tints einmal vorwärmen, statt sie beim ersten Treffer im
+// Kampf zu backen (tintedSheet() ist zeilenweise, aber ein Bake mitten im Frame
+// wäre trotzdem ein Regressionsregel-10-Verstoß). Läuft über ALLE MONDEF-Typen,
+// nicht nur das aktuelle Level-Roster — die Liste ist klein und fix, und so bäckt
+// auch nichts nach, wenn Schattenland oder eine Kammer später einen anderen Typ
+// zum ersten Mal zeigt.
+function prewarmMonsterTints(){
+  for(const type in MONDEF){
+    const d = MONDEF[type];
+    for(const anim in RIG_ANIM[d.rig || 'goblin']){
+      const key = RIG_ANIM[d.rig || 'goblin'][anim];
+      if(d.tint) tintedSheet(key, d.tint, d.tintA == null ? 0.55 : d.tintA);
+      tintedSheet(key, '#ffffff', 0.72); // Trefferblitz, s. drawMon/drawCorpse
+    }
+  }
+}
+
+// Boot-Assertion: jeder RIG_ANIM-Key muss in SHEETS existieren (sonst unsichtbare
+// Leichen/Mobs, s. G3-Notizen), und n <= cols (sonst blutet ein Anim in die
+// Nachbarzeile, s. drawSpriteAt-Zeilenberechnung). Nur console.warn, kein throw.
+function assertRigRegistrations(){
+  for(const rig in RIG_ANIM){
+    for(const anim in RIG_ANIM[rig]){
+      const key = RIG_ANIM[rig][anim];
+      const s = SHEETS[key];
+      if(!s) console.warn(`RIG_ANIM['${rig}']['${anim}'] = '${key}' fehlt in SHEETS`);
+      else if(s.n > s.cols) console.warn(`SHEETS['${key}']: n=${s.n} > cols=${s.cols}, Anim blutet in Nachbarzeile`);
+    }
+  }
+}
+
 loadAssets().then(() => {
   clearInterval(loadTick);
   assetsReady = true;
   bakeHeroSheet();
+  assertRigRegistrations();
+  prewarmMonsterTints();
   initFloorGraphics();
   showStartScreen();
   requestAnimationFrame(loop);
