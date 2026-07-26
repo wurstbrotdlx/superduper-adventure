@@ -1,4 +1,4 @@
-# SuperDuper Adventure, Gameplay-Umbau in 4 Phasen
+# SuperDuper Adventure, Gameplay-Umbau in 5 Phasen
 
 Arbeite die Phasen einzeln ab, nicht alle in einer Session.
 
@@ -146,7 +146,7 @@ Kammern erscheinen in allen 3 Biomen, Schild ist korrekt, jedes Modul einzeln l�
 * Der Alte Schrecken (`bossgeneric`) setzt wie jeder Boss `boss`. In `killMon()` löst nur ein Boss **außerhalb** einer Kammer `winGame()` aus, sonst würde eine Schatzkammer das Spiel gewinnen. Die Bossleiste erscheint erst bei `boss.aggro` und liest den Namen aus `MONDEF`.
 * Musik-Button und Lautstärkeregler sind aus dem Gürtel ins Inventar gewandert (`#musikBox`, ganz unten). Der Gürtel hatte sonst auf dem Handy drei Zeilen und lief unter den Daumen-Fächer.
 
-## Phase 3: Fluch-Ökonomie
+## Phase 3: Fluch-Ökonomie — ERLEDIGT
 
 Jedes am Kessel erzeugte Ausrüstungsteil hat genau einen Vorteil und genau einen Fluch, beides als deutscher Satz. Der Fluch leitet sich aus dem Adjektiv ab, hängt also an der Grammatik aus Phase 1.
 
@@ -169,7 +169,7 @@ Das eigentliche Spiel entsteht daraus, dass sich Flüche gegenseitig aufheben od
 
 Keine Zahl mehr im Item-Tooltip, nur Sätze. Alle 48 Hooks greifen. Kein Fluch kann das Spiel in einen unspielbaren Zustand bringen (harter Test: alle Slots mit den fiesesten Flüchen gleichzeitig).
 
-## Phase 4: Dienst nach Vorschrift
+## Phase 4: Dienst nach Vorschrift — ERLEDIGT
 
 Achtung, das ist ein struktureller Umbau, kein Anbau. Er ersetzt die bisherige Todesregel („Rückkehr in den Wald mit halbem HP, kein Reset").
 
@@ -208,8 +208,235 @@ Setze ein Flag `CONFIG.schichtModus = true`. Auf `false` gilt wieder die alte To
 
 Schicht startet, endet, Übertrag stimmt, Kladde überlebt garantiert jeden Tod, Dorf-Ausbauten wirken, Flag schaltet sauber zurück auf das alte Verhalten.
 
+## Phase 5: Amtsrat a. D. Knöterich — Onboarding ohne Tutorial
+
+Ersetzt den Erklärtext im Startbildschirm durch eine Figur, die ereignisgesteuert kurze Hinweise gibt. Kein Tutorial-Modus, keine Hinweisketten, keine Wall of Text.
+
+Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Commit `55236b8` geprüft. Zeilennummern verschieben sich beim Arbeiten, die Bezeichner nicht: such nach dem Bezeichner, nimm die Zeile nur als Wegweiser.
+
+### Die Figur
+
+Amtsrat a. D. Knöterich vom Amt für Monsterangelegenheiten. Er siezt den Spieler. Ton: trocken, Behördenkomik, kurz. Keine Emojis in seinen Texten, keine Gedankenstriche in Spieltexten (gilt im ganzen Projekt).
+
+**Wo er steht.** Es gibt kein begehbares Dorf: das Amt aus Phase 4 ist ein Overlay-Panel, kein Ort. Knöterich steht deshalb als **Außenstelle neben dem Kessel-Prop** (`KESSEL_T = {x:15, y:41}`, `KESSEL` in Pixeln, gezeichnet über `DRAW_KESSEL` / `drawKessel()`). Setz ihn auf eine begehbare Nachbarkachel, nicht auf den Kessel. Er hat keine KI, keine Kollision, keine Trefferbox und läuft nie mit. `placeMonsters()` darf nicht auf seine Kachel spawnen.
+
+`SPAWN` liegt bei `{x:12.5*TS, y:40.5*TS}`, der Kessel bei Kachel 15/41, das sind rund **97 Pixel** Abstand. Der Spieler steht beim Start also außerhalb des 58-Pixel-Radius der Kontextaktion. Das ist für die Blase relevant, siehe unten.
+
+**Sprite aus Bestand, keine neue Kunst.** `hero_idle` plus ein **fest gewähltes** Element aus `HAIRS` (nicht zufällig, er ist immer derselbe), beides grau getönt über den vorhandenen Cache `tintedSheet(key, color, alpha)` und etwas kleiner skaliert, gezeichnet mit `drawSpriteAt()` wie in `drawPlayer()`. **Kein `ctx.filter`**: das ist keine Nummer aus dem Regressionsschutz-Block, sondern eine Code-Regel, siehe die Kommentare bei `index.html:3722` und `index.html:3837`. Getönt wird ausschließlich über `tintedSheet()`.
+
+Neues Zeichentyp-Tag `DRAW_ALTER` in der Konstantenzeile neben `DRAW_KESSEL` (~3437), Einreihung über `pushDraw(y, DRAW_ALTER, null)` hinter einem `vis()`-Test, genau wie der Kessel. Nur zeichnen, wenn `currentLevel === 1` und `!kammer`.
+
+**Im Dienstbericht-Panel** taucht er zusätzlich als kleiner Kopf auf: nur im Bericht aus `endShift()` (~4118), **nicht** in `showDorf()` und **nicht** im Jahresgespräch. `#ovPanel` wird von sieben Stellen komplett per `innerHTML` überschrieben (Start, Tod, Sieg, Dienstbericht, Jahresgespräch, Amt, Ladebildschirm). Deshalb: **keine `id` innerhalb von `#ovPanel` vergeben und niemals `setTxt`/`setHTML`/`setStyle` darauf anwenden.** Der `el`-Cache (`~547`) und der `LAST`-Cache (`~551`) würden auf abgehängte Knoten zeigen. Der Kopf entsteht ausschließlich als Teil des Template-Strings.
+
+### Drei Kanäle
+
+| Kanal | Technik | Form | Dauer |
+|---|---|---|---|
+| Weltfigur-Blase | **Canvas**, im selben Zeichenschritt wie `DRAW_ALTER` | Blase über dem Kopf, 2 Zeilen | solange der Spieler in Reichweite ist |
+| Dienstzettel | DOM-Knoten | Zettel oben im Bild, Stempel plus Kopf als Briefmarke, 2 Zeilen | 6 Sekunden |
+| Randnotiz | DOM-Knoten | eine Zeile, nur Stempel, kein Kopf | 3 Sekunden |
+
+**Die Blase ist ausdrücklich Canvas, nicht DOM.** Sie hängt an einer Weltposition auf einer scrollenden Karte; ein DOM-Knoten müsste der Kamera pro Frame folgen, und der vorgeschriebene Dirty-Check würde nie greifen. Vorbild ist der vorhandene `floaters`-Zeichner (~3624), der ebenfalls in Weltkoordinaten innerhalb des Kamera-Transforms zeichnet. Textzeilen kommen aus Modulvariablen, keine Closure und keine Allokation pro Frame.
+
+**Blasen-Reichweite: 150 Pixel** (`sqDist < 22500`, kein `Math.hypot`). Muss größer sein als die 97 Pixel vom Spawn zum Kessel, sonst kommt Beat 1 nie. Blase erscheint beim Eintritt in den Radius, verschwindet beim Austritt. Steht kein Beat und keine Wiederholung an, zeigt die Blase nichts.
+
+Fiktion für die anderen beiden Kanäle: das ist Post, kein Gespräch. Der Zettel begründet seine eigene Kürze, ein Formular labert nicht. Halte dich daran, das ist die Bremse gegen wachsende Texte.
+
+### Grundgesetz, gilt für jeden Text
+
+1. **Knöterich erklärt Tasten und Absichten, nie Zusammenhänge.** Er darf sagen „Drei Zutaten, ein Ding, Taste K". Er darf niemals Kesselgrammatik (Slot = häufigstes Substantiv, Wirkung = häufigstes Adjektiv, dreimal gleich = Unikat, Qualität = Summe der Seltenheiten), eine Adjektiv-Wirkungs-Zuordnung oder eine Fluch-Ableitung verraten, auch nicht andeutungsweise. Die Kladde ist der eigentliche Fortschritt des Spiels und Knöterich ihr größtes Leck-Risiko. Jeder Text ist einzeln gegen diese Regel zu prüfen, das Ergebnis kommt in den Abschlussbericht.
+2. **Ein Hinweis nennt höchstens eine Taste.**
+3. **Zeichendeckel:** Dienstzettel und Blase Zeile 1 maximal 48 Zeichen, Zeile 2 maximal 32. Randnotiz maximal 44. Das gilt auch für die Touch-Fassungen und die Auftakt-Beats. Zusammengesetzte Zeilen (Schichtnummer, Zählerstände) werden mit ihrem **längstmöglichen** Wert geprüft. Beim Start als Assertion über alle Tabellen laufen lassen, nicht als guten Vorsatz behandeln.
+4. **Keine Ketten.** Ein Hinweis endet. Der nächste kommt vom nächsten Ereignis, nie vom vorherigen Hinweis.
+5. **Kein Blut.** Projektregel seit jeher: Treffer und Tode zerplatzen in Konfetti. Auch Knöterich redet nicht von Blut.
+
+### Startbildschirm
+
+`showStartScreen()` (~3930) wird zusammengestrichen auf Überschrift, Untertitel, **einen** Anreißersatz und den Knopf. Der lange `<p>`-Block und der komplette Steuerungs-`<div>` darunter (~3936 bis 3944) entfallen ersatzlos.
+
+Der Anreißersatz muss die **Angriffseingabe** mitnehmen, weil sie sonst nirgends mehr steht und Beat 2 sie bereits voraussetzt. Vorschlag:
+
+> Drei Biome, versiegelte Kammern, ein Kessel. Draufhauen mit Klick oder Leertaste, auf dem Handy rechte Bildschirmhälfte. Den Rest erklärt das Amt.
+
+### Auftakt: drei Beats
+
+| Beat | Auslöser | Zeile 1 | Zeile 2 | Zeile 2 auf Touch |
+|---|---|---|---|---|
+| `beat1` | direkt nach `startGame()`, als Blase | Knöterich. Amt für Monsterangelegenheiten. | Sie sind Außendienst. WASD. | Außendienst. Daumen links. |
+| `beat2` | nach dem ersten Kill, als Zettel | Geht doch. Schellen zählt als Sachbearbeitung. | Aufheben, was liegt. | Aufheben, was liegt. |
+| `beat3` | sobald `player.spellPoints > 0`, als Zettel | Punkt gutgeschrieben. Hilft keinem im Sack. | T. Aussuchen. | Der Stern im Gürtel. |
+
+**Beat 1 hängt an `startGame()` (~3991), nicht an `startShift()`.** Bei `CONFIG.schichtModus = false` läuft `startShift()` nie, dort fiele der komplette Ersatz für den gestrichenen Erklärtext sonst weg. `startShift()` bleibt ausdrücklich stumm, es bedient auch jede Folgeschicht.
+
+**Alle drei Beats sind über die Lebenszeit des Speicherstands einmalig**, Kriterium ist ein Flag in `sda_knoeterich_v1`, ausdrücklich **nicht** `amt.schichten === 0`. `startShift()` setzt Level, Skill- und Zauberpunkte zurück, ihre Auslöser treten also in jeder Schicht erneut ein.
+
+**Die Beats sind Startsequenz, kein normaler Zettel:** sie zählen nicht gegen das Drei-Zettel-Budget, unterliegen nicht dem 25-Sekunden-Cooldown und haben Vorrang vor jedem Katalogzettel (Prio 100). Sonst verdrängt sie in den ersten zwei Minuten der Katalog, und die Einführung fällt aus.
+
+Wird Beat 1 als Blase nicht zugestellt, weil der Spieler sofort wegläuft, gilt er nach 2 Sekunden sichtbarer Blase als zugestellt, sonst wandert er als Zettel hinterher.
+
+**Beat 3 achtet auf `player.spellPoints`, nicht auf `player.skillPoints`.** Ein Level-Up vergibt beides (`player.skillPoints += 2; player.spellPoints += 1;`, ~1644). `T` öffnet den Zauberbaum, der die Zauberpunkte verbraucht; die Skillpunkte sitzen im Inventar.
+
+### Dienstzettel-Katalog
+
+Alle einmalig über die Lebenszeit. `art` unterscheidet, wie die Bedingung ausgewertet wird (siehe Technik). Prio löst Konflikte: höher gewinnt, bei Gleichstand die frühere Tabellenzeile.
+
+| id | prio | art | Auslöser | Zeile 1 | Zeile 2 | Zeile 2 auf Touch |
+|---|---|---|---|---|---|---|
+| `hp30` | 90 | zustand | HP erstmals unter 30 Prozent | Sie verlieren Konfetti. Das ist selten gut. | Trank. Q. | Das Fläschchen. |
+| `tuer1` | 70 | zustand | erste Kammertür in Sichtweite | Schild lesen. Steht alles dran. | F, wenn Sie sich trauen. | Die Hand im Gürtel. |
+| `zutat3` | 65 | zustand | drei Zutaten-Stapel im `player.pouch` | Drei Stück. Das gilt als Antrag. | Zum Kessel. K. | Rucksack, dann Kessel. |
+| `zutat1` | 60 | ereignis | erste Zutat aufgenommen | Das ist kein Müll. Das ist Sachbestand. | Sammeln. Fragen später. | Sammeln. Fragen später. |
+| `craft1` | 55 | ereignis | erstes Kessel-Item erzeugt | Notiert. Ich notiere alles. | Zweiter Reiter im Kessel. | Zweiter Reiter im Kessel. |
+| `fluch1` | 50 | ereignis | erstes Fluch-Item angelegt | Jeder Vorteil hat eine Rückseite. | Nachlesen. I. | Im Rucksack nachlesen. |
+| `kammer1` | 45 | ereignis | erste Kammer geplündert | Kammer erledigt. Kommt in die Akte. | Weiter im Dienst. | Weiter im Dienst. |
+| `ult1` | 40 | zustand | Ultimate erstmals freigeschaltet | Alles gelernt. Jetzt wird es albern. | R. Einmal reicht. | Der Ult-Knopf. Einmal reicht. |
+| `portal1` | 35 | ereignis | Schattenportal erscheint erstmals | Das Portal ist nicht mein Ressort. | Viel Glück. | Viel Glück. |
+| `feierabend1` | 30 | gelatcht | erstes Schichtende | Erste Schicht überstanden. | Der Bericht liegt beim Amt. | Der Bericht liegt beim Amt. |
+| `amt1` | 25 | zustand | Guthaben reicht erstmals für einen Ausbau | Sie sind flüssig. Das Amt hätte da was. | Nach Feierabend. | Nach Feierabend. |
+
+**`fluch1` sagt nicht „Beutel".** Das Wort ist im Projekt für `player.pouch` (die Zutaten) reserviert, Ausrüstung liegt in den 24 Taschenplätzen.
+
+**`amt1` wörtlich:** `amt.bankGold >= Math.min(...AUSBAU_DEFS.filter(d => amt.ausbauten[d.key] < d.max).map(d => d.cost(amt.ausbauten[d.key])))`. Die Kosten sind Funktionen der aktuellen Stufe (`cost: l => 30*(l+1)` und so weiter), nicht feste Beträge. Die beiden Sonderposten im Amt (Vermutungen 100, Startfluch 60) stehen **nicht** in `AUSBAU_DEFS` und zählen hier bewusst nicht mit.
+
+**`feierabend1` und `amt1` werden gelatcht.** Ihr Auslöser fällt mit dem Öffnen von `#overlay` zusammen, also mit ihrer eigenen Sperrzone. Sie erscheinen als erster Zettel der Folgeschicht, frühestens 5 Sekunden nach `state === 'play'`. Deshalb steht in `feierabend1` „liegt beim Amt" und nicht „liegt vor".
+
+**Steckenbleib-Schubs.** 50 Sekunden ohne Kill, ohne Loot-Aufnahme und ohne geöffnetes Panel lösen genau einen Schubs aus. Reihenfolge nach dem, was der Spieler noch nie getan hat:
+
+1. nie gezaubert: „Sie schlagen nur. Es gibt auch Zauber." / „E." — Touch: „Der Zauberknopf."
+2. nie gekocht: „Zutaten allein werden nichts." / „Zum Kessel. K." — Touch: „Rucksack, dann Kessel."
+3. nie eine Kammer betreten: „Da draußen stehen verschlossene Türen." / „Schild lesen. F." — Touch: „Die Hand im Gürtel."
+
+Prio 20, einmal **pro Wissenslücke** über die Lebenszeit (nicht pro Sitzung, nicht pro Schicht). Kein zweiter Schubs vor der nächsten echten Aktion; „echte Aktion" sind genau die drei Ereignisse, die den Timer zurücksetzen.
+
+**Eskalation.** Gilt nur für Hinweise der Art `zustand`, weil nur dort die Bedingung nachprüfbar bestehen bleibt. Ist sie nach Ablauf des Zettels immer noch erfüllt, kommt genau einmal eine spitzere Variante B, zum Beispiel zu `beat3`: „Der Punkt liegt immer noch da." / „T." Danach zu diesem Thema nie wieder. Mehr als zwei Stufen gibt es nicht. Trag `varB` für `beat3`, `zutat3`, `hp30`, `tuer1`, `ult1` und `amt1` ein.
+
+### Anti-Nerv-Regeln
+
+* Globaler Cooldown 25 Sekunden zwischen zwei Dienstzetteln. Beats ausgenommen.
+* Prio entscheidet Konflikte. Der Verlierer wird **verworfen**, nicht in eine Warteschlange gelegt: er feuert später von selbst neu, falls seine Bedingung dann noch gilt (bei `art: ereignis` bleibt sein Pending-Flag ja stehen).
+* **Nachprüfung vor Anzeige:** bei `art: zustand` wird `wenn()` unmittelbar vor dem Einblenden erneut ausgewertet. Wer den Zauberpunkt während des Cooldowns schon ausgegeben hat, sieht den Hinweis nie. Bei `art: ereignis` und `gelatcht` entfällt die Nachprüfung, sonst gingen punktuelle Ereignisse verloren.
+* **Sperrzonen für Dienstzettel:** ein Monster mit `m.aggro === true` näher als 220 Pixel (`sqDist < 48400`, kein `Math.hypot`); offenes Panel (Inventar, Zauberbaum, Kessel, Symbolschloss, `#overlay`); laufendes Rätselmodul; `boss && boss.aggro`.
+* Budget: höchstens 3 Dienstzettel in den ersten 2 Minuten einer Sitzung. Beats zählen nicht mit.
+* Auto-Ausblenden nach 6 Sekunden. Nie modal, das Spiel läuft immer weiter.
+* **Verstummen:** sind alle einmaligen Hinweise inklusive ihrer Variante B durch und hat der Spieler gezaubert, gekocht und eine Kammer betreten, verstummt der Zettelkanal vollständig. Schweigen ist verdient.
+
+**Wo gilt das alles.** Oberwelt (`currentLevel === 1`): alle Kanäle. Schattenland (`currentLevel === 2`): Zettelkanal schweigt ganz, Randnotizen laufen weiter, kein Nachschlagen. Kammer (`currentLevel === 3`): Zettel nur außerhalb eines laufenden Moduls, Randnotizen laufen, kein Nachschlagen. Die Weltfigur wird außerhalb der Oberwelt gar nicht gezeichnet.
+
+### Randnotizen
+
+Reine Charakterzeilen ohne Information. Pro Anlass mindestens 4 Zeilen, nie zweimal dieselbe hintereinander. Jede neu erfundene Zeile ist vor dem Einbau gegen Grundgesetz Regel 1 und den Zeichendeckel zu prüfen.
+
+| Anlass | Hook | Zeilen |
+|---|---|---|
+| Crit | `hurtMon()`, an der vorhandenen 70ms-Bremse (~1555) | Vermerkt. · Das war unnötig laut. · Aktenzeichen folgt. · Ich habe nichts gesehen. |
+| Ultimate | Ult-Auslösung | Konfetti. Die Reinigung kostet extra. · Das war Ihr Budget. · Ich war das nicht. · Bitte nicht nachmachen. |
+| Level-Up | `levelUp` (~1644) | Aufstieg. Gehalt bleibt. · Gratuliere. Formlos. · Eine Stufe. Kein Titel. · Notiert, ohne Beförderung. |
+| Kammer-Abbruch | siehe unten | Abbruch ohne Beute. Auch eine Entscheidung. · Rückzug ist zulässig. · Die Tür bleibt da. · Vermerkt als Rückzug. |
+| Fluch angelegt | `recalc()`-Nachlauf | Kleingedrucktes gelesen? Nein. Nie. · Sie unterschreiben viel. · Steht alles drin. · Mutig. |
+| Großer Goldfund | `player.gold +=` an ~2134 und ~3221 | Die Hälfte davon ist später meine. · Buchen Sie das ordentlich. · Kassenzeichen folgt. · Schöner Posten. |
+| Untätigkeit | 25 Sekunden ohne echte Aktion | Sie stehen. Ich auch. Ich werde bezahlt. · Pause ist nicht beantragt. · Die Monster warten nicht ewig. · Ich notiere Stillstand. |
+
+**Reihenfolge im Hook ist Pflicht:** zuerst der billige Zeitvergleich für Taktung und Cooldown, **erst danach** Pool-Auswahl und Textaufbau. `hurtMon()` ist ein echter Hot Path, in dem Flächenzauber jeden Treffer als Crit markieren; genau dafür gibt es dort schon die 70ms-Bremse. Keine zweite Zufallsziehung pro Treffer.
+
+**Doppelung vermeiden:** Anlässe, für die es einen einmaligen Dienstzettel gibt (Level-Up, Fluch angelegt, Ultimate), lösen ihre Randnotiz erst **ab dem zweiten** Vorkommen aus.
+
+**Untätigkeit und Steckenbleib schließen sich aus:** Randnotiz frühestens nach 25 Sekunden, Steckenbleib-Zettel nach 50. Läuft der Zettel, entfällt die Randnotiz.
+
+**Kammer-Abbruch richtig einhängen.** `verlasseKammer()` ist **kein** Abbruch-Hook, sondern der einzige Ausstiegspfad überhaupt: er läuft auch beim regulären Ausgang nach geplünderter Truhe, beim Tod in der Kammer (`respawnPlayer()`) und bei `startShift()`. Häng den Zähler stattdessen an die beiden echten Abbruchpfade (Esc-Zweig ~4219 und `el('kamExitBtn').onclick` ~3111) und prüfe dort zusätzlich `!kammer.geleert` (das Feld existiert: Init `false` ~1993, gesetzt in `truheOeffnen()` ~2131). `respawnPlayer()` und `startShift()` bleiben ausdrücklich stumm.
+
+### Zähler
+
+Knöterichs Running Gag ist „Ich führe Buch". Schwellenzeilen statt Zufallszeilen, Tränke zum Beispiel bei 3, 7, 12, 20: „Ihr dritter Trank." · „Ihr siebter Trank. Ich führe Buch." · „Zwölf Tränke. Das ist ein Muster." · „Zwanzig. Ich habe eine Spalte angelegt."
+
+**Alle Schwellen-Gags laufen ausschließlich über eigene, persistente Zähler in `sda_knoeterich_v1`**, sonst hält „feuert genau einmal" den nächsten Reload nicht aus. Bestandsaufnahme:
+
+| Wert | Zustand | Verwendung |
+|---|---|---|
+| `stats.kills` (~1225, erhöht ~1577) | Sitzungszähler, kein Reset bei `startShift()`, **nicht** persistiert | nur für Sitzungs-Gags, nicht für Lebenszeit-Schwellen |
+| `stats.goldTotal` (~1225) | **tot**, wird nirgends erhöht | nicht benutzen. Goldfund-Randnotiz hängt am Einzelbetrag in den beiden `player.gold +=`-Stellen |
+| `shiftKillsByType`, `shiftKillsTotal` | pro Schicht, und nur befüllt bei `CONFIG.schichtModus === true` (~1578) | nur für schichtgebundene Zeilen |
+| `amt.schichten` | persistent, wird **erst am Schichtende** erhöht (~4104) | laufende Schichtnummer ist `amt.schichten + 1` |
+
+Neu anzulegen in `sda_knoeterich_v1`, alle über die Lebenszeit: `traenke`, `kammerAbbrueche`, `maxKillsSchicht` (beim Schichtende aus `shiftKillsTotal` fortgeschrieben), sowie die drei Wissenslücken-Flags `hatGezaubert`, `hatGekocht`, `hatKammerBetreten`. Hooks dafür: `drinkPotion()` (~1671), die beiden Kammer-Abbruchpfade, `endShift()`, der Zauber-Auslösepfad, der Braue-Pfad im Kessel, `betreteKammer()` (~1985).
+
+**Schichtbegrüßung.** Zu Schichtbeginn eine Zeile mit der laufenden Nummer `amt.schichten + 1`, zum Beispiel „Dritte Schicht. Die Akte wird dick." Ein Rekordwert ist nur zulässig, wenn er aus `maxKillsSchicht` kommt; `amt` hat kein Rekordfeld. In der allerersten Schicht läuft Beat 1 statt einer Begrüßung. Diese Zeilen dürfen als einzige wiederholt feuern, einmal pro Schicht.
+
+**Jahresgespräch** (Phase 4, alle 10 Schichten): Knöterich sagt genau einen Satz, „Ich habe alles mitgeschrieben." Der steht als statischer Text im Panel-HTML des Jahresgesprächs, hängt also nicht am Regler und nicht am Randnotiz-Kanal. Mehr als diesen Satz bekommt er dort nicht, sonst klaut er dem Bürgermeister die Szene.
+
+**Taktung:** höchstens eine Randnotiz pro 40 Sekunden, nie gleichzeitig mit einem Dienstzettel, nie im Rätselmodul. Im Kampf und im Bosskampf ausdrücklich erlaubt, dort sind sie am komischsten.
+
+**Regler.** Im Inventar unter „Ton" (dort stehen seit Phase 2 schon Musik und Lautstärke) ein Dreifach-Schalter **Knöterich: Gesprächig / Dienstlich / Schweigt**, Standard Gesprächig, Stellung überlebt den Reload.
+
+* Gesprächig: alles.
+* Dienstlich: alle Randnotizen aus, **außer** der Schichtbegrüßung.
+* Schweigt: auch die Schichtbegrüßung aus.
+
+**Dienstzettel laufen in jeder Stellung**, sonst kippt die Einführung weg. Weltfigur-Blase und die F-Wiederholung sind vom Regler ebenfalls unberührt.
+
+### Nachschlagen
+
+Neue Kontextaktion an der Weltfigur: `AKT_NACHFRAGE = 9` in der Konstantenzeile (`AKT_TUER` bis `AKT_GRUSS`, ~2475), Angebot in `scanAktion()` im `!kammer`-Zweig hinter dem `currentLevel !== 1`-Guard neben der `kammerTueren`-Schleife, Ausführung in `fuehreAktion()`. Text „Nachfragen".
+
+Verhalten: zeigt den zuletzt gezeigten Dienstzettel, beim nächsten Druck den zweitletzten, dann den drittletzten, dann wieder von vorn. Wurde noch nie ein Zettel gezeigt, wird die Aktion gar nicht angeboten. Die Wiederholung ist spielerausgelöst und deshalb von Cooldown, Budget, Verstummen und Prio ausgenommen; sie startet den Cooldown auch nicht neu und respektiert nur die Sperrzone „offenes Panel". Angezeigt wird sie im Zettel-Layout.
+
+Beachte den vorhandenen Kommentar über `CFX.gruss`: der Fluch Grußpflicht bietet `AKT_GRUSS` auf der Spielerposition an und gewinnt damit jeden Distanzvergleich. Steht ein ungegrüßtes Monster neben der Außenstelle, ist Knöterich kurz nicht ansprechbar. Das ist hinnehmbar und löst sich von selbst. **Bau die Grußpflicht dafür nicht um.**
+
+### Technik
+
+* Zwei Datentabellen, keine verstreuten `if`-Blöcke: `HINWEISE[]` mit `{id, prio, art, wenn(), z1, z2, z2t, varB}` und `RANDNOTIZ[anlass]` mit den Pools. Wie in Phase 1 gilt: Tabellen müssen vor ihrer ersten Verwendung stehen, sonst TDZ-Fehler.
+* **Drei Auswertungsarten**, das ist der Kern der Zustandsmaschine:
+  * `zustand` — `wenn()` ist ein Prädikat, wird geprüft und vor der Anzeige nachgeprüft. Kann eskalieren.
+  * `ereignis` — der Auslöser ist punktuell. Er setzt am Ereignisort ein persistentes Pending-Flag; `wenn()` liest nur dieses Flag. Keine Nachprüfung, keine Eskalation.
+  * `gelatcht` — wie `ereignis`, erscheint aber bewusst erst in der Folgeschicht, frühestens 5 Sekunden nach `state === 'play'`.
+* Die `wenn()`-Closures entstehen einmal beim Tabellenbau, nie pro Frame (Regressionsschutz Punkt 4: Zeichenliste über den Pool, keine Closures pro Frame). Geprüft wird alle 15 Frames, nicht jeden Frame; Vorbild ist Punkt 8, die Minimap alle 4 Frames.
+* **Ein DOM-Knoten je Bildschirmkanal** (Dienstzettel, Randnotiz). Die Blase ist Canvas, siehe oben. Text ausschließlich über die vorhandenen `setTxt` / `setHTML` / `setStyle` mit Dirty-Check. Niemals `innerHTML` pro Frame (Regressionsschutz Punkt 1). Ein- und Ausblenden per CSS-Transition, nicht per JS-Frame.
+* **Geometrie hart vorgeben, das obere Band ist bereits belegt:** `#zone` oben links, `#minimap` oben rechts (128 px, mobil 88 px), `#bossbar` oben mittig (mobil bis `min(480px,86vw)`, `z-index:11`). Also: Zettel und Randnotiz zentriert, `top: 46px`, `max-width: min(420px, calc(100vw - 200px))`, `z-index: 12`. Ist `#bossbar` sichtbar, rutscht das Band auf `top: 78px`. Die Minimap bleibt in jedem Fall frei. Randnotizen sind im Bosskampf erlaubt, dieser Fall tritt also wirklich ein.
+* `pointer-events:none` auf Zettel und Randnotiz.
+* **Kein manuelles Wegdrücken per Esc.** In der Kammer bricht Esc den Besuch ab, außerhalb schließt es Panels. Der Konflikt darf nicht entstehen, das Auto-Ausblenden genügt.
+* Persistenz in `localStorage` unter `sda_knoeterich_v1`: gesehene Hinweis-IDs, Pending-Flags, Eskalationsstände, die Lebenszeit-Zähler, die drei Wissenslücken-Flags, Reglerstellung. Wie die Kladde (`sda_kladde_v1`) **absolut todesimmun**: kein Schichtende, kein `startShift()`, kein `respawnPlayer()` und nichts aus Phase 4 darf sie anfassen. Einzige Ausnahme sind die Schichtbegrüßungen, die pro Schicht neu feuern. Laden wie bei `AMT_KEY` (~1888): vor der ersten Verwendung, in `try`/`catch`, defensiv gegen fehlende Felder.
+* Die Zettel sind nicht anfassbar, der Touch-Watchdog braucht keine Erweiterung. Trotzdem gegenprüfen, dass kein neues Element ein Touch-Ziel verdeckt.
+
+### Abnahme Phase 5
+
+**Startbildschirm und Auftakt**
+* Startbildschirm zeigt nur noch Titel, Untertitel, einen Satz mit Angriffseingabe und den Knopf.
+* Alle drei Beats feuern in richtiger Reihenfolge, auch wenn der Spieler sofort wegläuft, und auf Touch mit der Touch-Fassung.
+* Beats feuern je genau einmal über die Lebenszeit: Beat 3 auslösen, sterben, zweite Schicht starten, neu laden — er kommt nicht wieder.
+* Beat 1 erscheint auch bei `CONFIG.schichtModus = false`.
+
+**Hinweise**
+* Jeder einmalige Hinweis feuert genau einmal und übersteht Reload, Tod, Schichtende und Amt-Besuch.
+* `feierabend1` und `amt1` erscheinen tatsächlich, nämlich in der Folgeschicht, und nicht gar nicht.
+* Cooldown, Budget (3 in 2 Minuten, Beats zählen nicht), Prioritäten, Nachprüfung vor Anzeige und alle vier Sperrzonen sind nachweisbar wirksam. Testszenario: Zauberpunkt im Zauberbaum während des Cooldowns ausgeben, der Hinweis erscheint nie.
+* Steckenbleib-Schubs kommt nach 50 Sekunden genau einmal, in der Reihenfolge nie gezaubert vor nie gekocht vor nie Kammer, und pro Wissenslücke nur einmal.
+* Eskalation zu Variante B kommt genau einmal und nur bei `art: zustand`.
+* Zettelkanal verstummt nachweislich, wenn alles durch ist.
+
+**Texte**
+* Kein Text verrät Kesselgrammatik oder Fluch-Ableitung. Die komplette Tabelle wurde einzeln dagegen geprüft, das Ergebnis steht im Abschlussbericht.
+* Zeichendeckel-Assertion läuft beim Start über alle Tabellen inklusive Touch-Fassungen, Beats und Templates mit ihrem längstmöglichen Wert, und ist grün.
+* Kein Text enthält Gedankenstriche, Emojis oder Blut.
+* Jeder tastenbehaftete Hinweis hat eine Touch-Fassung.
+
+**Figur und Kanäle**
+* Figur steht sichtbar neben dem Kessel, grau getönt, kein `ctx.filter`, verschwindet in Kammer und Schattenland, blockiert keinen Weg und bekommt keine Monster auf die Kachel.
+* Blase erscheint am Spawn (97 Pixel Abstand liegen im 150-Pixel-Radius) und verschwindet beim Weggehen.
+* Randnotizen halten 40 Sekunden Abstand, wiederholen keine Zeile direkt und laufen nie gleichzeitig mit einem Zettel.
+* Zähler-Gags feuern an ihren Schwellen und überleben den Reload. Der Kammer-Abbruch-Zähler zählt **nicht** hoch, wenn die Truhe geplündert wurde, wenn der Spieler in der Kammer stirbt oder wenn eine Schicht startet.
+* Kopf erscheint im Dienstbericht, nicht in Amt und Jahresgespräch. Im Jahresgespräch steht genau ein Satz.
+* Regler wirkt in allen drei Stellungen unterschiedlich, Dienstzettel bleiben überall an, Stellung überlebt den Reload.
+* `F` an der Außenstelle liefert die letzten 3 Zettel neuester zuerst, läuft danach um, wird ohne gezeigten Zettel nicht angeboten und kollidiert nicht mit `AKT_TUER` oder `AKT_GRUSS`.
+
+**Regression**
+* `CONFIG.schichtModus = false` bricht nichts: Knöterich läuft in beiden Modi, nur `feierabend1`, `amt1`, die Schichtbegrüßungen und die schichtgebundenen Zähler-Gags hängen am Schichtmodus.
+* HUD ohne Leerschreibungen, keine Closures oder neuen Allokationen im Renderpfad, Caps unverändert, Tot-Guard und Sound-Bremsen unverändert, 300 Frames mit Zaubern und eingeblendeten Zetteln ohne Exception, lokal und live.
+
+### Umsetzungsnotizen aus Phase 5
+
+Nach der Umsetzung hier ergänzen, wie in den Phasen 1 und 2: was gebaut wurde, was bewusst weggelassen wurde, welche Fallen für spätere Arbeiten wichtig sind.
+
 ## Reihenfolge und Disziplin
 
-1, dann 2, dann 3, dann 4. Nach jeder Phase spielbar, getestet, committet, gepusht, live verifiziert. Wenn eine Phase größer wird als gedacht, sag es und liefere sie halb, statt sie ganz zu liefern und dabei den Renderpfad zu zerlegen.
+1 bis 5, in dieser Reihenfolge. Nach jeder Phase spielbar, getestet, committet, gepusht, live verifiziert. Wenn eine Phase größer wird als gedacht, sag es und liefere sie halb, statt sie ganz zu liefern und dabei den Renderpfad zu zerlegen.
 
 Am Ende jeder Phase: kurzer Bericht, was gebaut wurde, was bewusst weggelassen wurde, was noch offen ist.
