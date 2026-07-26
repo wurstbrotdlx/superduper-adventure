@@ -81,6 +81,7 @@
   #tooltip{position:fixed;z-index:40;display:none;min-width:180px;background:rgba(8,6,12,.96);border:2px solid #8a6d3b;border-radius:8px;color:#ddd;padding:10px 12px;font-size:12px;line-height:1.5;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,0.8);}
   #tooltip .tname{font-weight:bold;font-size:14px;margin-bottom:4px; border-bottom:1px solid #4c4030; padding-bottom:4px;}
   #tooltip .aff{color:#8fb0ff;}
+  #tooltip .fluch{color:#ff8f8f;}
   #tooltip .hint{margin-top:8px;font-size:10px;color:#9a8a5f;font-style:italic;}
 
   /* --- Kessel & Kladde (K) --- */
@@ -891,9 +892,9 @@ const BASES = [
   {t:'shield', name:'Holzschild',    tier:1, armor:2,  icon:'🛡️', iconFrame:'shield'},
 ];
 const AFFIXES = [
-  {k:'dmg',   min:3,  max:8,  fmt:v=>`+${v} Schaden`},
-  {k:'armor', min:4,  max:12, fmt:v=>`+${v} Rüstung`},
-  {k:'hp',    min:20, max:50, fmt:v=>`+${v} Leben`},
+  {k:'dmg',   min:3,  max:8,  fmt:v=>`+${v} Schaden`, satz:'Verbessert geschliffen.'},
+  {k:'armor', min:4,  max:12, fmt:v=>`+${v} Rüstung`, satz:'Zusätzlich verstärkt.'},
+  {k:'hp',    min:20, max:50, fmt:v=>`+${v} Leben`,  satz:'Angenehm zu tragen.'},
 ];
 
 // ===========================================================================
@@ -984,31 +985,111 @@ const WIRKUNG = {
     satz:['Dein Hieb greift weiter aus.', 'Dein Hieb greift deutlich weiter aus.', 'Dein Hieb nimmt den halben Vorplatz mit.']},
   beutelaune:   {name:'Beutelaune', fx:'beute', unikat:'Festliche Sammelbüchse',
     satz:['Monster lassen häufiger Zutaten liegen.', 'Monster lassen deutlich häufiger Zutaten liegen.', 'Monster hinterlassen fast immer etwas Brauchbares.']},
+  // Phase 3: zehn weitere Wirkungen, damit alle 24 Vorteile über die Grammatik erreichbar sind.
+  zehrend:      {name:'Zehrung', fx:'leech', unikat:'Beitragsbescheid mit Klinge',
+    satz:['Wer dich ärgert, zahlt einen kleinen Beitrag an deine Gesundheit.', 'Der Beitrag fällt spürbar höher aus.', 'Du finanzierst dich vollständig aus fremdem Unglück.']},
+  beschwoerend: {name:'Zauberkraft', fx:'zauber', unikat:'Vorlesungsstab',
+    satz:['Deine Zauber tragen mehr Gewicht.', 'Deine Zauber tragen deutlich mehr Gewicht.', 'Deine Zauber sind eine amtliche Ansage.']},
+  haushaltend:  {name:'Sparsamkeit', fx:'sparsam', unikat:'Haushaltssperre am Gürtel',
+    satz:['Zauber gehen sparsamer mit deinem Mana um.', 'Zauber gehen deutlich sparsamer mit deinem Mana um.', 'Dein Mana reicht für fast alles.']},
+  hastig:       {name:'Schlagzahl', fx:'tempo', unikat:'Stechuhr mit Griff',
+    satz:['Du schlägst schneller zu.', 'Du schlägst deutlich schneller zu.', 'Du schlägst, als wäre gleich Dienstschluss.']},
+  wohlgenaehrt: {name:'Leibesfülle', fx:'leben', unikat:'Zweites Frühstück in Blech',
+    satz:['Du hältst mehr aus.', 'Du hältst deutlich mehr aus.', 'Du bist praktisch nicht kleinzukriegen.']},
+  anziehend:    {name:'Anziehung', fx:'magnet', unikat:'Zuständigkeitsmagnet',
+    satz:['Beute kommt dir ein Stück entgegen.', 'Beute kommt dir deutlich weiter entgegen.', 'Beute sucht dich förmlich auf.']},
+  einschuechternd:{name:'Einschüchterung', fx:'schreck', unikat:'Vorladung mit Stiel',
+    satz:['Getroffene Gegner zögern kurz.', 'Getroffene Gegner zögern spürbar länger.', 'Getroffene Gegner überlegen sich alles noch einmal.']},
+  abweisend:    {name:'Abweisung', fx:'bollwerk', unikat:'Ablehnungsbescheid',
+    satz:['Schläge auf dich verlieren an Wirkung.', 'Schläge auf dich verlieren deutlich an Wirkung.', 'Schläge auf dich gelten als unbegründet.']},
+  nachfuellend: {name:'Nachschlag', fx:'nachschlag', unikat:'Bodenlose Feldflasche',
+    satz:['Manchmal bleibt im Fläschchen noch etwas übrig.', 'Oft bleibt im Fläschchen noch etwas übrig.', 'Das Fläschchen wird einfach nicht leer.']},
+  gut_unterrichtet:{name:'Aktenlage', fx:'karte', unikat:'Beglaubigter Lageplan',
+    satz:['Verschlossene Türen stehen dir auf der Karte.', 'Türen und Truhen stehen dir auf der Karte.', 'Auf deiner Karte ist nichts mehr geheim.']},
 };
 
 // Adjektive: w = Biom-Gewicht, minMon = nötige Monster-Seltenheit (0..3).
 // Mehrere Adjektive dürfen auf dieselbe Wirkung zeigen; genau das macht die
 // Kladde interessant.
+// fl = Fluch bei Stufe 1, fl2 = Fluch ab Stufe 2 (verstärkt/Unikat), optional.
+// Verstärken macht den Fluch schlimmer statt nur den Vorteil stärker.
 const ZUTAT_ADJ = [
-  {a:'klebrig',            wirk:'zaeh',         rar:0, minMon:0, w:{grass:6,   snow:1,   sand:2,   shadow:2}},
-  {a:'durchgefroren',      wirk:'zaeh',         rar:1, minMon:0, w:{grass:0.5, snow:6,   sand:0.2, shadow:1}},
-  {a:'empört',             wirk:'wucht',        rar:0, minMon:0, w:{grass:3,   snow:2,   sand:2,   shadow:3}},
-  {a:'leicht verkohlt',    wirk:'zorn',         rar:0, minMon:0, w:{grass:1,   snow:0.3, sand:4,   shadow:2}},
-  {a:'glühend',            wirk:'zorn',         rar:1, minMon:1, w:{grass:1,   snow:0.5, sand:5,   shadow:2}},
-  {a:'störrisch',          wirk:'panzer',       rar:0, minMon:0, w:{grass:3,   snow:3,   sand:2,   shadow:1}},
-  {a:'übermütig',          wirk:'flink',        rar:0, minMon:0, w:{grass:4,   snow:1,   sand:2,   shadow:3}},
-  {a:'zugig',              wirk:'rueckstoss',   rar:0, minMon:0, w:{grass:2,   snow:4,   sand:2,   shadow:1}},
-  {a:'unangenehm feucht',  wirk:'quelle',       rar:1, minMon:0, w:{grass:3,   snow:2,   sand:0.4, shadow:1}},
-  {a:'murmelnd',           wirk:'gemurmel',     rar:1, minMon:1, w:{grass:2,   snow:2,   sand:1,   shadow:3}},
-  {a:'frisch gestempelt',  wirk:'trankgueltig', rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:1}},
-  {a:'ausschweifend',      wirk:'weitschweifig',rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2}},
-  {a:'pedantisch',         wirk:'genau',        rar:2, minMon:2, w:{grass:2,   snow:2,   sand:2,   shadow:2}},
-  {a:'amtlich beglaubigt', wirk:'amtsschimmel', rar:2, minMon:2, w:{grass:2,   snow:1,   sand:1,   shadow:1}},
-  {a:'verwaltungserfahren',wirk:'aktenkunde',   rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:2}},
-  {a:'feierlich',          wirk:'beutelaune',   rar:2, minMon:3, w:{grass:1,   snow:1,   sand:1,   shadow:2}},
+  {a:'klebrig',            wirk:'zaeh',         fl:'kurzarm',                          rar:0, minMon:0, w:{grass:6,   snow:1,   sand:2,   shadow:2}},
+  {a:'durchgefroren',      wirk:'zaeh',         fl:'langsame_zunge',                   rar:1, minMon:0, w:{grass:0.5, snow:6,   sand:0.2, shadow:1}},
+  {a:'empört',             wirk:'wucht',        fl:'fehlschlag', fl2:'zerplatzer',     rar:0, minMon:0, w:{grass:3,   snow:2,   sand:2,   shadow:3}},
+  {a:'leicht verkohlt',    wirk:'zorn',         fl:'steuer',                           rar:0, minMon:0, w:{grass:1,   snow:0.3, sand:4,   shadow:2}},
+  {a:'glühend',            wirk:'zorn',         fl:'zutatenschwund', fl2:'blutmagie',  rar:1, minMon:1, w:{grass:1,   snow:0.5, sand:5,   shadow:2}},
+  {a:'störrisch',          wirk:'panzer',       fl:'standfest',                        rar:0, minMon:0, w:{grass:3,   snow:3,   sand:2,   shadow:1}},
+  {a:'übermütig',          wirk:'flink',        fl:'zappel',                           rar:0, minMon:0, w:{grass:4,   snow:1,   sand:2,   shadow:3}},
+  {a:'zugig',              wirk:'rueckstoss',   fl:'schleuder',                        rar:0, minMon:0, w:{grass:2,   snow:4,   sand:2,   shadow:1}},
+  {a:'unangenehm feucht',  wirk:'quelle',       fl:'duenn',                            rar:1, minMon:0, w:{grass:3,   snow:2,   sand:0.4, shadow:1}},
+  {a:'murmelnd',           wirk:'gemurmel',     fl:'manatot',                          rar:1, minMon:1, w:{grass:2,   snow:2,   sand:1,   shadow:3}},
+  {a:'frisch gestempelt',  wirk:'trankgueltig', fl:'hektik', fl2:'nuechtern',          rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:1}},
+  {a:'ausschweifend',      wirk:'weitschweifig',fl:'geschwaetzig', fl2:'einzelziel',   rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2}},
+  {a:'pedantisch',         wirk:'genau',        fl:'stumpf', fl2:'amtsschweigen',      rar:2, minMon:2, w:{grass:2,   snow:2,   sand:2,   shadow:2}},
+  {a:'amtlich beglaubigt', wirk:'amtsschimmel', fl:'goldschwund', fl2:'goldzauber',    rar:2, minMon:2, w:{grass:2,   snow:1,   sand:1,   shadow:1}},
+  {a:'verwaltungserfahren',wirk:'aktenkunde',   fl:'stille_zahlen',                    rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:2}},
+  {a:'feierlich',          wirk:'beutelaune',   fl:'blindbalken', fl2:'gruss',         rar:2, minMon:3, w:{grass:1,   snow:1,   sand:1,   shadow:2}},
+  // Phase 3: zehn neue Adjektive, je eins pro neuer Wirkung. Fluch ist bewusst die
+  // Kehrseite desselben Adjektivs (z.B. macht "gut unterrichtet" die Karte lesbar,
+  // aber blendet die Lebensbalken aus).
+  {a:'zehrend',            wirk:'zehrend',         fl:'zerplatzer',       rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:3}},
+  {a:'raunend',            wirk:'beschwoerend',    fl:'blutmagie',        rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:3}},
+  {a:'genügsam',           wirk:'haushaltend',     fl:'steuer',           rar:1, minMon:1, w:{grass:3,   snow:2,   sand:2,   shadow:1}},
+  {a:'aufgeregt',          wirk:'hastig',          fl:'zappel',           rar:0, minMon:0, w:{grass:3,   snow:2,   sand:3,   shadow:2}},
+  {a:'gut gepolstert',     wirk:'wohlgenaehrt',    fl:'standfest',        rar:1, minMon:0, w:{grass:2,   snow:3,   sand:1,   shadow:1}},
+  {a:'magnetisch',         wirk:'anziehend',       fl:'geschwaetzig',     rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2}},
+  {a:'grimmig',            wirk:'einschuechternd', fl:'schnelle_bolzen',  rar:0, minMon:0, w:{grass:2,   snow:2,   sand:2,   shadow:3}},
+  {a:'abgestempelt',       wirk:'abweisend',       fl:'nuechtern',        rar:1, minMon:1, w:{grass:1,   snow:2,   sand:2,   shadow:1}},
+  {a:'randvoll',           wirk:'nachfuellend',    fl:'duenn',            rar:1, minMon:1, w:{grass:2,   snow:1,   sand:1,   shadow:1}},
+  {a:'gut unterrichtet',   wirk:'gut_unterrichtet',fl:'blindbalken',      rar:2, minMon:2, w:{grass:1,   snow:1,   sand:1,   shadow:2}},
 ];
 const ADJ_BY_KEY = {};
 for(const d of ZUTAT_ADJ) ADJ_BY_KEY[d.a] = d;
+
+// ===========================================================================
+//  FLUCH-ÖKONOMIE  (Phase 3)
+//  Jedes Kessel-Item trägt neben der Wirkung genau einen Fluch, deutscher Satz,
+//  keine Zahl. cfx = Aggregat-Schlüssel in CFX, hart = zählt gegen das Budget
+//  aus recalc() (höchstens zwei harte Flüche gleichzeitig wirksam).
+//
+//  Sechs bewusste Wechselwirkungen:
+//   - zappel x standfest: Stehenbleiben kostet Leben, Rüstung wirkt nur im Stehen.
+//     Härteste Kombination, aber beide sind 'hart' und das Budget lässt nur zwei zu.
+//   - blutmagie x manatot heben sich auf: wer eh kein Mana regeneriert, verliert
+//     durch Blutmagie kaum noch etwas.
+//   - blutmagie x nuechtern verstärkt sich: Leben ist Zauberressource und im
+//     Kampf nicht nachfüllbar. nuechtern greift deshalb nur oberhalb 30% maxHp.
+//   - gruss x zappel: Grüßen ist ein Tastendruck ohne Stehzwang, frisst aber den
+//     Moment vor dem Zuschlagen.
+//   - goldzauber x goldschwund verstärkt sich: das Zauberbudget verdunstet doppelt.
+//   - blindbalken x stille_zahlen: vollständige Informationssperre über Kampfstand.
+const FLUCH = {
+  fehlschlag:      {cfx:'fehl',     kurz:'Fehlschlag',        satz:'Jeder dritte Schlag geht daneben.'},
+  einzelziel:      {cfx:'einzel',   kurz:'Einzelzuständigkeit', satz:'Dein Hieb erfasst nur einen Gegner. Für den Rest ist jemand anderes zuständig.'},
+  stumpf:          {cfx:'stumpf',   kurz:'Stumpfheit',        satz:'Deine Waffe kennt keine Ausnahmen mehr. Nichts trifft mehr besonders hart.'},
+  kurzarm:         {cfx:'kurzarm',  kurz:'Kurzarm',           satz:'Dein Hieb bleibt dicht am Körper. Man muss schon sehr nah heran.'},
+  gruss:           {cfx:'gruss',    kurz:'Grußpflicht', hart:true, satz:'Gegner müssen erst gegrüßt werden.'},
+  zappel:          {cfx:'zappel',   kurz:'Zappeln', hart:true, satz:'Du kannst nicht mehr stehenbleiben.'},
+  standfest:       {cfx:'stand',    kurz:'Standpflicht', hart:true, satz:'Deine Rüstung wirkt nur im Stehen. Wer läuft, ist ungeschützt.'},
+  schleuder:       {cfx:'schleuder',kurz:'Schleuderrückstoß', satz:'Jeder Zauber schleudert dich rückwärts. Man tritt zurück, wenn man etwas anordnet.'},
+  blutmagie:       {cfx:'blut',     kurz:'Blutmagie', hart:true, satz:'Deine Zauber kosten Leben statt Mana.'},
+  manatot:         {cfx:'manatot',  kurz:'Manastopp', hart:true, satz:'Dein Mana kehrt nicht mehr von selbst zurück. Es muss beantragt werden.'},
+  goldzauber:      {cfx:'goldz',    kurz:'Verwaltungsgebühr', satz:'Zaubern kostet zusätzlich Gold. Verwaltungsgebühr.'},
+  langsame_zunge:  {cfx:'zunge',    kurz:'Langsame Zunge',    satz:'Zwischen zwei Zaubern liegt ein Dienstweg.'},
+  goldschwund:     {cfx:'goldweg',  kurz:'Goldschwund',       satz:'Gold verfällt langsam in deiner Tasche.'},
+  zutatenschwund:  {cfx:'zutweg',   kurz:'Zutatenschwund',    satz:'Zutaten zerfallen dir unter den Fingern.'},
+  amtsschweigen:   {cfx:'schweigen',kurz:'Amtsschweigen',     satz:'Die Kladde schweigt, solange du das trägst.'},
+  steuer:          {cfx:'steuer',   kurz:'Fundsteuer',        satz:'Auf Fundgold wird ein Anteil einbehalten.'},
+  duenn:           {cfx:'duenn',    kurz:'Verdünnung',        satz:'Deine Tränke sind gestreckt.'},
+  hektik:          {cfx:'hektik',   kurz:'Hektik',            satz:'Tränke wirken sofort. Sie schmecken nach Konfetti und machen kurz hektisch.'},
+  nuechtern:       {cfx:'nuecht',   kurz:'Nüchternheitsgebot', hart:true, satz:'Im laufenden Vorgang wird nicht getrunken.'},
+  blindbalken:     {cfx:'blind',    kurz:'Aktenblindheit',    satz:'Du siehst keine Lebensbalken mehr.'},
+  stille_zahlen:   {cfx:'stille',   kurz:'Stille Zahlen',     satz:'Schadenszahlen werden nachgereicht. Irgendwann.'},
+  geschwaetzig:    {cfx:'laut',     kurz:'Geschwätzigkeit',   satz:'Deine Ausrüstung ist geschwätzig. Gegner aggroen auf doppelte Entfernung.'},
+  schnelle_bolzen: {cfx:'bolz',     kurz:'Vorfahrt',          satz:'Gegnergeschosse haben Vorfahrt.'},
+  zerplatzer:      {cfx:'platz',    kurz:'Zerplatzer',        satz:'Sterbende Gegner zerplatzen dir ins Gesicht.'},
+};
 
 // Ausrüstung, die am Kessel entsteht. Index = Qualitätsstufe 0..4.
 // Zahlen sind interne Rechengrößen und tauchen in keinem Tooltip auf.
@@ -1089,7 +1170,7 @@ function takeZutat(noun, adj){
 //  Neustart (localStorage): in Phase 4 ist Wissen der eigentliche Fortschritt.
 // ===========================================================================
 const KLADDE_KEY = 'sda_kladde_v1';
-const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}};
+const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}};
 (function loadKladde(){
   try{
     const raw = localStorage.getItem(KLADDE_KEY); if(!raw) return;
@@ -1099,11 +1180,13 @@ const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}};
       if(o.adj) kladde.adj = o.adj;
       if(o.noun) kladde.noun = o.noun;
       if(o.unikate) kladde.unikate = o.unikate;
+      if(o.fl) kladde.fl = o.fl;    // additiv: alte Speicherstände ohne fl laden ohne Fehler
     }
   }catch(_){}
 })();
 function saveKladde(){ try{ localStorage.setItem(KLADDE_KEY, JSON.stringify(kladde)); }catch(_){} }
 function noteKladde(bucket, key, value){
+  if(CFX.schweigen) return;   // Fluch 'Amtsschweigen': die Kladde lernt nichts Neues dazu
   const b = kladde[bucket];
   const e = b[key] || (b[key] = {});
   e[value] = (e[value] | 0) + 1;
@@ -1122,23 +1205,39 @@ const player = {
   equip:{weapon:null, armor:null, shield:null, boots:null},
   bag:new Array(24).fill(null),
   pouch:[],                      // Zutaten stapeln sich hier: [{noun, adj, count}]
+  // Fluch-Zustand (Phase 3): stillT = Zappel-Timer, hektikT = Trank-Tempobonus,
+  // kampfT = Sperrfenster für Nüchternheitsgebot, platzCd = Zerplatzer-Bremse,
+  // schlagN = Zähler für Fehlschlag.
+  stillT:0, hektikT:0, kampfT:0, platzCd:0, schlagN:0,
 };
 player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
 
 const stats = {kills:0, goldTotal:0};
 let derived = {};
+let goldRotT = 0;   // Sekundentakt für Fluch 'Goldschwund'
 
 // Aggregierte Wirkungen der getragenen Kessel-Ausrüstung. Schlüssel = fx-Feld der
 // Wirkung, Wert = Summe der Stufen. Wird nur in recalc() neu gerechnet, nie pro
 // Frame; die Hooks unten lesen bloß Zahlen aus diesem festen Objekt.
 const FX = {slow:0, crit:0, dmg:0, armor:0, speed:0, mana:0, regen:0, exact:0,
-            gold:0, xp:0, knock:0, potion:0, arc:0, beute:0};
+            gold:0, xp:0, knock:0, potion:0, arc:0, beute:0,
+            leech:0, zauber:0, sparsam:0, tempo:0, leben:0, magnet:0, schreck:0, bollwerk:0, nachschlag:0, karte:0};
+
+// Aggregierte Flüche der getragenen Ausrüstung, 0 oder 1 (mehrfach gleicher Fluch
+// wirkt nicht stärker). Fluchbudget in recalc(): höchstens zwei harte Flüche
+// gleichzeitig, weitere ruhen (item.fluchRuht). Das verhindert die Kombination
+// aus stumpf+nuechtern+blutmagie+manatot, die sonst keine Nachfüllquelle mehr hätte.
+const CFX = {fehl:0, einzel:0, stumpf:0, kurzarm:0, gruss:0, zappel:0, stand:0, schleuder:0,
+             blut:0, manatot:0, goldz:0, zunge:0, goldweg:0, zutweg:0, schweigen:0, steuer:0,
+             duenn:0, hektik:0, nuecht:0, blind:0, stille:0, laut:0, bolz:0, platz:0};
 
 function recalc(){
   const e=player.equip, w=e.weapon;
   player.attackMode = w ? w.base.mode : 'sword';
   let dmgBonus = 0, armorBonus = 0, hpBonus = 0, spdBonus = 0;
   for(const k in FX) FX[k] = 0;
+  for(const k in CFX) CFX[k] = 0;
+  let hartN = 0;
   for(const k in e){
     const item = e[k];
     if(item){
@@ -1151,18 +1250,37 @@ function recalc(){
       }
       // Kessel-Ausrüstung trägt genau eine Wirkung, deren Stufe sich aufsummiert
       if(item.effect){ const wk = WIRKUNG[item.effect.k]; if(wk) FX[wk.fx] += item.effect.stufe; }
+      // Fluchbudget: höchstens zwei harte Flüche gleichzeitig wirksam, der Rest
+      // ruht (item.fluchRuht). Gleicher Fluch zählt einmal, nie additiv.
+      item.fluchRuht = false;
+      if(item.fluch){
+        const fd = FLUCH[item.fluch];
+        if(fd){
+          // Derselbe Fluch auf zwei Slots darf das Budget nicht doppelt belasten.
+          const schonAktiv = CFX[fd.cfx] === 1;
+          if(fd.hart && !schonAktiv && hartN >= 2) item.fluchRuht = true;
+          else { if(fd.hart && !schonAktiv) hartN++; CFX[fd.cfx] = 1; }
+        }
+      }
     }
   }
   let dmgMin = (w? w.base.dmg[0] : 1) + player.skills.str*3 + dmgBonus + FX.dmg*4;
   let dmgMax = (w? w.base.dmg[1] : 2) + player.skills.str*4 + dmgBonus + FX.dmg*6;
-  let aps = (w? w.base.aps : 1.3) * (1 + player.skills.agi*0.05);
+  let aps = (w? w.base.aps : 1.3) * (1 + player.skills.agi*0.05) * (1 + FX.tempo*0.10);   // Wirkung 'Schlagzahl'
   let hpB = player.skills.vit*20 + hpBonus;
-  const maxHp = 70 + (player.level-1)*12 + hpB;
+  const maxHp = 70 + (player.level-1)*12 + hpB + FX.leben*18;   // Wirkung 'Leibesfülle'
   derived = {dmgMin, dmgMax, aps, armor:armorBonus + FX.armor*5, maxHp,
              maxMana: 40 + (player.level-1)*8 + player.skills.int*15,
              speed:135 + player.skills.agi*5 + spdBonus + FX.speed*10,
              range:70 + FX.arc*14, arc:1.6 + FX.arc*0.16,
              crit:Math.min(0.75, 0.25 + FX.crit*0.07)};
+  if(CFX.stumpf) derived.crit = 0;                                          // Fluch 'Stumpfheit'
+  if(CFX.kurzarm) derived.range = Math.max(44, derived.range * 0.62);       // Fluch 'Kurzarm'
+  // Untergrenzen: keine Fluchkombination darf Nahkampf oder Bewegung auf 0 drücken.
+  derived.dmgMin = Math.max(1, derived.dmgMin);
+  derived.dmgMax = Math.max(derived.dmgMin, derived.dmgMax);
+  derived.range  = Math.max(44, derived.range);
+  derived.speed  = Math.max(60, derived.speed);
   player.hp = Math.min(player.hp, maxHp);
   player.maxMana = derived.maxMana;
 }
@@ -1280,7 +1398,7 @@ function makeMon(type,x,y){
   const m = { type, def: d, x, y, r: d.r, hp: d.hp, maxHp: d.hp, aggro: false, atkT: rr(0,0.5), flash: 0, dead: false, kx: 0, ky: 0,
     bobPhase: rr(0, Math.PI*2), wanderT: rr(0,2), wanderDx:0, wanderDy:0, slowT: 0, facingLeft:false,
     animT: rr(0,1), anim:'idle', actT:0, alertT:0, moving:false,
-    regel: null, faceAng: 0 };        // regel: Kammer-Sonderregel (Phase 2), sonst null
+    regel: null, faceAng: 0, gruss: false };   // regel: Kammer-Sonderregel (Phase 2); gruss: Fluch 'Grußpflicht' (Phase 3)
   monsters.push(m);
   if(d.boss) boss=m;
   return m;
@@ -1356,6 +1474,14 @@ function tryAttack(dir){
   if(player.attackCd>0) return;
   player.attackCd = 1/derived.aps;
   player.swingT = 0.25; player.swingDir = dir; player.dir = dir;
+  player.kampfT = 3;      // Fluch 'Nüchternheitsgebot': Kampf sperrt kurz das Trinken
+
+  // Fluch 'Fehlschlag': jeder dritte Schlag geht daneben, ohne Cooldown zu sparen
+  if(CFX.fehl && (++player.schlagN % 3) === 0){
+    sfx.swing(false);
+    floaters.push({x:player.x, y:player.y-28, txt:'daneben', col:'#9a8a5f', t:0.6});
+    return;
+  }
 
   sfx.swing(false);
   let hitCount = 0;
@@ -1371,13 +1497,15 @@ function tryAttack(dir){
                            : rri(derived.dmgMin, derived.dmgMax);
       hurtMon(m, dmg, Math.random() < derived.crit, mAngle, 'nah');
       hitCount++;
+      if(CFX.einzel) break;     // Fluch 'Einzelzuständigkeit': nur ein Gegner pro Hieb
     }
   }
-  
+
   if(hitCount > 0){
     sfx.hit(hitCount > 2);
     addHitStop(Math.min(0.15, hitCount * 0.02)); // Je mehr Hits, desto fetter der Stop!
     addShake(Math.min(25, hitCount * 4), 0.2);
+    if(FX.leech) player.hp = Math.min(derived.maxHp, player.hp + FX.leech * Math.min(3, hitCount) * 0.5);   // Wirkung 'Zehrung'
   }
 }
 
@@ -1394,8 +1522,19 @@ function hurtMon(m, d, crit, hitAngle, quelle){
     }
     return;
   }
+  // Fluch 'Grußpflicht': nur Nahkampf gattet, nie Kammerwachen mit Sonderregel
+  // (die sind oben schon durchgelassen oder abgewiesen).
+  if(CFX.gruss && !m.gruss && !m.regel && quelle === 'nah'){
+    m.flash = 0.1; m.aggro = true;
+    if(gameT - lastAbprallSfx > 0.3){
+      lastAbprallSfx = gameT;
+      floaters.push({x: m.x, y: m.y - m.r - 10, txt: 'ungegrüßt', col:'#9a8a5f', t: 0.9});
+    }
+    return;
+  }
   if(crit) d = Math.round(d * 1.7);
   m.hp -= d; m.flash = 0.15; m.aggro = true;
+  if(FX.schreck) m.atkT = Math.max(m.atkT, FX.schreck*0.22);       // Wirkung 'Einschüchterung'
   if(FX.slow) m.slowT = Math.max(m.slowT, 0.5 + FX.slow*0.4);      // Wirkung 'Verlangsamung'
   const kn = (crit?180:100) * (1 + FX.knock*0.5);                  // Wirkung 'Rückstoß'
   m.kx = Math.cos(hitAngle) * kn; m.ky = Math.sin(hitAngle) * kn;
@@ -1404,7 +1543,7 @@ function hurtMon(m, d, crit, hitAngle, quelle){
   // Flächenzauber markieren jeden Treffer als Crit — ohne Bremse wären das dutzende
   // Oszillatoren im selben Frame (hörbares Knacken, unnötige Last).
   if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); }
-  floaters.push({x:m.x+rr(-8,8), y:m.y-m.r-10, txt:String(d), col:crit?'#ffe14d':'#ffffff', t:0.8, big:crit});
+  if(!CFX.stille) floaters.push({x:m.x+rr(-8,8), y:m.y-m.r-10, txt:String(d), col:crit?'#ffe14d':'#ffffff', t:0.8, big:crit});   // Fluch 'Stille Zahlen'
   if(m.hp <= 0) killMon(m);
 }
 
@@ -1435,7 +1574,13 @@ function killMon(m){
   spawnImpactParticles(m.x, m.y, 40, null);
   splatConfetti(m.x, m.y, currentLevel===2);
   gainXP(m.def.xp);
-  
+  // Fluch 'Zerplatzer': sterbende Gegner in der Nähe treffen zurück. 0.6s-Bremse ist
+  // zwingend, sonst löst ein Ultimate im Schattenland hurtPlayer() bis zu 130x im
+  // selben Frame aus (Sofort-Tod, Sound-Knacken, Floater-Überlauf).
+  if(CFX.platz && player.platzCd <= 0 && !player.dead && dist2(player.x, player.y, m.x, m.y) < 70){
+    player.platzCd = 0.6; hurtPlayer(Math.min(6 + player.level, Math.round(derived.maxHp*0.08)));
+  }
+
   // Beute: Gold, Tränke und Zutaten. Fertige Ausrüstung fällt nicht mehr an,
   // die entsteht ausschließlich am Kessel.
   if(currentLevel === 2){
@@ -1446,9 +1591,10 @@ function killMon(m){
     if(Math.random()<0.05) drops.push({kind:'potion', x:m.x, y:m.y});
   }
   const mr = monRar(m.def);
-  // Horde im Schattenland fällt reihenweise, deshalb dort deutlich seltener
+  // Horde im Schattenland fällt reihenweise, deshalb dort deutlich seltener.
+  // Fluch 'Zutatenschwund' halbiert die Chance.
   let zCount = m.def.boss ? 3
-             : (Math.random() < (currentLevel === 2 ? 0.22 : 0.5) + mr*0.06 + FX.beute*0.08 ? 1 : 0);
+             : (Math.random() < ((currentLevel === 2 ? 0.22 : 0.5) + mr*0.06 + FX.beute*0.08) * (CFX.zutweg ? 0.5 : 1) ? 1 : 0);
   if(zCount && mr >= 2 && Math.random() < 0.25) zCount++;
   for(let i=0; i<zCount; i++) dropZutat(m, m.x + rr(-10,10), m.y + rr(-10,10));
 
@@ -1495,8 +1641,12 @@ function gainXP(x){
 
 function hurtPlayer(raw){
   if(player.dead) return;
-  const red = derived.armor/(derived.armor+30);
-  const d = Math.max(1, Math.round(raw*(1-Math.min(0.6,red))));
+  player.kampfT = 3;      // Fluch 'Nüchternheitsgebot': Kampf sperrt kurz das Trinken
+  // Fluch 'Standpflicht': Rüstung wirkt nur, solange man steht
+  const armorNow = (CFX.stand && player.moving) ? 0 : derived.armor;
+  const red = armorNow/(armorNow+30);
+  const bollwerk = FX.bollwerk ? Math.min(0.4, FX.bollwerk*0.08) : 0;   // Wirkung 'Abweisung'
+  const d = Math.max(1, Math.round(raw*(1-Math.min(0.6,red))*(1-bollwerk)));
   player.hp -= d; player.hurtT = 0.25;
   addShake(12, 0.2); sfx.hurt();
   floaters.push({x:player.x, y:player.y-24, txt:String(d), col:'#ffe14d', t:0.8, big:true});
@@ -1505,8 +1655,16 @@ function hurtPlayer(raw){
 
 function drinkPotion(){
   if(state !== 'play' || player.potions<=0 || player.dead || player.hp>=derived.maxHp) return;
-  player.potions--;
-  player.hp = Math.min(derived.maxHp, player.hp + Math.round(60 * (1 + FX.potion*0.35)));  // Wirkung 'Trankwirkung'
+  // Fluch 'Nüchternheitsgebot': im Kampf gesperrt, außer unter 30% maxHp (Gnadenklausel,
+  // sonst wäre Nachheilen im Notfall unmöglich)
+  if(CFX.nuecht && player.kampfT > 0 && player.hp > derived.maxHp*0.3){
+    floaters.push({x:player.x, y:player.y-30, txt:'Nicht im Dienst', col:'#9a8a5f', t:0.8});
+    return;
+  }
+  // Fluch 'Verdünnung' halbiert die Heilung, Wirkung 'Nachschlag' spart manchmal den Trank
+  if(!(FX.nachschlag && Math.random() < Math.min(0.5, FX.nachschlag*0.16))) player.potions--;
+  player.hp = Math.min(derived.maxHp, player.hp + Math.max(15, Math.round(60 * (1 + FX.potion*0.35) * (CFX.duenn ? 0.5 : 1))));
+  if(CFX.hektik){ player.hektikT = 3; spawnImpactParticles(player.x, player.y, 14, null); }   // Fluch 'Hektik'
   sfx.potion(); updateHUD();
 }
 
@@ -1613,30 +1771,42 @@ function castUltimate(){ const sp = SPELLS.find(s=>s.ultimate); if(sp) castSpell
 function castSpell(sp, target){                          // target: optionaler Weltpunkt {wx,wy} (Touch-Drag)
   if(state!=='play' || player.dead || !spellKnown(sp.id)) return;
   if(player.spellCd > 0) return;
-  if(player.mana < sp.mana){ floaters.push({x:player.x, y:player.y-30, txt:'Zu wenig Mana', col:'#7da0ff', t:0.7}); return; }
-  player.mana -= sp.mana; player.spellCd = 0.28;
+  // Wirkung 'Sparsamkeit' senkt die Kosten, Fluch 'Blutmagie' zahlt sie in Leben statt Mana
+  const kosten = Math.max(1, Math.round(sp.mana * (1 - Math.min(0.55, FX.sparsam*0.11))));
+  if(CFX.blut){
+    // Sperre statt hurtPlayer(): sonst wäre Selbsttötung per Zauber ein Tastendruck
+    if(player.hp <= kosten + 1){ floaters.push({x:player.x, y:player.y-30, txt:'Zu wenig Kraft', col:'#ff8f8f', t:0.7}); return; }
+    player.hp -= kosten;
+  } else {
+    if(player.mana < kosten){ floaters.push({x:player.x, y:player.y-30, txt:'Zu wenig Mana', col:'#7da0ff', t:0.7}); return; }
+    player.mana -= kosten;
+  }
+  if(CFX.goldz) player.gold = Math.max(0, player.gold - Math.min(player.gold, kosten));   // Fluch 'Verwaltungsgebühr'
+  player.spellCd = CFX.zunge ? 0.75 : 0.28;                                                // Fluch 'Langsame Zunge'
   player.castT = 0.42;                                   // Zauber-Animation des Helden
   const aim = target || aimPoint();
   const dir = Math.atan2(aim.wy - player.y, aim.wx - player.x);
   player.dir = dir;
   player.faceLeft = Math.cos(dir) < 0;
+  if(CFX.schleuder) moveEnt(player, -Math.cos(dir)*46, -Math.sin(dir)*46);   // Fluch 'Schleuderrückstoß'
 
   const zweig = sp.ultimate ? 'ult' : sp.branch;         // Kammer-Sonderregeln lesen das mit
+  const sd = Math.round(sp.dmg * (1 + FX.zauber*0.12));  // Wirkung 'Zauberkraft'
   if(sp.type === 'bolt'){
     sfx.magic();
     projectiles.push({isSpell:true, zweig, x:player.x, y:player.y, vx:Math.cos(dir)*sp.speed, vy:Math.sin(dir)*sp.speed,
-      dmg:sp.dmg, t:2.0, color:sp.color, r:sp.r||7, aoe:sp.aoe||0, slow:sp.slow||0});
+      dmg:sd, t:2.0, color:sp.color, r:sp.r||7, aoe:sp.aoe||0, slow:sp.slow||0});
   } else if(sp.type === 'nova'){
     sfx.magic(); addShake(8,0.25);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.4, maxT:0.4});
     kamFlamme(player.x, player.y, sp.radius, zweig);
-    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sp.dmg, true, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
   } else if(sp.type === 'chain'){
     sfx.zap(); addShake(8,0.2);
     let targets = monsters.filter(m=>!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.range)
                           .sort((a,b)=>dist2(player.x,player.y,a.x,a.y)-dist2(player.x,player.y,b.x,b.y)).slice(0, sp.chain);
     let px=player.x, py=player.y;
-    for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sp.dmg, true, Math.atan2(t.y-py, t.x-px), zweig); px=t.x; py=t.y; }
+    for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sd, true, Math.atan2(t.y-py, t.x-px), zweig); px=t.x; py=t.y; }
   } else if(sp.type === 'aoe_target'){
     sfx.magic(); addShake(12,0.35);
     const tx=aim.wx, ty=aim.wy;
@@ -1646,17 +1816,17 @@ function castSpell(sp, target){                          // target: optionaler W
       for(let i=0;i<7;i++) magicEffects.push({type:'flame', x:tx+rr(-sp.radius*0.6, sp.radius*0.6),
         y:ty+rr(-sp.radius*0.45, sp.radius*0.45), sc:rr(2.2,4), t:rr(0.45,0.8), maxT:0.8});
     spawnImpactParticles(tx, ty, 30, null);
-    for(const m of monsters){ if(!m.dead && dist2(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sp.dmg, true, Math.atan2(m.y-ty,m.x-tx), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist2(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-ty,m.x-tx), zweig); } }
   } else if(sp.type === 'slow_field'){
     sfx.magic(); addShake(6,0.3);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.6, maxT:0.6});
     kamFlamme(player.x, player.y, sp.radius, zweig);
-    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ m.slowT = sp.slow; hurtMon(m, sp.dmg, false, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ m.slowT = sp.slow; hurtMon(m, sd, false, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
   } else if(sp.type === 'ultimate'){
     sfx.warp(); sfx.crit(); addShake(35, 1.2); addHitStop(0.12);
     floaters.push({x:player.x, y:player.y-60, txt:'KONFETTI-KATAKLYSMUS!', col:'#ffd54a', t:2.5, big:true});
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:900, color:'#ffffff', t:0.7, maxT:0.7});
-    for(const m of [...monsters]){ if(m.dead) continue; if(dist2(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sp.dmg, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
+    for(const m of [...monsters]){ if(m.dead) continue; if(dist2(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
     for(let i=0;i<160;i++){ const a=rr(0,Math.PI*2), d=rr(40,700); spawnImpactParticles(player.x+Math.cos(a)*d, player.y+Math.sin(a)*d, 3, null); }
   }
   updateHUD();
@@ -1666,7 +1836,8 @@ function enemyCast(m){
   const b = m.def.bolt;
   const dir = Math.atan2(player.y - m.y, player.x - m.x);
   sfx.shoot();
-  enemyBolts.push({x:m.x, y:m.y, vx:Math.cos(dir)*b.speed, vy:Math.sin(dir)*b.speed, dmg:rri(b.dmg[0],b.dmg[1]), t:2.4, color:b.color, r:b.r||7});
+  const bs = b.speed * (CFX.bolz ? 1.6 : 1);   // Fluch 'Vorfahrt'
+  enemyBolts.push({x:m.x, y:m.y, vx:Math.cos(dir)*bs, vy:Math.sin(dir)*bs, dmg:rri(b.dmg[0],b.dmg[1]), t:2.4, color:b.color, r:b.r||7});
 }
 
 // ===========================================================================
@@ -1892,6 +2063,7 @@ function verlasseKammer(){
   boss = owSave.boss; portal = owSave.portal;
   currentLevel = owSave.level; lockedTarget = null;
   player.x = tuer.x; player.y = tuer.y + TS;             // vor der Tür, nicht in ihr
+  player.kampfT = 0;      // Nüchternheitsgebot darf nicht über den Kammerausgang hinaus wirken
   kammer = null; owSave = null; aktSperre = 0.5;
   if(schlossOpen) schlossZu();
   setStyle('bossbar', 'display', boss && !boss.dead ? 'block' : 'none');
@@ -1922,7 +2094,7 @@ function truheOeffnen(){
   k.truhe.auf = true; k.geleert = true;
   k.tuer.cd = CONFIG.kammerNachwachsen;
   const gold = rri(40, 80) * (1 + k.diff);
-  player.gold += Math.round(gold * (1 + FX.gold*0.25));
+  player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
   sfx.gold(); addShake(10, 0.5);
   floaters.push({x: k.truhe.x, y: k.truhe.y - 40, txt: '+ ' + gold + ' Gold', col:'#f4d97a', t: 2.2, big: true});
   const n = 2 + k.diff;
@@ -2263,16 +2435,31 @@ function modulGeloest(k, mod){
 // --- Aktionen (Taste F / Kontext-Button) ------------------------------------
 // Kein Closure-Bau pro Frame: der beste Kandidat landet in drei festen Feldern.
 let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
+}
+// Fluch 'Grußpflicht': Kammerwachen mit Sonderregel sind ausgenommen (hurtMon prüft
+// das separat), deshalb reicht es, wenn Grüßen nur außerhalb der Kammer angeboten wird.
+function gruessen(){
+  let n = 0;
+  for(const m of monsters){ if(m.dead || m.gruss) continue;
+    if(sqDist(player.x, player.y, m.x, m.y) < 14400){ m.gruss = true; n++; } }
+  if(n){ sfx.gold(); floaters.push({x:player.x, y:player.y-34, txt:'Guten Tag.', col:'#e8d9a8', t:1.2}); }
 }
 function scanAktion(dt){
   if(aktSperre > 0) aktSperre -= dt;
   aktArt = 0; aktObj = null; aktD2 = 58*58;
   if(state !== 'play' || player.dead || aktSperre > 0) return;
   if(!kammer){
+    // Nur anbieten, wenn tatsächlich ein ungegrüßtes Ziel in der Nähe ist, sonst würde
+    // der Fluch dauerhaft jede Tür-/Truheninteraktion überstimmen (Distanz 0 gewinnt immer).
+    if(CFX.gruss){
+      let near = false;
+      for(const m of monsters){ if(!m.dead && !m.gruss && sqDist(player.x, player.y, m.x, m.y) < 8100){ near = true; break; } }
+      if(near) aktBiete(player.x, player.y, AKT_GRUSS, null, 'Grüßen');
+    }
     if(currentLevel !== 1) return;
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
     return;
@@ -2298,6 +2485,7 @@ function fuehreAktion(){
     case AKT_TRUHE:   truheOeffnen(); break;
     case AKT_AUSGANG: verlasseKammer(); break;
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
+    case AKT_GRUSS:   gruessen(); break;
   }
 }
 
@@ -2527,10 +2715,18 @@ function buildTooltip(item, isEquipped){
     const wk = WIRKUNG[item.effect.k];
     html += `<div style="color:#9a8a5f;font-size:10px;margin:-2px 0 5px;">${SLOT_DE[item.base.t]} · ${RARITY[item.rar].name}${item.effect.stufe >= 3 ? ' · Unikat' : ''}</div>`;
     html += `<div class="aff">${wk.satz[Math.min(2, item.effect.stufe - 1)]}</div>`;
+    if(item.fluch){
+      const fd = FLUCH[item.fluch];
+      if(fd){
+        html += `<div class="fluch">${fd.satz}</div>`;
+        if(item.fluchRuht) html += `<div class="hint">Dieser Fluch ruht. Zwei sind genug.</div>`;
+      }
+    }
   } else {
-    if(item.base.dmg) html += `<div>⚔️ Schaden: ${item.base.dmg[0]}-${item.base.dmg[1]}</div>`;
-    if(item.base.armor) html += `<div>🛡️ Rüstung: ${item.base.armor}</div>`;
-    item.affixes.forEach(a => html += `<div class="aff">${a.def.fmt(a.v)}</div>`);
+    // Altbestand: keine Zahlen mehr im Tooltip, dafür ein fester Satz je Slot/Affix.
+    html += `<div style="color:#9a8a5f;font-size:10px;margin:-2px 0 5px;">${SLOT_DE[item.base.t]} · ${RARITY[item.rar].name} · Altbestand</div>`;
+    html += `<div class="aff">Solide Dienstausrüstung ohne Vermerk.</div>`;
+    item.affixes.forEach(a => html += `<div class="aff">${a.def.satz}</div>`);
   }
   html += `<div class="hint">Links-Klick: ${isEquipped?'Ablegen':'Ausrüsten'}<br>Rechts-Klick: Wegwerfen</div>`;
   return html;
@@ -2723,23 +2919,28 @@ function brew(){
   }
   if(aTie) topAdj = rarest.adj;
   const stufe = aTie ? 1 : topA;                    // 1 = einfach, 2 = verstärkt, 3 = Unikat
-  const wirkKey = ADJ_BY_KEY[topAdj].wirk, wk = WIRKUNG[wirkKey];
+  const ad = ADJ_BY_KEY[topAdj];
+  const wirkKey = ad.wirk, wk = WIRKUNG[wirkKey];
+  // Fluch: Stufe 1 nutzt fl, ab Stufe 2 (verstärkt/Unikat) den schlimmeren fl2, falls vorhanden
+  const fluchKey = (stufe >= 2 && ad.fl2) ? ad.fl2 : ad.fl;
+  const fluchDef = FLUCH[fluchKey];
   // Qualität = Summe der Seltenheiten
   const qual = zutatRar(zs[0]) + zutatRar(zs[1]) + zutatRar(zs[2]);
   let rar = qual <= 1 ? 0 : qual <= 3 ? 1 : qual <= 5 ? 2 : qual <= 8 ? 3 : 4;
   if(stufe >= 3) rar = Math.max(rar, 3);
 
   const base = Object.assign({t:slot, tier:rar}, CRAFT_BASE[slot][rar]);
-  const item = {base, rar, affixes:[], effect:{k:wirkKey, stufe},
+  const item = {base, rar, affixes:[], effect:{k:wirkKey, stufe}, fluch:fluchKey, fluchRuht:false,
                 name: stufe >= 3 ? wk.unikat : base.name, crafted:true};
 
   const idx = player.bag.indexOf(null);
   if(idx !== -1) player.bag[idx] = item;
   else { dropItemToFloor(item); floaters.push({x:player.x, y:player.y-44, txt:'Tasche voll, liegt am Boden', col:'#f4d97a', t:1.6}); }
 
-  // Kladde notiert nur die beiden Zutatenteile, die wirklich entschieden haben
+  // Kladde notiert nur die Zutatenteile, die wirklich entschieden haben (Wirkung und Fluch)
   noteKladde('adj', topAdj, wirkKey);
   noteKladde('noun', topNoun, slot);
+  noteKladde('fl', topAdj, fluchKey);
   if(stufe >= 3) kladde.unikate[wirkKey] = wk.unikat;
   kladde.crafts++; saveKladde();
 
@@ -2752,7 +2953,8 @@ function brew(){
   res.style.display = 'block';
   res.innerHTML = `<div class="rname rar${rar}">${item.base.icon} ${item.name}</div>`
     + `<div style="color:#9a8a5f;font-size:10px;">${SLOT_DE[slot]} · ${RARITY[rar].name}${stufe>=3?' · Unikat':''}</div>`
-    + `<div class="aff" style="color:#8fb0ff;">${wk.satz[Math.min(2, stufe-1)]}</div>`;
+    + `<div class="aff" style="color:#8fb0ff;">${wk.satz[Math.min(2, stufe-1)]}</div>`
+    + (fluchDef ? `<div class="aff" style="color:#ff8f8f;">${fluchDef.satz}</div>` : '');
   renderKesselPane();
   if(invOpen) renderInventory();
   updateHUD();
@@ -2804,6 +3006,19 @@ function renderKladde(){
       } else {
         parts.push(`<div class="kl">«${nd.n}» landete ${list.map(i=>`${i.n}x im ${SLOT_FUGE[i.k]}-Slot`).join(' und ')}.</div>`);
       }
+    }
+  }
+  const flKeys = Object.keys(kladde.fl).sort();
+  if(flKeys.length){
+    parts.push('<div class="klHead">FLÜCHE</div>');
+    for(const a of flKeys){
+      const obs = kladde.fl[a];
+      const list = Object.keys(obs).map(k => ({k, n:obs[k]})).sort((x,y)=> y.n - x.n);
+      const fn = k => FLUCH[k] ? FLUCH[k].kurz : k;
+      if(list.length === 1)
+        parts.push(`<div class="kl">«${a}» brachte ${malWort(list[0].n)} ${fn(list[0].k)} mit.</div>`);
+      else
+        parts.push(`<div class="kl">«${a}» brachte bisher ${list.map(i=>`${fn(i.k)} (${i.n}x)`).join(' und ')} mit.</div>`);
     }
   }
   const uKeys = Object.keys(kladde.unikate);
@@ -2865,7 +3080,8 @@ function update(dt){
   if(hitStopT > 0){ hitStopT -= dt; return; } // Freeze-Frame Effekt
   gameT += dt; if(shakeT > 0) shakeT -= dt;
 
-  player.mana = Math.min(derived.maxMana, player.mana + (8 + FX.mana*4) * dt);   // Wirkung 'Manafluss'
+  if(!CFX.manatot)                                                               // Fluch 'Manastopp'
+    player.mana = Math.min(derived.maxMana, player.mana + (8 + FX.mana*4) * dt); // Wirkung 'Manafluss'
   if(FX.regen && player.hp > 0)                                                  // Wirkung 'Selbstheilung'
     player.hp = Math.min(derived.maxHp, player.hp + FX.regen*1.6*dt);
   if(player.attackCd > 0) player.attackCd -= dt;
@@ -2873,6 +3089,14 @@ function update(dt){
   if(player.hurtT > 0) player.hurtT -= dt;
   if(player.castT > 0) player.castT -= dt;
   if(player.spellCd > 0) player.spellCd -= dt;
+  if(player.hektikT > 0) player.hektikT -= dt;
+  if(player.kampfT > 0) player.kampfT -= dt;
+  if(player.platzCd > 0) player.platzCd -= dt;
+  // Fluch 'Goldschwund': 1%/s, mindestens 1, nie negativ
+  if(CFX.goldweg && player.gold > 0){
+    goldRotT += dt;
+    if(goldRotT >= 1){ goldRotT = 0; player.gold = Math.max(0, player.gold - Math.max(1, Math.round(player.gold*0.01))); }
+  }
 
   // Held-Animation: Angriff/Zauber schlagen alles, dann Treffer, dann Laufen
   {
@@ -2922,11 +3146,12 @@ function update(dt){
     }
   }
 
-  // Items aufsammeln
+  // Items aufsammeln. Wirkung 'Anziehung' vergrößert den Einzugsradius.
   for(let i = drops.length - 1; i >= 0; i--){
-    if(dist2(player.x, player.y, drops[i].x, drops[i].y) < 26){
+    if(dist2(player.x, player.y, drops[i].x, drops[i].y) < 26 + FX.magnet*14){
       if(drops[i].kind === 'gold'){
-        player.gold += Math.round(drops[i].amt * (1 + FX.gold*0.25));   // Wirkung 'Goldsegen'
+        // Wirkung 'Goldsegen' erhöht, Fluch 'Fundsteuer' behält einen Anteil ein
+        player.gold += Math.round(drops[i].amt * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));
         sfx.gold();
       }
       else if(drops[i].kind === 'potion'){ player.potions++; sfx.potion(); }
@@ -2962,9 +3187,16 @@ function update(dt){
     moveMag = Math.min(1, Math.hypot(dirX, dirY));
   }
   player.moving = dirX !== 0 || dirY !== 0;
+  // Fluch 'Zappeln': Stehenbleiben zehrt am Leben, mit Boden bei 25% maxHp (nie tödlich allein)
+  if(CFX.zappel && !player.moving){
+    player.stillT += dt;
+    if(player.stillT > 1.5 && player.hp > derived.maxHp*0.25)
+      player.hp = Math.max(derived.maxHp*0.25, player.hp - derived.maxHp*0.015*dt);
+  } else player.stillT = 0;
   if(player.moving){
     const len = Math.hypot(dirX, dirY);
-    moveEnt(player, (dirX / len) * derived.speed * moveMag * dt, (dirY / len) * derived.speed * moveMag * dt);
+    const hektikMul = player.hektikT > 0 ? 1.8 : 1;   // Fluch 'Hektik': Trank macht kurz eilig
+    moveEnt(player, (dirX / len) * derived.speed * hektikMul * moveMag * dt, (dirY / len) * derived.speed * hektikMul * moveMag * dt);
     player.faceLeft = dirX < 0;
     player.mvx = dirX; player.mvy = dirY;      // Schieberichtung für Kammerblöcke
   }
@@ -3038,7 +3270,7 @@ function update(dt){
     const spd = m.def.speed * (m.slowT > 0 ? 0.4 : 1);
 
     const pd = dist2(m.x, m.y, player.x, player.y);
-    if(!m.aggro && pd < m.def.aggro) m.aggro = true;
+    if(!m.aggro && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
 
     // Kammerwache mit Rückenregel: dreht sich nur begrenzt schnell zum Spieler,
     // sonst wäre "von hinten" nie erreichbar.
@@ -3549,7 +3781,7 @@ function drawMon(m){
   if(m.alertT > 0)   // "!" beim Entdecken des Spielers
     drawSprite('alert', 0, m.x, m.y - m.r - 14 - (0.9-m.alertT)*6, 1.6);
 
-  if(m.hp < m.maxHp && !m.def.boss){
+  if(m.hp < m.maxHp && !m.def.boss && !CFX.blind){   // Fluch 'Aktenblindheit'
     ctx.fillStyle = '#1a0505'; ctx.fillRect(m.x - 12, m.y - m.r - 12, 24, 4);
     ctx.fillStyle = currentLevel===2 ? '#a855f7' : '#ff3333'; ctx.fillRect(m.x - 12, m.y - m.r - 12, (m.hp/m.maxHp)*24, 4);
   }
@@ -3572,6 +3804,12 @@ function renderMinimap(){
   if(currentLevel === 1){ mctx.fillStyle = '#6aff8f'; mctx.fillRect((KESSEL.x/TS)*scale - 1, (KESSEL.y/TS)*scale - 1, 3, 3); }
   mctx.fillStyle = '#5c86ff'; mctx.fillRect((player.x/TS)*scale - 1, (player.y/TS)*scale - 1, 3, 3);
   if(portal){ mctx.fillStyle = '#ff00ff'; mctx.fillRect((portal.x/TS)*scale - 2, (portal.y/TS)*scale - 2, 4, 4); }
+  // Wirkung 'Aktenlage': ungeöffnete Truhe bzw. Kammertüren auf der Karte
+  if(FX.karte){
+    mctx.fillStyle = '#f4d97a';
+    if(kammer && kammer.truhe && !kammer.truhe.auf) mctx.fillRect((kammer.truhe.x/TS)*scale - 2, (kammer.truhe.y/TS)*scale - 2, 4, 4);
+    else if(currentLevel === 1) for(const t of kammerTueren) if(t.cd <= 0) mctx.fillRect((t.x/TS)*scale - 1, (t.y/TS)*scale - 1, 3, 3);
+  }
 }
 
 const ULT_SPELL = SPELLS.find(s => s.ultimate);
@@ -3662,6 +3900,7 @@ function respawnPlayer(){
   particles.length = 0; corpses.length = 0; floaters.length = 0;
   player.x = SPAWN.x; player.y = SPAWN.y; player.dead = false; player.hurtT = 0;
   player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
+  player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
   player.hp = Math.max(1, Math.round(derived.maxHp * 0.5)); player.mana = derived.maxMana;
   if(kesselOpen) toggleKessel();                                                   // gibt auch die Zutaten aus dem Topf zurück
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;   // Eingaben, die den Tod überlebt haben
