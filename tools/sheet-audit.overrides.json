@@ -1,0 +1,41 @@
+{
+  "_comment": "Handkorrekturen fuer tools/sheet-audit.mjs. Key = Graphics/-relativer Pfad (Slashes). fw/fh ueberschreiben eine falsch inferierte Rasterung, dokumentiert mit note. anims ordnet Zeilenindizes Animationsnamen zu ({idle:0, walk:1, ...}) - das kann das Script nicht raten, muss von Hand am Sheet geprueft werden. Nach jeder Aenderung hier: node tools/sheet-audit.mjs neu laufen lassen.",
+
+  "_castTable": [
+    { "rig": "Skeleton", "sheet": "Cute_Fantasy/Enemies/Skeleton/Skeleton.png", "hasCast": false, "checked": true, "note": "Reiner Nahkampf, kein Glow. Bestaetigt bestehenden Engine-Kommentar (index.html:1803/1845: skel cast faellt auf skel_attack zurueck)." },
+    { "rig": "Skeleton_Mage", "sheet": "Cute_Fantasy/Enemies/Skeleton/Skeleton_Mage.png", "hasCast": true, "checked": true, "note": "Lila Glutball-Effekt sichtbar in Zeilen ~7-9 (0-basiert 6-8) von 13. Cast-faehig." },
+    { "rig": "Skeleton_Swordman", "sheet": "Cute_Fantasy/Enemies/Skeleton/Skeleton_Swordman.png", "hasCast": false, "checked": true, "note": "Klingen-Slash sichtbar, kein Magie-Effekt." },
+    { "rig": "Skeleton_Bowman", "sheet": "Cute_Fantasy/Enemies/Skeleton/Skeleton_Bowman/Merged/Skeleton_Bowman.png", "hasCast": false, "checked": true, "note": "Pfeil/Bogen sichtbar, physischer Fernkampf, kein Magie-Glow. Fernkampf ungleich Cast." },
+    { "rig": "Slime_Small", "sheet": "Cute_Fantasy/Enemies/Slime/Slime_Small/Slime_Small_Blue.png", "hasCast": false, "checked": true, "note": "Einfache Blob-Bewegung." },
+    { "rig": "Slime_Medium", "sheet": "Cute_Fantasy/Enemies/Slime/Slime_Medium/Slime_Medium_Blue.png", "hasCast": false, "checked": true, "note": "Wie Slime_Small." },
+    { "rig": "Slime_Big", "sheet": "Cute_Fantasy/Enemies/Slime/Slime_Big/Slime_Big_Blue.png", "hasCast": false, "checked": false, "note": "Ungeprueft, identisches Muster zu Small/Medium erwartet." },
+    { "rig": "Bombschroom", "sheet": "Cute_Fantasy/Enemies/Bombschroom/Bombschroom.png", "hasCast": false, "checked": true, "note": "Selbstzerstoerung/Explosion als Angriff (breiteste Zeile vermutlich Burst-Frame), kein Zauber-Glow." },
+    { "rig": "Goblin_Archer", "sheet": "Cute_Fantasy_Characters/Goblins/Goblin_Archer.png", "hasCast": false, "checked": true, "note": "Bogen, physischer Fernkampf." },
+    { "rig": "Goblin_Maceman", "sheet": "Cute_Fantasy_Characters/Goblins/Goblin_Maceman.png", "hasCast": false, "checked": true, "note": "Nahkampf mit Keule." },
+    { "rig": "Goblin_Spearman", "sheet": "Cute_Fantasy_Characters/Goblins/Goblin_Spearman.png", "hasCast": false, "checked": false, "note": "Ungeprueft, identisches 13-Zeilen-Raster (288x624, 48x48) wie Goblin_Archer, gleiche Faktenlage erwartet." },
+    { "rig": "Goblin_Thief", "sheet": "Cute_Fantasy_Characters/Goblins/Goblin_Thief.png", "hasCast": false, "checked": false, "note": "Ungeprueft, physischer Dieb-Typ erwartet." },
+    { "rig": "Knights_Archer", "sheet": "Cute_Fantasy_Characters/Knights/Archer.png", "hasCast": false, "checked": false, "note": "Identisches Raster/Optik-Familie zu Templar (stichprobengeprueft), physisch erwartet." },
+    { "rig": "Knights_Spearman", "sheet": "Cute_Fantasy_Characters/Knights/Spearman.png", "hasCast": false, "checked": false, "note": "Wie Knights_Archer." },
+    { "rig": "Knights_Swordman", "sheet": "Cute_Fantasy_Characters/Knights/Swordman.png", "hasCast": false, "checked": false, "note": "Wie Knights_Archer." },
+    { "rig": "Knights_Templar", "sheet": "Cute_Fantasy_Characters/Knights/Templar.png", "hasCast": false, "checked": true, "note": "Stichprobe: kein Glow, rein physisch (Schwert/Schild)." },
+    { "rig": "Orc_Chief", "sheet": "Cute_Fantasy_Characters/Orcs/Orc_Chief.png", "hasCast": false, "checked": true, "note": "Zeilen 7-12 zeigen Posen mit wechselnden Gegenstaenden (evtl. Carry-Animationen), kein Magie-Glow." },
+    { "rig": "Orc_Grunt", "sheet": "Cute_Fantasy_Characters/Orcs/Orc_Grunt.png", "hasCast": false, "checked": false, "note": "Ungeprueft, identisches 16-Zeilen-Raster (512x512) wie Orc_Chief." },
+    { "rig": "Orc_Peon", "sheet": "Cute_Fantasy_Characters/Orcs/Orc_Peon.png", "hasCast": false, "checked": false, "note": "Ungeprueft, aehnliches 16-Zeilen-Raster (384x512, 6 statt 8 Spalten)." },
+    { "rig": "Orc_Archer", "sheet": "Cute_Fantasy_Characters/Orcs/Orc_Archer.png", "hasCast": false, "checked": true, "note": "Bogen sichtbar, physischer Fernkampf, kein Glow." },
+    { "rig": "Angel_1", "sheet": "Cute_Fantasy_Characters/Angels/Angel_1.png", "hasCast": true, "checked": true, "note": "Cast-KANDIDAT: Stabschwung mit weissem Sternchen-Funkeln in Zeilen ~7-9 (0-basiert 6-8) von 13 sichtbar. Vor Einsatz in G3 am realen Bild final bestaetigen (Funkeleffekt ist bei Thumbnail-Aufloesung schwerer zu verifizieren als der Skeleton_Mage/Cowling_Mage-Glow)." },
+    { "rig": "Angel_2", "sheet": "Cute_Fantasy_Characters/Angels/Angel_2.png", "hasCast": true, "checked": false, "note": "Ungeprueft, identisches Raster zu Angel_1 (512x832), gleiches Verhalten erwartet." },
+    { "rig": "Cowling_1", "sheet": "Cute_Fantasy_Volcano/Enemies/Cowling_1.png", "hasCast": false, "checked": true, "note": "Physischer Nahkampf, kleine Slash-Striche, kein Glow." },
+    { "rig": "Cowling_2", "sheet": "Cute_Fantasy_Volcano/Enemies/Cowling_2.png", "hasCast": false, "checked": false, "note": "Ungeprueft, identisches Raster zu Cowling_1." },
+    { "rig": "Cowling_Mage_1", "sheet": "Cute_Fantasy_Volcano/Enemies/Cowling_Mage_1.png", "hasCast": true, "checked": true, "note": "Orangenes Feuer-Glimmen deutlich sichtbar in Zeilen 4-9 (0-basiert 3-8) von 13. Cast-faehig." },
+    { "rig": "Cowling_Mage_2", "sheet": "Cute_Fantasy_Volcano/Enemies/Cowling_Mage_2.png", "hasCast": true, "checked": false, "note": "Ungeprueft, identisches Raster zu Cowling_Mage_1, gleiches Verhalten erwartet." },
+    { "rig": "Flying_Skull", "sheet": "Cute_Fantasy_Volcano/Enemies/Flying_Skull.png", "hasCast": false, "checked": true, "note": "Reiner Flug-/Sturzangriff, kein Magie-Effekt." },
+    { "rig": "Shroomling_Blue", "sheet": "Cute_Fantasy_ShroomLands/Shroomlings/Blue_Shroomling.png", "hasCast": false, "checked": true, "note": "Einfache Huepf-/Laufbewegung, kein Glow. Gilt vermutlich fuer alle 4 Farbvarianten." },
+    { "rig": "Snail", "sheet": "Cute_Fantasy_ShroomLands/Snails/Snail_1.png", "hasCast": false, "checked": true, "note": "Keine Angriffsanimation ueberhaupt erkennbar (nur Ein-/Ausfahren aus dem Haus), harmlose Deko-Kreatur." },
+    { "rig": "Witch", "sheet": "Cute_Fantasy_Halloween/Witch/Witch.png", "hasCast": true, "checked": true, "note": "WICHTIG: Cast-Animation liegt NICHT in Witch.png (9 Zeilen dort sind reine Bewegungsposen ohne Magie-Effekt), sondern in der separaten Datei Cute_Fantasy_Halloween/Witch/Witch_Cauldron_Anim.png (gruen glimmender Kessel, 10 Frames). G3 muss beide Dateien fuer den Hexen-Rig einbinden." }
+  ],
+
+  "Cute_Fantasy_Halloween/Witch/Witch_Cauldron_Anim.png": {
+    "anims": { "cast": 0 },
+    "note": "Einzige Zeile, gruen glimmender Kessel = Cast/Brau-Animation der Hexe. Siehe _castTable Eintrag Witch."
+  }
+}
