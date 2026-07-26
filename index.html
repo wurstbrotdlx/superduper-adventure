@@ -1212,6 +1212,16 @@ const player = {
 };
 player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
 
+// Phase 4: "Amt für Monsterangelegenheiten" — überlebt jede Schicht in localStorage.
+// Muss vor dem ersten recalc() weiter unten existieren, deshalb schon hier deklariert;
+// die persistierten Werte lädt loadAmt() erst beim CONFIG-Block nach.
+let amt = {bankGold:0, schichten:0,
+  ausbauten:{startLevel:0, kontingent:0, tueren:0, vermutungen:false, startFluchUnlocked:false, startFluch:null},
+  bonusManaRegen:0, bonusSpeed:0, bonusPotions:0, bonusStartGold:0};
+// Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
+let shiftT=0, shiftEndPending=false, overtimeT=0, shiftElapsedT=0,
+    shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[];
+
 const stats = {kills:0, goldTotal:0};
 let derived = {};
 let goldRotT = 0;   // Sekundentakt für Fluch 'Goldschwund'
@@ -1271,7 +1281,7 @@ function recalc(){
   const maxHp = 70 + (player.level-1)*12 + hpB + FX.leben*18;   // Wirkung 'Leibesfülle'
   derived = {dmgMin, dmgMax, aps, armor:armorBonus + FX.armor*5, maxHp,
              maxMana: 40 + (player.level-1)*8 + player.skills.int*15,
-             speed:135 + player.skills.agi*5 + spdBonus + FX.speed*10,
+             speed:135 + player.skills.agi*5 + spdBonus + FX.speed*10 + (amt.bonusSpeed||0),
              range:70 + FX.arc*14, arc:1.6 + FX.arc*0.16,
              crit:Math.min(0.75, 0.25 + FX.crit*0.07)};
   if(CFX.stumpf) derived.crit = 0;                                          // Fluch 'Stumpfheit'
@@ -1565,6 +1575,7 @@ function dropZutat(m, x, y){
 
 function killMon(m){
   m.dead = true; stats.kills++;
+  if(CONFIG.schichtModus){ shiftKillsByType[m.type] = (shiftKillsByType[m.type]||0) + 1; shiftKillsTotal++; }
   // Leiche spielt die Sterbe-Animation zu Ende und blendet dann aus
   const dKey = monAnim(m.def, 'death');
   corpses.push({x:m.x, y:m.y, def:m.def, key:dKey, t:0, dur:animLen(dKey, 11) + 1.4, flip:m.facingLeft});
@@ -1650,7 +1661,11 @@ function hurtPlayer(raw){
   player.hp -= d; player.hurtT = 0.25;
   addShake(12, 0.2); sfx.hurt();
   floaters.push({x:player.x, y:player.y-24, txt:String(d), col:'#ffe14d', t:0.8, big:true});
-  if(player.hp<=0){ player.hp=0; player.dead=true; state='dead'; showDead(); }
+  if(player.hp<=0){
+    player.hp=0; player.dead=true;
+    if(CONFIG.schichtModus){ state='feierabend'; endShift('tod'); }
+    else { state='dead'; showDead(); }
+  }
 }
 
 function drinkPotion(){
@@ -1863,7 +1878,29 @@ function enemyCast(m){
 const CONFIG = {
   kammerTueren: 2,          // Türen je Biom (Phase 4: Dorf-Ausbau erhöht das)
   kammerNachwachsen: 120,   // Sekunden, bis eine geleerte Kammer neu versiegelt ist
+  schichtModus: true,       // Phase 4: Dienst nach Vorschrift. false = alte Todesregel (halbes HP, kein Reset)
+  schichtDauer: 900,        // Sekunden pro Schicht (~15 Minuten)
+  goldUebertragAnteil: 0.5, // Anteil des Golds, der die Schicht überlebt
+  zutatenMitnahmeBasis: 5,  // Grund-Kontingent mitnehmbarer Zutaten-Stapel je Schicht
 };
+
+// Amt-Speicherstand laden, bevor irgendetwas (Kammertüren, HUD) danach fragt.
+const AMT_KEY = 'sda_amt_v1';
+(function loadAmt(){
+  try{
+    const raw = localStorage.getItem(AMT_KEY); if(!raw) return;
+    const o = JSON.parse(raw);
+    if(typeof o.bankGold === 'number') amt.bankGold = o.bankGold;
+    if(typeof o.schichten === 'number') amt.schichten = o.schichten;
+    if(o.ausbauten) Object.assign(amt.ausbauten, o.ausbauten);
+    if(typeof o.bonusManaRegen === 'number') amt.bonusManaRegen = o.bonusManaRegen;
+    if(typeof o.bonusSpeed === 'number') amt.bonusSpeed = o.bonusSpeed;
+    if(typeof o.bonusPotions === 'number') amt.bonusPotions = o.bonusPotions;
+    if(typeof o.bonusStartGold === 'number') amt.bonusStartGold = o.bonusStartGold;
+  }catch(_){}
+})();
+function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }catch(_){} }
+CONFIG.kammerTueren += amt.ausbauten.tueren;   // Dorf-Ausbau wirkt schon auf die allererste Schicht
 
 const KAM_W = 13, KAM_H = 15;      // Raumkantenlänge in Kacheln, Wände eingerechnet
 const KAM_X0 = 3, KAM_Y0 = 33;     // linke obere Ecke des Korridors (6 Räume passen in MW=80)
@@ -2993,6 +3030,19 @@ function renderKladde(){
         parts.push(`<div class="kl">«${a}» erzeugte bisher ${list.map(i=>`${wn(i.k)} (${i.n}x)`).join(' und ')}.</div>`);
     }
   }
+  // Phase 4 Dorf-Ausbau "Vermutungen": zeigt für noch nie gekochte Adjektive die
+  // tatsächliche Wirkung/den Fluch aus der Datentabelle als gehedgte Vermutung an.
+  if(amt.ausbauten.vermutungen){
+    const unbeobachtet = ZUTAT_ADJ.filter(d => !kladde.adj[d.a]);
+    if(unbeobachtet.length){
+      parts.push('<div class="klHead">VERMUTUNGEN</div>');
+      for(const d of unbeobachtet){
+        const wn = WIRKUNG[d.wirk] ? WIRKUNG[d.wirk].name : d.wirk;
+        const fn = FLUCH[d.fl] ? FLUCH[d.fl].kurz : d.fl;
+        parts.push(`<div class="kl" style="color:#9a8a5f;">«${d.a}» wirkt vermutlich wie ${wn} (${fn}).</div>`);
+      }
+    }
+  }
   const nounKeys = Object.keys(kladde.noun);
   if(nounKeys.length){
     parts.push('<div class="klHead">SUBSTANTIVE</div>');
@@ -3080,8 +3130,25 @@ function update(dt){
   if(hitStopT > 0){ hitStopT -= dt; return; } // Freeze-Frame Effekt
   gameT += dt; if(shakeT > 0) shakeT -= dt;
 
+  // Phase 4: Schicht-Uhr. Läuft ab, wartet dann auf ein sicheres Moment (kein Kampf in der
+  // Nähe, keine Kammer/Schloss offen) statt mitten im Getümmel abzubrechen — maximal 60s
+  // Überstunden, danach ist so oder so Feierabend (Softlock-Schutz gegen Dauerhorden).
+  if(CONFIG.schichtModus && state === 'play'){
+    shiftElapsedT += dt;
+    if(!shiftEndPending){
+      shiftT -= dt;
+      if(shiftT <= 0){ shiftT = 0; shiftEndPending = true; }
+    } else {
+      overtimeT += dt;
+      const kampfNah = monsters.some(m => !m.dead && dist2(player.x, player.y, m.x, m.y) < 220);
+      if((!kampfNah && !kammer && !schlossOpen) || overtimeT >= 60){
+        state = 'feierabend'; endShift('zeit'); return;
+      }
+    }
+  }
+
   if(!CFX.manatot)                                                               // Fluch 'Manastopp'
-    player.mana = Math.min(derived.maxMana, player.mana + (8 + FX.mana*4) * dt); // Wirkung 'Manafluss'
+    player.mana = Math.min(derived.maxMana, player.mana + (8 + FX.mana*4 + (amt.bonusManaRegen||0)) * dt); // Wirkung 'Manafluss'
   if(FX.regen && player.hp > 0)                                                  // Wirkung 'Selbstheilung'
     player.hp = Math.min(derived.maxHp, player.hp + FX.regen*1.6*dt);
   if(player.attackCd > 0) player.attackCd -= dt;
@@ -3113,14 +3180,14 @@ function update(dt){
 
   if(kammer){
     updateKammer(dt);
-    setTxt('zone', `📍 Kammer · Schwierigkeit ${kammer.diff} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}`);
+    setTxt('zone', `📍 Kammer · Schwierigkeit ${kammer.diff} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}${schichtHudSuffix()}`);
   } else {
     for(const t of kammerTueren) if(t.cd > 0){ t.cd -= dt; if(t.cd <= 0) wuerfleTuer(t); }
   }
   scanAktion(dt);
 
   if(schattenlandActive){
-    setTxt('zone', `📍 Schattenland | 💀 ${shadowKills} / 500`);
+    setTxt('zone', `📍 Schattenland | 💀 ${shadowKills} / 500${schichtHudSuffix()}`);
     // Horde Spawner
     if(monsters.length < 130 && (!boss || boss.dead)){
       const a = Math.random() * Math.PI * 2;
@@ -3134,9 +3201,9 @@ function update(dt){
     }
   } else if(!kammer){
     const ty = player.y / TS;                       // Biom-Anzeige statt statischem "Grasland"
-    setTxt('zone', ty < 26 ? '📍 Frostkamm (Stufe ' + player.level + ')'
+    setTxt('zone', (ty < 26 ? '📍 Frostkamm (Stufe ' + player.level + ')'
                  : ty > 54 ? '📍 Aschewüste (Stufe ' + player.level + ')'
-                           : '📍 Grasland (Stufe ' + player.level + ')');
+                           : '📍 Grasland (Stufe ' + player.level + ')') + schichtHudSuffix());
   }
   if(schattenlandActive){
     if(shadowKills >= 500 && !boss){
@@ -3921,7 +3988,217 @@ function winGame(){
   document.getElementById('overlay').style.display = 'flex';
 }
 
-function startGame(){ initAudio(); document.getElementById('overlay').style.display = 'none'; state = 'play'; }
+function startGame(){
+  initAudio();
+  if(CONFIG.schichtModus){ pendingCarryGold = 0; pendingCarryPouch = []; startShift(); }
+  else { document.getElementById('overlay').style.display = 'none'; state = 'play'; }
+}
+
+// ===========================================================================
+//  PHASE 4: DIENST NACH VORSCHRIFT
+//  Ersetzt bei CONFIG.schichtModus=true die alte Todesregel. Eine Schicht endet
+//  durch Tod oder durch die Uhr, danach Dienstbericht → Amt → nächste Schicht.
+//  Level/Skillpunkte/Zauberbaum/Ausrüstung setzen sich zurück, die Kessel-Kladde
+//  (siehe KLADDE_KEY) und das Amt-Guthaben/die Ausbauten (AMT_KEY) nicht.
+// ===========================================================================
+
+function schichtHudSuffix(){
+  if(!CONFIG.schichtModus || state !== 'play') return '';
+  if(shiftEndPending) return ' · ⏱ Überstunden';
+  const s = Math.max(0, Math.ceil(shiftT));
+  const mm = Math.floor(s/60), ss = s%60;
+  return ` · ⏱ ${mm}:${ss<10?'0':''}${ss}`;
+}
+
+const DIENST_BEMERKUNGEN = [
+  'Akte geschlossen. Nächste bitte.',
+  'Der Vorgang wurde ordnungsgemäß beendet.',
+  'Überstunden werden nicht vergütet, nur vermerkt.',
+  'Die Ausrüstung bleibt Eigentum des Amtes.',
+  'Wiedervorlage: nächste Schicht.',
+  'Kein Kommentar. Nur Zahlen.',
+];
+
+// Milde Flüche für die Startausrüstungs-Wahl — bewusst keine "harten" (siehe FLUCH),
+// sonst könnte eine Schicht schon am ersten Kessel-Item unspielbar starten.
+const STARTFLUCH_WAHL = ['fehlschlag','kurzarm','langsame_zunge','duenn','steuer','geschwaetzig'];
+
+const AUSBAU_DEFS = [
+  {key:'startLevel', name:'Höheres Anfangslevel', max:9, cost:l=>40*(l+1),
+   desc:'Startet jede Schicht ein Level höher.', unit:l=>`Stufe ${1+l}`},
+  {key:'kontingent', name:'Größeres Zutaten-Kontingent', max:10, cost:l=>30*(l+1),
+   desc:'Mehr Zutaten überstehen den Schichtwechsel.', unit:l=>`${CONFIG.zutatenMitnahmeBasis+l*2} Zutaten`},
+  {key:'tueren', name:'Mehr Kammertüren', max:2, cost:l=>80*(l+1),
+   desc:'Eine zusätzliche Kammertür pro Biom.', unit:l=>`${2+l} Türen/Biom`},
+];
+
+const JAHRES_BONI = [
+  {name:'Kaffeemaschine', text:'Mana regeneriert dauerhaft etwas schneller.', apply(){ amt.bonusManaRegen = (amt.bonusManaRegen||0)+2; }},
+  {name:'Bequemere Stiefel', text:'Grundtempo steigt dauerhaft leicht.', apply(){ amt.bonusSpeed = (amt.bonusSpeed||0)+6; }},
+  {name:'Notfallkeks', text:'Ein Trank mehr beim Schichtantritt.', apply(){ amt.bonusPotions = (amt.bonusPotions||0)+1; }},
+  {name:'Dienstsiegel', text:'Kammern versiegeln sich nach dem Plündern schneller neu.', apply(){ CONFIG.kammerNachwachsen = Math.max(40, CONFIG.kammerNachwachsen-20); }},
+  {name:'Startkapital', text:'Etwas Bargeld liegt schon in der Schublade.', apply(){ amt.bonusStartGold = (amt.bonusStartGold||0)+10; }},
+];
+
+// Setzt Welt und Spieler komplett neu auf und startet die Schichtuhr. Wird sowohl
+// für die allererste Schicht (aus startGame()) als auch für jede folgende (aus
+// dem Amt-Panel) benutzt — ein einziger, getesteter Reset-Pfad statt zweier.
+function startShift(){
+  if(kammer) verlasseKammer();
+  currentLevel = 1; schattenlandActive = false; shadowKills = 0; boss = null; portal = null;
+  monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
+  particles.length = 0; corpses.length = 0; floaters.length = 0;
+  if(kesselOpen) toggleKessel();
+  if(invOpen) toggleInventory();
+  if(spellTreeOpen) toggleSpellTree();
+  resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;
+  attackTouch = null; lockedTarget = null;
+  el('bossbar').style.display = 'none';
+
+  player.x = SPAWN.x; player.y = SPAWN.y; player.dead = false; player.hurtT = 0;
+  player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
+  player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
+  player.level = 1 + amt.ausbauten.startLevel; player.xp = 0;
+  player.skills = {str:0, vit:0, agi:0, int:0};
+  player.skillPoints = amt.ausbauten.startLevel * 2; player.spellPoints = amt.ausbauten.startLevel; player.spellsKnown = {};
+  player.hair = HAIRS[Math.floor(Math.random()*HAIRS.length)];
+  player.bag = new Array(24).fill(null);
+  player.potions = 2 + (amt.bonusPotions||0);
+  player.gold = pendingCarryGold + (amt.bonusStartGold||0); pendingCarryGold = 0;
+  player.pouch = pendingCarryPouch; pendingCarryPouch = [];
+  player.equip = {weapon:null, armor:null, shield:null, boots:null};
+  player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
+  if(amt.ausbauten.startFluch) player.equip.weapon.fluch = amt.ausbauten.startFluch;
+
+  CONFIG.kammerTueren = 2 + amt.ausbauten.tueren; setzeKammerTueren();
+
+  recalc(); player.hp = derived.maxHp; player.mana = derived.maxMana;
+  initFloorGraphics(); placeMonsters();
+
+  shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0; shiftElapsedT = 0;
+  shiftKillsByType = {}; shiftKillsTotal = 0;
+
+  document.getElementById('overlay').style.display = 'none';
+  state = 'play'; updateHUD();
+}
+
+// Schicht beenden: Übertrag berechnen (Gold anteilig, Zutaten gekappt nach Seltenheit
+// sortiert), Amt-Guthaben verbuchen, Dienstbericht zeigen. Die Kladde wird hier nicht
+// angefasst — sie speichert sich schon beim Kochen selbst (saveKladde()) und bleibt
+// dadurch unabhängig von diesem Reset garantiert erhalten.
+function endShift(reason){
+  if(kesselOpen) toggleKessel();
+
+  const carryGold = Math.round(player.gold * CONFIG.goldUebertragAnteil);
+  const kontingent = CONFIG.zutatenMitnahmeBasis + amt.ausbauten.kontingent*2;
+  const sorted = player.pouch.slice().sort((a,b) => zutatRar(b) - zutatRar(a));
+  let rest = kontingent, carryPouch = [], eingezogen = 0, zutatenGesamt = 0;
+  for(const z of sorted){
+    zutatenGesamt += z.count;
+    if(rest <= 0){ eingezogen += z.count; continue; }
+    const take = Math.min(rest, z.count);
+    carryPouch.push({noun:z.noun, adj:z.adj, count:take});
+    rest -= take; eingezogen += (z.count - take);
+  }
+  pendingCarryGold = carryGold; pendingCarryPouch = carryPouch;
+  amt.bankGold += carryGold; amt.schichten++;
+
+  const killLines = Object.keys(shiftKillsByType).sort((a,b) => shiftKillsByType[b]-shiftKillsByType[a])
+    .map(t => `${MONDEF[t] ? MONDEF[t].name : t}: ${shiftKillsByType[t]}`);
+  const bemerkung = DIENST_BEMERKUNGEN[Math.floor(Math.random()*DIENST_BEMERKUNGEN.length)];
+  const ueberstunden = Math.max(0, Math.round(overtimeT));
+  const mitgenommen = carryPouch.reduce((s,z) => s+z.count, 0);
+
+  saveAmt();
+
+  const titel = reason === 'tod' ? 'FEIERABEND' : 'DIENSTSCHLUSS';
+  const anlass = reason === 'tod' ? 'Der Dienst endete unsanft. Der nächste Trupp übernimmt.'
+                                   : 'Die Uhr hat entschieden. Akten schließen sich von selbst.';
+
+  document.getElementById('ovPanel').innerHTML = `
+    <h1>${titel}</h1>
+    <p style="font-size:12px;color:#9a8a5f;">${anlass}</p>
+    <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:13px;margin:14px 0;border:1px solid #5a4a2d;">
+      <b>Dienstbericht</b><br>
+      Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
+      Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
+      Überstunden: ${ueberstunden}s<br>
+      Beuteanteil nach Abzug: 💰 ${carryGold} (von ${player.gold})
+    </div>
+    <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
+    <button onclick="nachSchicht()">WEITER</button>
+  `;
+  document.getElementById('overlay').style.display = 'flex';
+}
+
+function nachSchicht(){
+  if(amt.schichten % 10 === 0) showJahresgespraech(); else showDorf();
+}
+
+function showJahresgespraech(){
+  const idx = (Math.floor(amt.schichten/10) - 1) % JAHRES_BONI.length;
+  const b = JAHRES_BONI[idx]; b.apply(); saveAmt();
+  document.getElementById('ovPanel').innerHTML = `
+    <h1>JAHRESGESPRÄCH</h1>
+    <p>Der Bürgermeister bedankt sich für ${amt.schichten} Schichten treuen Dienstes.</p>
+    <div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;margin:14px 0;border:1px solid #5a4a2d;">
+      <b>${b.name}</b><br><span style="font-size:12px;color:#c9b98a;">${b.text}</span>
+    </div>
+    <button onclick="showDorf()">WEITER</button>
+  `;
+  document.getElementById('overlay').style.display = 'flex';
+}
+
+function buyAusbau(key){
+  const def = AUSBAU_DEFS.find(d => d.key === key); if(!def) return;
+  const lvl = amt.ausbauten[key]; if(lvl >= def.max) return;
+  const cost = def.cost(lvl); if(amt.bankGold < cost) return;
+  amt.bankGold -= cost; amt.ausbauten[key] = lvl+1; saveAmt(); showDorf();
+}
+function buyVermutungen(){
+  if(amt.ausbauten.vermutungen || amt.bankGold < 100) return;
+  amt.bankGold -= 100; amt.ausbauten.vermutungen = true; saveAmt(); showDorf();
+}
+function unlockStartFluch(){
+  if(amt.ausbauten.startFluchUnlocked || amt.bankGold < 60) return;
+  amt.bankGold -= 60; amt.ausbauten.startFluchUnlocked = true; amt.ausbauten.startFluch = STARTFLUCH_WAHL[0];
+  saveAmt(); showDorf();
+}
+function waehleStartFluch(k){ amt.ausbauten.startFluch = k; saveAmt(); showDorf(); }
+
+// Dorf-Hub "Amt für Monsterangelegenheiten" zwischen den Schichten. Wie die anderen
+// Overlay-Screens (Start/Tod/Sieg) ein reines innerHTML-Panel, keine neue Renderpath-Berührung.
+function showDorf(){
+  const rows = AUSBAU_DEFS.map(d => {
+    const lvl = amt.ausbauten[d.key], maxed = lvl >= d.max, cost = maxed ? 0 : d.cost(lvl);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #3a2f1a;">
+      <div><b>${d.name}</b><br><span style="font-size:11px;color:#9a8a5f;">${d.desc} Jetzt: ${d.unit(lvl)}</span></div>
+      <button ${maxed||amt.bankGold<cost?'disabled':''} onclick="buyAusbau('${d.key}')" style="font-size:12px;padding:6px 10px;margin:0;">${maxed?'MAX':'💰'+cost}</button>
+    </div>`;
+  }).join('');
+
+  const vermRow = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #3a2f1a;">
+    <div><b>Vermutungen in der Kladde</b><br><span style="font-size:11px;color:#9a8a5f;">Die Kladde zeigt zusätzlich unbestätigte Vermutungen.</span></div>
+    <button ${amt.ausbauten.vermutungen||amt.bankGold<100?'disabled':''} onclick="buyVermutungen()" style="font-size:12px;padding:6px 10px;margin:0;">${amt.ausbauten.vermutungen?'AKTIV':'💰100'}</button>
+  </div>`;
+
+  const fluchChoices = amt.ausbauten.startFluchUnlocked
+    ? STARTFLUCH_WAHL.map(k => `<button onclick="waehleStartFluch('${k}')" style="font-size:10px;margin:2px;padding:4px 7px;${amt.ausbauten.startFluch===k?'background:#7a5a10;':''}">${FLUCH[k].kurz}</button>`).join('')
+    : `<button ${amt.bankGold<60?'disabled':''} onclick="unlockStartFluch()" style="font-size:12px;padding:6px 10px;margin:0;">💰60 freischalten</button>`;
+  const fluchRow = `<div style="padding:6px 0;border-bottom:1px solid #3a2f1a;">
+    <div><b>Startausrüstung mit festem Fluch</b><br><span style="font-size:11px;color:#9a8a5f;">Wähle den milden Fluch, der die Startwaffe jeder Schicht begleitet.</span></div>
+    <div style="margin-top:6px;">${fluchChoices}</div>
+  </div>`;
+
+  document.getElementById('ovPanel').innerHTML = `
+    <h1>AMT FÜR MONSTERANGELEGENHEITEN</h1>
+    <p style="font-size:12px;color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}</p>
+    <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}</div>
+    <button onclick="startShift()">NÄCHSTE SCHICHT ANTRETEN</button>
+  `;
+  document.getElementById('overlay').style.display = 'flex';
+  state = 'feierabend';
+}
 
 window.addEventListener('keydown', e => {
   initAudio(); const k = e.key.toLowerCase();
