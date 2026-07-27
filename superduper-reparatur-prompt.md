@@ -90,7 +90,7 @@ Kein Codeeingriff außer Kommentaren.
 * **F83** W1-Abnahmeliste war orts- statt sichtbarkeitsbasiert und hat den Ladebildschirm übersehen. Künftige Abnahmen über sichtbare Bildschirme führen: Ladebildschirm, Startbildschirm, Todesbildschirm, Dienstbericht, Jahresgespräch, Dorf, Amtsstube. **Die Liste im Fund ist selbst unvollständig, es sind acht:** der Siegesbildschirm (`winGame()`) fehlte. Die vollständige Fassung mit Funktionsnamen steht jetzt in den W1-Umsetzungsnotizen, weil dort die falsche Abnahmeliste steht.
 * **F63, F65, F77** Drei irreführende Codekommentare (Level-1-Zeichenblock nennt Wald statt Dorf, `KAM_WAECHTER` nennt sieben statt sechs, `zutatenMitnahmeBasis` nennt Stapel statt Stücke).
 
-### R5: Amtsdeutsch. Nicht mehr blockiert, F25 ist entschieden. — OFFEN
+### R5: Amtsdeutsch. Nicht mehr blockiert, F25 ist entschieden. — ERLEDIGT
 
 Registerarbeit. `weltbibel` Abschnitt 13 und 19 sind hier verbindlich, nicht optional.
 
@@ -105,6 +105,26 @@ Registerarbeit. `weltbibel` Abschnitt 13 und 19 sind hier verbindlich, nicht opt
 * **F58** Knöterich nennt das Haus mit einer vierten Namensform, die die Weltbibel nicht kennt. **Zeichendeckel beachten:** die Vollbezeichnung reißt `z1` um genau ein Zeichen. Gehört eigentlich zu W3, hier nur entscheiden ob mitnehmen.
 
 Nach jeder Textänderung `knAssertCaps()` prüfen und den Gedankenstrich-Scan wiederholen.
+
+**Umsetzungsnotizen R5.** Alle neun Funde am Code nachgeprüft, keiner widerlegt, sieben tragen unverändert, zwei mit Korrektur:
+
+* **F58, Zeichenzahl im Bericht falsch.** `ABGLEICH-2026-07-27.md:351` nennt für „Knöterich. Ministerium für Monsterangelegenheiten." 49 Zeichen, es sind **50** (nachgezählt mit `[...s].length`, Umlaute als ein Zeichen). Am Ergebnis ändert das nichts, der z1-Deckel von 48 reißt so oder so. Gewählt wurde die kanonische Form 1 aus Kapitel 18: `Knöterich. Monstralministerium.` (31 Zeichen, 17 Zeichen Luft). Das Haus nennt sich selbst laut Namenstabelle „immer" so, ein Bediensteter, der sich vorstellt, ist genau dieser Fall. Damit **mitgenommen statt nach W3 vertagt**, weil die Mischform sonst bis W3 als vierter Name im Spiel steht und R5 der Abschnitt ist, der Kapitel 18 durchsetzt.
+* **F61, Prämisse geprüft.** Der Fund trägt, seine Herleitung ist aber ungenau: die Nachbarzweige folgen dem Muster *Ort, amtliche Kurzform* (`Die Eisablage`, `Ablage A`), nicht dem Weltbibel-Vollnamen. Für das Dorf gibt es keine Kurzform, wohl aber einen amtlichen Ortsnamen: `Vordermühl an der Ablage` (`weltbibel:90`, Namensregister `:581`). Der Zweig lautet jetzt `📍 Vordermühl an der Ablage (Stufe N)`, 36 Zeichen und damit kürzer als der bereits vorhandene Aschewüste-Zweig.
+
+Über die Fundliste hinaus geändert, jeweils weil ein Fund die Stelle mitzieht:
+
+* `showDead()`: `Monster getötet` → `Monster erledigt` (F59, „kein Sterben", und deckungsgleich mit der Dienstbericht-Zeile) und `Level, Ausrüstung und Beute` → `Stufe, …` (F62). **Ungeprüft, laufzeitgebunden:** der Bildschirm ist bei `CONFIG.schichtModus = true` nicht erreichbar, `endShift('tod')` läuft stattdessen. Die Strings wurden im Browser durch direkten Aufruf abgenommen, nicht im Spielverlauf.
+* Zwei Einblender aus F27: `LEVEL UP!` → `STUFENAUFSTIEG` (F62, letzter sichtbarer „Level"-Rest) und `HORDEN DES SCHATTENS!` → `MASSENVORGANG ERÖFFNET`.
+* `AUSBAU_DEFS[0].name` `Höheres Anfangslevel` → `Höhere Anfangsstufe`. F62 nennt nur `desc`, aber Name und Beschreibung stehen im Dorf und in der Amtsstube untereinander, eine Hälfte umzustellen hätte den Widerspruch nur verschoben. Schlüssel `startLevel` unverändert.
+
+Bewusst **nicht** angefasst, mit Begründung:
+
+* **Der Einblender `KONFETTI-KATAKLYSMUS!`** (dritter der von F27 genannten). Er ist die Großschreibfassung des Zaubernamens `Konfetti-Kataklysmus des jüngsten Gerichts`. Nur den Einblender umzustellen, hätte genau den Fehler erzeugt, den F26 meldet: zwei Namen für dieselbe Sache. Den Zauber selbst umzubenennen ist Inhaltsarbeit an einem Phase-3-Gegenstand und liegt außerhalb von R5. `Konfetti` ist außerdem das Wort, mit dem Grundgesetz 8 selbst arbeitet.
+* **Die beiden `|`-Trenner im Statistikkasten** (`index.html:387`, `:388`). F60 begründet sich damit, dass „alle anderen Zeilen den Interpunkt nutzen" — das stimmt nicht, diese zwei nicht. Sie trennen aber Spalten in einer Tabelle, nicht Satzteile in einer Zeile, und das ist eine andere Funktion. Auffälligkeit, kein Registerfehler.
+* **Der Einblender `SCHATTEN-PORTAL ERSCHIENEN`.** Steht in keinem Fund und ist bereits amtsdeutschfähig („erschienen").
+* **`kn.history`** (`sda_knoeterich_v1`) speichert die letzten drei Zettel im **gerenderten** Wortlaut und spielt sie über `knNachfragen()` wieder ab. Bestehende Spielstände zeigen also bis zu drei Zeilen im alten Register weiter, unter anderem die alte Knöterich-Vorstellung. Eine Migration wäre ein Systemeingriff und gehört nicht in eine Registerarbeit. **Laufzeitgebunden offen.**
+
+Abnahme gelaufen, über die acht sichtbaren Bildschirme statt über Codestellen (Regel aus F83): Syntaxcheck `new Function()` auf den Skriptinhalt fehlerfrei; im Browser 300 Frames mit 25 Zaubern ohne Exception bei 0,34 ms/Frame (Referenz 0,6); `knAssertCaps()` liefert `true` und schreibt nichts; vollständiger Kanal-Scan über die Datei findet **null** sichtbare Gedankenstriche (die verbleibenden 94 stehen in Kommentaren), null Totenköpfe, null sichtbare Vorkommen von `Abaddon`, `Blutmagie`, `Sterbende`, `getötet`, `Level`, `HORDE`, `METZELN`; Schildbreiten mit `ctx.measureText` gegenmessen (`GEBÜHREN-` 48,6px, `BESCHEID` 43,2px gegen 66px Innenbreite, einzeilig wären es 86,4px).
 
 ### R6: Renderpfad und Regressionsschutz. — OFFEN
 

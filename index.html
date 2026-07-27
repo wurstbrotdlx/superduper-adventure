@@ -347,16 +347,16 @@
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="zone">📍 Grasland, Ablage A (Level 1)</div>
+<div id="zone">📍 Grasland, Ablage A (Stufe 1)</div>
 <canvas id="minimap" width="128" height="128"></canvas>
-<div id="bossbar"><span id="bossname">Schattenfürst Abaddon</span><div id="bossback"><div id="bossfill"></div></div></div>
+<div id="bossbar"><span id="bossname">Schattenfürst · Fürst Nachtrag</span><div id="bossback"><div id="bossfill"></div></div></div>
 <div id="hud">
   <div class="orbWrap hpOrb"><div id="hpFill"></div><div class="orbTicks" id="hpTicks"></div><div class="orbTxt" id="hpTxt">60</div></div>
   <div id="midHud">
     <div id="xpBar"><div id="xpFill"></div></div>
     <div id="beltRow">
       <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)">🧪 <span id="potCount">0</span></div>
-      <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:11px;">— (E)</span></div>
+      <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:11px;">· (E)</span></div>
       <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:11px;">🔒 Ult (R)</span></div>
       <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨<span class="bl">Zauber</span><span id="spBadge" style="color:#c77dff;display:none;">★</span></div>
       <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒<span class="bl">Inv</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span></div>
@@ -2045,7 +2045,7 @@ const FLUCH = {
   zappel:          {cfx:'zappel',   kurz:'Zappeln', hart:true, satz:'Du kannst nicht mehr stehenbleiben.'},
   standfest:       {cfx:'stand',    kurz:'Standpflicht', hart:true, satz:'Deine Rüstung wirkt nur im Stehen. Wer läuft, ist ungeschützt.'},
   schleuder:       {cfx:'schleuder',kurz:'Schleuderrückstoß', satz:'Jeder Zauber schleudert dich rückwärts. Man tritt zurück, wenn man etwas anordnet.'},
-  blutmagie:       {cfx:'blut',     kurz:'Blutmagie', hart:true, satz:'Deine Zauber kosten Leben statt Mana.'},
+  blutmagie:       {cfx:'blut',     kurz:'Eigenanteil', hart:true, satz:'Deine Zauber kosten Leben statt Mana.'},
   manatot:         {cfx:'manatot',  kurz:'Manastopp', hart:true, satz:'Dein Mana kehrt nicht mehr von selbst zurück. Es muss beantragt werden.'},
   goldzauber:      {cfx:'goldz',    kurz:'Verwaltungsgebühr', satz:'Zaubern kostet zusätzlich Gold. Verwaltungsgebühr.'},
   langsame_zunge:  {cfx:'zunge',    kurz:'Langsame Zunge',    satz:'Zwischen zwei Zaubern liegt ein Dienstweg.'},
@@ -2060,7 +2060,7 @@ const FLUCH = {
   stille_zahlen:   {cfx:'stille',   kurz:'Stille Zahlen',     satz:'Schadenszahlen werden nachgereicht. Irgendwann.'},
   geschwaetzig:    {cfx:'laut',     kurz:'Geschwätzigkeit',   satz:'Deine Ausrüstung ist geschwätzig. Gegner aggroen auf doppelte Entfernung.'},
   schnelle_bolzen: {cfx:'bolz',     kurz:'Vorfahrt',          satz:'Gegnergeschosse haben Vorfahrt.'},
-  zerplatzer:      {cfx:'platz',    kurz:'Zerplatzer',        satz:'Sterbende Gegner zerplatzen dir ins Gesicht.'},
+  zerplatzer:      {cfx:'platz',    kurz:'Zerplatzer',        satz:'Erledigte Gegner platzen dir ins Gesicht.'},
 };
 
 // Ausrüstung, die am Kessel entsteht. Index = Qualitätsstufe 0..4.
@@ -2543,7 +2543,7 @@ function loadLevel2(){
   player.x = ARENA.x * TS; player.y = ARENA.y * TS;
   monsters.length = 0; drops.length = 0; lockedTarget = null;
   initFloorGraphics(); // Map ändert sich optisch in Schatten-Biom
-  floaters.push({x:player.x, y:player.y-40, txt:'HORDEN DES SCHATTENS!', col:'#ff0055', t:4.0, big:true});
+  floaters.push({x:player.x, y:player.y-40, txt:'MASSENVORGANG ERÖFFNET', col:'#ff0055', t:4.0, big:true});
 }
 
 function moveEnt(e,dx,dy){
@@ -2743,7 +2743,7 @@ function gainXP(x){
   while(player.xp >= need){
     player.xp -= need; player.level++; player.skillPoints += 2; player.spellPoints += 1;
     recalc(); player.hp = derived.maxHp;
-    floaters.push({x:player.x, y:player.y-30, txt:'LEVEL UP!', col:'#a855f7', t:1.5, big:true});
+    floaters.push({x:player.x, y:player.y-30, txt:'STUFENAUFSTIEG', col:'#a855f7', t:1.5, big:true});
     floaters.push({x:player.x, y:player.y-52, txt:'+1 Zauberpunkt', col:'#c77dff', t:1.5});
     sfx.level(); addShake(10, 0.4);
     kn.counters.levelUps = (kn.counters.levelUps||0) + 1;
@@ -3141,7 +3141,7 @@ function knAssertCaps(){
   const rows = [];
   for(const h of HINWEISE) rows.push([h.z1,48],[h.z2,32],[h.z2t,32]);
   for(const id in ESCALATE_DEFS){ const e = ESCALATE_DEFS[id]; rows.push([e.z1,48],[e.z2,32],[e.z2t,32]); }
-  rows.push(['Knöterich. Amt für Monsterangelegenheiten.',48],['Sie sind Außendienst. WASD.',32],['Außendienst. Daumen links.',32]);
+  rows.push(['Knöterich. Monstralministerium.',48],['Sie sind Außendienst. WASD.',32],['Außendienst. Daumen links.',32]);
   rows.push(['Geht doch. Schellen zählt als Sachbearbeitung.',48],['Aufheben, was liegt.',32]);
   rows.push(['Punkt gutgeschrieben. Hilft keinem im Sack.',48],['T. Aussuchen.',32],['Der Stern im Gürtel.',32]);
   rows.push(['Sie schlagen nur. Es gibt auch Zauber.',48],['E.',32],['Der Zauberknopf.',32]);
@@ -3322,7 +3322,7 @@ function knUpdateBubble(){
   knBubble.wasIn = true;
   if(!kn.beats.beat1 && !kn.pending.beat1Fallback){
     knBubble.visible = true;
-    knBubble.text1 = 'Knöterich. Amt für Monsterangelegenheiten.';
+    knBubble.text1 = 'Knöterich. Monstralministerium.';
     knBubble.text2 = touchMode ? 'Außendienst. Daumen links.' : 'Sie sind Außendienst. WASD.';
     if(gameT - knBubble.enterT >= 2){ kn.beats.beat1 = true; saveKn(); knBubble.visible = false; }   // gilt nach 2s als zugestellt
   } else {
@@ -3342,7 +3342,7 @@ function knEvaluateZettel(){
   if(!kn.beats.beat3 && player.spellPoints > 0) cands.push({id:'beat3', prio:100, exempt:true,
     z1:'Punkt gutgeschrieben. Hilft keinem im Sack.', z2: touchMode ? 'Der Stern im Gürtel.' : 'T. Aussuchen.'});
   if(kn.pending.beat1Fallback && !kn.beats.beat1) cands.push({id:'beat1fb', prio:100, exempt:true,
-    z1:'Knöterich. Amt für Monsterangelegenheiten.', z2: touchMode ? 'Außendienst. Daumen links.' : 'Sie sind Außendienst. WASD.'});
+    z1:'Knöterich. Monstralministerium.', z2: touchMode ? 'Außendienst. Daumen links.' : 'Sie sind Außendienst. WASD.'});
 
   for(const h of HINWEISE){
     if(kn.seen[h.id]) continue;
@@ -4314,12 +4314,16 @@ function drawKammerTuer(t){
   if(g > 0.02) drawSprite(dk+'_gateAnim', Math.min(25, Math.floor(g*25)), t.x, t.y, 2,
                           false, t.cd > 0 ? '#120e1c' : null, 0.55);
   else         drawSprite(dk+'_gate', 0, t.x, t.y, 2, false, t.cd > 0 ? '#120e1c' : null, 0.55);
-  // Schild
+  // Schild: der Gebührenbescheid, auf den Knöterich verweist (W1/F24). Das Wort
+  // ist bei 9px Courier New (0,6em Vorschub) 86px breit und passt nicht in die
+  // 66px Innenbreite, deshalb zweizeilig getrennt; der Kasten wächst dafür von
+  // 34 auf 45px nach oben. Cull-Rand ist cam.y-120 auf den Ankerpunkt, bei
+  // Oberkante t.y-89 bleiben 31px Reserve, das Schild wird nicht abgeschnitten.
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#3b2f1c'; ctx.fillRect(t.x - 34, t.y - 78, 68, 34);
-  ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 2; ctx.strokeRect(t.x - 34, t.y - 78, 68, 34);
+  ctx.fillStyle = '#3b2f1c'; ctx.fillRect(t.x - 34, t.y - 89, 68, 45);
+  ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 2; ctx.strokeRect(t.x - 34, t.y - 89, 68, 45);
   ctx.font = 'bold 9px Courier New';
-  ctx.fillStyle = '#c9b98a'; ctx.fillText('KAMMER', t.x, t.y - 68);
+  ctx.fillStyle = '#c9b98a'; ctx.fillText('GEBÜHREN-', t.x, t.y - 79); ctx.fillText('BESCHEID', t.x, t.y - 70);
   if(t.cd > 0){
     ctx.fillStyle = '#9a8a5f'; ctx.font = 'bold 10px Courier New';
     ctx.fillText('geleert', t.x, t.y - 57);
@@ -4850,7 +4854,7 @@ function update(dt){
   knTick(dt);
 
   if(schattenlandActive){
-    setTxt('zone', `📍 Schattenland | 💀 ${shadowKills} / 500${schichtHudSuffix()}`);
+    setTxt('zone', `📍 Schattenland · erledigt ${shadowKills} / 500${schichtHudSuffix()}`);
     // Horde Spawner
     if(monsters.length < 130 && (!boss || boss.dead)){
       const a = Math.random() * Math.PI * 2;
@@ -4864,7 +4868,7 @@ function update(dt){
     }
   } else if(!kammer){
     const ty = player.y / TS;                       // Biom-Anzeige statt statischem "Grasland"
-    setTxt('zone', (inVillagePx(player.x, player.y) ? '📍 Dorf (Stufe ' + player.level + ')'   // G5
+    setTxt('zone', (inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage (Stufe ' + player.level + ')'   // G5
                  : ty < 26 ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
                  : ty > 54 ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
                            : '📍 Grasland, Ablage A (Stufe ' + player.level + ')') + schichtHudSuffix());
@@ -4872,7 +4876,7 @@ function update(dt){
   if(schattenlandActive){
     if(shadowKills >= 500 && !boss){
       makeMon('boss', player.x, player.y - 150);
-      floaters.push({x:player.x, y:player.y-80, txt:'ABADDON ERWACHT!', col:'#ff0000', t:5.0, big:true});
+      floaters.push({x:player.x, y:player.y-80, txt:'FÜRST NACHTRAG ÜBERNIMMT', col:'#ff0000', t:5.0, big:true});
       addShake(30, 2.0); sfx.warp();
     }
   }
@@ -5704,16 +5708,16 @@ function updateHUD(){
   if(as && player.spellsKnown[as.id]){
     el('spellBtn').classList.remove('disabled');
     setHTML('spellBtnTxt', `${as.icon} <span style="font-size:9px">${as.mana}⦿</span>`);
-    el('spellBtn').title = `${as.name} (E) — ${as.mana} Mana`;
+    el('spellBtn').title = `${as.name} (E) · ${as.mana} Mana`;
   } else {
     el('spellBtn').classList.add('disabled');
-    setHTML('spellBtnTxt', '— (E)');
+    setHTML('spellBtnTxt', '· (E)');   // gleiche Ersatzform wie der Markup-Platzhalter, sonst springt der Text beim ersten updateHUD()
   }
   // Ultimate
   if(player.spellsKnown[ULT_SPELL.id]){
     el('ultBtn').classList.remove('disabled');
     setHTML('ultBtnTxt', `${ULT_SPELL.icon} Ult (R)`);
-    el('ultBtn').title = `${ULT_SPELL.name} (R) — ${ULT_SPELL.mana} Mana`;
+    el('ultBtn').title = `${ULT_SPELL.name} (R) · ${ULT_SPELL.mana} Mana`;
   } else {
     el('ultBtn').classList.add('disabled');
     setHTML('ultBtnTxt', '🔒 Ult (R)');
@@ -5742,9 +5746,9 @@ function showDead(){
   const wasKammer = !!kammer;
   document.getElementById('ovPanel').innerHTML = `
     <h1 style="color:#ff5a5a">ÜBERRANNT</h1>
-    <p>Monster getötet: <b>${stats.kills}</b> · Stufe <b>${player.level}</b></p>
+    <p>Monster erledigt: <b>${stats.kills}</b> · Stufe <b>${player.level}</b></p>
     <p style="font-size:12px;color:#9a8a5f;">${wasKammer ? 'Die Kammer hat dich ausgespuckt. Sie bleibt versiegelt und wartet.'
-      : wasShadowland ? 'Das Schattenland hat dich zurück in den Wald geschleudert.' : 'Du wachst am Waldrand wieder auf.'} Level, Ausrüstung und Beute bleiben erhalten.</p>
+      : wasShadowland ? 'Das Schattenland hat dich zurück in den Wald geschleudert.' : 'Du wachst am Waldrand wieder auf.'} Stufe, Ausrüstung und Beute bleiben erhalten.</p>
     <button onclick="respawnPlayer()">ZURÜCK IN DEN WALD</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -5772,9 +5776,9 @@ function respawnPlayer(){
 function winGame(){
   state = 'win';
   document.getElementById('ovPanel').innerHTML = `
-    <h1 style="color:#a855f7">HORDE BESIEGT!</h1>
-    <p>Der Schattenfürst ist gefallen! Eine wahre Schnetzel-Legende.</p>
-    <button onclick="location.reload()">NOCHMAL METZELN</button>
+    <h1 style="color:#a855f7">VORGANG ABGESCHLOSSEN</h1>
+    <p>Fürst Nachtrag ist zu den Akten genommen. Der Sammelvorgang gilt als erledigt.</p>
+    <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
@@ -5815,8 +5819,8 @@ const DIENST_BEMERKUNGEN = [
 const STARTFLUCH_WAHL = ['fehlschlag','kurzarm','langsame_zunge','duenn','steuer','geschwaetzig'];
 
 const AUSBAU_DEFS = [
-  {key:'startLevel', name:'Höheres Anfangslevel', max:9, cost:l=>40*(l+1),
-   desc:'Startet jede Schicht ein Level höher.', unit:l=>`Stufe ${1+l}`},
+  {key:'startLevel', name:'Höhere Anfangsstufe', max:9, cost:l=>40*(l+1),   // Schlüssel bleibt startLevel, das ist Persistenz
+   desc:'Startet jede Schicht eine Stufe höher.', unit:l=>`Stufe ${1+l}`},
   {key:'kontingent', name:'Größeres Zutaten-Kontingent', max:10, cost:l=>30*(l+1),
    desc:'Mehr Zutaten überstehen den Schichtwechsel.', unit:l=>`${CONFIG.zutatenMitnahmeBasis+l*2} Zutaten`},
   {key:'tueren', name:'Mehr Kammertüren', max:2, cost:l=>80*(l+1),
