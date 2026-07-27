@@ -4,10 +4,12 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach G4: `dungeon/` (Kammer-Interieur), `player/` (Held), `enemies/` (alle 21
-Monster-Rigs), `deco/` (Hoftiere, Zauber-Projektil, Bäume, Requisiten, Landmarke,
-Feuer) und `tiles/` (Boden aller 3 Biome plus Schattenland) sind gefüllt. `ui/`
-folgt in G5.
+Stand nach G5 (letzte Phase): `dungeon/`, `player/`, `enemies/`, `tiles/` und
+`deco/` (jetzt zusätzlich Dorf-Gebäude, NPC-Staffage, Wetter) sind gefüllt, `ui/`
+ist mit G5 dazugekommen. Damit lädt das Spiel ausschließlich noch aus `assets/cf/`
+— `assets/Characters/`, `assets/Elements/`, `assets/Tileset/`, `assets/UI/`
+(Sunnyside) sind komplett aus dem Repo entfernt, siehe Abschnitt „Von G5 gebraucht"
+unten und `CREDITS.md`.
 
 ## Diese Unterordner sind nicht im Repo
 
@@ -126,6 +128,41 @@ flache Einzelkachel wie beim bisherigen `G_ICE` reicht), `Windmill_Sail_Anim.png
 (s. oben), `Cute_Fantasy_Christmass`-Requisiten für Frostkamm-Pilze (Scope-Trim:
 Frostkamm nutzt dieselben Grasland-Pilze, s. Umsetzungsnotizen G4).
 
+### Von G5 gebraucht (`ui/`, `deco/Buildings`, `deco/NPCs`, `deco/Weather`)
+
+Letzte Phase: begehbares Dorf, UI-Skin, Sunnyside-Abschied (glint/alert waren die
+letzten zwei geladenen Sunnyside-Sheets).
+
+| Zielordner | Dateien | Verwendung |
+|---|---|---|
+| `deco/Buildings/` | `Inn_Blue.png`, `House_1_Wood_Base_Red.png`, `House_2_Wood_Base_Blue.png`, `House_3_Stone_Base_Blue.png`, `Market_Stalls.png`, `Barn_Base_Red.png` (aus `Cute_Fantasy/Buildings/Buildings/…`) | Dorf-Gebäude als `big:true`-Decos, Amt = Inn (größtes, eindeutigstes Gebäude im Pack) |
+| `deco/NPCs/` | `Farmer_Bob.png`, `Bartender_Katy.png`, `Miner_Mike.png` (aus `Cute_Fantasy/NPCs (Premade)/`) | Dorf-Staffage, 64×64-Raster wie Angel_1/2, idle=Zeile1/walk=Zeile4 per Crop bestätigt |
+| `deco/Weather/` | `Clouds.png`, `Wind_Anim.png` (aus `Cute_Fantasy/Weather effects/`) | Grasland-Wolkenschatten, Aschewüste-Windböen. Schnee (Frostkamm) braucht kein Sprite, reine Canvas-Punkte |
+| `ui/` | `frame_brown.png`, `round_brown.png`, `glint_strip.png`, `alert.png` | UI-Skin-Rahmen/Rundknöpfe, glint-/alert-Ersatz — alle vier sind Einzelzell-Ausschnitte, siehe Ausnahme unten |
+
+**Bewusst nicht verwendet:** `Church`/`Blacksmith_House` als Amt-Alternativen (Inn
+wirkte im Vergleich am ehesten nach „Amt", reine Optik-Entscheidung), `Tent_*`
+(passt nicht zum Steinhaus-Look der übrigen Gebäude), `Cute_Fantasy_UI/Fonts/*`
+(keine ä/ö/ü/ß-Glyphen im TTF, per `fontTools`-Cmap-Check bestätigt — Systemfont
+bleibt, s. Umsetzungsnotizen G5), `Loading_Icon.png` als Glint-Ersatz (Kreis-
+Spinner, keine Funkel-Optik), restliche `UI_Icons.png`/`UI_Buttons.png`/
+`UI_Frames.png`-Zellen (nur die vier unten dokumentierten Einzelzellen sind
+kopiert, das große Sheet selbst bleibt in `Graphics/`).
+
+**Zusätzliche Ausnahme von „Originaldateinamen"** (wie schon `crate.png`/`pot.png`/
+`cobweb.png` aus G1): vier pixelgenau geschnittene Einzelzellen, weil `addSheet`s
+`'grid'`-Modus keinen Spaltenversatz kennt (nur `rowStart`) — ein Ausschnitt aus
+der Mitte eines Sheets braucht also eine eigene Datei, kein Referenzieren einer
+Zelle im großen Blatt:
+
+- `ui/frame_brown.png` — `UI_Frames.png`, Zelle (0,0), Quelle 0,0 48×48, auf die
+  sichtbare Form zugeschnitten (Bounding-Box 10,10–38,41 im Original).
+- `ui/round_brown.png` — `UI_Buttons.png`, Quelle 96,0 16×16 (Bounding-Box 1,1–15,15).
+- `ui/glint_strip.png` — `UI_Icons.png`, Zeile 3 Spalten 9–11, Quelle 144,48 48×16
+  (voller/halber/leerer blauer Stern als 3-Frame-Zwinker-Ersatz für die alte
+  6-Frame-Sunnyside-Animation — im Pack keine mehrframige Funkel-Animation).
+- `ui/alert.png` — `UI_Icons.png`, Zeile 2 Spalte 12, Quelle 192,32 16×16.
+
 ## Kopierkonvention
 
 - Originaldateinamen aus `Graphics/` behalten.
@@ -137,7 +174,7 @@ Frostkamm nutzt dieselben Grasland-Pilze, s. Umsetzungsnotizen G4).
                 Angels, Volcano/Cowlings+Flying_Skull, ShroomLands, Halloween/Bat)
     dungeon/    Dungeon_1/Dungeon_2-Sets, Objects
     tiles/      Grass/Cliff/Water/Beach/Cobble_Road/FarmLand etc.
-    deco/       Bäume, Tiere, Outdoor decoration, Weather effects
+    deco/       Bäume, Tiere, Outdoor decoration, Buildings, NPCs, Weather
     ui/         Cute_Fantasy_UI
   ```
 - Ausnahme von „Originaldateinamen": aus `Objects/Dungeon_Objects.png` (Sammelblatt

@@ -170,6 +170,13 @@
   .symBtn:hover{border-color:#c9a227;background:#241c10;}
   #schlossMsg{margin-top:9px;font-size:11px;color:#9a8a5f;font-style:italic;text-align:center;}
 
+  /* --- G5: Amtsstube (Dorf-Gebäude, Taste F) — gleiche Bauform wie #schloss --- */
+  #amtFenster{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(320px,calc(100vw - 32px));z-index:22;display:none;
+       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
+  #amtFenster h2{margin:0 0 8px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #amtFenster button{width:100%;font-family:inherit;font-weight:bold;font-size:14px;padding:10px;cursor:pointer;color:#1a1206;
+       background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
+
   #overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(5,3,10,.88);}
   #overlay .panel{text-align:center;color:#e8d9a8;max-width:580px;padding:30px;}
   #overlay h1{font-size:26px;margin:0 0 10px;color:#f4d97a;letter-spacing:2px;text-shadow:0 3px 0 #7a5a10,0 6px 18px #000;text-transform:uppercase;}
@@ -422,6 +429,8 @@
   <div id="schlossMsg">Drei Symbole. Der Code steht im Raum.</div>
 </div>
 
+<div id="amtFenster"></div>
+
 <div id="spellTree">
   <h2>ZAUBERBAUM <span style="font-size:11px;color:#e8d9a8;">Punkte: <span id="spellPtsCount">0</span></span> <span style="cursor:pointer" id="closeSpellBtn">✖</span></h2>
   <div id="spellCols"></div>
@@ -451,15 +460,11 @@ const miniBg = document.createElement('canvas');
 miniBg.width = miniBg.height = 128;
 
 // ===========================================================================
-//  Sprite-Engine — Sunnyside World (danieldiggle.itch.io/sunnyside)
-//  Frei nutzbar inkl. kommerziell, Weiterverkauf der Assets untersagt.
-//
-//  Alle Charakter-Sheets nutzen ein festes 96x64-Frameraster, row-major.
-//  ACHTUNG: die "stripN"-Zahl im Dateinamen ist teils FALSCH (z.B. Goblin
-//  idle_strip9 hat real 8 Frames) — die echte Zahl steht unten im Manifest.
+//  Sprite-Engine — Cute Fantasy (Kenmi, itch.io) seit G5 ausnahmslos. Bis G4
+//  liefen Held/Gegner/Welt schrittweise um (siehe Umsetzungsnotizen G0-G4 in
+//  superduper-grafik-prompt.md), G5 hat die letzten zwei Sunnyside-Sheets
+//  (glint/alert) sowie den nur dafür gebrauchten 'char'-Lademodus abgelöst.
 // ===========================================================================
-const FW = 96, FH = 64;            // Frameraster der Charaktere
-const ANCH_X = 48, ANCH_Y = 40;    // Figurmitte (x) / Fußlinie (y) im Frame
 const ASSETS = 'assets/';
 // Cute-Fantasy-Frisuren (Phase G2): 6 Style x 1 Farbe, damit die Zufallsvielfalt
 // der 6 Sunnyside-Frisuren erhalten bleibt, ohne alle 30 Style/Farb-Kombis zu laden.
@@ -484,10 +489,12 @@ const SHEETS = {};                 // key -> {img, cols, n, fw, fh, ax, ay}
 const SHEET_LIST = [];             // [key, url, n, mode]
 let assetsReady = false, assetsLoaded = 0;
 
-// mode: 'char' = 96x64-Raster, Anker Fußmitte | 'strip' = n Frames nebeneinander,
-//       Anker Fußmitte | 'raw' = ein Bild, Anker oben links (Tileset) |
-//       'grid' = festes fw/fh aus opt, freier Anker (Cute-Fantasy-Dungeon-Sheets)
-function addSheet(key, path, n, mode, opt){ SHEET_LIST.push([key, ASSETS + path, n, mode || 'char', opt]); }
+// mode: 'strip' = n Frames nebeneinander, Anker Fußmitte | 'raw' = ein Bild,
+//       Anker oben links | 'grid' = festes fw/fh aus opt, freier Anker
+//       (Cute-Fantasy-Dungeon-/Rig-/UI-Sheets). Jeder Aufruf übergibt seinen
+//       Modus explizit (G5: der 'char'-Fallback für Sunnyside-Charaktersheets
+//       ist mit den letzten zwei Sheets entfallen).
+function addSheet(key, path, n, mode, opt){ SHEET_LIST.push([key, ASSETS + path, n, mode, opt]); }
 
 // ===========================================================================
 //  Held: Cute-Fantasy-Player-System (Phase G2). Player_Base + 130 Ausrüstungs-
@@ -622,8 +629,8 @@ for(const rig in CF_RIGS){
 }
 
 // Sunnyside-Gegner-Rigs (Goblin/Skelett) sind mit G3 entfernt — alle MONDEF-Typen
-// laufen jetzt auf CF_RIGS oben. Die PNGs bleiben bis G5 ("Sunnyside-Abschied")
-// auf der Platte, s. G3-Umsetzungsnotizen in superduper-grafik-prompt.md.
+// laufen auf CF_RIGS oben. Die PNGs selbst sind mit G5 ("Sunnyside-Abschied") aus
+// dem Repo, s. Umsetzungsnotizen G3/G5 in superduper-grafik-prompt.md.
 
 // --- Welt: Tileset, Deko, VFX (Phase G4, Cute Fantasy) -----------------------
 // Boden-UVs per Pixel-Varianzscan gemessen (nicht die Bounding-Box-Heuristik aus
@@ -661,8 +668,8 @@ addSheet('cfmush_shadow', 'cf/deco/Mushrooms_Purple.png', 4, 'grid', {fw:32, fh:
 addSheet('cfwindmill', 'cf/deco/Windmill.png', 1, 'grid', {fw:64, fh:112, ax:32, ay:110});
 addSheet('fire1', 'cf/deco/Torch_Anim.png', 8, 'strip');
 addSheet('fire2', 'cf/deco/Campfire_Anim.png', 8, 'strip');
-// G3 Schritt 6: Hoftiere auf Cute Fantasy (Animals), ersetzt die Sunnyside-Strips
-// oben. Kein Down/Side/Up-Schema nötig (nur Idle/Lauf) — Zeilen aus
+// G3 Schritt 6: Hoftiere auf Cute Fantasy (Animals). Kein Down/Side/Up-Schema
+// nötig (nur Idle/Lauf) — Zeilen aus
 // tools/sheet-audit.overrides.json _rigTable (cf_animal_*), Ankerhöhe an der
 // jeweiligen Idle-Seitenzeile gemessen (Regel wie bei CF_RIGS oben).
 const CF_ANIMALS = {
@@ -676,12 +683,18 @@ for(const a in CF_ANIMALS){
   addSheet(`cf${a}_idle`, `cf/deco/${ad.file}`, ad.idle[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.idle[0]});
   addSheet(`cf${a}_walk`, `cf/deco/${ad.file}`, ad.walk[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.walk[0]});
 }
-// G5: glint/alert-Ersatz aus dem UI-Pack (Sunnyside-Abschied), Frames per Crop
-// gegen UI_Icons.png bestimmt — Funkeln-Icon Zeile 4 Spalte 10 (0-indiziert),
-// Ausrufezeichen Zeile 6 Spalte 0. Beide 16x16, 'grid' liest die Zeile über
-// rowStart, n=1 friert die Spalte fest (kein horizontales Durchlaufen nötig).
-addSheet('glint', 'cf/ui/UI_Icons.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8, rowStart:4, col:10});
-addSheet('alert', 'cf/ui/UI_Icons.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8, rowStart:6});
+// G5: glint/alert-Ersatz aus UI_Icons.png (Sunnyside-Abschied). 'grid' kennt keinen
+// Spaltenversatz (nur rowStart), deshalb wie in G1 bei crate/pot/cobweb: die
+// gebrauchten Zellen pixelgenau in eigene Dateien geschnitten (Quellkoordinaten
+// unten), Originaldatei bleibt unangetastet in Graphics/. glint_strip.png ist ein
+// 3-Zellen-Streifen (voller/halber/leerer blauer Stern, UI_Icons.png Zeile 3
+// Spalten 9-11) — animFrame lässt daraus ein Zwinker-Funkeln laufen statt der
+// alten 6-Frame-Sunnyside-Animation, im Pack gibt es keine mehrframige Funkel-
+// Animation (gleiche Lücke wie der fehlende Kaktus in G4). alert.png ist eine
+// Einzelzelle (Ausrufezeichen, Zeile 2 Spalte 12), wie das Original ein
+// Ein-Frame-Sprite.
+addSheet('glint', 'cf/ui/glint_strip.png', 3, 'strip');
+addSheet('alert', 'cf/ui/alert.png', 1, 'strip');
 // G3 Schritt 6: Zauber-Projektil für alle 5 Magier statt gezeichnetem Farbkreis,
 // getönt nach bolt.color. Zentrierter Anker (kein Fußpunkt, das Bolt-Objekt trägt
 // x/y als Mittelpunkt, s. enemyBolts-Draw).
@@ -720,6 +733,16 @@ for(const nkey in CF_NPCS){
 // über den Bildschirm, s. Wetter-Update).
 addSheet('cfcloud', 'cf/deco/Weather/Clouds.png', 4, 'grid', {fw:64, fh:64, ax:32, ay:32});
 addSheet('cfwind', 'cf/deco/Weather/Wind_Anim.png', 14, 'strip');
+
+// G5: UI-Skin. Zwei pixelgenau aus UI_Frames.png/UI_Buttons.png geschnittene
+// Einzelzellen (Quellkoordinaten unten, gleiche Methode wie glint/alert oben und
+// die G1-Dungeon-Objekte) — 'raw' lädt sie unverändert, kein Sheet-Raster nötig.
+// bakeUiSkin() unten liest ihre data:/Pfad-URL über SHEETS[key].img.src (nach dem
+// Laden identisch aufgelöst, egal ob Dev-Server oder ASSET_BLOBS-Build) und trägt
+// sie als border-image/background-image in den DOM ein — kein CSS-url() auf eine
+// Datei, das würde der Build nicht miteinbacken (s. Umsetzungsnotizen G5).
+addSheet('cfui_frame', 'cf/ui/frame_brown.png', 1, 'raw');   // UI_Frames.png, Zelle (0,0), 48x48
+addSheet('cfui_round', 'cf/ui/round_brown.png', 1, 'raw');   // UI_Buttons.png, x96-111 y0-15, 16x16
 
 // ===========================================================================
 //  Kammer-Interieur — Cute Fantasy Dungeons (Kenmi, itch.io), Phase G1.
@@ -765,8 +788,7 @@ function loadAssets(){
       if(!img){ console.warn('Sprite fehlt:', url); assetsLoaded++; return; }
       let fw, fh, cols, ax, ay;
       let rowStart = 0;
-      if(mode === 'char'){ fw = FW; fh = FH; cols = Math.max(1, Math.round(img.width/FW)); ax = ANCH_X; ay = ANCH_Y; }
-      else if(mode === 'raw'){ fw = img.width; fh = img.height; cols = 1; ax = 0; ay = 0; }
+      if(mode === 'raw'){ fw = img.width; fh = img.height; cols = 1; ax = 0; ay = 0; }
       else if(mode === 'grid'){ fw = opt.fw; fh = opt.fh; cols = Math.max(1, Math.round(img.width/fw)); ax = opt.ax; ay = opt.ay; rowStart = opt.rowStart || 0; }
       else { fw = img.width/n; fh = img.height; cols = n; ax = fw/2; ay = fh; }
       SHEETS[key] = {img, cols, n, fw, fh, ax, ay, rowStart};
@@ -1468,9 +1490,52 @@ const KESSEL = {x:KESSEL_T.x*TS + TS/2, y:KESSEL_T.y*TS + TS - 4};
 // und die Kachel schon dabei aussparen muss (TDZ sonst bei const weiter unten).
 const KN_T = {x: KESSEL_T.x - 2, y: KESSEL_T.y};
 const KN_POS = {x: KN_T.x*TS + TS/2, y: KN_T.y*TS + TS - 4};
+
+// G5: Dorf-Rechteck um Kessel/Spawn/Knöterich, in Kacheln (inklusive Grenzen).
+// Deckt beide Gebäude-Cluster inklusive Fassadenhöhe ab, damit genMap() dort gar
+// nicht erst Bäume/Felsen streut (Streuung läuft vor der Freiräumung, s. genMap).
+const VILLAGE = {x0:6, y0:33, x1:24, y1:47};
+function inVillageT(tx, ty){ return tx >= VILLAGE.x0 && tx <= VILLAGE.x1 && ty >= VILLAGE.y0 && ty <= VILLAGE.y1; }
+function inVillagePx(x, y){ return inVillageT(Math.floor(x/TS), Math.floor(y/TS)); }
+
+// Gebäude-Footprints: {x0,y0,w,h} = blockierte Kacheln (Fußabdruck, nicht die volle
+// Sprite-Höhe — die Fassade ragt optisch darüber hinaus, wie bei cfwindmill schon
+// seit G4 üblich). sheet zeigt auf die oben registrierten 'big'-Decos. amt:true
+// markiert das Gebäude, das scanAktion()/AKT_AMT anbietet.
+const VILLAGE_BUILDINGS = [
+  {sheet:'cfbld_amt',     x0:10, y0:35, w:8, h:2, amt:true},
+  {sheet:'cfbld_haus1',   x0:7,  y0:35, w:3, h:2},
+  {sheet:'cfbld_markt',   x0:18, y0:36, w:6, h:1},
+  {sheet:'cfbld_haus2',   x0:8,  y0:44, w:5, h:2},
+  {sheet:'cfbld_haus3',   x0:14, y0:44, w:5, h:2},
+  {sheet:'cfbld_scheune', x0:19, y0:44, w:4, h:2},
+];
+// Fußpunkt der Amt-Tür für die Kontext-Aktion (Mitte der Südkante des Footprints).
+const AMT_TUER = (() => {
+  const b = VILLAGE_BUILDINGS.find(b => b.amt);
+  return {x: (b.x0 + b.w/2)*TS, y: (b.y0 + b.h)*TS - 2};
+})();
+
+// NPC-Staffage: Heimatanker im Dorf, Wanderradius bleibt klein (anders als critters,
+// die frei über die ganze Karte abprallen) — sonst verlassen sie das Dorf sichtbar.
+const NPC_DEFS = [
+  {key:'bob',  tx:8,  ty:38},
+  {key:'katy', tx:20, ty:39},
+  {key:'mike', tx:16, ty:46},
+];
 let trees = [];
-const decos = [];      // Pilze, Windmühle — reine Optik, keine Kollision
+const decos = [];      // Pilze, Windmühle, Dorf-Gebäude (big:true) — reine Optik, keine Kollision
 const critters = [];   // Hühner/Schafe/Kühe, wandern im Grasland
+const npcs = [];        // G5: Dorf-Staffage, Wanderradius um einen Heimatanker (kein freies Abprallen wie critters)
+
+// G5: Wetter, rein optisch. Eigene Sub-Caps (keine particles[]-Producer, s. MAX_PARTICLES-
+// Kommentar weiter unten) — Wolken sind ohnehin kein particles-Fall, Schnee/Wind bekommen
+// je einen eigenen kleinen Deckel, damit ein zweiter Producer den 900er-Deckel nicht umgeht.
+const weatherClouds = [];   // Grasland, driften über die ganze Karte, persistent wie trees/decos
+const weatherSnow = [];     // Frostkamm, kontinuierlich nachgespeist
+const weatherWind = [];     // Aschewüste, gelegentliche Böen
+const WEATHER_SNOW_CAP = 40, WEATHER_WIND_CAP = 6;
+let windGustT = rr(3, 8);
 
 function makeCanvas(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
 
@@ -1661,9 +1726,18 @@ function genMap(){
       }
     }
   }
-  // Dorfanger um den Kessel freiräumen, sonst wächst ihm ein Baum in den Topf
-  for(let y=KESSEL_T.y-2; y<=KESSEL_T.y+1; y++)
-    for(let x=KESSEL_T.x-2; x<=KESSEL_T.x+2; x++) setT(x,y,G_PATH);
+  // Dorf-Rechteck komplett freiräumen (vorher nur der 5x4-Kessel-Anger), sonst
+  // wächst der Streuung von oben ein Baum ins Gebäude. Muss vor dem Baum-Sammel-
+  // Loop und dem Deko-Streu-Loop unten passieren (Regressionsordnung wie bisher).
+  for(let y=VILLAGE.y0; y<=VILLAGE.y1; y++)
+    for(let x=VILLAGE.x0; x<=VILLAGE.x1; x++) setT(x,y,G_PATH);
+  // Gebäude-Footprints blockieren (G_WALL, s. VILLAGE_BUILDINGS oben). WALKABLE ist
+  // eine Whitelist (index.html Zeile ~1410), G_WALL steht nicht drin — bereits
+  // ausreichend für Kollision, initFloorGraphics() hat im Oberwelt-Zweig keinen
+  // G_WALL-Fall und backt die Kachel als Gras; das Gebäude-Sprite deckt sie ab.
+  for(const b of VILLAGE_BUILDINGS)
+    for(let y=b.y0; y<b.y0+b.h; y++)
+      for(let x=b.x0; x<b.x0+b.w; x++) setT(x,y,G_WALL);
   for(let i=0;i<MW;i++){ for(let b=0;b<2;b++){ setT(i,b,G_TREE); setT(i,MH-1-b,G_TREE); setT(b,i,G_TREE); setT(MW-1-b,i,G_TREE); } }
   for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) {
     const t = T(x,y);
@@ -1692,8 +1766,14 @@ function genMap(){
     decos.push({x:x*TS+TS/2, y:y*TS+TS-4, sheet:rng()<0.5?'cfmush1':'cfmush2',
                 phase:rng()*10, scale:1.4});
   }
-  // Windmühle als Landmarke nahe dem Startpunkt
-  decos.push({x:19*TS, y:36*TS, sheet:'cfwindmill', phase:0, scale:1, big:true});
+  // Windmühle als Landmarke, ostwärts neben dem Dorf (G5 hat das alte (19,36)
+  // ans neue Markt-Gebäude verloren — s. VILLAGE_BUILDINGS, Umsetzungsnotizen G5).
+  decos.push({x:26*TS, y:38*TS, sheet:'cfwindmill', phase:0, scale:1, big:true});
+  // G5: Dorf-Gebäude als 'big'-Decos, Fußanker Mitte der Südkante des Footprints
+  // (gleiche Konvention wie jede andere Fußpunkt-Prop hier).
+  for(const b of VILLAGE_BUILDINGS){
+    decos.push({x:(b.x0 + b.w/2)*TS, y:(b.y0 + b.h)*TS - 2, sheet:b.sheet, phase:0, scale:1, big:true});
+  }
   // Nach y sortiert halten — der Renderer sucht das sichtbare Band binär statt linear.
   trees.sort((a,b)=>a.y-b.y); decos.sort((a,b)=>a.y-b.y);
 
@@ -1703,7 +1783,7 @@ function genMap(){
   for(let i=0;i<5;i++){
     for(let tries=0; tries<40; tries++){
       const tx = ri(8, MW-9), ty = ri(30, 50);
-      if(!walkT(tx,ty)) continue;
+      if(!walkT(tx,ty) || inVillageT(tx,ty)) continue;   // G5: Dorfplatz bleibt den NPCs vorbehalten
       // Beide Sheet-Keys beim Spawn fest anlegen (nicht im Draw-Case zusammenbauen,
       // Regressionsregel 4 — 130-Mob-Horde-Lektion gilt auch für Ambiente-Tiere).
       critters.push({x:tx*TS+16, y:ty*TS+16, sheetIdle:`cf${CRITTERS[i]}_idle`, sheetWalk:`cf${CRITTERS[i]}_walk`, flip:false,
@@ -1711,6 +1791,29 @@ function genMap(){
       break;
     }
   }
+
+  // --- G5: Dorf-NPCs — Staffage mit kleinem Wanderradius um einen Heimatanker ---
+  npcs.length = 0;
+  for(const nd of NPC_DEFS){
+    let tx = nd.tx, ty = nd.ty;
+    if(!walkT(tx,ty)){                       // Heimatanker landete auf einer nicht-begehbaren Kachel
+      for(let tries=0; tries<20 && !walkT(tx,ty); tries++){
+        tx = clamp(nd.tx + ri(-2,2), VILLAGE.x0+1, VILLAGE.x1-1);
+        ty = clamp(nd.ty + ri(-2,2), VILLAGE.y0+1, VILLAGE.y1-1);
+      }
+    }
+    const homeX = tx*TS+16, homeY = ty*TS+16;
+    npcs.push({key:nd.key, homeX, homeY, x:homeX, y:homeY, sheetIdle:`cfnpc_${nd.key}_idle`, sheetWalk:`cfnpc_${nd.key}_walk`,
+               flip:false, vx:0, vy:0, restT:rr(0,3), phase:rr(0,10)});
+  }
+
+  // G5: Wolkenschatten übers Grasland, driften über die ganze Kartenbreite (nicht
+  // nur übers Dorf), persistent wie trees/decos (kein Neubacken bei startShift()).
+  weatherClouds.length = 0;
+  for(let i=0;i<5;i++){
+    weatherClouds.push({x: rr(0, MW*TS), y: rr(28*TS, 52*TS), vx: rr(6,14)*(Math.random()<0.5?1:-1), variant: ri(0,3)});
+  }
+
   initFloorGraphics();
 }
 genMap();
@@ -2145,7 +2248,7 @@ const MAL = ['', 'einmal', 'zweimal', 'dreimal', 'viermal', 'fünfmal'];
 const malWort = n => MAL[n] || (n + '-mal');
 
 const keysDown = {w:false, a:false, s:false, d:false};
-const PLAYER_SC = 1.8;                                   // Sunnyside-Held auf ~34 px Höhe
+const PLAYER_SC = 1.8;                                   // Skalierung des CF-Helden (hero_baked), G3s psc-Grundwert (1,2) ist PLAYER_SC/1,5
 const player = {
   x:SPAWN.x, y:SPAWN.y, r:10, hp:70, mana:40, maxMana:40, level:1, xp:0, gold:0, potions:2,
   dir:0, faceLeft:false, mvx:0, mvy:0, attackCd:0, swingT:0, swingDir:0, attackMode:'sword', hurtT:0, dead:false,
@@ -2306,13 +2409,11 @@ function spellAimWorld(){                          // Weltziel folgt dem Spieler
 }
 function enterTouchMode(){ touchMode = true; document.body.classList.add('touch'); }
 
-// Optik-Felder: rig ('goblin'|'skel' Sunnyside, oder ein CF_RIGS-Key ab G3),
-// tint/tintA (eingefärbte Sheet-Kopie), sc (Skalierung), scx (extra Breite),
-// alpha, fly (Schwebe-Bob statt Lauf-Bob).
-// Das Skelett-Rig hat KEINE Zauber-Animation -> jeder Magier läuft auf Goblin.
+// Optik-Felder: rig (CF_RIGS-Key), tint/tintA (eingefärbte Sheet-Kopie),
+// sc (Skalierung), scx (extra Breite), alpha, fly (Schwebe-Bob statt Lauf-Bob).
 // G3 (Schritt 3): psc skaliert zusätzlich zu sc, gleicht die CF-Rig-Pixelgröße
 // an den Helden an (psc=1.2 entspricht PLAYER_SC bei sc:1.5, s. drawMon/drawCorpse).
-// Fehlt psc, gilt 1 (Sunnyside-Rigs unverändert). deathFps ersetzt die feste 11
+// Fehlt psc, gilt 1. deathFps ersetzt die feste 11
 // in killMon/drawCorpse, damit kurze CF-Death-Zeilen (4 statt 9 Frames) nicht
 // doppelt so schnell durchlaufen und dann einfrieren; fehlt deathFps, gilt 11.
 const MONDEF = {
@@ -2400,6 +2501,7 @@ function placeMonsters(){
       const tx=ri(4,MW-5), ty=ri(4,MH-5);
       if(!walkT(tx,ty) || dist2(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
+      if(inVillageT(tx,ty)) continue;            // G5: das Dorf bleibt monsterfrei
       const biome = ty<26 ? 'snow' : (ty>54 ? 'sand' : 'grass');
       const roster = BIOME_MOBS[biome];
       makeMon(roster[Math.floor(rng()*roster.length)], tx*TS+16, ty*TS+16);
@@ -3351,7 +3453,7 @@ function betreteKammer(tuer){
   knIdleT = 0;
   if(!kn.flags.hatKammerBetreten){ kn.flags.hatKammerBetreten = true; saveKn(); }
   owSave = {mapCopy: map.slice(), trees, decos: decos.slice(), critters: critters.slice(),
-            monsters: monsters.slice(), drops: drops.slice(), boss, portal,
+            npcs: npcs.slice(), monsters: monsters.slice(), drops: drops.slice(), boss, portal,
             level: currentLevel, px: player.x, py: player.y};
 
   const kinds = waehleModule(tuer.diff);
@@ -3400,7 +3502,7 @@ function betreteKammer(tuer){
   // Wandfelsen nur auf den Wänden, die an begehbaren Boden grenzen — das ist der
   // sichtbare Innenring. Der Rest der Karte bleibt gebackene Dunkelheit.
   baueWandProps();
-  decos.length = 0; critters.length = 0;
+  decos.length = 0; critters.length = 0; npcs.length = 0;
   drops.length = 0; corpses.length = 0; floaters.length = 0;
   projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   portal = null;
@@ -3478,6 +3580,7 @@ function verlasseKammer(){
   trees = owSave.trees;
   decos.length = 0; for(const d of owSave.decos) decos.push(d);
   critters.length = 0; for(const c of owSave.critters) critters.push(c);
+  npcs.length = 0; for(const n of owSave.npcs) npcs.push(n);
   monsters.length = 0; for(const m of owSave.monsters) monsters.push(m);
   drops.length = 0; for(const d of owSave.drops) drops.push(d);
   corpses.length = 0; floaters.length = 0;
@@ -3873,7 +3976,7 @@ function modulGeloest(k, mod){
 // --- Aktionen (Taste F / Kontext-Button) ------------------------------------
 // Kein Closure-Bau pro Frame: der beste Kandidat landet in drei festen Feldern.
 let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9, AKT_AMT=10;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -3902,6 +4005,7 @@ function scanAktion(dt){
     // Phase 5: Knöterich bietet "Nachfragen" nur, wenn schon einmal ein Zettel gezeigt wurde.
     if(kn.history.length) aktBiete(KN_POS.x, KN_POS.y, AKT_NACHFRAGE, null, 'Nachfragen');
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
+    aktBiete(AMT_TUER.x, AMT_TUER.y, AKT_AMT, null, 'Amtsstube');   // G5: Dorf-Gebäude
     return;
   }
   const k = kammer;
@@ -3927,7 +4031,36 @@ function fuehreAktion(){
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
     case AKT_NACHFRAGE: knNachfragen(); break;
+    case AKT_AMT:     amtFensterOeffnen(); break;
   }
+}
+
+// --- G5: Amtsstube-Panel (Kontext-Taste F am Amt-Gebäude) -------------------
+// Reine Anzeige, kein Kauf (der bleibt showDorf()/dem Schichtende vorbehalten,
+// s. Plan-Entscheidung) — nur Bankguthaben/Ausbauten-Überblick plus die Option,
+// die laufende Schicht freiwillig zu beenden. state bleibt 'play', solange das
+// Fenster offen ist (wie #schloss/#kessel auch), erst "Feierabend nehmen" wechselt
+// nach 'feierabend' über den bestehenden endShift()-Weg.
+let amtFensterOpen = false;
+function amtFensterOeffnen(){
+  amtFensterOpen = true;
+  el('amtFenster').style.display = 'block';
+  renderAmtFenster();
+}
+function amtFensterSchliessen(){ amtFensterOpen = false; el('amtFenster').style.display = 'none'; }
+function renderAmtFenster(){
+  const rows = AUSBAU_DEFS.map(d => `<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;">
+    <span>${d.name}</span><span style="color:#c9b98a;">${d.unit(amt.ausbauten[d.key])}</span></div>`).join('');
+  el('amtFenster').innerHTML = `
+    <h2>🏛 Amtsstube <span style="cursor:pointer;font-size:14px;" onclick="amtFensterSchliessen()">✖</span></h2>
+    <p style="font-size:12px;color:#9a8a5f;margin:0 0 8px;">Schicht ${amt.schichten} · Bankguthaben: 💰 ${amt.bankGold}</p>
+    <div style="text-align:left;">${rows}</div>
+    <button onclick="amtFeierabendNehmen()" style="width:100%;margin-top:12px;">FEIERABEND NEHMEN</button>
+  `;
+}
+function amtFeierabendNehmen(){
+  amtFensterSchliessen();
+  state = 'feierabend'; endShift('amt');
 }
 
 // --- Symbolschloss-Panel ----------------------------------------------------
@@ -4584,7 +4717,11 @@ function update(dt){
   {
     const bossFight = !!(boss && !boss.dead && boss.aggro);
     MUS.layer('kampf', bossFight);
-    MUS.goto(bossFight && currentLevel === 2 ? 'boss' : zoneForLevel(currentLevel));
+    // G5: Dorf-Zone übersteuert die Oberwelt-Musik, solange der Spieler im
+    // Dorf-Rechteck steht — zoneForLevel() selbst bleibt unangetastet (kennt
+    // Kammer/Schattenland-Vorrang weiterhin nicht, das ist hier nicht betroffen).
+    const inVillage = currentLevel === 1 && !kammer && inVillagePx(player.x, player.y);
+    MUS.goto(bossFight && currentLevel === 2 ? 'boss' : inVillage ? 'village' : zoneForLevel(currentLevel));
     MUS.layer('gefahr', !player.dead && player.hp < derived.maxHp*0.3);
     MUS.setOvertime(CONFIG.schichtModus
       ? (shiftEndPending ? Math.min(1, 0.5 + overtimeT/120) : Math.max(0, 1 - shiftT/30)*0.5)
@@ -4652,7 +4789,8 @@ function update(dt){
     }
   } else if(!kammer){
     const ty = player.y / TS;                       // Biom-Anzeige statt statischem "Grasland"
-    setTxt('zone', (ty < 26 ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
+    setTxt('zone', (inVillagePx(player.x, player.y) ? '📍 Dorf (Stufe ' + player.level + ')'   // G5
+                 : ty < 26 ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
                  : ty > 54 ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
                            : '📍 Grasland, Ablage A (Stufe ' + player.level + ')') + schichtHudSuffix());
   }
@@ -4724,6 +4862,38 @@ function update(dt){
   cam.x = lerp(cam.x, player.x - canvas.width / 2, 0.1);
   cam.y = lerp(cam.y, player.y - canvas.height / 2, 0.1);
   if(kammer) kammerKamera();      // Korridor mittig halten statt halbes Bild Leere zu zeigen
+
+  // G5: Wetter-Update — reine Optik, eigene Sub-Caps (WEATHER_SNOW_CAP/WEATHER_WIND_CAP),
+  // kein particles[]-Producer (Regressionsregel: MAX_PARTICLES gilt nur für spawnImpactParticles,
+  // ein zweiter Producer müsste eigenständig deckeln, was hier über die Sub-Caps passiert).
+  for(const cl of weatherClouds){
+    cl.x += cl.vx * dt;
+    if(cl.x < -80) cl.x = MW*TS + 80; else if(cl.x > MW*TS + 80) cl.x = -80;
+  }
+  if(currentLevel === 1 && !kammer){
+    const pyT = player.y / TS;
+    if(pyT < 26 && weatherSnow.length < WEATHER_SNOW_CAP && Math.random() < 0.6){
+      weatherSnow.push({x: cam.x + rr(-40, canvas.width+40), y: cam.y - 20, vx: rr(-8,8), vy: rr(28,48), life: rr(3,5)});
+    }
+    if(pyT > 54){
+      windGustT -= dt;
+      if(windGustT <= 0 && weatherWind.length < WEATHER_WIND_CAP){
+        windGustT = rr(4, 9);
+        const fromLeft = Math.random() < 0.5;
+        weatherWind.push({x: fromLeft ? cam.x - 40 : cam.x + canvas.width + 40,
+                           y: rr(cam.y+40, cam.y+canvas.height-40),
+                           vx: (fromLeft?1:-1) * rr(90,140), phase: 0});
+      }
+    }
+  }
+  for(let i=weatherSnow.length-1; i>=0; i--){
+    const s = weatherSnow[i]; s.x += s.vx*dt; s.y += s.vy*dt; s.life -= dt;
+    if(s.life <= 0) weatherSnow.splice(i,1);
+  }
+  for(let i=weatherWind.length-1; i>=0; i--){
+    const w = weatherWind[i]; w.x += w.vx*dt; w.phase += dt;
+    if(w.phase > 1.8) weatherWind.splice(i,1);
+  }
 
   // Projektile / Partikel Update
   for(let i=particles.length-1; i>=0; i--){
@@ -4879,6 +5049,29 @@ function update(dt){
     }
   }
 
+  // G5: Dorf-NPCs — wie critters, aber an einen Heimatanker gebunden (Radius 40px
+  // ≈ 1,25 Kacheln), sonst würden sie das Dorf sichtbar verlassen. Steuert bei
+  // Ferne vom Anker gezielt zurück statt rein zufällig, sonst dauert die Rückkehr
+  // (leichte Bias-Streuung ±0,6 rad, damit es nicht wie ein Schienenweg aussieht).
+  const NPC_HOME_R = 40;
+  for(const n of npcs){
+    n.restT -= dt;
+    if(n.restT <= 0){
+      n.restT = rr(1.5, 4);
+      if(Math.random() < 0.4){ n.vx = 0; n.vy = 0; }
+      else {
+        const distHome = Math.hypot(n.x-n.homeX, n.y-n.homeY);
+        const a = distHome > NPC_HOME_R ? Math.atan2(n.homeY-n.y, n.homeX-n.x) + rr(-0.6,0.6) : rr(0, Math.PI*2);
+        n.vx = Math.cos(a)*14; n.vy = Math.sin(a)*14; n.flip = n.vx < 0;
+      }
+    }
+    if(n.vx || n.vy){
+      const nx = n.x + n.vx*dt, ny = n.y + n.vy*dt;
+      if(walkPx(nx, n.y) && Math.hypot(nx-n.homeX, n.y-n.homeY) <= NPC_HOME_R) n.x = nx; else n.vx = -n.vx;
+      if(walkPx(n.x, ny) && Math.hypot(n.x-n.homeX, ny-n.homeY) <= NPC_HOME_R) n.y = ny; else n.vy = -n.vy;
+    }
+  }
+
   if(floaters.length > 70) floaters.splice(0, floaters.length - 70);   // Schadenszahlen der Horde deckeln
   for(let i = floaters.length - 1; i >= 0; i--){ const f = floaters[i]; f.y -= 24 * dt; f.t -= dt; if(f.t <= 0) floaters.splice(i, 1); }
 }
@@ -4888,7 +5081,7 @@ let frameNo = 0;
 // Zeichenliste: feste Einträge aus einem Pool, damit pro Frame weder Objekte noch
 // Closures anfallen (das war bei voller Horde der größte GC-Verursacher).
 const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5, DRAW_KESSEL=6,
-      DRAW_KAMOBJ=7, DRAW_KAMTUER=8, DRAW_ALTER=9;
+      DRAW_KAMOBJ=7, DRAW_KAMTUER=8, DRAW_ALTER=9, DRAW_NPC=10;
 const drawPool = [], drawList = [];
 let drawCount = 0;
 const byY = (a,b)=> a.y - b.y;
@@ -4986,6 +5179,19 @@ function render(){
     }
   }
 
+  // G5: Wetter, reine Optik, vor der y-sortierten Liste (wie particles oben).
+  if(currentLevel === 1 && !kammer){
+    ctx.globalAlpha = 0.22;                      // Wolkenschatten: weich, deckt nichts ab
+    for(const cl of weatherClouds) drawSprite('cfcloud', cl.variant, cl.x, cl.y, 2.2);
+    ctx.globalAlpha = 1;
+    for(const s of weatherSnow){
+      ctx.fillStyle = '#eaf6ff'; ctx.globalAlpha = Math.min(1, s.life);
+      ctx.beginPath(); ctx.arc(s.x, s.y, 2, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    for(const w of weatherWind) drawSprite('cfwind', animFrame('cfwind', w.phase, 14, false), w.x, w.y, 2, w.vx < 0);
+  }
+
   const cullL = cam.x - 80, cullR = cam.x + canvas.width + 80;
   const cullT = cam.y - 120, cullB = cam.y + canvas.height + 80;
   const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
@@ -5003,6 +5209,7 @@ function render(){
   }
   if(currentLevel === 1){                               // Hoftiere, Kessel und Kammertüren gibt es nur im Wald
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
+    for(const n of npcs) if(vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
     if(vis(KESSEL.x, KESSEL.y)) pushDraw(KESSEL.y, DRAW_KESSEL, null);
     if(vis(KN_POS.x, KN_POS.y)) pushDraw(KN_POS.y, DRAW_ALTER, null);
     for(const t of kammerTueren) if(vis(t.x, t.y)) pushDraw(t.y, DRAW_KAMTUER, t);
@@ -5034,6 +5241,10 @@ function render(){
                          const moving = !!(o.vx||o.vy);
                          const ckey = moving ? o.sheetWalk : o.sheetIdle;
                          drawSprite(ckey, animFrame(ckey, gameT + o.phase, moving ? 7 : 3), o.x, o.y+4, 1.15, o.flip); break; }
+      case DRAW_NPC: { drawShadowEllipse(o.x, o.y+4, 9);   // G5: Dorf-Staffage, gleiches Muster wie DRAW_CRITTER
+                      const nmoving = !!(o.vx||o.vy);
+                      const nkey = nmoving ? o.sheetWalk : o.sheetIdle;
+                      drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, 1, o.flip); break; }
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
       case DRAW_KESSEL:  drawKessel(); break;
@@ -5556,6 +5767,7 @@ function startShift(){
   if(kesselOpen) toggleKessel();
   if(invOpen) toggleInventory();
   if(spellTreeOpen) toggleSpellTree();
+  if(amtFensterOpen) amtFensterSchliessen();
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;
   attackTouch = null; lockedTarget = null;
   el('bossbar').style.display = 'none';
@@ -5597,6 +5809,7 @@ function startShift(){
 // dadurch unabhängig von diesem Reset garantiert erhalten.
 function endShift(reason){
   if(kesselOpen) toggleKessel();
+  if(amtFensterOpen) amtFensterSchliessen();
 
   const carryGold = Math.round(player.gold * CONFIG.goldUebertragAnteil);
   const kontingent = CONFIG.zutatenMitnahmeBasis + amt.ausbauten.kontingent*2;
@@ -5627,8 +5840,9 @@ function endShift(reason){
 
   saveAmt();
 
-  const titel = reason === 'tod' ? 'FEIERABEND' : 'DIENSTSCHLUSS';
+  const titel = reason === 'tod' ? 'FEIERABEND' : reason === 'amt' ? 'FEIERABEND' : 'DIENSTSCHLUSS';
   const anlass = reason === 'tod' ? 'Der Dienst endete unsanft. Der nächste Trupp übernimmt.'
+               : reason === 'amt' ? 'Freiwillig Feierabend genommen. Die Akte wartet bis morgen.'
                                    : 'Die Uhr hat entschieden. Akten schließen sich von selbst.';
 
   document.getElementById('ovPanel').innerHTML = `
@@ -5735,6 +5949,7 @@ window.addEventListener('keydown', e => {
     else if(spellTreeOpen) toggleSpellTree();
     else if(kesselOpen) toggleKessel();
     else if(schlossOpen) schlossZu();
+    else if(amtFensterOpen) amtFensterSchliessen();
     else if(kammer) knAbbruchKammer();          // Abbruch der Kammer, ohne Beute, ohne Softlock
   }
 });
@@ -6031,12 +6246,53 @@ function assertRigRegistrations(){
   }
 }
 
+// G5: UI-Skin. SHEETS[key].img.src ist bereits die richtige URL für den jeweiligen
+// Kontext (Dev-Server: relativer Pfad, dist/index.html-Build: data:-URI aus
+// ASSET_BLOBS) — kein CSS-url() auf eine Datei nötig, das würde der Build nicht
+// erfassen (s. Kommentar bei den addSheet-Aufrufen oben). border-image nutzt die
+// bestehende border-width jedes Elements fürs Layout (border-image-width betrifft
+// nur die Bildskalierung, keine Kastenmaße — die kalibrierten Mobile-Breakpoints
+// aus den Media Queries bleiben unangetastet). Touch-Contract unberührt: es werden
+// ausschließlich background-image/border-image-* gesetzt, keine pointer-events/
+// touch-action/IDs/DOM-Struktur angefasst.
+function bakeUiSkin(){
+  const frameUrl = SHEETS['cfui_frame'].img.src;
+  const roundUrl = SHEETS['cfui_round'].img.src;
+
+  // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
+  // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
+  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel']){
+    const el = document.querySelector(sel); if(!el) continue;
+    el.style.borderImageSource = `url("${frameUrl}")`;
+    el.style.borderImageSlice = '2 2 5 2';
+    el.style.borderImageWidth = '6px';
+    el.style.borderImageRepeat = 'stretch';
+  }
+  // Gürtel/Knöpfe: gleiche Rahmengrafik, dünner aufgetragen (kleinere Elemente).
+  document.querySelectorAll('.beltSlot').forEach(el => {
+    el.style.borderImageSource = `url("${frameUrl}")`;
+    el.style.borderImageSlice = '2 2 5 2';
+    el.style.borderImageWidth = '4px';
+    el.style.borderImageRepeat = 'stretch';
+  });
+  // Runde Elemente (Orbs/Röhren, Touch-Rundknöpfe): passendes rundes Button-Sprite
+  // als Hintergrund. #hpFill/#manaFill liegen als Kind-Divs darüber und bleiben
+  // unverändert — das Rundknopf-Sprite scheint nur im ungefüllten Teil durch,
+  // was optisch wie ein leeres Glas/Sockel wirkt (kein neuer Schreibpfad pro Frame,
+  // updateHUD() ändert weiterhin nur height/background-size der Kinder).
+  document.querySelectorAll('.orbWrap, .tBtn, #attackBtn').forEach(el => {
+    el.style.backgroundImage = `url("${roundUrl}")`;
+    el.style.backgroundSize = '100% 100%';
+  });
+}
+
 loadAssets().then(() => {
   clearInterval(loadTick);
   assetsReady = true;
   bakeHeroSheet();
   assertRigRegistrations();
   prewarmMonsterTints();
+  bakeUiSkin();
   initFloorGraphics();
   showStartScreen();
   requestAnimationFrame(loop);

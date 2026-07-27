@@ -711,6 +711,196 @@ war die einzige Runde, die einen sichtbaren zweiten Anlauf brauchte. Die
 `_Anim`-Namenskonvention des Packs ist zuverlässig; alles ohne dieses Suffix vorher
 per Bild-Ansicht (nicht nur Bounding-Box-Zahlen) auf Varianten-vs-Animation prüfen.
 
-### G5
+### G5 — Dorf, UI-Skin, Sunnyside-Abschied (erledigt)
 
-(noch offen)
+**Vorbedingung:** Im Arbeitsbaum lag beim Start unabhängig fertige, unpushte
+W1-Terminologiearbeit einer anderen Session (bereits committet als `a67c9c3` durch
+diese Session, bevor G5 begann — keine Vermischung mit dem G5-Diff).
+
+**Nutzerentscheidungen aus der Rückfrage vor der Umsetzung:**
+
+- **Amt-Zugang:** Kombination aus „Feierabend melden" und „Schalterfenster" — ein
+  neues, leichtes Panel an der Amt-Tür (Taste F) zeigt Bankguthaben/Ausbauten
+  (reine Anzeige, kein Kauf) und bietet „Feierabend nehmen", das den bestehenden
+  `endShift()`-Weg auslöst. `showDorf()`/`startShift()` selbst unangetastet.
+- **Dorf-Ort:** um `KESSEL_T`/`SPAWN`/`KN_T` herum (die lagen schon alle dicht
+  beieinander), kein neuer Ort auf der Karte.
+- **UI-Skin:** echte Bildgrafik aus `Cute_Fantasy_UI`, nicht nur Farbangleich in CSS.
+- **Wetter:** Wolkenschatten (Grasland), Schneeflocken (Frostkamm), Windböen
+  (Aschewüste), Schattenland bewusst ohne (Horde-Frame-Budget hat Vorrang).
+
+**Korrekturen am Prompt-Kontext oben (für die Nachwelt, falls je ein G6 kommt):**
+
+1. **`UI_Buttons.png`/`UI_Frames.png` sind keine sauberen Grid-Sheets.** Zellen
+   sind pro Zeile unterschiedlich breit (Pillen 30px, Rundknöpfe 14px, in
+   derselben Datei) — per Alpha-Lauflängen-Scan gemessen (`px[x,y][3]>0`-Läufe),
+   nicht mit `sheet-audit.mjs` (das nimmt ein festes Raster an). `addSheet`s
+   `'grid'`-Modus kennt außerdem keinen Spaltenversatz, nur `rowStart` — für
+   einzelne Zellen mitten im Blatt (glint, alert, Rahmen, Rundknopf) blieb nur
+   der G1-Weg: pixelgenau in eigene Dateien schneiden (Quellkoordinaten in
+   `assets/cf/README.md`).
+2. **`Cute_Fantasy_UI`-Fonts haben keine deutschen Sonderzeichen.**
+   `CuteFantasy-5x9.ttf` per `fontTools`-Cmap-Check geprüft: weder ä/ö/ü/ß noch
+   die Großschreibungen sind enthalten (0 von 7 Testzeichen). Systemfont
+   (`'Courier New', ui-monospace, monospace`) bleibt deshalb unverändert — der
+   Prompt-Text hatte diesen Fall selbst als Bedingung vorgesehen.
+3. **Der GitHub-Pages-Live-Check aus der Abnahme setzt eine Build-Umstellung
+   voraus, die es noch nicht gab.** Pages ist aktiv, Quelle bisher `main:/` —
+   das liefert die Quell-`index.html` aus, die `assets/cf/*` referenziert, und
+   die liegen seit G1 lizenzbedingt gitignored, also nicht im Repo. Die
+   Live-Seite war damit spätestens seit G1 grafisch kaputt, unabhängig von G5.
+   Lösung siehe „Bewusst nicht automatisch gemacht" unten.
+
+**Entscheidungen:**
+
+- **Dorf-Rechteck** `VILLAGE = {x0:6,y0:33,x1:24,y1:47}` (18×15 Kacheln), deckt
+  beide Gebäude-Cluster inklusive Fassadenhöhe ab. Wird in `genMap()` an exakt der
+  Stelle freigeräumt, an der bisher nur der 5×4-Kessel-Anger stand (Reihenfolge
+  Streuung → Teiche/Lava → Freiräumung bleibt unverändert, sonst würden Bäume im
+  Dorf landen).
+- **6 Gebäude statt der im Plan erwogenen 6–8:** Amt (`Inn_Blue.png`, größtes und
+  eindeutigstes Gebäude im Pack — Church/Blacksmith wirkten im Vergleich weniger
+  nach „Amt"), 3 Häuser (Wood/Wood/Stone), Markt (`Market_Stalls.png`), Scheune
+  (`Barn_Base_Red.png`). Zwei Cluster (Nord: Amt+Haus1+Markt, Süd: 2 Häuser+
+  Scheune), Kessel/Knöterich bleiben in der Mitte dazwischen — beide standen
+  schon dort, kein Positions-Update nötig trotz Prompt-Wortlaut „Kessel wandert
+  an seinen Dorfplatz".
+- **Kollision über `G_WALL`** (bislang nur in Kammern genutzt): Gebäude-Footprint
+  (nicht die volle Sprite-Höhe, nur der begehbare Fußabdruck) wird nach der
+  allgemeinen Dorf-Freiräumung auf `G_WALL` gesetzt. `WALKABLE` ist eine
+  Whitelist, `initFloorGraphics()` hat im Oberwelt-Zweig keinen `G_WALL`-Fall und
+  backt die Kachel als Gras — passt optisch, weil das Gebäude-Sprite (als
+  `big:true`-Deco wie `cfwindmill`) die Fläche ohnehin überdeckt. Kein neuer
+  `DRAW_*`-Kind nötig, der bestehende `DRAW_DECO`-Pfad reicht.
+- **Windmühle musste umziehen** (alte Position (19,36) kollidierte mit dem neuen
+  Markt-Gebäude) — jetzt bei (26,38), ostwärts neben dem Dorf.
+- **NPC-Staffage (`npcs[]`)** nach dem Vorbild von `critters[]`, aber mit
+  Heimatanker + Radius (40px) statt freiem Abprallen, sonst verlassen sie das
+  Dorf sichtbar. 3 Figuren (`Farmer_Bob`, `Bartender_Katy`, `Miner_Mike`,
+  64×64-Raster wie `Angel_1/2`, idle=Zeile1/walk=Zeile4 per Crop bestätigt — die
+  „mittlere Zeile ist immer die Seitenansicht"-Regel aus G3 hält auch hier).
+  `npcs[]` wird wie `decos`/`critters` in `owSave` gesichert und beim
+  Kammer-Verlassen wiederhergestellt (gleiches Muster, gleiche Zeilen).
+- **Amt-Panel als eigenes kleines Overlay** (`#amtFenster`, Bauform wie
+  `#schloss`), nicht `showDorf()` wiederverwendet — `showDorf()` setzt
+  `state='feierabend'` und sein einziger Knopf ist `startShift()`, das hätte die
+  laufende Schicht hart zurückgesetzt. `endShift()` bekommt einen dritten
+  `reason`-Zweig (`'amt'`) für Titel/Anlasstext, der Rest des Dienstbericht-Flows
+  ist identisch zu Zeit/Tod.
+- **Musik:** `MUS.goto()` in `update()` bekommt vor dem bestehenden
+  `zoneForLevel(currentLevel)`-Aufruf eine Dorf-Prüfung
+  (`currentLevel===1 && !kammer && inVillagePx(player.x,player.y)`) — greift nur
+  auf Level 1 außerhalb von Kammern, `zoneForLevel()` selbst (Kammer/
+  Schattenland-Vorrang) bleibt unangetastet.
+- **UI-Skin-Mechanismus ohne Canvas-Bake-Schritt:** ursprünglich geplant war,
+  Frames zur Laufzeit aus den großen UI-Sheets zu schneiden und per
+  `canvas.toDataURL()` zu backen. Stattdessen (einfacher, robuster): die vier
+  gebrauchten Zellen sind wie glint/alert vorab in eigene Dateien geschnitten,
+  ganz normal per `addSheet(...,'raw')` geladen — `SHEETS[key].img.src` ist nach
+  dem Laden bereits die richtige URL (Dev-Server: Pfad, `dist/`-Build:
+  `data:`-URI aus `ASSET_BLOBS`, weil der Bild-Loader ganz normal durchläuft).
+  `bakeUiSkin()` liest nur noch diese fertigen `src`-Strings und trägt sie per
+  `style.borderImageSource`/`style.backgroundImage` ein — kein CSS-`url()` auf
+  eine Datei, das hätte der Build nicht erfasst (bestätigter Befund aus der
+  Recherche vor der Umsetzung).
+- **Panels/Gürtel bekommen nur den Rahmen als Bild** (`border-image`, Slice
+  `2 2 5 2` relativ zum 28×31 zugeschnittenen `frame_brown.png`, Breite 6px/4px),
+  die dunkle Füllung (`rgba(20,14,24,…)`/`#17130d`) bleibt Kontrastgrund für den
+  hellen Text. Das UI-Pack ist hell/pastellig gehalten — eine volle Flächenfüllung
+  hätte die Lesbarkeit des hellgoldenen Texts (`#e8d9a8`) gekostet, deshalb
+  bewusst nur Rahmen statt `border-image-slice: … fill`.
+- **Runde Elemente** (Orbs/Röhren, Touch-Rundknöpfe, `#attackBtn`) bekommen
+  stattdessen `round_brown.png` als `background-image` (100%×100%, keine
+  Distortion bei Kreisen). `#hpFill`/`#manaFill` liegen als Kind-Divs unverändert
+  darüber — bei vollen Werten unsichtbar, bei Teilfüllung zeigt sich der
+  Rundknopf im leeren Bereich als „Sockel/Glas"-Optik (am laufenden Spiel mit
+  25/70 HP bestätigt, siehe Verifikation).
+- **`border-image-width` statt `border-width` verändert** — Layout/Media-Query-
+  Mathematik (die kalibrierten `calc(100vh - 349px)`-Werte etc.) bleibt exakt
+  erhalten, nur die Bildskalierung der Rahmengrafik wird größer als die
+  tatsächliche Border-Box gezogen (spec-konform, kein Kastenmaß-Effekt).
+- **glint/alert-Ersatz:** `glint_strip.png` ist ein 3-Zellen-Ausschnitt (voller/
+  halber/leerer blauer Stern, `UI_Icons.png` Zeile 3 Spalten 9–11) — `animFrame`
+  macht daraus ein Zwinker-Funkeln statt der alten 6-Frame-Sunnyside-Animation.
+  Im ganzen Pack gibt es keine mehrframige Funkel-Animation (gleiche Lücke wie
+  der fehlende Kaktus in G4) — Kompromiss dokumentiert statt stillschweigend
+  verschlechtert.
+- **Wetter, eigene Sub-Caps statt `MAX_PARTICLES`:** Wolken sind kein
+  `particles[]`-Fall (eigenes kleines Array, kein Producer). Schnee/Wind haben
+  je einen eigenen Deckel (`WEATHER_SNOW_CAP=40`, `WEATHER_WIND_CAP=6`) mit
+  explizitem Check vor jedem `push` — bewusst kein zweiter `particles[]`-Producer,
+  der am 900er-Deckel vorbeiliefe.
+
+**Umgesetzt (alles in `index.html`, sofern nicht anders vermerkt):**
+
+- `VILLAGE`, `VILLAGE_BUILDINGS`, `AMT_TUER`, `NPC_DEFS` (Datentabellen, direkt
+  nach `KN_POS`), `inVillageT`/`inVillagePx`-Helfer.
+- `genMap()`: Dorf-Freiräumung ersetzt die alte Anger-Freiräumung, Gebäude-
+  Footprints als `G_WALL`, Windmühle verschoben, Gebäude/Wolken/NPCs-Spawn nach
+  dem bestehenden Deko-/Critter-Muster.
+- `placeMonsters()`: Dorf-Ausschluss (analog zur Knöterich-Kachel-Ausnahme).
+- `npcs[]`-Wander-Update (Heimatanker-Radius), `DRAW_NPC` im Zeichenlisten-Pool,
+  `owSave`/`betreteKammer`/`verlasseKammer` führen `npcs[]` mit.
+- `AKT_AMT`, `scanAktion()`-Angebot, `amtFensterOeffnen/Schliessen/render`,
+  `amtFeierabendNehmen()`, `#amtFenster`-DOM+CSS, Escape-/`startShift()`-Guards,
+  `endShift()`-Reason-Zweig `'amt'`.
+- Dorf-Musikzone in der Frame-Musik-Auswahl, Dorf-Zonenlabel in `update()`.
+- `bakeUiSkin()`, aufgerufen nach `assetsReady=true`/`prewarmMonsterTints()`.
+- Wetter: `weatherClouds/Snow/Wind`-Arrays, Spawn/Update in `update()` nach dem
+  Kamera-Update, Zeichnen in `render()` vor der y-sortierten Liste.
+- `glint`/`alert` auf CF-Icons umgestellt (Sheet-Keys unverändert, keine
+  Änderung an den 6 Zeichenstellen nötig).
+- `'char'`-Lademodus, `FW`/`FH`/`ANCH_X`/`ANCH_Y` entfernt (kein Aufrufer mehr).
+- 10 Sunnyside-Kommentarstellen bereinigt (nur faktisch falsche/veraltete, reine
+  Historie blieb stehen — z. B. die G3-Lektion über fehlende Cast-Animationen).
+- `assets/Characters/`, `assets/Tileset/`, `assets/Elements/`, `assets/UI/`
+  (325 Dateien) aus dem Git-Index entfernt (`assets/` enthält nur noch `cf/`).
+- `assets/cf/deco/Buildings|NPCs|Weather/`, `assets/cf/ui/` befüllt (alle
+  gitignored wie seit G0), `assets/cf/README.md` um den G5-Block ergänzt.
+- `CREDITS.md`: Sunnyside-Absatz entfernt, Kenmi-Absatz unverändert.
+
+**Bewusst nicht gemacht:**
+
+- **Kein Kauf im Amt-Panel** — nur Anzeige plus „Feierabend nehmen". Käufe
+  bleiben exklusiv `showDorf()` vorbehalten (Nutzerentscheidung, hält den Umbau
+  klein und vermeidet zwei Code-Pfade für dieselbe Kauf-Logik).
+- **Icons/Selectors/Crosshair aus dem UI-Pack nicht eingebaut** (Rarity-Rahmen,
+  Tabs, Symbolschloss-Tasten bleiben CSS) — im Plan als optionale dritte Stufe
+  markiert, für die Abnahme nicht nötig (die nennt nur Panels/Knöpfe/Gürtel/
+  Röhren/Kessel-Panel namentlich).
+- **Kein `border-image` auf Desktop-Orbs' Kreisform selbst** — nur
+  `background-image` auf `.orbWrap`, `border-image` ignoriert `border-radius`
+  und hätte auf dem kreisrunden Desktop-Orb eckige Artefakte erzeugt.
+- **GitHub-Pages-Umstellung (`docs/`-Build, Push, Quelle wechseln) nicht
+  automatisch ausgeführt** — Push zu `origin/main` und eine Änderung der
+  Pages-Repo-Einstellung sind sichtbare/schwer rückgängig zu machende Aktionen,
+  dafür erst das ausdrückliche Go einholen (s. Chat).
+- **Kein Sway/keine Animation für die Dorf-Gebäude** — reine `big:true`-Decos wie
+  die Windmühle, ein Gebäude hat keinen Grund zu wackeln.
+
+**Verifikation (`http://localhost:8378/adventure/index.html`, Konsolen-
+Introspektion und direkte `update()`/`render()`-Aufrufe wie in G1–G4, da kein
+automatisierter Test-Runner existiert):**
+
+| Prüfung | Ergebnis |
+|---|---|
+| Ladeliste | 335/335 Sheets geladen, `assetsLoaded===335`, keine „Sprite fehlt"-Warnung, Konsole über die gesamte Sitzung leer |
+| Dorf-Kollision | alle 6 Gebäude-Footprints `!walkT`, Fläche drumherum begehbar, Screenshot bestätigt korrekte Platzierung beider Cluster |
+| NPCs | 3/3 gespawnt, Wanderradius hält (Heimatanker-Distanz-Check), `npcs.length` nach Kammer-Betreten 0, nach Verlassen wieder 3 (bitgleich zu vorher) |
+| Amt-Panel | F an der Amt-Tür → `aktArt===AKT_AMT`, Panel öffnet mit Bankguthaben/Ausbauten, „Feierabend nehmen" → `state='feierabend'`, `endShift('amt')` zeigt „FEIERABEND"/eigenen Anlasstext, `nachSchicht()`→`showDorf()`→`startShift()` komplett durchlaufen |
+| Dorf-Musik | `inVillagePx` korrekt bei Spawn/Kessel/Amt-Tür, Zonenlabel zeigt „📍 Dorf" nur innerhalb des Rechtecks |
+| Kammer-Regression | `betreteKammer`/`verlasseKammer` über Konsole: `trees`/`decos`/`npcs` vorher/nachher exakt gleiche Länge (1112/104/3), 0 Exceptions |
+| UI-Skin Desktop | Start-, Amt-, Dienstbericht-, Kessel-, Inventar-Panel zeigen sichtbaren Pixel-Rahmen (Screenshots), Text bleibt lesbar |
+| UI-Skin Touch | `body.touch` aktiviert, Röhren zeigen bei Teilfüllung (25/70 HP, 20/40 Mana) das Rundknopf-Sprite im leeren Bereich, Gürtel eine Zeile, Daumen-Fächer unverändert positioniert |
+| Wetter | Wolken 5 (konstant, driften/wrappen), Schnee spawnt nur bei `pyT<26` (bis Cap 40) und baut bei Verlassen der Zone ab, Wind spawnt nur bei `pyT>54` (Cap 6), Schattenland 0 Wettereinträge |
+| 300-Frame-Soak | Dorf ohne Horde: 0,40 ms/Frame; 180-Mob-Horde (55 automatisch + 130 manuell): 0,66 ms/Frame, 0 Exceptions in beiden Läufen |
+| Sunnyside | `git status --short` zeigt `assets/Characters|Tileset|Elements|UI` nicht mehr, `assets/` enthält nur `cf/`, `git grep -i sunnyside -- index.html` nur noch Historie |
+| Build | `node tools/build-single.mjs` → 99 Dateien, 1009 KB eingebettet, `dist/index.html` 1339 KB (G4-Referenz 2046 KB — der Sunnyside-Wegfall macht sich direkt bemerkbar). Statisch geprüft (Skript-Syntax, keine `assets/Characters` o.ä.-Referenz, `ASSET_BLOBS` gefüllt, neue Sheet-Keys enthalten) — interaktive `file://`-Prüfung im Sandbox-Browser dieser Sitzung nicht möglich (Datei liegt außerhalb des Projektordners, Tool liefert nur einen statischen Snapshot); Matthias bitte einmal von Hand per Doppelklick gegenchecken, wie in G1 |
+
+**Für ein mögliches G6 zum Mitnehmen:** Alpha-Lauflängen-Scan (`px[x,y][3]>0`
+in einer Zeile) ist der Weg, um Zellgrenzen in einem Sheet mit uneinheitlicher
+Zellbreite zu finden — `sheet-audit.mjs` setzt ein festes Raster voraus und hilft
+bei UI-Atlanten wie `UI_Buttons.png` nicht. Und: `SHEETS[key].img.src` nach dem
+Laden ist überall dieselbe korrekt aufgelöste URL (Dev-Server-Pfad oder
+Build-Data-URI) — jeder künftige CSS-Bezug auf eine Cute-Fantasy-Datei sollte
+darüber laufen, nie über ein hartes `url(assets/cf/...)` im Stylesheet.
