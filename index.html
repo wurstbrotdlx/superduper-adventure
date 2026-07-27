@@ -1051,6 +1051,11 @@ function initAudio(){
       applyZoneSends();
       applyMusicGain();
       scheduler.start();
+      // Der Ladebildschirm hat längst muffle(true) gesetzt, nur ohne AC. Hall und Pegel
+      // holen sich das oben aus muffled, der frische Lowpass steht aber auf 20000. Ohne
+      // Argument leitet muffle() den Sollzustand neu ab (R2/F36), setzt also keinen zweiten
+      // Wahrheitsträger neben ovMuffle.
+      MUS.muffle();
     }catch(e){ AC = null; }
   }
   if(AC && AC.state === 'suspended') AC.resume();
@@ -1248,7 +1253,7 @@ const ZONES = {
     chordStabOffsets:[], chordInstr:'pluck',
     perc:{shakerEvery:4},
     reverbSend:0.22, delaySend:0.22, droneLevel:0.13,
-    tonic:'A', scale:[0,2,3,5,7,8,10]
+    tonic:'A', scale:[0,1,3,5,7,8,10]   // phrygisch: b2 = Bb, wie im Lead oben. Kammer und Boss sind planmäßig äolisch
   },
   chamber:{
     label:'Kammer', bpm:76, meter:[4,4], bars:4,
@@ -1388,7 +1393,12 @@ const scheduler = (function(){
     if(!running) return;
     while(nextStepTime < AC.currentTime + HORIZON_SEC){
       const z = currentZone();
-      if(stepIdx % z._totalSteps === 0 && pendingZone){
+      // Taktgrenze, nicht Viertakt-Phrase: _totalSteps hätte den Wechsel bis zu 12,6s
+      // aufgehalten (Kammer; Oberwelt 8,6s, Dorf 7,8s, in den Überstunden bis 14 Prozent
+      // mehr). Gefahrlos, weil die neue Zone weiterhin bei stepIdx 0 einsetzt und damit
+      // jedes in prepareZone() gebackene Raster an seinem Kopf beginnt. Verkürzt wird nur
+      // die abgehende Zone, die dafür am Taktstrich schneidet statt am Phrasenende.
+      if(stepIdx % z._stepsPerBar === 0 && pendingZone){
         currentZoneKey = pendingZone; pendingZone = null; stepIdx = 0;
         duckToFx(180, 0.5);
         applyZoneSends();
@@ -1402,7 +1412,12 @@ const scheduler = (function(){
 
   return {
     start(){ if(running) return; running=true; stepIdx=0; nextStepTime=AC.currentTime+0.05; tick(); },
-    gotoZone(key){ pendingZone = key; }
+    // Hin und wieder zurück über die Dorfgrenze hebt den Wunsch auf, statt an der Taktgrenze
+    // einen Duck auf eine unveränderte Zone zu legen. Danach gilt: pendingZone gesetzt genau
+    // dann, wenn requestedZone und currentZoneKey auseinanderliegen. Der Vergleich gehört
+    // hierher und nicht in MUS.goto: dort stünde requestedZone auf der abbestellten Zone und
+    // der Idempotenz-Guard schluckte jeden weiteren Wechsel zurück.
+    gotoZone(key){ pendingZone = (key === currentZoneKey) ? null : key; }
   };
 })();
 
@@ -2763,7 +2778,10 @@ function killMon(m){
 
   // Nur der Schattenfürst beendet das Spiel. Der Alte Schrecken bewacht bloß eine
   // Schatzkammer und darf keinen Siegesbildschirm auslösen.
-  if(m.def.boss && !kammer){ el('bossbar').style.display='none'; setTimeout(()=>{ if(state==='play') winGame(); }, 2000); }
+  // MUS.swell() hing bis hierher ohne Aufrufer im Code. Der Bosssieg ist der einzige der drei
+  // vorgesehenen Anlässe, der selten genug ist: killMon() läuft hinter dem Tot-Guard in hurtMon()
+  // und feuert deshalb höchstens einmal je Boss, der !kammer-Zweig hält den Alten Schrecken raus.
+  if(m.def.boss && !kammer){ el('bossbar').style.display='none'; MUS.swell(); setTimeout(()=>{ if(state==='play') winGame(); }, 2000); }
 }
 
 function gainXP(x){
