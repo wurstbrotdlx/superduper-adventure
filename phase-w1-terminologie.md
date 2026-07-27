@@ -1,4 +1,4 @@
-## W1: Terminologie — Amtsdeutsch für Bestandstexte
+## W1: Terminologie — Amtsdeutsch für Bestandstexte — ERLEDIGT
 
 Umbau-Prompt zu Bauabschnitt W1 aus `superduper-weltbibel.md`, Kapitel 14, ergänzt um die konkreten Entscheidungen aus Kapitel 18 ("Der Spieltitel") und Kapitel 6 ("Bestiarium: die 21 Vorgangsarten"). Reine Textarbeit an bestehenden Strings, kein Systemeingriff, keine neue Persistenz, kein neuer Zeichenschritt. Ziel: das Spiel heißt fortan **Das Monstralministerium**, spricht aber im Volksmund weiterhin von „dem Amt" wie seit Phase 4.
 
@@ -14,11 +14,11 @@ Aus Kapitel 18: alle drei Formen sind wahr und bleiben nebeneinander bestehen, k
 
 | Form | Wortlaut | Wo |
 |---|---|---|
-| Titel und Kurzname | **Das Monstralministerium** (ein Wort, deutsche Zusammenschreibung) | Browser-Tab, Startbildschirm-Logo, `CREDITS.md` |
+| Titel und Kurzname | **Das Monstralministerium** (ein Wort, deutsche Zusammenschreibung) | Browser-Tab, Ladebildschirm, `CREDITS.md` |
 | Vollständige Bezeichnung | **Ministerium für Monsterangelegenheiten** | `CREDITS.md`-Zweitzeile |
 | Volksmund | **das Amt** | jeder bestehende Spielstring, unverändert |
 
-Logo-Schreibweise mit Zeilenumbruch (`DAS MONSTRAL` / `MINISTERIUM`) ist reines Grafik-/Titelbild-Thema aus Kapitel 18 und nicht Teil von W1. Im HTML genügt der einzeilige String.
+Der Zeilenumbruch der Logofassung (`DAS MONSTRAL` / `MINISTERIUM`) ist reines Grafik-/Titelbild-Thema aus Kapitel 18 und nicht Teil von W1. Im HTML steht der Startbildschirm-`<h1>` einzeilig, aber **getrennt**: `DAS MONSTRAL MINISTERIUM`. Er zählt als gesetztes Logo, auch wenn er als Text gerendert wird. Ladebildschirm und Browser-Tab tragen die zusammengeschriebene Form. So zu F25 entschieden, maßgeblich ist die Weltbibel, Kapitel 18, Abschnitt „Was mitwandert", weil sie den Startbildschirm namentlich nennt.
 
 ### Startbildschirm (`showStartScreen()`, `index.html:5254`)
 
@@ -138,7 +138,7 @@ Diese sechs Zeilen sind bereits nah an Nörgels Ton (trocken, Verfahren statt Po
 
 ### Abnahme W1
 
-* `<title>`, Startbildschirm-`<h1>`, Startbildschirm-`<h3>` und Startknopf zeigen die neuen Texte, der Anreißersatz ist wortgleich zum Bestand.
+* `<title>`, Ladebildschirm-`<h1>` (`showLoading()`), Startbildschirm-`<h1>`, Startbildschirm-`<h3>` und Startknopf zeigen die neuen Texte, der Anreißersatz ist wortgleich zum Bestand.
 * `#zone`-Initialtext und alle drei `updateHUD()`-Zweige zeigen die amtliche Zusatzbezeichnung, Stufenanzeige funktioniert unverändert.
 * Jeder der 21 `MONDEF`-Einträge trägt ein `art`-Feld, Wortlaut deckungsgleich mit Kapitel 6. Kein `name`-Feld wurde verändert.
 * Bossleiste zeigt Name und Vorgangsart getrennt durch `·`, kein Gedankenstrich.
@@ -157,3 +157,5 @@ Bewusst weggelassen: der statische Platzhaltertext `Schattenfürst Abaddon` im `
 Falle für spätere Arbeiten: `art` ist jetzt ein Feldname in zwei völlig verschiedenen Strukturen — `MONDEF[type].art` (Vorgangsart, neu aus W1) und `HINWEISE[i].art` (Hinweis-Kategorie `'zustand'`/`'ereignis'`, bestand schon vorher). Beim Grep nach `art:` beide Treffergruppen auseinanderhalten, sonst verwechselt man Klasse mit Ministerialbegriff.
 
 Alle Abnahme-Punkte geprüft: `node -e "new Function(...)"` auf den `<script>`-Inhalt lief fehlerfrei, Zeichendeckel für die beiden neuen Hinweistexte manuell nachgezählt (42/48, 20/32), `amt`/`AMT_KEY`/`showDorf()` nicht angefasst.
+
+**Nachtrag zur Abnahme (F83).** Die Liste oben war nach Fundstellen im Code sortiert, nicht danach, was der Spieler sieht. `showLoading()` stand in keiner der aufgezählten Fundstellen und zeigte deshalb nach `a67c9c3` weiter „SuperDuper Adventure", aufgefallen erst auf der Pages-Seite und nachgezogen mit `5d7c0b4`. Der Satz „Alle Abnahme-Punkte geprüft" war also wahr und trotzdem unvollständig, weil die Liste selbst eine Lücke hatte. **Künftige Textabnahmen laufen deshalb über die sichtbaren Bildschirme, nicht über Codestellen.** Es sind acht: Ladebildschirm (`showLoading()`), Startbildschirm (`showStartScreen()`), Todesbildschirm (`showDead()`), Siegesbildschirm (`winGame()`), Dienstbericht (das `#overlay` aus `endShift()`), Jahresgespräch (`showJahresgespraech()`), Dorf (`showDorf()`) und Amtsstube (`renderAmtFenster()`). Derselbe Mechanismus hat F24 durchrutschen lassen.

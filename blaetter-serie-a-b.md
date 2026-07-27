@@ -1,4 +1,4 @@
-## Aktenfunde: Serie A und Serie B, vollständig ausformuliert
+## Aktenfunde: Serie A und Serie B, vollständig ausformuliert — ERLEDIGT (eingebaut mit W2)
 
 Inhaltslieferung zu Kapitel 12 der `superduper-weltbibel.md` ("Aktenfunde: wie die Geschichte in den Spieler kommt") und Vorstufe für den Bauabschnitt **W2** aus Kapitel 14. Dort steht die Entscheidung, zuerst genau diese 18 Blätter zu bauen und zu testen, bevor der Rest der sechs Serien folgt (Zitat: „Erst 16 Blätter (Serien A und B) bauen, testen, dann den Rest." — die Tabelle in Kapitel 12 zählt Serie A mit 12 und Serie B mit 6, macht 18; die Differenz zur genannten Zahl 16 ist ein Zählfehler im Ursprungsdokument, hier zugunsten der vollständigen Serien aufgelöst).
 

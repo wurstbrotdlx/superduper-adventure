@@ -505,7 +505,9 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
 
 Fünf Bauabschnitte, in der Reihenfolge des Ertrags. Jeder ist für sich abnehmbar. **Keiner braucht ein neues System.** Das ist die Bedingung, unter der dieses Dokument steht.
 
-### W1: Terminologie (billigster Schritt, größter Gewinn)
+**Statusmarker, gilt projektweit (F78).** Jede Phasen- oder Bauabschnitts-Überschrift in allen Plandokumenten trägt ihren Stand als Suffix hinter einem Gedankenstrich: `— ERLEDIGT` oder `— OFFEN`, optional gefolgt vom Commit in Klammern. Kein zweiter Marker weiter unten, keine Kleinschreibung, keine Statuszelle in Tabellen. Wer eine Phase abschließt, zieht den Marker im selben Commit nach. Grund: `git log` ist die einzige sonst verlässliche Statusquelle und kennt kein Vorhaben, das noch nicht angefangen wurde.
+
+### W1: Terminologie (billigster Schritt, größter Gewinn) — ERLEDIGT
 
 Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
@@ -519,7 +521,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 **Abnahme:** Kein neuer Codepfad, kein neuer Zeichenschritt, keine neue Persistenz. Nur andere Wörter. Das Spiel fühlt sich sofort um Klassen eigener an.
 
-### W2: Aktenfunde (Kladde, dritter Reiter)
+### W2: Aktenfunde (Kladde, dritter Reiter) — ERLEDIGT
 
 * Blatt-Drop an der bestehenden Kammertruhe, Wahrscheinlichkeit an die Kammerstufe gekoppelt.
 * Dritter Reiter in der Kladde, Liste plus Lesefenster.
@@ -528,7 +530,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 **Abnahme:** Blätter überleben Tod, Schichtende und Reload. Kein Blatt verrät Kesselgrammatik, geprüft Blatt für Blatt, Ergebnis in den Abschlussbericht. Zeichendeckel gilt auch hier.
 
-### W3: Das Dorf spricht (setzt Grafik-Phase G5 voraus)
+### W3: Das Dorf spricht (setzt Grafik-Phase G5 voraus) — OFFEN
 
 * Zwölf NPCs als Weltfiguren im Dorf, Bedienung über die bestehende Kontextaktion `F`, technisch wie Knöterichs "Nachfragen".
 * Pro Figur vier bis sechs Zeilen plus eine Zeile, die sich mit dem Aktstand ändert. Mehr nicht. Kein Dialogbaum, keine Antwortauswahl.
@@ -537,7 +539,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 **Abnahme:** Keine Figur blockiert einen Weg, keine bekommt Monster auf die Kachel, keine neue Trefferbox, `AKT_`-Konstanten kollidieren nicht mit der Grußpflicht.
 
-### W4: Schwarzes Brett
+### W4: Schwarzes Brett — OFFEN
 
 * Vierter Reiter im Amt-Panel. Drei generierte Dienstaufträge pro Schicht, einer wählbar.
 * Fortschritt läuft über bereits existierende Zähler (`shiftKillsByType`, `shiftKillsTotal`, Kammer- und Kessel-Ereignisse). Möglichst kein neuer Zähler.
@@ -546,7 +548,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 **Abnahme:** Ein Auftrag pro Schicht, Erfüllung eindeutig prüfbar, Abbruch ohne Strafe, Aufträge nie unerfüllbar (kein Auftrag auf ein Monster, das im gewählten Biom nicht spawnt).
 
-### W5: Der Vorgang
+### W5: Der Vorgang — OFFEN
 
 * Aktstand als Zahl 1 bis 5 in `sda_amt_v1`, hochgezählt im bestehenden Jahresgespräch.
 * Pro Akt: ein zusätzlicher Absatz im Jahresgespräch-Panel, ein geänderter Satz bei drei Figuren, eine freigeschaltete Blattserie.
@@ -560,7 +562,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.
 * Keine Cutscene, kein Kamerafahrt-Skript, kein Standbild-Interlude.
 * Keine Vertonung.
-* Keine Questmarker auf der Minimap. Wer suchen soll, bekommt keinen Pfeil.
+* Keine Questmarker auf der Minimap. Wer suchen soll, bekommt keinen Pfeil. (Ausgenommen die erbraute Wirkung „Aktenlage" aus Phase 3: sie zeigt ungeöffnete Truhen und bereitstehende Kammertüren als Punkte, also Fundorte, keine Ziele, und wird mit dem Fluch „Aktenblindheit" bezahlt.)
 * Keine zweite Währung.
 
 ---
@@ -828,7 +830,7 @@ Im **Logo und auf dem Titelbild** steht der Titel gesetzt, mit Abstand:
 > DAS MONSTRAL
 > MINISTERIUM
 
-Im **Fließtext, in Dialogen und in jedem Spielstring** gilt die deutsche Zusammenschreibung: **Monstralministerium**. Ein Ministerium, das den eigenen Namen falsch trennt, wäre ein Witz, den das Haus niemals machen würde. Der Stolz lässt das nicht zu. (Falls wir den Gag doch wollen: dann steht die getrennte Schreibweise auf dem Pappschild draußen, und Bramsche korrigiert sie jedes Mal, wenn jemand daran vorbeigeht. Das ist die einzige Stelle, an der er funktioniert. Standard bleibt zusammen.)
+Im **Fließtext, in Dialogen und in jedem Spielstring** gilt die deutsche Zusammenschreibung: **Monstralministerium**. Ein Ministerium, das den eigenen Namen falsch trennt, wäre ein Witz, den das Haus niemals machen würde. Der Stolz lässt das nicht zu. **Ausnahme, entschieden zu F25:** der Startbildschirm zählt als gesetztes Logo im Sinne des Absatzes darüber und behält die getrennte Fassung, obwohl er technisch als Text gerendert wird, siehe „Was mitwandert" weiter unten. Ladebildschirm und Browser-Tab schreiben zusammen. (Falls wir den Gag doch wollen: dann steht die getrennte Schreibweise auf dem Pappschild draußen, und Bramsche korrigiert sie jedes Mal, wenn jemand daran vorbeigeht. Das ist die einzige Stelle, an der er funktioniert. Standard bleibt zusammen.)
 
 ### Die drei Namen des Hauses
 

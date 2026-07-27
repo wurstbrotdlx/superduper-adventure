@@ -17,7 +17,7 @@ Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurs
 * Aktuelle Grafik: `assets/` (Sunnyside World, danieldiggle), einheitliches 96x64-Frameraster, row-major, Framezahlen hart im Code hinterlegt
 * Neue Grafik-Quelle: `Graphics/` im Repo-Root (Cute Fantasy von Kenmi plus Add-ons). Das ist die **Rohbibliothek**, sie wird NIE committet (siehe Lizenz). Genutzte Dateien werden kuratiert nach `assets/cf/` kopiert — **auch die sind gitignored**, siehe Lizenz-Abschnitt.
 * Ausgeliefert wird **nicht** der Repo-Inhalt, sondern ein Build: `node tools/build-single.mjs` schreibt `dist/index.html` mit allen Grafiken als `data:`-URIs (eine Datei, ~1,1 MB, läuft auch per `file://` ohne Server). Seit G1 so, Begründung im Lizenz-Abschnitt.
-* Dev-Server: `.claude/launch.json` (eine Ebene höher, `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://localhost:8378/adventure/index.html`
+* Dev-Server: `.claude/launch.json` (eine Ebene höher, `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://localhost:8378/adventure/index.html`. Dahinter steht `serve.py` (seit R4 im Repo): ein `http.server` mit `Cache-Control: no-store`. Ein blankes `python3 -m http.server` reicht nicht, es antwortet mit 304 und prüft dann den alten Stand.
 * Gameplay-Doku: `superduper-gameplay-prompt.md` im selben Ordner. Dort stehen die Umsetzungsnotizen der Phasen 1 bis 6 (Zutaten-Grammatik, Kammern, Flüche, Schichtmodus, Knöterich, Soundtrack). Bei Berührungspunkten dort nachlesen.
 
 ### Was in `Graphics/` liegt
@@ -26,7 +26,7 @@ Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurs
 |---|---|---|
 | `Cute_Fantasy/` | Basis: modularer Player (Player_Base, Chest, Feet, Hands, Head, Legs, Accessories, Tools, Player_Mounts), Enemies (Slime S/M/L, Skeleton + Bowman/Mage/Swordman, Bombschroom), Tiles (Grass, Beach, Cliff, Cave, Water, Waterfall, Bridge, Cobble_Road, FarmLand), Trees, Buildings, Animals, NPCs (Premade), Outdoor decoration, Weather effects, Crops, Icons | G2, G3, G4, G5 |
 | `Cute_Fantasy_Characters/` | Goblins, Knights, Orcs, Angels | G3 |
-| `Cute_Fantasy_Dungeons/` | **2** komplette Dungeon-Sets (`Dungeon_3/` ist leer): Böden, Wände, Türen, Tore (mit Öffnungs-Animation), Druckplatten (mit Animation), Bodenstacheln, Treppen, Sewer, Pillars, Objects | G1 (erledigt) |
+| `Cute_Fantasy_Dungeons/` | **2** komplette Dungeon-Sets (`Dungeon_3/` ist leer): Böden, Wände, Türen, Tore (mit Öffnungs-Animation), Druckplatten (mit Animation), Bodenstacheln, Treppen, Sewer, Pillars, Objects | G1 |
 | `Cute_Fantasy_Volcano/` | Vulkan-Tiles, Gebäude, Props, Enemies (Cowling 1/2, Cowling Mage 1/2, Flying Skull) | G3, G4 |
 | `Cute_Fantasy_ShroomLands/` | Pilzland-Tiles, Häuser, Props, Shroomlings, Snails | G3, G4 |
 | `Cute_Fantasy_UI/` | UI-Elemente, Fonts | G5 |
@@ -75,8 +75,9 @@ Grafik-spezifisch neu dazu:
 12. Ladeliste datengetrieben: eine Manifest-Tabelle im Code (Pfad, Framegröße, Framezahl je Animation, Anker). Kein Ladecode, der Eigenschaften rät.
 13. Übergangszustand ist erlaubt: Bis G5 dürfen Sunnyside und Cute Fantasy gemischt sichtbar sein (z. B. Sunnyside-Held auf Cute-Fantasy-Dungeonboden). Nicht versuchen, in einer Phase alles zu tauschen.
 14. `pixelated`-Rendering (`imageSmoothingEnabled=false` bzw. CSS) konsistent halten, damit 16/32-px-Kunst scharf bleibt.
+15. Der Auslieferungsweg läuft seit F9 automatisch und wird nicht von Hand nachgebaut: `.github/workflows/pages.yml` ersetzt bei jedem Push auf `main` das ganze `assets/cf/` durch den Inhalt des privaten Repos `wurstbrotdlx/superduper-adventure-assets`, baut mit `node tools/build-single.mjs --out dist/index.html` und deployt über `actions/deploy-pages`. Kein `docs/` mehr, kein Build-Commit, kein Kopierschritt. **Die Falle:** ein Sheet, das lokal in `assets/cf/` liegt, aber nicht im Assets-Repo, fehlt live, obwohl lokal alles grün ist. Neue Grafik gehört deshalb zuerst ins Assets-Repo, danach den Workflow-Lauf prüfen.
 
-Nach jeder Phase gilt: Spiel startet, ist durchspielbar, 300-Frame-Soak mit Zaubern ohne Exception, CPU-Frame-Budget in der Horde nicht schlechter als vorher (~0,6 ms Referenz). Erst dann committen. Ein Commit pro Phase.
+Nach jeder Phase gilt: Spiel startet, ist durchspielbar, 300-Frame-Soak mit Zaubern ohne Exception, CPU-Frame-Budget in der Horde nicht schlechter als vorher (~0,6 ms Referenz). Erst dann committen. Ein Commit pro Phase. Nachtragscommits sind erlaubt, wenn Information erst später eintrifft (eine Bestätigung, ein Live-Befund, ein vergessener Statusmarker); sie nennen den Vorgängercommit.
 
 ## Zielbild
 
@@ -84,7 +85,7 @@ Ein durchgehender Look aus einem Guss: Cute Fantasy überall, 16-px-Tiles, 32-px
 
 ---
 
-## Phase G0: Fundament (kein sichtbarer Unterschied im Spiel)
+## Phase G0: Fundament (kein sichtbarer Unterschied im Spiel) — ERLEDIGT
 
 1. `.gitignore` um `Graphics/` ergänzen. Prüfen: `git status` darf `Graphics/` nicht mehr anbieten.
 2. `CREDITS.md` ergänzen: Cute Fantasy (Kenmi, itch.io), Lizenzkurzfassung wie oben. Sunnyside-Eintrag bleibt vorerst.
@@ -97,22 +98,22 @@ Ein durchgehender Look aus einem Guss: Cute Fantasy überall, 16-px-Tiles, 32-px
 
 `Graphics/` unsichtbar für git. Manifest deckt alle benötigten Sheets ab, Stichprobe von 5 Sheets von Hand gegen das PNG geprüft. Spiel selbst unverändert (kein Diff im Verhalten, Soak läuft).
 
-## Phase G1: Kammern-Interieur (Dungeon-Sets)
+## Phase G1: Kammern-Interieur (Dungeon-Sets) — ERLEDIGT
 
 Die Kammern (Phase 2 des Gameplay-Umbaus) bekommen echtes Dungeon-Interieur. Bisher: eingefärbter Erdboden auf derselben Karte, Oberwelt wird gesichert und kachelgenau wiederhergestellt. Diese Mechanik bleibt unangetastet, nur die Optik der Kammer wechselt.
 
-* Die 3 Dungeon-Sets auf die Schwierigkeit mappen: Stufe 1 bis 2 nimmt Dungeon_1, Stufe 3 bis 4 Dungeon_2, Stufe 5 Dungeon_3 (oder pro Biom, wenn das optisch besser trägt; entscheide beim Sichten und dokumentiere es in den Umsetzungsnotizen).
+* Die 3 Dungeon-Sets auf die Schwierigkeit mappen: Stufe 1 bis 2 nimmt Dungeon_1, Stufe 3 bis 4 Dungeon_2, Stufe 5 Dungeon_3 (oder pro Biom, wenn das optisch besser trägt; entscheide beim Sichten und dokumentiere es in den Umsetzungsnotizen). **G1 ist hier abgewichen:** `Graphics/Cute_Fantasy_Dungeons/Dungeon_3/` ist real ein leeres Verzeichnis, es gibt nur 2 Sets. Umgesetzt sind Stufe 1 bis 2 auf Dungeon_1 und Stufe 3 bis 5 auf Dungeon_2 (`k.set` in `betreteKammer`), Begründung in den G1-Umsetzungsnotizen unter „Set-Mapping".
 * Echte Wände statt Blocker-Kacheln, echte Böden, Pillars und Objects als Deko.
 * Die versiegelte Kammertür in der Oberwelt nutzt die Tor-Sprites (Gate_Closed, Gate_anim beim Öffnen). Das Holzschild mit Schwierigkeit und Beute-Tier bleibt in Funktion und Lesbarkeit unverändert.
-* Modul-Requisiten aufwerten: Druckplatten-Modul nutzt `Dungeon_1_Pressure_Plate_Anim`, Tore zwischen Räumen nutzen Door/Gate-Animationen, einbrechende Bodenplatten können `Floor_spikes`/Sewer-Elemente als Optik nehmen. Rätsel-Logik bleibt exakt gleich, nur Darstellung wechselt.
+* Modul-Requisiten aufwerten: Druckplatten-Modul nutzt `Dungeon_1_Pressure_Plate_Anim`, Tore zwischen Räumen nutzen Door/Gate-Animationen, einbrechende Bodenplatten können `Floor_spikes`/Sewer-Elemente als Optik nehmen. Rätsel-Logik bleibt exakt gleich, nur Darstellung wechselt. **G1 ist hier zweimal abgewichen:** geladen wird die statische `Dungeon_{n}_Pressure_Plate.png` statt der `_Anim`-Fassung, und `Floor_spikes` wurde gar nicht erst kopiert. Begründungen in den G1-Umsetzungsnotizen unter „Druckplatten" und „Bewusst nicht gemacht".
 * Treppen-Sprites für Ein- und Ausgang der Kammer.
 * Kammerwächter (Mumie, Golem, Spinne, Fledermaus, Knochenritter, Irrlichtmagier, Alter Schrecken) bleiben in dieser Phase auf ihren alten Rigs. Stilbruch ist bis G3 erlaubt.
 
 ### Abnahme G1
 
-Alle 8 Rätselmodule in Kammern aller Schwierigkeitsstufen gebaut, gelöst, verlassen (die bestehende Zusicherungs-Suite aus Phase 2 muss grün bleiben). Oberwelt kachelgenau wiederhergestellt. Esc-Abbruch und Tod in der Kammer funktionieren. Soak über mehrere Kammern plus Oberwelt.
+Alle 8 Rätselmodule in Kammern aller Schwierigkeitsstufen gebaut, gelöst, verlassen (Handdurchlauf Modul für Modul, kein automatisierter Testlauf vorhanden: eine Zusicherungs-Suite aus Phase 2 gibt es nicht, die einzigen Boot-Assertions im Spiel sind `knAssertCaps()` für Zeichendeckel und `assertRigRegistrations()` für Sprite-Keys, beide ohne Kammerbezug). Oberwelt kachelgenau wiederhergestellt. Esc-Abbruch und Tod in der Kammer funktionieren. Soak über mehrere Kammern plus Oberwelt.
 
-## Phase G2: Held modular (sichtbare Ausrüstung)
+## Phase G2: Held modular (sichtbare Ausrüstung) — ERLEDIGT
 
 Der Held wechselt auf das Cute-Fantasy-Player-System: `Player_Base` plus Layer für Chest, Legs, Feet, Head, Hands, Tools, Accessories, übereinandergezeichnet in fester Reihenfolge.
 
@@ -127,7 +128,7 @@ Der Held wechselt auf das Cute-Fantasy-Player-System: `Player_Base` plus Layer f
 
 Jede Slot-Belegung ändert den Helden sichtbar (4 Slots x mindestens 3 Qualitätsstufen von Hand durchgeschaltet und angesehen). Alle Animationen laufen in Oberwelt, Kammer, Schattenland. Touch-Steuerung unberührt. Aura-Glow-Code entfernt. Soak.
 
-## Phase G3: Monster auf echte Rigs
+## Phase G3: Monster auf echte Rigs — ERLEDIGT
 
 Alle 21 Monstertypen aus `MONDEF` plus beide Bosse wechseln auf Cute-Fantasy-Rigs. Tint und Skalierung bleiben als Werkzeug erlaubt, aber die Rig-Basis wird vielfältig statt 2 Rigs für alles.
 
@@ -143,7 +144,7 @@ Verfügbare Rigs (Manifest aus G0 ist die Wahrheit): Slime S/M/L, Skeleton, Skel
 
 Alle 21 Typen plus beide Bosse einzeln erzwungen und angesehen (idle, laufen, angreifen, casten wo zutreffend, sterben). Kammerwächter in Kammern geprüft. Kein Sunnyside-Charakter-Sheet mehr in der Ladeliste. Soak mit voller Horde, Frame-Budget gehalten.
 
-## Phase G4: Oberwelt-Tiles, Biome, Deko
+## Phase G4: Oberwelt-Tiles, Biome, Deko — ERLEDIGT
 
 Der Boden und die Welt wechseln auf Cute-Fantasy-Tiles. Bake-Mechanik (einmal pro Level auf 2560x2560) bleibt.
 
@@ -161,7 +162,7 @@ Der Boden und die Welt wechseln auf Cute-Fantasy-Tiles. Bake-Mechanik (einmal pr
 
 Alle 3 Biome plus Schattenland durchlaufen, Böden aus echten Tiles bzw. dokumentierten Umfärbungen, Übergänge sauber, keine sichtbaren Kachelfugen. Kein Sunnyside-Tile mehr in der Ladeliste. Bake-Zeit beim Levelwechsel nicht spürbar schlechter. Soak.
 
-## Phase G5: Dorf, UI, Sunnyside-Abschied
+## Phase G5: Dorf, UI, Sunnyside-Abschied — ERLEDIGT
 
 * **Begehbares Dorf** im Grasland: Buildings (Häuser, Amt als erkennbares Gebäude), NPCs (Premade) als Staffage mit Wander- oder Standverhalten, der Kessel-Prop wandert an seinen Dorfplatz, Knöterich steht als Weltfigur im Dorf (sein Grau-Ton bleibt gebacken, kein `ctx.filter`). Das Amt-Overlay (`#ovPanel`) mit den Ausbau-Käufen bleibt funktional wie es ist und wird weiterhin nach dem Schichtende erreicht; das Gebäude öffnet mit der Kontext-Taste F ein eigenes, kleines Anzeigefenster (Bankguthaben, Ausbaustände, „Feierabend nehmen"), denn `showDorf()` setzt `state='feierabend'` und würde über seinen einzigen Knopf `startShift()` die laufende Schicht hart zurücksetzen.
 * `MUS.goto('village')` scharf schalten: die Dorf-Zone liegt seit Phase 6 (Soundtrack) fertig in den Daten und wartet genau hierauf.
@@ -178,7 +179,7 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 
 ## Umsetzungsnotizen (füllt Claude Code nach jeder Phase)
 
-### G0 — Fundament (erledigt)
+### G0 — Fundament
 
 **Korrekturen am Prompt-Kontext oben (wichtig für G1–G5):**
 
@@ -217,7 +218,7 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 
 **Verifikation:** `git diff -- index.html` leer. Spiel unter `http://localhost:8378/adventure/index.html` gestartet, Konsole ohne Fehler (siehe unten).
 
-### G1 — Kammern-Interieur (erledigt)
+### G1 — Kammern-Interieur
 
 **Korrekturen am Prompt-Kontext oben (wichtig für G2–G5):**
 
@@ -277,7 +278,7 @@ Der Build inliniert **alles** unter `assets/`, statt die benutzte Teilmenge zu e
 
 Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**, Kammer identisch zur Serverfassung. **`file://` läuft** (von Matthias per Doppelklick bestätigt) — das Spiel nutzt kein `fetch`, keine Module und kein `getImageData`, alle `localStorage`-Zugriffe stehen in `try/catch`. Damit ist `dist/index.html` als einzelne Datei versendbar, ohne Hosting.
 
-### G2 — Held modular (erledigt)
+### G2 — Held modular
 
 **Korrekturen am Prompt-Kontext oben (wichtig für G3–G5):**
 
@@ -414,7 +415,7 @@ gegen das PNG gegenprüfen — der Player-Rig hat gezeigt, dass „sieht aus wie
 ohne Metrik in die Irre führt (Rolle vs. Attacke, Sprung vs. Zauber sahen im
 Daumennagel-Vorschaubild anfangs sehr ähnlich aus).
 
-### G3 — Monster auf echte Rigs (erledigt)
+### G3 — Monster auf echte Rigs
 
 **Korrekturen am Prompt-Kontext oben (wichtig für G4/G5):**
 
@@ -559,7 +560,7 @@ ist der Weg für jede weitere Zeilen-Verifikation (Tiles, UI). Und: die
 geprüfte Triplets bestätigt — bei neuen Rigs in G4 zuerst danach suchen, bevor
 man am Bild rätselt.
 
-### G4 — Oberwelt-Tiles, Biome, Deko (erledigt)
+### G4 — Oberwelt-Tiles, Biome, Deko
 
 **Vom Nutzer entschieden (weicht bewusst vom Prompt-Text oben ab):**
 
@@ -711,7 +712,7 @@ war die einzige Runde, die einen sichtbaren zweiten Anlauf brauchte. Die
 `_Anim`-Namenskonvention des Packs ist zuverlässig; alles ohne dieses Suffix vorher
 per Bild-Ansicht (nicht nur Bounding-Box-Zahlen) auf Varianten-vs-Animation prüfen.
 
-### G5 — Dorf, UI-Skin, Sunnyside-Abschied (erledigt)
+### G5 — Dorf, UI-Skin, Sunnyside-Abschied
 
 **Vorbedingung:** Im Arbeitsbaum lag beim Start unabhängig fertige, unpushte
 W1-Terminologiearbeit einer anderen Session (bereits committet als `a67c9c3` durch
@@ -871,10 +872,13 @@ diese Session, bevor G5 begann — keine Vermischung mit dem G5-Diff).
 - **Kein `border-image` auf Desktop-Orbs' Kreisform selbst** — nur
   `background-image` auf `.orbWrap`, `border-image` ignoriert `border-radius`
   und hätte auf dem kreisrunden Desktop-Orb eckige Artefakte erzeugt.
-- **GitHub-Pages-Umstellung (`docs/`-Build, Push, Quelle wechseln) nicht
-  automatisch ausgeführt** — Push zu `origin/main` und eine Änderung der
-  Pages-Repo-Einstellung sind sichtbare/schwer rückgängig zu machende Aktionen,
-  dafür erst das ausdrückliche Go einholen (s. Chat).
+- **GitHub-Pages-Umstellung (`docs/`-Build, Push, Quelle wechseln) in der
+  G5-Sitzung nicht selbst ausgeführt** — Push zu `origin/main` und eine Änderung
+  der Pages-Repo-Einstellung sind sichtbare/schwer rückgängig zu machende
+  Aktionen, dafür erst das ausdrückliche Go einholen (s. Chat). **Nachtrag:**
+  Matthias hat sie danach von Hand vorgenommen, daher der Live-Eintrag in der
+  Verifikationstabelle unten. Seit F9 ist der `docs/`-Weg ohnehin ersetzt, siehe
+  Regressionsschutz Punkt 15.
 - **Kein Sway/keine Animation für die Dorf-Gebäude** — reine `big:true`-Decos wie
   die Windmühle, ein Gebäude hat keinen Grund zu wackeln.
 

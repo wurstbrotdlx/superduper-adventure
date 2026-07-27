@@ -2992,7 +2992,7 @@ const CONFIG = {
   schichtModus: true,       // Phase 4: Dienst nach Vorschrift. false = alte Todesregel (halbes HP, kein Reset)
   schichtDauer: 900,        // Sekunden pro Schicht (~15 Minuten)
   goldUebertragAnteil: 0.5, // Anteil des Golds, der die Schicht überlebt
-  zutatenMitnahmeBasis: 5,  // Grund-Kontingent mitnehmbarer Zutaten-Stapel je Schicht
+  zutatenMitnahmeBasis: 5,  // Grund-Kontingent mitnehmbarer Zutaten je Schicht, gezählt in Stücken (endShift teilt Stapel)
 };
 
 // Amt-Speicherstand laden, bevor irgendetwas (Kammertüren, HUD) danach fragt.
@@ -3429,7 +3429,8 @@ const KAM_X0 = 3, KAM_Y0 = 33;     // linke obere Ecke des Korridors (6 Räume p
 const KAM_TY = KAM_Y0 + 7;         // Zeile, in der alle Tore sitzen (Raummitte)
 const KAM_SYM = ['◆','●','▲','■','✦','✚'];
 const KAM_ZWEIG_COL = ['#ff9f4a', '#7ad6ff', '#c77dff'];
-// Die sieben bisher unverdrahteten Monstertypen bekommen hier ihren Dienst.
+// Sechs der sieben bisher unverdrahteten Monstertypen bekommen hier ihren Dienst.
+// Der siebte, bossgeneric, hängt woanders: Schatzkammer ab Schwierigkeit 5 und Zutaten-Pool ab Tier 4.
 const KAM_WAECHTER = ['mummy','golem','spider','bat','stalfos','mage'];
 
 const kammerTueren = [];           // Türen in der Oberwelt
@@ -5281,7 +5282,7 @@ function render(){
     const d = decos[i];
     if(d.x > cullL && d.x < cullR) pushDraw(d.y, DRAW_DECO, d);
   }
-  if(currentLevel === 1){                               // Hoftiere, Kessel und Kammertüren gibt es nur im Wald
+  if(currentLevel === 1){                               // Hoftiere, Dorf-Staffage, Kessel, Knöterich und Kammertüren, alle nur hier
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
     for(const n of npcs) if(vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
     if(vis(KESSEL.x, KESSEL.y)) pushDraw(KESSEL.y, DRAW_KESSEL, null);

@@ -1,4 +1,4 @@
-## W2: Aktenfunde — Serien A und B als dritter Kladde-Reiter
+## W2: Aktenfunde — Serien A und B als dritter Kladde-Reiter — ERLEDIGT
 
 Umbau-Prompt zu Bauabschnitt W2 aus `superduper-weltbibel.md`, Kapitel 12 ("Aktenfunde: wie die Geschichte in den Spieler kommt") und Kapitel 14. Inhaltslieferung ist bereits fertig: `blaetter-serie-a-b.md` enthält alle 18 Blätter (Serie A, 12 Stück, und Serie B, 6 Stück) vollständig ausformuliert. Diese Phase verdrahtet sie, erfindet keinen einzigen neuen Satz.
 

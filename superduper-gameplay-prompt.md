@@ -15,7 +15,7 @@ Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurs
 
 * Hauptdatei: `index.html` (Canvas/JS, ein File, groß)
 * Grafik: `assets/`, Sunnyside World (danieldiggle), einheitliches 96x64-Frameraster, row-major
-* Dev-Server: `.claude/launch.json` (liegt eine Ebene höher, in `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://localhost:8378/adventure/index.html`
+* Dev-Server: `.claude/launch.json` (liegt eine Ebene höher, in `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://localhost:8378/adventure/index.html`. Dahinter steht `serve.py` (seit R4 im Repo): ein `http.server` mit `Cache-Control: no-store`. Ein blankes `python3 -m http.server` reicht nicht, es antwortet mit 304 und prüft dann den alten Stand.
 * Sprache im Spiel: Deutsch, Untertitel „Looten, leveln und Monster wegschellen!"
 
 Bestehende Systeme, auf denen du aufbaust:
@@ -40,7 +40,7 @@ Diese Punkte sind teuer erkämpft. Jede neue UI und jedes neue System muss sich 
 8. Minimap wird bei Levelwechsel einmal gebacken, danach nur Blit, alle 4 Frames.
 9. Sound: die 70ms-Bremse auf Crit- und Sterbe-Sound bleibt.
 
-Nach jeder Phase gilt: Spiel startet, ist durchspielbar, 300 Frames mit Zaubern ohne Exception. Erst dann committen. Ein Commit pro Phase, aussagekräftige Message.
+Nach jeder Phase gilt: Spiel startet, ist durchspielbar, 300 Frames mit Zaubern ohne Exception. Erst dann committen. Ein Commit pro Phase, aussagekräftige Message. Nachtragscommits sind erlaubt, wenn Information erst später eintrifft (eine Bestätigung, ein Live-Befund, ein vergessener Statusmarker); sie nennen den Vorgängercommit.
 
 ## Ziel des Umbaus
 
@@ -94,7 +94,7 @@ Zutaten droppen, stapeln sich im Inventar, Kessel funktioniert, Kladde füllt si
 * Zutaten liegen in `player.pouch` (eigener Beutel, gestapelt), nicht in den 24 Taschenplätzen. Phase 4 nimmt genau diesen Beutel für das Mitnahme-Kontingent.
 * Wirkungen werden in `recalc()` zu `FX` aggregiert (Schlüssel = `WIRKUNG[k].fx`, Wert = Summe der Stufen). Die 14 Hooks lesen nur aus `FX`. Phase 3 hängt Flüche an dieselbe Stelle.
 * Die Kladde liegt in `localStorage` unter `sda_kladde_v1` und überlebt jeden Neustart. Phase 4 darf sie unter keinen Umständen zurücksetzen.
-* Der Kessel ist über `K` überall bedienbar, nicht nur im Dorf: ein Dorf existiert im Code noch nicht. Am Spawn steht ein Kessel-Prop als Landmarke (`KESSEL`, `KESSEL_T`, `drawKessel()`, Zeichentyp `DRAW_KESSEL`). Phase 4 kann die Bedienung dort verankern.
+* Der Kessel ist über `K` überall bedienbar, nicht nur im Dorf: ein Dorf existierte zu diesem Zeitpunkt im Code noch nicht (**seit G5 steht es, siehe die Notiz zu Phase 4**; die Bedienung über `K` blieb trotzdem ortsunabhängig). Am Spawn steht ein Kessel-Prop als Landmarke (`KESSEL`, `KESSEL_T`, `drawKessel()`, Zeichentyp `DRAW_KESSEL`). Phase 4 kann die Bedienung dort verankern.
 * `rollItem()` ist entfallen. `BASES`/`AFFIXES` bleiben für den Altbestand (Startwaffe, alte Fundstücke) stehen.
 * `drops` wird jetzt mit `while(drops.length > 90) drops.shift()` gedeckelt: ein Kill lässt bis zu fünf Sachen fallen, ein einzelnes `shift()` hielt die Liste nicht mehr.
 
@@ -226,7 +226,7 @@ Schicht startet, endet, Übertrag stimmt, Kladde überlebt garantiert jeden Tod,
 ### Umsetzungsnotizen aus Phase 4 (für die Folgephasen wichtig)
 
 * `startShift()` ist der **einzige** Reset-Pfad, sowohl für die allererste Schicht (aus `startGame()`) als auch für jede folgende (aus dem Amt-Panel). Das ist Absicht, ein getesteter Pfad statt zweier. Wer etwas ausschließlich beim allerersten Spielstart braucht, darf es deshalb **nicht** dort einhängen, sondern in `startGame()`. Bei `CONFIG.schichtModus = false` läuft `startShift()` nie.
-* `endShift(reason)` kennt `'tod'` und `'zeit'`. Es erhöht `amt.schichten` selbst, bevor das Panel steht. Der Wert zählt also **abgeschlossene** Schichten, die laufende Nummer ist `amt.schichten + 1`. `showDorf()` liest ihn entsprechend als „Schicht N abgeschlossen".
+* `endShift(reason)` kannte in dieser Phase `'tod'` und `'zeit'`. **Seit Grafik-Phase G5 kommt `'amt'` dazu**, der freiwillige Feierabend aus dem Amtsfenster. Vollständige Aufruferliste heute: `'tod'` im Sterbepfad, `'zeit'` in der Schichtuhr, `'amt'` im Amtsfenster. Der Anlass steuert nur Titel und Anlasstext, der übrige Dienstbericht ist identisch. Es erhöht `amt.schichten` selbst, bevor das Panel steht. Der Wert zählt also **abgeschlossene** Schichten, die laufende Nummer ist `amt.schichten + 1`. `showDorf()` liest ihn entsprechend als „Schicht N abgeschlossen".
 * Neuer `state`-Wert `'feierabend'` neben `'menu'`, `'play'` und `'win'`, gesetzt an drei Stellen (Tod, Zeitablauf, `showDorf()`). Jede neue Abfrage auf `state !== 'play'` muss ihn mitdenken.
 * Die Kladde wird in `endShift()` bewusst **nicht** angefasst. Sie speichert sich schon beim Kochen über `saveKladde()` und ist dadurch strukturell unabhängig vom Reset. Das ist die Garantie aus Phase 1, kein Sonderfall im Schichtcode. So muss es bleiben.
 * `AMT_KEY = 'sda_amt_v1'` wird ganz oben geladen, bevor Kammertüren oder HUD danach fragen. Gleiche Reihenfolge-Regel wie die Tabellen aus Phase 1.
@@ -241,7 +241,7 @@ Schicht startet, endet, Übertrag stimmt, Kladde überlebt garantiert jeden Tod,
 * `STARTFLUCH_WAHL` enthält bewusst nur milde Flüche. Ein harter Fluch könnte eine Schicht schon beim Antritt unspielbar machen.
 * Die Startwaffe steht hart in `startShift()` (`BASES[1]` plus `AFFIXES[0]`), der gekaufte Startfluch hängt sich als `player.equip.weapon.fluch` daran.
 * `player.hair` wird pro Schicht neu gewürfelt: jede Schicht ein anderer Sachbearbeiter.
-* Das Amt ist ein `#ovPanel`-Screen wie Start, Tod und Sieg, **kein begehbarer Ort**. Ein Dorf existiert im Code weiterhin nicht, die einzige Landmarke ist nach wie vor der Kessel-Prop am Spawn.
+* Das Amt dieser Phase ist ein `#ovPanel`-Screen wie Start, Tod und Sieg, **kein begehbarer Ort**. Ein Dorf existierte zum Abschluss von Phase 4 nicht, die einzige Landmarke war der Kessel-Prop am Spawn. **Seit Grafik-Phase G5 überholt:** um den Spawn steht ein begehbares Dorf (`VILLAGE`, sechs Gebäude in `VILLAGE_BUILDINGS`, drei NPCs aus `NPC_DEFS` als reine Staffage ohne Dialog und ohne Kontextaktion). Das Amt ist zusätzlich als Gebäude erreichbar: `AMT_TUER` bietet `AKT_AMT` an und öffnet ein eigenes Amtsfenster. Das `#ovPanel` aus Phase 4 bleibt daneben bestehen, beide Wege haben bewusst unterschiedlichen Umfang.
 * Die Schichtuhr hängt über `schichtHudSuffix()` im Zonen-HUD.
 * Bewusst offen gelassen: die Ausbau-Kosten in `AUSBAU_DEFS` sind eine erste vernünftige Schätzung, keine durchgespielte Zahl.
 
@@ -255,7 +255,7 @@ Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Co
 
 Amtsrat a. D. Knöterich vom Amt für Monsterangelegenheiten. Er siezt den Spieler. Ton: trocken, Behördenkomik, kurz. Keine Emojis in seinen Texten, keine Gedankenstriche in Spieltexten (gilt im ganzen Projekt).
 
-**Wo er steht.** Es gibt kein begehbares Dorf: das Amt aus Phase 4 ist ein Overlay-Panel, kein Ort. Knöterich steht deshalb als **Außenstelle neben dem Kessel-Prop** (`KESSEL_T = {x:15, y:41}`, `KESSEL` in Pixeln, gezeichnet über `DRAW_KESSEL` / `drawKessel()`). Setz ihn auf eine begehbare Nachbarkachel, nicht auf den Kessel. Er hat keine KI, keine Kollision, keine Trefferbox und läuft nie mit. `placeMonsters()` darf nicht auf seine Kachel spawnen.
+**Wo er steht.** Zum Zeitpunkt dieser Phase gab es kein begehbares Dorf: das Amt aus Phase 4 war ein Overlay-Panel, kein Ort. Knöterich steht deshalb als **Außenstelle neben dem Kessel-Prop** (**seit G5 liegt das Dorf um genau diese Stelle herum, sein Standort ist damit mitten im Dorf und bleibt unverändert**) (`KESSEL_T = {x:15, y:41}`, `KESSEL` in Pixeln, gezeichnet über `DRAW_KESSEL` / `drawKessel()`). Setz ihn auf eine begehbare Nachbarkachel, nicht auf den Kessel. Er hat keine KI, keine Kollision, keine Trefferbox und läuft nie mit. `placeMonsters()` darf nicht auf seine Kachel spawnen.
 
 `SPAWN` liegt bei `{x:12.5*TS, y:40.5*TS}`, der Kessel bei Kachel 15/41, das sind rund **97 Pixel** Abstand. Der Spieler steht beim Start also außerhalb des 58-Pixel-Radius der Kontextaktion. Das ist für die Blase relevant, siehe unten.
 
@@ -515,7 +515,7 @@ Fünf Schichten, in dieser Reihenfolge im Code:
 | `overworld` | 4/4, A-dorisch | 112 | Pluck | `currentLevel === 1`, Standardfall |
 | `shadowland` | 4/4, A-phrygisch (B→Bb) | 100 | Pluck | `currentLevel === 2` |
 | `chamber` | 4/4, A-äolisch, Oktave tiefer | 76 | Marimba | `currentLevel === 3` |
-| `village` | 3/4, F-Dur | 92 | Flöte | **keiner** (siehe unten) |
+| `village` | 3/4, F-Dur | 92 | Flöte | seit G5: `inVillage` im Musikblock (siehe unten) |
 | `office` | 2/4, F-Dur-Marsch | 104 | Fagott | `showDorf()`, `showJahresgespraech()` |
 | `boss` | 4/4, wie Kammer, Oktave tiefer | 140 | Blech | echter Schattenfürst-Kampf |
 
@@ -537,9 +537,9 @@ Läuft jeden Frame, kostet im Regelfall nur einen Stringvergleich. **`loadLevel2
 
 `update(dt)` läuft nur bei `state === 'play'`. Für Zonen außerhalb dieser Bedingung (Amt, Jahresgespräch) braucht es einen expliziten Aufruf, siehe unten.
 
-### `village` ist fertig, aber unerreichbar
+### `village` ist fertig, seit G5 auch erreichbar
 
-Die Zone liegt vollständig in `ZONES.village`, wird aber **von nirgends aufgerufen**. Es gibt kein begehbares Dorf im Code, nur das Amt-Overlay (Phase 4/5). Sobald ein Dorf entsteht: ein `MUS.goto('village')` an der richtigen Stelle genügt, keine neue Komposition nötig.
+Die Zone liegt vollständig in `ZONES.village` und war zum Abschluss dieser Phase **von nirgends aufgerufen**, weil es kein begehbares Dorf gab, nur das Amt-Overlay (Phase 4/5). **Grafik-Phase G5 hat genau den einen vorgesehenen Aufruf nachgeliefert, ohne eine Note zu ändern:** der Musikblock in `update(dt)` bildet vor `zoneForLevel(currentLevel)` ein `inVillage` aus `currentLevel === 1 && !kammer && inVillagePx(player.x, player.y)` und wählt damit `'village'`. `zoneForLevel()` selbst blieb unangetastet, Kammer- und Schattenland-Vorrang laufen weiter über sie, der Boss-Zweig steht wie zuvor davor. Der Restposten aus dieser Phase ist damit erledigt.
 
 ### Panels: Muffle oder eigene Zone
 

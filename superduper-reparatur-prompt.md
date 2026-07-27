@@ -33,8 +33,8 @@ Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Bra
 Verbindlich mitzulesen, je nach Abschnitt:
 
 * `ABGLEICH-2026-07-27.md` immer, mindestens die Funde des eigenen Abschnitts
-* `superduper-gameplay-prompt.md`, Regressionsschutz Z.29 bis 44
-* `superduper-grafik-prompt.md`, Regressionsschutz Z.57 bis 80
+* `superduper-gameplay-prompt.md`, Abschnitt „Regressionsschutz: das hier NICHT kaputtmachen"
+* `superduper-grafik-prompt.md`, Abschnitt „Regressionsschutz: das hier NICHT kaputtmachen" (14 geerbte Punkte plus Punkt 15 zum Auslieferungsweg, in R4 ergänzt)
 * `superduper-weltbibel.md`, Abschnitt 13 (Humor-Grundgesetz) und 19 (Prüfliste für Texte), zwingend bei R5
 
 Achtung Namenskollision: **Phase 5** ist Knöterich (Gameplay), **Phase G5** ist Dorf und UI (Grafik). Im Bericht sauber getrennt, beim Lesen ebenso halten.
@@ -51,16 +51,16 @@ Drei Punkte, die niemand nebenbei entscheiden kann. **Hier wird nichts umgesetzt
 
 * **F19 Gold-Doppelbuchung. ENTSCHIEDEN, kein eigener Fund mehr, geht in F20 auf.** Der Befund ist widerlegt: `player.gold` hat im ganzen Spiel keine Ausgabestelle. Einnahmen kommen aus Loot und Drops (`index.html:3645`, `:4845`), abgezogen wird nur von den zwei Flüchen `Verwaltungsgebühr` (`:2898`) und `goldweg` (`:4778`). Kein Händler, kein Kauf. Kaufkraft ist allein `amt.bankGold` (`buyAusbau`, `buyVermutungen`, `unlockStartFluch`), und die bekommt plankonform 50 Prozent. Der Gürtelübertrag ist keine zweite Buchung von Vermögen, sondern Angriffsfläche für die zwei Flüche. Doppelt ist nur die Buchhaltung, nicht die Wirtschaft. Die vorgeschlagene Gegenvariante `amt.bankGold += player.gold - carryGold` wäre bei geradem Gold ein reiner No-Op und bei ungeradem 1 Gold Unterschied gewesen. Offen bleibt allein die Beschriftung: die Zeile "Beuteanteil nach Abzug" (`:5890`) liest sich als Verlust, und der Spieler erfährt nirgends, dass die Bank etwas bekommen hat. Diese eine Zeile wird zusammen mit F20 erledigt, nicht davor.
 * **F20 Ausbau-Kosten.** Vollausbau 3850 Gold gegen etwa 1000 bis 1500 Bankzugang pro Schicht. Der Baum ist ab Schicht 3 bis 4 leer, das erste Jahresgespräch kommt bei Schicht 10. Braucht eine durchgespielte Schicht, nicht Kopfrechnen. **Hängt nicht mehr an F19, sondern umgekehrt: F19 ist hierher gewandert** und liefert die Berichtszeile nach, sobald die Zahl steht. **Altlast vorher lesen:** `CONFIG.goldUebertragAnteil` (`index.html:2967`) steuert mit einem einzigen Regler zwei unabhängige Dinge, den Gürtelübertrag und den Bankzufluss. Getunt werden muss aber nur der Bankzufluss, denn er allein bestimmt, wann der Baum leer ist. Wer den Regler anfasst, ohne ihn vorher zu entkoppeln, verschiebt ungewollt auch die Fluch-Angriffsfläche. Der Kommentar an der Konstante beschreibt bislang nur den Gürtelübertrag und verschweigt die Bank.
-* **F25 Titel-Schreibweise. ENTSCHIEDEN, kein Codeeingriff.** Maßgeblich ist `weltbibel:863` ("Was mitwandert"), weil es den Startbildschirm namentlich nennt, während `:831` allgemein von Fließtext und Spielstrings spricht. Der Startbildschirm behält also die getrennte Fassung `DAS MONSTRAL MINISTERIUM`, Ladebildschirm und Tab-Titel behalten `Das Monstralministerium`. Der Ist-Zustand im Code ist damit bereits richtig. Nachzuziehen ist nur die Doku, und zwar in R4: `phase-w1-terminologie.md:17` zählt den Startbildschirm fälschlich zur zusammengeschriebenen Form, und `weltbibel:831` braucht den Hinweis, dass der Startbildschirm als gesetztes Logo zählt, obwohl er als Text gerendert wird. **Blockiert R5 nicht mehr.**
+* **F25 Titel-Schreibweise. ENTSCHIEDEN, kein Codeeingriff.** Maßgeblich ist die Weltbibel, Kapitel 18, Abschnitt „Was mitwandert", weil sie den Startbildschirm namentlich nennt, während der Absatz „Schreibweise" desselben Kapitels allgemein von Fließtext und Spielstrings spricht. Der Startbildschirm behält also die getrennte Fassung `DAS MONSTRAL MINISTERIUM`, Ladebildschirm und Tab-Titel behalten `Das Monstralministerium`. Der Ist-Zustand im Code ist damit bereits richtig. Nachzuziehen ist nur die Doku, und zwar in R4: die Namenstabelle in `phase-w1-terminologie.md` zählt den Startbildschirm fälschlich zur zusammengeschriebenen Form, und der Absatz „Schreibweise" in Kapitel 18 der Weltbibel braucht den Hinweis, dass der Startbildschirm als gesetztes Logo zählt, obwohl er als Text gerendert wird. **Blockiert R5 nicht mehr.** Beides in R4 erledigt.
 
 ### R2: Querstand aus G5. Höchster Wert, echte Zustandsfehler. — ERLEDIGT (Commit `9c96df2`)
 
 * **F10** `amtFensterOpen` fehlt in drei Guard-Listen: `knSperrzone()`, `knNachfragen()`, Schichtuhr. Dazu `knIdleT = 0` beim Öffnen, wie es Inventar, Zauberbaum und Kessel schon tun. **Nur zwei der vier Punkte umgesetzt.** `knSperrzone()` und `knNachfragen()` haben den Term bekommen. Die Schichtuhr nicht: sie prüft `!kampfNah && !kammer && !schlossOpen`, nicht das Flag-Quartett, und Inventar, Zauberbaum und Kessel blocken das Schichtende bewusst nicht. `knIdleT = 0` ebenfalls nicht: die drei Vorbild-Panels lösen je eine Wissenslücke auf (zaubern, kochen, Gürtel), die Amtsstube keine, und mit dem neuen Guard kann während des Lesens ohnehin kein Zettel feuern. Ein Reset würde nur die 50-Sekunden-Uhr aus `knStuckCandidate()` neu starten und dem verlorenen Spieler ausgerechnet `stuck_kammer` vorenthalten, dessen z2 `Gebührenbescheid. F.` genau seinen Fastreffer beschreibt. Nebenbefund: die Schadensbehauptung "Dienstzettel knallt über das Panel" stimmt nicht, `#knZettel` liegt auf z-index 12 bei `top:46px`, `#amtFenster` auf 22 und zentriert, es gibt keine Überlappung. Der Fund trägt über den Verbrauch von `kn.seen`.
 * **F33** Amtsfenster zeigt `amt.schichten` roh, also während der laufenden Schicht die Nummer der vorigen. In der ersten Schicht steht dort "Schicht 0". Die richtige Umrechnung steht bereits zweimal im Code.
 * **F36** Nur die `#ovPanel`-Screens dämpfen die Musik. Inventar, Zauberbaum, Kessel, Schloss und Amtsfenster nicht, obwohl `knSperrzone()` genau sie als Panel führt und `MUS.sting` seinen Guard damit begründet. **Vorsicht:** braucht einen gemeinsamen Zähler, sonst hebt das Schließen eines Panels den Muffle auf, während ein zweites noch offen ist. **Umgesetzt ohne Zähler:** `MUS.muffle()` leitet den Sollzustand aus den vorhandenen Flags ab, statt ihn zu setzen. Mit Argument setzt ein Overlay-Screen seinen Wunsch in `ovMuffle`, ohne Argument wird nur neu abgeleitet. Doppeltes Öffnen und ein Schließweg auf ein längst geschlossenes Panel sind damit strukturell harmlos, ein Zähler könnte beides nicht. Bewusste Reichweite über den Fund hinaus: ab jetzt dämpft auch das Inventar mitten im Kampf. Kampf-SFX bleiben unberührt, `sfxBus` hängt direkt am Master und umgeht den Lowpass.
-* **F40** Zwei Wege ins Amt mit unterschiedlichem Funktionsumfang. Bewusste Entscheidung und technisch begründet, **kein Codeeingriff**. Nur die Abnahmezeile `grafik:166` so umformulieren, dass sie den gebauten Zustand beschreibt. `grafik:166` ist umformuliert. Zur Genauigkeit: das ist nicht die Abnahmezeile, sondern der Plan-Fließtext von G5, und dort stand auch die falsche Zusicherung. Die echte Abnahmezeile (`grafik:175`, "Amt über Gebäude erreichbar") ist am Code nicht falsch, nur unspezifisch, und blieb deshalb unberührt.
+* **F40** Zwei Wege ins Amt mit unterschiedlichem Funktionsumfang. Bewusste Entscheidung und technisch begründet, **kein Codeeingriff**. Nur die Abnahmezeile in G5 so umformulieren, dass sie den gebauten Zustand beschreibt. Der erste Aufzählungspunkt von Phase G5 („Begehbares Dorf") ist umformuliert. Zur Genauigkeit: das ist nicht die Abnahmezeile, sondern der Plan-Fließtext von G5, und dort stand auch die falsche Zusicherung. Die echte Abnahme G5 („Amt über Gebäude erreichbar") ist am Code nicht falsch, nur unspezifisch, und blieb deshalb unberührt.
 
-### R3: Knöterich-Nachzüge.
+### R3: Knöterich-Nachzüge. — ERLEDIGT (Commit `ef89376`)
 
 * **F11** Randnotiz-Anlass `untaetigkeit` wird nie ausgelöst, der Pool ist tot. Die 25-Sekunden-Regel aus `gameplay:374` fehlt komplett, ebenso ihr Verhältnis zum Steckenbleib-Schubs aus `:380`.
 * **F12** Zweiter Steckenbleib-Schubs kommt nach 25 Sekunden ohne Spieleraktion, weil `knIdleT` nicht zurückgesetzt wird. Wer 100 Sekunden stillsteht, bekommt drei Schubse.
@@ -74,23 +74,23 @@ Drei Punkte, die niemand nebenbei entscheiden kann. **Hier wird nichts umgesetzt
 
 Nach diesem Abschnitt `knAssertCaps()` im Browser laufen lassen. Muss `true` liefern und darf nichts in die Konsole schreiben.
 
-### R4: Doku. Bestes Verhältnis von Aufwand zu vermiedener Fehlarbeit.
+### R4: Doku. Bestes Verhältnis von Aufwand zu vermiedener Fehlarbeit. — ERLEDIGT
 
 Kein Codeeingriff außer Kommentaren.
 
-* **F22** W1 und W2 sind fertig, tragen aber nirgends einen Statusmarker. Kopfzeilen in `phase-w1-terminologie.md`, `phase-w2-aktenfunde.md` und `weltbibel:508/522`.
-* **F23** Drei Planabschnitte beschreiben einen Zustand, den G5 überholt hat: `gameplay:244` (kein Dorf), `:540` (village unerreichbar), `:229` (endShift kennt zwei Anlässe). **Wichtigster Punkt des Abschnitts**, weil W3 direkt darauf aufsetzen würde.
-* **F78** Drei unvereinbare Statusmarker-Konventionen. Eine wählen und 13 Kopfzeilen angleichen, oder eine Statustabelle anlegen, auf die alle Dokumente zeigen.
+* **F22** W1 und W2 sind fertig, tragen aber nirgends einen Statusmarker. Kopfzeilen in `phase-w1-terminologie.md`, `phase-w2-aktenfunde.md` und an den Abschnitten W1 und W2 in Kapitel 14 der Weltbibel. **Geht in F78 auf, dort im selben Durchgang miterledigt.**
+* **F23** Drei Planabschnitte beschreiben einen Zustand, den G5 überholt hat: `gameplay:244` (kein Dorf), `:540` (village unerreichbar), `:229` (endShift kennt zwei Anlässe). **Wichtigster Punkt des Abschnitts**, weil W3 direkt darauf aufsetzen würde. **Umgesetzt, aber an sechs statt drei Stellen:** dieselbe überholte Aussage stand außerdem in `gameplay:97`, `:258` und in der Zonentabelle `:518`, die `village` weiter als aufruferlos führte. Wer nur die drei benannten Absätze repariert hätte, hätte W3 über die anderen drei genauso in die Irre laufen lassen. Alle sechs Stellen sind jetzt als historisch markiert statt umgeschrieben, die Phasennotizen bleiben damit ein lesbares Protokoll.
+* **F78** Drei unvereinbare Statusmarker-Konventionen. Eine wählen und 13 Kopfzeilen angleichen, oder eine Statustabelle anlegen, auf die alle Dokumente zeigen. **Gewählt: der Suffix `— ERLEDIGT` / `— OFFEN` an der Überschrift**, weil er im Repo schon achtmal steht (sechs Gameplay-Phasen, zwei Reparatur-Abschnitte) und keine neue Datei braucht. Festgehalten in `weltbibel`, Kapitel 14, direkt unter der Überschrift. Es waren nicht 13 Kopfzeilen, sondern 21: der Bericht kannte `superduper-reparatur-prompt.md` und `blaetter-serie-a-b.md` noch nicht. Die Konvention `(erledigt)` an den Grafik-Umsetzungsnotizen und die Statuszelle in der Bestandstabelle sind ersatzlos entfallen, den Stand trägt jetzt allein der Phasenkopf.
 * **F42** G1-Abnahme verweist auf eine Zusicherungs-Suite, die es nicht gibt. Streichen oder auf "Handdurchlauf aller 8 Module" umformulieren.
 * **F69, F70** G1-Abweichungen (Druckplatten-Datei, Set-Mapping wegen leerem `Dungeon_3`) gehören an die Planzeile selbst, nicht nur in die Notizen weit unten.
-* **F44 Rest** `.gitignore`-Kommentar und `grafik:874-877` gegen `:899` geraderücken. Der Build-Schritt läuft seit F9 automatisch, das gehört in den Regressionsschutz.
-* **F76** Weltbibel verbietet Minimap-Marker, die seit Phase 3 als gekaufter Effekt im Code stehen. Eine Klammer in `weltbibel:562`.
+* **F44 Rest** `.gitignore`-Kommentar und den Punkt „GitHub-Pages-Umstellung" unter „Bewusst nicht gemacht" in den G5-Notizen gegen die Zeile „GitHub-Pages-Live-Check" der Verifikationstabelle darunter geraderücken. Der Build-Schritt läuft seit F9 automatisch, das gehört in den Regressionsschutz. **Der `.gitignore`-Teil ist widerlegt:** `efe5437` (F9) hat den Kommentar bereits ersetzt, er beschreibt den Actions-Weg korrekt, `docs/` ist weder vorhanden noch getrackt. Offen waren nur die beiden anderen Teile, beide erledigt: der Widerspruch in den G5-Notizen ist als Nachtrag aufgelöst statt gelöscht, und der Auslieferungsweg steht als Regressionsschutz-Punkt 15 im Grafik-Prompt, samt der eigentlichen Falle (ein Sheet, das lokal liegt, aber nicht im Assets-Repo, fehlt live).
+* **F76** Weltbibel verbietet Minimap-Marker, die seit Phase 3 als gekaufter Effekt im Code stehen. Eine Klammer an der Zeile „Keine Questmarker auf der Minimap" in Kapitel 14, „Was wir ausdrücklich nicht bauen". **Der Fund trägt, seine Begründung nicht:** „Aktenlage" wird nicht gekauft, sondern gebraut (`gut_unterrichtet`, `fx:'karte'`), und sie ist über das Adjektiv „gut unterrichtet" mit dem Fluch „Aktenblindheit" bezahlt. Bezahlt also, nur nicht mit Gold. Die Klammer nennt das so.
 * **F79** Regel "ein Commit pro Phase" um einen Halbsatz für Nachtragscommits ergänzen.
-* **F81** `serve.py` ist ignoriert, obwohl die ganze Verifikations-Doku gegen seinen Port arbeitet. Committen oder begründen. Kein `README.md` im Root.
-* **F83** W1-Abnahmeliste war orts- statt sichtbarkeitsbasiert und hat den Ladebildschirm übersehen. Künftige Abnahmen über sichtbare Bildschirme führen: Ladebildschirm, Startbildschirm, Todesbildschirm, Dienstbericht, Jahresgespräch, Dorf, Amtsstube.
+* **F81** `serve.py` ist ignoriert, obwohl die ganze Verifikations-Doku gegen seinen Port arbeitet. Committen oder begründen. Kein `README.md` im Root. **Entschieden: committen.** Der Ausschluss war der einzige in `.gitignore` ohne Begründung, und es gibt auch keine: 542 Byte eigener Code, keine Fremdlizenz wie bei `Graphics/` und `assets/cf/`, kein Build-Artefakt wie `dist/`. Gleichzeitig ist es das Werkzeug, das die gesamte dokumentierte Verifikation stillschweigend voraussetzt, weil ein cachender Server sie falsch positiv beantwortet. Der Hinweis steht jetzt in beiden Kontextblöcken (`gameplay`, `grafik`). Kein `README.md` angelegt, das wäre eine neue Datei über den Fund hinaus.
+* **F83** W1-Abnahmeliste war orts- statt sichtbarkeitsbasiert und hat den Ladebildschirm übersehen. Künftige Abnahmen über sichtbare Bildschirme führen: Ladebildschirm, Startbildschirm, Todesbildschirm, Dienstbericht, Jahresgespräch, Dorf, Amtsstube. **Die Liste im Fund ist selbst unvollständig, es sind acht:** der Siegesbildschirm (`winGame()`) fehlte. Die vollständige Fassung mit Funktionsnamen steht jetzt in den W1-Umsetzungsnotizen, weil dort die falsche Abnahmeliste steht.
 * **F63, F65, F77** Drei irreführende Codekommentare (Level-1-Zeichenblock nennt Wald statt Dorf, `KAM_WAECHTER` nennt sieben statt sechs, `zutatenMitnahmeBasis` nennt Stapel statt Stücke).
 
-### R5: Amtsdeutsch. Nicht mehr blockiert, F25 ist entschieden.
+### R5: Amtsdeutsch. Nicht mehr blockiert, F25 ist entschieden. — OFFEN
 
 Registerarbeit. `weltbibel` Abschnitt 13 und 19 sind hier verbindlich, nicht optional.
 
@@ -106,7 +106,7 @@ Registerarbeit. `weltbibel` Abschnitt 13 und 19 sind hier verbindlich, nicht opt
 
 Nach jeder Textänderung `knAssertCaps()` prüfen und den Gedankenstrich-Scan wiederholen.
 
-### R6: Renderpfad und Regressionsschutz.
+### R6: Renderpfad und Regressionsschutz. — OFFEN
 
 Der Regressionsblock ist hier Prüfmaßstab, nicht Hintergrundlektüre.
 
@@ -120,7 +120,7 @@ Der Regressionsblock ist hier Prüfmaßstab, nicht Hintergrundlektüre.
 
 Abnahme: nach dem Umbau 300 Frames mit Zaubern ohne Exception, und das Frame-Budget in der Horde nicht schlechter als vorher (Referenz etwa 0,6 ms).
 
-### R7: Audio-Feinschliff.
+### R7: Audio-Feinschliff. — OFFEN
 
 * **F21** `MUS.duck(ms)` steht in der Schnittstellenliste, existiert aber nicht. Der erste Aufrufer bekommt einen TypeError, und zwar spät.
 * **F35** Zonenwechsel wartet bis zu vier Takte statt bis zur nächsten Taktgrenze, im Extremfall 12,6 Sekunden. Entweder Mechanik angleichen oder Planzeile `gameplay:508` ehrlich machen. **Achtung**, keine reine Kosmetik: `stepIdx` wird beim Wechsel auf 0 gesetzt.
@@ -131,7 +131,7 @@ Abnahme: nach dem Umbau 300 Frames mit Zaubern ohne Exception, und das Frame-Bud
 
 Das meiste hier ist nur im Hören zu beurteilen. Was nicht am Code entschieden werden kann, **als laufzeitgebunden melden statt als erledigt zählen**.
 
-### R8: Grafik-Restposten.
+### R8: Grafik-Restposten. — OFFEN
 
 * **F18** UI-Skin macht die runden Touch-Menüknöpfe wieder eckig, weil `border-image` den `border-radius` ignoriert. **Echte Regression** gegen eigene Vorarbeit, das Vorbild für die Lösung steht drei Zeilen weiter.
 * **F37** Dorf-Gebäude überragen die Cull-Ränder, die für kleine Props kalibriert wurden. Beim Amt verschwinden bis zu 110px Dach in einem Frame.
@@ -144,7 +144,7 @@ Das meiste hier ist nur im Hören zu beurteilen. Was nicht am Code entschieden w
 * **F16** Waffe und Schild erreichen den Helden gar nicht. Für den Schild gibt das Pack nichts her, hier ist nur eine ehrliche Umformulierung der Abnahme möglich.
 * **F71** `CREDITS.md` nennt zwei Packs, aus denen nichts verwendet wird, und einen dritten Projektnamen, den es nicht gibt.
 
-### R9: Aufräumen.
+### R9: Aufräumen. — OFFEN
 
 Toter und irreführender Code. Jede Stelle ist im Bericht einzeln belegt.
 
@@ -173,7 +173,7 @@ Diese Funde stehen im Bericht, sind aber geprüft und richtig so. Wer sie "repar
 4. Syntaxcheck über den Skriptinhalt (`new Function(...)`).
 5. Spiel starten, 300 Frames mit Zaubern, Konsole muss leer bleiben.
 6. Was nur im Spielen prüfbar ist, ausdrücklich als **ungeprüft, laufzeitgebunden** melden statt als erledigt zählen.
-7. Ein Commit pro Abschnitt, Betreff `fix(r<N>): …` oder `docs(r<N>): …`, Body nennt die behandelten Fundnummern. Nachtragscommits sind erlaubt, wenn Information erst später eintrifft.
+7. Ein Commit pro Abschnitt, Betreff `fix(r<N>): …` oder `docs(r<N>): …`, Body nennt die behandelten Fundnummern. Nachtragscommits sind erlaubt, wenn Information erst später eintrifft; sie nennen den Vorgängercommit.
 8. Kurzer Abschlussbericht im Chat: was repariert, was widerlegt, was laufzeitgebunden offen.
 
 ## Zwei offene Lücken aus dem Abgleich
