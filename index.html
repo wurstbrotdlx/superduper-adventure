@@ -617,15 +617,42 @@ for(const rig in CF_RIGS){
 // laufen jetzt auf CF_RIGS oben. Die PNGs bleiben bis G5 ("Sunnyside-Abschied")
 // auf der Platte, s. G3-Umsetzungsnotizen in superduper-grafik-prompt.md.
 
-// --- Welt: Tileset, Deko, VFX ---
-addSheet('tileset', 'Tileset/spr_tileset_sunnysideworld_16px.png', 1, 'raw');
-addSheet('tree1', 'Elements/Plants/spr_deco_tree_01_strip4.png', 4, 'strip');
-addSheet('tree2', 'Elements/Plants/spr_deco_tree_02_strip4.png', 4, 'strip');
-addSheet('mush_blue1', 'Elements/Plants/spr_deco_mushroom_blue_01_strip4.png', 4, 'strip');
-addSheet('mush_blue2', 'Elements/Plants/spr_deco_mushroom_blue_02_strip4.png', 4, 'strip');
-addSheet('mush_blue3', 'Elements/Plants/spr_deco_mushroom_blue_03_strip4.png', 4, 'strip');
-addSheet('mush_red', 'Elements/Plants/spr_deco_mushroom_red_01_strip4.png', 4, 'strip');
-addSheet('windmill', 'Elements/Other/spr_deco_windmill_withshadow_strip9.png', 9, 'strip');
+// --- Welt: Tileset, Deko, VFX (Phase G4, Cute Fantasy) -----------------------
+// Boden-UVs per Pixel-Varianzscan gemessen (nicht die Bounding-Box-Heuristik aus
+// sheet-audit.mjs — die taugt bei voll opaken Flächen-Tiles nichts), Details und
+// Messwerte in tools/sheet-audit.overrides.json unter _g4Tiles. Gesucht wurden
+// Zellen mit Varianz 0 bzw. minimal = nahtlos wiederholbare Flächenfarbe.
+addSheet('cfgrass1', 'cf/tiles/Grass_1_Middle.png', 1, 'raw');
+addSheet('cfgrass2', 'cf/tiles/Grass_2_Middle.png', 1, 'raw');
+addSheet('cfgrass3', 'cf/tiles/Grass_3_Middle.png', 1, 'raw');
+addSheet('cfgrass4', 'cf/tiles/Grass_4_Middle.png', 1, 'raw');
+addSheet('cfpath', 'cf/tiles/Path_Middle.png', 1, 'raw');
+addSheet('cfwater', 'cf/tiles/Water_Middle.png', 1, 'raw');
+addSheet('cfvolcano_tiles', 'cf/tiles/Volcano_Tiles.png', 1, 'raw');
+addSheet('cfshroom_tiles', 'cf/tiles/ShroomLands_Grass_Purple_Tiles.png', 1, 'raw');
+// Bäume: 3-Spalten-Sheets (Spalte 0 ist ein Baumstumpf, keine Baumvariante — beim
+// Zeichnen übersprungen), kein Sway-Frame im Pack vorhanden (Nutzerentscheidung:
+// kein Code-Sway nachrüsten, s. Umsetzungsnotizen G4).
+addSheet('cftree_oak', 'cf/deco/Trees/Big_Oak_Tree.png', 3, 'strip');
+addSheet('cftree_birch', 'cf/deco/Trees/Big_Birch_Tree.png', 3, 'strip');
+addSheet('cftree_spruce', 'cf/deco/Trees/Big_Spruce_tree.png', 3, 'strip');
+// G_CACTUS-Ersatz — kein Kaktus im Pack, thematisch passende Vulkanpflanze (Nutzerentscheidung).
+addSheet('cfvolcplant', 'cf/deco/Volcano_Plants.png', 4, 'grid', {fw:16, fh:16, ax:8, ay:15});
+addSheet('cfrock', 'cf/deco/Rock_1_Anim.png', 8, 'strip');
+// Neu in G4: hohes Gras bekommt erstmals ein Sprite (Nutzerentscheidung, war bis G3 unsichtbar).
+addSheet('cftallgrass', 'cf/deco/Grass_1_Anim.png', 8, 'strip');
+addSheet('cfmush1', 'cf/deco/muschroom_1_Anim.png', 6, 'strip');
+addSheet('cfmush2', 'cf/deco/muschroom_2_Anim.png', 6, 'strip');
+// Leuchtende Pilze fürs Schattenland (Prompt-Wunsch).
+addSheet('cfmush_shadow', 'cf/deco/Mushrooms_Purple.png', 4, 'grid', {fw:32, fh:32, ax:16, ay:30});
+// Landmarke: nur Rumpf, kein Sail-Overlay (separates Layer, eigene Rotationsachse
+// nötig — für eine reine Deko-Landmarke nicht gerechtfertigt, Nutzerentscheidung).
+// n:1 erzwingt Spalte 0 (die 2. Spalte ist nur eine zweite Gebäude-Skin, keine
+// Animation) — mit 'strip' und n:2 hätte der bestehende DRAW_DECO-Aufruf
+// (animFrame mit 9fps) zwischen beiden 9x/s hin- und hergeflackert.
+addSheet('cfwindmill', 'cf/deco/Windmill.png', 1, 'grid', {fw:64, fh:112, ax:32, ay:110});
+addSheet('fire1', 'cf/deco/Torch_Anim.png', 8, 'strip');
+addSheet('fire2', 'cf/deco/Campfire_Anim.png', 8, 'strip');
 // G3 Schritt 6: Hoftiere auf Cute Fantasy (Animals), ersetzt die Sunnyside-Strips
 // oben. Kein Down/Side/Up-Schema nötig (nur Idle/Lauf) — Zeilen aus
 // tools/sheet-audit.overrides.json _rigTable (cf_animal_*), Ankerhöhe an der
@@ -641,11 +668,8 @@ for(const a in CF_ANIMALS){
   addSheet(`cf${a}_idle`, `cf/deco/${ad.file}`, ad.idle[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.idle[0]});
   addSheet(`cf${a}_walk`, `cf/deco/${ad.file}`, ad.walk[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.walk[0]});
 }
-addSheet('fire1', 'Elements/VFX/Fire/spr_deco_fire_01_strip4.png', 4, 'strip');
-addSheet('fire2', 'Elements/VFX/Fire/spr_deco_fire_02_strip4.png', 4, 'strip');
+// glint/alert bleiben Sunnyside bis G5 — im Pack kein Gegenstück (dokumentiert).
 addSheet('glint', 'Elements/VFX/Glint/spr_deco_glint_01_strip6.png', 6, 'strip');
-addSheet('rock', 'Elements/Crops/rock.png', 1, 'strip');
-addSheet('wood', 'Elements/Crops/wood.png', 1, 'strip');
 addSheet('alert', 'UI/expression_alerted.png', 1, 'strip');
 // G3 Schritt 6: Zauber-Projektil für alle 5 Magier statt gezeichnetem Farbkreis,
 // getönt nach bolt.color. Zentrierter Anker (kein Fußpunkt, das Bolt-Objekt trägt
@@ -1368,7 +1392,10 @@ const MUS = {
   }
 };
 
-const G_GRASS=0, G_PATH=1, G_WATER=2, G_TREE=3, G_ROCK=4, G_TALL=5, G_SAND=6, G_SNOW=7, G_ICE=8, G_CACTUS=9, G_ICE_TREE=10;
+// G4: G_WATER war deklariert, aber nie geschrieben (kein Teich-Feature nutzte es) —
+// umgewidmet zu G_LAVA für die Aschewüste. Reine Optik, begehbar wie die Eisteiche
+// (Nutzerentscheidung, s. Umsetzungsnotizen G4), deshalb in WALKABLE unten dabei.
+const G_GRASS=0, G_PATH=1, G_LAVA=2, G_TREE=3, G_ROCK=4, G_TALL=5, G_SAND=6, G_SNOW=7, G_ICE=8, G_CACTUS=9, G_ICE_TREE=10;
 // Nur in Kammern (Phase 2): Wand, geschobener Block, eingebrochene Bodenplatte.
 // Alle drei sind nicht begehbar — WALKABLE ist eine Whitelist, sie stehen einfach nicht drin.
 const G_WALL=11, G_BLOCK=12, G_GAP=13;
@@ -1380,7 +1407,7 @@ const map = new Uint8Array(MW*MH);
 const inB = (x,y)=> x>=0 && y>=0 && x<MW && y<MH;
 const T = (x,y)=> map[x+y*MW];
 const setT = (x,y,v)=>{ if(inB(x,y)) map[x+y*MW]=v; };
-const WALKABLE = t => t===G_GRASS||t===G_PATH||t===G_TALL||t===G_SAND||t===G_SNOW||t===G_ICE;
+const WALKABLE = t => t===G_GRASS||t===G_PATH||t===G_TALL||t===G_SAND||t===G_SNOW||t===G_ICE||t===G_LAVA;
 const walkT = (x,y)=> inB(x,y) && WALKABLE(T(x,y));
 const walkPx = (x,y)=> walkT(Math.floor(x/TS), Math.floor(y/TS));
 function circleWalkable(x,y,r){ return walkPx(x-r,y-r)&&walkPx(x+r,y-r)&&walkPx(x-r,y+r)&&walkPx(x+r,y+r); }
@@ -1402,30 +1429,37 @@ const critters = [];   // Hühner/Schafe/Kühe, wandern im Grasland
 
 function makeCanvas(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
 
-// --- Boden aus dem Sunnyside-Tileset ---------------------------------------
-// Pixelkoordinaten der reinen (kantenlosen) Flächen-Tiles im 1024er Sheet.
-const TILE_UV = {
-  grass:     [[16,16],[32,16]],                       // zwei fast gleiche Grundtöne
-  grassDeco: [[16,32],[48,32],[64,32]],               // Blüten/Klee — nur sparsam einstreuen
-  dirt:  [[48,16]],
-  sand:  [[80,16]],
-  water: [[64,16]],
-  ice:   [[176,288],[192,288],[176,304],[192,304]],   // Wellen-Textur, weiß getönt = Eisfläche
+// --- Boden aus Cute-Fantasy-Tiles (Phase G4) --------------------------------
+// Jeder Eintrag ist [sheetKey, [x,y]] — UV nur bei aus einem Großbild
+// gecroppten Sheets (Volcano/ShroomLands), bei eigenständigen Einzeltile-PNGs
+// (Grass/Path/Water) ist es [0,0], das ganze Bild ist die Kachel. Werte per
+// Pixel-Varianzscan gemessen, Details in tools/sheet-audit.overrides.json
+// unter _g4Tiles. Frostkamm hat weiterhin kein eigenes Schnee-Tileset im Pack
+// und bleibt eine gebackene Umfärbung (TILE_TINT.snow).
+const CF_TILE = {
+  // 4 statt 2 Grundtöne (kein Blüten-Einzeltile im Pack, s. Umsetzungsnotizen G4).
+  // Erster Anlauf hatte Grass_3/4 als seltene 1-von-6-Sonderkachel wie einst die
+  // Sunnyside-Blüten — sichtbares Schachbrett am laufenden Spiel, weil die beiden
+  // Töne deutlich kontrastreicher sind als 1/2. Korrigiert: alle 4 gleichberechtigt
+  // im selben Pool, dadurch feinere, natürlichere Streuung statt harter Flecken.
+  grass:     [['cfgrass1',[0,0]], ['cfgrass2',[0,0]], ['cfgrass3',[0,0]], ['cfgrass4',[0,0]]],
+  path:      [['cfpath',[0,0]]],
+  water:     [['cfwater',[0,0]]],
+  volcano:   [['cfvolcano_tiles',[16,0]], ['cfvolcano_tiles',[16,32]]],
+  lava:      [['cfvolcano_tiles',[128,112]]],
+  shroom:    [['cfshroom_tiles',[16,16]], ['cfshroom_tiles',[16,64]]],
 };
 // Biome ohne eigene Tiles entstehen als eingefärbte Kopien (einmal gebacken).
 const TILE_TINT = {
   snow:       ['#eaf6ff', 0.82],
   ice:        ['#f2fbff', 0.74],
-  shadow:     ['#4a1866', 0.74],
-  shadowDirt: ['#2e0f42', 0.74],
-  dead:       ['#c9a06a', 0.45],
 };
 
 const TILE_CACHE = {};
-function bakeTile(uv, tintName){
-  const ck = uv[0] + ',' + uv[1] + ',' + (tintName || '-');
+function bakeCfTile(sheetKey, uv, tintName){
+  const ck = sheetKey + ',' + uv[0] + ',' + uv[1] + ',' + (tintName || '-');
   if(TILE_CACHE[ck]) return TILE_CACHE[ck];
-  const sheet = SHEETS.tileset; if(!sheet) return null;
+  const sheet = SHEETS[sheetKey]; if(!sheet) return null;
   const c = makeCanvas(TS, TS), cc = c.getContext('2d');
   cc.imageSmoothingEnabled = false;
   cc.drawImage(sheet.img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
@@ -1437,6 +1471,13 @@ function bakeTile(uv, tintName){
   }
   TILE_CACHE[ck] = c;
   return c;
+}
+// Wählt per Zellhash einen Eintrag aus einer CF_TILE-Liste und backt ihn.
+// Bits >>>4 verwendet, nicht die rohen Low-Bits — die entscheiden anderswo
+// (Deko-Streurate), Wiederverwendung derselben Bits würde beide Muster koppeln.
+function pickCfTile(list, x, y, tintName){
+  const e = list[(tileHash(x,y) >>> 4) % list.length];
+  return bakeCfTile(e[0], e[1], tintName);
 }
 
 // --- Kammerboden aus Cute-Fantasy-Dungeon-Sets (Phase G1) -------------------
@@ -1501,25 +1542,23 @@ function initFloorGraphics(){
   for(let y=0;y<MH;y++){
     for(let x=0;x<MW;x++){
       const t = T(x,y), px = x*TS, py = y*TS;
-      // ~1 von 6 Zellen bekommt ein Deko-Tile — sonst entsteht ein Schachbrettmuster
-      const gh = tileHash(x,y);
-      const gv = (gh % 6 === 0) ? TILE_UV.grassDeco[(gh >>> 4) % TILE_UV.grassDeco.length]
-                                : TILE_UV.grass[(gh >>> 4) & 1];
       let tile;
       if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
         tile = t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
-      } else if(currentLevel === 2){
-        tile = bakeTile(t===G_PATH ? TILE_UV.dirt[0] : gv, t===G_PATH ? 'shadowDirt' : 'shadow');
+      } else if(currentLevel === 2){                 // Schattenland: echtes Pilzland-Lila statt Umfärbung
+        tile = t===G_PATH ? pickCfTile(CF_TILE.path, x, y, 'shadowDirt') : pickCfTile(CF_TILE.shroom, x, y);
       } else if(t === G_PATH){
-        tile = bakeTile(TILE_UV.dirt[0], null);
+        tile = pickCfTile(CF_TILE.path, x, y);
       } else if(t === G_ICE){
-        tile = bakeTile(TILE_UV.ice[tileHash(x,y) % TILE_UV.ice.length], 'ice');
+        tile = pickCfTile(CF_TILE.water, x, y, 'ice');
+      } else if(t === G_LAVA){                        // reine Optik, begehbar wie Eisteiche
+        tile = pickCfTile(CF_TILE.lava, x, y);
       } else if(y < 26){
-        tile = bakeTile(gv, 'snow');             // Schneeband: eingefärbtes Gras
+        tile = pickCfTile(CF_TILE.grass, x, y, 'snow');   // Schneeband: eingefärbtes Gras (kein Schnee-Tileset im Pack)
       } else if(y > 54){
-        tile = bakeTile(TILE_UV.sand[0], null);
+        tile = pickCfTile(CF_TILE.volcano, x, y);
       } else {
-        tile = bakeTile(gv, null);
+        tile = pickCfTile(CF_TILE.grass, x, y);
       }
       if(tile) floorCtx.drawImage(tile, px, py);
     }
@@ -1564,6 +1603,19 @@ function genMap(){
       }
     }
   }
+  // Lavatümpel im Wüstenband: reine Optik, begehbar (Nutzerentscheidung), gleiches
+  // Fleck-statt-Einzelkachel-Muster wie die Eisteiche oben, kleinerer Radius.
+  for(let n=0;n<16;n++){
+    const cx = ri(5, MW-6), cy = ri(56, MH-5), rad = rr(1.0, 2.0);
+    for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
+      for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
+        if(!inB(x,y) || y <= 54) continue;
+        if(T(x,y) !== G_SAND && T(x,y) !== G_CACTUS) continue;   // Felsen bleiben stehen
+        if(Math.hypot(x-cx, y-cy) > rad - rng()*0.7) continue;
+        setT(x,y,G_LAVA);
+      }
+    }
+  }
   // Dorfanger um den Kessel freiräumen, sonst wächst ihm ein Baum in den Topf
   for(let y=KESSEL_T.y-2; y<=KESSEL_T.y+1; y++)
     for(let x=KESSEL_T.x-2; x<=KESSEL_T.x+2; x++) setT(x,y,G_PATH);
@@ -1571,22 +1623,32 @@ function genMap(){
   for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) {
     const t = T(x,y);
     if(t===G_TREE || t===G_ICE_TREE || t===G_CACTUS || t===G_ROCK)
-      trees.push({x:x*TS+TS/2, y:y*TS+TS-2, type:t, phase:rng()*10, variant:(x+y)&1});
+      // sp wählt bei G_TREE die Art (Eiche/Birke) und bei G_CACTUS die
+      // Wuchsvariante der Vulkanpflanze — eigenes Hash-Bit, damit es nicht mit
+      // variant (Frame innerhalb der Art) koppelt.
+      trees.push({x:x*TS+TS/2, y:y*TS+TS-2, type:t, phase:rng()*10, variant:(x+y)&1, sp:(tileHash(x,y)>>>2)&1});
   }
 
-  // --- Deko: Pilze auf begehbarem Grund, rein optisch (keine Kollision) ---
+  // --- Deko: Pilze und hohes Gras auf begehbarem Grund, rein optisch ---------
   decos.length = 0;
   for(let y=3;y<MH-3;y++) for(let x=3;x<MW-3;x++){
     if(!walkT(x,y) || T(x,y)===G_PATH) continue;
+    const t = T(x,y);
+    // Neu in G4: hohes Gras bekommt erstmals ein Sprite (Nutzerentscheidung) —
+    // sparsam gestreut (~1/6 der G_TALL-Kacheln), nicht jede einzelne.
+    if(t === G_TALL){
+      if(rng() > 0.16) continue;
+      decos.push({x:x*TS+TS/2, y:y*TS+TS-2, sheet:'cftallgrass', phase:rng()*10, scale:1.3});
+      continue;
+    }
     if(rng() > 0.022) continue;
-    const snow = y < 26, sand = y > 54;
-    if(sand) continue;                                     // Wüste bleibt karg
-    const kinds = snow ? ['mush_blue1','mush_blue2','mush_blue3'] : ['mush_red','mush_blue1'];
-    decos.push({x:x*TS+TS/2, y:y*TS+TS-4, sheet:kinds[Math.floor(rng()*kinds.length)],
+    const sand = y > 54;
+    if(sand) continue;                                     // Wüste bleibt karg (nur Vulkanpflanzen als "Bäume")
+    decos.push({x:x*TS+TS/2, y:y*TS+TS-4, sheet:rng()<0.5?'cfmush1':'cfmush2',
                 phase:rng()*10, scale:1.4});
   }
   // Windmühle als Landmarke nahe dem Startpunkt
-  decos.push({x:19*TS, y:36*TS, sheet:'windmill', phase:0, scale:1, big:true});
+  decos.push({x:19*TS, y:36*TS, sheet:'cfwindmill', phase:0, scale:1, big:true});
   // Nach y sortiert halten — der Renderer sucht das sichtbare Band binär statt linear.
   trees.sort((a,b)=>a.y-b.y); decos.sort((a,b)=>a.y-b.y);
 
@@ -4768,7 +4830,17 @@ function render(){
     const o = e.o;
     switch(e.kind){
       case DRAW_TREE:    drawProp(o); break;
-      case DRAW_DECO:    drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, o.big?9:4), o.x, o.y, o.scale); break;
+      case DRAW_DECO:
+        // Schattenland: Pilz-Deko wird durch die leuchtende Pilzland-Variante ersetzt
+        // (Windmühle und hohes Gras bleiben unverändert). Mushrooms_Purple ist ein
+        // Props-Sheet (4 Wuchsvarianten), keine Animation — fixes Frame je Prop,
+        // damit nicht 4 verschiedene Pilzformen pro Sekunde durchflackern.
+        if(currentLevel === 2 && !o.big && o.sheet !== 'cftallgrass'){
+          drawSprite('cfmush_shadow', Math.floor(o.phase*0.4) % 4, o.x, o.y, o.scale);
+        } else {
+          drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, o.big?9:4), o.x, o.y, o.scale);
+        }
+        break;
       case DRAW_CRITTER: { drawShadowEllipse(o.x, o.y+2, 8);
                          const moving = !!(o.vx||o.vy);
                          const ckey = moving ? o.sheetWalk : o.sheetIdle;
@@ -5016,13 +5088,19 @@ function drawPlayer(){
 }
 
 // Bäume / Felsen — feste Hindernisse, y-sortiert über dem Boden
+// Bäume: Big_Oak/Big_Birch/Big_Spruce sind 3-Spalten-Sheets (Spalte 0 = Stumpf,
+// übersprungen), kein Sway-Frame im Sheet — deshalb fester Frame 1/2 statt
+// animFrame-Sway (Nutzerentscheidung, weicht bewusst vom Prompt-Wunsch ab,
+// s. Umsetzungsnotizen G4). Rock_1_Anim/Mushrooms_Purple sind Requisiten-
+// Varianten, keine echten Animationen — ebenfalls fester statt zeitbasierter Frame.
 function drawProp(t){
   if(t.kt === 'pillar'){ drawSprite(`dun${kammer.set+1}_pillar`, t.variant, t.x, t.y); return; }
   if(t.kt === 'pot'){ drawShadowEllipse(t.x, t.y + 3, 8); drawSprite('dun_pot', 0, t.x, t.y, 1.6); return; }
   if(t.kt === 'cobweb'){ drawSprite('dun_cobweb', 0, t.x, t.y, 1.4); return; }
   if(currentLevel === 2){
-    drawSprite(t.variant ? 'tree2' : 'tree1', animFrame('tree1', gameT*0.5 + t.phase, 3),
-               t.x, t.y+4, 1.5, false, '#4a1866', 0.72);
+    // Schattenland: einheitliche dunkle Baumsilhouette, Art spielt keine Rolle
+    // (identisch zum Vorgehen vor G4, nur der Sheet-Key ist neu).
+    drawSprite('cftree_oak', t.variant ? 2 : 1, t.x, t.y+4, 1.05, false, '#4a1866', 0.72);
     return;
   }
   if(t.type === G_ROCK){
@@ -5031,13 +5109,13 @@ function drawProp(t){
     // Felsen nehmen die Farbe ihres Bandes an: Sandstein in der Wüste, Reif im
     // Schnee. Kammerwände bringen ihre Färbung als t.tint selbst mit.
     const tint = t.tint || (ty > 54 ? '#d9b070' : (ty < 26 ? '#dfeeff' : null));
-    drawSprite('rock', 0, t.x, t.y+2, 2.2, (t.phase|0) & 1, tint, t.tint ? 0.66 : 0.5);
+    const rf = Math.floor(t.phase) % 8;
+    drawSprite('cfrock', rf, t.x, t.y+2, 1.8, (t.phase|0) & 1, tint, t.tint ? 0.66 : 0.5);
     return;
   }
-  const sway = animFrame('tree1', gameT*0.5 + t.phase, 3);
-  if(t.type === G_ICE_TREE)      drawSprite('tree1', sway, t.x, t.y+4, 1.5, false, '#cfe9ff', 0.5);
-  else if(t.type === G_CACTUS)   drawSprite('tree2', sway, t.x, t.y+4, 1.25, false, '#b5872f', 0.82);
-  else                           drawSprite(t.variant ? 'tree2' : 'tree1', sway, t.x, t.y+4, 1.5);
+  if(t.type === G_ICE_TREE){ drawSprite('cftree_spruce', t.variant ? 2 : 1, t.x, t.y+4, 1.05, false, '#cfe9ff', 0.5); return; }
+  if(t.type === G_CACTUS){ drawSprite('cfvolcplant', t.sp, t.x, t.y+2, 2.2); return; }
+  drawSprite(t.sp ? 'cftree_birch' : 'cftree_oak', t.variant ? 2 : 1, t.x, t.y+4, 1.05);
 }
 
 function drawCorpse(c){

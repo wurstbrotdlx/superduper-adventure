@@ -559,9 +559,157 @@ ist der Weg für jede weitere Zeilen-Verifikation (Tiles, UI). Und: die
 geprüfte Triplets bestätigt — bei neuen Rigs in G4 zuerst danach suchen, bevor
 man am Bild rätselt.
 
-### G4
+### G4 — Oberwelt-Tiles, Biome, Deko (erledigt)
 
-(noch offen)
+**Vom Nutzer entschieden (weicht bewusst vom Prompt-Text oben ab):**
+
+1. **Schattenland bekommt echte Pilzland-Tiles** (`ShroomLands_Grass_Purple_Tiles.png`)
+   statt der bisherigen Dunkel-Umfärbung. Auch die Pilz-Deko wechselt dort zur
+   leuchtenden lila `Mushrooms_Purple`-Variante.
+2. **`G_LAVA` ist reine Optik und begehbar**, exakt wie die bestehenden Eisteiche —
+   keine Änderung an Kollision, Wegfindung, Spawn oder der Kammer-Wiederherstellung.
+3. **Hohes Gras (`G_TALL`) bekommt erstmals ein Sprite** (`Grass_1_Anim`, sparsam
+   über `decos[]` gestreut) — war bis G3 eine unsichtbare Datenkachel.
+
+**Korrekturen am Prompt-Kontext oben (wichtig für G5):**
+
+1. **`sheet-audit.mjs`s Bounding-Box-Heuristik taugt bei flächigen Boden-Tiles
+   nichts** — jede 16×16-Zelle eines Grass-/Volcano-/ShroomLands-Tilesets ist voll
+   opak, die BBox ist immer 0..16/0..16. Boden-UVs wurden stattdessen per
+   Python/PIL-Varianzscan gefunden (niedrigste RGB-Varianz unter den opaken Zellen
+   = nahtlos wiederholbare Fläche). Methode und alle Werte in
+   `tools/sheet-audit.overrides.json` unter `_g4Tiles`.
+2. **Erster Anlauf beim Gras war zu kontrastreich.** Grass_3/4_Middle als seltene
+   „1-von-6"-Sonderkachel (Nachbau der alten Sunnyside-Blüten-Logik) erzeugte am
+   laufenden Spiel ein deutlich sichtbares Schachbrett, weil die beiden Töne
+   spürbar wärmer/kühler sind als 1/2. Korrigiert: alle 4 Töne gleichberechtigt im
+   selben Pool (`CF_TILE.grass`), dadurch feinere Streuung statt harter Flecken.
+   Merksatz fürs nächste Tileset: **Kontrast der Kandidat-Töne am laufenden Spiel
+   prüfen, nicht nur den Einzel-Krop** — was im 16×16-Ausschnitt dezent wirkt, kann
+   flächig gekachelt ein Muster ergeben.
+3. **Tree-/Rock-/Plant-Sheets, deren Name auf „Animation" hindeutet, sind es nicht
+   zwangsläufig.** `Big_Oak/Birch/Spruce_Tree.png` sind 3-Spalten-**Varianten**-
+   Sheets (Spalte 0 ist ein Baumstumpf, keine Wuchsstufe — visuell per Crop
+   bestätigt), kein Sway-Frame vorhanden. `Volcano_Plants.png`/`Mushrooms_Purple.png`
+   liegen in „Props"-Ordnern und sind ebenfalls Varianten-Blätter. Nur Dateien mit
+   `_Anim`-Suffix (`Rock_1_Anim`, `Grass_1_Anim`, `muschroom_N_Anim`, `Torch_Anim`,
+   `Campfire_Anim`) sind im ganzen Pack durchgängig echte Frame-für-Frame-
+   Animationen — diese Namenskonvention war zuverlässig, wo vorhanden.
+4. **Kein Kaktus im ganzen Pack.** `G_CACTUS` läuft auf `Volcano_Plants` (Zeile 0,
+   orange-stachelige Vulkanpflanze) — thematisch die nächstliegende Alternative.
+
+**Entscheidungen:**
+
+- **Boden-Tabelle `CF_TILE`** nach dem Muster von `DUN_SET`/`bakeDunTile` aus G1
+  (Wiederverwendung, keine Neuerfindung): pro Fläche eine Liste von
+  `[sheetKey, uv]`-Einträgen, `pickCfTile()` wählt per `(tileHash>>>4) % length`
+  einen Eintrag (Bit-Shift bewusst, damit die Wahl nicht mit anderen Low-Bit-
+  Entscheidungen wie der G_TALL-Streurate koppelt). `bakeCfTile()` ersetzt
+  `bakeTile()` 1:1, plus optionaler `source-atop`-Tint wie bisher.
+- **Kein 9-Slice-Autotiling für Teiche/Lava.** Geprüft: `Cobble_Road`/`Water_Tile_1`
+  sind waschechte 3×5-Blob-Sets (3×3-Ring + 2 Sonderzeilen mit konkaven
+  Innenecken) — ein vollständiges Wang-Tile-System wäre nötig, um sie sauber zu
+  nutzen. Das bestehende `G_ICE` nutzte diese Komplexität nie (flache
+  Zufallsvariante pro Kachel, kein Nachbar-Check), `G_LAVA` übernimmt exakt dasselbe
+  einfache Muster. Aufwand/Nutzen für eine reine Deko-Wasserfläche nicht
+  gerechtfertigt.
+- **Weg (`G_PATH`) bleibt eine einzelne flache Kachel** (`Path_Middle.png`) über
+  alle Biome hinweg, wie zuvor mit `TILE_UV.dirt`. Keine Cobble-Road-Variante pro
+  Biome — hätte den Autotiling-Aufwand von oben gebraucht, um an den Rändern nicht
+  hart abzuschneiden.
+- **Bäume/Steine/Pilze bekommen einen festen statt zeitbasierten Frame** (aus
+  `t.phase` bzw. `o.phase` abgeleitet), weil ihre Quell-Sheets Varianten- und keine
+  Animationsblätter sind (s. Korrektur 3). Einzige Ausnahme: `cftallgrass` und
+  `cfmush1/cfmush2` sind echte `_Anim`-Strips und laufen weiter über `animFrame`.
+- **Windmühle nur als Rumpf**, ohne das separate `Windmill_Sail_Anim`-Layer — eine
+  rotierende Flügel-Overlay hätte eine eigene Rotationsachse und Positionierung
+  relativ zum Rumpf gebraucht; für eine reine Wiedererkennbarkeits-Landmarke nicht
+  gerechtfertigt. `cfwindmill` ist bewusst mit `n:1` registriert (nicht `strip`
+  mit `n:2`), sonst hätte die bestehende `animFrame(...,9)`-Aufruf im
+  `DRAW_DECO`-Case zwischen Rumpf und einer zweiten Gebäude-Skin geflackert.
+- **Schattenland-Pilze per Draw-Time-Override, nicht per eigenem Decos-Array.**
+  Level 2 ist technisch dieselbe Karte wie Level 1, nur umgebacken (kein `genMap()`
+  beim Wechsel) — die Pilz-Decos wurden schon beim ursprünglichen `genMap()`
+  gespawnt. Der `DRAW_DECO`-Fall ersetzt den Sheet-Key deshalb zur Zeichenzeit
+  gegen `cfmush_shadow`, wenn `currentLevel===2` und es sich nicht um Windmühle
+  oder hohes Gras handelt.
+- **`G_ROCK` nutzt jetzt ein einziges Sheet (`Rock_1_Anim`) für alle Biome**, mit der
+  bestehenden Tint-Logik (Sandstein/Reif/keine Färbung) unverändert übernommen —
+  ein zweites Requisiten-Set (`Volcano_Rocks`) hätte nur Risiko ohne klaren Gewinn
+  hinzugefügt.
+
+**Umgesetzt (alles in `index.html`, sofern nicht anders vermerkt):**
+
+- Sheet-Registrierung (~Zeile 620ff): komplette Sunnyside-Welt-Sektion (`tileset`,
+  `tree1/2`, `mush_blue1-3`, `mush_red`, `windmill`, `rock`, `wood`) durch CF-Sheets
+  ersetzt. `glint`/`alert` bleiben bewusst Sunnyside bis G5 (kein Pack-Äquivalent).
+- `CF_TILE`, `bakeCfTile()`, `pickCfTile()` ersetzen `TILE_UV`/`TILE_TINT`/`bakeTile()`.
+  `TILE_TINT` verliert die toten Einträge `dead` (nie referenziert) sowie
+  `shadow`/`shadowDirt` bleiben (Schattenland-Weg nutzt `shadowDirt` weiter).
+- `G_WATER` (deklariert, nie geschrieben) umgewidmet zu `G_LAVA`, in `WALKABLE`
+  aufgenommen. Lavatümpel in `genMap()` nach demselben Fleck-Algorithmus wie die
+  26 Eisteiche, nur im Wüstenband (`y>54`) und kleinerem Radius (16 Stück).
+- `initFloorGraphics()`: alle Zweige auf `pickCfTile`/`CF_TILE` umgestellt,
+  Zweig-Reihenfolge (Kammer → Level2 → Path → Ice → Lava → Snow-Band → Sand-Band →
+  Grasland) unverändert zur Vorlage.
+- `trees[]`-Einträge tragen neu `sp` (Art-/Wuchsvariante, eigenes Hash-Bit,
+  entkoppelt von `variant`). `drawProp()` komplett auf CF-Sheets umgestellt:
+  Oak/Birch für `G_TREE`, Spruce für `G_ICE_TREE`, Volcano-Plant für `G_CACTUS`,
+  `cfrock` für `G_ROCK`, `cftree_oak` fix getönt für die Schattenland-Silhouette.
+- `genMap()`-Deko-Schleife: `G_TALL` erzeugt jetzt `cftallgrass`-Props (~16 % der
+  Kacheln), Pilz-Deko auf `cfmush1`/`cfmush2` umgestellt (Wüste bleibt karg),
+  Windmühle auf `cfwindmill`.
+- `DRAW_DECO`-Fall: Schattenland-Override auf `cfmush_shadow` (fixer Frame aus
+  `o.phase`, keine echte Animation, s. Entscheidungen).
+- `assets/cf/tiles/` (8 Dateien) und `assets/cf/deco/` (14 Dateien, davon 3 in
+  `Trees/`) befüllt, `assets/cf/README.md` fortgeschrieben. `.gitignore` brauchte
+  keine Änderung — beide Ordner standen seit G0 schon drin.
+- `tools/sheet-audit.overrides.json`: `_g4Tiles`-Block mit allen gemessenen
+  Boden-UVs, Baum-/Requisiten-Rastern und den Python-Scan-Ergebnissen.
+
+**Bewusst nicht gemacht:**
+
+- **Kein Autotiling für Teich-/Lava-Ufer** (s. Entscheidungen) — flache
+  Zufallsvariante wie bei `G_ICE` seit jeher.
+- **Frostkamm-Pilze nutzen dieselben Grasland-Sheets**, keine eigene
+  `Cute_Fantasy_Christmass`-Deko. Das Christmas-Decor-Blatt ist ein dichtes
+  Sammelblatt (Geschenke, Zuckerstangen, Kränze) ohne einzeln passendes
+  Bodenmotiv — Aufwand für eine sehr kleine visuelle Nuance nicht gerechtfertigt.
+- **Kein Sway-Code für die neuen Bäume** (s. Korrektur 3) — weicht bewusst vom
+  Prompt-Wunsch „Sway-Verhalten übernehmen falls Sheets es hergeben, sonst
+  dezenter Code-Sway" ab. Ein `ctx.rotate`-basierter Wiege-Effekt wäre ohne
+  Sheet-Unterstützung zusätzlicher, ungeplanter Code gewesen.
+- **`Volcano_Rocks.png`, `Volcano_lava_buble.png`, `Windmill_Sail_Anim.png`,
+  `Cobble_Road`/große Blob-Tilesets nicht kopiert** — nicht geladen, also nicht im
+  Repo (s. Entscheidungen für die jeweilige Begründung).
+- **Kein `ctx.filter` an keiner Stelle** — alle neuen Tints laufen weiter über
+  `source-atop` auf gebackenen Canvas-Kopien, Regressionsregel 10 unangetastet.
+
+**Verifikation (`http://localhost:8378/adventure/index.html`, Konsolen-
+Introspektion wie in G1–G3, da kein automatisierter Test-Runner existiert):**
+
+| Prüfung | Ergebnis |
+|---|---|
+| Ladeliste | 319 Sheets in `SHEET_LIST`, alle in `SHEETS` vorhanden; einzige `n>cols`-Auffälligkeit ist `dun1_plate`/`dun2_plate` — vorbestehend seit G1, von G4 nicht berührt (`git diff` bestätigt keine Änderung an der Zeile) |
+| Kein Sunnyside-Tile mehr | `tileset`/`tree1`/`tree2`/`mush_*`/`windmill`/`rock`/`wood` aus `SHEET_LIST` entfernt, `grep` bestätigt keine Restreferenz im Code |
+| Grasland | Boden 4-Ton-Streuung ohne Schachbrett (nach Korrektur 2), Oak/Birch-Bäume, Windmühle als erkennbares Gebäude (per 3×-Zoom-Screenshot geprüft), hohes Gras sichtbar |
+| Frostkamm | Schnee-Tint auf CF-Gras, Spruce-Bäume gefroren getönt, Eisteiche unverändert in Form (Fleck-Algorithmus nicht angefasst) |
+| Aschewüste | Basalt-Boden, 16 Lava-Flecken sichtbar und **begehbar** (per Konsole: `T(tx,ty)===G_LAVA` in `WALKABLE`), Vulkanpflanzen statt Kaktus |
+| Schattenland | Echtes lila Pilzland-Set, einheitliche dunkle Baumsilhouette, leuchtende lila Pilz-Deko (Draw-Time-Override bestätigt: Windmühle und hohes Gras bleiben unverändert) |
+| Kammer-Regression | Tür Schwierigkeit 1 betreten (`betreteKammer`) und verlassen (`verlasseKammer`) über die Konsole — `currentLevel` korrekt 3→1, `kammer===null`, `trees.length` nach Rückkehr 1156 (unverändert), Dungeon-Rendering unangetastet |
+| Bake-Zeit | `initFloorGraphics()` per `performance.now()`: 7,30 ms (G1-Referenz Oberwelt 5,3 ms — leichter Anstieg durch die zusätzliche Tabellen-Indirektion, keine Regression im spürbaren Bereich) |
+| Frame-Budget | Hintergrund allein (0 Mobs) 0,308 ms/Frame (G3-Referenz 0,525 ms, damit gehalten); Bäume+Deko (1156+102 Einträge, y-Band-gefiltert) kosten zusätzlich ~0,26 ms; 265-Mob-Stresstest (absichtlich über dem 130er-Referenzwert) 3,55 ms — der Monster-Zeichenpfad selbst ist von G4 unangetastet |
+| 300-Frame-Soak | Einmal ohne Mobs (0 Exceptions), einmal mit 40 frisch gespawnten Mobs plus Zauber-Versuchen (0 Exceptions) — ein Lauf endete regulär im „Dienstschluss"-Screen (Spielzeit lief durch die synchronen `update(16)`-Aufrufe schneller als Echtzeit ab), bestätigt sauberen Übergang statt Absturz |
+| Build | `node tools/build-single.mjs` → 409 Dateien, 1743 KB eingebettet, `dist/index.html` 2046 KB; im Browser via `file://` geöffnet: Konsole leer, **0 Bild-Requests** im Netzwerk-Log |
+| Lizenz-Check | `git status --short --ignored` bestätigt `assets/cf/tiles/`/`deco/` weiterhin ignoriert; `assets/cf/audit-report.md` (reine Timestamp-Neuerzeugung durch die Recherche) vor dem Commit zurückgesetzt, um den Diff sauber zu halten |
+
+**Für G5 zum Mitnehmen:** Boden-UVs für flächige Tilesets müssen per Pixel-
+Varianzscan gesucht werden, nicht mit `sheet-audit.mjs --rig` (das Werkzeug ist für
+Sprite-Raster gebaut, nicht für nahtlose Flächentexturen). Und: **Kontrast von
+Kachel-Varianten immer am laufenden Spiel prüfen**, nicht nur am Einzel-Crop — das
+war die einzige Runde, die einen sichtbaren zweiten Anlauf brauchte. Die
+`_Anim`-Namenskonvention des Packs ist zuverlässig; alles ohne dieses Suffix vorher
+per Bild-Ansicht (nicht nur Bounding-Box-Zahlen) auf Varianten-vs-Animation prüfen.
 
 ### G5
 

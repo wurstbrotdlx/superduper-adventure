@@ -4,9 +4,10 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach G3: `dungeon/` (Kammer-Interieur), `player/` (Held), `enemies/` (alle 21
-Monster-Rigs) und `deco/` (Hoftiere, Zauber-Projektil) sind gefüllt. `tiles/`, `ui/`
-folgen in G4–G5.
+Stand nach G4: `dungeon/` (Kammer-Interieur), `player/` (Held), `enemies/` (alle 21
+Monster-Rigs), `deco/` (Hoftiere, Zauber-Projektil, Bäume, Requisiten, Landmarke,
+Feuer) und `tiles/` (Boden aller 3 Biome plus Schattenland) sind gefüllt. `ui/`
+folgt in G5.
 
 ## Diese Unterordner sind nicht im Repo
 
@@ -95,6 +96,35 @@ die Angriffszeile gebildet und bis zu 13px/88% daneben, s. Umsetzungsnotizen G3)
 separaten Datei mit anderem Frameraster — ein Kessel ist keine Zauber-Animation),
 `Orc_Chief/Grunt/Peon.png` (Raster-Konfidenz zu niedrig, ungeprüft), alle übrigen
 Skeleton_Swordman-Verwendungen (kein sauberes 32px-Raster, Ersatz s. oben).
+
+### Von G4 gebraucht (`tiles/`, `deco/`)
+
+Boden-UVs per Pixel-Varianzscan gemessen (niedrigste RGB-Varianz unter den voll
+opaken 16×16-Zellen = nahtlos wiederholbare Fläche), nicht mit `sheet-audit.mjs`
+selbst — das taugt bei flächigen Tiles nichts (jede Zelle ist voll opak). Details
+und exakte UVs in `tools/sheet-audit.overrides.json` unter `_g4Tiles`.
+
+| Zielordner | Dateien | Verwendung |
+|---|---|---|
+| `tiles/` | `Grass_1..4_Middle.png`, `Path_Middle.png`, `Water_Middle.png` (aus `Cute_Fantasy/Tiles/Grass/`, `.../Water/`) | Grasland-Boden (4 Töne statt 2, kein Blüten-Einzeltile im Pack), Weg, Teich/Eis |
+| `tiles/` | `Volcano_Tiles.png` (aus `Cute_Fantasy_Volcano/Tiles/`) | Aschewüste-Basalt (2 UVs) + Lava (1 UV), ganzes Blatt geladen, nur 3 Zellen gecroppt |
+| `tiles/` | `ShroomLands_Grass_Purple_Tiles.png` (aus `Cute_Fantasy_ShroomLands/Tiles/`) | Schattenland-Boden (2 UVs) — Nutzerentscheidung: echtes Set statt Dunkel-Umfärbung |
+| `deco/Trees/` | `Big_Oak_Tree.png`, `Big_Birch_Tree.png`, `Big_Spruce_tree.png` (aus `Cute_Fantasy/Trees/`) | G_TREE (Oak/Birch), G_ICE_TREE (Spruce). Spalte 0 je Datei ist ein Baumstumpf, nicht kopiert relevant, aber im Blatt belassen und beim Zeichnen übersprungen |
+| `deco/` | `Volcano_Plants.png` (aus `Cute_Fantasy_Volcano/Volcano_Props/`) | G_CACTUS-Ersatz — kein Kaktus im Pack (Nutzerentscheidung) |
+| `deco/` | `Rock_1_Anim.png` (aus `.../Rock_Animations/`) | ersetzt das alte einzelne Sunnyside-`rock`-Sheet 1:1, inkl. bestehender Biom-Tint-Logik |
+| `deco/` | `Grass_1_Anim.png` (aus `.../Grass_Animations/`) | Neu: G_TALL bekommt erstmals ein Sprite (Nutzerentscheidung) |
+| `deco/` | `muschroom_1_Anim.png`, `muschroom_2_Anim.png` (aus `.../Muschroom_Animations/`) | Pilz-Deko Grasland/Frostkamm |
+| `deco/` | `Mushrooms_Purple.png` (aus `Cute_Fantasy_ShroomLands/Props/`) | leuchtende Pilz-Deko Schattenland (Prompt-Wunsch) |
+| `deco/` | `Windmill.png` (aus `.../Unique_Buildings/Windmill/`) | Landmarke, nur Rumpf — kein Sail-Overlay (separates Layer, für eine Deko-Landmarke nicht gerechtfertigt) |
+| `deco/` | `Torch_Anim.png`, `Campfire_Anim.png` (aus `.../Other_Animations/`) | ersetzen `fire1`/`fire2` (Kessel, Kammer-Fackeln, Magie-Effekt, Boss-Aura) |
+
+**Bewusst nicht verwendet:** `Volcano_Rocks.png`/`Volcano_lava_buble.png` (ein
+einzelnes Rock-Sheet für alle Biome reicht, geringeres Risiko als ein zweites
+Requisiten-Set), `Cobble_Road`/`Water_Tile_1`/`Volcano_lava_buble` als große
+Blob-Tilesets (0/47-Autotile-Aufwand für ein Deko-Feature nicht gerechtfertigt —
+flache Einzelkachel wie beim bisherigen `G_ICE` reicht), `Windmill_Sail_Anim.png`
+(s. oben), `Cute_Fantasy_Christmass`-Requisiten für Frostkamm-Pilze (Scope-Trim:
+Frostkamm nutzt dieselben Grasland-Pilze, s. Umsetzungsnotizen G4).
 
 ## Kopierkonvention
 
