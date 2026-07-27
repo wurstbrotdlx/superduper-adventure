@@ -48,7 +48,36 @@
       "w": 51,
       "h": 49
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        8
+      ],
+      "cast": [
+        7,
+        8
+      ],
+      "hurt": [
+        11,
+        4
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Angels/Angel_2.png",
@@ -99,7 +128,36 @@
       "w": 51,
       "h": 46
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        8
+      ],
+      "cast": [
+        7,
+        8
+      ],
+      "hurt": [
+        11,
+        4
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Goblins/Goblin_Archer.png",
@@ -201,7 +259,36 @@
       "w": 32,
       "h": 27
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        4
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        4
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Goblins/Goblin_Spearman.png",
@@ -303,7 +390,36 @@
       "w": 31,
       "h": 26
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        4
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        4
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Knights/Archer.png",
@@ -354,7 +470,36 @@
       "w": 27,
       "h": 32
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Knights/Spearman.png",
@@ -405,7 +550,36 @@
       "w": 35,
       "h": 41
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Knights/Swordman.png",
@@ -456,7 +630,36 @@
       "w": 46,
       "h": 48
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Knights/Templar.png",
@@ -507,7 +710,36 @@
       "w": 36,
       "h": 41
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Characters/Orcs/Orc_Archer.png",
@@ -1281,59 +1513,59 @@
     "path": "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Gate_anim.png",
     "w": 832,
     "h": 32,
-    "fw": 16,
-    "fh": 16,
-    "cols": 52,
-    "rows": 2,
-    "gridSource": "rule",
-    "score": 1.25,
+    "fw": 32,
+    "fh": 32,
+    "cols": 26,
+    "rows": 1,
+    "gridSource": "override",
+    "score": 2.75,
     "confidence": 1,
     "alternatives": [],
     "rowFrames": [
-      52,
-      52
+      26
     ],
-    "totalFrames": 104,
+    "totalFrames": 26,
     "anchorSuggested": {
-      "ax": 8,
-      "ay": 16
+      "ax": 16,
+      "ay": 32
     },
     "unionBBox": {
       "x": 0,
       "y": 0,
-      "w": 16,
-      "h": 16
+      "w": 32,
+      "h": 32
     },
-    "anims": null
+    "anims": null,
+    "overrideNote": "F15: TILE_RULE_HINTS stuft /Dungeon_1/ pauschal als 16x16 ein - hier falsch. 832x32 = 26 Frames a 32x32, per Pixelvergleich belegt: Frame 0 ist pixelidentisch mit Dungeon_1_Gate_Closed.png. Code laedt 26 (index.html addSheet dun1_gateAnim)."
   },
   {
     "path": "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Gate_Closed.png",
     "w": 32,
     "h": 32,
-    "fw": 16,
-    "fh": 16,
-    "cols": 2,
-    "rows": 2,
-    "gridSource": "rule",
-    "score": 1.25,
+    "fw": 32,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "override",
+    "score": 4.25,
     "confidence": 1,
     "alternatives": [],
     "rowFrames": [
-      2,
-      2
+      1
     ],
-    "totalFrames": 4,
+    "totalFrames": 1,
     "anchorSuggested": {
-      "ax": 8,
-      "ay": 16
+      "ax": 16,
+      "ay": 32
     },
     "unionBBox": {
       "x": 0,
       "y": 0,
-      "w": 16,
-      "h": 16
+      "w": 32,
+      "h": 32
     },
-    "anims": null
+    "anims": null,
+    "overrideNote": "F15: Einzelsprite 32x32, kein 2x2-Tileraster (vollflaechig opak, keine Fuge). Code laedt 1 Frame (index.html addSheet dun1_gate)."
   },
   {
     "path": "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Gate_Open.png",
@@ -1369,30 +1601,29 @@
     "w": 48,
     "h": 48,
     "fw": 16,
-    "fh": 16,
+    "fh": 48,
     "cols": 3,
-    "rows": 3,
-    "gridSource": "rule",
-    "score": 4.083,
+    "rows": 1,
+    "gridSource": "override",
+    "score": 6.25,
     "confidence": 1,
     "alternatives": [],
     "rowFrames": [
-      3,
-      3,
       3
     ],
-    "totalFrames": 9,
+    "totalFrames": 3,
     "anchorSuggested": {
       "ax": 8,
-      "ay": 16
+      "ay": 47
     },
     "unionBBox": {
       "x": 1,
-      "y": 0,
+      "y": 4,
       "w": 14,
-      "h": 16
+      "h": 43
     },
-    "anims": null
+    "anims": null,
+    "overrideNote": "F15: 3 Pfeiler a 16x48, nicht 9 Tiles a 16x16. Leere Spalten bei x=0,15,16,31,32,47 trennen senkrecht; ueber die Nahtzeilen y=16/y=32 laeuft der Alphakanal in 21 bzw. 30 von 48 Spalten durch. Code laedt 3 (index.html addSheet dun1_pillar)."
   },
   {
     "path": "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Pressure_Plate_Anim.png",
@@ -1904,59 +2135,59 @@
     "path": "Cute_Fantasy_Dungeons/Dungeon_2/Dungeon_2_Gate_anim.png",
     "w": 832,
     "h": 32,
-    "fw": 16,
-    "fh": 16,
-    "cols": 52,
-    "rows": 2,
-    "gridSource": "rule",
-    "score": 1.25,
+    "fw": 32,
+    "fh": 32,
+    "cols": 26,
+    "rows": 1,
+    "gridSource": "override",
+    "score": 2.75,
     "confidence": 1,
     "alternatives": [],
     "rowFrames": [
-      52,
-      52
+      26
     ],
-    "totalFrames": 104,
+    "totalFrames": 26,
     "anchorSuggested": {
-      "ax": 8,
-      "ay": 16
+      "ax": 16,
+      "ay": 32
     },
     "unionBBox": {
       "x": 0,
       "y": 0,
-      "w": 16,
-      "h": 16
+      "w": 32,
+      "h": 32
     },
-    "anims": null
+    "anims": null,
+    "overrideNote": "F15: wie Dungeon_1_Gate_anim.png - 832x32 = 26 Frames a 32x32, Frame 0 pixelidentisch mit Dungeon_2_Gate_Closed.png."
   },
   {
     "path": "Cute_Fantasy_Dungeons/Dungeon_2/Dungeon_2_Gate_Closed.png",
     "w": 32,
     "h": 32,
-    "fw": 16,
-    "fh": 16,
-    "cols": 2,
-    "rows": 2,
-    "gridSource": "rule",
-    "score": 1.25,
+    "fw": 32,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "override",
+    "score": 4.25,
     "confidence": 1,
     "alternatives": [],
     "rowFrames": [
-      2,
-      2
+      1
     ],
-    "totalFrames": 4,
+    "totalFrames": 1,
     "anchorSuggested": {
-      "ax": 8,
-      "ay": 16
+      "ax": 16,
+      "ay": 32
     },
     "unionBBox": {
       "x": 0,
       "y": 0,
-      "w": 16,
-      "h": 16
+      "w": 32,
+      "h": 32
     },
-    "anims": null
+    "anims": null,
+    "overrideNote": "F15: wie Dungeon_1_Gate_Closed.png - Einzelsprite 32x32, 1 Frame."
   },
   {
     "path": "Cute_Fantasy_Dungeons/Dungeon_2/Dungeon_2_Gate_Open.png",
@@ -1992,30 +2223,29 @@
     "w": 48,
     "h": 48,
     "fw": 16,
-    "fh": 16,
+    "fh": 48,
     "cols": 3,
-    "rows": 3,
-    "gridSource": "rule",
-    "score": 4.083,
+    "rows": 1,
+    "gridSource": "override",
+    "score": 6.25,
     "confidence": 1,
     "alternatives": [],
     "rowFrames": [
-      3,
-      3,
       3
     ],
-    "totalFrames": 9,
+    "totalFrames": 3,
     "anchorSuggested": {
       "ax": 8,
-      "ay": 16
+      "ay": 47
     },
     "unionBBox": {
       "x": 1,
-      "y": 0,
+      "y": 4,
       "w": 14,
-      "h": 16
+      "h": 43
     },
-    "anims": null
+    "anims": null,
+    "overrideNote": "F15: wie Dungeon_1_Pillars.png - 3 Pfeiler a 16x48, identische Naht-Signatur."
   },
   {
     "path": "Cute_Fantasy_Dungeons/Dungeon_2/Dungeon_2_Pressure_Plate_Anim.png",
@@ -3153,7 +3383,36 @@
       "w": 12,
       "h": 8
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        0,
+        6
+      ],
+      "walk": [
+        0,
+        6
+      ],
+      "run": [
+        0,
+        6
+      ],
+      "attack": [
+        0,
+        6
+      ],
+      "cast": [
+        0,
+        6
+      ],
+      "hurt": [
+        0,
+        6
+      ],
+      "death": [
+        0,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Halloween/Witch/Broom.png",
@@ -4509,7 +4768,36 @@
       "w": 16,
       "h": 24
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        2
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        4
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_ShroomLands/Shroomlings/Green_Shroomling.png",
@@ -6348,7 +6636,36 @@
       "w": 30,
       "h": 42
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        4
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        4
+      ],
+      "cast": [
+        7,
+        4
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Volcano/Enemies/Cowling_2.png",
@@ -6399,7 +6716,36 @@
       "w": 30,
       "h": 42
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        4
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        4
+      ],
+      "cast": [
+        7,
+        4
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Volcano/Enemies/Cowling_Mage_1.png",
@@ -6450,7 +6796,36 @@
       "w": 29,
       "h": 26
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        4
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Volcano/Enemies/Cowling_Mage_2.png",
@@ -6501,7 +6876,36 @@
       "w": 29,
       "h": 26
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        4
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        2
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Volcano/Enemies/Flying_Skull.png",
@@ -6547,7 +6951,36 @@
       "w": 31,
       "h": 16
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        0,
+        6
+      ],
+      "walk": [
+        2,
+        3
+      ],
+      "run": [
+        2,
+        3
+      ],
+      "attack": [
+        4,
+        2
+      ],
+      "cast": [
+        4,
+        2
+      ],
+      "hurt": [
+        6,
+        6
+      ],
+      "death": [
+        7,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy_Volcano/Tiles/Volcano_Bridge.png",
@@ -7025,7 +7458,16 @@
       "w": 17,
       "h": 24
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        0,
+        2
+      ],
+      "walk": [
+        2,
+        8
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Animals/Chicken/Chicken_02.png",
@@ -8050,7 +8492,16 @@
       "w": 27,
       "h": 28
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        2
+      ],
+      "walk": [
+        4,
+        8
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Animals/Cow/Cow_02.png",
@@ -10294,7 +10745,16 @@
       "w": 23,
       "h": 24
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        2
+      ],
+      "walk": [
+        4,
+        8
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Animals/Pig/Pig_02.png",
@@ -11142,7 +11602,16 @@
       "w": 22,
       "h": 24
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        2
+      ],
+      "walk": [
+        4,
+        8
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Animals/Sheep/Sheep_02.png",
@@ -19834,7 +20303,36 @@
       "w": 30,
       "h": 32
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        6
+      ],
+      "cast": [
+        7,
+        6
+      ],
+      "hurt": [
+        11,
+        4
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Enemies/Skeleton/Skeleton_Bowman/Separated/Skeleton_Bowman_Bow.png",
@@ -19983,7 +20481,36 @@
       "w": 27,
       "h": 24
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ],
+      "run": [
+        4,
+        6
+      ],
+      "attack": [
+        7,
+        8
+      ],
+      "cast": [
+        7,
+        8
+      ],
+      "hurt": [
+        11,
+        4
+      ],
+      "death": [
+        9,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Enemies/Skeleton/Skeleton_Swordman.png",
@@ -20547,7 +21074,36 @@
       "w": 11,
       "h": 14
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        0,
+        4
+      ],
+      "walk": [
+        1,
+        8
+      ],
+      "run": [
+        1,
+        8
+      ],
+      "attack": [
+        2,
+        4
+      ],
+      "cast": [
+        2,
+        4
+      ],
+      "hurt": [
+        3,
+        4
+      ],
+      "death": [
+        3,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Enemies/Slime/Slime_Small/Slime_Small_Green.png",
@@ -20589,7 +21145,36 @@
       "w": 11,
       "h": 14
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        0,
+        4
+      ],
+      "walk": [
+        1,
+        8
+      ],
+      "run": [
+        1,
+        8
+      ],
+      "attack": [
+        2,
+        4
+      ],
+      "cast": [
+        2,
+        4
+      ],
+      "hurt": [
+        3,
+        4
+      ],
+      "death": [
+        3,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Enemies/Slime/Slime_Small/Slime_Small_Pink.png",
@@ -21187,7 +21772,16 @@
       "w": 20,
       "h": 24
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/NPCs (Premade)/Chef_Chloe.png",
@@ -21283,7 +21877,16 @@
       "w": 35,
       "h": 38
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/NPCs (Premade)/Farmer_Buba.png",
@@ -21481,7 +22084,16 @@
       "w": 35,
       "h": 38
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Other/Bow_Stages.png",
@@ -21638,7 +22250,12 @@
       "w": 10,
       "h": 15
     },
-    "anims": null
+    "anims": {
+      "fly": [
+        0,
+        8
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Outdoor decoration/barrels.png",
@@ -26163,7 +26780,36 @@
       "w": 14,
       "h": 17
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Chest/Farmer_Shirt/Farmer_Shirt_1_Orange.png",
@@ -28231,7 +28877,36 @@
       "w": 14,
       "h": 17
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Chest/Plate_Chest/Plate_Chest_Blue.png",
@@ -28513,7 +29188,36 @@
       "w": 14,
       "h": 17
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Chest/Plate_Chest/Plate_Chest_Green.png",
@@ -28701,7 +29405,36 @@
       "w": 14,
       "h": 17
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Chest/Plate_Chest/Plate_Chest_Orange.png",
@@ -29171,7 +29904,36 @@
       "w": 14,
       "h": 17
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Chest/Royal_Shirt/Royal_Shirt_1_Green.png",
@@ -29647,189 +30409,225 @@
     "path": "Cute_Fantasy/Player/Feet/Shoes_1_Black.png",
     "w": 576,
     "h": 3584,
-    "fw": 32,
+    "fw": 64,
     "fh": 64,
-    "cols": 18,
+    "cols": 9,
     "rows": 56,
-    "gridSource": "inferred",
-    "score": 5.072,
-    "confidence": 0.022,
-    "alternatives": [
-      {
-        "fw": 32,
-        "fh": 56,
-        "score": 4.96
-      },
-      {
-        "fw": 16,
-        "fh": 64,
-        "score": 4.468
-      }
-    ],
+    "gridSource": "override",
+    "score": 3.642,
+    "confidence": 1,
+    "alternatives": [],
     "rowFrames": [
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
       6,
-      12,
       6,
-      10,
-      10,
-      2,
-      2,
-      2,
-      10,
-      10,
-      10,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      18,
-      18,
-      18,
-      16,
-      16,
-      16,
+      6,
+      6,
+      6,
+      6,
       4,
       4,
       4,
-      12,
-      12,
-      12
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      6,
+      3,
+      8,
+      5,
+      1,
+      1,
+      1,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      9,
+      9,
+      9,
+      8,
+      8,
+      8,
+      2,
+      2,
+      2,
+      6,
+      6,
+      6
     ],
-    "totalFrames": 590,
+    "totalFrames": 299,
     "anchorSuggested": {
-      "ax": 16,
+      "ax": 32,
       "ay": 40
     },
     "unionBBox": {
-      "x": 0,
+      "x": 26,
       "y": 27,
-      "w": 32,
+      "w": 15,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Feet/Shoes_1_Blue.png",
     "w": 576,
     "h": 3584,
-    "fw": 32,
+    "fw": 64,
     "fh": 64,
-    "cols": 18,
+    "cols": 9,
     "rows": 56,
-    "gridSource": "inferred",
-    "score": 5.072,
-    "confidence": 0.022,
-    "alternatives": [
-      {
-        "fw": 32,
-        "fh": 56,
-        "score": 4.96
-      },
-      {
-        "fw": 16,
-        "fh": 64,
-        "score": 4.468
-      }
-    ],
+    "gridSource": "override",
+    "score": 3.642,
+    "confidence": 1,
+    "alternatives": [],
     "rowFrames": [
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
       6,
-      12,
       6,
-      10,
-      10,
-      2,
-      2,
-      2,
-      10,
-      10,
-      10,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      18,
-      18,
-      18,
-      16,
-      16,
-      16,
+      6,
+      6,
+      6,
+      6,
       4,
       4,
       4,
-      12,
-      12,
-      12
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      6,
+      3,
+      8,
+      5,
+      1,
+      1,
+      1,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      9,
+      9,
+      9,
+      8,
+      8,
+      8,
+      2,
+      2,
+      2,
+      6,
+      6,
+      6
     ],
-    "totalFrames": 590,
+    "totalFrames": 299,
     "anchorSuggested": {
-      "ax": 16,
+      "ax": 32,
       "ay": 40
     },
     "unionBBox": {
-      "x": 0,
+      "x": 26,
       "y": 27,
-      "w": 32,
+      "w": 15,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Feet/Shoes_1_Brown.png",
@@ -30023,283 +30821,337 @@
     "path": "Cute_Fantasy/Player/Feet/Shoes_1_Orange.png",
     "w": 576,
     "h": 3584,
-    "fw": 32,
+    "fw": 64,
     "fh": 64,
-    "cols": 18,
+    "cols": 9,
     "rows": 56,
-    "gridSource": "inferred",
-    "score": 5.072,
-    "confidence": 0.022,
-    "alternatives": [
-      {
-        "fw": 32,
-        "fh": 56,
-        "score": 4.96
-      },
-      {
-        "fw": 16,
-        "fh": 64,
-        "score": 4.468
-      }
-    ],
+    "gridSource": "override",
+    "score": 3.642,
+    "confidence": 1,
+    "alternatives": [],
     "rowFrames": [
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
       6,
-      12,
       6,
-      10,
-      10,
-      2,
-      2,
-      2,
-      10,
-      10,
-      10,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      18,
-      18,
-      18,
-      16,
-      16,
-      16,
+      6,
+      6,
+      6,
+      6,
       4,
       4,
       4,
-      12,
-      12,
-      12
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      6,
+      3,
+      8,
+      5,
+      1,
+      1,
+      1,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      9,
+      9,
+      9,
+      8,
+      8,
+      8,
+      2,
+      2,
+      2,
+      6,
+      6,
+      6
     ],
-    "totalFrames": 590,
+    "totalFrames": 299,
     "anchorSuggested": {
-      "ax": 16,
+      "ax": 32,
       "ay": 40
     },
     "unionBBox": {
-      "x": 0,
+      "x": 26,
       "y": 27,
-      "w": 32,
+      "w": 15,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Feet/Shoes_1_Pink.png",
     "w": 576,
     "h": 3584,
-    "fw": 32,
+    "fw": 64,
     "fh": 64,
-    "cols": 18,
+    "cols": 9,
     "rows": 56,
-    "gridSource": "inferred",
-    "score": 5.072,
-    "confidence": 0.022,
-    "alternatives": [
-      {
-        "fw": 32,
-        "fh": 56,
-        "score": 4.96
-      },
-      {
-        "fw": 16,
-        "fh": 64,
-        "score": 4.468
-      }
-    ],
+    "gridSource": "override",
+    "score": 3.642,
+    "confidence": 1,
+    "alternatives": [],
     "rowFrames": [
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
       6,
-      12,
       6,
-      10,
-      10,
-      2,
-      2,
-      2,
-      10,
-      10,
-      10,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      18,
-      18,
-      18,
-      16,
-      16,
-      16,
+      6,
+      6,
+      6,
+      6,
       4,
       4,
       4,
-      12,
-      12,
-      12
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      6,
+      3,
+      8,
+      5,
+      1,
+      1,
+      1,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      9,
+      9,
+      9,
+      8,
+      8,
+      8,
+      2,
+      2,
+      2,
+      6,
+      6,
+      6
     ],
-    "totalFrames": 590,
+    "totalFrames": 299,
     "anchorSuggested": {
-      "ax": 16,
+      "ax": 32,
       "ay": 40
     },
     "unionBBox": {
-      "x": 0,
+      "x": 26,
       "y": 27,
-      "w": 32,
+      "w": 15,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Feet/Shoes_1_Purple.png",
     "w": 576,
     "h": 3584,
-    "fw": 32,
+    "fw": 64,
     "fh": 64,
-    "cols": 18,
+    "cols": 9,
     "rows": 56,
-    "gridSource": "inferred",
-    "score": 5.072,
-    "confidence": 0.022,
-    "alternatives": [
-      {
-        "fw": 32,
-        "fh": 56,
-        "score": 4.96
-      },
-      {
-        "fw": 16,
-        "fh": 64,
-        "score": 4.468
-      }
-    ],
+    "gridSource": "override",
+    "score": 3.642,
+    "confidence": 1,
+    "alternatives": [],
     "rowFrames": [
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
-      8,
       6,
-      12,
       6,
-      10,
-      10,
-      2,
-      2,
-      2,
-      10,
-      10,
-      10,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
-      18,
-      18,
-      18,
-      16,
-      16,
-      16,
+      6,
+      6,
+      6,
+      6,
       4,
       4,
       4,
-      12,
-      12,
-      12
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      6,
+      3,
+      8,
+      5,
+      1,
+      1,
+      1,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      9,
+      9,
+      9,
+      8,
+      8,
+      8,
+      2,
+      2,
+      2,
+      6,
+      6,
+      6
     ],
-    "totalFrames": 590,
+    "totalFrames": 299,
     "anchorSuggested": {
-      "ax": 16,
+      "ax": 32,
       "ay": 40
     },
     "unionBBox": {
-      "x": 0,
+      "x": 26,
       "y": 27,
-      "w": 32,
+      "w": 15,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Feet/Shoes_1_Red.png",
@@ -30581,7 +31433,36 @@
       "w": 23,
       "h": 23
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Hands/Hands_Bare_Lantern_Torch_Idle_Running.png",
@@ -30965,7 +31846,36 @@
       "w": 23,
       "h": 29
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Head/Hair_1/Hair_1_Ginger.png",
@@ -31341,7 +32251,36 @@
       "w": 24,
       "h": 32
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Head/Hair_2/Hair_2_Brown.png",
@@ -31717,7 +32656,36 @@
       "w": 24,
       "h": 30
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Head/Hair_3/Hair_3_Blonde.png",
@@ -32469,7 +33437,36 @@
       "w": 25,
       "h": 30
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Head/Hair_4/Hair_4_Grey.png",
@@ -33033,7 +34030,36 @@
       "w": 24,
       "h": 29
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Head/Hair_6/Hair_6_Black.png",
@@ -33315,7 +34341,36 @@
       "w": 27,
       "h": 33
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Head/Hair_6/Hair_6_Ginger.png",
@@ -35289,7 +36344,36 @@
       "w": 14,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Legs/Farmer_Pants/Farmer_Pants_1_Orange.png",
@@ -36511,7 +37595,36 @@
       "w": 14,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Legs/Plate_Legs/Plate_Legs_Blue.png",
@@ -36793,7 +37906,36 @@
       "w": 14,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Legs/Plate_Legs/Plate_Legs_Green.png",
@@ -36981,7 +38123,36 @@
       "w": 14,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Legs/Plate_Legs/Plate_Legs_Orange.png",
@@ -37451,7 +38622,36 @@
       "w": 14,
       "h": 13
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Legs/Royal_Pants/Royal_Pants_1_Green.png",
@@ -38015,7 +39215,36 @@
       "w": 20,
       "h": 28
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        9,
+        4
+      ],
+      "run": [
+        45,
+        9
+      ],
+      "attack": [
+        18,
+        8
+      ],
+      "cast": [
+        24,
+        5
+      ],
+      "hurt": [
+        15,
+        4
+      ],
+      "death": [
+        15,
+        4
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Player_Mounts/Horse/Player_Horse_Black.png",
@@ -38385,7 +39614,12 @@
       "w": 32,
       "h": 31
     },
-    "anims": null
+    "anims": {
+      "blade": [
+        2,
+        1
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/Player/Tools/Iron/Iron_Tools.png",

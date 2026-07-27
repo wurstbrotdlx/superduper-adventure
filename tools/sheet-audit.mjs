@@ -534,6 +534,13 @@ function main() {
   walkPngs(GRAPHICS_DIR, GRAPHICS_DIR, relPaths);
 
   const overrides = loadOverrides();
+  // F43: die _rigTable spiegelt die im Code verbauten Rigs (CF_RIGS, CF_HERO_ANIMS,
+  // CF_ANIMALS, CF_NPCS in index.html — der Code bleibt die Quelle, Regressionsregel 7).
+  // Ihre anims/fw/fh wirken als Override je file-Pfad, damit die Zeilenwerte nicht ein
+  // drittes Mal abgeschrieben werden. Direkte Pfad-Keys in der Datei schlagen die Tabelle.
+  const rigAnims = {};
+  for (const v of Object.values(overrides._rigTable || {}))
+    if (v && typeof v === 'object' && v.file && v.anims) rigAnims[v.file] = { anims: v.anims, fw: v.fw, fh: v.fh };
   const manifest = [];
   const errors = [];
 
@@ -541,7 +548,7 @@ function main() {
     const absPath = path.join(GRAPHICS_DIR, relPath);
     try {
       let entry = auditFile(absPath, relPath);
-      entry = applyOverride(entry, absPath, overrides[relPath]);
+      entry = applyOverride(entry, absPath, overrides[relPath] || rigAnims[relPath]);
       manifest.push(entry);
     } catch (err) {
       errors.push({ path: relPath, error: err.message });

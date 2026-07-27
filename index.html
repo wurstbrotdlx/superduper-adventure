@@ -211,7 +211,11 @@
   /* Daumen-Fächer: Kampf-Buttons aus dem Belt um den Attack-Button gruppieren.
      position:fixed nimmt sie aus dem Flex-Flow; Rest des Belts (Menü-Buttons) bleibt zentriert. */
   body.touch #potionBtn, body.touch #spellBtn, body.touch #ultBtn{
-    position:fixed;z-index:11;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;touch-action:none;}
+    position:fixed;z-index:11;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;touch-action:none;
+    /* border-image ignoriert border-radius und machte die Rundknöpfe eckig (F18).
+       !important nötig: bakeUiSkin() schreibt border-image inline auf jeden .beltSlot.
+       --cfui-round setzt bakeUiSkin(), gleiche Optik wie die Desktop-Orbs. */
+    border-image-source:none !important;background-image:var(--cfui-round);background-size:100% 100%;image-rendering:pixelated;}
   body.touch #spellBtn{right:102px;bottom:128px;}    /* ~180° vom Attack-Button, Radius ~88px */
   body.touch #ultBtn{right:84px;bottom:194px;}       /* ~135° */
   body.touch #potionBtn{right:18px;bottom:212px;}    /* ~90°  */
@@ -224,8 +228,9 @@
      Text ist dort die eigentliche Information (Hebel / Schloss / Öffnen). */
   body.touch .beltSlot .bl{display:none;}
   body.touch #spellsBtn, body.touch #invBtn, body.touch #kamExitBtn, body.touch #prioBtn{
-    width:52px;height:52px;min-width:0;padding:0;border-radius:50%;font-size:22px;gap:0;position:relative;}
-  body.touch #aktionBtn{height:52px;border-radius:26px;padding:0 14px;}   /* gleiche Höhe wie die runden */
+    width:52px;height:52px;min-width:0;padding:0;border-radius:50%;font-size:22px;gap:0;position:relative;
+    border-image-source:none !important;background-image:var(--cfui-round);background-size:100% 100%;image-rendering:pixelated;}   /* s. F18-Kommentar oben */
+  body.touch #aktionBtn{height:52px;border-radius:26px;padding:0 14px;border-image-source:none !important;}   /* gleiche Höhe wie die runden; Pille behält ihre Rundung (F18) */
 
   /* Mobil stehen Leben und Mana als senkrechte Thermometer an den Bildschirm-
      rändern statt als Kugeln im Gürtel: links Leben, rechts Mana. Beide sind
@@ -630,7 +635,11 @@ const CF_RIGS = {
     // auseinanderfliegend (hurt bzw. death). Kein cast (ghost/shadowghost sind Nahkampf).
     anims:{ idle:[0,6], walk:[2,3], run:[2,3], attack:[4,2], cast:[4,2], hurt:[6,6], death:[7,6] } },    // ghost + shadowghost
   bat:               { file:'Halloween/Bat.png', fw:16, fh:16, ax:8, ay:11,
-    // Nur eine Zeile im ganzen Sheet, alle 7 Anims aliasen darauf.
+    // Nur eine Zeile im ganzen Sheet, alle 7 Anims aliasen darauf. Bewusster Kompromiss
+    // (F17): flying_skull als Ersatz verworfen, dessen hurt/death (zerberstende
+    // Schädel-Bruchstücke) widersprächen Name, Drop 'Fledermausflügel' und dem
+    // Weltbibel-Eintrag 'Der Umlauf'. Treffer/Tod bleiben über Blitz-Tint und
+    // Konfetti-Leiche sichtbar, nur ohne eigene Pose.
     anims:{ idle:[0,6], walk:[0,6], run:[0,6], attack:[0,6], cast:[0,6], hurt:[0,6], death:[0,6] } },    // bat
 };
 for(const rig in CF_RIGS){
@@ -1654,10 +1663,11 @@ function bakeCfTile(sheetKey, uv, tintName){
   return c;
 }
 // Wählt per Zellhash einen Eintrag aus einer CF_TILE-Liste und backt ihn.
-// Bits >>>4 verwendet, nicht die rohen Low-Bits — die entscheiden anderswo
-// (Deko-Streurate), Wiederverwendung derselben Bits würde beide Muster koppeln.
+// fmix32 ist Pflicht: die Bits 4/5 von tileHash hängen nur von x&63/y&63 ab
+// (Multiplikator-Übertrag läuft nur nach oben), benachbarte Kacheln wechselten
+// dadurch garantiert die Variante — regelmäßiges Schachbrett statt Streuung (F39).
 function pickCfTile(list, x, y, tintName){
-  const e = list[(tileHash(x,y) >>> 4) % list.length];
+  const e = list[(fmix32(tileHash(x,y)) >>> 4) % list.length];
   return bakeCfTile(e[0], e[1], tintName);
 }
 
@@ -1716,6 +1726,10 @@ function dunFloorTile(set, x, y){
 
 // Stabiler Pseudo-Zufall pro Zelle: Neubacken (Levelwechsel) ergibt dasselbe Bild.
 const tileHash = (x,y)=> (Math.imul(x, 73856093) ^ Math.imul(y, 19349663)) >>> 0;
+// Avalanche-Runde (murmur3-Finalizer). Nur im Boden-Bake (pickCfTile) verbaut —
+// die rohen tileHash-Verbraucher (Baumart, Kammer-Wandprops) bleiben unverändert,
+// damit deren Streuung nicht mitwandert.
+const fmix32 = h => { h^=h>>>16; h=Math.imul(h,0x85ebca6b); h^=h>>>13; h=Math.imul(h,0xc2b2ae35); h^=h>>>16; return h>>>0; };
 
 function initFloorGraphics(){
   if(!assetsReady) return;                       // wird nach dem Laden nachgeholt
@@ -1727,8 +1741,8 @@ function initFloorGraphics(){
       if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
         tile = t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
       } else if(currentLevel === 2){                 // Schattenland: echtes Pilzland-Lila statt Umfärbung
-        tile = t===G_PATH ? pickCfTile(CF_TILE.path, x, y, 'shadowDirt') : pickCfTile(CF_TILE.shroom, x, y);
-      } else if(t === G_PATH){
+        tile = (t===G_PATH || t===G_WALL) ? pickCfTile(CF_TILE.path, x, y, 'shadowDirt') : pickCfTile(CF_TILE.shroom, x, y);
+      } else if(t === G_PATH || t === G_WALL){         // G_WALL = Dorf-Footprints, backen wie Pfad (F38)
         tile = pickCfTile(CF_TILE.path, x, y);
       } else if(t === G_ICE){
         tile = pickCfTile(CF_TILE.water, x, y, 'ice');
@@ -1803,9 +1817,10 @@ function genMap(){
   for(let y=VILLAGE.y0; y<=VILLAGE.y1; y++)
     for(let x=VILLAGE.x0; x<=VILLAGE.x1; x++) setT(x,y,G_PATH);
   // Gebäude-Footprints blockieren (G_WALL, s. VILLAGE_BUILDINGS oben). WALKABLE ist
-  // eine Whitelist (index.html Zeile ~1410), G_WALL steht nicht drin — bereits
-  // ausreichend für Kollision, initFloorGraphics() hat im Oberwelt-Zweig keinen
-  // G_WALL-Fall und backt die Kachel als Gras; das Gebäude-Sprite deckt sie ab.
+  // eine Whitelist, G_WALL steht nicht drin — bereits ausreichend für Kollision.
+  // initFloorGraphics() backt G_WALL in der Oberwelt wie G_PATH: die Sprites sind
+  // schmaler als ihr Footprint (das Amt lässt 18px links frei, F38), das Gebäude
+  // deckt die Kachel also NICHT vollständig ab.
   for(const b of VILLAGE_BUILDINGS)
     for(let y=b.y0; y<b.y0+b.h; y++)
       for(let x=b.x0; x<b.x0+b.w; x++) setT(x,y,G_WALL);
@@ -5241,6 +5256,10 @@ function firstAtY(arr, y){
 // Sichtbarkeitsfenster der Zeichenliste. R6/F32: Grenzen und Prüfung lagen bis dahin
 // in render(), die Closure entstand damit pro Frame neu (Regressionsregel 4).
 let cullL = 0, cullR = 0, cullT = 0, cullB = 0;
+// Größter Fassaden-Überstand über den Fußpunkt (cfbld_amt: ay 190, ax 120). Die
+// 80er-Ränder unten sind exakt auf den Baum-Überstand kalibriert und bleiben —
+// big-Decos (Gebäude, Windmühle) bekommen nur in ihrer Schleife diesen Zuschlag (F37).
+const BIG_PAD = 190;
 const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
 
 function render(){
@@ -5348,9 +5367,10 @@ function render(){
     const t = trees[i];
     if(t.x > cullL && t.x < cullR) pushDraw(t.y, DRAW_TREE, t);
   }
-  for(let i = firstAtY(decos, cullT); i < decos.length && decos[i].y < cullB; i++){
+  for(let i = firstAtY(decos, cullT); i < decos.length && decos[i].y < cullB + BIG_PAD; i++){
     const d = decos[i];
-    if(d.x > cullL && d.x < cullR) pushDraw(d.y, DRAW_DECO, d);
+    const p = d.big ? BIG_PAD : 0;   // Pilze/Gras behalten bit-identisch die alten Ränder
+    if(d.y < cullB + p && d.x > cullL - p && d.x < cullR + p) pushDraw(d.y, DRAW_DECO, d);
   }
   if(currentLevel === 1){                               // Hoftiere, Dorf-Staffage, Kessel, Knöterich und Kammertüren, alle nur hier
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
@@ -5372,14 +5392,17 @@ function render(){
     switch(e.kind){
       case DRAW_TREE:    drawProp(o); break;
       case DRAW_DECO:
-        // Schattenland: Pilz-Deko wird durch die leuchtende Pilzland-Variante ersetzt
-        // (Windmühle und hohes Gras bleiben unverändert). Mushrooms_Purple ist ein
-        // Props-Sheet (4 Wuchsvarianten), keine Animation — fixes Frame je Prop,
-        // damit nicht 4 verschiedene Pilzformen pro Sekunde durchflackern.
+        // Schattenland: Pilz-Deko wird durch die leuchtende Pilzland-Variante ersetzt,
+        // big-Decos (Gebäude, Windmühle) bekommen die Baum-Silhouetten-Tönung aus
+        // drawProp — sonst steht das Dorf in Tagfarben mitten in der Horde (F64).
+        // Hohes Gras bleibt unverändert. Mushrooms_Purple ist ein Props-Sheet
+        // (4 Wuchsvarianten), keine Animation — fixes Frame je Prop, damit nicht
+        // 4 verschiedene Pilzformen pro Sekunde durchflackern.
         if(currentLevel === 2 && !o.big && o.sheet !== 'cftallgrass'){
           drawSprite('cfmush_shadow', Math.floor(o.phase*0.4) % 4, o.x, o.y, o.scale);
         } else {
-          drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, o.big?9:4), o.x, o.y, o.scale);
+          drawSprite(o.sheet, animFrame(o.sheet, gameT + o.phase, o.big?9:4), o.x, o.y, o.scale, false,
+                     (currentLevel === 2 && o.big) ? '#4a1866' : null, 0.72);
         }
         break;
       case DRAW_CRITTER: { drawShadowEllipse(o.x, o.y+2, 8);
@@ -6426,6 +6449,10 @@ function assertRigRegistrations(){
 function bakeUiSkin(){
   const frameUrl = SHEETS['cfui_frame'].img.src;
   const roundUrl = SHEETS['cfui_round'].img.src;
+  // Touch-Rundknöpfe bekommen das Rundsprite über die body.touch-Regeln im <style>:
+  // beim Backen (einmalig, nach dem Laden) ist body.touch noch gar nicht gesetzt
+  // (enterTouchMode() kommt erst beim ersten Touch), deshalb nur die Variable (F18).
+  document.documentElement.style.setProperty('--cfui-round', `url("${roundUrl}")`);
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.

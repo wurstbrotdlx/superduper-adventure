@@ -39,8 +39,33 @@
     "note": "Einzige Zeile, gruen glimmender Kessel = Cast/Brau-Animation der Hexe. Siehe _castTable Eintrag Witch. In G3 nicht genutzt (Witch als Magier-Rig verworfen)."
   },
 
+  "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Gate_anim.png": {
+    "fw": 32, "fh": 32,
+    "note": "F15: TILE_RULE_HINTS stuft /Dungeon_1/ pauschal als 16x16 ein - hier falsch. 832x32 = 26 Frames a 32x32, per Pixelvergleich belegt: Frame 0 ist pixelidentisch mit Dungeon_1_Gate_Closed.png. Code laedt 26 (index.html addSheet dun1_gateAnim)."
+  },
+  "Cute_Fantasy_Dungeons/Dungeon_2/Dungeon_2_Gate_anim.png": {
+    "fw": 32, "fh": 32,
+    "note": "F15: wie Dungeon_1_Gate_anim.png - 832x32 = 26 Frames a 32x32, Frame 0 pixelidentisch mit Dungeon_2_Gate_Closed.png."
+  },
+  "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Gate_Closed.png": {
+    "fw": 32, "fh": 32,
+    "note": "F15: Einzelsprite 32x32, kein 2x2-Tileraster (vollflaechig opak, keine Fuge). Code laedt 1 Frame (index.html addSheet dun1_gate)."
+  },
+  "Cute_Fantasy_Dungeons/Dungeon_2/Dungeon_2_Gate_Closed.png": {
+    "fw": 32, "fh": 32,
+    "note": "F15: wie Dungeon_1_Gate_Closed.png - Einzelsprite 32x32, 1 Frame."
+  },
+  "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Pillars.png": {
+    "fw": 16, "fh": 48,
+    "note": "F15: 3 Pfeiler a 16x48, nicht 9 Tiles a 16x16. Leere Spalten bei x=0,15,16,31,32,47 trennen senkrecht; ueber die Nahtzeilen y=16/y=32 laeuft der Alphakanal in 21 bzw. 30 von 48 Spalten durch. Code laedt 3 (index.html addSheet dun1_pillar)."
+  },
+  "Cute_Fantasy_Dungeons/Dungeon_2/Dungeon_2_Pillars.png": {
+    "fw": 16, "fh": 48,
+    "note": "F15: wie Dungeon_1_Pillars.png - 3 Pfeiler a 16x48, identische Naht-Signatur."
+  },
+
   "_rigTable": {
-    "_comment": "G3: pro Rig fw/fh/ax/ay (ax/ay AUSSCHLIESSLICH aus der Idle-Seitenzeile gemessen, NIE aus manifest.json unionBBox/anchorSuggested - die sind ueber die Angriffszeile gebildet und bis zu 13px/88% daneben, siehe superduper-grafik-prompt.md G3-Vorbefund 3). Zeilen als [row,n]. Universelle Regel fuer die 13-Zeilen-Familie (durch 2 Idle/Walk/Hurt-Triplets UND 3 bestaetigte Cast-Triplets belegt): Seiten-Ansicht = tripletStart+1 (idle=1, walk=4, attack/cast=7, hurt=11), death=9 (Einzelzeile). Ausnahmen einzeln dokumentiert.",
+    "_comment": "G3: pro Rig fw/fh/ax/ay (ax/ay AUSSCHLIESSLICH aus der Idle-Seitenzeile gemessen, NIE aus manifest.json unionBBox/anchorSuggested - die sind ueber die Angriffszeile gebildet und bis zu 13px/88% daneben, siehe superduper-grafik-prompt.md G3-Vorbefund 3). Zeilen als [row,n]. Universelle Regel fuer die 13-Zeilen-Familie (durch 2 Idle/Walk/Hurt-Triplets UND 3 bestaetigte Cast-Triplets belegt): Seiten-Ansicht = tripletStart+1 (idle=1, walk=4, attack/cast=7, hurt=11), death=9 (Einzelzeile). Ausnahmen einzeln dokumentiert. Seit F43 deckt die Tabelle ALLE verbauten Rigs ab (Monster aus CF_RIGS, Held/Layer aus CF_HERO_ANIMS+addCfHeroLayer, NPCs aus CF_NPCS, Tiere aus CF_ANIMALS, Projektil cf_bolt) und wird von sheet-audit.mjs als anims/fw-fh-Override je file-Pfad gelesen; index.html bleibt die autoritative Quelle (Regressionsregel 7).",
     "goblin_maceman":       { "file": "Cute_Fantasy_Characters/Goblins/Goblin_Maceman.png", "fw":32,"fh":32,"ax":16,"ay":25, "anims": { "idle":[1,4], "walk":[4,6], "run":[4,6], "attack":[7,6], "cast":[7,6], "hurt":[11,4], "death":[9,4] } },
     "goblin_thief":         { "file": "Cute_Fantasy_Characters/Goblins/Goblin_Thief.png", "fw":32,"fh":32,"ax":16,"ay":25, "anims": { "idle":[1,4], "walk":[4,6], "run":[4,6], "attack":[7,6], "cast":[7,6], "hurt":[11,4], "death":[9,4] } },
     "skeleton_bowman":      { "file": "Cute_Fantasy/Enemies/Skeleton/Skeleton_Bowman/Merged/Skeleton_Bowman.png", "fw":32,"fh":32,"ax":15,"ay":25, "anims": { "idle":[1,6], "walk":[4,6], "run":[4,6], "attack":[7,6], "cast":[7,6], "hurt":[11,4], "death":[9,4] }, "note": "mummy - ersetzt Skeleton.png (keine Angriffszeile, s. _castTable)." },
@@ -64,7 +89,35 @@
     "cf_animal_chicken":    { "file": "Cute_Fantasy/Animals/Chicken/Chicken_01.png", "fw":32,"fh":32,"ax":16,"ay":24, "anims": { "idle":[0,2], "walk":[2,8] }, "note": "Kein Down/Side/Up-Schema (16 Zeilen = 2 identische 8-Zeilen-Bloecke, Verhaltens-Sheet statt Richtungs-Sheet). row0=Idle-Nicken, row2=Lauf-Variante (breiteste Zeile, 8 Frames)." },
     "cf_animal_cow":        { "file": "Cute_Fantasy/Animals/Cow/Cow_01.png", "fw":32,"fh":32,"ax":16,"ay":27, "anims": { "idle":[1,2], "walk":[4,8] } },
     "cf_animal_sheep":      { "file": "Cute_Fantasy/Animals/Sheep/Sheep_01.png", "fw":32,"fh":32,"ax":16,"ay":24, "anims": { "idle":[1,2], "walk":[4,8] } },
-    "cf_animal_pig":        { "file": "Cute_Fantasy/Animals/Pig/Pig_01.png", "fw":32,"fh":32,"ax":16,"ay":24, "anims": { "idle":[1,2], "walk":[4,8] } }
+    "cf_animal_pig":        { "file": "Cute_Fantasy/Animals/Pig/Pig_01.png", "fw":32,"fh":32,"ax":16,"ay":24, "anims": { "idle":[1,2], "walk":[4,8] } },
+    "_commentHero": "F43: Held-Layer aus index.html CF_HERO_ANIMS + addCfHeroLayer, alle 24 Dateien teilen dasselbe 64x64-Raster und dieselben Zeilen; ax/ay aus CF_ANCHOR (Fusslinie). death hat keine eigene Zeile und wird zur Laufzeit auf hurt gealiast (bakeHeroSheet). Die 5 Feet-Sheets brauchen fw/fh zwingend als Override: 576x3584 identisch zu Player_Base, aber die schmale Schuh-Silhouette laesst die Inferenz faelschlich 32x64 raten.",
+    "hero_base":            { "file": "Cute_Fantasy/Player/Player_Base/Player_Base_animations.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_hands":           { "file": "Cute_Fantasy/Player/Hands/Hands_1_Bare.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_hair_h1":         { "file": "Cute_Fantasy/Player/Head/Hair_1/Hair_1_Brown.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_hair_h2":         { "file": "Cute_Fantasy/Player/Head/Hair_2/Hair_2_Blonde.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_hair_h3":         { "file": "Cute_Fantasy/Player/Head/Hair_3/Hair_3_Black.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_hair_h4":         { "file": "Cute_Fantasy/Player/Head/Hair_4/Hair_4_Ginger.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_hair_h5":         { "file": "Cute_Fantasy/Player/Head/Hair_5/Hair_5_Grey.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_hair_h6":         { "file": "Cute_Fantasy/Player/Head/Hair_6/Hair_6_Brown.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_chest_0":         { "file": "Cute_Fantasy/Player/Chest/OG_Shirt/Shirt_1_Red.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_chest_1":         { "file": "Cute_Fantasy/Player/Chest/Farmer_Shirt/Farmer_Shirt_1_Green.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_chest_2":         { "file": "Cute_Fantasy/Player/Chest/Royal_Shirt/Royal_Shirt_1_Blue.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_chest_3":         { "file": "Cute_Fantasy/Player/Chest/Plate_Chest/Plate_Chest_Iron.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_chest_4":         { "file": "Cute_Fantasy/Player/Chest/Plate_Chest/Plate_Chest_Gold.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_legs_0":          { "file": "Cute_Fantasy/Player/Legs/OG_Pants/Pants_1_Red.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_legs_1":          { "file": "Cute_Fantasy/Player/Legs/Farmer_Pants/Farmer_Pants_1_Green.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_legs_2":          { "file": "Cute_Fantasy/Player/Legs/Royal_Pants/Royal_Pants_1_Blue.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_legs_3":          { "file": "Cute_Fantasy/Player/Legs/Plate_Legs/Plate_Legs_Iron.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_legs_4":          { "file": "Cute_Fantasy/Player/Legs/Plate_Legs/Plate_Legs_Gold.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] } },
+    "hero_feet_0":          { "file": "Cute_Fantasy/Player/Feet/Shoes_1_Orange.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] }, "note": "fw/fh-Override noetig, s. _commentHero (Inferenz raet 32x64)." },
+    "hero_feet_1":          { "file": "Cute_Fantasy/Player/Feet/Shoes_1_Black.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] }, "note": "fw/fh-Override noetig, s. _commentHero." },
+    "hero_feet_2":          { "file": "Cute_Fantasy/Player/Feet/Shoes_1_Blue.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] }, "note": "fw/fh-Override noetig, s. _commentHero." },
+    "hero_feet_3":          { "file": "Cute_Fantasy/Player/Feet/Shoes_1_Purple.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] }, "note": "fw/fh-Override noetig, s. _commentHero." },
+    "hero_feet_4":          { "file": "Cute_Fantasy/Player/Feet/Shoes_1_Pink.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] }, "note": "fw/fh-Override noetig, s. _commentHero." },
+    "hero_tool_sword":      { "file": "Cute_Fantasy/Player/Tools/Iron/Iron_Sword.png", "fw":64,"fh":64,"ax":32,"ay":32, "anims": { "blade":[2,1] }, "note": "Kein Anim-Rig: Zeile 2 ist das einzelne Klingenblatt, das drawPlayer als schwebendes Icon nutzt (addSheet cftool_sword, rowStart:2). 'blade' ist bewusst kein Kampf-Anim-Name." },
+    "npc_bob":              { "file": "Cute_Fantasy/NPCs (Premade)/Farmer_Bob.png", "fw":64,"fh":64,"ax":32,"ay":60, "anims": { "idle":[1,6], "walk":[4,6] }, "note": "F43: Dorf-Staffage aus CF_NPCS, nur Idle/Lauf verbaut (Seitenzeilen wie bei den 13-Zeilen-Monster-Rigs)." },
+    "npc_katy":             { "file": "Cute_Fantasy/NPCs (Premade)/Bartender_Katy.png", "fw":64,"fh":64,"ax":32,"ay":60, "anims": { "idle":[1,6], "walk":[4,6] } },
+    "npc_mike":             { "file": "Cute_Fantasy/NPCs (Premade)/Miner_Mike.png", "fw":64,"fh":64,"ax":32,"ay":60, "anims": { "idle":[1,6], "walk":[4,6] } }
   },
 
   "_g4Tiles": {

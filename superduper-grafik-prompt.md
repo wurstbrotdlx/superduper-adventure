@@ -126,7 +126,7 @@ Der Held wechselt auf das Cute-Fantasy-Player-System: `Player_Base` plus Layer f
 
 ### Abnahme G2
 
-Jede Slot-Belegung ändert den Helden sichtbar (4 Slots x mindestens 3 Qualitätsstufen von Hand durchgeschaltet und angesehen). Alle Animationen laufen in Oberwelt, Kammer, Schattenland. Touch-Steuerung unberührt. Aura-Glow-Code entfernt. Soak.
+Jede Slot-Belegung ist am Bildschirm sichtbar (4 Slots x mindestens 3 Qualitätsstufen von Hand durchgeschaltet und angesehen) — mit unterschiedlicher Tiefe je Slot: `armor` (Chest+Legs) und `boots` (Feet) gehen als Layer in das Helden-Sprite selbst (`bakeHeroSheet()`), `weapon` bleibt ein schwebendes `Iron_Sword`-Icon (Tint nach Gattung, Größe und Leuchten nach Stufe; alle drei Gattungen teilen dieselbe Klinge), `shield` ein schwebendes Emoji (Größe und Leuchten nach Stufe). Begründung in den G2-Umsetzungsnotizen unter „Entscheidungen"; im ganzen Pack existiert kein Schild-Sprite für den Helden. Alle Animationen laufen in Oberwelt, Kammer, Schattenland. Touch-Steuerung unberührt. Aura-Glow-Code entfernt. Soak. *(Formulierung in R8/F16 ehrlich gemacht — die alte Fassung „ändert den Helden sichtbar" versprach mehr, als Waffe und Schild einlösen.)*
 
 ## Phase G3: Monster auf echte Rigs — ERLEDIGT
 
@@ -142,7 +142,7 @@ Verfügbare Rigs (Manifest aus G0 ist die Wahrheit): Slime S/M/L, Skeleton, Skel
 
 ### Abnahme G3
 
-Alle 21 Typen plus beide Bosse einzeln erzwungen und angesehen (idle, laufen, angreifen, casten wo zutreffend, sterben). Kammerwächter in Kammern geprüft. Kein Sunnyside-Charakter-Sheet mehr in der Ladeliste. Soak mit voller Horde, Frame-Budget gehalten.
+Alle 21 Typen plus beide Bosse einzeln erzwungen und angesehen (idle, laufen, angreifen, casten wo zutreffend, sterben) — Ausnahmen `bat` (keine eigene Angriffs-/Hurt-/Death-Zeile) und `slime`/`shadow` (hurt = death), s. den Kompromiss-Punkt in den Umsetzungsnotizen (R8/F17). Kammerwächter in Kammern geprüft. Kein Sunnyside-Charakter-Sheet mehr in der Ladeliste. Soak mit voller Horde, Frame-Budget gehalten.
 
 ## Phase G4: Oberwelt-Tiles, Biome, Deko — ERLEDIGT
 
@@ -337,7 +337,10 @@ Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**,
   **kein einziges Schild-Sprite für den Helden**, nur Boden-Requisiten in den
   Dungeon-Sets). Die Waffe zeigt neu das echte `Iron_Sword`-Frame statt Emoji-Text,
   eingefärbt nach Waffengattung (`WEAPON_STYLE`); alle drei Gattungen (Dolch/Schwert/
-  Kriegsaxt) teilen sich dieselbe Klinge, weil es keine anderen Waffen-Sprites gibt.
+  Kriegsaxt) teilen sich dieselbe Klinge, weil `Iron_Sword.png` das einzige
+  **eingebundene** Waffenblatt ist (`Tools/Iron/Iron_Tools.png` mit Axt und
+  `Tools/Bow/Wooden_Bow.png` liegen ungenutzt im Pack — Reserve für eine
+  gattungseigene Klinge, Richtigstellung R8/F16).
   Weil zwei Qualitätsstufen derselben Gattung sonst identisch aussähen (z. B.
   Amtsklinge/Dienstschwert, beide `sword`), skalieren Größe und Leuchten zusätzlich
   mit der Stufe — sonst hätte die Abnahme „jede Slot-Belegung sichtbar" für die
@@ -485,6 +488,18 @@ Daumennagel-Vorschaubild anfangs sehr ähnlich aus).
 - **Kammerwächter-Ersatz-Rigs, wo das Pack nichts Passenderes hergibt:** `spider`
   auf `Blue_Shroomling.png` (kein Spinnen-Rig vorhanden), dokumentiert als
   bewusster Kompromiss wie vom Prompt für Golem/Mumie vorgesehen.
+- **Rigs ohne eigene Treffer-/Sterbezeile, bewusst akzeptiert (nachgetragen in
+  R8/F17):** `bat` läuft auf `Halloween/Bat.png` (96×16, genau eine Zeile mit
+  6 Frames — alle sieben Anim-Keys aliasen darauf, es gibt keine Angriffs-, Hurt-
+  oder Death-Pose). Das vom Prompt vorgeschlagene `Flying_Skull` wäre das einzige
+  Alternativ-Rig, wurde aber verworfen: seine hurt/death-Zeilen zeigen
+  auseinanderfliegende Schädel-Bruchstücke und widersprächen Name (`Fledermaus`),
+  Drop (`Fledermausflügel`, `ZUTAT_NOUNS.bat` mit 🦇-Icon) und dem
+  Weltbibel-Eintrag „Der Umlauf"; außerdem ist es selbst kein voller Rig
+  (attack nur 2 Frames, cast = attack). Kleinerer Fall gleicher Art:
+  `slime`/`shadow` teilen hurt und death auf Zeile 3 (`Slime_Small_*.png` hat nur
+  4 Zeilen). Beides bleibt mechanisch sichtbar — weißer Trefferblitz, ausblendende
+  Konfetti-Leiche — nur ohne eigene Pose.
 - **Zauber-Projektil:** `Skeleton_Mage_Projectile.png` ersetzt den gezeichneten
   Farbkreis für alle 5 Magier, getönt nach `bolt.color`. Spieler-eigene
   `projectiles` bleiben Kreise (nicht Teil des Auftrags).
@@ -588,6 +603,15 @@ man am Bild rätselt.
    Merksatz fürs nächste Tileset: **Kontrast der Kandidat-Töne am laufenden Spiel
    prüfen, nicht nur den Einzel-Krop** — was im 16×16-Ausschnitt dezent wirkt, kann
    flächig gekachelt ein Muster ergeben.
+   **Nachtrag R8 (F39): die hier benannte Ursache war falsch.** Das Schachbrett kam
+   nicht vom Tonkontrast, sondern aus `tileHash` selbst: dessen Bits 4/5 hängen nur
+   von `x&63`/`y&63` ab, benachbarte Kacheln wechselten dadurch **garantiert** die
+   Variante (gemessen 0,0 % gleiche Nachbarn statt 25 %, striktes Gitter mit
+   Periode 64). Der 4-Töne-Pool hat das Muster nur kontrastärmer gemacht, die
+   Nachbarschaftsstreuung sogar verschlechtert. Behoben durch eine
+   fmix32-Avalanche-Runde in `pickCfTile` (gemessen danach 25,2/24,5 % gleiche
+   Nachbarn bei n=4, keine Periode ≤256), am laufenden Spiel per
+   Screenshot-Vergleich gegengesehen.
 3. **Tree-/Rock-/Plant-Sheets, deren Name auf „Animation" hindeutet, sind es nicht
    zwangsläufig.** `Big_Oak/Birch/Spruce_Tree.png` sind 3-Spalten-**Varianten**-
    Sheets (Spalte 0 ist ein Baumstumpf, keine Wuchsstufe — visuell per Crop
@@ -693,7 +717,7 @@ Introspektion wie in G1–G3, da kein automatisierter Test-Runner existiert):**
 |---|---|
 | Ladeliste | 319 Sheets in `SHEET_LIST`, alle in `SHEETS` vorhanden; einzige `n>cols`-Auffälligkeit ist `dun1_plate`/`dun2_plate` — vorbestehend seit G1, von G4 nicht berührt (`git diff` bestätigt keine Änderung an der Zeile) |
 | Kein Sunnyside-Tile mehr | `tileset`/`tree1`/`tree2`/`mush_*`/`windmill`/`rock`/`wood` aus `SHEET_LIST` entfernt, `grep` bestätigt keine Restreferenz im Code |
-| Grasland | Boden 4-Ton-Streuung ohne Schachbrett (nach Korrektur 2), Oak/Birch-Bäume, Windmühle als erkennbares Gebäude (per 3×-Zoom-Screenshot geprüft), hohes Gras sichtbar |
+| Grasland | Boden 4-Ton-Streuung ohne Schachbrett (Zusicherung galt erst ab R8/F39: die Fassung „nach Korrektur 2" war weiterhin ein regelmäßiges Gitter, s. Nachtrag an Korrektur 2), Oak/Birch-Bäume, Windmühle als erkennbares Gebäude (per 3×-Zoom-Screenshot geprüft), hohes Gras sichtbar |
 | Frostkamm | Schnee-Tint auf CF-Gras, Spruce-Bäume gefroren getönt, Eisteiche unverändert in Form (Fleck-Algorithmus nicht angefasst) |
 | Aschewüste | Basalt-Boden, 16 Lava-Flecken sichtbar und **begehbar** (per Konsole: `T(tx,ty)===G_LAVA` in `WALKABLE`), Vulkanpflanzen statt Kaktus |
 | Schattenland | Echtes lila Pilzland-Set, einheitliche dunkle Baumsilhouette, leuchtende lila Pilz-Deko (Draw-Time-Override bestätigt: Windmühle und hohes Gras bleiben unverändert) |
