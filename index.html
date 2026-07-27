@@ -12,7 +12,12 @@
   #hud{position:fixed;left:0;right:0;bottom:0;height:96px;pointer-events:none;z-index:10;
        background:linear-gradient(to top,rgba(10,8,16,.95),rgba(10,8,16,.75) 70%,transparent);
        display:flex;align-items:flex-end;justify-content:center;gap:18px;padding:0 16px 10px;}
-  .orbWrap{width:84px;height:84px;border-radius:50%;border:3px solid #6b5a3a;background:#1a0505;overflow:hidden;position:relative;flex:0 0 auto;box-shadow:0 0 12px rgba(0,0,0,.8) inset;}
+  /* image-rendering: bakeUiSkin() legt round_brown.png (16x16) als background-image
+     mit background-size:100% 100% unter Orbs und Touch-Rundknöpfe, das ist 3,5- bis
+     5-fach hochskalierte Pixelkunst. Ohne pixelated glättet der Browser sie weich,
+     Regressionsregel 14 verlangt das Gegenteil (R6/F34). Die Füllungen darunter
+     (#hpFill/#manaFill/.orbTicks) sind CSS-Verläufe, keine Rasterbilder. */
+  .orbWrap{width:84px;height:84px;border-radius:50%;border:3px solid #6b5a3a;background:#1a0505;overflow:hidden;position:relative;flex:0 0 auto;box-shadow:0 0 12px rgba(0,0,0,.8) inset;image-rendering:pixelated;}
   #hpFill{position:absolute;left:0;right:0;bottom:0;height:100%;background:radial-gradient(circle at 35% 30%,#ff6a5a,#b31414 60%,#7a0a0a);transition:height .15s;}
   #manaFill{position:absolute;left:0;right:0;bottom:0;height:100%;background:radial-gradient(circle at 35% 30%,#5a9eff,#144cb3 60%,#0a207a);transition:height .15s;}
   .orbTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:12px;text-shadow:0 1px 2px #000;}
@@ -200,7 +205,7 @@
   body.touch #touchCluster{display:block;position:fixed;right:0;bottom:0;width:230px;height:250px;z-index:11;pointer-events:none;}
   #touchCluster .tBtn{position:absolute;pointer-events:auto;border:3px solid #6b5a3a;border-radius:50%;
     background:rgba(23,19,13,.85);color:#e8d9a8;display:flex;align-items:center;justify-content:center;
-    touch-action:none;-webkit-user-select:none;user-select:none;}
+    touch-action:none;-webkit-user-select:none;user-select:none;image-rendering:pixelated;}  /* s. .orbWrap, R6/F34 — deckt #attackBtn mit ab */
   #attackBtn{width:78px;height:78px;right:14px;bottom:118px;font-size:30px;}
   #attackBtn.locked{border-color:#ff5a5a;box-shadow:0 0 10px rgba(255,90,90,.6);}
   /* Daumen-Fächer: Kampf-Buttons aus dem Belt um den Attack-Button gruppieren.
@@ -811,10 +816,20 @@ function loadAssets(){
 // nicht das ganze PNG — bei den großen CF-Rig-Sheets (bis 512x832, 7 Anim-Keys pro
 // Datei) wäre ein Ganz-Sheet-Bake pro Tint ~172 MB Canvas und ein Mehr-ms-Hänger
 // beim ersten Treffer mitten im Frame. Zeilenweise sind es ~16 MB, siehe G3-Notizen.
-const TINT_CACHE = {};
+// R6/F30: Der Cache-Schlüssel war key+'|'+color+'|'+alpha, also eine Stringallokation
+// pro getöntem Sprite pro Frame — die einzige Allokation im Renderpfad, die mit der
+// Hordengröße skaliert (gemessen 37 Aufrufe/Frame bei 45 Monstern in der Horde).
+// Dreistufig über Maps kostet dieselben drei Vergleiche ohne Allokation.
+const TINT_CACHE = new Map();
 function tintedSheet(key, color, alpha){
-  const ck = key + '|' + color + '|' + alpha;
-  if(TINT_CACHE[ck]) return TINT_CACHE[ck];
+  const byColor = TINT_CACHE.get(key);
+  if(byColor !== undefined){
+    const byAlpha = byColor.get(color);
+    if(byAlpha !== undefined){
+      const hit = byAlpha.get(alpha);
+      if(hit !== undefined) return hit;
+    }
+  }
   const s = SHEETS[key]; if(!s) return null;
   const rows = Math.max(1, Math.ceil(s.n / s.cols));
   const srcY = (s.rowStart||0) * s.fh;
@@ -826,7 +841,9 @@ function tintedSheet(key, color, alpha){
   cc.globalAlpha = alpha;
   cc.fillStyle = color;
   cc.fillRect(0, 0, c.width, c.height);
-  TINT_CACHE[ck] = c;
+  let bc = TINT_CACHE.get(key); if(bc === undefined){ bc = new Map(); TINT_CACHE.set(key, bc); }
+  let ba = bc.get(color);       if(ba === undefined){ ba = new Map(); bc.set(color, ba); }
+  ba.set(alpha, c);
   return c;
 }
 
@@ -906,7 +923,7 @@ function bakeHeroSheet(){
   anims.death = anims.hurt;   // kein eigenes Sterbe-Frame, siehe CF_HERO_ANIMS-Kommentar oben
   BAKED_HERO_ANIM = anims;
   SHEETS['hero_baked'] = {img:canvas, cols:totalFrames, n:totalFrames, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
-  TINT_CACHE && Object.keys(TINT_CACHE).forEach(k => { if(k.startsWith('hero_baked|')) delete TINT_CACHE[k]; });
+  TINT_CACHE.delete('hero_baked');   // getönte Kopien des alten Bakes verwerfen (Haar/Rüstung geändert)
 }
 
 // DOM-Cache: getElementById war im Renderloop einer der teuersten Posten.
@@ -915,9 +932,15 @@ const el = id => DOM[id] || (DOM[id] = document.getElementById(id));
 // Schreibt nur bei echter Änderung — spart Style-Recalcs und, wichtiger, verhindert
 // dass Kindknoten während einer laufenden Touch-Geste ausgetauscht werden.
 const LAST = {};
+// R6/F73: setStyle baute seinen Cache-Schlüssel als id+'|'+prop, also eine
+// Stringallokation pro Aufruf (gemessen 11 Aufrufe/Frame). Zweistufig gleich teuer,
+// aber ohne Allokation. setAttr ist neu und schließt den letzten HUD-Schreibpfad
+// ohne Dirty-Check (R6/F29, Regressionsregel 1).
+const LAST_STYLE = {}, LAST_ATTR = {};
 function setTxt(id, v){ if(LAST[id] === v) return; LAST[id] = v; el(id).textContent = v; }
 function setHTML(id, v){ if(LAST[id] === v) return; LAST[id] = v; el(id).innerHTML = v; }
-function setStyle(id, prop, v){ const k = id+'|'+prop; if(LAST[k] === v) return; LAST[k] = v; el(id).style[prop] = v; }
+function setStyle(id, prop, v){ const m = LAST_STYLE[id] || (LAST_STYLE[id] = {}); if(m[prop] === v) return; m[prop] = v; el(id).style[prop] = v; }
+function setAttr(id, name, v){ const m = LAST_ATTR[id] || (LAST_ATTR[id] = {}); if(m[name] === v) return; m[name] = v; el(id).setAttribute(name, v); }
 
 const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
 const lerp = (a,b,t)=> a+(b-a)*t;
@@ -926,6 +949,12 @@ const lerp = (a,b,t)=> a+(b-a)*t;
 const dist2 = (ax,ay,bx,by)=>{ const dx=ax-bx, dy=ay-by; return Math.sqrt(dx*dx+dy*dy); };
 const sqDist = (ax,ay,bx,by)=>{ const dx=ax-bx, dy=ay-by; return dx*dx+dy*dy; };
 const angDiff = (a,b)=>{ let d=(a-b)%(Math.PI*2); if(d>Math.PI)d-=Math.PI*2; if(d<-Math.PI)d+=Math.PI*2; return Math.abs(d); };
+
+// R6/F73: Array- und Zeichenkettenliterale, die im Renderpfad standen, einmal statt
+// pro Frame (Regressionsregel 4: keine neuen Objekt-Allokationen im Renderpfad).
+const DASH_5_4 = [5,4], DASH_6_6 = [6,6], DASH_AUS = [];
+const DOLCH_OFFS = [-0.35, 0.35];                                  // zwei Schlitze des Dolchhiebs
+const SCHILD_FONT = ['13px serif','14px serif','15px serif','16px serif','17px serif'];   // Stufe 0..4
 
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 const rng = mulberry32(20260721);
@@ -2813,6 +2842,10 @@ const SPELLS = [
    desc:'Zerlegt ALLES auf dem Bildschirm in buntes Konfetti.'},
 ];
 let activeSpellId = null;      // aktuell gewählter Spruch (E)
+let activeSpell = null;        // R6/F32: derselbe Spruch als Objekt, gesetzt an denselben
+                               // zwei Stellen wie die Id — updateHUD() suchte ihn bisher
+                               // pro Frame linear in SPELLS, obwohl er sich nur bei
+                               // Nutzeraktion ändert.
 let spellTreeOpen = false;
 
 function spellKnown(id){ return !!player.spellsKnown[id]; }
@@ -2823,7 +2856,7 @@ function spellUnlockable(sp){
 function unlockSpell(sp){
   if(!spellUnlockable(sp)) return;
   player.spellPoints--; player.spellsKnown[sp.id] = true;
-  if(!sp.ultimate && !activeSpellId) activeSpellId = sp.id;
+  if(!sp.ultimate && !activeSpellId){ activeSpellId = sp.id; activeSpell = sp; }
   sfx.level();
   floaters.push({x:player.x, y:player.y-40, txt:'Gelernt: '+sp.name, col:'#c77dff', t:1.6, big:true});
   renderSpellTree(); updateHUD();
@@ -2832,7 +2865,7 @@ function selectSpell(id){
   if(!spellKnown(id)) return;
   const sp = SPELLS.find(s=>s.id===id);
   if(sp.ultimate) return; // Ultimate immer auf R
-  activeSpellId = id; renderSpellTree(); updateHUD();
+  activeSpellId = id; activeSpell = sp; renderSpellTree(); updateHUD();
 }
 
 function castActiveSpell(){ const sp = SPELLS.find(s=>s.id===activeSpellId); if(sp) castSpell(sp); }
@@ -3445,6 +3478,10 @@ function wuerfleTuer(t){
   t.diff = rri(1, 5);
   t.tier = clamp(t.diff - 1, 0, 4);   // Schild und Beute lesen dasselbe Feld
   t.cd = 0;
+  // R6/F31: Set-Wahl wie beim Betreten (diff 1-2 -> Set 0). Die Keys hängen allein
+  // an diff und werden hier mitgewürfelt, statt in drawKammerTuer() pro Tür pro Frame.
+  const dk = `dun${t.diff <= 2 ? 1 : 2}`;
+  t.dkGate = dk + '_gate'; t.dkGateAnim = dk + '_gateAnim';
 }
 
 function setzeKammerTueren(){
@@ -3515,8 +3552,14 @@ function betreteKammer(tuer){
             level: currentLevel, px: player.x, py: player.y};
 
   const kinds = waehleModule(tuer.diff);
-  const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome, set: tuer.diff <= 2 ? 0 : 1,
-             mods: [], raeume: [], tore: [], props: [], idx: 0, geleert: false, truhe: null};
+  const set = tuer.diff <= 2 ? 0 : 1;
+  const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome, set,
+             mods: [], raeume: [], tore: [], props: [], idx: 0, geleert: false, truhe: null,
+             // R6/F31: Sheet-Keys des Sets einmal beim Kammeraufbau, statt sie in
+             // drawKammerObj()/drawProp() pro sichtbarem Objekt pro Frame neu zu bauen.
+             dkGate: `dun${set+1}_gate`, dkGateAnim: `dun${set+1}_gateAnim`,
+             dkPlate: `dun${set+1}_plate`, dkStairs: `dun${set+1}_stairsDown`,
+             dkPillar: `dun${set+1}_pillar`};
   kammer = k;
   currentLevel = 3;
   // Muss vor dem Modulbau passieren: der ruft makeMon, und die Oberwelt-Mobs
@@ -4187,9 +4230,9 @@ function drawKammerBoden(){
         for(let y = mod.fy0; y <= mod.fy1; y++) ctx.strokeRect(x*TS+2, y*TS+2, TS-4, TS-4);
     }
     if(mod.kind === 'bloecke'){
-      ctx.strokeStyle = '#f4d97a'; ctx.lineWidth = 2; ctx.setLineDash([5,4]);
+      ctx.strokeStyle = '#f4d97a'; ctx.lineWidth = 2; ctx.setLineDash(DASH_5_4);
       for(const z of mod.ziele) ctx.strokeRect(z.x - 13, z.y - 13, 26, 26);
-      ctx.setLineDash([]);
+      ctx.setLineDash(DASH_AUS);
     }
     if(mod.kind === 'spiegel' && mod.pfad.length >= 4){
       ctx.strokeStyle = '#ffe14d'; ctx.lineWidth = 3;
@@ -4208,17 +4251,16 @@ function drawKammerObj(o){
   ctx.textAlign = 'center';
   switch(o.kt){
     case 'tor': {
-      const dk = `dun${kammer.set+1}`;
       if(o.offen){
         const t = gameT - o.openT;
-        if(t < 26/18) drawSprite(dk+'_gateAnim', Math.floor(t*18), o.x, o.y, 2);
+        if(t < 26/18) drawSprite(kammer.dkGateAnim, Math.floor(t*18), o.x, o.y, 2);
         break;
       }
-      drawSprite(dk+'_gate', 0, o.x, o.y, 2);
+      drawSprite(kammer.dkGate, 0, o.x, o.y, 2);
       break;
     }
     case 'platte':
-      drawSprite(`dun${kammer.set+1}_plate`, o.symIdx + (o.an ? 3 : 0), o.x, o.y, 2);
+      drawSprite(kammer.dkPlate, o.symIdx + (o.an ? 3 : 0), o.x, o.y, 2);
       ctx.fillStyle = o.an ? '#6aff8f' : '#f4d97a'; ctx.font = 'bold 15px serif';
       ctx.fillText(o.sym, o.x, o.y + 6);
       break;
@@ -4274,10 +4316,10 @@ function drawKammerObj(o){
     case 'rune':
       ctx.strokeStyle = '#6aff8f'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.arc(o.x, o.y, 14 + Math.sin(gameT*2.4)*2, 0, Math.PI*2); ctx.stroke();
-      drawSprite(`dun${kammer.set+1}_stairsDown`, 0, o.x, o.y, 2);
+      drawSprite(kammer.dkStairs, 0, o.x, o.y, 2);
       break;
     case 'treppe':                                        // Einstieg: reine Bodendecke, kein Kontaktpunkt
-      drawSprite(`dun${kammer.set+1}_stairsDown`, 0, o.x, o.y, 2);
+      drawSprite(kammer.dkStairs, 0, o.x, o.y, 2);
       break;
     case 'tafel':
       ctx.fillStyle = '#2b2338'; ctx.fillRect(o.x - 26, o.y - 20, 52, 34);
@@ -4307,13 +4349,13 @@ function drawKammerTuer(t){
   drawShadowEllipse(t.x, t.y, 16);
   ctx.save();
   // Set-Wahl wie beim Betreten (diff 1-2 -> Set 0), damit Tür und Innenraum
-  // zusammenpassen. Geleerte Türen sind über eine gebackene Tint-Kopie
-  // abgedunkelt — kein ctx.filter im Frame-Pfad.
-  const dk = `dun${t.diff <= 2 ? 1 : 2}`;
+  // zusammenpassen; die Keys stehen seit R6/F31 an der Tür (s. wuerfleTuer).
+  // Geleerte Türen sind über eine gebackene Tint-Kopie abgedunkelt — kein
+  // ctx.filter im Frame-Pfad.
   const g = t.gateT || 0;
-  if(g > 0.02) drawSprite(dk+'_gateAnim', Math.min(25, Math.floor(g*25)), t.x, t.y, 2,
+  if(g > 0.02) drawSprite(t.dkGateAnim, Math.min(25, Math.floor(g*25)), t.x, t.y, 2,
                           false, t.cd > 0 ? '#120e1c' : null, 0.55);
-  else         drawSprite(dk+'_gate', 0, t.x, t.y, 2, false, t.cd > 0 ? '#120e1c' : null, 0.55);
+  else         drawSprite(t.dkGate, 0, t.x, t.y, 2, false, t.cd > 0 ? '#120e1c' : null, 0.55);
   // Schild: der Gebührenbescheid, auf den Knöterich verweist (W1/F24). Das Wort
   // ist bei 9px Courier New (0,6em Vorschub) 86px breit und passt nicht in die
   // 66px Innenbreite, deshalb zweizeilig getrennt; der Kasten wächst dafür von
@@ -4921,7 +4963,7 @@ function update(dt){
   if(keysDown.a) dirX -= 1; if(keysDown.d) dirX += 1;
   if(dirX === 0 && dirY === 0 && touchMove.active){      // Touch füllt nur die Lücke – Tastatur gewinnt
     dirX = touchMove.x; dirY = touchMove.y;
-    moveMag = Math.min(1, Math.hypot(dirX, dirY));
+    moveMag = Math.min(1, Math.sqrt(dirX*dirX + dirY*dirY));   // R6/F41: kein hypot im Frame-Pfad
   }
   player.moving = dirX !== 0 || dirY !== 0;
   // Fluch 'Zappeln': Stehenbleiben zehrt am Leben, mit Boden bei 25% maxHp (nie tödlich allein)
@@ -4931,7 +4973,7 @@ function update(dt){
       player.hp = Math.max(derived.maxHp*0.25, player.hp - derived.maxHp*0.015*dt);
   } else player.stillT = 0;
   if(player.moving){
-    const len = Math.hypot(dirX, dirY);
+    const len = Math.sqrt(dirX*dirX + dirY*dirY);     // R6/F41
     const hektikMul = player.hektikT > 0 ? 1.8 : 1;   // Fluch 'Hektik': Trank macht kurz eilig
     moveEnt(player, (dirX / len) * derived.speed * hektikMul * moveMag * dt, (dirY / len) * derived.speed * hektikMul * moveMag * dt);
     player.faceLeft = dirX < 0;
@@ -5132,22 +5174,24 @@ function update(dt){
   // ≈ 1,25 Kacheln), sonst würden sie das Dorf sichtbar verlassen. Steuert bei
   // Ferne vom Anker gezielt zurück statt rein zufällig, sonst dauert die Rückkehr
   // (leichte Bias-Streuung ±0,6 rad, damit es nicht wie ein Schienenweg aussieht).
-  const NPC_HOME_R = 40;
+  // R6/F41: alle drei Ankerprüfungen vergleichen nur gegen den Radius, die Wurzel
+  // wird nirgends gebraucht — deshalb sqDist gegen das Quadrat (Regressionsregel 3).
+  const NPC_HOME_R = 40, NPC_HOME_R2 = NPC_HOME_R * NPC_HOME_R;
   for(const n of npcs){
     n.restT -= dt;
     if(n.restT <= 0){
       n.restT = rr(1.5, 4);
       if(Math.random() < 0.4){ n.vx = 0; n.vy = 0; }
       else {
-        const distHome = Math.hypot(n.x-n.homeX, n.y-n.homeY);
-        const a = distHome > NPC_HOME_R ? Math.atan2(n.homeY-n.y, n.homeX-n.x) + rr(-0.6,0.6) : rr(0, Math.PI*2);
+        const weitDraussen = sqDist(n.x, n.y, n.homeX, n.homeY) > NPC_HOME_R2;
+        const a = weitDraussen ? Math.atan2(n.homeY-n.y, n.homeX-n.x) + rr(-0.6,0.6) : rr(0, Math.PI*2);
         n.vx = Math.cos(a)*14; n.vy = Math.sin(a)*14; n.flip = n.vx < 0;
       }
     }
     if(n.vx || n.vy){
       const nx = n.x + n.vx*dt, ny = n.y + n.vy*dt;
-      if(walkPx(nx, n.y) && Math.hypot(nx-n.homeX, n.y-n.homeY) <= NPC_HOME_R) n.x = nx; else n.vx = -n.vx;
-      if(walkPx(n.x, ny) && Math.hypot(n.x-n.homeX, ny-n.homeY) <= NPC_HOME_R) n.y = ny; else n.vy = -n.vy;
+      if(walkPx(nx, n.y) && sqDist(nx, n.y, n.homeX, n.homeY) <= NPC_HOME_R2) n.x = nx; else n.vx = -n.vx;
+      if(walkPx(n.x, ny) && sqDist(n.x, ny, n.homeX, n.homeY) <= NPC_HOME_R2) n.y = ny; else n.vy = -n.vy;
     }
   }
 
@@ -5175,6 +5219,11 @@ function firstAtY(arr, y){
   while(lo < hi){ const mid = (lo + hi) >> 1; if(arr[mid].y < y) lo = mid + 1; else hi = mid; }
   return lo;
 }
+
+// Sichtbarkeitsfenster der Zeichenliste. R6/F32: Grenzen und Prüfung lagen bis dahin
+// in render(), die Closure entstand damit pro Frame neu (Regressionsregel 4).
+let cullL = 0, cullR = 0, cullT = 0, cullB = 0;
+const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
 
 function render(){
   ctx.fillStyle = '#05030a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -5271,9 +5320,8 @@ function render(){
     for(const w of weatherWind) drawSprite('cfwind', animFrame('cfwind', w.phase, 14, false), w.x, w.y, 2, w.vx < 0);
   }
 
-  const cullL = cam.x - 80, cullR = cam.x + canvas.width + 80;
-  const cullT = cam.y - 120, cullB = cam.y + canvas.height + 80;
-  const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
+  cullL = cam.x - 80; cullR = cam.x + canvas.width + 80;
+  cullT = cam.y - 120; cullB = cam.y + canvas.height + 80;
 
   drawCount = 0;
   // trees/decos entstehen zeilenweise und sind damit nach y sortiert: statt aller
@@ -5341,16 +5389,16 @@ function render(){
     ctx.globalAlpha = spellAim.cancel ? 0.15 : 0.55;       // Cancel dimmt Preview
     ctx.strokeStyle = sp.color; ctx.lineWidth = 2;
     if(sp.type === 'bolt'){
-      ctx.setLineDash([6,6]);
+      ctx.setLineDash(DASH_6_6);
       ctx.beginPath(); ctx.moveTo(player.x, player.y); ctx.lineTo(w.x, w.y); ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.setLineDash(DASH_AUS);
       ctx.beginPath(); ctx.arc(w.x, w.y, 14, 0, Math.PI*2); ctx.stroke();       // Reticle
       ctx.beginPath(); ctx.moveTo(w.x-20, w.y); ctx.lineTo(w.x+20, w.y);
       ctx.moveTo(w.x, w.y-20); ctx.lineTo(w.x, w.y+20); ctx.stroke();
     } else if(sp.type === 'aoe_target'){
-      ctx.setLineDash([6,6]);
+      ctx.setLineDash(DASH_6_6);
       ctx.beginPath(); ctx.moveTo(player.x, player.y); ctx.lineTo(w.x, w.y); ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.setLineDash(DASH_AUS);
       ctx.beginPath(); ctx.arc(w.x, w.y, sp.radius, 0, Math.PI*2); ctx.stroke();
       ctx.globalAlpha *= 0.3; ctx.fillStyle = sp.color;
       ctx.beginPath(); ctx.arc(w.x, w.y, sp.radius, 0, Math.PI*2); ctx.fill();
@@ -5389,7 +5437,7 @@ function render(){
     ctx.strokeStyle = '#e8d9a8'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(joy.baseX, joy.baseY, joy.R, 0, Math.PI*2); ctx.stroke();
     const jdx = joy.curX - joy.baseX, jdy = joy.curY - joy.baseY;
-    const jlen = Math.hypot(jdx, jdy) || 1, jcl = Math.min(jlen, joy.R);
+    const jlen = Math.sqrt(jdx*jdx + jdy*jdy) || 1, jcl = Math.min(jlen, joy.R);   // R6/F41
     ctx.fillStyle = '#c9a227';
     ctx.beginPath(); ctx.arc(joy.baseX + jdx/jlen*jcl, joy.baseY + jdy/jlen*jcl, 24, 0, Math.PI*2); ctx.fill();
     ctx.globalAlpha = 1;
@@ -5470,6 +5518,19 @@ const WEAPON_STYLE = {
   doubleaxe:  {icon:'doubleaxe',  col1:'#ffcf6a', col2:'#ff6a2a', width:5},
 };
 
+// R6/F73: Der Klingen-Verlauf des Schwerthiebs hing an Reichweite und Waffenfarben
+// und wurde trotzdem pro Frame neu gebaut. Gradient-Koordinaten gelten im Nutzerraum
+// zum Zeitpunkt des Zeichnens, der Cache übersteht die Kamera- und Drehtransformation
+// des Hiebs also unverändert.
+let khGrad = null, khRange = -1, khC1 = '', khC2 = '';
+function klingenVerlauf(range, col1, col2){
+  if(khGrad && khRange === range && khC1 === col1 && khC2 === col2) return khGrad;
+  const g = ctx.createLinearGradient(0, -range, 0, range);
+  g.addColorStop(0, col2); g.addColorStop(0.5, col1); g.addColorStop(1, col2);
+  khGrad = g; khRange = range; khC1 = col1; khC2 = col2;
+  return g;
+}
+
 function drawPlayer(){
   drawShadowEllipse(player.x, player.y + 12, 12);
 
@@ -5525,7 +5586,7 @@ function drawPlayer(){
     const sx = player.x + side*20, sy = player.y - 4 + Math.sin(gameT*2.6 + 1.5)*2;
     ctx.save(); ctx.translate(sx, sy);
     ctx.shadowColor = col; ctx.shadowBlur = 5 + tier*2;
-    ctx.textAlign = 'center'; ctx.font = `${13 + tier}px serif`;
+    ctx.textAlign = 'center'; ctx.font = SCHILD_FONT[tier];   // R6/F73: Fontstring nicht pro Frame bauen
     ctx.fillText(sh.base.icon || '🛡️', 0, 5);
     ctx.shadowBlur = 0;
     ctx.restore();
@@ -5541,25 +5602,29 @@ function drawPlayer(){
     if(player.attackMode === 'dagger'){
       // zwei schnelle, dünne Schlitze
       ctx.strokeStyle = style.col1; ctx.lineWidth = style.width; ctx.lineCap = 'round';
-      for(const off of [-0.35, 0.35]){
+      for(const off of DOLCH_OFFS){
         ctx.beginPath(); ctx.arc(0, 0, derived.range*0.85, off-0.5, off+0.5); ctx.stroke();
       }
     } else if(player.attackMode === 'doubleaxe'){
-      // wuchtiger, breiter Bogen + Schockring
-      ctx.fillStyle = `rgba(255,106,42,${0.28*p})`;
+      // wuchtiger, breiter Bogen + Schockring. R6/F73: Deckkraft über globalAlpha
+      // statt über einen rgba()-String, der sonst pro Frame neu entstünde.
+      const ga = ctx.globalAlpha;
+      ctx.fillStyle = '#ff6a2a'; ctx.globalAlpha = ga * 0.28 * p;
       ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0, 0, derived.range, -1.7, 1.7); ctx.fill();
+      ctx.globalAlpha = ga;
       ctx.strokeStyle = style.col2; ctx.lineWidth = style.width;
       ctx.beginPath(); ctx.arc(0, 0, derived.range, -1.7, 1.7); ctx.stroke();
       ctx.strokeStyle = style.col1; ctx.lineWidth = 1.5; ctx.globalAlpha *= 0.7;
       ctx.beginPath(); ctx.arc(0, 0, derived.range*(1.05-p*0.2), -1.7, 1.7); ctx.stroke();
     } else {
       // Schwert: Klingen-Bogen mit hellem Kern + Nachzieh-Trail
-      const grad = ctx.createLinearGradient(0,-derived.range,0,derived.range);
-      grad.addColorStop(0, style.col2); grad.addColorStop(0.5, style.col1); grad.addColorStop(1, style.col2);
-      ctx.strokeStyle = grad; ctx.lineWidth = style.width; ctx.lineCap='round';
+      ctx.strokeStyle = klingenVerlauf(derived.range, style.col1, style.col2);
+      ctx.lineWidth = style.width; ctx.lineCap='round';
       ctx.beginPath(); ctx.arc(0, 0, derived.range, -1.55, 1.55); ctx.stroke();
-      ctx.strokeStyle = `rgba(255,255,255,${0.5*p})`; ctx.lineWidth = 1.5;
+      const ga = ctx.globalAlpha;                                  // R6/F73: kein rgba()-String pro Frame
+      ctx.strokeStyle = '#ffffff'; ctx.globalAlpha = ga * 0.5 * p; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.arc(0, 0, derived.range*0.92, -1.4, 1.4); ctx.stroke();
+      ctx.globalAlpha = ga;
     }
     ctx.globalAlpha = 1.0;
     ctx.restore();
@@ -5573,7 +5638,7 @@ function drawPlayer(){
 // s. Umsetzungsnotizen G4). Rock_1_Anim/Mushrooms_Purple sind Requisiten-
 // Varianten, keine echten Animationen — ebenfalls fester statt zeitbasierter Frame.
 function drawProp(t){
-  if(t.kt === 'pillar'){ drawSprite(`dun${kammer.set+1}_pillar`, t.variant, t.x, t.y); return; }
+  if(t.kt === 'pillar'){ drawSprite(kammer.dkPillar, t.variant, t.x, t.y); return; }
   if(t.kt === 'pot'){ drawShadowEllipse(t.x, t.y + 3, 8); drawSprite('dun_pot', 0, t.x, t.y, 1.6); return; }
   if(t.kt === 'cobweb'){ drawSprite('dun_cobweb', 0, t.x, t.y, 1.4); return; }
   if(currentLevel === 2){
@@ -5683,6 +5748,10 @@ function renderMinimap(){
 }
 
 const ULT_SPELL = SPELLS.find(s => s.ultimate);
+// Der Tooltip eines Spruchs ändert sich nie. Einmal gebaut, danach vergleicht der
+// Dirty-Check aus setAttr denselben String — sonst entstünde er pro Frame neu (R6/F29).
+const spellTitel = sp => sp._titel || (sp._titel = `${sp.name} (E) · ${sp.mana} Mana`);
+const ULT_TITEL = `${ULT_SPELL.name} (R) · ${ULT_SPELL.mana} Mana`;
 
 // Segmente der mobilen Röhren: eins zu Beginn, ab jeder vollen Stufenschwelle
 // eins dazu, bei fünf ist Schluss. Leben zählt in Fünfer-, Mana in Siebenerschritten.
@@ -5704,23 +5773,25 @@ function updateHUD(){
   setStyle('spBadge', 'display', player.spellPoints > 0 ? 'inline' : 'none');
 
   // Aktiver Zauber
-  const as = SPELLS.find(s=>s.id===activeSpellId);
+  const as = activeSpell;                              // R6/F32: kein SPELLS.find pro Frame
   if(as && player.spellsKnown[as.id]){
     el('spellBtn').classList.remove('disabled');
     setHTML('spellBtnTxt', `${as.icon} <span style="font-size:9px">${as.mana}⦿</span>`);
-    el('spellBtn').title = `${as.name} (E) · ${as.mana} Mana`;
+    setAttr('spellBtn', 'title', spellTitel(as));
   } else {
     el('spellBtn').classList.add('disabled');
     setHTML('spellBtnTxt', '· (E)');   // gleiche Ersatzform wie der Markup-Platzhalter, sonst springt der Text beim ersten updateHUD()
+    setAttr('spellBtn', 'title', '');  // startShift() leert spellsKnown, ohne activeSpellId zu leeren — sonst bliebe der Tooltip der Vorschicht stehen
   }
   // Ultimate
   if(player.spellsKnown[ULT_SPELL.id]){
     el('ultBtn').classList.remove('disabled');
     setHTML('ultBtnTxt', `${ULT_SPELL.icon} Ult (R)`);
-    el('ultBtn').title = `${ULT_SPELL.name} (R) · ${ULT_SPELL.mana} Mana`;
+    setAttr('ultBtn', 'title', ULT_TITEL);
   } else {
     el('ultBtn').classList.add('disabled');
     setHTML('ultBtnTxt', '🔒 Ult (R)');
+    setAttr('ultBtn', 'title', '');
   }
   // Kontext-Button und Kammer-Abbruch: gleiche Dirty-Check-Regel wie der Rest des HUD
   setStyle('aktionBtn', 'display', aktArt ? 'flex' : 'none');
