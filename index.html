@@ -153,7 +153,15 @@
     opacity:0;transform:translate(-50%,-6px);transition:opacity .25s ease, transform .25s ease, top .2s ease;}
   #knZettel.show,#knRandnotiz.show{opacity:1;transform:translate(-50%,0);}
   #knZettel{display:flex;align-items:center;gap:8px;}
-  #knZettelHead{font-size:17px;}
+  /* Amtsstempel: gemeinsames Merkmal beider Kanäle, der Kopf trennt sie (gameplay:273/274).
+     Rein statisches CSS, kein JS-Pfad, aus dem Skript nicht erreichbar. */
+  #knZettel::before,#knRandnotiz::before{content:'§';display:inline-block;font-size:11px;
+    font-weight:bold;font-style:normal;line-height:1;padding:2px 4px;color:#c9a227;
+    border:1px solid #c9a227;border-radius:2px;transform:rotate(-8deg);opacity:.8;}
+  #knZettel::before{flex:0 0 auto;}
+  #knRandnotiz::before{margin-right:6px;vertical-align:middle;}
+  #knZettelHead{font-size:15px;line-height:1;flex:0 0 auto;padding:2px;
+    background:#241c10;border:1px solid #8a6d3b;border-radius:2px;}
   #knZettelZ1{font-weight:bold;}
   #knZettelZ2{font-size:11px;color:#c9b98a;}
   #knRandnotiz{font-style:italic;font-size:11px;}
@@ -3141,6 +3149,9 @@ function knAssertCaps(){
   rows.push(['Da draußen stehen verschlossene Türen.',48],['Gebührenbescheid. F.',32],['Die Hand im Gürtel.',32]);
   for(const anlass in RANDNOTIZ) for(const l of RANDNOTIZ[anlass]) rows.push([l,44]);
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
+  // Das Rekord-Suffix aus knBegruessungLine() steht hier bewusst nicht: es prüft seine
+  // Gesamtlänge dort selbst gegen 44 und fällt sonst auf die Grundzeile zurück. Der
+  // Jahresgespräch-Satz ebenso wenig, der ist freier Panel-Text ohne Zeichendeckel.
   for(let n=1;n<=12;n++) rows.push([knOrdinal(n)+' Schicht. Die Akte wird dick.',44]);
   let ok = true;
   for(const [txt,cap] of rows){
@@ -3158,6 +3169,10 @@ let knLastZettelT = -999, knBudgetShown = 0;
 let knLastRandnotizT = -999, knRandLastLine = {};
 let knIdleT = 0, knFrameCtr = 0, knClosingId = null, knNfIdx = -1, knBegruessungPending = null;
 let knCurseWasOn = false;
+// Je Ruhephase genau ein Steckenbleib-Schubs (gameplay:346/448) und genau eine
+// Untätigkeits-Randnotiz. knIdleT bleibt die eine monotone Uhr für beide Schwellen
+// (25s Notiz, 50s Schubs, gameplay:380); die Einmaligkeit hängt an diesen Merkern.
+let knStuckArmed = true, knIdleNotizDone = false;
 const knBubble = {visible:false, text1:'', text2:'', wasIn:false, enterT:0};
 const knZettel = {active:false};
 const knRand = {active:false};
@@ -3184,7 +3199,7 @@ function knSperrzone(){
 }
 
 function knStuckCandidate(){
-  if(knIdleT < 50) return null;
+  if(!knStuckArmed || knIdleT < 50) return null;
   if(!kn.flags.hatGezaubert && !kn.wissensluecke.zauber) return {id:'stuck_zauber', prio:20, exempt:false, isStuck:'zauber',
     z1:'Sie schlagen nur. Es gibt auch Zauber.', z2: touchMode ? 'Der Zauberknopf.' : 'E.'};
   if(!kn.flags.hatGekocht && !kn.wissensluecke.kochen) return {id:'stuck_kochen', prio:20, exempt:false, isStuck:'kochen',
@@ -3209,7 +3224,7 @@ function knDisplayZettel(cand){
     if(gameT - knSessionStart < 120) knBudgetShown++;
   }
   if(cand.isVarB){ kn.varB[cand.id] = true; kn.escReady[cand.id] = false; }
-  else if(cand.isStuck){ kn.wissensluecke[cand.isStuck] = true; }
+  else if(cand.isStuck){ kn.wissensluecke[cand.isStuck] = true; knStuckArmed = false; }
   else if(cand.id === 'beat2'){ kn.beats.beat2 = true; }
   else if(cand.id === 'beat3'){ kn.beats.beat3 = true; }
   else if(cand.id === 'beat1fb'){ kn.beats.beat1 = true; kn.pending.beat1Fallback = false; }
@@ -3234,22 +3249,29 @@ function knShowRandLine(line){
   knRand.active = true; knRandHideAt = gameT + 3;
   knLastRandnotizT = gameT;
 }
-function knShowLineGated(anlass, line){
-  if(!line) return false;
+// Seiteneffektfrei, wird auf dem knRandnotiz()-Pfad bewusst zweimal ausgewertet.
+function knLineErlaubt(anlass){
   if(kn.regler === 'schweigt') return false;
   if(kn.regler === 'dienstlich' && anlass !== 'begruessung') return false;
   if(state !== 'play' || player.dead) return false;
   if(gameT - knLastRandnotizT < 40) return false;
   if(knZettel.active) return false;
   if(kammer){ const mod = kammer.mods[kammer.idx]; if(mod && mod.begonnen && !mod.fertig) return false; }
+  return true;
+}
+function knShowLineGated(anlass, line){
+  if(!line) return false;
+  if(!knLineErlaubt(anlass)) return false;
   knShowRandLine(line);
   return true;
 }
 function knRandnotiz(anlass){
-  const pool = RANDNOTIZ[anlass]; if(!pool || !pool.length) return;
+  const pool = RANDNOTIZ[anlass]; if(!pool || !pool.length) return false;
+  if(!knLineErlaubt(anlass)) return false;   // Gates vor Pool-Auswahl, hurtMon ist Hot Path
   let line = pool[Math.floor(Math.random()*pool.length)];
   if(pool.length > 1){ let guard = 0; while(line === knRandLastLine[anlass] && guard++ < 8) line = pool[Math.floor(Math.random()*pool.length)]; }
-  if(knShowLineGated(anlass, line)) knRandLastLine[anlass] = line;
+  if(knShowLineGated(anlass, line)){ knRandLastLine[anlass] = line; return true; }
+  return false;
 }
 
 function knBegruessungLine(){
@@ -3262,9 +3284,11 @@ function knBegruessungLine(){
   return line;
 }
 
-// Curse-Equip-Nachlauf: hinter jedem recalc(), das eine Ausrüstungsänderung
-// begleitet (siehe equipItemFromBag() und startShift()). Reine Zustandsprüfung,
-// löst nur auf der steigenden Flanke aus (Fluch neu angelegt, nicht weiter getragen).
+// Curse-Equip-Nachlauf: hinter jedem recalc(), das eine Ausrüstungsänderung begleitet.
+// Das sind alle vier Equip-Schreiber: equipItemFromBag(), unequipItem(), der Rechtsklick-
+// Ablegepfad in renderInventory() und startShift(). Reine Zustandsprüfung, löst nur auf der
+// steigenden Flanke aus. Ablegen muss mitlaufen, obwohl es keinen Fluch anlegen kann: sonst
+// bleibt knCurseWasOn true und verschluckt die nächste Anlage (Flanke statt Zustand).
 function knCheckFluchEquipped(){
   const e = player.equip;
   const hasCurse = !!((e.weapon && e.weapon.fluch) || (e.armor && e.armor.fluch) || (e.shield && e.shield.fluch) || (e.boots && e.boots.fluch));
@@ -3378,10 +3402,20 @@ function knTick(dt){
   document.body.classList.toggle('bossvis', bv);
 
   if((knFrameCtr++ % 15) === 0) knEvaluateZettel();
+
+  // Beide Merker werden aus knIdleT abgeleitet, das nur eine echte Aktion nullt. Damit
+  // bleiben alle sechs vorhandenen knIdleT-Nullstellen unangetastet. Steht nach der
+  // Zettelauswertung, damit ein im selben Frame fälliger Zettel Vorrang hat: knRandnotiz
+  // sieht dann knZettel.active und verfällt, statt knLastRandnotizT zu verbrennen.
+  if(knIdleT < 50) knStuckArmed = true;
+  if(knIdleT < 25) knIdleNotizDone = false;
+  else if(!knIdleNotizDone && knRandnotiz('untaetigkeit')) knIdleNotizDone = true;
 }
 
 // Regler im Inventar unter "Ton": Dienstzettel laufen in jeder Stellung, nur
-// Randnotizen (inklusive Schichtbegrüßung bei 'schweigt') reagieren darauf.
+// Randnotizen (inklusive Schichtbegrüßung bei 'schweigt') und die beiden Stinger
+// reagieren darauf. Der Zettel selbst erscheint auch bei 'schweigt', nur lautlos
+// (gameplay:411 gegen gameplay:552, wo die Reglerprüfung am Sting gefordert ist).
 function knApplyToneUI(){
   document.querySelectorAll('.knToneBtn').forEach(b => b.classList.toggle('on', b.dataset.v === kn.regler));
 }
@@ -4390,7 +4424,7 @@ function unequipItem(slotType){
   if(emptyIdx !== -1){
     player.bag[emptyIdx] = item; player.equip[slotType] = null;
     document.getElementById('tooltip').style.display = 'none';
-    recalc(); updateHUD(); renderInventory();
+    recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory();
   } else {
     floaters.push({x:player.x, y:player.y-30, txt:'Tasche voll!', col:'#ff0000', t:1.0});
   }
@@ -4413,7 +4447,7 @@ function renderInventory(){
     const item = player.equip[key];
     el.innerHTML = item ? `<span class="lbl">${SLOT_DE[key]}</span><span style="font-size:26px;line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${SLOT_DE[key]}</span>`;
     el.className = 'eqSlot ' + (item ? `rar${item.rar}` : '');
-    bindTooltip(el, item, true, () => { player.equip[key] = null; dropItemToFloor(item); recalc(); renderInventory(); }, () => unequipItem(key));
+    bindTooltip(el, item, true, () => { player.equip[key] = null; dropItemToFloor(item); recalc(); knCheckFluchEquipped(); renderInventory(); }, () => unequipItem(key));
   }
 
   const bagGrid = document.getElementById('bagGrid'); bagGrid.innerHTML = '';
@@ -4697,6 +4731,12 @@ el('aktionBtn').onclick = fuehreAktion;
 function knAbbruchKammer(){
   // Echter Abbruchpfad (nicht verlasseKammer() selbst, das läuft auch bei Truhe/Tod/Schichtstart):
   // nur zählen, wenn die Truhe noch nicht geplündert ist.
+  // F53, bewusst akzeptierte Abweichung: der Rückweg über die Ausgangsrune (AKT_AUSGANG in
+  // fuehreAktion()) zählt NICHT mit, obwohl er der Normalfall ist. gameplay:382 nennt genau
+  // diese zwei Pfade, und ein Umhängen würde MUS.sting('spitz') bei fast jedem beutelosen
+  // Ausstieg feuern und den Randnotiz-Kanal 40 Sekunden sperren. kammerAbbrueche misst
+  // deshalb nur das ausdrückliche Aufgeben. Wer den Wert je für einen Schwellen-Gag liest,
+  // muss diese Entscheidung zuerst neu treffen.
   if(kammer && !kammer.geleert){
     kn.counters.kammerAbbrueche = (kn.counters.kammerAbbrueche||0) + 1; saveKn(); knRandnotiz('kammerAbbruch');
     if(kn.regler !== 'schweigt') MUS.sting('spitz');
@@ -5817,7 +5857,7 @@ function startShift(){
   player.potions = 2 + (amt.bonusPotions||0);
   player.gold = pendingCarryGold + (amt.bonusStartGold||0); pendingCarryGold = 0;
   player.pouch = pendingCarryPouch; pendingCarryPouch = [];
-  player.equip = {weapon:null, armor:null, shield:null, boots:null};
+  player.equip = {weapon:null, armor:null, shield:null, boots:null}; knCurseWasOn = false;
   player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
   if(amt.ausbauten.startFluch) player.equip.weapon.fluch = amt.ausbauten.startFluch;
 
@@ -5906,7 +5946,7 @@ function showJahresgespraech(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>JAHRESGESPRÄCH</h1>
     <p>Der Bürgermeister bedankt sich für ${amt.schichten} Schichten treuen Dienstes.</p>
-    <p style="font-size:12px;font-style:italic;color:#c9b98a;">🧑‍💼 „Ich habe alles mitgeschrieben."</p>
+    <p style="font-size:12px;font-style:italic;color:#c9b98a;">„Ich habe alles mitgeschrieben."</p>
     <div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;margin:14px 0;border:1px solid #5a4a2d;">
       <b>${b.name}</b><br><span style="font-size:12px;color:#c9b98a;">${b.text}</span>
     </div>
