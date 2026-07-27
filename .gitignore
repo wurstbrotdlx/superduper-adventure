@@ -9,7 +9,9 @@ Graphics/
 # fertigen Spiel auszuliefern — das macht `node tools/build-single.mjs`, der sie
 # als data:-URIs in eine einzelne dist/index.html einbackt.
 # Wer das Repo klont, braucht Graphics/ selbst lizenziert und kopiert daraus nach
-# assets/cf/ (Dateiliste siehe assets/cf/README.md).
+# assets/cf/ (Dateiliste siehe assets/cf/README.md). Der CI-Build in
+# .github/workflows/pages.yml holt sie stattdessen aus dem privaten Repo
+# wurstbrotdlx/superduper-adventure-assets per Deploy Key.
 assets/cf/dungeon/
 assets/cf/player/
 assets/cf/enemies/
@@ -17,5 +19,8 @@ assets/cf/tiles/
 assets/cf/deco/
 assets/cf/ui/
 
-# Build-Artefakt, enthält die eingebackene Grafik
+# Build-Artefakte, enthalten die eingebackene Grafik. GitHub Pages liefert seit
+# .github/workflows/pages.yml über den Actions-Weg aus, nicht mehr aus docs/ im
+# Branch — kein PNG-Byte landet mehr als Git-Objekt im öffentlichen Repo.
 dist/
+docs/

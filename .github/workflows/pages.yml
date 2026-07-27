@@ -1,0 +1,61 @@
+name: Deploy Pages
+
+# Baut index.html + die lizenzierte Cute-Fantasy-Grafik zu einer einzigen Datei
+# und deployt sie ueber die Actions-Pipeline (kein Branch/Ordner mit eingebackener
+# Grafik im Repo, s. tools/build-single.mjs Kopf und ABGLEICH-2026-07-27.md F9).
+# Die Grafik selbst liegt nicht hier, sondern im privaten Repo
+# wurstbrotdlx/superduper-adventure-assets und wird per Deploy Key geklont.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Spiel-Repo
+        uses: actions/checkout@v4
+
+      - name: Assets-Repo per Deploy Key laden
+        env:
+          ASSETS_DEPLOY_KEY: ${{ secrets.ASSETS_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$ASSETS_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          git clone --depth 1 git@github.com:wurstbrotdlx/superduper-adventure-assets.git /tmp/cf-assets
+          rm -rf assets/cf
+          mv /tmp/cf-assets assets/cf
+          rm -rf assets/cf/.git
+          rm -f ~/.ssh/id_ed25519
+
+      - name: Build
+        run: node tools/build-single.mjs --out dist/index.html
+
+      - name: Pages-Artefakt hochladen
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
