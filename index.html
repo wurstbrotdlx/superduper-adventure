@@ -116,6 +116,12 @@
   #kladdeBox .kl{margin-bottom:7px;padding-left:14px;text-indent:-14px;}
   #kladdeBox .klHead{color:#f4d97a;font-weight:bold;font-size:11px;letter-spacing:1px;margin:10px 0 5px;}
   #kladdeBox .klEmpty{color:#9a8a5f;font-style:italic;}
+  #blaetterBox{font-size:12px;line-height:1.6;}
+  #blaetterBox .klEmpty{color:#9a8a5f;font-style:italic;}
+  #blaetterBox .ak{margin-bottom:8px;padding:6px 8px;cursor:pointer;border-left:2px solid #6b5a3a;}
+  #blaetterBox .ak:hover{background:rgba(255,255,255,0.04);}
+  #blaetterBox .akText{margin-top:4px;color:#d8cba8;font-style:italic;}
+  #blaetterBox .akText p{margin:0 0 4px;}
   #zutBox h4{margin:10px 0 6px;color:#f4d97a;font-size:12px;}
 
   /* Kessel sitzt oben im Inventar, nicht mehr im Gürtel. Der Kessel ist das
@@ -397,6 +403,7 @@
   <div id="kesselTabs">
     <div class="kTab on" id="tabKessel">🍲 Kochen</div>
     <div class="kTab" id="tabKladde">📓 Kladde</div>
+    <div class="kTab" id="tabBlaetter">🗄 Akten</div>
   </div>
   <div id="kesselPane">
     <div id="potRow"></div>
@@ -405,6 +412,7 @@
     <div id="zutGrid"></div>
   </div>
   <div id="kladdePane" style="display:none;"><div id="kladdeBox"></div></div>
+  <div id="blaetterPane" style="display:none;"><div id="blaetterBox"></div></div>
 </div>
 
 <div id="schloss">
@@ -668,13 +676,50 @@ for(const a in CF_ANIMALS){
   addSheet(`cf${a}_idle`, `cf/deco/${ad.file}`, ad.idle[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.idle[0]});
   addSheet(`cf${a}_walk`, `cf/deco/${ad.file}`, ad.walk[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.walk[0]});
 }
-// glint/alert bleiben Sunnyside bis G5 — im Pack kein Gegenstück (dokumentiert).
-addSheet('glint', 'Elements/VFX/Glint/spr_deco_glint_01_strip6.png', 6, 'strip');
-addSheet('alert', 'UI/expression_alerted.png', 1, 'strip');
+// G5: glint/alert-Ersatz aus dem UI-Pack (Sunnyside-Abschied), Frames per Crop
+// gegen UI_Icons.png bestimmt — Funkeln-Icon Zeile 4 Spalte 10 (0-indiziert),
+// Ausrufezeichen Zeile 6 Spalte 0. Beide 16x16, 'grid' liest die Zeile über
+// rowStart, n=1 friert die Spalte fest (kein horizontales Durchlaufen nötig).
+addSheet('glint', 'cf/ui/UI_Icons.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8, rowStart:4, col:10});
+addSheet('alert', 'cf/ui/UI_Icons.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8, rowStart:6});
 // G3 Schritt 6: Zauber-Projektil für alle 5 Magier statt gezeichnetem Farbkreis,
 // getönt nach bolt.color. Zentrierter Anker (kein Fußpunkt, das Bolt-Objekt trägt
 // x/y als Mittelpunkt, s. enemyBolts-Draw).
 addSheet('cf_bolt', 'cf/deco/Other/Skeleton_Mage_Projectile.png', 8, 'grid', {fw:16, fh:16, ax:8, ay:8});
+
+// ===========================================================================
+//  G5: Dorf — Gebäude, NPC-Staffage, Wetter (Cute Fantasy, Kenmi).
+// ===========================================================================
+// Gebäude sind reine 'big'-Decos wie cfwindmill: ein Frame, Fußanker unten-mittig,
+// Maße per Node-PNG-Header gemessen (kein sheet-audit.mjs — das Werkzeug ist für
+// Sprite-Raster gebaut, nicht für monolithische Einzelbilder, s. G4-Lektion für
+// Flächentexturen, hier trifft dieselbe Einschränkung sinngemäß zu).
+addSheet('cfbld_amt',     'cf/deco/Buildings/Inn_Blue.png',            1, 'grid', {fw:240, fh:192, ax:120, ay:190});
+addSheet('cfbld_haus1',   'cf/deco/Buildings/House_1_Wood_Base_Red.png',1,'grid', {fw:96,  fh:128, ax:48,  ay:126});
+addSheet('cfbld_haus2',   'cf/deco/Buildings/House_2_Wood_Base_Blue.png',1,'grid',{fw:144, fh:128, ax:72,  ay:126});
+addSheet('cfbld_haus3',   'cf/deco/Buildings/House_3_Stone_Base_Blue.png',1,'grid',{fw:144, fh:128, ax:72,  ay:126});
+addSheet('cfbld_markt',   'cf/deco/Buildings/Market_Stalls.png',       1, 'grid', {fw:192, fh:48,  ax:96,  ay:46});
+addSheet('cfbld_scheune', 'cf/deco/Buildings/Barn_Base_Red.png',       1, 'grid', {fw:128, fh:144, ax:64,  ay:142});
+
+// NPC-Staffage: 64x64-Raster wie Angel_1/2 (CF_RIGS oben), idle=Zeile1/walk=Zeile4
+// per Crop bestätigt (mittlere mittlere Down/Side/Up-Zeile = Seitenansicht, gleiche
+// Regel wie bei den Monster-Rigs aus G3). Nur Idle/Lauf gebraucht, keine Kampf-Anims.
+const CF_NPCS = {
+  bob:  {file:'NPCs/Farmer_Bob.png',      fw:64, fh:64, ax:32, ay:60},
+  katy: {file:'NPCs/Bartender_Katy.png',  fw:64, fh:64, ax:32, ay:60},
+  mike: {file:'NPCs/Miner_Mike.png',      fw:64, fh:64, ax:32, ay:60},
+};
+for(const nkey in CF_NPCS){
+  const nd = CF_NPCS[nkey];
+  addSheet(`cfnpc_${nkey}_idle`, `cf/deco/${nd.file}`, 6, 'grid', {fw:nd.fw, fh:nd.fh, ax:nd.ax, ay:nd.ay, rowStart:1});
+  addSheet(`cfnpc_${nkey}_walk`, `cf/deco/${nd.file}`, 6, 'grid', {fw:nd.fw, fh:nd.fh, ax:nd.ax, ay:nd.ay, rowStart:4});
+}
+
+// Wetter, rein optisch. Wolken: 4 Varianten im 2x2-Raster, zentrierter Anker (kein
+// Fußpunkt, treiben über dem Boden). Wind: 14-Frame-Strip, Fußpunkt egal (waagerecht
+// über den Bildschirm, s. Wetter-Update).
+addSheet('cfcloud', 'cf/deco/Weather/Clouds.png', 4, 'grid', {fw:64, fh:64, ax:32, ay:32});
+addSheet('cfwind', 'cf/deco/Weather/Wind_Anim.png', 14, 'strip');
 
 // ===========================================================================
 //  Kammer-Interieur — Cute Fantasy Dungeons (Kenmi, itch.io), Phase G1.
@@ -1967,8 +2012,106 @@ function takeZutat(noun, adj){
 //  nie ausgelöst haben, stehen nicht drin. Überlebt bewusst schon jetzt jeden
 //  Neustart (localStorage): in Phase 4 ist Wissen der eigentliche Fortschritt.
 // ===========================================================================
+// ===========================================================================
+//  AKTENFUNDE (Phase W2)
+//  18 Blätter, Serie A (Der Vorgang, alle Biome ab Kammerstufe 3) und Serie B
+//  (Die Poststelle, nur Grasland). Text unverändert aus blaetter-serie-a-b.md
+//  übernommen. Kein Blatt verrät Kesselgrammatik oder eine Fluch-Ableitung,
+//  siehe Sperrvermerk dort. Reihenfolge beim Fund ist absichtlich egal.
+// ===========================================================================
+const BLAETTER = {
+  a1:  {serie:'A', n:1,  minDiff:3, lines:['Aktenzeichen 1-0-2.',
+        'Der Zuständigkeitsbereich VI meldet Waffenstillstandsbruch.',
+        'Ursache: eine Grenzfrage, ungeklärt seit der Gründung.',
+        'Gegenseite: Fürst Nachtrag, vertreten durch sich selbst.',
+        'Weiteres Vorgehen wird nachgereicht.']},
+  a2:  {serie:'A', n:2,  minDiff:3, lines:['Aktenzeichen 1-0-2, Anlage.',
+        'Die Grenzfrage lässt sich nicht klären. Beide Seiten haben recht.',
+        'Empfehlung: keine Entscheidung treffen, sondern eine Stelle einrichten, die die Frage verwaltet.',
+        'Vermerk am Rand, andere Handschrift: „Das nennt man aufschieben, nicht lösen."']},
+  a3:  {serie:'A', n:3,  minDiff:3, lines:['Aktenzeichen 1-0-2, Fortsetzung.',
+        'Waffenstillstand unterzeichnet. Dauer: bis zur abschließenden Bearbeitung.',
+        'Eine abschließende Bearbeitung ist nicht terminiert.',
+        'Das ist im Vertragstext so gewollt.']},
+  a4:  {serie:'A', n:4,  minDiff:3, lines:['Aktenzeichen 1-0-1.',
+        'Der Krieg gilt als ausgesetzt bis zur abschließenden Bearbeitung.',
+        'Für die abschließende Bearbeitung ist eine Stelle einzurichten.',
+        'Die Stelle ist vorläufig.',
+        'Vermerk am Rand, andere Handschrift: „Vorläufig seit wann?"']},
+  a5:  {serie:'A', n:5,  minDiff:3, lines:['Aktenzeichen 1-0-3.',
+        'Gründungsverfügung der Stelle für den Zuständigkeitsbereich VI.',
+        'Personalstärke: fünf, zuzüglich Registratur.',
+        'Amtssitz: Vordermühl, vorbehaltlich Bestätigung.',
+        'Die Bestätigung steht noch aus.']},
+  a6:  {serie:'A', n:6,  minDiff:3, lines:['Aktenzeichen 1-1-1.',
+        'Beglaubigung erfolgt ab sofort in dreifacher Ausfertigung.',
+        'Grund: Streitfälle mit drei Beteiligten, keiner davon neutral.',
+        'Erste Ausfertigung: Gegenseite. Zweite: hiesige Registratur. Dritte: Verwahrung.',
+        'Das Gerät dafür wurde bereits requiriert.']},
+  a7:  {serie:'A', n:7,  minDiff:3, lines:['Aktenzeichen 1-1-2.',
+        'Erste Ausfertigung auf dem Postweg an die Gegenseite.',
+        'Der Bote meldet, der Weg führe durch den Brandabschnitt.',
+        'Ankunft unbestätigt.',
+        'Wiedervorlage in einem Jahr. Wiedervorlage in dreihundert Jahren.']},
+  a8:  {serie:'A', n:8,  minDiff:3, lines:['Aktenzeichen 1-1-3.',
+        'Zweite Ausfertigung verbleibt in der hiesigen Registratur.',
+        'Fundort laut Ablageplan: Fach 6, zwischen Grenzfrage und Dorffest.',
+        'Zustand bei letzter Prüfung: vollständig.',
+        'Letzte Prüfung: siebenundzwanzig Jahre her.']},
+  a9:  {serie:'A', n:9,  minDiff:3, lines:['Aktenzeichen 1-1-4.',
+        'Dritte Ausfertigung zur dauerhaften Verwahrung an das Vervielfältigungsgerät.',
+        'Das Gerät verwahrt gründlich. Das Gerät gibt ungern etwas heraus.',
+        'Zugriff nur mit ordnungsgemäßem Antrag.',
+        'Ein solcher Antrag liegt bislang nicht vor.']},
+  a10: {serie:'A', n:10, minDiff:3, lines:['Aktenzeichen 1-2-1.',
+        'Zur Person des Adressaten: kein Ort vermerkt, nur ein Name.',
+        'Das ist kein Versehen. Manche Adressaten haben keinen Ort.',
+        'Zustellung erfolgt, sobald jemand ihn trifft.',
+        'Bislang hat ihn niemand getroffen.']},
+  a11: {serie:'A', n:11, minDiff:3, lines:['Aktenzeichen 1-2-2.',
+        'Bearbeiterwechsel, siebte Generation seit Gründung.',
+        'Vorgänger: sämtlich im Ruhestand, verstorben oder unauffindbar.',
+        'Der Vorgang selbst wechselt den Bearbeiter nicht. Nur die Bearbeiter wechseln den Vorgang.',
+        'Übergabe erfolgt ohne besonderen Vermerk.']},
+  a12: {serie:'A', n:12, minDiff:3, lines:['Aktenzeichen 1-2-3, jüngster Stand.',
+        'Der Vorgang ist unverändert offen.',
+        'Alle drei Ausfertigungen gelten als unzugestellt.',
+        'Die Aussetzung läuft weiter, mangels Frist unbefristet.',
+        'Nächste Prüfung: bei Gelegenheit.']},
+  b1:  {serie:'B', n:1, biome:'grass', lines:['Ohne Aktenzeichen, Postvermerk.',
+        'Der erste Trepp übernimmt den Weg zwischen Amt und Gegenseite.',
+        'Sein Sohn übernimmt den Weg von ihm, ohne Übergabeprotokoll.',
+        'Ein Protokoll war nicht vorgesehen. Der Weg war ohnehin nur einer.',
+        'Beide sind seither Poststelle, nicht mehr Familie mit Beruf.']},
+  b2:  {serie:'B', n:2, biome:'grass', lines:['Postvermerk, dritte Generation.',
+        'Der Weg wurde um den Brandabschnitt herum verlegt, nach dem Brand.',
+        'Länger, aber begehbar. Kürzer war seither keine Option.',
+        'Vermerk: „Ein Umweg, der bleibt, ist irgendwann der Weg."']},
+  b3:  {serie:'B', n:3, biome:'grass', lines:['Postvermerk, vierte Generation.',
+        'Ein Brief ohne lesbare Adresse liegt seit heute in der Poststelle.',
+        'Zustellung derzeit nicht möglich. Zurücksenden ebenfalls nicht.',
+        'Verwahrt, bis sich das klärt.',
+        'Das klärte sich bislang nicht.']},
+  b4:  {serie:'B', n:4, biome:'grass', lines:['Postvermerk, fünfte Generation.',
+        'Der Weg wird heute wie gestern gegangen, nur schneller.',
+        'Der Brief aus Blatt 3 liegt noch immer im selben Fach.',
+        'Man gewöhnt sich an einen Brief wie an ein Möbelstück.',
+        'Er stört nicht mehr. Er wird nur noch abgestaubt.']},
+  b5:  {serie:'B', n:5, biome:'grass', lines:['Postvermerk, sechste Generation.',
+        'Der Nachfolger wird eingearbeitet. Er fragt nach dem alten Brief.',
+        'Antwort: „Der geht nicht dich an. Der geht niemanden an. Noch nicht."',
+        'Der Nachfolger fragt nicht weiter. Das ist die richtige Reaktion.',
+        'Er übernimmt den Sack am Ende der Einarbeitung.']},
+  b6:  {serie:'B', n:6, biome:'grass', lines:['Postvermerk, siebte Generation, von heute.',
+        'Der Sack ist heute schwerer als sonst.',
+        'Der alte Brief liegt noch immer zuoberst.',
+        'Diesmal wird er geöffnet.',
+        'Weiteres siehe Dienstweg.']},
+};
+const BLAETTER_KEYS = Object.keys(BLAETTER);
+
 const KLADDE_KEY = 'sda_kladde_v1';
-const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}};
+const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}};
 (function loadKladde(){
   try{
     const raw = localStorage.getItem(KLADDE_KEY); if(!raw) return;
@@ -1979,6 +2122,7 @@ const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}};
       if(o.noun) kladde.noun = o.noun;
       if(o.unikate) kladde.unikate = o.unikate;
       if(o.fl) kladde.fl = o.fl;    // additiv: alte Speicherstände ohne fl laden ohne Fehler
+      if(o.blaetter) kladde.blaetter = o.blaetter;
     }
   }catch(_){}
 })();
@@ -1988,6 +2132,14 @@ function noteKladde(bucket, key, value){
   const b = kladde[bucket];
   const e = b[key] || (b[key] = {});
   e[value] = (e[value] | 0) + 1;
+}
+// Bewusst kein CFX.schweigen-Guard: Aktenfunde werden am Fundort gefunden,
+// nicht am Kessel beobachtet. Siehe phase-w2-aktenfunde.md.
+function findeBlatt(id){
+  if(kladde.blaetter[id]) return false;   // schon gefunden, kein Doppelfund
+  kladde.blaetter[id] = true;
+  saveKladde();
+  return true;
 }
 const MAL = ['', 'einmal', 'zweimal', 'dreimal', 'viermal', 'fünfmal'];
 const malWort = n => MAL[n] || (n + '-mal');
@@ -3376,6 +3528,20 @@ function truheOeffnen(){
     floaters.push({x: k.truhe.x + rr(-30,30), y: k.truhe.y - 56 - i*16, txt: '+ ' + zutatName(z),
                    col: RARITY[zutatRar(z)].col, t: 2.6});
   }
+  // Aktenfund (Phase W2): höchstens einer pro Truhe, unabhängig von den Zutaten.
+  const kandidaten = BLAETTER_KEYS.filter(id => {
+    if(kladde.blaetter[id]) return false;
+    const b = BLAETTER[id];
+    if(b.serie === 'A') return k.diff >= b.minDiff;
+    if(b.serie === 'B') return k.biome === b.biome;
+    return false;
+  });
+  if(kandidaten.length && Math.random() < 0.18 + k.diff * 0.04){
+    const id = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+    findeBlatt(id);
+    floaters.push({x: k.truhe.x, y: k.truhe.y - 56 - n*16, txt: '+ Aktenfund',
+                   col:'#c9b98a', t: 2.8, big: true});
+  }
   if(invOpen) renderInventory();
   if(kesselOpen) renderKesselPane();
   updateHUD();
@@ -4310,13 +4476,35 @@ function renderKladde(){
   el('kladdeBox').innerHTML = parts.join('');
 }
 
+let blaetterOffen = null;   // welche Blatt-ID gerade aufgeklappt ist, kein neues Panel dafür
+function renderBlaetter(){
+  const gefunden = BLAETTER_KEYS.filter(id => kladde.blaetter[id]);
+  if(!gefunden.length){
+    el('blaetterBox').innerHTML = '<div class="klEmpty">Noch keine Aktenfunde. Kammern durchsuchen.</div>';
+    return;
+  }
+  const parts = [`<div style="font-size:10px;color:#9a8a5f;font-style:italic;margin-bottom:6px;">${gefunden.length} von ${BLAETTER_KEYS.length} Blättern gefunden.</div>`];
+  for(const id of gefunden){
+    const b = BLAETTER[id];
+    const titel = `Serie ${b.serie}, Blatt ${b.n}`;
+    parts.push(`<div class="ak" onclick="toggleBlatt('${id}')">${titel}${blaetterOffen === id
+      ? '<div class="akText">' + b.lines.map(l => `<p>${l}</p>`).join('') + '</div>' : ''}</div>`);
+  }
+  el('blaetterBox').innerHTML = parts.join('');
+}
+function toggleBlatt(id){ blaetterOffen = blaetterOffen === id ? null : id; renderBlaetter(); }
+
 function switchKesselTab(t){
   kesselTab = t;
   el('tabKessel').classList.toggle('on', t === 'kessel');
   el('tabKladde').classList.toggle('on', t === 'kladde');
+  el('tabBlaetter').classList.toggle('on', t === 'blaetter');
   el('kesselPane').style.display = t === 'kessel' ? 'block' : 'none';
   el('kladdePane').style.display = t === 'kladde' ? 'block' : 'none';
-  if(t === 'kladde') renderKladde(); else renderKesselPane();
+  el('blaetterPane').style.display = t === 'blaetter' ? 'block' : 'none';
+  if(t === 'kladde') renderKladde();
+  else if(t === 'blaetter') renderBlaetter();
+  else renderKesselPane();
 }
 
 function toggleKessel(){
@@ -4333,6 +4521,7 @@ function toggleKessel(){
 
 el('tabKessel').onclick = () => switchKesselTab('kessel');
 el('tabKladde').onclick = () => switchKesselTab('kladde');
+el('tabBlaetter').onclick = () => switchKesselTab('blaetter');
 el('brewBtn').onclick = brew;
 el('closeKesselBtn').onclick = toggleKessel;
 el('kesselBtn').onclick = toggleKessel;
