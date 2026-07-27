@@ -245,7 +245,7 @@ Schicht startet, endet, Übertrag stimmt, Kladde überlebt garantiert jeden Tod,
 * Die Schichtuhr hängt über `schichtHudSuffix()` im Zonen-HUD.
 * Bewusst offen gelassen: die Ausbau-Kosten in `AUSBAU_DEFS` sind eine erste vernünftige Schätzung, keine durchgespielte Zahl.
 
-## Phase 5: Amtsrat a. D. Knöterich — Onboarding ohne Tutorial
+## Phase 5: Amtsrat a. D. Knöterich — Onboarding ohne Tutorial — ERLEDIGT
 
 Ersetzt den Erklärtext im Startbildschirm durch eine Figur, die ereignisgesteuert kurze Hinweise gibt. Kein Tutorial-Modus, keine Hinweisketten, keine Wall of Text.
 
