@@ -1002,10 +1002,10 @@ function initAudio(){
       delayNode.connect(delayWet); delayWet.connect(master);
 
       musicBus = AC.createGain(); musicBus.gain.value = 0; musicBus.connect(toFx);
-      kampfGain = AC.createGain(); kampfGain.gain.value = 0; kampfGain.connect(toFx);
-      gefahrGain = AC.createGain(); gefahrGain.gain.value = 0; gefahrGain.connect(toFx);
-      zoneDroneGain = AC.createGain(); zoneDroneGain.gain.value = 0; zoneDroneGain.connect(toFx);
-      swellGain = AC.createGain(); swellGain.gain.value = 0; swellGain.connect(toFx);
+      kampfGain = AC.createGain(); kampfGain.gain.value = 0; kampfGain.connect(musicBus);
+      gefahrGain = AC.createGain(); gefahrGain.gain.value = 0; gefahrGain.connect(musicBus);
+      zoneDroneGain = AC.createGain(); zoneDroneGain.gain.value = 0; zoneDroneGain.connect(musicBus);
+      swellGain = AC.createGain(); swellGain.gain.value = 0; swellGain.connect(musicBus);
 
       sfxBus = AC.createGain(); sfxBus.gain.value = 0.22; sfxBus.connect(master);
 
@@ -1439,7 +1439,7 @@ const MUS = {
       const oct = 4 + Math.floor(d/z.scale.length);
       const deg = z.scale[d % z.scale.length];
       const semi = SEMI[z.tonic] + deg + (oct-4)*12;
-      bassoon(t, 440*Math.pow(2, semi/12), 0.32, master, 0.28);
+      bassoon(t, 440*Math.pow(2, semi/12), 0.32, musicBus, 0.28);
       t += name==='dienstlich' ? 0.34 : 0.19;
     });
     duckToFx(name==='dienstlich'?500:650, 0.55);
@@ -1563,6 +1563,7 @@ const CF_TILE = {
 const TILE_TINT = {
   snow:       ['#eaf6ff', 0.82],
   ice:        ['#f2fbff', 0.74],
+  shadowDirt: ['#2e0f42', 0.74],
 };
 
 const TILE_CACHE = {};
@@ -2270,7 +2271,7 @@ player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0
 // die persistierten Werte lädt loadAmt() erst beim CONFIG-Block nach.
 let amt = {bankGold:0, schichten:0,
   ausbauten:{startLevel:0, kontingent:0, tueren:0, vermutungen:false, startFluchUnlocked:false, startFluch:null},
-  bonusManaRegen:0, bonusSpeed:0, bonusPotions:0, bonusStartGold:0};
+  bonusManaRegen:0, bonusSpeed:0, bonusPotions:0, bonusStartGold:0, bonusNachwachsen:0};
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
 let shiftT=0, shiftEndPending=false, overtimeT=0, shiftElapsedT=0,
     shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[];
@@ -2980,6 +2981,7 @@ const AMT_KEY = 'sda_amt_v1';
     if(typeof o.bonusSpeed === 'number') amt.bonusSpeed = o.bonusSpeed;
     if(typeof o.bonusPotions === 'number') amt.bonusPotions = o.bonusPotions;
     if(typeof o.bonusStartGold === 'number') amt.bonusStartGold = o.bonusStartGold;
+    if(typeof o.bonusNachwachsen === 'number') amt.bonusNachwachsen = o.bonusNachwachsen;
   }catch(_){}
 })();
 function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }catch(_){} }
@@ -3032,7 +3034,7 @@ const HINWEISE = [
    z1:'Sie verlieren Konfetti. Das ist selten gut.', z2:'Trank. Q.', z2t:'Das Fläschchen.'},
   {id:'tuer1', prio:70, art:'zustand',
    // "Sichtweite": grobe Nährungsdistanz übers Bildschirmband, kein Math.hypot
-   wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && dist2(player.x,player.y,t.x,t.y) < 202500),
+   wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && sqDist(player.x,player.y,t.x,t.y) < 202500),
    z1:'Gebührenbescheid lesen. Steht alles drauf.', z2:'F, wenn Sie sich trauen.', z2t:'Die Hand im Gürtel.'},
   {id:'zutat3', prio:65, art:'zustand',
    wenn:()=> player.pouch.length >= 3,
@@ -3076,7 +3078,7 @@ const ESCALATE_DEFS = {
            z1:'Der Punkt liegt immer noch da.', z2:'T.', z2t:'Der Stern im Gürtel.'},
   hp30:   {prio:90, wenn:()=> !player.dead && player.hp < derived.maxHp*0.3,
            z1:'Immer noch wenig Konfetti übrig.', z2:'Q.', z2t:'Das Fläschchen.'},
-  tuer1:  {prio:70, wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && dist2(player.x,player.y,t.x,t.y) < 202500),
+  tuer1:  {prio:70, wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && sqDist(player.x,player.y,t.x,t.y) < 202500),
            z1:'Die Tür steht immer noch da.', z2:'F.', z2t:'Die Hand im Gürtel.'},
   zutat3: {prio:65, wenn:()=> player.pouch.length >= 3,
            z1:'Drei Stapel. Der Antrag wartet.', z2:'K.', z2t:'Kessel.'},
@@ -3174,6 +3176,7 @@ function knStuckCandidate(){
 }
 
 function knDisplayZettel(cand){
+  if(knRand.active){ knRand.active = false; el('knRandnotiz').classList.remove('show'); }
   if(kn.regler !== 'schweigt') MUS.sting(kn.regler === 'dienstlich' ? 'dienstlich' : 'gespraechig');
   setTxt('knZettelZ1', cand.z1);
   if(cand.z2){ setStyle('knZettelZ2', 'display', 'block'); setTxt('knZettelZ2', cand.z2); }
@@ -3399,6 +3402,7 @@ function setzeKammerTueren(){
         const tx = ri(5, MW-6), ty = ri(b[1], b[2]);
         if(!walkT(tx, ty) || !walkT(tx, ty+1)) continue;                    // davor muss man stehen können
         if(sqDist(tx*TS, ty*TS, SPAWN.x, SPAWN.y) < (12*TS)*(12*TS)) continue;
+        if(inVillageT(tx, ty)) continue;                                    // G5: Dorfplatz bleibt türenfrei
         let zuNah = false;
         for(const d of kammerTueren) if(sqDist(tx, ty, d.tx, d.ty) < 144){ zuNah = true; break; }
         if(zuNah) continue;
@@ -3617,7 +3621,7 @@ function rollKammerZutat(tier, biome){
 function truheOeffnen(){
   const k = kammer; if(!k || k.truhe.auf) return;
   k.truhe.auf = true; k.geleert = true;
-  k.tuer.cd = CONFIG.kammerNachwachsen;
+  k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen);
   const gold = rri(40, 80) * (1 + k.diff);
   player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
   if(gold >= 60) knRandnotiz('goldfund');
@@ -3981,8 +3985,8 @@ function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
 }
-// Fluch 'Grußpflicht': Kammerwachen mit Sonderregel sind ausgenommen (hurtMon prüft
-// das separat), deshalb reicht es, wenn Grüßen nur außerhalb der Kammer angeboten wird.
+// Fluch 'Grußpflicht': hurtMon prüft m.regel separat (Wellen-Wachen sind ausgenommen),
+// Grüßen selbst muss aber innerhalb und außerhalb der Kammer angeboten werden.
 function gruessen(){
   let n = 0;
   for(const m of monsters){ if(m.dead || m.gruss) continue;
@@ -4005,10 +4009,15 @@ function scanAktion(dt){
     // Phase 5: Knöterich bietet "Nachfragen" nur, wenn schon einmal ein Zettel gezeigt wurde.
     if(kn.history.length) aktBiete(KN_POS.x, KN_POS.y, AKT_NACHFRAGE, null, 'Nachfragen');
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
-    aktBiete(AMT_TUER.x, AMT_TUER.y, AKT_AMT, null, 'Amtsstube');   // G5: Dorf-Gebäude
+    if(CONFIG.schichtModus) aktBiete(AMT_TUER.x, AMT_TUER.y, AKT_AMT, null, 'Amtsstube');   // G5: Dorf-Gebäude
     return;
   }
   const k = kammer;
+  if(CFX.gruss){
+    let near = false;
+    for(const m of monsters){ if(!m.dead && !m.gruss && sqDist(player.x, player.y, m.x, m.y) < 8100){ near = true; break; } }
+    if(near) aktBiete(player.x, player.y, AKT_GRUSS, null, 'Grüßen');
+  }
   aktBiete(k.ausgang.x, k.ausgang.y, AKT_AUSGANG, null, 'Verlassen');
   if(k.truhe) aktBiete(k.truhe.x, k.truhe.y, k.truhe.auf ? AKT_AUSGANG : AKT_TRUHE, null,
                        k.truhe.auf ? 'Verlassen' : 'Öffnen');
@@ -5752,7 +5761,7 @@ const JAHRES_BONI = [
   {name:'Kaffeemaschine', text:'Mana regeneriert dauerhaft etwas schneller.', apply(){ amt.bonusManaRegen = (amt.bonusManaRegen||0)+2; }},
   {name:'Bequemere Stiefel', text:'Grundtempo steigt dauerhaft leicht.', apply(){ amt.bonusSpeed = (amt.bonusSpeed||0)+6; }},
   {name:'Notfallkeks', text:'Ein Trank mehr beim Schichtantritt.', apply(){ amt.bonusPotions = (amt.bonusPotions||0)+1; }},
-  {name:'Dienstsiegel', text:'Kammern versiegeln sich nach dem Plündern schneller neu.', apply(){ CONFIG.kammerNachwachsen = Math.max(40, CONFIG.kammerNachwachsen-20); }},
+  {name:'Dienstsiegel', text:'Kammern versiegeln sich nach dem Plündern schneller neu.', apply(){ amt.bonusNachwachsen = Math.min(80, (amt.bonusNachwachsen||0)+20); }},
   {name:'Startkapital', text:'Etwas Bargeld liegt schon in der Schublade.', apply(){ amt.bonusStartGold = (amt.bonusStartGold||0)+10; }},
 ];
 
