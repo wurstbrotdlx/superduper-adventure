@@ -961,6 +961,7 @@ let toFx=null, lowpass=null, dry=null, reverbSend=null, convolver=null, reverbWe
 let delayNode=null, delayFeedback=null, delaySend=null, delayWet=null;
 let musicBus=null, sfxBus=null, kampfGain=null, gefahrGain=null, zoneDroneGain=null, swellGain=null;
 let musicMuted=false, musicVolTarget=0.45, muffled=false;
+let ovMuffle=false;   // Dämpfungswunsch der #overlay-Screens; die offenen Panels kommen in MUS.muffle() dazu
 
 function makeImpulse(duration, decay){
   const rate=AC.sampleRate, len=Math.floor(rate*duration);
@@ -1444,10 +1445,27 @@ const MUS = {
     });
     duckToFx(name==='dienstlich'?500:650, 0.55);
   },
+  // Kein Zähler, sondern abgeleiteter Sollzustand: mit Argument setzt ein #overlay-Screen
+  // seinen Wunsch, ohne Argument wird nach jedem Öffnen/Schließen eines Panels nur neu
+  // abgeleitet. Doppeltes Öffnen und ein Schließweg auf ein längst geschlossenes Panel
+  // sind dadurch harmlos. Nur bei Zustandswechsel aufrufen, nie pro Frame, der Aufruf
+  // schreibt drei Audioparameter (goto/layer haben dafür eigene Guards, muffle nicht).
   muffle(on){
-    muffled = on;
+    if(on !== undefined) ovMuffle = on;
+    // Die fünf Panels liegen unter dem Overlay (z-index 20 bis 22 gegen 50): solange ein
+    // Overlay-Screen steht, zählt allein dessen Wunsch (showDorf will trotz eines noch
+    // offenen Inventars klar klingen), sonst dämpft jedes offene Panel. Achtung: showDorf
+    // und showJahresgespraech rufen muffle(false) in ihrer ersten Zeile und setzen das
+    // Overlay erst in ihrer letzten, sie funktionieren nur, weil jeder Aufrufer es schon
+    // auf 'flex' stehen hat. Wer einen neuen Aufrufer ergänzt, muss das mitprüfen.
+    muffled = ovMuffle || (el('overlay').style.display !== 'flex'
+              && (invOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen));
     if(!AC) return;
-    lowpass.frequency.setTargetAtTime(on?600:20000, AC.currentTime, 0.15);
+    // Aus-Zweig: im Spiel gilt weiter die Überstunden-Kurve aus setOvertime. Dessen
+    // q-Guard schreibt erst beim nächsten 1/50-Schritt nach (in den Überstunden bis zu
+    // 2,4 s), ein flaches 20000 beim Panel-Zu risse den Filter so lange ganz auf. Auf den
+    // Overlay-Screens läuft update() nicht, dort ist overtimeFactor nur ein Restwert.
+    lowpass.frequency.setTargetAtTime(muffled ? 600 : (state === 'play' ? 20000 - overtimeFactor*14000 : 20000), AC.currentTime, 0.15);
     applyZoneSends();
     applyMusicGain();
   },
@@ -2815,6 +2833,7 @@ function toggleSpellTree(){
   spellTreeOpen = !spellTreeOpen;
   document.getElementById('spellTree').style.display = spellTreeOpen ? 'block' : 'none';
   if(spellTreeOpen){ renderSpellTree(); knIdleT = 0; }
+  MUS.muffle();   // offenes Panel dämpft die Musik
 }
 
 function spellNodeHTML(sp){
@@ -3152,7 +3171,7 @@ function knAllDone(){
 // Sperrzonen gelten nur für Dienstzettel, nicht für Randnotizen und nicht für
 // die spielerausgelöste Wiederholung (Nachfragen).
 function knSperrzone(){
-  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen) return true;
+  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen) return true;
   if(document.getElementById('overlay').style.display === 'flex') return true;
   if(kammer){ const mod = kammer.mods[kammer.idx]; if(mod && mod.begonnen && !mod.fertig) return true; }
   if(boss && boss.aggro) return true;
@@ -3328,7 +3347,7 @@ function knEvaluateZettel(){
 
 function knNachfragen(){
   if(!kn.history.length) return;
-  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen) return;
+  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen) return;
   if(document.getElementById('overlay').style.display === 'flex') return;
   const n = kn.history.length;
   knNfIdx = (knNfIdx + 1) % n;
@@ -4055,14 +4074,18 @@ function amtFensterOeffnen(){
   amtFensterOpen = true;
   el('amtFenster').style.display = 'block';
   renderAmtFenster();
+  MUS.muffle();   // offenes Panel dämpft die Musik
 }
-function amtFensterSchliessen(){ amtFensterOpen = false; el('amtFenster').style.display = 'none'; }
+function amtFensterSchliessen(){ amtFensterOpen = false; el('amtFenster').style.display = 'none'; MUS.muffle(); }
 function renderAmtFenster(){
   const rows = AUSBAU_DEFS.map(d => `<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;">
     <span>${d.name}</span><span style="color:#c9b98a;">${d.unit(amt.ausbauten[d.key])}</span></div>`).join('');
+  // amt.schichten zählt abgeschlossene Schichten (Inkrement erst in endShift()). Dieses
+  // Panel ist nur im laufenden Dienst offen (fuehreAktion() sperrt alles außer state 'play'),
+  // also +1 wie in knBegruessungLine(). showDorf()/showJahresgespraech() bleiben beim Rohwert.
   el('amtFenster').innerHTML = `
     <h2>🏛 Amtsstube <span style="cursor:pointer;font-size:14px;" onclick="amtFensterSchliessen()">✖</span></h2>
-    <p style="font-size:12px;color:#9a8a5f;margin:0 0 8px;">Schicht ${amt.schichten} · Bankguthaben: 💰 ${amt.bankGold}</p>
+    <p style="font-size:12px;color:#9a8a5f;margin:0 0 8px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
     <div style="text-align:left;">${rows}</div>
     <button onclick="amtFeierabendNehmen()" style="width:100%;margin-top:12px;">FEIERABEND NEHMEN</button>
   `;
@@ -4079,8 +4102,9 @@ function schlossAuf(mod){
   schlossMod = mod; schlossOpen = true; schlossEin.length = 0;
   el('schloss').style.display = 'block';
   renderSchloss();
+  MUS.muffle();   // offenes Panel dämpft die Musik
 }
-function schlossZu(){ schlossOpen = false; schlossMod = null; el('schloss').style.display = 'none'; }
+function schlossZu(){ schlossOpen = false; schlossMod = null; el('schloss').style.display = 'none'; MUS.muffle(); }
 function schlossTippe(s){
   if(!schlossMod) return;
   schlossEin.push(s);
@@ -4340,7 +4364,7 @@ function bindTooltip(el, item, isEquipped, dropAction, clickAction, htmlFn){
   }, {passive:true});
 }
 
-function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen){ renderInventory(); knIdleT = 0; } }
+function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen){ renderInventory(); knIdleT = 0; } MUS.muffle(); }
 
 function addSkill(type){
   if(player.skillPoints > 0){ player.skillPoints--; player.skills[type]++; recalc(); updateHUD(); renderInventory(); }
@@ -4659,6 +4683,7 @@ function toggleKessel(){
     knIdleT = 0;
   }
   else clearPot();
+  MUS.muffle();   // offenes Panel dämpft die Musik
 }
 
 el('tabKessel').onclick = () => switchKesselTab('kessel');
