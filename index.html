@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>SuperDuper Adventure</title>
+<title>Das Monstralministerium</title>
 <style>
   html,body{margin:0;padding:0;overflow:hidden;background:#05030a;font-family:'Courier New',ui-monospace,monospace;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;overscroll-behavior:none;}
   #game{position:fixed;inset:0;display:block;cursor:crosshair;image-rendering:pixelated;touch-action:none;-webkit-tap-highlight-color:transparent;}
@@ -326,7 +326,7 @@
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="zone">📍 Grasland (Level 1)</div>
+<div id="zone">📍 Grasland, Ablage A (Level 1)</div>
 <canvas id="minimap" width="128" height="128"></canvas>
 <div id="bossbar"><span id="bossname">Schattenfürst Abaddon</span><div id="bossback"><div id="bossfill"></div></div></div>
 <div id="hud">
@@ -2168,43 +2168,43 @@ const MONDEF = {
   // G3: psc:1.2 ist der Grundwert (PLAYER_SC/1.5), passt CF-Chibi-Proportionen an
   // den Helden an, siehe MONDEF-Kommentar oben. deathFps aus der 4-Frame-Death-
   // Zeile der jeweiligen CF-Rigs (4f / 0,8s = 5).
-  slime:     {name:'Chuchu',      rig:'slime_small_green', sc:1.15, psc:1.2, deathFps:5, r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
-  goblin:    {name:'Grünhaut',    rig:'goblin_maceman', sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[4,7],  xp:16, speed:78, aggro:160, atkCd:0.9, atkRange:26, gold:[6,14]},
-  greenmage: {name:'Waldschamane',rig:'cowling_mage_2', tint:'#2f8f4a', tintA:0.5, sc:1.5, psc:1.2, deathFps:5, r:11, hp:18, dmg:[6,10], xp:26, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[10,20],
+  slime:     {name:'Chuchu',      art:'Der Formfehler', rig:'slime_small_green', sc:1.15, psc:1.2, deathFps:5, r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
+  goblin:    {name:'Grünhaut',    art:'Die Beschwerde', rig:'goblin_maceman', sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[4,7],  xp:16, speed:78, aggro:160, atkCd:0.9, atkRange:26, gold:[6,14]},
+  greenmage: {name:'Waldschamane',art:'Der Widerspruch', rig:'cowling_mage_2', tint:'#2f8f4a', tintA:0.5, sc:1.5, psc:1.2, deathFps:5, r:11, hp:18, dmg:[6,10], xp:26, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[10,20],
               ranged:true, bolt:{dmg:[6,10], speed:190, color:'#6aff8f', r:7}},
 
   // --- Schnee ---
-  ghost:      {name:'Frostgeist', rig:'flying_skull', tint:'#8fd8ff', tintA:0.6, alpha:0.62, fly:true, sc:1.45, psc:1.2, deathFps:7, r:10, hp:20, dmg:[3,6],  xp:18, speed:52, aggro:150, atkCd:1.0, atkRange:24, gold:[6,14]},
-  frostgolem: {name:'Frostgolem', rig:'knights_swordman', tint:'#4ab5e8', tintA:0.62, sc:2.1, psc:1.2, deathFps:5, r:14, hp:60, dmg:[8,14], xp:34, speed:30, aggro:150, atkCd:1.4, atkRange:30, gold:[14,26]},
-  frostmage:  {name:'Eismagier',  rig:'skeleton_mage', tint:'#5ac8ff', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:11, hp:20, dmg:[5,9],  xp:28, speed:42, aggro:180, atkCd:1.8, atkRange:140, gold:[10,22],
+  ghost:      {name:'Frostgeist', art:'Der ruhende Antrag', rig:'flying_skull', tint:'#8fd8ff', tintA:0.6, alpha:0.62, fly:true, sc:1.45, psc:1.2, deathFps:7, r:10, hp:20, dmg:[3,6],  xp:18, speed:52, aggro:150, atkCd:1.0, atkRange:24, gold:[6,14]},
+  frostgolem: {name:'Frostgolem', art:'Die Sammelakte auf Eis', rig:'knights_swordman', tint:'#4ab5e8', tintA:0.62, sc:2.1, psc:1.2, deathFps:5, r:14, hp:60, dmg:[8,14], xp:34, speed:30, aggro:150, atkCd:1.4, atkRange:30, gold:[14,26]},
+  frostmage:  {name:'Eismagier',  art:'Die Rückfrage', rig:'skeleton_mage', tint:'#5ac8ff', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:11, hp:20, dmg:[5,9],  xp:28, speed:42, aggro:180, atkCd:1.8, atkRange:140, gold:[10,22],
               ranged:true, bolt:{dmg:[5,9], speed:220, color:'#7ad6ff', r:7}},
 
   // --- Wüste ---
-  crab:      {name:'Klippkrabbe', rig:'cowling_2', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, psc:1.2, deathFps:5, r:12, hp:34, dmg:[5,10], xp:24, speed:36, aggro:140, atkCd:1.1, atkRange:28, gold:[10,20]},
-  scorpion:  {name:'Sandskorpion',rig:'goblin_thief', tint:'#e8c46a', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10, hp:20, dmg:[4,8],  xp:20, speed:88, aggro:170, atkCd:0.8, atkRange:24, gold:[8,16]},
-  sandmage:  {name:'Dünenpriester',rig:'cowling_mage_1', tint:'#ff9f2a', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[6,11], xp:30, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[12,24],
+  crab:      {name:'Klippkrabbe', art:'Die Aktenklammer', rig:'cowling_2', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, psc:1.2, deathFps:5, r:12, hp:34, dmg:[5,10], xp:24, speed:36, aggro:140, atkCd:1.1, atkRange:28, gold:[10,20]},
+  scorpion:  {name:'Sandskorpion',art:'Die Nachforderung', rig:'goblin_thief', tint:'#e8c46a', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10, hp:20, dmg:[4,8],  xp:20, speed:88, aggro:170, atkCd:0.8, atkRange:24, gold:[8,16]},
+  sandmage:  {name:'Dünenpriester',art:'Die Verfügung', rig:'cowling_mage_1', tint:'#ff9f2a', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[6,11], xp:30, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[12,24],
               ranged:true, bolt:{dmg:[6,11], speed:200, color:'#ffb04a', r:7}},
 
   // --- Schattenland (Horde) ---
-  shadow:      {name:'Schattenling',  rig:'slime_small_blue', tint:'#3a0d5c', tintA:0.72, sc:1.2, psc:1.2, deathFps:5, r:10, hp:12, dmg:[1,3], xp:5,  speed:95, aggro:600, atkCd:1.5, atkRange:22, gold:[1,3]},
-  demon:       {name:'Schattenhund',  rig:'cowling_1', tint:'#8a0f2a', tintA:0.68, sc:1.5, psc:1.2, deathFps:5, r:12, hp:24, dmg:[3,6], xp:10, speed:110,aggro:600, atkCd:1.2, atkRange:26, gold:[2,6]},
-  shadowghost: {name:'Schattenspukt', rig:'flying_skull', tint:'#a855f7', tintA:0.62, alpha:0.6, fly:true, sc:1.45, psc:1.2, deathFps:7, r:11, hp:18, dmg:[2,5], xp:8,  speed:120,aggro:600, atkCd:1.3, atkRange:24, gold:[2,6]},
-  shadowmage:  {name:'Schattenrufer', rig:'angel_2', tint:'#c77dff', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:11, hp:20, dmg:[5,9], xp:14, speed:70, aggro:600, atkCd:1.6, atkRange:130, gold:[3,8],
+  shadow:      {name:'Schattenling',  art:'Der gelöschte Eintrag', rig:'slime_small_blue', tint:'#3a0d5c', tintA:0.72, sc:1.2, psc:1.2, deathFps:5, r:10, hp:12, dmg:[1,3], xp:5,  speed:95, aggro:600, atkCd:1.5, atkRange:22, gold:[1,3]},
+  demon:       {name:'Schattenhund',  art:'Die Mahnung', rig:'cowling_1', tint:'#8a0f2a', tintA:0.68, sc:1.5, psc:1.2, deathFps:5, r:12, hp:24, dmg:[3,6], xp:10, speed:110,aggro:600, atkCd:1.2, atkRange:26, gold:[2,6]},
+  shadowghost: {name:'Schattenspukt', art:'Das Erinnerungsschreiben', rig:'flying_skull', tint:'#a855f7', tintA:0.62, alpha:0.6, fly:true, sc:1.45, psc:1.2, deathFps:7, r:11, hp:18, dmg:[2,5], xp:8,  speed:120,aggro:600, atkCd:1.3, atkRange:24, gold:[2,6]},
+  shadowmage:  {name:'Schattenrufer', art:'Die Vorladung', rig:'angel_2', tint:'#c77dff', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:11, hp:20, dmg:[5,9], xp:14, speed:70, aggro:600, atkCd:1.6, atkRange:130, gold:[3,8],
               ranged:true, bolt:{dmg:[5,9], speed:230, color:'#c77dff', r:7}},
-  boss:        {name:'Schattenfürst', rig:'knights_templar', tint:'#6b1fa8', tintA:0.6, sc:4.5, psc:1.2, deathFps:5, glow:'#c77dff', r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
+  boss:        {name:'Schattenfürst', art:'Fürst Nachtrag', rig:'knights_templar', tint:'#6b1fa8', tintA:0.6, sc:4.5, psc:1.2, deathFps:5, glow:'#c77dff', r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
 
   // --- Reserve für spätere Level: fertig definiert, aktuell in keinem Roster ---
   // stalfos/bossgeneric: Skeleton_Swordman.png hat kein sauberes 32px-Raster (Gate
   // in Schritt 0 nicht bestanden, s. tools/sheet-audit.overrides.json _rigTable) —
   // Ersatz Knights_Swordman bzw. Knights_Archer, wie im G3-Plan als Fallback vorgesehen.
-  mummy:       {name:'Mumie',        rig:'skeleton_bowman', tint:'#d8c9a0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:40, dmg:[6,11], xp:30, speed:26, aggro:150, atkCd:1.5, atkRange:28, gold:[12,24]},
-  golem:       {name:'Steingolem',   rig:'knights_spearman', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, reserved:true, r:16, hp:90, dmg:[10,18],xp:45, speed:26, aggro:150, atkCd:1.6, atkRange:34, gold:[20,40]},
-  spider:      {name:'Höhlenspinne', rig:'blue_shroomling', tint:'#2a0f3a', tintA:0.7, sc:1.1, psc:1.2, deathFps:5, reserved:true, r:9,  hp:16, dmg:[3,7],  xp:18, speed:120,aggro:180, atkCd:0.7, atkRange:22, gold:[6,14]},
-  bat:         {name:'Fledermaus',   rig:'bat', tint:'#6b5a4a', tintA:0.65, sc:1.0, psc:1.2, deathFps:7, fly:true, reserved:true, r:9, hp:12, dmg:[2,5], xp:12, speed:135,aggro:200, atkCd:0.9, atkRange:20, gold:[3,9]},
-  stalfos:     {name:'Knochenritter',rig:'knights_swordman', sc:1.6, psc:1.2, deathFps:5, reserved:true, r:11, hp:35, dmg:[7,12], xp:32, speed:70, aggro:170, atkCd:1.0, atkRange:28, gold:[14,28]},
-  mage:        {name:'Irrlichtmagier',rig:'angel_1', tint:'#8fa8c9', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:24, dmg:[7,12], xp:34, speed:46, aggro:180, atkCd:1.6, atkRange:140, gold:[14,28],
+  mummy:       {name:'Mumie',        art:'Die versiegelte Akte', rig:'skeleton_bowman', tint:'#d8c9a0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:40, dmg:[6,11], xp:30, speed:26, aggro:150, atkCd:1.5, atkRange:28, gold:[12,24]},
+  golem:       {name:'Steingolem',   art:'Die Bestandskraft', rig:'knights_spearman', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, reserved:true, r:16, hp:90, dmg:[10,18],xp:45, speed:26, aggro:150, atkCd:1.6, atkRange:34, gold:[20,40]},
+  spider:      {name:'Höhlenspinne', art:'Der Querverweis', rig:'blue_shroomling', tint:'#2a0f3a', tintA:0.7, sc:1.1, psc:1.2, deathFps:5, reserved:true, r:9,  hp:16, dmg:[3,7],  xp:18, speed:120,aggro:180, atkCd:0.7, atkRange:22, gold:[6,14]},
+  bat:         {name:'Fledermaus',   art:'Der Umlauf', rig:'bat', tint:'#6b5a4a', tintA:0.65, sc:1.0, psc:1.2, deathFps:7, fly:true, reserved:true, r:9, hp:12, dmg:[2,5], xp:12, speed:135,aggro:200, atkCd:0.9, atkRange:20, gold:[3,9]},
+  stalfos:     {name:'Knochenritter',art:'Die Dienstvorschrift', rig:'knights_swordman', sc:1.6, psc:1.2, deathFps:5, reserved:true, r:11, hp:35, dmg:[7,12], xp:32, speed:70, aggro:170, atkCd:1.0, atkRange:28, gold:[14,28]},
+  mage:        {name:'Irrlichtmagier',art:'Die Fußnote', rig:'angel_1', tint:'#8fa8c9', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:24, dmg:[7,12], xp:34, speed:46, aggro:180, atkCd:1.6, atkRange:140, gold:[14,28],
               ranged:true, bolt:{dmg:[7,12], speed:210, color:'#bcd8ff', r:7}},
-  bossgeneric: {name:'Alter Schrecken', rig:'knights_archer', tint:'#c9a227', tintA:0.55, sc:4.0, psc:1.2, deathFps:5, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
+  bossgeneric: {name:'Alter Schrecken', art:'Der Sammelvorgang', rig:'knights_archer', tint:'#c9a227', tintA:0.55, sc:4.0, psc:1.2, deathFps:5, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
 };
 
 // Animationssatz je Rig. G3: die Sunnyside-Rigs (goblin/skel) sind entfernt, alle
@@ -2779,7 +2779,7 @@ const HINWEISE = [
   {id:'tuer1', prio:70, art:'zustand',
    // "Sichtweite": grobe Nährungsdistanz übers Bildschirmband, kein Math.hypot
    wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && dist2(player.x,player.y,t.x,t.y) < 202500),
-   z1:'Schild lesen. Steht alles dran.', z2:'F, wenn Sie sich trauen.', z2t:'Die Hand im Gürtel.'},
+   z1:'Gebührenbescheid lesen. Steht alles drauf.', z2:'F, wenn Sie sich trauen.', z2t:'Die Hand im Gürtel.'},
   {id:'zutat3', prio:65, art:'zustand',
    wenn:()=> player.pouch.length >= 3,
    z1:'Drei Stück. Das gilt als Antrag.', z2:'Zum Kessel. K.', z2t:'Rucksack, dann Kessel.'},
@@ -2863,7 +2863,7 @@ function knAssertCaps(){
   rows.push(['Punkt gutgeschrieben. Hilft keinem im Sack.',48],['T. Aussuchen.',32],['Der Stern im Gürtel.',32]);
   rows.push(['Sie schlagen nur. Es gibt auch Zauber.',48],['E.',32],['Der Zauberknopf.',32]);
   rows.push(['Zutaten allein werden nichts.',48],['Zum Kessel. K.',32],['Rucksack, dann Kessel.',32]);
-  rows.push(['Da draußen stehen verschlossene Türen.',48],['Schild lesen. F.',32],['Die Hand im Gürtel.',32]);
+  rows.push(['Da draußen stehen verschlossene Türen.',48],['Gebührenbescheid. F.',32],['Die Hand im Gürtel.',32]);
   for(const anlass in RANDNOTIZ) for(const l of RANDNOTIZ[anlass]) rows.push([l,44]);
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
   for(let n=1;n<=12;n++) rows.push([knOrdinal(n)+' Schicht. Die Akte wird dick.',44]);
@@ -2915,7 +2915,7 @@ function knStuckCandidate(){
   if(!kn.flags.hatGekocht && !kn.wissensluecke.kochen) return {id:'stuck_kochen', prio:20, exempt:false, isStuck:'kochen',
     z1:'Zutaten allein werden nichts.', z2: touchMode ? 'Rucksack, dann Kessel.' : 'Zum Kessel. K.'};
   if(!kn.flags.hatKammerBetreten && !kn.wissensluecke.kammer) return {id:'stuck_kammer', prio:20, exempt:false, isStuck:'kammer',
-    z1:'Da draußen stehen verschlossene Türen.', z2: touchMode ? 'Die Hand im Gürtel.' : 'Schild lesen. F.'};
+    z1:'Da draußen stehen verschlossene Türen.', z2: touchMode ? 'Die Hand im Gürtel.' : 'Gebührenbescheid. F.'};
   return null;
 }
 
@@ -4463,9 +4463,9 @@ function update(dt){
     }
   } else if(!kammer){
     const ty = player.y / TS;                       // Biom-Anzeige statt statischem "Grasland"
-    setTxt('zone', (ty < 26 ? '📍 Frostkamm (Stufe ' + player.level + ')'
-                 : ty > 54 ? '📍 Aschewüste (Stufe ' + player.level + ')'
-                           : '📍 Grasland (Stufe ' + player.level + ')') + schichtHudSuffix());
+    setTxt('zone', (ty < 26 ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
+                 : ty > 54 ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
+                           : '📍 Grasland, Ablage A (Stufe ' + player.level + ')') + schichtHudSuffix());
   }
   if(schattenlandActive){
     if(shadowKills >= 500 && !boss){
@@ -4582,7 +4582,7 @@ function update(dt){
   // nicht schon aus Raum 1 heraus angekündigt werden. Name kommt aus MONDEF.
   if(boss && !boss.dead && boss.aggro){
     setStyle('bossbar', 'display', 'block');
-    setTxt('bossname', boss.def.name);
+    setTxt('bossname', boss.def.name + ' · ' + boss.def.art);
     setStyle('bossfill', 'width', Math.max(0, (boss.hp / boss.maxHp) * 100) + '%');
   } else setStyle('bossbar', 'display', 'none');
 
@@ -5254,10 +5254,10 @@ function updateHUD(){
 function showStartScreen(){
   state = 'menu';
   document.getElementById('ovPanel').innerHTML = `
-    <h1>SuperDuper Adventure</h1>
-    <h3>✨ Looten, leveln und Monster wegschellen!</h3>
+    <h1>DAS MONSTRAL MINISTERIUM</h1>
+    <h3>Erledigen. Beglaubigen. Feierabend.</h3>
     <p>Drei Biome, versiegelte Kammern, ein Kessel. Draufhauen mit Klick oder Leertaste, auf dem Handy rechte Bildschirmhälfte. Den Rest erklärt das Amt.</p>
-    <button onclick="startGame()">LOSLEGEN</button>
+    <button onclick="startGame()">Dienst antreten</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
@@ -5330,7 +5330,7 @@ const DIENST_BEMERKUNGEN = [
   'Akte geschlossen. Nächste bitte.',
   'Der Vorgang wurde ordnungsgemäß beendet.',
   'Überstunden werden nicht vergütet, nur vermerkt.',
-  'Die Ausrüstung bleibt Eigentum des Amtes.',
+  'Ausrüstung verbleibt aktenkundig beim Amt.',
   'Wiedervorlage: nächste Schicht.',
   'Kein Kommentar. Nur Zahlen.',
 ];
@@ -5431,7 +5431,7 @@ function endShift(reason){
   saveKn();
 
   const killLines = Object.keys(shiftKillsByType).sort((a,b) => shiftKillsByType[b]-shiftKillsByType[a])
-    .map(t => `${MONDEF[t] ? MONDEF[t].name : t}: ${shiftKillsByType[t]}`);
+    .map(t => `${MONDEF[t] ? MONDEF[t].name + ' (' + MONDEF[t].art + ')' : t}: ${shiftKillsByType[t]}`);
   const bemerkung = DIENST_BEMERKUNGEN[Math.floor(Math.random()*DIENST_BEMERKUNGEN.length)];
   const ueberstunden = Math.max(0, Math.round(overtimeT));
   const mitgenommen = carryPouch.reduce((s,z) => s+z.count, 0);
