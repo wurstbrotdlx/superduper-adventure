@@ -181,17 +181,19 @@ Abnahme R8: Syntaxcheck fehlerfrei; 300 Frames mit 25 Zaubern ohne Exception, Ko
 
 Laufzeitgebunden offen: ob 0,72 Tönungsstärke für die Schattenland-Gebäude auf Dauer richtig liest (Screenshot gut, Feinurteil beim Spielen); der halbtransparente Boden-Saum der Gebäude-Sprites auf der neuen Pfadkachel. Nach dem Push live verifiziert (Nachtrag zu `37d7324`): Pages-Deploy grün, R8-Marker (`fmix32`, `BIG_PAD`, `--cfui-round`) im ausgelieferten Build, und `Bat.png` liegt als `ASSET_BLOBS`-Eintrag (96x16) im Live-Build — die offene Frage, ob das Sheet im privaten Assets-Repo liegt, ist damit beantwortet. Nebenbefund aus F17, nicht repariert: bat friert beim Angriff auf dem letzten Flatterframe ein (`loop = false` plus Frame-Klemme in `animFrame`), betrifft alle Nicht-Loop-Anims des Ein-Zeilen-Rigs.
 
-### R9: Aufräumen. — OFFEN
+### R9: Aufräumen. — ERLEDIGT
 
 Toter und irreführender Code. Jede Stelle ist im Bericht einzeln belegt.
 
-* **F45** `stats.goldTotal` deklariert, nirgends erhöht.
-* **F46** `shiftElapsedT` jeden Frame hochgezählt, nie gelesen.
-* **F47** `stats.kills` nie zurückgesetzt, nie gespeichert.
-* **F52** `item.fluchRuht` bleibt an abgelegten Stücken stehen, der Tooltip behauptet dann einen ruhenden Fluch.
-* **F66** `AFFIXES.fmt` ist seit der Tooltip-Umstellung toter Zahlformatierer, also genau das, was Phase 3 aus dem UI entfernen sollte.
-* **F67** Lokale Konstante `kn` in `hurtMon` beschattet das globale Knöterich-Objekt. Heute harmlos, aber `hurtMon` wird als nächstes wieder angefasst.
-* **F68** Die `walk`-Animation des Helden wird gebacken, aber nie gezeigt. `death` ist korrekt aufgelöst, nicht verwechseln.
+* **F45** `stats.goldTotal` deklariert, nirgends erhöht. **Entfernt** (Deklaration, keine andere Fundstelle).
+* **F46** `shiftElapsedT` jeden Frame hochgezählt, nie gelesen. **Entfernt** (Deklaration, Hochzähler, Reset — drei Stellen).
+* **F47** `stats.kills` nie zurückgesetzt, nie gespeichert. **Widerlegt.** Der Zähler ist nicht tot: Er trägt den einmaligen Lifetime-Gate `!kn.beats.beat2 && stats.kills >= 1` (`knEvaluateZettel`) und die Anzeige in `showDead()`. Der Gate braucht ausdrücklich den schichtübergreifenden Stand, nicht den der laufenden Schicht — ein Reset in `startShift()` hätte den Trigger verzögert (Regression über den Fund hinaus). Das Nicht-Speichern ist kein Ausreißer, sondern folgt demselben Muster wie der ganze übrige Laufzeitzustand des Spielers (Level, Gold, Ausrüstung): nur `amt` und `kn` persistieren, alles andere setzt sich beim Neuladen zurück. Nicht angefasst.
+* **F52** `item.fluchRuht` bleibt an abgelegten Stücken stehen, der Tooltip behauptet dann einen ruhenden Fluch. **Bestätigt und repariert.** `recalc()` setzt das Flag nur für Items in `player.equip` zurück; beim Ablegen (`unequipItem`) und beim Verdrängen durch einen Tausch (`equipItemFromBag`) wandert das Item mit seinem letzten Equip-Stand in die Tasche. Fix: Flag wird an beiden Stellen beim Verlassen des Equip-Slots explizit auf `false` gesetzt.
+* **F66** `AFFIXES.fmt` ist seit der Tooltip-Umstellung toter Zahlformatierer, also genau das, was Phase 3 aus dem UI entfernen sollte. **Entfernt**, alle drei Einträge. `satz` (in `buildTooltip` über `a.def.satz` gelesen) trägt die Anzeige längst allein.
+* **F67** Lokale Konstante `kn` in `hurtMon` beschattet das globale Knöterich-Objekt. Heute harmlos, aber `hurtMon` wird als nächstes wieder angefasst. **Umbenannt** zu `knock`.
+* **F68** Die `walk`-Animation des Helden wird gebacken, aber nie gezeigt. `death` ist korrekt aufgelöst, nicht verwechseln. **Bestätigt.** `player.anim` kennt für Bewegung nur `run` (`player.moving ? 'run' : 'idle'`), anders als bei Monstern gibt es keinen Aggro- oder Tempo-Zustand, der `walk` auslösen könnte — eine solche Unterscheidung neu einzuführen wäre eine neue Funktion über den Fund hinaus. Fix im Rahmen des Aufräumens: `['walk', 9, 4]` aus `CF_HERO_ANIMS` entfernt, die vier Frames werden nicht mehr gebacken.
+
+**Abnahme R9:** Syntaxcheck (`new Function`) fehlerfrei. Im Browser: Titelbildschirm, Dorf und Kampf laufen ohne Konsolenfehler; `hurtMon`/`killMon` über alle 47 geladenen Monster direkt durchgerufen (F67-Umbenennung), Equip/Unequip-Zyklus fünfmal über `equipItemFromBag`/`unequipItem` inklusive `buildTooltip` auf Ausrüstung und gesamter Tasche (F52) — keine Exceptions, `fluchRuht` nach dem Zyklus korrekt `false`. `knAssertCaps()` nicht separat aufgerufen, R9 fasst keinen Knöterich-Text an.
 
 ## Ausdrücklich nicht anfassen
 

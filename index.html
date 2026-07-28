@@ -539,7 +539,7 @@ function addSheet(key, path, n, mode, opt){ SHEET_LIST.push([key, ASSETS + path,
 //        death teilt sich deshalb die hurt-Zeile (Cast/Hurt/Death laufen ohnehin
 //        nicht-loopend und klemmen aufs letzte Frame).
 const CF_HERO_ANIMS = [
-  ['idle', 1, 6], ['walk', 9, 4], ['run', 45, 9],
+  ['idle', 1, 6], ['run', 45, 9],
   ['attack', 18, 8], ['cast', 24, 5], ['hurt', 15, 4],
 ];
 const CF_ANCHOR = {ax:32, ay:40};             // Fußlinie, per Bounding-Box gegen alle Anim-Reihen geprüft (botY≈40)
@@ -1923,9 +1923,9 @@ const BASES = [
   {t:'shield', name:'Holzschild',    tier:1, armor:2,  icon:'🛡️', iconFrame:'shield'},
 ];
 const AFFIXES = [
-  {k:'dmg',   min:3,  max:8,  fmt:v=>`+${v} Schaden`, satz:'Verbessert geschliffen.'},
-  {k:'armor', min:4,  max:12, fmt:v=>`+${v} Rüstung`, satz:'Zusätzlich verstärkt.'},
-  {k:'hp',    min:20, max:50, fmt:v=>`+${v} Leben`,  satz:'Angenehm zu tragen.'},
+  {k:'dmg',   min:3,  max:8,  satz:'Verbessert geschliffen.'},
+  {k:'armor', min:4,  max:12, satz:'Zusätzlich verstärkt.'},
+  {k:'hp',    min:20, max:50, satz:'Angenehm zu tragen.'},
 ];
 
 // ===========================================================================
@@ -2358,10 +2358,10 @@ let amt = {bankGold:0, schichten:0,
   ausbauten:{startLevel:0, kontingent:0, tueren:0, vermutungen:false, startFluchUnlocked:false, startFluch:null},
   bonusManaRegen:0, bonusSpeed:0, bonusPotions:0, bonusStartGold:0, bonusNachwachsen:0};
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
-let shiftT=0, shiftEndPending=false, overtimeT=0, shiftElapsedT=0,
+let shiftT=0, shiftEndPending=false, overtimeT=0,
     shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[];
 
-const stats = {kills:0, goldTotal:0};
+const stats = {kills:0};
 let derived = {};
 let goldRotT = 0;   // Sekundentakt für Fluch 'Goldschwund'
 
@@ -2704,8 +2704,8 @@ function hurtMon(m, d, crit, hitAngle, quelle){
   m.hp -= d; m.flash = 0.15; m.aggro = true;
   if(FX.schreck) m.atkT = Math.max(m.atkT, FX.schreck*0.22);       // Wirkung 'Einschüchterung'
   if(FX.slow) m.slowT = Math.max(m.slowT, 0.5 + FX.slow*0.4);      // Wirkung 'Verlangsamung'
-  const kn = (crit?180:100) * (1 + FX.knock*0.5);                  // Wirkung 'Rückstoß'
-  m.kx = Math.cos(hitAngle) * kn; m.ky = Math.sin(hitAngle) * kn;
+  const knock = (crit?180:100) * (1 + FX.knock*0.5);                // Wirkung 'Rückstoß'
+  m.kx = Math.cos(hitAngle) * knock; m.ky = Math.sin(hitAngle) * knock;
   spawnImpactParticles(m.x, m.y, crit ? 25 : 10, null);
 
   // Flächenzauber markieren jeden Treffer als Crit — ohne Bremse wären das dutzende
@@ -4493,6 +4493,7 @@ function equipItemFromBag(idx){
   const item = player.bag[idx]; if(!item) return;
   const slotType = item.base.t;
   const currentEquipped = player.equip[slotType];
+  if(currentEquipped) currentEquipped.fluchRuht = false;   // Budget-Flag gilt nur im Equip-Slot, nicht in der Tasche
   player.equip[slotType] = item; player.bag[idx] = currentEquipped;
   document.getElementById('tooltip').style.display = 'none';
   recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory();
@@ -4502,6 +4503,7 @@ function unequipItem(slotType){
   const item = player.equip[slotType]; if(!item) return;
   const emptyIdx = player.bag.findIndex(slot => slot === null);
   if(emptyIdx !== -1){
+    item.fluchRuht = false;   // Budget-Flag gilt nur im Equip-Slot, nicht in der Tasche
     player.bag[emptyIdx] = item; player.equip[slotType] = null;
     document.getElementById('tooltip').style.display = 'none';
     recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory();
@@ -4853,7 +4855,6 @@ function update(dt){
   // Nähe, keine Kammer/Schloss offen) statt mitten im Getümmel abzubrechen — maximal 60s
   // Überstunden, danach ist so oder so Feierabend (Softlock-Schutz gegen Dauerhorden).
   if(CONFIG.schichtModus && state === 'play'){
-    shiftElapsedT += dt;
     if(!shiftEndPending){
       shiftT -= dt;
       if(shiftT <= 0){ shiftT = 0; shiftEndPending = true; }
@@ -5984,7 +5985,7 @@ function startShift(){
   knCheckFluchEquipped();   // Startfluch-Ausbau kann ohne equipItemFromBag() einen Fluch anlegen
   initFloorGraphics(); placeMonsters();
 
-  shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0; shiftElapsedT = 0;
+  shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0;
   shiftKillsByType = {}; shiftKillsTotal = 0;
 
   document.getElementById('overlay').style.display = 'none'; MUS.muffle(false);
