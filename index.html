@@ -2521,11 +2521,14 @@ function takeZutat(noun, adj){
 //  Neustart (localStorage): in Phase 4 ist Wissen der eigentliche Fortschritt.
 // ===========================================================================
 // ===========================================================================
-//  AKTENFUNDE (Phase W2)
-//  18 Blätter, Serie A (Der Vorgang, alle Biome ab Kammerstufe 3) und Serie B
-//  (Die Poststelle, nur Grasland). Text unverändert aus blaetter-serie-a-b.md
-//  übernommen. Kein Blatt verrät Kesselgrammatik oder eine Fluch-Ableitung,
-//  siehe Sperrvermerk dort. Reihenfolge beim Fund ist absichtlich egal.
+//  AKTENFUNDE (Phase W2, erweitert um Serie C-F)
+//  48 Blätter, sechs Serien. Fundwege sind zweigeteilt: A/B/C/D fallen aus
+//  Kammertruhen (truheOeffnen(), Filter unten prüft minDiff bzw. biome).
+//  E/F gibt es nur im Schattenland, wo es keine Kammern gibt — eigener
+//  Dropkanal in killMon() (currentLevel === 2). Siehe phase-w-blaetter-cf.md
+//  für die Begründung, warum E/F kein biome-Feld bekommen haben.
+//  Kein Blatt verrät Kesselgrammatik oder eine Fluch-Ableitung, siehe
+//  Sperrvermerk. Reihenfolge beim Fund ist absichtlich egal.
 //  Zusagen-Bilanz 2026-08-04: a1/a5 verorteten den Vorgang fälschlich in
 //  Zuständigkeitsbereich VI, den die Weltbibel als abgeschlossen führt
 //  (Kapitel 3/9/15). Die Welt selbst ist Bereich VII. Auf VII korrigiert,
@@ -2619,8 +2622,172 @@ const BLAETTER = {
         'Der alte Brief liegt noch immer zuoberst.',
         'Diesmal wird er geöffnet.',
         'Weiteres siehe Dienstweg.']},
+  c1:  {serie:'C', n:1, biome:'sand', lines:['Aktenzeichen 9-[verkohlt].',
+        'Anweisung zur ordnungsgemäßen Aktenvernichtung, Bereich VII.',
+        'Betroffen: sämtliche Unterlagen zu einem einzelnen Vorgang.',
+        'Welcher Vorgang, ist nicht mehr zu ermitteln. Der Rand ist verbrannt.']},
+  c2:  {serie:'C', n:2, biome:'sand', lines:['Ohne lesbares Aktenzeichen, Rand verkohlt.',
+        'Vernichtungsprotokoll, unterschrieben mit Kürzel statt Namen.',
+        'Grund der Vernichtung laut Formular: „ordnungsgemäß".',
+        'Der Rest des Formulars ist Asche.']},
+  c3:  {serie:'C', n:3, biome:'sand', lines:['Aktenzeichen 9-1-[Rest fehlt].',
+        'Vermerk eines Feuerwehrmanns, der nicht zuständig war.',
+        'Zitat: „Das war kein Unfall. Das war ordentlich gestapelt."',
+        'Der Vermerk wurde selbst zu den Akten genommen. Und verbrannte mit.']},
+  c4:  {serie:'C', n:4, biome:'sand', lines:['Aktenzeichen 9-2-1, teilweise erhalten.',
+        'Liste der zu vernichtenden Vorgänge, Punkt eins bis sieben lesbar.',
+        'Punkt acht: nur noch der Buchstabe N.',
+        'Punkt neun bis Ende: Asche.']},
+  c5:  {serie:'C', n:5, biome:'sand', lines:['Ohne Aktenzeichen.',
+        'Ein Brandmeldeprotokoll, das den Brand erst drei Tage später meldet.',
+        'Begründung für die Verspätung: „Dienstweg."',
+        'Der Dienstweg ist länger als der Brand gedauert hat.']},
+  c6:  {serie:'C', n:6, biome:'sand', lines:['Aktenzeichen 9-2-[unleserlich].',
+        'Randnotiz, andere Handschrift, halb verkohlt: „Nicht al[...]s Feuer ist Zufall."',
+        'Der Rest der Notiz lässt sich nicht mehr rekonstruieren.',
+        'Die Akte, auf die sich die Notiz bezog, ebenfalls nicht.']},
+  c7:  {serie:'C', n:7, biome:'sand', lines:['Aktenzeichen 9-3-1.',
+        'Inventarliste des Brandabschnitts, angelegt nach dem Brand.',
+        'Eintrag: „Eine Truhe, verschlossen, Herkunft unbekannt, überstand das Feuer."',
+        'Verbleib der Truhe: siehe Anlage. Die Anlage ist verbrannt.']},
+  c8:  {serie:'C', n:8, biome:'sand', lines:['Aktenzeichen 9-3-2, letztes lesbares Blatt der Serie.',
+        'Abschlussvermerk: die Aktenvernichtung gilt als vollständig durchgeführt.',
+        'Nachprüfung nicht vorgesehen, da nichts mehr zu prüfen ist.',
+        'Zuständig bleibt trotzdem jemand. Das steht so im Organigramm.']},
+  d1:  {serie:'D', n:1, biome:'snow', lines:['Aktenzeichen 4-0-1.',
+        'Vorgang zurückgestellt zur Klärung einer einzelnen Frage.',
+        'Die Frage lautet: Ist der Antragsteller derselbe wie in Zeile drei?',
+        'Antwort steht aus.']},
+  d2:  {serie:'D', n:2, biome:'snow', lines:['Aktenzeichen 4-0-1, erste Erinnerung.',
+        'Rückfrage erneut versandt, wegen ausbleibender Antwort.',
+        'Bearbeitungsstand: unverändert zurückgestellt.',
+        'Frist zur Beantwortung: zwei Wochen. Verstrichen seit: einhundertsiebzig Jahre.']},
+  d3:  {serie:'D', n:3, biome:'snow', lines:['Aktenzeichen 4-0-2.',
+        'Vorgang betrifft eine Grenzmarkierung im Schnee.',
+        'Die Markierung wurde seither mehrfach weggeweht und immer wieder neu gesetzt.',
+        'Immer an derselben Stelle. Das gilt als Bestätigung.']},
+  d4:  {serie:'D', n:4, biome:'snow', lines:['Aktenzeichen 4-1-1.',
+        'Zwei Zeilen fehlen zur vollständigen Klärung des Vorgangs.',
+        'Welche zwei Zeilen das sind, ist selbst Gegenstand eines offenen Vorgangs.',
+        'Zuständig dafür: eine noch zu benennende Stelle.']},
+  d5:  {serie:'D', n:5, biome:'snow', lines:['Aktenzeichen 4-1-2.',
+        'Der Antragsteller ist zwischenzeitlich verzogen, neue Anschrift unbekannt.',
+        'Die Klärung wartet auf denselben Antragsteller unter derselben Anschrift.',
+        'Beides gleichzeitig ist unwahrscheinlich.']},
+  d6:  {serie:'D', n:6, biome:'snow', lines:['Aktenzeichen 4-1-3.',
+        'Randnotiz, andere Handschrift: „Vielleicht ist die Frage falsch gestellt."',
+        'Antwort darunter, dritte Handschrift: „Dann stellen wir sie eben richtig. Später."',
+        '„Später" ist nicht terminiert.']},
+  d7:  {serie:'D', n:7, biome:'snow', lines:['Aktenzeichen 4-2-1.',
+        'Zwischenbericht: der Vorgang wurde geprüft und für weiterhin ungeklärt befunden.',
+        'Die Prüfung selbst gilt als abgeschlossen.',
+        'Das Ergebnis der Prüfung nicht.']},
+  d8:  {serie:'D', n:8, biome:'snow', lines:['Aktenzeichen 4-2-2, jüngster Stand.',
+        'Die zwei fehlenden Zeilen aus Blatt vier wurden gefunden.',
+        'Sie beantworten eine andere Frage als die gestellte.',
+        'Der Vorgang bleibt zurückgestellt, jetzt aus einem neuen Grund.']},
+  e1:  {serie:'E', n:1, lines:['Ohne Aktenzeichen. Erster Bericht.',
+        'Ankunft in Ablage V wie geplant. Der Empfang war förmlich.',
+        'Der Empfänger war nicht anwesend. Ich warte.',
+        'Weiterer Bericht folgt nach Rücksprache.']},
+  e2:  {serie:'E', n:2, lines:['Zweiter Bericht.',
+        'Der Empfänger lässt bitten, sich zu gedulden.',
+        'Die Gastfreundschaft ist über jeden Zweifel erhaben.',
+        'Ein Rückweg ist mir bislang nicht angeboten worden.']},
+  e3:  {serie:'E', n:3, lines:['Dritter Bericht.',
+        'Ich habe nach der Uhrzeit gefragt. Man konnte sie mir nicht nennen.',
+        'Das scheint hier niemanden zu beunruhigen.',
+        'Mich auch nicht. Noch nicht.']},
+  e4:  {serie:'E', n:4, lines:['Vierter Bericht.',
+        'Der Brief liegt noch immer bei mir, ungeöffnet, wie es sich gehört.',
+        'Man hat mich nicht danach gefragt.',
+        'Ich finde das bemerkenswert höflich oder bemerkenswert etwas anderes.']},
+  e5:  {serie:'E', n:5, lines:['Fünfter Bericht.',
+        'Ich bitte erneut um eine Antwort auf meine letzten vier Berichte.',
+        'Die Post hier ist zuverlässig. Von hier weg, vermutlich auch.',
+        'Vermutlich.']},
+  e6:  {serie:'E', n:6, lines:['Sechster Bericht.',
+        'Man hat mir einen eigenen Schreibtisch eingerichtet. Ohne dass ich darum gebeten hätte.',
+        'Das nehme ich nicht als gutes Zeichen.',
+        'Ich nehme es trotzdem an. Es ist ein guter Schreibtisch.']},
+  e7:  {serie:'E', n:7, lines:['Siebter Bericht.',
+        'Ich habe um einen Termin für die Übergabe gebeten. Fünfmal.',
+        'Die Antwort ist jedes Mal dieselbe Höflichkeit.',
+        'Höflichkeit ist keine Antwort. Das würde ich gern jemandem hier sagen.']},
+  e8:  {serie:'E', n:8, lines:['Achter Bericht.',
+        'Ich schreibe nicht mehr jede Woche. Es ändert nichts an der Antwort.',
+        'Der Tee hier ist tatsächlich gut.',
+        'Das schreibe ich, weil es stimmt, nicht weil es beruhigen soll.']},
+  e9:  {serie:'E', n:9, lines:['Neunter Bericht.',
+        'Ich warte weiter. Das ist inzwischen die ganze Nachricht.',
+        'Sagen Sie Zwirn, der Antrag war richtig gestellt.',
+        'Das war er.']},
+  e10: {serie:'E', n:10, lines:['Ohne Aktenzeichen.',
+        'Der Tee ist gut. Antworten Sie bitte.']},
+  f1:  {serie:'F', n:1, lines:['Ohne Absender vermerkt, Handschrift fremd.',
+        'Man hört, ein Bote sei unterwegs. Das freut mich aufrichtig.',
+        'Nehmen Sie sich Zeit. Ich habe reichlich davon.',
+        'Mit vorzüglicher Hochachtung, der Empfänger.']},
+  f2:  {serie:'F', n:2, lines:['Ohne Absender vermerkt.',
+        'Ihr Bote hat heute den Postweg um den Brandabschnitt herum genommen.',
+        'Eine gute Wahl. Ich habe zugesehen.',
+        'Grüßen Sie die Poststelle von mir. Sie wissen nicht, dass ich sie kenne.']},
+  f3:  {serie:'F', n:3, lines:['Ohne Absender vermerkt.',
+        'Man sagt mir, es gebe inzwischen einen neuen Außendienstler.',
+        'Ich freue mich auf die Bekanntschaft. Wirklich.',
+        'Kommen Sie vorbei, wann immer es Ihnen passt. Ich warte ohnehin.']},
+  f4:  {serie:'F', n:4, lines:['Ohne Absender vermerkt.',
+        'Ich habe den Tisch gedeckt. Für den Fall, dass diesmal jemand kommt.',
+        'Bislang kam niemand. Das rechne ich niemandem an.',
+        'Mit vorzüglicher Hochachtung, und aufrichtiger Geduld, der Empfänger.']},
 };
 const BLAETTER_KEYS = Object.keys(BLAETTER);
+
+// Guard, Bauform wie knAssertCaps()/auftragAssertBrett() weiter unten. Beweist
+// beim Start, dass keine Serie "still vorhanden" ist, d.h. in BLAETTER_KEYS
+// mitgezählt wird (Zählzeile "N von 48"), aber über keinen Fundweg erreichbar
+// ist. TRUHE_SERIEN fällt in truheOeffnen() (Kammer, biome bzw. minDiff),
+// SCHATTEN_SERIEN fällt in killMon() (Schattenland, kein biome-Feld). Biome-
+// Liste hier bewusst als Literal, nicht aus BIOME_MOBS/BIOM_AMT gelesen: beide
+// werden erst deutlich weiter unten deklariert, ein Zugriff hier liefe in die
+// TDZ, siehe Übergabe-Falle.
+(function blaetterAssert(){
+  const TRUHE_SERIEN = ['A', 'B', 'C', 'D'];
+  const SCHATTEN_SERIEN = ['E', 'F'];
+  const TRUHE_BIOME = ['grass', 'snow', 'sand'];
+  const SOLL = {A:12, B:6, C:8, D:8, E:10, F:4};
+  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+  const GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'dreimal',
+                  'Slot', 'ergibt', 'bewirkt', 'Wirkung entsteht', 'Fluch entsteht', 'Alter'];
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('Aktenfunde:', m, ...r); };
+
+  const gesehen = {};
+  for(const id of BLAETTER_KEYS){
+    const b = BLAETTER[id];
+    if(!SOLL[b.serie]) { fehler('Serie ohne Sollzahl', id, b.serie); continue; }
+    if(TRUHE_SERIEN.indexOf(b.serie) < 0 && SCHATTEN_SERIEN.indexOf(b.serie) < 0){
+      fehler('Serie ohne bekannten Fundweg (weder Truhe noch Schattenland)', id, b.serie);
+    }
+    if(b.serie === 'A' && typeof b.minDiff !== 'number') fehler('Serie A ohne minDiff', id);
+    if((b.serie === 'B' || b.serie === 'C' || b.serie === 'D')){
+      if(!b.biome) fehler('Kammer-Serie ohne biome-Feld', id);
+      else if(TRUHE_BIOME.indexOf(b.biome) < 0) fehler('biome-Feld auf unbekanntes Biom', id, b.biome);
+    }
+    if((b.serie === 'E' || b.serie === 'F') && b.biome) fehler('Schattenland-Serie hat ein biome-Feld, kann nie droppen', id);
+    if(!b.lines || !b.lines.length) fehler('Blatt ohne Text', id);
+    else if(b.lines.length > 6) fehler('Mehr als sechs Zeilen', id, b.lines.length);
+    for(const l of (b.lines || [])){
+      if(/[—–]/.test(l)) fehler('Gedankenstrich statt Interpunkt', id, l);
+      if(EMOJI.test(l)) fehler('Emoji im Blatttext', id, l);
+      for(const g of GEHEIM) if(l.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', id, g, l);
+    }
+    gesehen[b.serie] = (gesehen[b.serie] || 0) + 1;
+  }
+  for(const s in SOLL) if(gesehen[s] !== SOLL[s]) fehler('Serie hat falsche Blattzahl', s, 'ist', gesehen[s] || 0, 'soll', SOLL[s]);
+  if(BLAETTER_KEYS.length !== 48) fehler('Gesamtzahl ist nicht 48', BLAETTER_KEYS.length);
+  if(!ok) console.error('Aktenfunde: Guard fehlgeschlagen, siehe obige Zeilen.');
+})();
 
 const KLADDE_KEY = 'sda_kladde_v1';
 const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}};
@@ -3110,6 +3277,22 @@ function killMon(m){
   corpses.push({x:m.x, y:m.y, def:m.def, key:dKey, t:0, dur:animLen(dKey, m.def.deathFps || 11) + 1.4, flip:m.facingLeft});
   if(corpses.length > 24) corpses.shift();
   if(currentLevel === 2) shadowKills++;
+  // Aktenfund Serie E/F (Ablage V): einziger Fundweg für diese Serien, denn im
+  // Schattenland gibt es keine Kammern und damit keine Kammertruhe. Höchstens
+  // ein Blatt pro Kill. F zuerst und mit eigener, sehr kleiner Chance geprüft —
+  // sonst würde ein gemeinsamer Pool mit E das "sehr selten" aus der Weltbibel
+  // wegmitteln, sobald wenige F-Blätter noch offen sind. Siehe truheOeffnen()
+  // für dasselbe Prinzip bei den Kammer-Serien.
+  if(currentLevel === 2){
+    const kandF = BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'F' && !kladde.blaetter[id]);
+    const kandE = BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'E' && !kladde.blaetter[id]);
+    let blattId = null;
+    if(kandF.length && Math.random() < 0.006) blattId = kandF[Math.floor(Math.random() * kandF.length)];
+    else if(kandE.length && Math.random() < 0.04) blattId = kandE[Math.floor(Math.random() * kandE.length)];
+    if(blattId && findeBlatt(blattId)){
+      floaters.push({x:m.x, y:m.y-40, txt:'+ Aktenfund', col:'#c9b98a', t:2.8, big:true});
+    }
+  }
   if(gameT - lastDieSfx > 0.07){ lastDieSfx = gameT; sfx.die(); }   // Massensterben nicht 30x gleichzeitig
   spawnImpactParticles(m.x, m.y, 40, null);
   splatConfetti(m.x, m.y, currentLevel===2);
@@ -4177,7 +4360,7 @@ function truheOeffnen(){
     if(kladde.blaetter[id]) return false;
     const b = BLAETTER[id];
     if(b.serie === 'A') return k.diff >= b.minDiff;
-    if(b.serie === 'B') return k.biome === b.biome;
+    if(b.serie === 'B' || b.serie === 'C' || b.serie === 'D') return k.biome === b.biome;
     return false;
   });
   if(kandidaten.length && Math.random() < 0.18 + k.diff * 0.04){

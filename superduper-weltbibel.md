@@ -527,6 +527,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Dritter Reiter in der Kladde, Liste plus Lesefenster.
 * Persistenz im bestehenden `sda_kladde_v1`, nicht in einem neuen Schlüssel. Damit erbt die Geschichte die Todesimmunität automatisch.
 * Erst 18 Blätter (Serien A und B) bauen, testen, dann den Rest. (Zählfehler korrigiert: Serie A hat 12, Serie B hat 6, macht 18, nicht 16 — siehe `blaetter-serie-a-b.md`, Kopfzeile, und die Umsetzung in W2.)
+* Der Rest (Serien C bis F, 30 Blätter) ist gebaut: C/D über die bestehende Kammertruhe (wie A/B), E/F über einen eigenen Dropkanal im Schattenland, da es dort keine Kammern gibt. Details in `phase-w-blaetter-cf.md`.
 
 **Abnahme:** Blätter überleben Tod, Schichtende und Reload. Kein Blatt verrät Kesselgrammatik, geprüft Blatt für Blatt, Ergebnis in den Abschlussbericht. Zeichendeckel gilt auch hier.
 
