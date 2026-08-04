@@ -3888,6 +3888,11 @@ function knAssertCaps(){
   // Das Rekord-Suffix aus knBegruessungLine() steht hier bewusst nicht: es prüft seine
   // Gesamtlänge dort selbst gegen 44 und fällt sonst auf die Grundzeile zurück. Der
   // Jahresgespräch-Satz ebenso wenig, der ist freier Panel-Text ohne Zeichendeckel.
+  // Die Anrede (18.5) aus derselben Funktion steht hier ebenfalls nicht, und zwar
+  // zwingend: knAssertCaps() ruft sich unten selbst auf, lange bevor RAENGE und
+  // rangStufe() deklariert sind. Ein Zugriff von hier wäre ein ReferenceError durch
+  // Temporal Dead Zone, den node --check nicht findet. Geprüft wird sie stattdessen
+  // in anredeAssert(), unmittelbar hinter dem Rangblock.
   for(let n=1;n<=12;n++) rows.push([knOrdinal(n)+' Schicht. Die Akte wird dick.',44]);
   let ok = true;
   for(const [txt,cap] of rows){
@@ -4015,9 +4020,18 @@ function knRandnotiz(anlass){
   return false;
 }
 
+// 18.5: Knöterich spricht immer vollständig, immer korrekt, immer inklusive
+// "Herr oder Frau" an. Jedes Mal. Deshalb zwei Anläufe statt einem: erst die
+// Anrede samt Schichtzähler, dann die Anrede allein. Die zweite passt immer,
+// die längste Sprosse ohne Zähler ist 43 Zeichen lang — die alte Grundzeile
+// bleibt nur als dritter Boden stehen, erreicht wird sie nie.
+// Deckel ist 44 (Randnotiz-Kanal), nicht 48/32: das hier ist ein Einzeiler.
 function knBegruessungLine(){
   const n = amt.schichten + 1;
-  let line = knOrdinal(n) + ' Schicht. Die Akte wird dick.';
+  const st = rangStufe();
+  let line = anredeVersuch(t => t + '. ' + knOrdinal(n) + ' Schicht.', st, 44)
+             || anredePunkt(st, 44)
+             || (knOrdinal(n) + ' Schicht. Die Akte wird dick.');
   if(kn.counters.maxKillsSchicht > 0){
     const alt = line + ' Rekord ' + kn.counters.maxKillsSchicht + '.';
     if(alt.length <= 44) line = alt;
@@ -4898,9 +4912,15 @@ function fuehreAktion(){
 // Aktzeile, die sich mit aktStand() automatisch ändert), Bramsche und der
 // Lott/Pahl-Chor weichen davon situativ ab, siehe unten.
 function npcCycle(n, fig){
-  n.bubbleIdx = (n.bubbleIdx + 1) % (fig.grund.length + 1);
-  if(n.bubbleIdx < fig.grund.length){
-    const p = fig.grund[n.bubbleIdx];
+  // 18.5: Schritt 0 ist die Anredezeile. bubbleIdx startet bei -1, der erste
+  // Tastendruck landet also darauf. Danach die unveränderten Grundzeilen,
+  // zuletzt die Aktzeile — deshalb +2 statt +1 im Modulo.
+  n.bubbleIdx = (n.bubbleIdx + 1) % (fig.grund.length + 2);
+  if(n.bubbleIdx === 0){
+    const a = anredeZeile(fig.key);
+    n.bubbleText1 = a.z1; n.bubbleText2 = a.z2;
+  } else if(n.bubbleIdx <= fig.grund.length){
+    const p = fig.grund[n.bubbleIdx - 1];
     n.bubbleText1 = p.z1; n.bubbleText2 = p.z2;
   } else {
     n.bubbleText1 = fig.akt[aktStand() - 1]; n.bubbleText2 = '';
@@ -4932,6 +4952,7 @@ function npcSprechen(n){
     if(pool && pool.length){
       const line = pool[Math.floor(Math.random() * pool.length)];
       n.bubbleText1 = line.z1; n.bubbleText2 = line.z2;
+      letzterAnlass = null;   // Der Anlass ist verbraucht, der Chor kehrt in den Zyklus zurück
     } else {
       npcCycle(n, fig);
     }
@@ -6991,10 +7012,14 @@ function roemisch(n){ let r = '', v = Math.max(1, n|0); for(const [w,z] of ROEM)
 
 const rangStufe = () => Math.floor(amt.schichten / 5);
 const rangDef   = () => RAENGE[Math.min(rangStufe(), RAENGE.length - 1)];
-function rangName(){
-  const i = rangStufe(), letzt = RAENGE.length - 1;
-  return i <= letzt ? RAENGE[i].t : RAENGE[letzt].t + ' ' + roemisch(i - letzt + 1);
+// rangNameVon() ist die Wahrheitsquelle, rangName() nur der Aufruf mit der
+// eigenen Stufe. 18.5 braucht die Nachbarstufen: Zwirn schmeichelt einen Rang
+// zu hoch, Milb stuft einen zu niedrig ein. Eine Rechnung, kein zweiter Ort.
+function rangNameVon(i){
+  const letzt = RAENGE.length - 1, s = Math.max(0, i | 0);
+  return s <= letzt ? RAENGE[s].t : RAENGE[letzt].t + ' ' + roemisch(s - letzt + 1);
 }
+function rangName(){ return rangNameVon(rangStufe()); }
 const rangGruppe      = () => rangDef().g;
 const rangGruppeName  = () => RANG_GRUPPEN[rangDef().g] + (rangDef().spitze ? ', Spitze' : '');
 const rangVerhaeltnis = () => RANG_VERH[rangDef().v];
@@ -7170,6 +7195,7 @@ function rangAssert(){
     amt.schichten = s;
     const name = rangName();
     if(!name || name.indexOf('undefined') >= 0) fehler('rangName() leer oder undefined', s, name);
+    if(rangNameVon(rangStufe()) !== name) fehler('rangNameVon() driftet von rangName() ab', s, name);
     const sollWechsel = s % 5 === 0 && s > 0;
     if(sollWechsel && name === vorher) fehler('Kein Wechsel an Fünferschritt', s);
     if(!sollWechsel && vorher !== null && name !== vorher) fehler('Wechsel außerhalb Fünferschritt', s);
@@ -7234,6 +7260,169 @@ function rangAssert(){
   return ok;
 }
 rangAssert();
+
+// ===========================================================================
+//  DIE ANREDE — Weltbibel 18.5. Der Titel aus rangName() wird an die NPC-Zeilen
+//  durchgereicht; wie jede Figur damit umgeht, ist ihre Charakterisierung.
+//
+//  Bauform: eine dynamisch gebaute Anredezeile als Schritt 0 des Sprechzyklus.
+//  Die 66 Grundzeilen in DORF_FIGUREN bleiben unangetastet, figuren-dorf.md
+//  bleibt gültig. Der Eingriff sitzt in npcCycle(), nicht in npcSprechen() —
+//  damit bleiben der Bramsche-Pfad und der Lott/Pahl-Anlass-Pfad per
+//  Konstruktion unberührt, sie erreichen npcCycle() gar nicht erst.
+//
+//  Diese Zeilen sind Sprechblasen, tragen also den Deckel z1<=48 / z2<=32.
+//  Der Titel wird bis zu 38 Zeichen lang und wächst jenseits Rang 18 römisch
+//  weiter — deshalb die Sprossenleiter unten statt eines festen Rahmens.
+// ===========================================================================
+
+const ANREDE_HERR = 'Herr oder Frau ';
+
+// Die Sprossen, absteigend. Ein Titel, der das Paar ausschreibt
+// ('Monstralamtmann / Monstralamtfrau'), braucht kein '(in)': die Klammer steht
+// nur dort, wo der Dienstposten das Geschlecht nicht kennt, so begründet 18.5
+// sie. Die letzte Sprosse ist der benannte Grundtitel ohne römische Ziffer —
+// kein falscher Titel im Sinn von 18.6.2, sondern derselbe ohne Zählung, und
+// als einziger nach oben beschränkt (38 Zeichen).
+function anredeFormen(i){
+  const s = Math.max(0, i | 0), letzt = RAENGE.length - 1;
+  const t = rangNameVon(s);
+  const basis = RAENGE[Math.min(s, letzt)].t;
+  // Kein '(in)', wenn der Titel das Paar ohnehin ausschreibt, und keins jenseits
+  // der benannten Ränge: dort hängt eine römische Ziffer hinten dran, und
+  // 'Geschäftsbereich II(in)' wäre die Klammer am Zählwerk statt am Substantiv.
+  const ohneKlammer = t.indexOf(' / ') >= 0 || s > letzt;
+  const mitKlammer = ohneKlammer ? [] : [ANREDE_HERR + t + '(in)', t + '(in)'];
+  return mitKlammer.concat([ANREDE_HERR + t, t, basis]);
+}
+// Baut die längste Fassung, die unter den Deckel passt. null = keine passt,
+// dann nimmt der Aufrufer seinen eigenen Rückfall. Gleiches Muster wie das
+// Rekord-Suffix in knBegruessungLine(): bauen, Länge prüfen, sonst zurück.
+function anredeVersuch(bau, i, cap){
+  for(const f of anredeFormen(i)){ const z = bau(f); if(z.length <= cap) return z; }
+  return null;
+}
+const anredePunkt = (i, cap) => anredeVersuch(t => t + '.', i, cap);
+
+// Sie fragt als Einzige nach dem Namen, jede Schicht neu, weil es jede Schicht
+// ein anderer ist (18.5). Der Spieler hat keinen Namen und bekommt keinen: kein
+// Eingabefeld, kein amt-Feld, keine Antwortauswahl (Kapitel 16). Dass niemand
+// antwortet, ist die Aussage.
+const ANREDE_LISBETH = [
+  {z1:'Guten Tag. Und wie heißen Sie?',          z2:'Nicht der Titel. Der Name.'},
+  {z1:'Den Titel kenne ich. Den Namen nicht.',   z2:'Wie heißen Sie?'},
+  {z1:'Jede Schicht ein anderer Titel.',         z2:'Aber wie heißen Sie?'},
+  {z1:'Ich schreibe mir die Namen auf.',         z2:'Ihrer fehlt noch immer.'},
+  {z1:'Verzeihung. Ihr Name, nicht Ihr Titel.',  z2:'Sonst fragt das ja keiner.'},
+];
+
+// Die elf Formen. Acht stehen wörtlich in 18.5; Trepp, Milb und Fass kommen
+// dort nicht vor, bekommen aber eine, weil Stolzregel 18.6.1 keine Ausnahme
+// kennt ("Niemand wird ohne Titel angesprochen"). Ihre z2 ist jeweils die
+// bereits kanonische Sprachmarke aus Kapitel 8, also Ableitung statt neuer
+// Charakterisierung. Keiner benutzt den Titel ironisch (18.6.7).
+const ANREDE = {
+  // Schmeichelei: immer einen Rang zu hoch. Er befördert verbal, bevor er
+  // befördert. Jenseits von RAENGE zählt roemisch() weiter, die Schmeichelei
+  // geht nie aus.
+  zwirn:    () => ({z1: anredeVersuch(t => t + '!', rangStufe() + 1, 48) || rangDef().t + '!',
+                    z2: 'Bald schon. Ganz sicher.'}),
+  // Sie liest die Schriftform vor, Klammern eingeschlossen. Hat der Deckel die
+  // Klammer weggenommen, sagt sie stattdessen, dass es so geschrieben steht.
+  // Sie liest immer, was dasteht — auch das ist Charakter.
+  bramsche: () => { const z1 = anredePunkt(rangStufe(), 48) || rangDef().t + '.';
+                    return {z1, z2: z1.indexOf('(in)') >= 0 ? 'Klammer auf in Klammer zu.'
+                                                            : 'Genau so steht es geschrieben.'}; },
+  zapf:     () => ({z1:'Chef.', z2:'Sag Bescheid, wenn was klemmt.'}),
+  lisbeth:  () => ANREDE_LISBETH[amt.schichten % ANREDE_LISBETH.length],
+  trepp:    () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                    z2:'Wenn ich kurz stören darf.'}),
+  // Vollständig und korrekt, mit hörbarem Neid. Er hat keinen Titel.
+  noergel:  () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                    z2:'Ich habe keinen. Nur Krawatte.'}),
+  milb:     () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                    z2:'Geschätzt, nicht geraten.'}),
+  // Der Titel, der auf dem Antrag steht, nicht der, den man hat. Der Antrag ist
+  // vom ersten Tag und wurde nie geändert: RAENGE[0]. Stimmt bis Schicht 4
+  // zufällig, driftet ab Schicht 5 und wird mit jeder Beförderung komischer.
+  // Keine Persistenz, kein Merker.
+  pommer:   () => ({z1: anredePunkt(0, 48) || RAENGE[0].t + '.',
+                    z2:'So steht es auf dem Antrag.'}),
+  lott:     () => ({z1:'Der Neue.', z2:'Vierhundert Jahre der Neue.'}),
+  pahl:     () => ({z1:'Der Neue.', z2:'Der Name bleibt. Sie wechseln.'}),
+  fass:     () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                    z2:'Setz dich. Der Krug wartet.'}),
+};
+function anredeZeile(key){ const f = ANREDE[key]; return f ? f() : {z1: rangName() + '.', z2:''}; }
+
+// Zeichendeckel-Assertion für die Anrede. Sie steht bewusst NICHT in
+// knAssertCaps(): der Guard ruft sich weit oben im Skript selbst auf, lange
+// bevor rangStufe() deklariert ist, und ein Zugriff von dort wäre ein
+// ReferenceError durch Temporal Dead Zone, den node --check nicht findet.
+function anredeAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('Anrede 18.5:', m, ...r); };
+  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+  const text = (txt, cap, feld) => {
+    if(typeof txt !== 'string' || !txt) return fehler('leer', feld, JSON.stringify(txt));
+    if(txt.length > cap)        fehler('Zeichendeckel verletzt', feld, JSON.stringify(txt), txt.length, '>', cap);
+    if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', feld, txt);
+    if(/[—–]/.test(txt))        fehler('Gedankenstrich', feld, txt);
+    if(EMOJI.test(txt))         fehler('Emoji', feld, txt);
+  };
+
+  // (1) Jede Figur aus DORF_FIGUREN hat eine Form, und keine Form ist verwaist.
+  for(const fig of DORF_FIGUREN) if(!ANREDE[fig.key]) fehler('Figur ohne Anredeform', fig.key);
+  for(const k in ANREDE) if(!DORF_FIGUREN.some(f => f.key === k)) fehler('Anredeform ohne Figur', k);
+
+  // (2) Deckelsweep über alle Figuren und den gesamten Laufbahnverlauf, weit
+  // über RAENGE hinaus in die römische Fortsetzung. amt.schichten wird
+  // gespiegelt und exakt wiederhergestellt, kein saveAmt() — Idiom aus
+  // rangAssert()/auftragAssertBrett().
+  const echt = amt.schichten;
+  for(let s = 0; s <= 5000; s += 5){
+    amt.schichten = s;
+    for(const k in ANREDE){
+      const a = anredeZeile(k);
+      if(!a) { fehler('Anredeform liefert nichts', k, s); continue; }
+      text(a.z1, 48, 'z1 ' + k + ' s=' + s);
+      if(a.z2) text(a.z2, 32, 'z2 ' + k + ' s=' + s);
+    }
+    // (3) Zwirn schmeichelt wirklich, solange es über ihm einen benannten Rang
+    // gibt: gleicher Bau, eine Stufe höher, muss einen anderen String ergeben.
+    // Jenseits von RAENGE zählt roemisch() zwar weiter, dort kann die
+    // Sprossenleiter aber auf den Grundtitel zurückfallen und beide Fassungen
+    // zusammenlegen — das ist bekannt und ab Schicht 90+ hingenommen.
+    if(rangStufe() < RAENGE.length - 1){
+      const eigen = anredeVersuch(t => t + '!', rangStufe(), 48);
+      if(eigen && anredeZeile('zwirn').z1 === eigen) fehler('Zwirn schmeichelt nicht', s);
+    }
+    // Pommer liest den Antrag vom ersten Tag, nie den aktuellen Titel.
+    if(anredeZeile('pommer').z1.indexOf(RAENGE[0].t) < 0) fehler('Pommer liest nicht den Antrag', s);
+  }
+  amt.schichten = echt;
+
+  // (4) Knöterichs Begrüßung, Einzeiler-Deckel 44, über dieselbe Schichtreihe
+  // und beide Rekord-Zustände. Steht hier statt in knAssertCaps(), s. Kommentar
+  // dort. kn.counters wird gespiegelt und exakt zurückgesetzt, kein saveKn().
+  const rekEcht = kn.counters.maxKillsSchicht;
+  for(const rek of [0, 99]){
+    kn.counters.maxKillsSchicht = rek;
+    for(let s = 0; s <= 5000; s += 5){
+      amt.schichten = s;
+      const l = knBegruessungLine();
+      text(l, 44, 'knBegruessung rek=' + rek + ' s=' + s);
+      // 18.5 verlangt die Anrede jedes Mal: der dritte Boden darf nie greifen.
+      if(l.indexOf('Die Akte wird dick') >= 0) fehler('Knöterich fällt aus der Anrede', s, l);
+    }
+  }
+  kn.counters.maxKillsSchicht = rekEcht;
+  amt.schichten = echt;
+
+  console.assert(ok, 'Anrede 18.5: Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+anredeAssert();
 
 // ===========================================================================
 //  W5: DER VORGANG — Weltbibel Kapitel 9. Jahresgespräch-Absatz, Zustellen,

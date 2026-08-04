@@ -565,9 +565,20 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Jede zweite Beförderung fällt auf das bestehende Jahresgespräch (`amt.schichten % 10 === 0`) und läuft dort als Zeremonie: Urkunde, Aushändigung, „Auf die Form!", Amtsmarsch bricht nach dem dritten Takt ab, ein Knöterich-Satz, der von Mal zu Mal wärmer wird.
 * Dienstausweis als neuer Bildschirm aus dem Inventar, Bauform wie der Kessel-Knopf. Lichtbild ist ein Ausschnitt aus dem bestehenden Held-Bake, kein neues Grafiksystem.
 * Zwei Insignien wirken echt (18.7): Zeichnungsbefugnis ab gehobenem Dienst (Voraussetzung für W5), zweiter Registraturschlüssel ab höherem Dienst (Bramsches Abweisung entfällt).
-* Die Anrede der Figuren (18.5) bleibt ausdrücklich offen.
+* Die Anrede der Figuren (18.5) blieb in W6 ausdrücklich offen und ist seither nachgezogen, siehe den eigenen Abschnitt unten.
 
 **Abnahme:** Der Rang klebt am Dienstposten, nicht an der Person, wird nie zurückgesetzt und nie herabgestuft (18.2). Er kostet kein Gold und lässt sich nicht kaufen.
+
+### Anrede der Figuren (18.5) — ERLEDIGT (siehe `phase-anrede.md`)
+
+Kein eigener W-Abschnitt, sondern der Nachzug zu W6: klein genug für eine eigene Mini-Phase, groß genug für ein eigenes Phasendokument und einen eigenen Guard.
+
+* Der Titel aus `rangName()` wird als **eigene Anredezeile** durchgereicht, gebaut zur Laufzeit und als Schritt 0 des Sprechzyklus gezeigt. Die 66 Grundzeilen aus W3 bleiben unangetastet, `figuren-dorf.md` bleibt gültig.
+* Alle elf Dorf-Figuren bekommen eine Form, nicht nur die acht aus der Tabelle in 18.5: Stolzregel 18.6.1 kennt keine Ausnahme. Trepp, Milb und Fass sprechen den korrekten Titel plus ihre bereits kanonische Sprachmarke aus Kapitel 8 — Ableitung, keine neue Charakterisierung.
+* Knöterich spricht die Anrede in seiner Begrüßungszeile, dem einzigen Kanal, der ihm dafür gehört.
+* Weil der Titel bis zu 38 Zeichen lang wird und jenseits Rang 18 römisch weiterwächst, trägt jede Zeile eine Sprossenleiter mit Rückfall statt eines festen Rahmens (`anredeFormen()`/`anredeVersuch()`). Jenseits der benannten Ränge entfällt das `(in)`: die Klammer gehört ans Substantiv, nicht ans Zählwerk.
+
+**Abnahme:** Niemand wird ohne Titel angesprochen (18.6.1). Kein Titel wird ironisch benutzt (18.6.7). Lisbeth fragt als Einzige nach dem Namen, jede Schicht neu, und bekommt nie eine Antwort — der Spieler hat keinen Namen und bekommt keinen.
 
 ### Was wir ausdrücklich nicht bauen
 

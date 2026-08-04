@@ -8,7 +8,7 @@ Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Co
 
 Kein neues `amt`-Feld, keine `loadAmt()`-Ladezeile, kein zweiter Zähler neben `amt.schichten`. Amtsbezeichnung, Laufbahngruppe und Dienstverhältnis sind **abgeleitet**, exakt wie der bestehende `aktStand()` — eine Beförderung ist kein Ereignis mit Nebenwirkung, sondern eine Eigenschaft der Zahl `amt.schichten`. Nichts wird angewendet, nichts gespeichert, jedes Neurendern ist von selbst idempotent. Das ist strikt anders als `showJahresgespraech()`, das mit `JAHRES_BONI[i].apply(); saveAmt();` einen echten Seiteneffekt hat.
 
-Die Anrede der Figuren (18.5) wird **nicht** gebaut: kein Titel wird an `DORF_FIGUREN`-Zeilen durchgereicht, keine der sieben Charakterisierungen. Das bleibt ausdrücklich offen. Ebenso nicht gebaut: alles aus 18.9 bis 18.11 (Wappen, Ränge der Gegenseite, Titelmaschine) außer den zwei Wahlsprüchen als Zeilen in Urkunde/Ausweis — es entsteht keine Heraldik.
+Die Anrede der Figuren (18.5) wird **nicht** gebaut: kein Titel wird an `DORF_FIGUREN`-Zeilen durchgereicht, keine der sieben Charakterisierungen. Das bleibt ausdrücklich offen. *(Nachtrag: mit `phase-anrede.md` nachgezogen. `rangName()` ist dort in `rangNameVon(i)` und einen Aufruf mit der eigenen Stufe zerlegt worden, weil 18.5 die Nachbarstufen braucht; die Aussage über `DORF_FIGUREN` gilt weiterhin — die Grundzeilen sind unangetastet, die Anrede ist ein eigener Zyklusschritt.)* Ebenso nicht gebaut: alles aus 18.9 bis 18.11 (Wappen, Ränge der Gegenseite, Titelmaschine) außer den zwei Wahlsprüchen als Zeilen in Urkunde/Ausweis — es entsteht keine Heraldik.
 
 ### Die Formel, die alles trägt: `rangStufe()` neben `aktStand()` (`index.html:6750`ff.)
 
