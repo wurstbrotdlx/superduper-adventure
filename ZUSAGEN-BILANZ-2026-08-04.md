@@ -253,9 +253,9 @@ Nachgerechnet wurde mit Node gegen die aus `index.html` extrahierten Tabellen (A
 | Serienplan der Aktenfunde | weltbibel:454 | rund 48 Blätter | Tabellensumme 12+6+8+8+10+4 = 48, exakt | . | stimmt |
 | **Bauabschnitts-Zahl der ersten Lieferung** | weltbibel:529 | „Erst 16 Blätter (Serien A und B)" | Serien A und B sind 18; in `blaetter:3` als Zählfehler erkannt, an der Quelle nie korrigiert | 2211 | **weicht ab** (Fund 11) |
 | **Zuständigkeitsbereich des Vorgangs** | weltbibel:80, 389, 574 gegen blaetter:18, 40 | Welt = Bereich VII, Bereich VI gilt als abgeschlossen | Blätter A1 und A5 verorten Gründung und Waffenstillstandsbruch im Bereich **VI**, wortgleich im Code | 2213, 2231 | **weicht ab** (Fund 5) |
-| Rangsystem und Laufbahnstufen | weltbibel 18.3 | 11 Stufen plus 8 Fortsetzungen | im Code kein einziger Rangbegriff; W3 bis W5 stehen als OFFEN | . | nicht anwendbar |
+| Rangsystem und Laufbahnstufen | weltbibel 18.3 | 11 Stufen plus 8 Fortsetzungen | Stand 04.08.2026 vor W6/W5: im Code kein einziger Rangbegriff, W3 bis W5 standen als OFFEN. Inzwischen überholt: W3, W4, W6 und W5 sind erledigt, siehe die jeweiligen `phase-*.md`. | . | überholt |
 | Ensemble | weltbibel Kap. 8 | 13 Figuren | im Code nur Knöterich; der Bürgermeister erscheint namenlos | 6060 ff. | nicht anwendbar |
-| Serien C bis F | w2:254 | ausdrücklich später | nicht vorhanden, wie vorgesehen | . | nicht anwendbar |
+| Serien C bis F | w2:254 | ausdrücklich später | Stand 04.08.2026 vor `phase-w-blaetter-cf.md`: nicht vorhanden, wie vorgesehen. Inzwischen überholt: alle 30 Blätter sind gebaut. | . | überholt |
 
 25 Zusagen, 2 Abweichungen, 3 nicht anwendbar.
 
@@ -471,7 +471,7 @@ Nachgerechnet wurde mit Node gegen die aus `index.html` extrahierten Tabellen (A
 | Optik der Touch-Oberfläche (Gürtel eine Zeile, Daumen-Fächer frei) | Nur am Gerät beurteilbar. Geprüft wurde ausschließlich, dass für jede Taste ein Bedienelement existiert. |
 | 873 der 886 Manifest-Zeilen | 13 Sheets wurden gegen die Planangaben geprüft, 9 davon direkt an den IHDR-Kopfdaten der Dateien. Der Rest ist die Aussage des Werkzeugs über sich selbst. Alle 99 tatsächlich geladenen Dateien sind dagegen vollständig geprüft: Existenz, Rasterteilbarkeit, `rowStart`-Grenzen. |
 | Wirkungsstärken der Flüche und Wirkungen (Faktoren wie `0.62`, `*0.25`, `0.5`) | Der Plan verspricht für keinen dieser Werte eine Zahl, er verlangt nur „mechanisch echt". Alle 48 Hooks sind belegt, ihre Balance nicht. |
-| Rangsystem, Ensemble, Serien C bis F | Gehören zu W3 bis W5, die als OFFEN geführt werden. Im Code erwartungsgemäß nicht vorhanden. |
+| Rangsystem, Ensemble, Serien C bis F | Stand 04.08.2026 vor W3/W4/W6/W5: gehörten zu Bauabschnitten, die als OFFEN geführt wurden, im Code erwartungsgemäß nicht vorhanden. Inzwischen überholt: alle vier sind erledigt, siehe die jeweiligen `phase-*.md`. |
 | Adversariale Gegenprobe der R-Funde | Laut Auftrag weitgehend abgegolten und nicht Gegenstand dieser Session. Unterwegs sind keine Gegenbeispiele aufgefallen; die drei R9-Aufräumfunde (F45, F68, und F1 aus R2) haben sich im Gegenteil als Ursache für vier Planabweichungen bestätigt. |
 
 ---

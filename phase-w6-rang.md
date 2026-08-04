@@ -107,7 +107,7 @@ TDZ-sicher: liest nur `amt` (weit oberhalb deklariert und geladen) und die Tabel
 * `#ovPanel` — keine `id` im Inneren, weiter nur über `document.getElementById`. Die Zahl der Schreibstellen bleibt sieben, W6 erweitert zwei bestehende Templates.
 * `RANDNOTIZ.levelup` und Lotts `anlass.levelup` — geprüft: beide hängen am Charakter-Stufenaufstieg (`gainXP()` → `knRandnotiz('levelup')`), nicht an `amt.schichten`. Sie werden durch W6 richtiger, nicht falscher, und bleiben deshalb unverändert.
 * Die sieben wirkungslosen Insignien existieren nur als Namen — kein Sprite, kein Dorfobjekt, das ist Grafikarbeit.
-* Akt V, Zustellen, Ausfertigung — bleiben W5. Zeichnungsbefugnis ist in W6 nur ein Prädikat mit zwei Lesern (Ausweis, Guard).
+* Akt V, Zustellen, Ausfertigung — waren bei W6 noch nicht gebaut, Zeichnungsbefugnis war nur ein Prädikat mit zwei Lesern (Ausweis, Guard). W5 hat ihr jetzt einen dritten, mechanischen Leser gegeben: `vorgangZustellbar()` in `scanAktion()`. Ebenso bekam das Dienstsiegel in W5 einen `k:'siegel'`-Schlüssel (bewusst ohne `wirkung:true`, damit die Zwei-Insignien-Zählung hier unten unverändert bleibt) für `rangDienstsiegel()`, den Puzzleteil-1-Leser im Schlusspanel. Siehe `phase-w5-vorgang.md`.
 * Verbotsliste unberührt: kein Dialogbaum, keine Antwortauswahl, kein Gesprächssystem, keine Cutscene, keine Vertonung, keine Questmarker, keine zweite Währung. Der Rang kostet kein Gold und lässt sich nicht kaufen (18.2).
 
 ## Abnahme W6

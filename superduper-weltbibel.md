@@ -89,7 +89,7 @@ Der Bereich ist keine Fantasy-Landkarte, sondern ein Archiv, das über die Ufer 
 | Der Fluss | Die Ablage | Ein sehr langsamer Fluss. Wer lange genug hineinschaut, sieht Papier. |
 | Das Dorf | Vordermühl an der Ablage | Sechzig Seelen, ein Gasthaus, ein Amt. Es gab einmal ein Hintermühl. Das gilt als abgeschlossen. |
 
-**Kammer-Sonderfall.** Selten trägt eine Kammertür kein Gebührenbescheid, sondern nur ein Aktenzeichen. Diese Kammern gehören zum Vorgang 1. Innen liegt keine bessere Beute, sondern ein Blatt.
+**Kammer-Sonderfall.** Selten trägt eine Kammertür kein Gebührenbescheid, sondern nur ein Aktenzeichen. Diese Kammern gehören zum Vorgang 1, es gibt genau eine je Biom, und nur in Akt IV. Innen liegt keine bessere Beute, sondern eine Adresszeile — kein Aktenfund der 48, sondern ein eigener Bestand (W5).
 
 ---
 
@@ -350,7 +350,7 @@ Auflösung nebenbei: Nörgel schreibt die Dienstberichte.
 
 Trepp öffnet den Sack. Der Brief. Die unleserliche Adresse.
 
-**Die Quest:** Die Adresse besteht aus vier Zeilen. Jede Zeile liegt in einem anderen Biom, in einer Kammer mit Aktenzeichen statt Gebührenbescheid. Vier Kammern, vier Bereiche, ein Blatt pro Kammer. Das nutzt Phase 2 ohne eine einzige neue Mechanik.
+**Die Quest:** Die Adresse besteht aus vier Zeilen. Jede Zeile liegt in einem anderen Bereich, in einer Kammer mit Aktenzeichen statt Gebührenbescheid, sofern der Bereich Kammern kennt. Drei Zeilen liegen in Sonderkammern, eine je Biom (der Code kennt nur drei Kammer-Biome); die vierte fällt in Ablage V, wo es keine Kammern gibt, über den bestehenden Schattenland-Fundkanal. Vier Bereiche, kein Blatt der 48 Aktenfunde: die Adresszeilen laufen als eigener Bestand. Das nutzt Phase 2 ohne eine einzige neue Mechanik. (W5, siehe `phase-w5-vorgang.md`.)
 
 Zusammengesetzt ergibt die Adresse: keinen Ort. Einen Namen. **An Fürst Nachtrag, zu Händen, persönlich.** Es gab nie eine Adresse. Es gab nur jemanden.
 
@@ -549,12 +549,12 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 **Abnahme:** Ein Auftrag pro Schicht, Erfüllung eindeutig prüfbar, Abbruch ohne Strafe, Aufträge nie unerfüllbar (kein Auftrag auf ein Monster, das im gewählten Biom nicht spawnt).
 
-### W5: Der Vorgang — OFFEN
+### W5: Der Vorgang — ERLEDIGT (siehe `phase-w5-vorgang.md`)
 
-* Aktstand als Zahl 1 bis 5 in `sda_amt_v1`, hochgezählt im bestehenden Jahresgespräch.
-* Pro Akt: ein zusätzlicher Absatz im Jahresgespräch-Panel, ein geänderter Satz bei drei Figuren, eine freigeschaltete Blattserie.
-* Vier Adress-Kammern in Akt IV: bestehende Kammern mit Sonderschild, garantierter Blatt-Drop.
-* Akt V: eine neue Kontextaktion **Zustellen** am Boss, angeboten nur mit Ausfertigung im Bestand. Sie beendet den Kampf und öffnet das Schlusspanel. Der Kampf selbst bleibt vollständig unverändert, das ist wichtig: das Finale ist ein Ausweg, keine Umschreibung.
+* Aktstand bleibt **abgeleitet** aus `amt.schichten` über das bestehende `aktStand()`, kein `amt`-Feld, keine `loadAmt()`-Ladezeile — dieselbe Korrektur wie beim Rang in W6 (siehe Zeile 563). Der Halbsatz „hochgezählt im bestehenden Jahresgespräch" bleibt korrekt, `aktStand()` springt genau am Zehnerschritt.
+* Pro Akt: ein zusätzlicher Absatz im Jahresgespräch-Panel, ein geänderter Satz bei drei Figuren (Lisbeth, Nörgel — die übrigen Aktzeilen passten bereits aus W3), eine freigeschaltete Blattserie (C-F, in Biom-Reihenfolge über Akt 2-5).
+* Vier Adress-Kammern in Akt IV: drei Sonderkammern (eine je Biom) mit Sonderschild, garantiertem Blatt-Drop, plus eine vierte Zeile über den Schattenland-Fundkanal in Ablage V (siehe Zeile 353).
+* Akt V: eine neue Kontextaktion **Zustellen** am Boss, angeboten nur mit Ausfertigung im Bestand und Zeichnungsbefugnis (W6). Sie beendet den Kampf und öffnet das Schlusspanel. Der Kampf selbst bleibt vollständig unverändert — das Finale ist ein Ausweg, keine Umschreibung. Der bestehende Kampf-Tod-Ausgang (`winGame()`) bleibt parallel bestehen.
 
 **Abnahme:** Wer nie zustellt, spielt das Spiel wie bisher weiter, unendlich. Wer zustellt, sieht das Ende. Beides ist ein gültiger Zustand. `CONFIG.schichtModus = false` bricht nichts, dort läuft die Geschichte über die Blätter allein.
 

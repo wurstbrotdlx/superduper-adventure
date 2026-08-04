@@ -122,6 +122,8 @@
   #kladdeBox .klHead{color:#f4d97a;font-weight:bold;font-size:11px;letter-spacing:1px;margin:10px 0 5px;}
   #kladdeBox .klEmpty{color:#9a8a5f;font-style:italic;}
   #blaetterBox{font-size:12px;line-height:1.6;}
+  #blaetterBox .klHead{color:#f4d97a;font-weight:bold;font-size:11px;letter-spacing:1px;margin:10px 0 5px;}
+  #blaetterBox .kl{margin-bottom:7px;padding-left:14px;text-indent:-14px;}
   #blaetterBox .klEmpty{color:#9a8a5f;font-style:italic;}
   #blaetterBox .ak{margin-bottom:8px;padding:6px 8px;cursor:pointer;border-left:2px solid #6b5a3a;}
   #blaetterBox .ak:hover{background:rgba(255,255,255,0.04);}
@@ -1750,8 +1752,8 @@ const DORF_FIGUREN = [
      'Ich zähle mit, aber ich frage schon.',
      'Jetzt fragt endlich jemand mit mir.',
      'Ein leerer Stuhl. Genau mein Problem.',
-     'Ich habe nur gefragt, wer lesen kann.',
-     'Vielleicht braucht er nur eine Antwort.',
+     'Fragen Sie Nörgel. Er kann das lesen.',
+     'Ich komme mit. Ich habe ja gefragt.',
    ]},
 
   {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:22, ty:41, opt:'wander', sheet:'fin',
@@ -1784,7 +1786,7 @@ const DORF_FIGUREN = [
      'Noch ein Formular, noch keine Antwort.',
      'Jetzt braucht auch Zwirn die Amtsleitung.',
      'Die Stelle ist leer, ich bin es nicht.',
-     'Niemand fragt mich. Jetzt fragen alle.',
+     'Gelesen und gezeichnet. Ich bin im Dienst.',
      'Auch jetzt ist es nicht meine Zuständigkeit.',
    ]},
 
@@ -2827,7 +2829,7 @@ const BLAETTER_KEYS = Object.keys(BLAETTER);
 })();
 
 const KLADDE_KEY = 'sda_kladde_v1';
-const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}};
+const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorgang:{}};
 (function loadKladde(){
   try{
     const raw = localStorage.getItem(KLADDE_KEY); if(!raw) return;
@@ -2839,6 +2841,7 @@ const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}};
       if(o.unikate) kladde.unikate = o.unikate;
       if(o.fl) kladde.fl = o.fl;    // additiv: alte Speicherstände ohne fl laden ohne Fehler
       if(o.blaetter) kladde.blaetter = o.blaetter;
+      if(o.vorgang) kladde.vorgang = o.vorgang;   // W5: additiv wie fl
     }
   }catch(_){}
 })();
@@ -2857,6 +2860,41 @@ function findeBlatt(id){
   saveKladde();
   return true;
 }
+
+// ===========================================================================
+//  W5: DER VORGANGS-BESTAND — Weltbibel Kapitel 9, Akt IV. Vier Adresszeilen,
+//  bewusst getrennt von BLAETTER: blaetterAssert()s Sollzahl 48 und die
+//  Zählzeile "N von 48" (renderBlaetter()) bleiben dadurch unberührt. Drei
+//  Zeilen liegen in Sonderkammern (ein Biom je Zeile, siehe setzeKammerTueren()
+//  und drawKammerTuer()), die vierte fällt in Ablage V (killMon()), weil es
+//  dort keine Kammern gibt, siehe A. Genau wie findeBlatt(): kein
+//  CFX.schweigen-Guard, eine Adresszeile wird am Fundort gefunden, nicht am
+//  Kessel beobachtet.
+const ADRESS_ZEILEN = {
+  1: {biome:'snow', lines:['Der erste Streifen der Anschrift, wasserfleckig aus der Eisablage.',
+      'Zu lesen: "An". Mehr nicht. Nörgel bestätigt die Schrift.',
+      'Trepp fragt, an wen. Niemand antwortet ihr.']},
+  2: {biome:'grass', lines:['Der zweite Streifen, aus einer Kammerakte in Ablage A.',
+      'Zu lesen: "Fürst Nachtrag". Bramsche wird sehr still.',
+      'Zwirn sagt, den Namen habe er noch nie gehört. Das stimmt nicht.']},
+  3: {biome:'sand', lines:['Der dritte Streifen, angesengt aus dem Brandabschnitt.',
+      'Zu lesen: "zu Händen, persönlich". Nörgel liest es zweimal.',
+      'Eine Anschrift ohne Ort. Nur eine Person.']},
+  4: {biome:null, lines:['Der letzte Streifen, gefunden in Ablage V selbst.',
+      'Er trägt kein Wort. Nur ein Siegel, das niemand kennt.',
+      'Die Anschrift ist vollständig. Sie führt hierher und nirgendwo sonst hin.']},
+};
+const VORGANG_ANSCHRIFT = 'An Fürst Nachtrag, zu Händen, persönlich.';
+function findeAdresszeile(id){
+  if(kladde.vorgang[id]) return false;   // schon gefunden, kein Doppelfund
+  kladde.vorgang[id] = true;
+  saveKladde();
+  return true;
+}
+const vorgangHat = id => !!kladde.vorgang[id];
+const vorgangDreiZeilen = () => vorgangHat(1) && vorgangHat(2) && vorgangHat(3);
+const vorgangAusfertigung = () => vorgangDreiZeilen() && vorgangHat(4);
+
 const MAL = ['', 'einmal', 'zweimal', 'dreimal', 'viermal', 'fünfmal'];
 const malWort = n => MAL[n] || (n + '-mal');
 
@@ -2888,6 +2926,13 @@ let amt = {bankGold:0, schichten:0,
   // auftrag = der angenommene Aushang, ohne Fortschritt (der läuft in shiftT-Laufzeitfeldern
   // unten, nicht hier — sonst wäre jeder Kill ein localStorage-Schreibvorgang).
   brett:null, auftrag:null, auftraegeErfuellt:0};
+// W3: Aktstand aus der bestehenden Schichtzahl abgeleitet, nichts Neues
+// gespeichert. Deckt sich mit Kapitel 9: Akt I = Schicht 1-10 (amt.schichten
+// 0-9), ... Akt V ab Schicht 41 (amt.schichten >= 40), gedeckelt bei 5.
+// W5: hierher vorgezogen (Original stand bei aktStand-Zeigerkommentar weiter
+// unten), weil setzeKammerTueren() bei Zeile ~5116 auf Skriptebene läuft und
+// die Adresskammer-Markierung aktStand() lesen muss. TDZ-Falle, siehe Übergabe.
+const aktStand = () => Math.min(5, Math.floor(amt.schichten / 10) + 1);
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
 let shiftT=0, shiftEndPending=false, overtimeT=0,
     shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[],
@@ -3321,13 +3366,18 @@ function killMon(m){
   // wegmitteln, sobald wenige F-Blätter noch offen sind. Siehe truheOeffnen()
   // für dasselbe Prinzip bei den Kammer-Serien.
   if(currentLevel === 2){
-    const kandF = BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'F' && !kladde.blaetter[id]);
-    const kandE = BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'E' && !kladde.blaetter[id]);
+    const kandF = serieFrei('F') ? BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'F' && !kladde.blaetter[id]) : [];
+    const kandE = serieFrei('E') ? BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'E' && !kladde.blaetter[id]) : [];
     let blattId = null;
     if(kandF.length && Math.random() < 0.006) blattId = kandF[Math.floor(Math.random() * kandF.length)];
     else if(kandE.length && Math.random() < 0.04) blattId = kandE[Math.floor(Math.random() * kandE.length)];
     if(blattId && findeBlatt(blattId)){
       floaters.push({x:m.x, y:m.y-40, txt:'+ Aktenfund', col:'#c9b98a', t:2.8, big:true});
+    }
+    // W5: vierte Adresszeile. Kein eigener Wurf, kein neuer Kanal: sie fällt beim
+    // ersten Kill in Ablage V, sobald die drei Kammerzeilen im Bestand sind.
+    if(vorgangAdressAkt() && vorgangDreiZeilen() && findeAdresszeile(4)){
+      floaters.push({x:m.x, y:m.y-40, txt:'+ Adresszeile', col:'#f4d97a', t:3.2, big:true});
     }
   }
   if(gameT - lastDieSfx > 0.07){ lastDieSfx = gameT; sfx.die(); }   // Massensterben nicht 30x gleichzeitig
@@ -3680,6 +3730,15 @@ const AMT_KEY = 'sda_amt_v1';
   }catch(_){}
 })();
 function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }catch(_){} }
+
+// W5: Das Aktgatter. Eine Wahrheitsquelle für beide Aktenfund-Fundwege
+// (truheOeffnen(), killMon()) und für vorgangAssert(). Der !CONFIG.schichtModus-
+// Kurzschluss ist wörtliche Abnahme: bei schichtModus=false steigt
+// amt.schichten nie, ein Gatter wäre dort ein Dauerschloss.
+const SERIE_AKT = {A:1, B:1, C:2, D:3, E:4, F:5};
+const serieFrei = s => !CONFIG.schichtModus || aktStand() >= SERIE_AKT[s];
+const vorgangAdressAkt = () => CONFIG.schichtModus && aktStand() >= 4;
+
 CONFIG.kammerTueren += amt.ausbauten.tueren;   // Dorf-Ausbau wirkt schon auf die allererste Schicht
 
 // ===========================================================================
@@ -4164,6 +4223,21 @@ function setzeKammerTueren(){
     for(const d of kammerTueren) if(d.diff > best.diff) best = d;
     if(best.diff < auftragK.ziel) wuerfleTuer(best, auftragK.ziel);
   }
+  // W5: Adresskammern, Akt IV. Markiert je noch nicht gefundener Zeile 1-3 eine
+  // zufällige Tür ihres Bioms mit t.adr. Nichts wird persistiert: kammerTueren
+  // wird oben bei jedem Aufruf geleert, die Markierung entsteht bei jedem
+  // Schichtstart neu aus kladde.vorgang. Math.random(), nicht ri()/R() — der
+  // gesiegelte Weltgenerator-Strom darf hier nicht mitlaufen (Falle wie bei
+  // auftragWuerfeln()). Eine Tür darf zugleich W4-Garantietür und
+  // Adresskammer sein, deshalb erst hier, nach der Garantie oben.
+  if(vorgangAdressAkt()){
+    for(const id in ADRESS_ZEILEN){
+      const z = ADRESS_ZEILEN[id];
+      if(!z.biome || vorgangHat(id)) continue;
+      const kand = kammerTueren.filter(t => t.biome === z.biome);
+      if(kand.length) kand[Math.floor(Math.random() * kand.length)].adr = id;
+    }
+  }
 }
 
 // --- Modulauswahl nach Schwierigkeitsbudget ---------------------------------
@@ -4397,6 +4471,7 @@ function truheOeffnen(){
   const kandidaten = BLAETTER_KEYS.filter(id => {
     if(kladde.blaetter[id]) return false;
     const b = BLAETTER[id];
+    if(!serieFrei(b.serie)) return false;   // W5: Aktgatter
     if(b.serie === 'A') return k.diff >= b.minDiff;
     if(b.serie === 'B' || b.serie === 'C' || b.serie === 'D') return k.biome === b.biome;
     return false;
@@ -4406,6 +4481,12 @@ function truheOeffnen(){
     findeBlatt(id);
     floaters.push({x: k.truhe.x, y: k.truhe.y - 56 - n*16, txt: '+ Aktenfund',
                    col:'#c9b98a', t: 2.8, big: true});
+  }
+  // W5: garantierter Adresszeilen-Fund, unabhängig vom Aktenfund-Wurf. k.tuer.adr
+  // wird von setzeKammerTueren() gesetzt, wenn diese Tür eine Adresskammer ist.
+  if(k.tuer.adr && findeAdresszeile(k.tuer.adr)){
+    floaters.push({x: k.truhe.x, y: k.truhe.y - 56 - (n+1)*16, txt: '+ Adresszeile',
+                   col:'#f4d97a', t: 3.2, big: true});
   }
   if(invOpen) renderInventory();
   if(kesselOpen) renderKesselPane();
@@ -4738,7 +4819,7 @@ function modulGeloest(k, mod){
 // --- Aktionen (Taste F / Kontext-Button) ------------------------------------
 // Kein Closure-Bau pro Frame: der beste Kandidat landet in drei festen Feldern.
 let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9, AKT_AMT=10, AKT_NPC=11;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -4756,12 +4837,19 @@ function scanAktion(dt){
   aktArt = 0; aktObj = null; aktD2 = 58*58;
   if(state !== 'play' || player.dead || aktSperre > 0) return;
   if(!kammer){
+    // W5: "Zustellen" am Schattenfürsten. Vor dem Grußpflicht-Block geprüft: boss.x/
+    // boss.y sind echte Weltkoordinaten (nie player.x/player.y — Distanz 0 schlägt
+    // sonst jedes andere Angebot, die aktBiete()-Falle).
+    if(currentLevel === 2 && boss && !boss.dead && vorgangZustellbar())
+      aktBiete(boss.x, boss.y, AKT_ZUSTELLEN, null, 'Zustellen');
     // Nur anbieten, wenn tatsächlich ein ungegrüßtes Ziel in der Nähe ist, sonst würde
     // der Fluch dauerhaft jede Tür-/Truheninteraktion überstimmen (Distanz 0 gewinnt immer).
+    // W5: zusätzlich aktArt !== AKT_ZUSTELLEN, sonst überstimmt die Grußpflicht in
+    // Ablage V "Zustellen" bei bis zu 130 ungegrüßten Monstern dauerhaft.
     if(CFX.gruss){
       let near = false;
       for(const m of monsters){ if(!m.dead && !m.gruss && sqDist(player.x, player.y, m.x, m.y) < 8100){ near = true; break; } }
-      if(near) aktBiete(player.x, player.y, AKT_GRUSS, null, 'Grüßen');
+      if(near && aktArt !== AKT_ZUSTELLEN) aktBiete(player.x, player.y, AKT_GRUSS, null, 'Grüßen');
     }
     if(currentLevel !== 1) return;
     // Phase 5: Knöterich bietet "Nachfragen" nur, wenn schon einmal ein Zettel gezeigt wurde.
@@ -4801,6 +4889,7 @@ function fuehreAktion(){
     case AKT_NACHFRAGE: knNachfragen(); break;
     case AKT_NPC:     npcSprechen(aktObj); break;
     case AKT_AMT:     amtFensterOeffnen(); break;
+    case AKT_ZUSTELLEN: zustellen(); break;
   }
 }
 
@@ -5097,7 +5186,14 @@ function drawKammerTuer(t){
   ctx.fillStyle = '#3b2f1c'; ctx.fillRect(t.x - 34, t.y - 89, 68, 45);
   ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 2; ctx.strokeRect(t.x - 34, t.y - 89, 68, 45);
   ctx.font = 'bold 9px Courier New';
-  ctx.fillStyle = '#c9b98a'; ctx.fillText('GEBÜHREN-', t.x, t.y - 79); ctx.fillText('BESCHEID', t.x, t.y - 70);
+  // W5: Sonderschild für Adresskammern (Akt IV). Nur die zwei Textzeilen
+  // verzweigen, Kasten und Cull-Reserve bleiben pixelgleich. Nach dem Fund
+  // beantwortet !vorgangHat(t.adr) die "wiederbetreten"-Frage von selbst:
+  // Schild zeigt wieder GEBÜHREN-/BESCHEID, kein zweiter Fund möglich.
+  const adrK = t.adr && !vorgangHat(t.adr);
+  ctx.fillStyle = adrK ? '#f4d97a' : '#c9b98a';
+  if(adrK){ ctx.fillText('AKTEN-', t.x, t.y - 79); ctx.fillText('ZEICHEN', t.x, t.y - 70); }
+  else    { ctx.fillText('GEBÜHREN-', t.x, t.y - 79); ctx.fillText('BESCHEID', t.x, t.y - 70); }
   if(t.cd > 0){
     ctx.fillStyle = '#9a8a5f'; ctx.font = 'bold 10px Courier New';
     ctx.fillText('geleert', t.x, t.y - 57);
@@ -5461,12 +5557,16 @@ function renderKladde(){
 
 let blaetterOffen = null;   // welche Blatt-ID gerade aufgeklappt ist, kein neues Panel dafür
 function renderBlaetter(){
+  // W5: vorgangBestandBlock() (Definition bei vorgangAssert()) liefert '', solange
+  // keine Adresszeile gefunden ist — vor Akt IV sieht der Reiter aus wie zuvor.
+  // Getrennt von BLAETTER_KEYS/gefunden: die Zählzeile "N von 48" bleibt unberührt.
   const gefunden = BLAETTER_KEYS.filter(id => kladde.blaetter[id]);
+  const bestand = vorgangBestandBlock();
   if(!gefunden.length){
-    el('blaetterBox').innerHTML = '<div class="klEmpty">Noch keine Aktenfunde. Kammern durchsuchen.</div>';
+    el('blaetterBox').innerHTML = bestand + '<div class="klEmpty">Noch keine Aktenfunde. Kammern durchsuchen.</div>';
     return;
   }
-  const parts = [`<div style="font-size:10px;color:#9a8a5f;font-style:italic;margin-bottom:6px;">${gefunden.length} von ${BLAETTER_KEYS.length} Blättern gefunden.</div>`];
+  const parts = [bestand, `<div style="font-size:10px;color:#9a8a5f;font-style:italic;margin-bottom:6px;">${gefunden.length} von ${BLAETTER_KEYS.length} Blättern gefunden.</div>`];
   for(const id of gefunden){
     const b = BLAETTER[id];
     const titel = `Serie ${b.serie}, Blatt ${b.n}`;
@@ -6838,10 +6938,8 @@ function nachSchicht(){
   if(amt.schichten % 10 === 0) showJahresgespraech(); else showDorf();
 }
 
-// W3: Aktstand aus der bestehenden Schichtzahl abgeleitet, nichts Neues
-// gespeichert. Deckt sich mit Kapitel 9: Akt I = Schicht 1-10 (amt.schichten
-// 0-9), ... Akt V ab Schicht 41 (amt.schichten >= 40), gedeckelt bei 5.
-const aktStand = () => Math.min(5, Math.floor(amt.schichten / 10) + 1);
+// aktStand() ist nach oben gewandert, siehe amt-Literal weiter oben (W5-Falle:
+// setzeKammerTueren() lief sonst gegen die TDZ).
 
 // ===========================================================================
 //  W6: RANG UND LAUFBAHN — Weltbibel Kapitel 17 (18.1-18.12). Amtsbezeichnung,
@@ -6913,13 +7011,18 @@ const INSIGNIEN = [
   {n:'Fensterplatz',                                        wenn:()=> rangStufe() >= 5},
   {n:'Ernennungsurkunde, gerahmt',                          wenn:()=> rangGruppe() >= 2},
   {n:'Zeichnungsbefugnis',        k:'zeichnung',  wirkung:true, wenn:()=> rangGruppe() >= 2},
-  {n:'Das Dienstsiegel',                                    wenn:()=> (amt.bonusNachwachsen||0) > 0},
+  {n:'Das Dienstsiegel',                  k:'siegel',                wenn:()=> (amt.bonusNachwachsen||0) > 0},
   {n:'Zweiter Schlüssel zur Registratur', k:'schluessel', wirkung:true, wenn:()=> rangGruppe() >= 3},
   {n:'Ein Vorzimmer',                                       wenn:()=> rangStufe() >= 15},
 ];
 const INSIGNIE = {}; for(const i of INSIGNIEN) if(i.k) INSIGNIE[i.k] = i;
 const rangZeichnungsbefugt = () => INSIGNIE.zeichnung.wenn();
 const rangSchluessel       = () => INSIGNIE.schluessel.wenn();
+// W5: k:'siegel' bewusst ohne wirkung:true — rangAssert() zählt hart genau zwei
+// wirkende Insignien (Zeichnungsbefugnis, Registraturschlüssel), das bleibt W6.
+// Eine Wahrheitsquelle für Akt V, Puzzleteil 1 ("Der Stift"), statt eines
+// eigenen W5-Prädikats auf amt.bonusNachwachsen (die F1-Falle aus 18.7).
+const rangDienstsiegel = () => INSIGNIE.siegel.wenn();
 
 // --- Beförderungszeremonie (18.12): läuft im bestehenden Jahresgespräch-Panel.
 // Jedes Jahresgespräch ist zwingend eine Beförderung (10 | n ⟹ 5 | n), deshalb
@@ -7132,6 +7235,265 @@ function rangAssert(){
 }
 rangAssert();
 
+// ===========================================================================
+//  W5: DER VORGANG — Weltbibel Kapitel 9. Jahresgespräch-Absatz, Zustellen,
+//  Schlusspanel. Läuft komplett auf bestehenden Systemen (Jahresgespräch-Panel,
+//  Kontextaktionen, rangZeichnungsbefugt()). Kein neues System.
+// ===========================================================================
+
+// Der Absatz im Jahresgespräch, Bauform wie rangZeremonieBlock(): reine
+// Funktion von amt.schichten, kein apply(), kein saveAmt(), von selbst
+// idempotent. idx-Rechnung bewusst NICHT zyklisch (kein % Länge) — die Boni
+// kreisen, die Geschichte nicht.
+const VORGANG_JAHRES = [
+  {zwirn:'Solange der Vorgang läuft, brauchen wir Sie ja.'},
+  {zwirn:'Ich wollte das Dorffest genehmigen. Ich kann nicht. Zuständig wäre die Amtsleitung.'},
+  {zwirn:'Ich habe den Antrag unterschrieben. Ich war schneller fertig, als sie aus der Tür war.',
+   hinweis:'Trepp öffnet den Sack. Die Anschrift ist unleserlich. Fragen Sie Nörgel, sagt Lisbeth.'},
+  {zwirn:'Ich unterschreibe den Dienstreiseantrag. Diesmal zittert die Hand.'},
+  {zwirn:'Ablage V. Die Zustellung. Mehr sage ich dazu nicht.'},
+];
+const VORGANG_JAHRES_WEITER = 'Der Vorgang läuft weiter. Vermerkt, wie immer.';
+function vorgangJahresBlock(){
+  const idx = Math.floor(amt.schichten/10) - 1;   // gleiche Rechnung wie JAHRES_BONI/rangZeremonieBlock
+  const e = idx >= 0 && idx < VORGANG_JAHRES.length ? VORGANG_JAHRES[idx] : null;
+  const zwirn = e ? e.zwirn : VORGANG_JAHRES_WEITER;
+  const hinweis = e && e.hinweis ? `<p style="font-size:12px;color:#9a8a5f;">${e.hinweis}</p>` : '';
+  return `
+    <div style="border-top:1px solid #5a4a2d;margin-top:12px;padding-top:10px;">
+      <p style="font-size:12px;font-style:italic;color:#c9b98a;">Zwirn: „${zwirn}“</p>
+      ${hinweis}
+    </div>`;
+}
+
+// Anzeige des Vorgangs-Bestands im Kessel-Reiter (renderBlaetter()). Liefert
+// '', solange keine Adresszeile gefunden ist — vor Akt IV bleibt der Reiter
+// unverändert. Getrennt von BLAETTER: die Zählzeile "N von 48" bleibt unberührt.
+function vorgangBestandBlock(){
+  if(!vorgangHat(1) && !vorgangHat(2) && !vorgangHat(3) && !vorgangHat(4)) return '';
+  const zeilen = [1,2,3,4].map(id => vorgangHat(id)
+    ? `<div class="kl">${ADRESS_ZEILEN[id].lines[ADRESS_ZEILEN[id].lines.length - 1]}</div>`
+    : `<div class="kl klEmpty">Adresszeile ${id}: noch nicht gefunden.</div>`).join('');
+  const voll = vorgangAusfertigung()
+    ? `<div class="kl" style="color:#f4d97a;">Die Ausfertigung ist vollständig. ${VORGANG_ANSCHRIFT}</div>` : '';
+  return `<div class="klHead">DIE ANSCHRIFT</div>${zeilen}${voll}`;
+}
+
+// Akt V, die vier Finale-Puzzleteile (Kapitel 9). Teil 1 und 3 haben eine
+// echte Bedingung, sind aber nie hart blockierend: der Text passt sich an,
+// Zustellen wird nie verweigert. Ein Erklärsystem für ein fehlendes Teil ist
+// verboten, und Teil 1 ist ohnehin faktisch nie leer (JAHRES_BONI Index 3
+// fällt deterministisch bei Schicht 40, dem Beginn von Akt V).
+const VORGANG_PUZZLE = [
+  {frei: () => rangDienstsiegel(),
+   text: 'Er braucht einen Stift. Das Dienstsiegel liegt bereit, seit einem Jahresgespräch. Er benutzt es zum ersten Mal.',
+   sonst: 'Er braucht einen Stift. Trepp hat einen Bleistift dabei. Er hat immer einen.'},
+  {frei: () => true,
+   text: 'Er braucht einen Zeugen. Lisbeth ist mitgekommen. Sie hat gefragt, ob sie darf.'},
+  {frei: () => kladde.crafts > 0,
+   text: 'Er braucht es in dreifacher Ausfertigung. Der Kessel liefert sie, wortlos.',
+   sonst: 'Er braucht es in dreifacher Ausfertigung. Bramsche hat Durchschläge mitgeschickt.'},
+  {frei: () => true,
+   text: 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“'},
+];
+const vorgangZustellbar = () => vorgangAusfertigung() && rangZeichnungsbefugt();
+
+// Eine Schreibstelle, drei Schritte. #ovPanel-Schreibstellen steigen dadurch
+// von sieben auf acht.
+function vorgangPanelHtml(schritt){
+  if(schritt === 1) return `
+    <h1>ZUSTELLUNG</h1>
+    <p>Er nimmt den Umschlag. Er liest. Er liest lange.</p>
+    <p style="font-size:12px;font-style:italic;color:#c9b98a;">„Vierhundert Jahre. Und Sie kommen einfach vorbei.“</p>
+    <button onclick="vorgangPanel(2)">WEITER</button>`;
+  if(schritt === 2){
+    const teile = VORGANG_PUZZLE.map(p => `<p>${p.frei() ? p.text : (p.sonst || p.text)}</p>`).join('');
+    return `
+    <h1>DAS FINALE</h1>
+    <div style="text-align:left;">${teile}</div>
+    <p style="color:#f4d97a;">Der Vorgang 1 wird geschlossen.</p>
+    <button onclick="vorgangPanel(3)">WEITER</button>`;
+  }
+  return `
+    <h1>VORGANG 1: GESCHLOSSEN</h1>
+    <div style="max-height:38vh;overflow-y:auto;text-align:left;background:rgba(0,0,0,.4);
+                padding:10px;border-radius:8px;margin:10px 0;font-size:12px;">
+      <p>Das Ministerium löst sich auf. Sein Auftrag ist erfüllt.</p>
+      <p>Knöterichs Entpflichtung wird als vorletzte Amtshandlung bearbeitet. Er darf gehen. Er steht sehr lange auf.</p>
+      <p>Sturz genehmigt, als letzte Amtshandlung, das Dorffest.</p>
+      <p>Nörgel wird entfristet. Er beschwert sich über die Feierlichkeit.</p>
+      <p>Dorffest in Vordermühl. Lott und Pahl finden die Musik zu laut.</p>
+      <p>Ganz zuletzt bringt Trepps Nachfolgerin einen Umschlag ins leere Amt. Aufschrift: Vorgang 2.</p>
+      <p>Der Amtsmarsch läuft heute einmal ganz durch. Niemand ruft dazwischen.</p>
+    </div>
+    <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>`;
+}
+function vorgangPanel(schritt){
+  if(schritt === 3){ MUS.goto('office'); MUS.muffle(false); }
+  document.getElementById('ovPanel').innerHTML = vorgangPanelHtml(schritt);
+  document.getElementById('overlay').style.display = 'flex';
+  if(schritt !== 3) MUS.muffle(true);
+}
+// Ein einziger Zustandswechsel friert den kompletten Simulationspfad ein
+// (update(dt) beginnt mit if(state !== 'play') return;). Horde-Spawner und
+// Boss-KI stoppen dadurch von selbst, killMon()/die Siegweiche bleiben
+// unberührt: der Boss stirbt nie, winGame() läuft nicht. Der Kampf bleibt
+// Zeile für Zeile derselbe, Zustellen ist ein Ausweg, keine Umschreibung.
+function zustellen(){
+  if(state !== 'play' || currentLevel !== 2 || !boss || boss.dead || !vorgangZustellbar()) return;
+  state = 'zustellung';
+  aktArt = 0; aktSperre = 1; updateHUD();
+  el('bossbar').style.display = 'none';
+  MUS.swell();
+  vorgangPanel(1);
+}
+
+// --- Guard, Bauform wie rangAssert()/auftragAssertBrett() oben. TDZ-sicher:
+// liest nur amt/CONFIG/kladde (alle oberhalb geladen) und die Tabellen aus
+// diesem Block. AUFTRAG_TYPEN wird bewusst nicht gelesen.
+function vorgangAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('W5 Vorgang:', m, ...r); };
+  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal',
+                  'Slot','ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const text = (txt, feld) => {
+    if(!txt) return fehler('Text leer', feld);
+    if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', feld, txt);
+    if(EMOJI.test(txt))  fehler('Emoji im Text', feld, txt);
+    for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', g, feld, txt);
+  };
+  const schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
+        vorgangEcht = kladde.vorgang, bonusEcht = amt.bonusNachwachsen, craftsEcht = kladde.crafts;
+
+  // (1) Tabellenform: vier Zeilen, Zeilen 1-3 mit je einem der drei Biome,
+  // Zeile 4 ohne Biom. Ankerprüfung auf den zusammengesetzten Wortlaut.
+  const biomeGesehen = {};
+  for(const id of [1,2,3,4]){
+    const z = ADRESS_ZEILEN[id];
+    if(!z){ fehler('Adresszeile fehlt', id); continue; }
+    if(id <= 3){
+      if(!z.biome) fehler('Kammer-Adresszeile ohne Biom', id);
+      else biomeGesehen[z.biome] = (biomeGesehen[z.biome]||0) + 1;
+    } else if(z.biome) fehler('Ablage-V-Adresszeile hat ein Biom', id);
+  }
+  for(const b of ['snow','grass','sand']) if(biomeGesehen[b] !== 1) fehler('Biom nicht genau einmal vergeben', b, biomeGesehen[b]||0);
+  if(VORGANG_ANSCHRIFT !== 'An Fürst Nachtrag, zu Händen, persönlich.') fehler('Anschrift-Wortlaut driftet', VORGANG_ANSCHRIFT);
+
+  // (2) Vollständigkeit: SERIE_AKT deckt genau die in BLAETTER vorkommenden
+  // Serien ab, kein Wert über 5 — sonst wäre eine Serie still unerreichbar
+  // (die Sorge aus blaetterAssert()).
+  const serienInBlaettern = {};
+  for(const id of BLAETTER_KEYS) serienInBlaettern[BLAETTER[id].serie] = true;
+  for(const s in serienInBlaettern) if(!(s in SERIE_AKT)) fehler('Serie ohne Akt-Zuordnung', s);
+  for(const s in SERIE_AKT){
+    if(!(s in serienInBlaettern)) fehler('SERIE_AKT nennt unbekannte Serie', s);
+    if(!(SERIE_AKT[s] >= 1 && SERIE_AKT[s] <= 5)) fehler('Akt-Zuordnung außerhalb 1-5', s, SERIE_AKT[s]);
+  }
+
+  // (3) Gatter-Sweep: nie ein Rücksprung von frei nach gesperrt, Schwellen
+  // exakt bei den Sollwerten.
+  CONFIG.schichtModus = true;
+  const vorherFrei = {};
+  for(let s = 0; s <= 60; s++){
+    amt.schichten = s;
+    for(const serie in SERIE_AKT){
+      const frei = serieFrei(serie);
+      if(vorherFrei[serie] && !frei) fehler('Serie springt von frei zu gesperrt', serie, s);
+      vorherFrei[serie] = frei;
+    }
+  }
+  const SCHWELLE = {A:0, B:0, C:10, D:20, E:30, F:40};
+  for(const serie in SCHWELLE){
+    if(SCHWELLE[serie] > 0){ amt.schichten = SCHWELLE[serie] - 1; if(serieFrei(serie)) fehler('Serie zu früh frei', serie, amt.schichten); }
+    amt.schichten = SCHWELLE[serie];
+    if(!serieFrei(serie)) fehler('Serie nicht frei ab Sollschwelle', serie, amt.schichten);
+  }
+
+  // (4) Der Abnahmesatz: schichtModus=false hält alles offen, Adress-Akt bleibt aus.
+  CONFIG.schichtModus = false; amt.schichten = 0;
+  for(const serie in SERIE_AKT) if(!serieFrei(serie)) fehler('schichtModus=false sperrt eine Serie', serie);
+  if(vorgangAdressAkt()) fehler('schichtModus=false, aber vorgangAdressAkt() ist wahr');
+  CONFIG.schichtModus = modusEcht; amt.schichten = schichtenEcht;
+
+  // (5) Bestandsprädikate, alle 16 Teilmengen. findeAdresszeile() darf hier nie
+  // aufgerufen werden — die Funktion ruft saveKladde() und überschriebe den
+  // echten Spielstand. Direkt auf dem Spiegel geschrieben.
+  for(let mask = 0; mask < 16; mask++){
+    const spiegel = {};
+    for(let b = 0; b < 4; b++) if(mask & (1<<b)) spiegel[b+1] = true;
+    kladde.vorgang = spiegel;
+    const drei = !!(spiegel[1] && spiegel[2] && spiegel[3]);
+    const voll = drei && !!spiegel[4];
+    if(vorgangDreiZeilen() !== drei) fehler('vorgangDreiZeilen() driftet', mask);
+    if(vorgangAusfertigung() !== voll) fehler('vorgangAusfertigung() driftet', mask);
+  }
+  kladde.vorgang = vorgangEcht;
+
+  // (6) W6-Kopplung: INSIGNIE.siegel existiert, rangDienstsiegel() driftet
+  // nicht, rangZeichnungsbefugt() genau ab Schicht 30 wahr.
+  if(!INSIGNIE.siegel) fehler('INSIGNIE.siegel fehlt');
+  else {
+    amt.bonusNachwachsen = 0;
+    if(rangDienstsiegel() !== false) fehler('rangDienstsiegel() bei bonusNachwachsen=0 nicht falsch');
+    amt.bonusNachwachsen = 20;
+    if(rangDienstsiegel() !== true) fehler('rangDienstsiegel() bei bonusNachwachsen=20 nicht wahr');
+  }
+  amt.bonusNachwachsen = bonusEcht;
+  for(let s = 0; s <= 60; s += 5){
+    amt.schichten = s;
+    if(rangZeichnungsbefugt() !== (s >= 30)) fehler('rangZeichnungsbefugt() weicht von Schicht 30 ab', s);
+  }
+  amt.schichten = schichtenEcht;
+
+  // (7) Zustell-Vorbedingung: Kreuzprodukt Ausfertigung × Zeichnungsbefugnis,
+  // genau eine der vier Kombinationen ist wahr.
+  let zustellbarCount = 0;
+  for(const ausf of [false, true]){
+    kladde.vorgang = ausf ? {1:true, 2:true, 3:true, 4:true} : {};
+    for(const zb of [false, true]){
+      amt.schichten = zb ? 30 : 0;
+      if(vorgangZustellbar()) zustellbarCount++;
+    }
+  }
+  if(zustellbarCount !== 1) fehler('vorgangZustellbar() nicht genau einmal wahr im Kreuzprodukt', zustellbarCount);
+  kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht;
+
+  // (8) Aktzeilen-Anker: die drei geänderten Zeilen stehen an den erwarteten
+  // Indizes von lisbeth.akt/noergel.akt.
+  const lisbeth = DORF_FIGUREN.find(f => f.key === 'lisbeth');
+  const noergel = DORF_FIGUREN.find(f => f.key === 'noergel');
+  if(!lisbeth || lisbeth.akt[3].indexOf('Nörgel') < 0) fehler('Lisbeth Akt-IV-Zeile fehlt oder falsch verankert');
+  if(!lisbeth || lisbeth.akt[4].indexOf('gefragt') < 0) fehler('Lisbeth Akt-V-Zeile fehlt oder falsch verankert');
+  if(!noergel || noergel.akt[3].indexOf('gezeichnet') < 0) fehler('Nörgel Akt-IV-Zeile fehlt oder falsch verankert');
+
+  // (9) Formregeln und Sperrvermerk über jede neue Tabelle.
+  for(const id in ADRESS_ZEILEN) ADRESS_ZEILEN[id].lines.forEach((l,i) => text(l, 'Adresszeile '+id+'/'+i));
+  text(VORGANG_ANSCHRIFT, 'Anschrift');
+  VORGANG_JAHRES.forEach((e,i) => { text(e.zwirn, 'Jahres-Zwirn '+i); if(e.hinweis) text(e.hinweis, 'Jahres-Hinweis '+i); });
+  text(VORGANG_JAHRES_WEITER, 'Jahres-Weiter');
+  VORGANG_PUZZLE.forEach((p,i) => { text(p.text, 'Puzzle '+i); if(p.sonst) text(p.sonst, 'Puzzle-Sonst '+i); });
+
+  // (10) Gerenderte Blöcke, HTML-gestrippt — Muster rangAssert().
+  const strip = html => html.replace(/<[^>]+>/g, ' ');
+  for(let s = 10; s <= 100; s += 10){ amt.schichten = s; text(strip(vorgangJahresBlock()), 'Jahresblock s='+s); }
+  amt.schichten = schichtenEcht;
+  text(strip(vorgangPanelHtml(1)), 'Schlusspanel 1');
+  text(strip(vorgangPanelHtml(3)), 'Schlusspanel 3');
+  amt.bonusNachwachsen = 0; kladde.crafts = 0; text(strip(vorgangPanelHtml(2)), 'Schlusspanel 2, leer');
+  amt.bonusNachwachsen = 20; kladde.crafts = 1; text(strip(vorgangPanelHtml(2)), 'Schlusspanel 2, voll');
+  amt.bonusNachwachsen = bonusEcht; kladde.crafts = craftsEcht;
+  kladde.vorgang = {};
+  if(vorgangBestandBlock() !== '') fehler('vorgangBestandBlock() bei leerem Bestand nicht leer');
+  kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+  text(strip(vorgangBestandBlock()), 'Bestandblock voll');
+  kladde.vorgang = vorgangEcht;
+
+  console.assert(ok, 'W5 Vorgang: Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+vorgangAssert();
+
 function showJahresgespraech(){
   MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
   const idx = (Math.floor(amt.schichten/10) - 1) % JAHRES_BONI.length;
@@ -7143,6 +7505,7 @@ function showJahresgespraech(){
     <div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;margin:14px 0;border:1px solid #5a4a2d;">
       <b>${b.name}</b><br><span style="font-size:12px;color:#c9b98a;">${b.text}</span>
     </div>
+    ${vorgangJahresBlock()}
     ${rangZeremonieBlock()}
     <button onclick="showDorf()">WEITER</button>
   `;

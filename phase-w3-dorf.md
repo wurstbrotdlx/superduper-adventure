@@ -649,7 +649,7 @@ Das Dorf ist bereits monsterfrei (`inVillageT`-Guard direkt darunter), alle elf 
 ## Bewusst offen für spätere Bauabschnitte
 
 * **W4** (Schwarzes Brett) kann Pommer oder Nörgel später als Kommentarstimme für Dienstaufträge nutzen, das ist hier nicht vorweggenommen.
-* **W5** (Der Vorgang) übernimmt `aktStand()` unverändert oder ersetzt sie durch ein gespeichertes Feld, falls die Story später vom reinen Schicht-Automatismus abweichen soll (z. B. ein Ereignis, das einen Akt vorzeitig auslöst). Diese Phase trifft dazu keine Vorentscheidung.
+* **W5** (Der Vorgang) hat entschieden: `aktStand()` bleibt unverändert übernommen, kein gespeichertes Feld. Siehe `phase-w5-vorgang.md`, Abschnitt „Korrektur zur Weltbibel".
 * Zapfs Kessel-Pflichtsatz („Der Kessel ist kein Kessel. Der Kessel ist ein Kopierer.") wartet auf einen gezielten Einbauort, z. B. eine sechste Aktzeile oder einen einmaligen Bonus-Satz nach einer bestimmten Anzahl Ansprachen. Nicht spekulativ vorgebaut.
 
 ## Live geprüft
