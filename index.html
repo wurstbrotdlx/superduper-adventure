@@ -2829,7 +2829,7 @@ const BLAETTER_KEYS = Object.keys(BLAETTER);
 })();
 
 const KLADDE_KEY = 'sda_kladde_v1';
-const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorgang:{}};
+const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorgang:{}, lang:{}};
 (function loadKladde(){
   try{
     const raw = localStorage.getItem(KLADDE_KEY); if(!raw) return;
@@ -2842,6 +2842,7 @@ const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorga
       if(o.fl) kladde.fl = o.fl;    // additiv: alte Speicherstände ohne fl laden ohne Fehler
       if(o.blaetter) kladde.blaetter = o.blaetter;
       if(o.vorgang) kladde.vorgang = o.vorgang;   // W5: additiv wie fl
+      if(o.lang) kladde.lang = o.lang;            // W7: additiv wie fl, fehlender Schlüssel liest sich als 0
     }
   }catch(_){}
 })();
@@ -3919,8 +3920,15 @@ const knZettel = {active:false};
 const knRand = {active:false};
 // W3: Sitzungszustand für Dorf-Figuren, nicht persistiert, wie kn.history schon
 // nicht die Anlässe selbst speichert, sondern nur gezeigte Zettel.
-let letzterAnlass = null, bramscheFragePending = false;
+// W7 Nr. 2: aus dem Boolean ist ein Zähler geworden. Mit abgeschlossener
+// Anlage 3 gibt die Registratur zwei Fragen pro Schicht statt einer.
+let letzterAnlass = null, bramscheFragen = 0;
 let bramscheLastAntwort = null;   // W6: Wiederholungssperre, gleiches Vorbild wie knRandLastLine
+// W7: "höchstens einmal je Schicht"-Merker der Langvorgänge. Steht hier oben bei
+// den übrigen Sitzungsvariablen, damit nichts weiter unten in die TDZ läuft —
+// langEreignis() hängt am selben Trichter wie auftragEreignis() und wird von
+// killMon() aus erreicht. Reset in startShift().
+let langSchicht = {};
 let knZettelHideAt = 0, knRandHideAt = 0;
 
 function knAllDone(){
@@ -4029,7 +4037,12 @@ function knRandnotiz(anlass){
 function knBegruessungLine(){
   const n = amt.schichten + 1;
   const st = rangStufe();
-  let line = anredeVersuch(t => t + '. ' + knOrdinal(n) + ' Schicht.', st, 44)
+  // W7 Nr. 1: die einzige Belohnung der Gießkanne. Kein Bonus, kein Vermerk,
+  // eine Spur wärmer. Sie steht als EIGENE Sprosse ganz oben und wird nicht
+  // angehängt: der Schichtzähler frisst den Deckel sonst vollständig auf, und
+  // die Belohnung wäre auf jedem Rang unsichtbar.
+  let line = (langFertig('giesskanne') ? anredeVersuch(t => t + '. Schön, dass Sie da sind.', st, 44) : null)
+             || anredeVersuch(t => t + '. ' + knOrdinal(n) + ' Schicht.', st, 44)
              || anredePunkt(st, 44)
              || (knOrdinal(n) + ' Schicht. Die Akte wird dick.');
   if(kn.counters.maxKillsSchicht > 0){
@@ -4912,15 +4925,23 @@ function fuehreAktion(){
 // Aktzeile, die sich mit aktStand() automatisch ändert), Bramsche und der
 // Lott/Pahl-Chor weichen davon situativ ab, siehe unten.
 function npcCycle(n, fig){
+  // W7: Ein laufender Langvorgang rückt vor und spricht, ohne den Zeiger zu
+  // bewegen — die Grundzeilen gehen dadurch nicht verloren, sie kommen später.
+  const lv = langAnsprechen(fig.key);
+  if(lv){ n.bubbleText1 = lv.z1; n.bubbleText2 = lv.z2; return; }
   // 18.5: Schritt 0 ist die Anredezeile. bubbleIdx startet bei -1, der erste
-  // Tastendruck landet also darauf. Danach die unveränderten Grundzeilen,
-  // zuletzt die Aktzeile — deshalb +2 statt +1 im Modulo.
-  n.bubbleIdx = (n.bubbleIdx + 1) % (fig.grund.length + 2);
+  // Tastendruck landet also darauf. Danach die unveränderten Grundzeilen plus
+  // die per Langvorgang freigeschalteten Zusatzzeilen, zuletzt die Aktzeile —
+  // deshalb +2 statt +1 im Modulo. Das Modulo hält den Zeiger auch dann im
+  // Bereich, wenn zus mitten im Zyklus wächst.
+  const zus   = langZusatz(fig.key);
+  const grund = zus.length ? fig.grund.concat(zus) : fig.grund;
+  n.bubbleIdx = (n.bubbleIdx + 1) % (grund.length + 2);
   if(n.bubbleIdx === 0){
     const a = anredeZeile(fig.key);
     n.bubbleText1 = a.z1; n.bubbleText2 = a.z2;
-  } else if(n.bubbleIdx <= fig.grund.length){
-    const p = fig.grund[n.bubbleIdx - 1];
+  } else if(n.bubbleIdx <= grund.length){
+    const p = grund[n.bubbleIdx - 1];
     n.bubbleText1 = p.z1; n.bubbleText2 = p.z2;
   } else {
     n.bubbleText1 = fig.akt[aktStand() - 1]; n.bubbleText2 = '';
@@ -4929,16 +4950,16 @@ function npcCycle(n, fig){
 function npcSprechen(n){
   const fig = n.figur;
   if(fig.key === 'bramsche'){
-    if(bramscheFragePending){
+    if(bramscheFragen > 0){
       let qa = fig.antworten[Math.floor(Math.random() * fig.antworten.length)];
       let guard = 0; while(qa === bramscheLastAntwort && guard++ < 8) qa = fig.antworten[Math.floor(Math.random() * fig.antworten.length)];
       bramscheLastAntwort = qa;
       n.bubbleText1 = qa.z1; n.bubbleText2 = qa.z2;
-      bramscheFragePending = false; n.bramscheJustAsked = true;
+      bramscheFragen--; n.bramscheJustAsked = true;
     } else if(n.bramscheJustAsked){
       n.bramscheJustAsked = false;
       if(rangSchluessel()){          // W6: zweiter Schlüssel, ab höherem Dienst (18.7) — die Frage ist nie verbraucht, es gibt nichts abzuweisen
-        bramscheFragePending = true;
+        bramscheFragen = 1;
         npcCycle(n, fig);
       } else {
         const ab = fig.abweisung[Math.floor(Math.random() * fig.abweisung.length)];
@@ -4988,6 +5009,7 @@ function renderAmtFenster(){
     <p style="font-size:11px;color:#c9b98a;margin:0 0 8px;">${rangName()}<br>${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <div style="text-align:left;">${rows}</div>
     ${auftragFensterBlock()}
+    ${langGiesskanneBlock()}
     <button onclick="amtFeierabendNehmen()" style="width:100%;margin-top:12px;">FEIERABEND NEHMEN</button>
   `;
 }
@@ -5220,12 +5242,16 @@ function drawKammerTuer(t){
     ctx.fillText('geleert', t.x, t.y - 57);
     ctx.fillText(Math.ceil(t.cd) + 's', t.x, t.y - 47);
   } else {
+    // W7 Nr. 7: Das Schild ist der Gebührenbescheid, also Milbs Gutachten. Bis
+    // man ihm den Fehler nachweist, stuft er systematisch eine Stufe zu niedrig
+    // ein. Nur die Anzeige verzweigt, t.diff/t.tier bleiben unberührt.
+    const zeig = langKammerWert(t), zeigTier = Math.max(0, Math.min(4, zeig - 1));
     let bar = '';
-    for(let i = 1; i <= 5; i++) bar += i <= t.diff ? '▮' : '▯';
+    for(let i = 1; i <= 5; i++) bar += i <= zeig ? '▮' : '▯';
     ctx.fillStyle = '#f4d97a'; ctx.font = 'bold 11px Courier New';
     ctx.fillText(bar, t.x, t.y - 57);
-    ctx.fillStyle = RARITY[t.tier].col; ctx.font = 'bold 9px Courier New';
-    ctx.fillText(RARITY[t.tier].name, t.x, t.y - 47);
+    ctx.fillStyle = RARITY[zeigTier].col; ctx.font = 'bold 9px Courier New';
+    ctx.fillText(RARITY[zeigTier].name, t.x, t.y - 47);
   }
   ctx.restore();
 }
@@ -5582,7 +5608,7 @@ function renderBlaetter(){
   // keine Adresszeile gefunden ist — vor Akt IV sieht der Reiter aus wie zuvor.
   // Getrennt von BLAETTER_KEYS/gefunden: die Zählzeile "N von 48" bleibt unberührt.
   const gefunden = BLAETTER_KEYS.filter(id => kladde.blaetter[id]);
-  const bestand = vorgangBestandBlock();
+  const bestand = vorgangBestandBlock() + langBestandBlock();
   if(!gefunden.length){
     el('blaetterBox').innerHTML = bestand + '<div class="klEmpty">Noch keine Aktenfunde. Kammern durchsuchen.</div>';
     return;
@@ -6882,13 +6908,16 @@ function startShift(){
   shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0;
   shiftKillsByType = {}; shiftKillsTotal = 0;
   auftragStand = 0; auftragVerletzt = false; auftragFertig = false;   // W4
+  langSchicht = {};                                                   // W7: Einmal-je-Schicht-Merker
 
   document.getElementById('overlay').style.display = 'none'; MUS.muffle(false);
   state = 'play'; updateHUD();
   knPlayStartT = gameT;
   // In der allerersten Schicht übernimmt Beat 1 die Einführung, keine Begrüßung.
   if(amt.schichten >= 1) knBegruessungPending = knBegruessungLine();
-  bramscheFragePending = true;   // W3: eine Frage pro Schicht, neu scharf ab der nächsten
+  // W3: eine Frage pro Schicht, neu scharf ab der nächsten. W7 Nr. 2: mit
+  // abgeschlossener Anlage 3 sind es zwei. Abgeleitet gelesen, kein amt-Feld.
+  bramscheFragen = 1 + (langFertig('anlage3') ? 1 : 0);
 }
 
 // Schicht beenden: Übertrag berechnen (Gold anteilig, Zutaten gekappt nach Seltenheit
@@ -6926,7 +6955,12 @@ function endShift(reason){
 
   const killLines = Object.keys(shiftKillsByType).sort((a,b) => shiftKillsByType[b]-shiftKillsByType[a])
     .map(t => `${MONDEF[t] ? MONDEF[t].name + ' (' + MONDEF[t].art + ')' : t}: ${shiftKillsByType[t]}`);
-  const bemerkung = DIENST_BEMERKUNGEN[Math.floor(Math.random()*DIENST_BEMERKUNGEN.length)];
+  // W7 Nr. 6: Die Bemerkungen sind laut Kapitel 8 von Nörgel. Genau sie sind der
+  // Sammelgegenstand seines Langvorgangs, ein neuer wäre überflüssig. Der Index
+  // ist deshalb eine eigene Zeile — er wandert in den Trichter, nicht der Text.
+  const bmIdx = Math.floor(Math.random()*DIENST_BEMERKUNGEN.length);
+  const bemerkung = DIENST_BEMERKUNGEN[bmIdx];
+  langEreignis('schichtende', {bm: bmIdx});
   const ueberstunden = Math.max(0, Math.round(overtimeT));
   const mitgenommen = carryPouch.reduce((s,z) => s+z.count, 0);
 
@@ -7405,24 +7439,34 @@ function anredeAssert(){
   // (4) Knöterichs Begrüßung, Einzeiler-Deckel 44, über dieselbe Schichtreihe
   // und beide Rekord-Zustände. Steht hier statt in knAssertCaps(), s. Kommentar
   // dort. kn.counters wird gespiegelt und exakt zurückgesetzt, kein saveKn().
-  const rekEcht = kn.counters.maxKillsSchicht;
-  for(const rek of [0, 99]){
+  const rekEcht = kn.counters.maxKillsSchicht, langEcht = kladde.lang;
+  let warmGesehen = false;
+  for(const rek of [0, 99]) for(const giess of [false, true]){
     kn.counters.maxKillsSchicht = rek;
+    kladde.lang = giess ? {giesskanne: LANGVORGAENGE.giesskanne.stufen} : {};
     for(let s = 0; s <= 5000; s += 5){
       amt.schichten = s;
       const l = knBegruessungLine();
-      text(l, 44, 'knBegruessung rek=' + rek + ' s=' + s);
-      // 18.5 verlangt die Anrede jedes Mal: der dritte Boden darf nie greifen.
+      text(l, 44, 'knBegruessung rek=' + rek + ' giess=' + giess + ' s=' + s);
+      // 18.5 verlangt die Anrede jedes Mal: der letzte Boden darf nie greifen.
       if(l.indexOf('Die Akte wird dick') >= 0) fehler('Knöterich fällt aus der Anrede', s, l);
+      if(giess && l.indexOf('Schön, dass Sie da sind') >= 0) warmGesehen = true;
     }
   }
-  kn.counters.maxKillsSchicht = rekEcht;
+  // Die Gießkannen-Belohnung muss auf mindestens einem Rang sichtbar sein,
+  // sonst ist sie gebaut und unerreichbar.
+  if(!warmGesehen) fehler('Die Gießkannen-Wärme passt auf keinem Rang unter den Deckel');
+  kn.counters.maxKillsSchicht = rekEcht; kladde.lang = langEcht;
   amt.schichten = echt;
 
   console.assert(ok, 'Anrede 18.5: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
 }
-anredeAssert();
+// Der Selbstaufruf steht seit W7 unten hinter langAssert(), nicht hier:
+// anredeAssert() ruft knBegruessungLine(), und die liest seit dem
+// Gießkannen-Strang langFertig(). Von hier aus wäre das ein ReferenceError
+// durch Temporal Dead Zone, den node --check nicht findet — genau die Falle,
+// vor der der Kommentar an knAssertCaps() warnt, eine Ebene höher.
 
 // ===========================================================================
 //  W5: DER VORGANG — Weltbibel Kapitel 9. Jahresgespräch-Absatz, Zustellen,
@@ -7510,6 +7554,7 @@ function vorgangPanelHtml(schritt){
       <p>Das Ministerium löst sich auf. Sein Auftrag ist erfüllt.</p>
       <p>Knöterichs Entpflichtung wird als vorletzte Amtshandlung bearbeitet. Er darf gehen. Er steht sehr lange auf.</p>
       <p>Sturz genehmigt, als letzte Amtshandlung, das Dorffest.</p>
+      ${langFertig('dorffest') ? '<p>Zwirns elf Absagen liegen bei. Sie werden mitgeheftet, nicht widerrufen. Der elfte Anlauf war der letzte nötige.</p>' : ''}
       <p>Nörgel wird entfristet. Er beschwert sich über die Feierlichkeit.</p>
       <p>Dorffest in Vordermühl. Lott und Pahl finden die Musik zu laut.</p>
       <p>Ganz zuletzt bringt Trepps Nachfolgerin einen Umschlag ins leere Amt. Aufschrift: Vorgang 2.</p>
@@ -7681,18 +7726,29 @@ function vorgangAssert(){
   console.assert(ok, 'W5 Vorgang: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
 }
-vorgangAssert();
+// Der Selbstaufruf steht seit W7 unten hinter langAssert(), nicht hier:
+// vorgangAssert() rendert vorgangPanelHtml(3), und dessen Abspann liest seither
+// langFertig('dorffest'). Von hier aus wäre das ein ReferenceError durch
+// Temporal Dead Zone, den node --check nicht findet. Die Funktion selbst bleibt
+// stehen, nur der Aufruf ist gewandert — gleiche Bauform wie der Umzug von
+// aktStand() in W5.
+
 
 function showJahresgespraech(){
   MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
   const idx = (Math.floor(amt.schichten/10) - 1) % JAHRES_BONI.length;
   const b = JAHRES_BONI[idx]; b.apply(); saveAmt();
+  // W7 Nr. 5: nach dem apply(), damit amt.bonusManaRegen bereits steht, wenn
+  // der Strang seinen Auslöser liest.
+  langEreignis('jahresbonus', {name: b.name});
   document.getElementById('ovPanel').innerHTML = `
     <h1>JAHRESGESPRÄCH</h1>
     <p>Der Bürgermeister bedankt sich für ${amt.schichten} Schichten treuen Dienstes.</p>
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„Ich habe alles mitgeschrieben."</p>
     <div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;margin:14px 0;border:1px solid #5a4a2d;">
       <b>${b.name}</b><br><span style="font-size:12px;color:#c9b98a;">${b.text}</span>
+      ${b.name === 'Kaffeemaschine' && langLaeuft('kaffeemaschine')
+        ? '<br><span style="font-size:11px;color:#9a8a5f;">Zapf trägt sie herein und stellt sie sehr vorsichtig ab. Er sagt nichts dazu. Noch nicht.</span>' : ''}
     </div>
     ${vorgangJahresBlock()}
     ${rangZeremonieBlock()}
@@ -7939,6 +7995,579 @@ function auftragAssertBrett(){
 auftragAssertBrett();
 
 // ===========================================================================
+//  W7: DIE LANGVORGÄNGE — Weltbibel Kapitel 10. Sieben Nebenstränge über
+//  mehrere Schichten. Nummer 4 (Lisbeths sechster Praktikumsbericht) und
+//  Nummer 8 (die Zustellung) hat W5 gebaut, die bleiben unangetastet.
+//
+//  Eine Tabelle statt sieben Einzellösungen: die Stränge sind inhaltlich
+//  heterogen, der Beweisbedarf ist es nicht. Kein toter Strang, kein
+//  Rücksprung, keine Blockade, kein Deckelbruch, inert bei schichtModus=false —
+//  genau die Klasse Aussagen, die auftragAssertBrett() über neun ebenso
+//  heterogene Auftragstypen führt, weil deren Tabelle eine einheitliche
+//  Feldform hat. Sieben Einzellösungen ergäben sieben Guard-Zweige.
+//
+//  KEIN apply(). Jede Belohnung ist ein abgeleiteter Lesevorgang von
+//  langFertig(key) an der Stelle, die sie betrifft — W5/W6-Doktrin wörtlich.
+//  Damit ist jedes Neurendern von selbst idempotent, und es gibt genau EINE
+//  Schreibstelle für W7-Zustand: langEreignis().
+//
+//  Kein neues amt-Feld, keine loadAmt()-Ladezeile. Der Fortschritt liegt in
+//  kladde.lang (additiv geladen wie kladde.fl und kladde.vorgang), die Auslöser
+//  sind aus amt.schichten bzw. amt.bonusManaRegen abgeleitet.
+// ===========================================================================
+
+// Ereignisarten, die langEreignis() kennt. Die ersten sieben sind die
+// bestehenden W4-Trichterarten, die letzten vier kommen mit W7 dazu.
+const LANG_EREIGNISSE = ['kill','kammer','kessel','trank','zauber','ablage','zutat',
+                         'ansprechen','schichtende','jahresbonus','amtstube'];
+
+// Feldform je Strang:
+//   figur   DORF_FIGUREN-Key oder 'knoeterich' — wer den Strang trägt
+//   titel   Überschrift im Kladde-Reiter, freier Panel-Text, kein Deckel
+//   stufen  Abschluss bei stufe(roh) === stufen
+//   hoert   Ereignisarten, die diesen Strang überhaupt erreichen (Hot-Path-Filter)
+//   wenn    Auslöser. false = der Strang liegt still, die Figur spricht wie immer
+//   schritt (was, info, roh) => NEUER Rohwert, nie ein kleinerer
+//   stufe   optional, Rohwert => Stufe. Default Identität (Bitmaske bei Nr. 6)
+//   fortschritt  st => {z1,z2}, EINE Sprechblase beim Erreichen von st (1..stufen)
+//   zusatz  optional, st => [{z1,z2}], zusätzliche Grundzeilen ab einer Stufe
+//   bestand optional, st => Zeile im Kladde-Reiter, Panel-Text, kein Deckel
+const LANGVORGAENGE = {};
+
+// Weltbibel Kapitel 10, Nummer 3. Läuft über das ganze Spiel: elf Anläufe, elf
+// Absagen, jede aus einem anderen Grund. Ein Anlauf je Schicht. Zahlt sich erst
+// im Abspann aus, deshalb kein Bonus und kein Zusatzzeilen-Feld.
+const DORFFEST_ABSAGEN = [
+  {z1:'Der Antrag ist raus. Endlich!',           z2:'Zurück. Falsches Formular.'},
+  {z1:'Neues Formular, neuer Anlauf.',           z2:'Zurück. Falsche Farbe.'},
+  {z1:'Diesmal in Blau. Das war es.',            z2:'Zurück. Kein Aktenzeichen.'},
+  {z1:'Bramsche gab mir ein Aktenzeichen.',      z2:'Zurück. Zeichen abgelaufen.'},
+  {z1:'Frisches Zeichen, gleiche Sache.',        z2:'Zurück. Falsche Stelle.'},
+  {z1:'Jetzt an die richtige Stelle.',           z2:'Zurück. Stelle unbesetzt.'},
+  {z1:'Die Vertretung nimmt es an.',             z2:'Zurück. Vertretung im Urlaub.'},
+  {z1:'Nach dem Urlaub, sagte man mir.',         z2:'Zurück. Frist verstrichen.'},
+  {z1:'Fristverlängerung beantragt.',            z2:'Zurück. Braucht Genehmigung.'},
+  {z1:'Die Genehmigung braucht Genehmigung.',    z2:'Zurück. Zuständigkeit unklar.'},
+  {z1:'Elf Anläufe. Ich lege es zu den Akten.',  z2:'Aber ich gebe nicht auf.'},
+];
+
+LANGVORGAENGE.dorffest = {
+  figur:'zwirn', titel:'Das Dorffest', stufen:DORFFEST_ABSAGEN.length,
+  hoert:['ansprechen'],
+  wenn: () => true,
+  // Ein Anlauf je Schicht. Ein Neuladen mitten in der Schicht erlaubt einen
+  // zweiten — bewusst hingenommen: der Strang trägt keine mechanische
+  // Belohnung, und dieselbe Toleranz gilt seit W3 für bramscheFragen.
+  schritt(was, info, roh){
+    if(was !== 'ansprechen' || !info || info.key !== 'zwirn' || langSchicht.dorffest) return roh;
+    langSchicht.dorffest = true;
+    return roh + 1;
+  },
+  fortschritt: st => DORFFEST_ABSAGEN[st - 1],
+  bestand: st => st >= DORFFEST_ABSAGEN.length
+    ? 'Das Dorffest: elf Anläufe, elf Absagen. Zu den Akten genommen.'
+    : 'Das Dorffest: ' + st + ' von ' + DORFFEST_ABSAGEN.length + ' Anläufen aktenkundig.',
+};
+
+// Weltbibel Kapitel 10, Nummer 6. Vierzig Jahre Probe. Man sammelt seine eigenen
+// Dienstberichte und legt sie ihm vor. Der Sammelgegenstand existiert bereits:
+// DIENST_BEMERKUNGEN sind laut Kapitel 8 von Nörgel, eine davon steht in jedem
+// Dienstbericht. Der Rohwert trägt beides in einer Zahl — untere sechs Bits das
+// gesammelte Set, Bits 8 bis 11 die Zahl der vorgelegten. Ein zweites Feld wäre
+// eine zweite Wahrheitsquelle für denselben Fortschritt.
+const langPopcount = n => { let c = 0, v = n | 0; while(v){ v &= v - 1; c++; } return c; };
+
+const PROBEZEIT_BEATS = [
+  {z1:'Ein Dienstbericht. Meiner.',        z2:'Den hat nie jemand gelesen.'},
+  {z1:'Der zweite. Auch von mir.',         z2:'Sammeln Sie die etwa?'},
+  {z1:'Drei Stück. Das ist ein Vorgang.',  z2:'Kein guter, aber einer.'},
+  {z1:'Vier. Langsam wird es eine Akte.',  z2:'Akten sind nicht mein Ressort.'},
+  {z1:'Fünf. Sie meinen das ernst.',       z2:'Das macht sonst niemand.'},
+  {z1:'Sechs. Vollständig. Alle von mir.', z2:'Vierzig Jahre auf sechs Zetteln.'},
+  {z1:'Sie legen es der Amtsleitung vor.', z2:'Es gibt sie nicht. Danke.'},
+];
+// Die Belohnung: er redet. Zweite Hinweisquelle, und zwar die ehrlichere.
+// Ausdrücklich KEIN zweites Frage-und-Antwort-System — er braucht keinen
+// Antrag, das ist der Unterschied zu Bramsche und der ganze Witz. Die Zeilen
+// laufen als zusätzliche Grundzeilen durch den bestehenden Zyklus.
+const PROBEZEIT_HINWEISE = [
+  {z1:'Kammertüren geben mehr her als der Sack.', z2:'Steht in keiner Anweisung.'},
+  {z1:'Ablage V öffnet sich nur mit Ausfertigung.', z2:'Das sagt Ihnen sonst keiner.'},
+  {z1:'Bramsche antwortet, wenn man fragt.',      z2:'Genau einmal je Schicht.'},
+  {z1:'Das Brett hängt jede Schicht neu.',        z2:'Lesen Sie es vor dem Rausgehen.'},
+  {z1:'Überstunden zählt niemand außer mir.',     z2:'Ich vermerke sie trotzdem.'},
+];
+
+LANGVORGAENGE.probezeit = {
+  figur:'noergel', titel:'Nörgels Probezeit', stufen:PROBEZEIT_BEATS.length,
+  hoert:['schichtende','ansprechen'],
+  wenn: () => true,
+  stufe: roh => (roh >> 8) & 15,   // die vorgelegten, nicht die gesammelten
+  schritt(was, info, roh){
+    if(was === 'schichtende' && info) return roh | (1 << info.bm);
+    if(was === 'ansprechen' && info && info.key === 'noergel'){
+      const gesammelt = langPopcount(roh & 63), vorgelegt = (roh >> 8) & 15;
+      if(vorgelegt < gesammelt) return (roh & 255) | ((vorgelegt + 1) << 8);
+      if(gesammelt === 6 && vorgelegt === 6) return (roh & 255) | (7 << 8);
+    }
+    return roh;
+  },
+  fortschritt: st => PROBEZEIT_BEATS[st - 1],
+  zusatz: st => st >= PROBEZEIT_BEATS.length ? PROBEZEIT_HINWEISE : [],
+  bestand(st){
+    const g = langPopcount(langRoh('probezeit') & 63);
+    return st >= PROBEZEIT_BEATS.length
+      ? 'Nörgels Probezeit: sechs Dienstberichte vorgelegt. Er redet seither.'
+      : 'Nörgels Probezeit: ' + g + ' von 6 Bemerkungen gesammelt, ' + Math.min(st, g) + ' vorgelegt.';
+  },
+};
+
+// Weltbibel Kapitel 10, Nummer 2. Der Kater liegt auf der Akte. Man kann ihn
+// nicht wegnehmen, man muss ihm etwas Besseres anbieten. Zapf liefert die
+// Lösung, weil das seine Zuständigkeit ist: der Ofen zieht nicht.
+// Belohnung: Registratur-Zugang, eine zusätzliche Frage pro Schicht.
+const ANLAGE3_BEATS = [
+  {z1:'Anlage Drei liegt auf dem Brandabschnitt.', z2:'Wecken kommt nicht in Frage.'},
+  {z1:'Der Ofen zieht nicht. Ich mach das.',       z2:'Warm liegt besser als Papier.'},
+  {z1:'Der Ofen zieht. Anlage Drei liegt davor.',  z2:'Die Akte ist wieder greifbar.'},
+];
+const ANLAGE3_DRAN = ['bramsche', 'zapf', 'bramsche'];
+
+LANGVORGAENGE.anlage3 = {
+  figur:'bramsche', titel:'Anlage 3', stufen:ANLAGE3_BEATS.length,
+  hoert:['ansprechen'],
+  wenn: () => aktStand() >= 2,   // Akt I gehört Knöterichs Onboarding, wie AUFTRAG_TYPEN.reise
+  // Kette Bramsche, Zapf, Bramsche. Kein Merker für "wer war dran": die Stufe
+  // ist der Merker, und wer nicht dran ist, rückt nicht vor. Als Tabelle statt
+  // als Kaskade, damit ANLAGE3_DRAN[stufen] undefined ist und schritt() auf dem
+  // Endzustand von selbst idempotent wird.
+  schritt(was, info, roh){
+    if(was !== 'ansprechen' || !info) return roh;
+    return info.key === ANLAGE3_DRAN[roh] ? roh + 1 : roh;
+  },
+  fortschritt: st => ANLAGE3_BEATS[st - 1],
+  bestand: st => st >= ANLAGE3_BEATS.length
+    ? 'Anlage 3: liegt vor dem Ofen. Registratur-Zugang erweitert.'
+    : 'Anlage 3: liegt auf der Akte. ' + st + ' von ' + ANLAGE3_BEATS.length + ' aktenkundig.',
+};
+
+// Weltbibel Kapitel 10, Nummer 1. Die Pflanze auf dem leeren Schreibtisch geht
+// ein. Man muss herausfinden, was sie braucht, ohne dass Knöterich es sagt.
+// Zapf berichtet (das ist seine Sprachmarke), Pommer liefert die Lösung — seine
+// Grundzeile "Auf dem Antrag steht Eimer. Nicht Kanne." steht seit W3 im Spiel
+// und war die ganze Zeit die Antwort. Belohnung: KEIN Bonus, absichtlich. Er
+// redet danach eine Spur wärmer, mehr nicht.
+//
+// Bewusst nicht gebaut: kein Pflanzen-Sprite, kein Weltobjekt, kein
+// Krankheitszustand für Knöterich. Die Pflanze existiert als Text im
+// Amtsstuben-Panel, dort steht der leere Schreibtisch ohnehin schon.
+const GIESSKANNE_BEATS = [
+  {z1:'Die Pflanze auf dem leeren Tisch hängt.',   z2:'Gießen ist nicht mein Ressort.'},
+  {z1:'Kanne steht nicht im Bestand. Eimer schon.', z2:'Nehmen Sie den Eimer mit.'},
+  {z1:'Die Pflanze steht wieder gerade.',          z2:'Niemand hat es angeordnet.'},
+];
+
+LANGVORGAENGE.giesskanne = {
+  figur:'knoeterich', titel:'Die Gießkanne', stufen:GIESSKANNE_BEATS.length,
+  hoert:['ansprechen','amtstube'],
+  wenn: () => aktStand() >= 2,
+  schritt(was, info, roh){
+    if(was === 'ansprechen' && info){
+      if(roh === 0 && info.key === 'zapf')   return 1;
+      if(roh === 1 && info.key === 'pommer') return 2;
+    }
+    if(was === 'amtstube' && roh === 2) return 3;
+    return roh;
+  },
+  fortschritt: st => GIESSKANNE_BEATS[st - 1],
+  bestand: st => st >= GIESSKANNE_BEATS.length
+    ? 'Die Gießkanne: erledigt. Kein Vermerk, keine Zuständigkeit, kein Bonus.'
+    : 'Die Gießkanne: die Pflanze auf dem leeren Schreibtisch hängt. ' + st + ' von ' + GIESSKANNE_BEATS.length + '.',
+};
+
+// Der Abschluss passiert im Amtsstuben-Panel, nicht an einer Figur — deshalb
+// braucht er eine eigene Anzeige. Panel-Text, kein Zeichendeckel. Ein <span>
+// statt <button>, weil #amtFenster button{width:100%} den Fluss sprengen würde
+// (dieselbe Begründung wie beim W4-Rückgabelink).
+function langGiesskanneBlock(){
+  if(!CONFIG.schichtModus) return '';
+  const d = LANGVORGAENGE.giesskanne;
+  if(!d.wenn()) return '';
+  const st = langStufe('giesskanne');
+  if(st >= d.stufen){
+    const f = d.fortschritt(d.stufen);
+    return `<p style="font-size:11px;color:#8fdc8f;margin:8px 0 0;">${f.z1} ${f.z2}</p>`;
+  }
+  if(st < 2) return `<p style="font-size:11px;color:#9a8a5f;margin:8px 0 0;">Auf dem leeren Schreibtisch steht eine Pflanze. Sie hängt.</p>`;
+  return `<p style="font-size:11px;color:#c9b98a;margin:8px 0 0;">Der Eimer steht bereit. Die Pflanze hängt weiter.</p>
+    <span onclick="langGiessen()" style="cursor:pointer;color:#f4d97a;font-size:11px;">▸ Die Pflanze gießen</span>`;
+}
+function langGiessen(){ langEreignis('amtstube', null); renderAmtFenster(); }
+
+// Weltbibel Kapitel 10, Nummer 5. Die Maschine im Amt ist das Schwestergerät
+// des Kessels. Sie ist beleidigt. Auslöser ist der bestehende Jahresbonus
+// "Kaffeemaschine" — abgeleitet aus amt.bonusManaRegen, dessen einziger
+// Schreiber JAHRES_BONI[0].apply() ist. Kein neues Feld.
+// Belohnung: keine Mechanik. Der Bonus bekommt seine Geschichte.
+//
+// Rohwert wie bei Nörgel zweigeteilt: untere Bits, wie weit die Ereignisse
+// freigeschaltet haben, obere, wie viel Zapf davon schon erzählt hat. Ohne die
+// Teilung wären die Beats, die an einem Ereignis statt an einem Tastendruck
+// hängen, im Spiel nie zu sehen.
+const KAFFEE_BEATS = [
+  {z1:'Die Kaffeemaschine im Amt ist beleidigt.',   z2:'Seit die Prämie kam. Ehrlich.'},
+  {z1:'Sie ist das Schwestergerät vom Kessel.',     z2:'Baugleich. Andere Laufbahn.'},
+  {z1:'Sie hat gemerkt, dass Sie am Kessel waren.', z2:'Tropft jetzt langsamer. Absicht.'},
+  {z1:'Ich hab ihr gut zugeredet. Läuft wieder.',   z2:'Zwei Geräte, eine Zuständigkeit.'},
+];
+const KAFFEE_GRENZE = [0, 2, 4];   // wie viele Beats je Freischaltstufe erzählbar sind
+
+LANGVORGAENGE.kaffeemaschine = {
+  figur:'zapf', titel:'Die Kaffeemaschine', stufen:KAFFEE_BEATS.length,
+  hoert:['ansprechen','kessel','jahresbonus'],
+  wenn: () => (amt.bonusManaRegen || 0) > 0,
+  stufe: roh => (roh >> 8) & 15,
+  schritt(was, info, roh){
+    const frei = roh & 15, gez = (roh >> 8) & 15;
+    if(was === 'jahresbonus' && frei === 0) return 1 | (gez << 8);
+    if(was === 'kessel' && frei === 1 && gez >= 2) return 2 | (gez << 8);
+    if(was === 'ansprechen' && info && info.key === 'zapf' && gez < KAFFEE_GRENZE[frei])
+      return frei | ((gez + 1) << 8);
+    return roh;
+  },
+  fortschritt: st => KAFFEE_BEATS[st - 1],
+  bestand: st => st >= KAFFEE_BEATS.length
+    ? 'Die Kaffeemaschine: läuft wieder. Zwei Geräte, eine Zuständigkeit.'
+    : 'Die Kaffeemaschine: beleidigt. ' + st + ' von ' + KAFFEE_BEATS.length + ' aktenkundig.',
+};
+
+// Weltbibel Kapitel 10, Nummer 9. Wo ist das zweite Dorf hin? Antwort: es wurde
+// abgeschlossen. Vollständig. Ordnungsgemäß. Kein Bonus, keine Freischaltung,
+// kein Panel — zwei Herren auf einer Bank sagen vier Sätze. Braucht die
+// letzterAnlass-Korrektur aus der Anrede-Phase, sonst erreicht keine Taste den
+// Zyklus der beiden.
+const HINTERMUEHL_BEATS = [
+  {z1:'Hintermühl war das zweite Dorf.',          z2:'Pahl, wie hieß der Wirt dort?'},
+  {z1:'Der Wirt hieß wie das Gasthaus.',          z2:'Beides steht nicht mehr.'},
+  {z1:'Man hat Hintermühl abgeschlossen.',        z2:'Vollständig. Ordnungsgemäß.'},
+  {z1:'Es fehlte nichts. Das ist das Schlimme.',  z2:'Wir sitzen seitdem hier.'},
+];
+const HINTERMUEHL_DRAN = ['lott', 'pahl', 'lott', 'pahl'];
+
+LANGVORGAENGE.hintermuehl = {
+  figur:'lott', titel:'Hintermühl', stufen:HINTERMUEHL_BEATS.length,
+  hoert:['ansprechen'],
+  wenn: () => aktStand() >= 3,
+  schritt(was, info, roh){
+    if(was !== 'ansprechen' || !info) return roh;
+    return info.key === HINTERMUEHL_DRAN[roh] ? roh + 1 : roh;
+  },
+  fortschritt: st => HINTERMUEHL_BEATS[st - 1],
+  bestand: st => st >= HINTERMUEHL_BEATS.length
+    ? 'Hintermühl: abgeschlossen. Vollständig. Ordnungsgemäß. Kein Vermerk nötig.'
+    : 'Hintermühl: das zweite Dorf. ' + st + ' von ' + HINTERMUEHL_BEATS.length + ' aktenkundig.',
+};
+
+// Weltbibel Kapitel 10, Nummer 7. Man weist Milb nach, dass er systematisch eine
+// Stufe danebenliegt. Erfordert Buchführung über mehrere Schichten. Der
+// Vergleichswert existiert längst: das Kammerschild zeigt t.diff, und
+// betreteKammer() wirft die echte Schwierigkeit beim Betreten als Floater.
+// Belohnung: die Schilder zeigen danach den echten Wert.
+// Rohwert zweigeteilt wie bei Nörgel und der Kaffeemaschine.
+const GUTACHTER_BEATS = [
+  {z1:'Ich stufe ein. Andere raten nur.',       z2:'Wollen Sie es nachprüfen?'},
+  {z1:'Eine Kammer nachgerechnet.',             z2:'Das Schild war zu niedrig.'},
+  {z1:'Zwei Kammern. Beide gleich daneben.',    z2:'Immer um genau eine Stufe.'},
+  {z1:'Drei Kammern. Das ist ein Muster.',      z2:'Kein Zufall mehr. Buchführung.'},
+  {z1:'Sie haben recht. Ich lag eine zu tief.', z2:'Das kommt in die Schilder.'},
+];
+const GUTACHTER_GRENZE = [1, 2, 3, 5];   // je nachgerechneter Kammer erzählbare Beats
+
+LANGVORGAENGE.gutachter = {
+  figur:'milb', titel:'Der falsche Gutachter', stufen:GUTACHTER_BEATS.length,
+  hoert:['ansprechen','kammer'],
+  wenn: () => aktStand() >= 2,
+  stufe: roh => (roh >> 8) & 15,
+  schritt(was, info, roh){
+    const kam = roh & 15, gez = (roh >> 8) & 15;
+    // Höchstens eine Kammer je Schicht, sonst wäre die Buchführung in einer
+    // einzigen Schicht erledigt und "über mehrere Schichten" eine Behauptung.
+    if(was === 'kammer' && gez >= 1 && kam < 3 && !langSchicht.gutachter){
+      langSchicht.gutachter = true;
+      return (kam + 1) | (gez << 8);
+    }
+    if(was === 'ansprechen' && info && info.key === 'milb' && gez < GUTACHTER_GRENZE[kam])
+      return kam | ((gez + 1) << 8);
+    return roh;
+  },
+  fortschritt: st => GUTACHTER_BEATS[st - 1],
+  bestand(st){
+    const kam = langRoh('gutachter') & 15;
+    return st >= GUTACHTER_BEATS.length
+      ? 'Der falsche Gutachter: nachgewiesen. Die Kammerschilder nennen seither den echten Aufwand.'
+      : 'Der falsche Gutachter: ' + kam + ' von 3 Kammern nachgerechnet, ' + st + ' von ' + GUTACHTER_BEATS.length + ' besprochen.';
+  },
+};
+
+// Was das Kammerschild anzeigt. Milb liegt immer NACH UNTEN daneben: jede Kammer
+// liefert mehr als angekündigt, ein W4-Aushang "ab Aufwand N" wird dadurch nie
+// schwerer. t.diff und t.tier selbst bleiben unangetastet — Beute, die
+// Kammergarantie und AUFTRAG_TYPEN.kammer lesen weiter den echten Wert.
+// Der schichtModus-Zweig ist Pflicht: dort ist der Strang nie abschließbar, das
+// Schild bliebe sonst für immer falsch.
+const langKammerWert = t => (!CONFIG.schichtModus || langFertig('gutachter')) ? t.diff : Math.max(1, t.diff - 1);
+
+const langRoh    = k => kladde.lang[k] | 0;
+const langStufe  = k => { const d = LANGVORGAENGE[k]; return d.stufe ? d.stufe(langRoh(k)) : langRoh(k); };
+const langFertig = k => langStufe(k) >= LANGVORGAENGE[k].stufen;
+const langLaeuft = k => LANGVORGAENGE[k].wenn() && !langFertig(k);
+
+// Der Trichter. Hängt an auftragEreignis(), deckt damit alle acht bestehenden
+// Fundstellen mit einer Zeile ab. Bewusst kein CFX.schweigen-Guard, gleiche
+// Begründung wie bei findeBlatt()/findeAdresszeile(): Langvorgänge sind
+// Geschichte am Fundort, keine Kesselbeobachtung.
+function langEreignis(was, info){
+  if(!CONFIG.schichtModus) return;   // Inertheit, Muster serieFrei()
+  let dirty = false;
+  for(const k in LANGVORGAENGE){
+    const d = LANGVORGAENGE[k];
+    if(info && info.nur && info.nur !== k) continue;   // gezielter Schritt, s. langAnsprechen()
+    if(d.hoert.indexOf(was) < 0) continue;   // Hot Path: killMon() läuft hier durch
+    if(!d.wenn()) continue;
+    const roh = langRoh(k), alt = d.stufe ? d.stufe(roh) : roh;
+    if(alt >= d.stufen) continue;
+    const neu = d.schritt(was, info, roh);
+    if(neu === roh) continue;
+    if((d.stufe ? d.stufe(neu) : neu) < alt) continue;   // Monotonie, nie ein Rücksprung
+    kladde.lang[k] = neu; dirty = true;
+  }
+  if(dirty) saveKladde();
+}
+
+// Rückt GENAU EINEN Strang vor und liefert dessen Fortschrittszeile. null =
+// nichts zu melden, der Zyklus läuft wie bisher. Blockiert nie: eine Figur,
+// deren Stränge stillstehen, verhält sich Byte für Byte wie vor W7.
+//
+// Nicht nach d.figur gefiltert: eine Kette darf über mehrere Figuren laufen
+// (Anlage 3 geht über Zapf, die Gießkanne über Zapf und Pommer). Wer an einer
+// Stufe dran ist, entscheidet allein das schritt() des Strangs über info.key.
+// d.figur sagt nur, wem der Strang gehört — für zusatz() und den Kladde-Reiter.
+//
+// Der gezielte Schritt über info.nur ist nötig, weil Zapf drei Stränge berührt:
+// ohne ihn könnten zwei auf denselben Tastendruck vorrücken und eine der beiden
+// Zeilen würde stumm verschluckt. Geschrieben wird trotzdem nur an einer
+// Stelle, in langEreignis().
+function langAnsprechen(key){
+  for(const k in LANGVORGAENGE){
+    if(!langLaeuft(k)) continue;
+    const d = LANGVORGAENGE[k];
+    if(d.hoert.indexOf('ansprechen') < 0) continue;
+    const vorher = langStufe(k);
+    langEreignis('ansprechen', {key, nur:k});
+    const st = langStufe(k);
+    if(st > vorher) return d.fortschritt(st);
+  }
+  return null;
+}
+// Zusätzliche Grundzeilen aus fortgeschrittenen Strängen. Sie hängen sich hinten
+// an fig.grund an, statt eine der sechs zu ersetzen.
+function langZusatz(key){
+  let out = [];
+  for(const k in LANGVORGAENGE){
+    const d = LANGVORGAENGE[k];
+    if(d.figur !== key || !d.zusatz) continue;
+    const z = d.zusatz(langStufe(k));
+    if(z && z.length) out = out.concat(z);
+  }
+  return out;
+}
+
+// Vierter Abschnitt im Blätter-Reiter, neben vorgangBestandBlock(). Liefert '',
+// solange kein Strang angefangen hat — vorher sieht der Reiter aus wie zuvor.
+// Panel-Text, kein Zeichendeckel. Gezeigt werden nur begonnene Stränge: eine
+// Liste aller sieben wäre ein Questlog, und das gibt es hier nicht.
+function langBestandBlock(){
+  if(!CONFIG.schichtModus) return '';
+  const zeilen = [];
+  for(const k in LANGVORGAENGE){
+    const d = LANGVORGAENGE[k];
+    if(!d.bestand) continue;
+    const st = langStufe(k);
+    if(st <= 0) continue;
+    zeilen.push(`<p style="margin:2px 0;color:${langFertig(k) ? '#8fdc8f' : '#c9b98a'};">${d.bestand(st)}</p>`);
+  }
+  if(!zeilen.length) return '';
+  return `<div style="font-size:11px;margin-bottom:8px;">
+    <div style="font-size:10px;color:#f4d97a;font-weight:bold;margin-bottom:3px;">LAUFENDE VORGÄNGE</div>
+    ${zeilen.join('')}</div>`;
+}
+
+function langAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('W7 Langvorgang:', m, ...r); };
+  const EMOJI  = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal','Slot',
+                  'ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const strip  = html => String(html).replace(/<[^>]+>/g, ' ');
+  const text = (txt, cap, feld) => {
+    if(typeof txt !== 'string' || !txt) return fehler('leer', feld, JSON.stringify(txt));
+    if(cap && txt.length > cap) fehler('Zeichendeckel verletzt', feld, JSON.stringify(txt), txt.length, '>', cap);
+    if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', feld, txt);
+    if(/[—–]/.test(txt)) fehler('Gedankenstrich', feld, txt);
+    if(EMOJI.test(txt))  fehler('Emoji', feld, txt);
+    for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk verletzt', feld, g, txt);
+  };
+
+  // Spiegel. Alles wird am Ende exakt zurückgesetzt, ohne saveAmt()/saveKladde().
+  const langEcht = kladde.lang, schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
+        flagsEcht = langSchicht, manaEcht = amt.bonusManaRegen, vorgangEcht = kladde.vorgang;
+
+  // (1) Tabellenform.
+  for(const k in LANGVORGAENGE){
+    const d = LANGVORGAENGE[k];
+    for(const f of ['figur','titel','stufen','hoert','wenn','schritt','fortschritt'])
+      if(!(f in d)) fehler('Pflichtfeld fehlt', k, f);
+    if(!(d.stufen >= 1)) fehler('stufen muss mindestens 1 sein', k, d.stufen);
+    if(!Array.isArray(d.hoert) || !d.hoert.length) fehler('hoert leer', k);
+    else for(const e of d.hoert) if(LANG_EREIGNISSE.indexOf(e) < 0) fehler('unbekannte Ereignisart', k, e);
+    if(d.figur !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === d.figur)) fehler('Figur existiert nicht', k, d.figur);
+    text(d.titel, 0, 'titel ' + k);
+  }
+
+  // (2) Kein toter Strang: jeder muss über eine Ereignisfolge bis stufen
+  // kommen. Der Guard ruft NIE langEreignis() — das würde saveKladde()
+  // auslösen und den echten Spielstand überschreiben. Er ruft d.schritt()
+  // direkt, das ist eine reine Funktion, und schreibt auf den Spiegel.
+  // Dieselbe Warnung trägt vorgangAssert() für findeAdresszeile().
+  CONFIG.schichtModus = true;
+  const rohEnde = {};   // der erreichte Endzustand je Strang, für (10)
+  for(const k in LANGVORGAENGE){
+    const d = LANGVORGAENGE[k];
+    kladde.lang = {}; amt.schichten = 200; amt.bonusManaRegen = 2;
+    let roh = 0, runden = 0;
+    const stufeVon = r => d.stufe ? d.stufe(r) : r;
+    while(stufeVon(roh) < d.stufen && runden++ < 400){
+      langSchicht = {};                       // je Runde eine neue Schicht
+      for(const was of d.hoert){
+        for(const info of LANG_PROBEN[was] || [null]){
+          const neu = d.schritt(was, info, roh);
+          if(stufeVon(neu) < stufeVon(roh)) fehler('schritt() senkt die Stufe', k, was, roh, neu);
+          roh = neu; kladde.lang[k] = roh;
+        }
+      }
+    }
+    if(stufeVon(roh) < d.stufen) fehler('Strang nie abschliessbar, toter Tabelleneintrag', k, stufeVon(roh), 'von', d.stufen);
+    rohEnde[k] = roh;
+
+    // (3) Idempotenz auf dem Endzustand: kein Ereignis bewegt ihn noch.
+    for(const was of d.hoert) for(const info of LANG_PROBEN[was] || [null])
+      if(d.schritt(was, info, roh) !== roh) fehler('schritt() ist auf dem Endzustand nicht idempotent', k, was);
+  }
+  kladde.lang = {}; langSchicht = {};
+
+  // (8) Zeichendeckel, Formregeln, Sperrvermerk. Fortschritts- und Zusatzzeilen
+  // sind Sprechblasen (z1<=48, z2<=32); bestand() ist freier Panel-Text ohne
+  // Deckel, aber Form und Sperrvermerk gelten auch dort.
+  for(const k in LANGVORGAENGE){
+    const d = LANGVORGAENGE[k];
+    for(let st = 1; st <= d.stufen; st++){
+      const f = d.fortschritt(st);
+      if(!f){ fehler('fortschritt() liefert nichts', k, st); continue; }
+      text(f.z1, 48, 'fortschritt z1 ' + k + ' st=' + st);
+      if(f.z2) text(f.z2, 32, 'fortschritt z2 ' + k + ' st=' + st);
+    }
+    for(let st = 0; st <= d.stufen; st++){
+      if(d.zusatz) for(const z of (d.zusatz(st) || [])){
+        text(z.z1, 48, 'zusatz z1 ' + k + ' st=' + st);
+        if(z.z2) text(z.z2, 32, 'zusatz z2 ' + k + ' st=' + st);
+      }
+      if(d.bestand) text(d.bestand(st), 0, 'bestand ' + k + ' st=' + st);
+    }
+  }
+
+  // (4) Blockadefreiheit. Mit leerem kladde.lang bleibt der Hauptvorgang genau
+  // so erreichbar wie vor W7 — kein Strang ist Bedingung für irgendetwas.
+  amt.schichten = 30; kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+  if(!vorgangZustellbar()) fehler('W7 blockiert den Hauptvorgang: Zustellen nicht möglich bei Schicht 30 mit vollem Bestand');
+  for(const s in SERIE_AKT){ amt.schichten = SERIE_AKT[s] * 10; if(!serieFrei(s)) fehler('W7 blockiert eine Blattserie', s); }
+  amt.schichten = 200;
+  for(const k in AUFTRAG_TYPEN) if(AUFTRAG_TYPEN[k].wenn && !AUFTRAG_TYPEN[k].wenn()) fehler('W7 blockiert einen Auftragstyp', k);
+
+  // (6) Milbs Schild. Über alle t.diff und beide Strangzustände: es liegt nie
+  // über dem echten Wert (sonst wäre ein W4-Aushang schwerer als angekündigt),
+  // nach dem Nachweis trifft es ihn genau, und der angezeigte Index bleibt im
+  // RARITY-Bereich.
+  for(const zustand of ['offen', 'fertig']){
+    kladde.lang = zustand === 'fertig' ? {gutachter: rohEnde.gutachter} : {};
+    for(let diff = 1; diff <= 5; diff++){
+      const zeig = langKammerWert({diff});
+      if(zeig > diff) fehler('Milb stuft zu hoch ein', zustand, diff, zeig);
+      if(zeig < 1)    fehler('Milbs Schild unterschreitet die Skala', zustand, diff, zeig);
+      const tier = Math.max(0, Math.min(4, zeig - 1));
+      if(!RARITY[tier]) fehler('Schild-Index ausserhalb RARITY', zustand, diff, tier);
+      if(zustand === 'fertig' && zeig !== diff) fehler('Milb liegt nach dem Nachweis weiter daneben', diff, zeig);
+      if(zustand === 'offen' && diff > 1 && zeig !== diff - 1) fehler('Milb liegt nicht um genau eine Stufe daneben', diff, zeig);
+    }
+  }
+  kladde.lang = {};
+
+  // (7) Bramsches Fragenrechnung, beide Strangzustände. Die Zeile in
+  // startShift() ist die einzige Stelle, die den Zähler setzt.
+  kladde.lang = {};
+  if(1 + (langFertig('anlage3') ? 1 : 0) !== 1) fehler('Bramsche gibt ohne Anlage 3 nicht genau eine Frage');
+  kladde.lang = {anlage3: rohEnde.anlage3};
+  if(1 + (langFertig('anlage3') ? 1 : 0) !== 2) fehler('Bramsche gibt mit Anlage 3 nicht genau zwei Fragen');
+  kladde.lang = {};
+
+  // (10) Gerenderte Blöcke, HTML-gestrippt, in BEIDEN Strangzuständen. Ein
+  // bedingter Absatz, den nur der abgeschlossene Zustand zeigt, wäre sonst nie
+  // geprüft — vorgangAssert() sieht ihn nur im Ladezustand.
+  for(const zustand of ['leer', 'fertig']){
+    kladde.lang = {};
+    // rohEnde statt stufen: bei Strängen mit eigener stufe()-Abbildung (Nörgels
+    // Bitmaske) ist der Rohwert nicht die Stufe, und ein naives kladde.lang[k]
+    // = stufen läge daneben.
+    if(zustand === 'fertig') for(const k in LANGVORGAENGE) kladde.lang[k] = rohEnde[k];
+    text(strip(vorgangPanelHtml(3)), 0, 'Abspann ' + zustand);
+    for(let st = 0; st <= LANGVORGAENGE.giesskanne.stufen; st++){
+      kladde.lang.giesskanne = st;
+      const blk = langGiesskanneBlock();
+      if(blk) text(strip(blk), 0, 'Gießkanne-Block st=' + st);
+    }
+    kladde.lang = zustand === 'fertig' ? Object.assign({}, rohEnde) : {};
+    const bb = langBestandBlock();
+    if(zustand === 'leer' && bb !== '') fehler('langBestandBlock() ist bei leerem Bestand nicht leer');
+    if(bb) text(strip(bb), 0, 'Bestandblock ' + zustand);
+  }
+  kladde.lang = {};
+
+  // (5) Inertheit: bei schichtModus=false schreibt kein Ereignis irgendetwas.
+  CONFIG.schichtModus = false;
+  for(const was of LANG_EREIGNISSE) for(const info of LANG_PROBEN[was] || [null]) langEreignis(was, info);
+  for(const k in kladde.lang) fehler('W7 ist bei schichtModus=false nicht inert', k, kladde.lang[k]);
+
+  CONFIG.schichtModus = modusEcht; amt.schichten = schichtenEcht;
+  kladde.lang = langEcht; kladde.vorgang = vorgangEcht;
+  amt.bonusManaRegen = manaEcht; langSchicht = flagsEcht;
+
+  console.assert(ok, 'W7 Langvorgang: Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+
+// Probeninfos für den Guard: je Ereignisart die info-Objekte, die im Spiel
+// vorkommen können. Steht direkt vor dem Selbstaufruf, damit langAssert() es
+// beim Laufen bereits sieht.
+const LANG_PROBEN = {
+  schichtende: [{bm:0},{bm:1},{bm:2},{bm:3},{bm:4},{bm:5}],
+  ansprechen:  DORF_FIGUREN.map(f => ({key:f.key})),
+};
+// Die drei Guards, die W7-Zustand lesen, laufen erst hier — alle drei tragen an
+// ihrer Definition den Grund. Reihenfolge egal, es sind reine Prüfungen.
+langAssert();
+vorgangAssert();
+anredeAssert();
+
+// ===========================================================================
 //  W4: Trichter. Acht bestehende Fundstellen melden, WAS passiert ist; was das
 //  für den laufenden Aushang bedeutet, entscheidet allein AUFTRAG_TYPEN. Kein
 //  Ereignis erhöht einen Zähler, der anderswo schon existiert — dort ist das
@@ -7946,6 +8575,9 @@ auftragAssertBrett();
 //  ausgeschlossen).
 // ===========================================================================
 function auftragEreignis(was, info){
+  // W7: derselbe Trichter, eigener schichtModus-Guard. Steht vor den
+  // Frühabbrüchen unten: die Langvorgänge hängen nicht am angenommenen Aushang.
+  langEreignis(was, info);
   if(!CONFIG.schichtModus) return;
   const a = amt.auftrag;
   if(!a || auftragFertig || auftragVerletzt) return;

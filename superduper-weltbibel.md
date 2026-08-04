@@ -580,6 +580,18 @@ Kein eigener W-Abschnitt, sondern der Nachzug zu W6: klein genug für eine eigen
 
 **Abnahme:** Niemand wird ohne Titel angesprochen (18.6.1). Kein Titel wird ironisch benutzt (18.6.7). Lisbeth fragt als Einzige nach dem Namen, jede Schicht neu, und bekommt nie eine Antwort — der Spieler hat keinen Namen und bekommt keinen.
 
+### W7: Die Langvorgänge — ERLEDIGT (siehe `phase-w7-langvorgaenge.md`)
+
+Kapitel 10, die sieben noch offenen Nebenstränge. Nummer 4 (Lisbeths sechster Praktikumsbericht) und Nummer 8 (die Zustellung) hat W5 gebaut und bleiben unangetastet.
+
+* **Eine Tabelle statt sieben Einzellösungen.** `LANGVORGAENGE` trägt alle Stränge in einheitlicher Feldform, Bauform wie `AUFTRAG_TYPEN` aus W4. Der Beweisbedarf ist bei allen identisch, also auch der Guard: `langAssert()` zeigt für jeden Strang, dass er abschließbar, monoton, idempotent, blockadefrei und bei `schichtModus=false` inert ist.
+* **Kein neues `amt`-Feld.** Der Fortschritt liegt in `kladde.lang`, additiv geladen wie `kladde.fl` und `kladde.vorgang`. Die Auslöser sind abgeleitet: `aktStand()` aus `amt.schichten`, die Kaffeemaschine aus `amt.bonusManaRegen`.
+* **Kein `apply()`.** Jede Belohnung ist ein abgeleiteter Lesevorgang von `langFertig(key)` an der Stelle, die sie betrifft. Es gibt genau eine Schreibstelle für W7-Zustand.
+* **Ein Trichter.** `langEreignis()` hängt an `auftragEreignis()` und erreicht damit alle acht bestehenden Fundstellen mit einer Zeile. Drei Ereignisarten kommen dazu: Ansprechen, Schichtende, Jahresbonus.
+* Belohnungen: Gießkanne kein Bonus (absichtlich, Knöterich grüßt wärmer), Anlage 3 eine zweite Registraturfrage pro Schicht, Dorffest eine Zeile im Abspann, Kaffeemaschine die Geschichte zum bestehenden Jahresbonus, Nörgels Probezeit fünf ehrliche Hinweiszeilen, falscher Gutachter die echten Kammerschilder, Hintermühl nichts.
+
+**Abnahme:** Kein Langvorgang blockiert den Spielfluss, keiner ist Bedingung für den Hauptvorgang, keiner belegt eine Kachel, eine Tür oder eine Kontextaktion. Wer nie mit jemandem spricht, spielt das Spiel unverändert weiter.
+
 ### Was wir ausdrücklich nicht bauen
 
 * Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.
