@@ -530,7 +530,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 **Abnahme:** Blätter überleben Tod, Schichtende und Reload. Kein Blatt verrät Kesselgrammatik, geprüft Blatt für Blatt, Ergebnis in den Abschlussbericht. Zeichendeckel gilt auch hier.
 
-### W3: Das Dorf spricht (setzt Grafik-Phase G5 voraus) — OFFEN
+### W3: Das Dorf spricht (setzt Grafik-Phase G5 voraus) — ERLEDIGT
 
 * Zwölf NPCs als Weltfiguren im Dorf, Bedienung über die bestehende Kontextaktion `F`, technisch wie Knöterichs "Nachfragen".
 * Pro Figur vier bis sechs Zeilen plus eine Zeile, die sich mit dem Aktstand ändert. Mehr nicht. Kein Dialogbaum, keine Antwortauswahl.

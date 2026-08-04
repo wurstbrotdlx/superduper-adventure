@@ -740,9 +740,14 @@ addSheet('cfbld_scheune', 'cf/deco/Buildings/Barn_Base_Red.png',       1, 'grid'
 // per Crop bestätigt (mittlere mittlere Down/Side/Up-Zeile = Seitenansicht, gleiche
 // Regel wie bei den Monster-Rigs aus G3). Nur Idle/Lauf gebraucht, keine Kampf-Anims.
 const CF_NPCS = {
-  bob:  {file:'NPCs/Farmer_Bob.png',      fw:64, fh:64, ax:32, ay:60},
-  katy: {file:'NPCs/Bartender_Katy.png',  fw:64, fh:64, ax:32, ay:60},
-  mike: {file:'NPCs/Miner_Mike.png',      fw:64, fh:64, ax:32, ay:60},
+  bob:   {file:'NPCs/Farmer_Bob.png',      fw:64, fh:64, ax:32, ay:60},
+  katy:  {file:'NPCs/Bartender_Katy.png',  fw:64, fh:64, ax:32, ay:60},
+  mike:  {file:'NPCs/Miner_Mike.png',      fw:64, fh:64, ax:32, ay:60},
+  bruno: {file:'NPCs/Bartender_Bruno.png', fw:64, fh:64, ax:32, ay:60},
+  chloe: {file:'NPCs/Chef_Chloe.png',      fw:64, fh:64, ax:32, ay:60},
+  buba:  {file:'NPCs/Farmer_Buba.png',     fw:64, fh:64, ax:32, ay:60},
+  jack:  {file:'NPCs/Lumberjack_Jack.png', fw:64, fh:64, ax:32, ay:60},
+  fin:   {file:'NPCs/Fisherman_Fin.png',   fw:64, fh:64, ax:32, ay:60},
 };
 for(const nkey in CF_NPCS){
   const nd = CF_NPCS[nkey];
@@ -933,6 +938,30 @@ function bakeHeroSheet(){
   BAKED_HERO_ANIM = anims;
   SHEETS['hero_baked'] = {img:canvas, cols:totalFrames, n:totalFrames, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
   TINT_CACHE.delete('hero_baked');   // getönte Kopien des alten Bakes verwerfen (Haar/Rüstung geändert)
+}
+
+// ===========================================================================
+//  W3: NPC-Komposit aus dem Helden-Rig (Bramsche, Lott, Pahl), gleiches Prinzip
+//  wie bakeHeroSheet(), aber nur Idle (6 Frames) und genau einmal gebacken —
+//  diese Figuren wechseln nie die Kleidung, ein Dirty-Check wäre Ballast.
+// ===========================================================================
+function bakeNpcSheet(key, chest, legs, feet, hair){
+  const canvas = document.createElement('canvas');
+  canvas.width = 6 * 64; canvas.height = 64;
+  const bctx = canvas.getContext('2d');
+  for(let f = 0; f < 6; f++){
+    const dx = f * 64;
+    if(legs >= 0) blitLayerFrame(bctx, `cflegs_${legs}_idle`, f, dx, 0);
+    if(feet >= 0) blitLayerFrame(bctx, `cffeet_${feet}_idle`, f, dx, 0);
+    blitLayerFrame(bctx, 'cfbody_idle', f, dx, 0);
+    if(chest >= 0) blitLayerFrame(bctx, `cfchest_${chest}_idle`, f, dx, 0);
+    blitLayerFrame(bctx, `cfhair_${hair}_idle`, f, dx, 0);
+    blitLayerFrame(bctx, 'cfhands_idle', f, dx, 0);
+  }
+  SHEETS[`npc_baked_${key}`] = {img:canvas, cols:6, n:6, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
+}
+function bakeAllNpcSheets(){
+  for(const f of DORF_FIGUREN) if(f.opt === 'fest') bakeNpcSheet(f.key, f.chest ?? -1, f.legs ?? -1, f.feet ?? -1, f.hair);
 }
 
 // DOM-Cache: getElementById war im Renderloop einer der teuersten Posten.
@@ -1595,12 +1624,291 @@ const AMT_TUER = (() => {
   return {x: (b.x0 + b.w/2)*TS, y: (b.y0 + b.h)*TS - 2};
 })();
 
-// NPC-Staffage: Heimatanker im Dorf, Wanderradius bleibt klein (anders als critters,
-// die frei über die ganze Karte abprallen) — sonst verlassen sie das Dorf sichtbar.
-const NPC_DEFS = [
-  {key:'bob',  tx:8,  ty:38},
-  {key:'katy', tx:20, ty:39},
-  {key:'mike', tx:16, ty:46},
+// ===========================================================================
+//  DORF_FIGUREN (Bauabschnitt W3): elf ansprechbare Ensemble-Mitglieder aus
+//  Kapitel 8 der Weltbibel. Text unverändert aus figuren-dorf.md übernommen,
+//  dreistufig gegen Sperrvermerk/Humor-Grundgesetz/Formregeln/Zeichendeckel
+//  geprüft. Knöterich (bereits im Code) und der Kater Anlage 3 (kein Sprite,
+//  siehe drawAnlage3()) sind nicht Teil dieser Tabelle. opt:'wander' nutzt ein
+//  Sprite aus CF_NPCS und wandert wie die bisherige Dorf-Staffage; opt:'fest'
+//  ist ein Held-Komposit (bakeNpcSheet()) und steht fest wie Knöterich.
+// ===========================================================================
+const DORF_FIGUREN = [
+  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', tx:14, ty:34, opt:'wander', sheet:'bob',
+   grund:[
+     {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
+     {z1:'Eine Genehmigung fehlt uns noch.', z2:'Da bin ich dran.'},
+     {z1:'Wir werden das angehen.', z2:'Noch dieses Jahr, vielleicht.'},
+     {z1:'Schön, dass Sie da sind! Wirklich.', z2:'Ihr Jahresgespräch führe ich.'},
+     {z1:'Zuständig wäre die Amtsleitung.', z2:'Nur weiß ich nicht, wer sie ist.'},
+     {z1:'Konfetti habe ich schon bestellt.', z2:'Nur die Genehmigung fehlt noch.'},
+   ],
+   akt:[
+     'Elf Jahre Vorfreude, noch mehr Händedruck.',
+     'Wer zuständig ist? Klären wir noch.',
+     'Der Schreibtisch ist leer. Ich weiß warum.',
+     'Ich habe gestanden. Das Fest steht noch aus.',
+     'Wir werden das Fest feiern. Irgendwann.',
+   ]},
+
+  {key:'bramsche', name:'Registratorin Ottilie Bramsche', tx:18, ty:37, opt:'fest', hair:'h3', chest:2, legs:2,
+   grund:[
+     {z1:'Ordnung ist, was man wiederfindet.', z2:'Alles andere ist Zufall.'},
+     {z1:'In welcher Sache sprechen Sie mich an?', z2:'Ohne Antrag sage ich nichts.'},
+     {z1:'Ein Antrag, korrekt gestellt, öffnet alles.', z2:'Fehlt er, bleibt alles zu.'},
+     {z1:'Anlage Drei schläft auf der richtigen Akte.', z2:'Ich wecke sie nicht.'},
+     {z1:'Einmal gab ich etwas ohne Antrag heraus.', z2:'Das war der Brandabschnitt.'},
+     {z1:'Was nicht abgelegt ist, existiert nicht.', z2:'In welcher Sache also?'},
+   ],
+   akt:[
+     'Ein ruhiger Tag. Die Akten liegen richtig.',
+     'Neuerdings fragen alle nach der Amtsleitung.',
+     'Der Schreibtisch bleibt leer. Merkwürdig.',
+     'Ein Sack ohne lesbare Anschrift. Seltsam.',
+     'Ablage V ist offen. Ich lege nichts mehr ab.',
+   ],
+   antworten:[
+     {frage:'Was war der Vorgang 1?', z1:'Vorgang 1 ist der Friedensvertrag.', z2:'Nie geschlossen, nur ausgesetzt.'},
+     {frage:'Wo ist die Amtsleitung?', z1:'N.N. heißt nicht genannt.', z2:'Der Posten ist unbesetzt.'},
+     {frage:'Was ist der Brandabschnitt?', z1:'Er liegt in Zuständigkeitsbereich VII.', z2:'Dort endete meine Ausnahme.'},
+     {frage:'Was ist Ablage V?', z1:'Ablage V führt ins Schattenland.', z2:'Zugang nur mit Ausfertigung.'},
+     {frage:'Wer ist Fürst Nachtrag?', z1:'Fürst Nachtrag ist Herr über Ablage V.', z2:'Er steht im Brief als Empfänger.'},
+     {frage:'Wer ist zuständig für das Dorffest?', z1:'Zuständig wäre die Amtsleitung.', z2:'Diese Stelle ist unbesetzt.'},
+     {frage:'Was liegt in Ablage auf Eis?', z1:'Ablage auf Eis führt nach Frostkamm.', z2:'Dort liegt seit Jahren Ruhe.'},
+     {frage:'Was ist Ablage A?', z1:'Ablage A ist das Grasland.', z2:'Die harmloseste aller Ablagen.'},
+   ],
+   abweisung:[
+     {z1:'Eine Frage pro Schicht.', z2:'Die Ihre ist verbraucht.'},
+     {z1:'In welcher Sache?', z2:'Das hatten wir schon.'},
+     {z1:'Antrag für heute erledigt.', z2:'Morgen wieder.'},
+   ]},
+
+  {key:'zapf', name:'Hausmeister Reinhold Zapf', tx:16, ty:46, opt:'wander', sheet:'jack',
+   grund:[
+     {z1:'Ich reparier das. Nicht fragen.', z2:'Weil sonst nichts läuft.'},
+     {z1:'Das Regal wackelt. Ich keile es fest.', z2:'Sonst kippt hier alles um.'},
+     {z1:'Ich habe Werkzeug dabei.', z2:'Immer. Für alle Fälle.'},
+     {z1:'Kaffee tropft. Ich beseitige das.', z2:'Kaffee ist ein Betriebsrisiko.'},
+     {z1:'Tür klemmt. Ich mach sie leise.', z2:'Damit niemand was merkt.'},
+     {z1:'Registratur ruft schon wieder.', z2:'Ich hab aber nur zwei Hände.'},
+   ],
+   akt:[
+     'Neuer Außendienstler. Tür schon kaputt?',
+     'Fest oder nicht, Bühne muss stehen.',
+     'Leerer Stuhl. Quietscht trotzdem.',
+     'Sack ist eingerissen. Ich nähe das.',
+     'Nichts kaputt. Komisches Gefühl.',
+   ]},
+
+  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', tx:10, ty:42, opt:'wander', sheet:'chloe',
+   grund:[
+     {z1:'Man erledigt Monster nicht.', z2:'Man beantwortet sie.'},
+     {z1:'Und wenn er einfach nur wartet?', z2:'Das fragt hier keiner gern.'},
+     {z1:'Sechstes Jahr Praktikum, immer noch unbezahlt.', z2:'Es fehlt nur eine Unterschrift.'},
+     {z1:'Es fehlt eine weisungsbefugte Person.', z2:'Es gibt sie einfach nicht.'},
+     {z1:'Mein Traum: ein Amt für Monster.', z2:'Nicht gegen sie, für sie.'},
+     {z1:'Ich stelle nur die Fragen, die stören.', z2:'Antworten fehlen meistens.'},
+   ],
+   akt:[
+     'Ich zähle mit, aber ich frage schon.',
+     'Jetzt fragt endlich jemand mit mir.',
+     'Ein leerer Stuhl. Genau mein Problem.',
+     'Ich habe nur gefragt, wer lesen kann.',
+     'Vielleicht braucht er nur eine Antwort.',
+   ]},
+
+  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:22, ty:41, opt:'wander', sheet:'fin',
+   grund:[
+     {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Trepp.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Der Brief ist immer im Sack.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Die Adresse ist unleserlich.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Ich starre sie schon ewig an.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Vielleicht heute lesbar?'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Zustellung bleibt Zustellung.'},
+   ],
+   akt:[
+     'Ein Brief im Sack, wie immer.',
+     'Alle reden vom Amt, ich trage den Brief.',
+     'Ein leerer Stuhl, ein Brief, der bleibt.',
+     'Sieben Generationen, und es ist ein Name.',
+     'Sieben Generationen, jetzt oder nie.',
+   ]},
+
+  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', tx:8, ty:38, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
+   grund:[
+     {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
+     {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie.'},
+     {z1:'Ich habe mich damals beschwert.', z2:'Dann hat man mich eingestellt.'},
+     {z1:'Ich trage eine Krawatte.', z2:'Fällt niemandem auf.'},
+     {z1:'Ich beschwere mich auch über mich.', z2:'Berechtigt, wie meistens.'},
+     {z1:'Das ist nicht meine Zuständigkeit.', z2:'Ich mache es trotzdem.'},
+   ],
+   akt:[
+     'Noch ein Formular, noch keine Antwort.',
+     'Jetzt braucht auch Zwirn die Amtsleitung.',
+     'Die Stelle ist leer, ich bin es nicht.',
+     'Niemand fragt mich. Jetzt fragen alle.',
+     'Auch jetzt ist es nicht meine Zuständigkeit.',
+   ]},
+
+  {key:'milb', name:'Gutachter Dr. phil. Milb', tx:11, ty:39, opt:'wander', sheet:'buba',
+   grund:[
+     {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
+     {z1:'Diese Kammer würde ich einstufen.', z2:'Ungefragt, versteht sich.'},
+     {z1:'Manche Kammern fühlen sich falsch an.', z2:'Das beunruhigt mich.'},
+     {z1:'Meine Zahlen stimmen immer. Fast.', z2:'Nur wo, weiß ich nicht.'},
+     {z1:'Ein Gutachten ist nie fertig.', z2:'Nur eingestellt.'},
+     {z1:'Andere raten. Ich stufe ein.', z2:'Das ist ein Unterschied.'},
+   ],
+   akt:[
+     'Die neue Kraft schätze ich auf Zwei.',
+     'Ohne Freigabe stufe ich das niedrig ein.',
+     'Ein leerer Stuhl lässt sich nicht bewerten.',
+     'Diese Schrift verweigert sich der Note.',
+     'Diesmal setze ich keine Note mehr an.',
+   ]},
+
+  {key:'pommer', name:'Materialausgabe Herr Pommer', tx:13, ty:45, opt:'wander', sheet:'katy',
+   grund:[
+     {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
+     {z1:'Auf dem Antrag steht Montag. Nicht heute.', z2:'Kommen Sie am Montag wieder.'},
+     {z1:'Wortlaut ist Wortlaut. Sonst nichts.', z2:'Ich lese nur vor.'},
+     {z1:'Steht da leicht, geht leicht heraus.', z2:'Nicht schwer. Leicht.'},
+     {z1:'Ich betone nur, was dasteht.', z2:'Manchmal falsch betont.'},
+     {z1:'Kein Antrag, kein Material. So steht es.', z2:'So steht es.'},
+   ],
+   akt:[
+     'Antrag korrekt, Ausgabe korrekt. Nächster.',
+     'Zwirns Antrag fehlt. Kein Fest ohne Antrag.',
+     'Wer unterschreibt jetzt meine Freigaben?',
+     'Ein Sack, kein Antrag dazu. Unglaublich.',
+     'Zustellen steht nicht in meinem Bestand.',
+   ]},
+
+  {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', tx:20, ty:39, opt:'wander', sheet:'bruno',
+   grund:[
+     {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
+     {z1:'Zum Letzten Stempel schließt nie zu früh.', z2:'Bleib, so lang du willst.'},
+     {z1:'Alle hauen ab, bevor der Käse kommt.', z2:'Schade eigentlich.'},
+     {z1:'Einmal bleibt wer bis zum Schluss.', z2:'Das wär mal was.'},
+     {z1:'Hier redet sich manches leichter.', z2:'Bei Suppe und Bier.'},
+     {z1:'Kaum eingekehrt, schon wieder Dienst.', z2:'So ein Jammer.'},
+   ],
+   akt:[
+     'Ein neues Gesicht am Tresen heute.',
+     'Die Gespräche werden länger, die Krüge auch.',
+     'Der Stammtisch hat eine Lücke.',
+     'Heute sitzen alle enger zusammen.',
+     'Es fühlt sich an wie ein letzter Abend.',
+   ]},
+
+  {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', tx:9, ty:47, opt:'fest', hair:'h1',
+   grund:[
+     {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
+     {z1:'Der Neue. Schlägt wieder alles kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
+     {z1:'Der Neue. Läuft, wo ich nur sitze.', z2:'Manche stehen auf. Ich nicht.'},
+     {z1:'Der Neue. Mutig. Nicht mein Bereich.', z2:'Ich sag nur, was ich sehe.'},
+     {z1:'Der Neue. Wieder klatschnass vom Kampf.', z2:'Ich bleibe trocken. Prinzip.'},
+     {z1:'Der Neue. Frag lieber Herrn Pahl.', z2:'Der hat mehr Geduld als ich.'},
+   ],
+   akt:[
+     'Der Neue zählt Konfetti. Süß.',
+     'Krieg ausgesetzt. Ich sitze weiter.',
+     'N.N. Wenigstens fragt niemand nach mir.',
+     'Ich lese keine Adressen. Ich sitze.',
+     'Der Neue zieht los. Kein Kommentar heut.',
+   ],
+   anlass:{
+     crit:[
+       {z1:'Direkt ins Aktenzeichen.', z2:'Pahl schweigt. Wie erwartet.'},
+       {z1:'Das war kein Zufall. Glaub ich.', z2:'Pahl, klatsch doch mal mit.'},
+       {z1:'Ein Treffer für die Geschichtsbücher.', z2:'Pahl nickt. Immerhin das.'},
+     ],
+     levelup:[
+       {z1:'Der Neue wird befördert. Von wem?', z2:'Pahl weiß es auch nicht.'},
+       {z1:'Höher, weiter, immer noch sitzend hier.', z2:'Pahl klatscht. Ich nicke.'},
+       {z1:'Stufe hoch. Bank bleibt gleich.', z2:'Pahl, freu dich für ihn.'},
+     ],
+     ultimate:[
+       {z1:'Na sowas. Ganz schön viel Zauber.', z2:'Pahl duckt sich schon mal.'},
+       {z1:'Das hat sicher eine Genehmigung. Oder?', z2:'Pahl fragt nicht nach. Klug.'},
+       {z1:'So viel Licht. Meine Augen, meine Akte.', z2:'Pahl blinzelt. Sonst nichts.'},
+     ],
+     fluch:[
+       {z1:'Neuer Fluch. Kleingedrucktes, wie immer.', z2:'Pahl liest es. Ich nie.'},
+       {z1:'Jede Gabe hat einen Haken. Amtlich.', z2:'Pahl nennt das gerecht.'},
+       {z1:'Noch ein Fluch. Passt zur Sammlung.', z2:'Pahl seufzt fürs Protokoll.'},
+     ],
+     goldfund:[
+       {z1:'So viel Gold. Ich brauch keins.', z2:'Pahl rechnet schon mit.'},
+       {z1:'Klingt nach Feierabend. Für dich.', z2:'Pahl fragt: für wen sonst?'},
+       {z1:'Viel Gold. Wenig Aussicht auf Rente.', z2:'Pahl lacht. Ich nicht.'},
+     ],
+     kammerAbbruch:[
+       {z1:'Nichts gefunden. Passiert den Besten.', z2:'Pahl zählt trotzdem mit.'},
+       {z1:'Leere Kammer. Voller Rückweg.', z2:'Pahl seufzt lauter als ich.'},
+       {z1:'Manchmal ist leer auch eine Antwort.', z2:'Pahl widerspricht. Natürlich.'},
+     ],
+     untaetigkeit:[
+       {z1:'Der Neue steht. Wie ich. Interessant.', z2:'Pahl findet das gruselig.'},
+       {z1:'Willkommen im Klub. Bank ist frei.', z2:'Pahl rückt trotzdem nicht.'},
+       {z1:'Steh nicht so rum. Das ist mein Job.', z2:'Pahl übernimmt notfalls.'},
+     ],
+   }},
+
+  {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', tx:11, ty:47, opt:'fest', hair:'h4',
+   grund:[
+     {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
+     {z1:'Sie kämpfen. Ich sehe nur zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
+     {z1:'Die Bank ist warm. Ich bleibe.', z2:'Kommentieren wärmt genauso gut.'},
+     {z1:'So nannte ich schon viele Neue.', z2:'Der Name bleibt. Sie wechseln.'},
+     {z1:'Ob ich ein Vorgang bin? Unhöflich.', z2:'Fragen Sie das nicht noch mal.'},
+     {z1:'Die Sonne dreht sich. Ich nicht.', z2:'Kommentar ist auch ein Beruf.'},
+   ],
+   akt:[
+     'Wieder einer, der alles ernst nimmt.',
+     'Ein Fest ohne Erlaubnis. Wie hübsch.',
+     'Ein Platz bleibt leer. Auffällig leer.',
+     'Ein Brief, den keiner lesen will.',
+     'Es wird still. Auffällig still hier.',
+   ],
+   anlass:{
+     crit:[
+       {z1:'Ein Treffer. Sauber getroffen.', z2:'Lott hat sowas noch nie gesehen.'},
+       {z1:'Das saß. Sogar ich hab\'s gemerkt.', z2:'Lott schläft schon wieder.'},
+       {z1:'Kritisch. Sehr kritisch sogar.', z2:'Notieren Sie das, Lott.'},
+     ],
+     levelup:[
+       {z1:'Eine Stufe höher. Wie fein.', z2:'Lott zählt bestimmt falsch.'},
+       {z1:'Sie wachsen. Ich sitze weiter.', z2:'Lott klatscht schon wieder.'},
+       {z1:'Stufenaufstieg. Herzlichen Glückwunsch.', z2:'Lott, klatschen Sie leiser.'},
+     ],
+     ultimate:[
+       {z1:'Das war groß. Richtig groß.', z2:'Lott hat die Augen zugemacht.'},
+       {z1:'Ein großer Zauber. Beeindruckend.', z2:'Lott, aufwachen. Das war gut.'},
+       {z1:'So viel Kraft für so wenig Feind.', z2:'Lott findet das übertrieben.'},
+     ],
+     fluch:[
+       {z1:'Ein Fluch mehr. Passt zu Ihnen.', z2:'Lott nennt das nur konsequent.'},
+       {z1:'Schon wieder ein Haken dabei.', z2:'Lott freut sich klammheimlich.'},
+       {z1:'Ein Fluch. Man gewöhnt sich daran.', z2:'Lott gewöhnt sich nie.'},
+     ],
+     goldfund:[
+       {z1:'So viel Gold. Alles echt?', z2:'Lott zählt es heimlich mit.'},
+       {z1:'Ein Sack voll Glück. Kommt kaum vor.', z2:'Lott will die Hälfte haben.'},
+       {z1:'Reich geworden. Vorübergehend.', z2:'Lott nennt das Statistik.'},
+     ],
+     kammerAbbruch:[
+       {z1:'Nichts gefunden. Auch eine Leistung.', z2:'Lott sieht das anders.'},
+       {z1:'Leer rausgekommen. Ehrlich immerhin.', z2:'Lott nennt das Verschwendung.'},
+       {z1:'Keine Beute. Kommt öfter vor.', z2:'Lott führt da eine Liste.'},
+     ],
+     untaetigkeit:[
+       {z1:'Der Neue steht. Ich sitze auch.', z2:'Lott findet das gemütlich.'},
+       {z1:'Nichts passiert. Endlich Ruhe.', z2:'Lott redet trotzdem weiter.'},
+       {z1:'Sie stehen nur. Ich auch.', z2:'Lott hält das für Faulheit.'},
+     ],
+   }},
 ];
 let trees = [];
 const decos = [];      // Pilze, Windmühle, Dorf-Gebäude (big:true) — reine Optik, keine Kollision
@@ -1878,9 +2186,12 @@ function genMap(){
     }
   }
 
-  // --- G5: Dorf-NPCs — Staffage mit kleinem Wanderradius um einen Heimatanker ---
+  // --- G5/W3: Dorf-Figuren — Staffage mit kleinem Wanderradius um einen Heimat-
+  // anker, drei sind stattdessen Held-Komposite und stehen fest (siehe opt:'fest'
+  // oben). Blasenfelder liegen im Objekt selbst (keine Modulvariable wie knBubble),
+  // weil es jetzt elf statt eine Figur mit eigenem Sprechzustand sind.
   npcs.length = 0;
-  for(const nd of NPC_DEFS){
+  for(const nd of DORF_FIGUREN){
     let tx = nd.tx, ty = nd.ty;
     if(!walkT(tx,ty)){                       // Heimatanker landete auf einer nicht-begehbaren Kachel
       for(let tries=0; tries<20 && !walkT(tx,ty); tries++){
@@ -1889,8 +2200,16 @@ function genMap(){
       }
     }
     const homeX = tx*TS+16, homeY = ty*TS+16;
-    npcs.push({key:nd.key, homeX, homeY, x:homeX, y:homeY, sheetIdle:`cfnpc_${nd.key}_idle`, sheetWalk:`cfnpc_${nd.key}_walk`,
-               flip:false, vx:0, vy:0, restT:rr(0,3), phase:rr(0,10)});
+    const idleKey = nd.opt === 'fest' ? `npc_baked_${nd.key}` : `cfnpc_${nd.sheet}_idle`;
+    const walkKey = nd.opt === 'fest' ? idleKey : `cfnpc_${nd.sheet}_walk`;
+    // sc (Skalierung) wird bewusst nicht hier berechnet: PLAYER_SC ist an dieser
+    // Stelle (genMap() läuft beim Skriptstart, lange vor der PLAYER_SC-Deklaration
+    // weiter unten) noch in der TDZ. DRAW_NPC berechnet sc pro Zeichenschritt,
+    // genau wie drawAlter() es für Knöterich schon immer tut.
+    npcs.push({key:nd.key, figur:nd, homeX, homeY, x:homeX, y:homeY, sheetIdle:idleKey, sheetWalk:walkKey,
+               fest:nd.opt === 'fest', tint:nd.tint||null, tintA:nd.tintA,
+               flip:false, vx:0, vy:0, restT:rr(0,3), phase:rr(0,10),
+               bubbleIdx:-1, bubbleText1:'', bubbleText2:'', bubbleHideAt:0});
   }
 
   // G5: Wolkenschatten übers Grasland, driften über die ganze Kartenbreite (nicht
@@ -3219,6 +3538,15 @@ function knAssertCaps(){
   rows.push(['Da draußen stehen verschlossene Türen.',48],['Gebührenbescheid. F.',32],['Die Hand im Gürtel.',32]);
   for(const anlass in RANDNOTIZ) for(const l of RANDNOTIZ[anlass]) rows.push([l,44]);
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
+  // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
+  // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
+  for(const fig of DORF_FIGUREN){
+    for(const p of fig.grund) rows.push([p.z1,48],[p.z2,32]);
+    for(const a of fig.akt) rows.push([a,44]);
+    if(fig.antworten) for(const qa of fig.antworten) rows.push([qa.z1,48],[qa.z2,32]);
+    if(fig.abweisung) for(const ab of fig.abweisung) rows.push([ab.z1,48],[ab.z2,32]);
+    if(fig.anlass) for(const key in fig.anlass) for(const p of fig.anlass[key]) rows.push([p.z1,48],[p.z2,32]);
+  }
   // Das Rekord-Suffix aus knBegruessungLine() steht hier bewusst nicht: es prüft seine
   // Gesamtlänge dort selbst gegen 44 und fällt sonst auf die Grundzeile zurück. Der
   // Jahresgespräch-Satz ebenso wenig, der ist freier Panel-Text ohne Zeichendeckel.
@@ -3246,6 +3574,9 @@ let knStuckArmed = true, knIdleNotizDone = false;
 const knBubble = {visible:false, text1:'', text2:'', wasIn:false, enterT:0};
 const knZettel = {active:false};
 const knRand = {active:false};
+// W3: Sitzungszustand für Dorf-Figuren, nicht persistiert, wie kn.history schon
+// nicht die Anlässe selbst speichert, sondern nur gezeigte Zettel.
+let letzterAnlass = null, bramscheFragePending = false;
 let knZettelHideAt = 0, knRandHideAt = 0;
 
 function knAllDone(){
@@ -3336,6 +3667,7 @@ function knShowLineGated(anlass, line){
   return true;
 }
 function knRandnotiz(anlass){
+  letzterAnlass = anlass;   // W3: Lott/Pahl kommentieren das, unabhängig von Knöterichs eigenen Gates
   const pool = RANDNOTIZ[anlass]; if(!pool || !pool.length) return false;
   if(!knLineErlaubt(anlass)) return false;   // Gates vor Pool-Auswahl, hurtMon ist Hot Path
   let line = pool[Math.floor(Math.random()*pool.length)];
@@ -4114,7 +4446,7 @@ function modulGeloest(k, mod){
 // --- Aktionen (Taste F / Kontext-Button) ------------------------------------
 // Kein Closure-Bau pro Frame: der beste Kandidat landet in drei festen Feldern.
 let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9, AKT_AMT=10;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9, AKT_AMT=10, AKT_NPC=11;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -4142,6 +4474,7 @@ function scanAktion(dt){
     if(currentLevel !== 1) return;
     // Phase 5: Knöterich bietet "Nachfragen" nur, wenn schon einmal ein Zettel gezeigt wurde.
     if(kn.history.length) aktBiete(KN_POS.x, KN_POS.y, AKT_NACHFRAGE, null, 'Nachfragen');
+    for(const n of npcs) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');   // W3: eigene Weltposition je Figur
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
     if(CONFIG.schichtModus) aktBiete(AMT_TUER.x, AMT_TUER.y, AKT_AMT, null, 'Amtsstube');   // G5: Dorf-Gebäude
     return;
@@ -4174,8 +4507,50 @@ function fuehreAktion(){
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
     case AKT_NACHFRAGE: knNachfragen(); break;
+    case AKT_NPC:     npcSprechen(aktObj); break;
     case AKT_AMT:     amtFensterOeffnen(); break;
   }
+}
+
+// W3: Dorf-Figuren ansprechen. Kein Dialogbaum, kein Menü — ein Tastendruck
+// schaltet die Figur eine Zeile weiter (Grundzeilen-Kreislauf, zuletzt die
+// Aktzeile, die sich mit aktStand() automatisch ändert), Bramsche und der
+// Lott/Pahl-Chor weichen davon situativ ab, siehe unten.
+function npcCycle(n, fig){
+  n.bubbleIdx = (n.bubbleIdx + 1) % (fig.grund.length + 1);
+  if(n.bubbleIdx < fig.grund.length){
+    const p = fig.grund[n.bubbleIdx];
+    n.bubbleText1 = p.z1; n.bubbleText2 = p.z2;
+  } else {
+    n.bubbleText1 = fig.akt[aktStand() - 1]; n.bubbleText2 = '';
+  }
+}
+function npcSprechen(n){
+  const fig = n.figur;
+  if(fig.key === 'bramsche'){
+    if(bramscheFragePending){
+      const qa = fig.antworten[Math.floor(Math.random() * fig.antworten.length)];
+      n.bubbleText1 = qa.z1; n.bubbleText2 = qa.z2;
+      bramscheFragePending = false; n.bramscheJustAsked = true;
+    } else if(n.bramscheJustAsked){
+      const ab = fig.abweisung[Math.floor(Math.random() * fig.abweisung.length)];
+      n.bubbleText1 = ab.z1; n.bubbleText2 = ab.z2;
+      n.bramscheJustAsked = false;
+    } else {
+      npcCycle(n, fig);
+    }
+  } else if(fig.anlass){
+    const pool = letzterAnlass ? fig.anlass[letzterAnlass] : null;
+    if(pool && pool.length){
+      const line = pool[Math.floor(Math.random() * pool.length)];
+      n.bubbleText1 = line.z1; n.bubbleText2 = line.z2;
+    } else {
+      npcCycle(n, fig);
+    }
+  } else {
+    npcCycle(n, fig);
+  }
+  n.bubbleHideAt = gameT + 4;
 }
 
 // --- G5: Amtsstube-Panel (Kontext-Taste F am Amt-Gebäude) -------------------
@@ -5216,6 +5591,7 @@ function update(dt){
   // wird nirgends gebraucht — deshalb sqDist gegen das Quadrat (Regressionsregel 3).
   const NPC_HOME_R = 40, NPC_HOME_R2 = NPC_HOME_R * NPC_HOME_R;
   for(const n of npcs){
+    if(n.fest) continue;   // W3: Held-Komposit-Figuren stehen fest wie Knöterich, keine Wanderung
     n.restT -= dt;
     if(n.restT <= 0){
       n.restT = rr(1.5, 4);
@@ -5417,7 +5793,11 @@ function render(){
       case DRAW_NPC: { drawShadowEllipse(o.x, o.y+4, 9);   // G5: Dorf-Staffage, gleiches Muster wie DRAW_CRITTER
                       const nmoving = !!(o.vx||o.vy);
                       const nkey = nmoving ? o.sheetWalk : o.sheetIdle;
-                      drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, 1, o.flip); break; }
+                      const nsc = o.fest ? PLAYER_SC * 0.92 : 1;   // W3: Komposit-Figuren im Held-Maßstab
+                      drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, nsc, o.flip, o.tint, o.tintA);
+                      if(o.key === 'bramsche') drawAnlage3(o.x + 14, o.y + 6);
+                      if(o.bubbleText1 && gameT < o.bubbleHideAt) drawBubble(o.x, o.y, o.bubbleText1, o.bubbleText2);
+                      break; }
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
       case DRAW_KESSEL:  drawKessel(); break;
@@ -5523,6 +5903,23 @@ function drawKessel(){
 // grau getönt über tintedSheet() (Cache aus drawPlayer()). Ausdrücklich kein
 // ctx.filter, siehe die Kommentare bei drawPlayer()/drawMon() weiter unten.
 // Trägt bewusst keine Rüstungs-Layer (Knöterich war schon vor G2 unbewaffnet/-gerüstet).
+function drawBubble(x, y, text1, text2){
+  if(!text1) return;
+  ctx.save();
+  ctx.textAlign = 'center'; ctx.font = 'bold 11px Courier New';
+  const by = y - 48;
+  const w = Math.max(ctx.measureText(text1).width, ctx.measureText(text2 || '').width) + 16;
+  const h = text2 ? 34 : 20;
+  ctx.fillStyle = 'rgba(20,14,10,.85)'; ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  if(ctx.roundRect) ctx.roundRect(x - w/2, by - h + 8, w, h, 6); else ctx.rect(x - w/2, by - h + 8, w, h);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#f4e6c8';
+  ctx.fillText(text1, x, by - (text2 ? 12 : 4));
+  if(text2) ctx.fillText(text2, x, by + 2);
+  ctx.restore();
+}
+
 function drawAlter(){
   const x = KN_POS.x, y = KN_POS.y;
   drawShadowEllipse(x, y + 2, 10);
@@ -5535,21 +5932,17 @@ function drawAlter(){
   drawSpriteAt(hairKey, f, '#8a8a8a', 0.82);
   ctx.restore();
 
-  if(knBubble.visible){
-    ctx.save();
-    ctx.textAlign = 'center'; ctx.font = 'bold 11px Courier New';
-    const by = y - 48;
-    const w = Math.max(ctx.measureText(knBubble.text1).width, ctx.measureText(knBubble.text2 || '').width) + 16;
-    const h = knBubble.text2 ? 34 : 20;
-    ctx.fillStyle = 'rgba(20,14,10,.85)'; ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    if(ctx.roundRect) ctx.roundRect(x - w/2, by - h + 8, w, h, 6); else ctx.rect(x - w/2, by - h + 8, w, h);
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#f4e6c8';
-    ctx.fillText(knBubble.text1, x, by - (knBubble.text2 ? 12 : 4));
-    if(knBubble.text2) ctx.fillText(knBubble.text2, x, by + 2);
-    ctx.restore();
-  }
+  if(knBubble.visible) drawBubble(x, y, knBubble.text1, knBubble.text2);
+}
+
+// W3: der Kater Anlage 3, kein Sprite, keine Kontextaktion — laut Kapitel 8
+// stumm, "sie weckt ihn nicht". Reine liegende Form neben Bramsches Kachel.
+function drawAnlage3(x, y){
+  ctx.save();
+  ctx.fillStyle = '#2a2a2a';
+  ctx.beginPath(); ctx.ellipse(x, y, 7, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x-6, y-3, 3, 3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
 }
 
 function drawShadowEllipse(x, y, rx){
@@ -5997,6 +6390,7 @@ function startShift(){
   knPlayStartT = gameT;
   // In der allerersten Schicht übernimmt Beat 1 die Einführung, keine Begrüßung.
   if(amt.schichten >= 1) knBegruessungPending = knBegruessungLine();
+  bramscheFragePending = true;   // W3: eine Frage pro Schicht, neu scharf ab der nächsten
 }
 
 // Schicht beenden: Übertrag berechnen (Gold anteilig, Zutaten gekappt nach Seltenheit
@@ -6060,6 +6454,11 @@ function endShift(reason){
 function nachSchicht(){
   if(amt.schichten % 10 === 0) showJahresgespraech(); else showDorf();
 }
+
+// W3: Aktstand aus der bestehenden Schichtzahl abgeleitet, nichts Neues
+// gespeichert. Deckt sich mit Kapitel 9: Akt I = Schicht 1-10 (amt.schichten
+// 0-9), ... Akt V ab Schicht 41 (amt.schichten >= 40), gedeckelt bei 5.
+const aktStand = () => Math.min(5, Math.floor(amt.schichten / 10) + 1);
 
 function showJahresgespraech(){
   MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
@@ -6505,6 +6904,7 @@ loadAssets().then(() => {
   assertRigRegistrations();
   prewarmMonsterTints();
   bakeUiSkin();
+  bakeAllNpcSheets();
   initFloorGraphics();
   showStartScreen();
   requestAnimationFrame(loop);
