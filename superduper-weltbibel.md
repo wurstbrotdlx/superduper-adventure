@@ -503,7 +503,7 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
 
 ## 14. Wie wir das implementieren
 
-Fünf Bauabschnitte, in der Reihenfolge des Ertrags. Jeder ist für sich abnehmbar. **Keiner braucht ein neues System.** Das ist die Bedingung, unter der dieses Dokument steht.
+Sechs Bauabschnitte, in der Reihenfolge des Ertrags. Jeder ist für sich abnehmbar. **Keiner braucht ein neues System.** Das ist die Bedingung, unter der dieses Dokument steht.
 
 **Statusmarker, gilt projektweit (F78).** Jede Phasen- oder Bauabschnitts-Überschrift in allen Plandokumenten trägt ihren Stand als Suffix hinter einem Gedankenstrich: `— ERLEDIGT` oder `— OFFEN`, optional gefolgt vom Commit in Klammern. Kein zweiter Marker weiter unten, keine Kleinschreibung, keine Statuszelle in Tabellen. Wer eine Phase abschließt, zieht den Marker im selben Commit nach. Grund: `git log` ist die einzige sonst verlässliche Statusquelle und kennt kein Vorhaben, das noch nicht angefangen wurde.
 
@@ -557,6 +557,17 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Akt V: eine neue Kontextaktion **Zustellen** am Boss, angeboten nur mit Ausfertigung im Bestand. Sie beendet den Kampf und öffnet das Schlusspanel. Der Kampf selbst bleibt vollständig unverändert, das ist wichtig: das Finale ist ein Ausweg, keine Umschreibung.
 
 **Abnahme:** Wer nie zustellt, spielt das Spiel wie bisher weiter, unendlich. Wer zustellt, sieht das Ende. Beides ist ein gültiger Zustand. `CONFIG.schichtModus = false` bricht nichts, dort läuft die Geschichte über die Blätter allein.
+
+### W6: Rang und Laufbahn — ERLEDIGT
+
+* Amtsbezeichnung, Laufbahngruppe und Dienstverhältnis (Kapitel 17) sind aus `amt.schichten` **abgeleitet**, genau wie der bestehende Aktstand — kein neues `amt`-Feld, keine `loadAmt()`-Ladezeile, keine zweite Wahrheitsquelle.
+* Beförderung alle 5 Schichten, 19 benannte Ränge bis Schicht 90, danach römische Ziffern im Kreis (18.4).
+* Jede zweite Beförderung fällt auf das bestehende Jahresgespräch (`amt.schichten % 10 === 0`) und läuft dort als Zeremonie: Urkunde, Aushändigung, „Auf die Form!", Amtsmarsch bricht nach dem dritten Takt ab, ein Knöterich-Satz, der von Mal zu Mal wärmer wird.
+* Dienstausweis als neuer Bildschirm aus dem Inventar, Bauform wie der Kessel-Knopf. Lichtbild ist ein Ausschnitt aus dem bestehenden Held-Bake, kein neues Grafiksystem.
+* Zwei Insignien wirken echt (18.7): Zeichnungsbefugnis ab gehobenem Dienst (Voraussetzung für W5), zweiter Registraturschlüssel ab höherem Dienst (Bramsches Abweisung entfällt).
+* Die Anrede der Figuren (18.5) bleibt ausdrücklich offen.
+
+**Abnahme:** Der Rang klebt am Dienstposten, nicht an der Person, wird nie zurückgesetzt und nie herabgestuft (18.2). Er kostet kein Gold und lässt sich nicht kaufen.
 
 ### Was wir ausdrücklich nicht bauen
 

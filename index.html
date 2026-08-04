@@ -137,6 +137,12 @@
   #kesselHint{color:#6aff8f;font-size:11px;font-weight:normal;}
   #kesselBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
 
+  /* W6: Dienstausweis-Knopf, gleiche Bauform wie #kesselBtn, andere Farbe. */
+  #ausweisBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:40px;margin-bottom:10px;
+    border:2px solid #8a6d3b;border-radius:6px;background:#201a10;color:#e8d9a8;font-weight:bold;font-size:13px;cursor:pointer;}
+  #ausweisBtn:hover{background:#2a2214;border-color:#c9a227;}
+  #ausweisBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
+
   /* Ton-Steuerung sitzt unten im Inventar, nicht mehr im Gürtel */
   #musikBox{margin-top:12px;padding-top:8px;border-top:1px solid #4c4030;}
   #musikBox h4{margin:0 0 6px;color:#f4d97a;font-size:12px;}
@@ -182,6 +188,18 @@
           display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;}
   .symBtn:hover{border-color:#c9a227;background:#241c10;}
   #schlossMsg{margin-top:9px;font-size:11px;color:#9a8a5f;font-style:italic;text-align:center;}
+
+  /* --- W6: Dienstausweis (18.8), gleiche Bauform wie #schloss/#kessel --- */
+  #ausweis{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(340px,calc(100vw - 32px));z-index:21;display:none;
+       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
+  #ausweis h2{margin:0 0 10px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #ausweisKopf{display:flex;gap:12px;align-items:flex-start;}
+  #ausweisFoto{image-rendering:pixelated;width:96px;height:108px;flex:0 0 auto;border:2px solid #6b5a3a;border-radius:4px;background:#17130d;}
+  #ausweisFelder{font-size:12px;line-height:1.7;}
+  #ausweisFelder b{color:#f4d97a;}
+  #ausweisInsignien{margin-top:10px;padding-top:8px;border-top:1px solid #5a4a2d;font-size:11px;color:#c9b98a;text-align:left;}
+  #ausweisInsignien div{padding:2px 0;}
+  #ausweisFuss{margin-top:9px;font-size:10px;color:#9a8a5f;font-style:italic;text-align:center;}
 
   /* --- G5: Amtsstube (Dorf-Gebäude, Taste F) — gleiche Bauform wie #schloss --- */
   #amtFenster{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(320px,calc(100vw - 32px));z-index:22;display:none;
@@ -310,6 +328,11 @@
       top:56px; left:8px; transform:none; box-sizing:border-box;
       width:calc(100vw - 16px); background:rgba(20,14,24,.93);
     }
+    #ausweis{
+      top:56px; left:8px; transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px); max-height:calc(100vh - 96px); overflow-y:auto;
+      background:rgba(20,14,24,.93);
+    }
     #closeSchlossBtn{
       display:flex; align-items:center; justify-content:center;
       width:44px; height:44px; margin:-13px -14px -13px 0;
@@ -322,12 +345,12 @@
     .kTab{font-size:13px;}
 
     /* --- Close-Buttons: 44px Tap-Target --- */
-    #closeInvBtn, #closeSpellBtn, #closeKesselBtn{
+    #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeAusweisBtn{
       display:flex; align-items:center; justify-content:center;
       width:44px; height:44px; margin:-13px -14px -13px 0;
       font-size:20px; border-radius:8px; flex:0 0 auto;
     }
-    #closeInvBtn:active, #closeSpellBtn:active, #closeKesselBtn:active{background:rgba(201,162,39,.25);}
+    #closeInvBtn:active, #closeSpellBtn:active, #closeKesselBtn:active, #closeAusweisBtn:active{background:rgba(201,162,39,.25);}
 
     /* --- Zauberbaum: eine Spalte, horizontale Nodes --- */
     #spellCols{grid-template-columns:1fr; gap:0;}
@@ -386,6 +409,7 @@
 <div id="inv">
   <h2>INVENTAR & SKILLS <span style="cursor:pointer" id="closeInvBtn">✖</span></h2>
   <div id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
+  <div id="ausweisBtn" title="Dienstausweis">🪪 Dienstausweis</div>
   <div id="skillBox">
     <h4>SKILL PUNKTE: <span id="spCount">0</span></h4>
     <div class="skillRow"><span>💪 Stärke (+Dmg): <span id="skStr">0</span></span> <button class="skillBtn" id="btnStr">+</button></div>
@@ -445,6 +469,19 @@
   <div id="schlossAnz">_  _  _</div>
   <div id="schlossTasten"></div>
   <div id="schlossMsg">Drei Symbole. Der Code steht im Raum.</div>
+</div>
+
+<!-- W6: Dienstausweis (18.8), Bauform wie #schloss/#kessel. Statisches Gerüst
+     mit festen Kind-IDs, damit renderAusweis() nur Textknoten schreibt und
+     die Canvas nie ausgetauscht wird. -->
+<div id="ausweis">
+  <h2>🪪 <span id="ausweisTitel"></span> <span style="cursor:pointer" id="closeAusweisBtn">✖</span></h2>
+  <div id="ausweisKopf">
+    <canvas id="ausweisFoto" width="64" height="72"></canvas>
+    <div id="ausweisFelder"></div>
+  </div>
+  <div id="ausweisInsignien"></div>
+  <div id="ausweisFuss"></div>
 </div>
 
 <div id="amtFenster"></div>
@@ -3819,6 +3856,7 @@ const knRand = {active:false};
 // W3: Sitzungszustand für Dorf-Figuren, nicht persistiert, wie kn.history schon
 // nicht die Anlässe selbst speichert, sondern nur gezeigte Zettel.
 let letzterAnlass = null, bramscheFragePending = false;
+let bramscheLastAntwort = null;   // W6: Wiederholungssperre, gleiches Vorbild wie knRandLastLine
 let knZettelHideAt = 0, knRandHideAt = 0;
 
 function knAllDone(){
@@ -4783,13 +4821,20 @@ function npcSprechen(n){
   const fig = n.figur;
   if(fig.key === 'bramsche'){
     if(bramscheFragePending){
-      const qa = fig.antworten[Math.floor(Math.random() * fig.antworten.length)];
+      let qa = fig.antworten[Math.floor(Math.random() * fig.antworten.length)];
+      let guard = 0; while(qa === bramscheLastAntwort && guard++ < 8) qa = fig.antworten[Math.floor(Math.random() * fig.antworten.length)];
+      bramscheLastAntwort = qa;
       n.bubbleText1 = qa.z1; n.bubbleText2 = qa.z2;
       bramscheFragePending = false; n.bramscheJustAsked = true;
     } else if(n.bramscheJustAsked){
-      const ab = fig.abweisung[Math.floor(Math.random() * fig.abweisung.length)];
-      n.bubbleText1 = ab.z1; n.bubbleText2 = ab.z2;
       n.bramscheJustAsked = false;
+      if(rangSchluessel()){          // W6: zweiter Schlüssel, ab höherem Dienst (18.7) — die Frage ist nie verbraucht, es gibt nichts abzuweisen
+        bramscheFragePending = true;
+        npcCycle(n, fig);
+      } else {
+        const ab = fig.abweisung[Math.floor(Math.random() * fig.abweisung.length)];
+        n.bubbleText1 = ab.z1; n.bubbleText2 = ab.z2;
+      }
     } else {
       npcCycle(n, fig);
     }
@@ -4829,7 +4874,8 @@ function renderAmtFenster(){
   // also +1 wie in knBegruessungLine(). showDorf()/showJahresgespraech() bleiben beim Rohwert.
   el('amtFenster').innerHTML = `
     <h2>🏛 Amtsstube <span style="cursor:pointer;font-size:14px;" onclick="amtFensterSchliessen()">✖</span></h2>
-    <p style="font-size:12px;color:#9a8a5f;margin:0 0 8px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
+    <p style="font-size:12px;color:#9a8a5f;margin:0 0 4px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
+    <p style="font-size:11px;color:#c9b98a;margin:0 0 8px;">${rangName()}<br>${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <div style="text-align:left;">${rows}</div>
     ${auftragFensterBlock()}
     <button onclick="amtFeierabendNehmen()" style="width:100%;margin-top:12px;">FEIERABEND NEHMEN</button>
@@ -5233,6 +5279,7 @@ function fillZutatGrid(grid, onPick){
 //  Kladde, und zwar nur das, was tatsächlich passiert ist.
 // ===========================================================================
 let kesselOpen = false, kesselTab = 'kessel';
+let ausweisOpen = false;   // W6: Dienstausweis, gleiche Bauform wie kesselOpen
 const potSlots = [null, null, null];               // je {noun, adj}
 
 function addToPot(z){
@@ -5456,12 +5503,55 @@ function toggleKessel(){
   MUS.muffle();   // offenes Panel dämpft die Musik
 }
 
+// W6: Dienstausweis, wortgleiche Form wie toggleKessel() oben.
+function toggleAusweis(){
+  ausweisOpen = !ausweisOpen;
+  el('ausweis').style.display = ausweisOpen ? 'block' : 'none';
+  if(ausweisOpen){
+    if(invOpen) toggleInventory();   // der Knopf sitzt im Inventar: nicht zwei Panels stapeln
+    renderAusweis();
+    knIdleT = 0;
+  }
+  MUS.muffle();   // offenes Panel dämpft die Musik
+}
+
+// Passbild-Ausschnitt aus dem bestehenden Held-Bake (SHEETS['hero_baked']), Idle-
+// Frame 0, kein Zappeln auf einem Lichtbild. Kein neues Sheet, kein zweites Bake.
+// player.hair würfelt startShift() pro Schicht neu (18.8: "jeden Tag ein anderes
+// Gesicht"), das Aussehen ist also bereits nicht konstant, ohne dass es je jemand
+// gezeigt hat. Ausschnitt an den Alpha-Bounding-Boxen des Idle-Frames gemessen,
+// bei Bedarf sy/sh nachjustieren, falls eine Frisur oben anstößt.
+function renderAusweisFoto(){
+  const cv = el('ausweisFoto'), c = cv.getContext('2d');
+  c.imageSmoothingEnabled = false;
+  c.clearRect(0, 0, cv.width, cv.height);
+  const s = SHEETS['hero_baked'];
+  if(!s || !BAKED_HERO_ANIM) return;   // vor loadAssets(): leeres Feld, kein Fehler
+  const sx = BAKED_HERO_ANIM.idle.offset * 64 + 24;
+  c.drawImage(s.img, sx, 20, 16, 18, 0, 0, cv.width, cv.height);
+}
+
+function renderAusweis(){
+  renderAusweisFoto();
+  setTxt('ausweisTitel', AUSWEIS_TEXTE.titel);
+  el('ausweisFelder').innerHTML = `
+    <div><b>${AUSWEIS_TEXTE.labelAmt}:</b> ${rangName()}</div>
+    <div><b>${AUSWEIS_TEXTE.labelVerh}:</b> ${rangVerhaeltnis()}</div>
+    <div><b>${AUSWEIS_TEXTE.labelPosten}:</b> ${AUSWEIS_TEXTE.posten}</div>
+    <div><b>${AUSWEIS_TEXTE.labelGueltig}:</b> ${AUSWEIS_TEXTE.gueltig}</div>`;
+  const zeilen = INSIGNIEN.filter(i => i.wenn()).map(i => `<div>${i.n}</div>`).join('');
+  el('ausweisInsignien').innerHTML = `<b style="color:#f4d97a;">${AUSWEIS_TEXTE.insignienUeberschrift}</b>${zeilen}`;
+  setTxt('ausweisFuss', AUSWEIS_TEXTE.rueckgabe);
+}
+
 el('tabKessel').onclick = () => switchKesselTab('kessel');
 el('tabKladde').onclick = () => switchKesselTab('kladde');
 el('tabBlaetter').onclick = () => switchKesselTab('blaetter');
 el('brewBtn').onclick = brew;
 el('closeKesselBtn').onclick = toggleKessel;
 el('kesselBtn').onclick = toggleKessel;
+el('closeAusweisBtn').onclick = toggleAusweis;
+el('ausweisBtn').onclick = toggleAusweis;
 el('closeSchlossBtn').onclick = schlossZu;
 el('aktionBtn').onclick = fuehreAktion;
 function knAbbruchKammer(){
@@ -6549,6 +6639,7 @@ function respawnPlayer(){
   player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
   player.hp = Math.max(1, Math.round(derived.maxHp * 0.5)); player.mana = derived.maxMana;
   if(kesselOpen) toggleKessel();                                                   // gibt auch die Zutaten aus dem Topf zurück
+  if(ausweisOpen) toggleAusweis();
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;   // Eingaben, die den Tod überlebt haben
   attackTouch = null; lockedTarget = null;
   el('bossbar').style.display = 'none';
@@ -6629,6 +6720,7 @@ function startShift(){
   monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   particles.length = 0; corpses.length = 0; floaters.length = 0;
   if(kesselOpen) toggleKessel();
+  if(ausweisOpen) toggleAusweis();
   if(invOpen) toggleInventory();
   if(spellTreeOpen) toggleSpellTree();
   if(amtFensterOpen) amtFensterSchliessen();
@@ -6684,6 +6776,7 @@ function startShift(){
 // dadurch unabhängig von diesem Reset garantiert erhalten.
 function endShift(reason){
   if(kesselOpen) toggleKessel();
+  if(ausweisOpen) toggleAusweis();
   if(amtFensterOpen) amtFensterSchliessen();
   // W4: vor allen weiteren Änderungen prüfen, solange player.gold noch der
   // ungeteilte Schichtstand ist (Bilanz-Aufträge lesen genau den).
@@ -6734,6 +6827,7 @@ function endShift(reason){
       Überstunden: ${ueberstunden}s<br>${auftragBericht ? '      ' + auftragBericht + '<br>' : ''}
       Beuteanteil nach Abzug: 💰 ${carryGold} (von ${player.gold})
     </div>
+    ${rangBerichtBlock()}
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
     <button onclick="nachSchicht()">WEITER</button>
   `;
@@ -6749,6 +6843,295 @@ function nachSchicht(){
 // 0-9), ... Akt V ab Schicht 41 (amt.schichten >= 40), gedeckelt bei 5.
 const aktStand = () => Math.min(5, Math.floor(amt.schichten / 10) + 1);
 
+// ===========================================================================
+//  W6: RANG UND LAUFBAHN — Weltbibel Kapitel 17 (18.1-18.12). Amtsbezeichnung,
+//  Laufbahngruppe und Dienstverhältnis sind ABGELEITET aus amt.schichten,
+//  genau wie aktStand() oben — kein neues amt-Feld, keine loadAmt()-Ladezeile,
+//  keine zweite Wahrheitsquelle. Eine Beförderung ist kein Ereignis mit
+//  Nebenwirkung, sondern eine Eigenschaft der Zahl amt.schichten: nichts wird
+//  angewendet, nichts gespeichert, jedes Neurendern ist von selbst idempotent.
+//
+//  Alle Texte hier sind freier Panel-Text (#ovPanel, #ausweis) und tragen
+//  deshalb KEINEN Zeichendeckel, s. Kommentar bei knAssertCaps(). Wandert je
+//  ein Rang-Text in eine Sprechblase, gilt 48/32/44 und die Zeile gehört dort
+//  hinein, nicht hierher.
+// ===========================================================================
+
+const RANG_GRUPPEN = ['einfacher Dienst', 'mittlerer Dienst', 'gehobener Dienst', 'höherer Dienst'];
+const RANG_VERH    = ['auf Widerruf', 'auf Probe', 'auf Lebenszeit'];
+
+// Wörtlich aus 18.3/18.4. Eintrag i gilt ab Schicht i*5, Eintrag 0 auch bei
+// amt.schichten === 0 — niemand ist je ohne Titel (18.6.1).
+const RAENGE = [
+  {t:'Monsterangelegenheitenanwärter',         g:0, v:0},                //  0  ab Schicht  1
+  {t:'Monstralamtsgehilfe',                    g:0, v:0},                //  1  ab Schicht  5
+  {t:'Monstralamtsmeister',                    g:0, v:1, spitze:true},   //  2  ab Schicht 10
+  {t:'Monstralsekretär',                       g:1, v:1},                //  3  ab Schicht 15
+  {t:'Monstralobersekretär',                   g:1, v:1},                //  4  ab Schicht 20
+  {t:'Monstralamtsinspektor',                  g:1, v:1, spitze:true},   //  5  ab Schicht 25
+  {t:'Monstralinspektor',                      g:2, v:2},                //  6  ab Schicht 30
+  {t:'Monstraloberinspektor',                  g:2, v:2},                //  7  ab Schicht 35
+  {t:'Monstralamtmann / Monstralamtfrau',      g:2, v:2},                //  8  ab Schicht 40
+  {t:'Monstralamtsrat',                        g:2, v:2},                //  9  ab Schicht 45
+  {t:'Obermonstralamtsrat',                    g:2, v:2, spitze:true},   // 10  ab Schicht 50
+  {t:'Monstralrat',                            g:3, v:2},                // 11  ab Schicht 55
+  {t:'Obermonstralrat',                        g:3, v:2},                // 12  ab Schicht 60
+  {t:'Monstraldirigent',                       g:3, v:2},                // 13  ab Schicht 65
+  {t:'Erster Monstraldirigent',                g:3, v:2},                // 14  ab Schicht 70
+  {t:'Monstraldirektor',                       g:3, v:2},                // 15  ab Schicht 75
+  {t:'Leitender Monstraldirektor',             g:3, v:2},                // 16  ab Schicht 80
+  {t:'Generalmonstraldirektor',                g:3, v:2},                // 17  ab Schicht 85
+  {t:'Monstralminister ohne Geschäftsbereich', g:3, v:2, spitze:true},   // 18  ab Schicht 90
+];
+
+// 18.4: jenseits des letzten benannten Rangs läuft es mit römischen Ziffern im
+// Kreis weiter, nur der letzte Titel wiederholt sich. Greedy-Konverter, deckt
+// jede Schichtzahl ab und liefert nie den leeren String.
+const ROEM = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],
+              [50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+function roemisch(n){ let r = '', v = Math.max(1, n|0); for(const [w,z] of ROEM) while(v >= w){ r += z; v -= w; } return r; }
+
+const rangStufe = () => Math.floor(amt.schichten / 5);
+const rangDef   = () => RAENGE[Math.min(rangStufe(), RAENGE.length - 1)];
+function rangName(){
+  const i = rangStufe(), letzt = RAENGE.length - 1;
+  return i <= letzt ? RAENGE[i].t : RAENGE[letzt].t + ' ' + roemisch(i - letzt + 1);
+}
+const rangGruppe      = () => rangDef().g;
+const rangGruppeName  = () => RANG_GRUPPEN[rangDef().g] + (rangDef().spitze ? ', Spitze' : '');
+const rangVerhaeltnis = () => RANG_VERH[rangDef().v];
+
+// 18.7: nur zwei Insignien wirken echt, der Rest ist Deko. Eine Wahrheitsquelle
+// je Insignie, gleiches Prinzip wie beim Rang selbst — sonst die Falle aus F1
+// (zwei Stellen behaupten dasselbe, driften irgendwann auseinander). Das
+// Dienstsiegel hängt bewusst am bestehenden Jahresbonus amt.bonusNachwachsen,
+// nicht am Rang, genau wie 18.7 es beschreibt.
+const INSIGNIEN = [
+  {n:'Namensschild an der Tür, handbeschrieben',            wenn:()=> true},
+  {n:'Namensschild, gedruckt',                              wenn:()=> rangStufe() >= 2},
+  {n:'Ein eigener Stempel',                                 wenn:()=> rangGruppe() >= 1},
+  {n:'Fensterplatz',                                        wenn:()=> rangStufe() >= 5},
+  {n:'Ernennungsurkunde, gerahmt',                          wenn:()=> rangGruppe() >= 2},
+  {n:'Zeichnungsbefugnis',        k:'zeichnung',  wirkung:true, wenn:()=> rangGruppe() >= 2},
+  {n:'Das Dienstsiegel',                                    wenn:()=> (amt.bonusNachwachsen||0) > 0},
+  {n:'Zweiter Schlüssel zur Registratur', k:'schluessel', wirkung:true, wenn:()=> rangGruppe() >= 3},
+  {n:'Ein Vorzimmer',                                       wenn:()=> rangStufe() >= 15},
+];
+const INSIGNIE = {}; for(const i of INSIGNIEN) if(i.k) INSIGNIE[i.k] = i;
+const rangZeichnungsbefugt = () => INSIGNIE.zeichnung.wenn();
+const rangSchluessel       = () => INSIGNIE.schluessel.wenn();
+
+// --- Beförderungszeremonie (18.12): läuft im bestehenden Jahresgespräch-Panel.
+// Jedes Jahresgespräch ist zwingend eine Beförderung (10 | n ⟹ 5 | n), deshalb
+// kein bedingter Zweig — ein if wäre eine tote Verzweigung.
+const RANG_URKUNDE = () => [
+  'URKUNDE ÜBER DIE HEBUNG EINES DIENSTPOSTENS',
+  'Gemäß Geschäftsordnung des Monstral Ministeriums, Abteilung Personal, wird hiermit bezeugt:',
+  'Der Dienstposten Außendienst, Sachgebiet 7, wird mit Wirkung von heute gehoben.',
+  `Neue Amtsbezeichnung: ${rangName()}.`,
+  `Laufbahngruppe: ${rangGruppeName()}.`,
+  `Dienstverhältnis: ${rangVerhaeltnis()}.`,
+  'Die Hebung betrifft den Dienstposten, nicht die Person, die ihn heute bekleidet.',
+  'Ansprüche aus dieser Urkunde bestehen nur für die Dauer der Dienstzeit.',
+  'Ein Widerspruch ist nicht vorgesehen. Ein Widerspruch war noch nie vorgesehen.',
+  'Diese Urkunde wird in einfacher Ausfertigung erstellt und sogleich ausgehändigt.',
+  'Die Ausfertigung verbleibt beim Amt. Sie sehen sie jetzt zum ersten und letzten Mal.',
+  'Vordermühl, heute.',
+  'Gezeichnet: Bürgermeister Alfons Zwirn.',
+  'Amtssiegel angebracht. Es wackelt etwas.',
+];
+
+const RANG_ZEREMONIE_FIX = [
+  'Zwirn händigt die Urkunde aus. Das ist der Rechtsakt, nicht die Rede.',
+  '„Auf die Form!“ Alle im Raum sagen es gleichzeitig.',
+  'Der Amtsmarsch setzt ein. Fagott, wie immer.',
+  'Nach dem dritten Takt ruft jemand dazwischen. Der Marsch bricht ab.',
+];
+
+// 18.12 Punkt 5: von Beförderung zu Beförderung wärmer, beim ersten Mal
+// "Notiert.", beim letzten Mal etwas anderes. Index 0 = Schicht 10 (gleiche
+// Indexrechnung wie JAHRES_BONI in showJahresgespraech()), Index 8 = Schicht
+// 90. RANG_KNOETERICH_WEITER trägt alles danach.
+const RANG_KNOETERICH = [
+  'Notiert.',
+  'Wieder eine Stufe. Wird vermerkt.',
+  'Auf Lebenszeit. Das bleibt jetzt so.',
+  'Amtmann oder Amtfrau, wie es passt. Beides steht Ihnen.',
+  'Obermonstralamtsrat. Spitze des gehobenen Dienstes. Respekt, ehrlich gesagt.',
+  'Höherer Dienst. Das hätte ich nicht gedacht, nicht bei Ihnen.',
+  'Erster Monstraldirigent. Der Titel braucht länger als der Handschlag.',
+  'Leitender Monstraldirektor. Fast hätte ich applaudiert.',
+  'Monstralminister ohne Geschäftsbereich. Ich hätte nie gedacht, dass ich das sagen darf.',
+];
+const RANG_KNOETERICH_WEITER = 'Weiter geht es trotzdem. Vermerkt, wie immer.';
+
+function rangZeremonieBlock(){
+  const idx = Math.floor(amt.schichten/10) - 1;   // 0 bei Schicht 10, gleiche Rechnung wie oben
+  const knSatz = idx < RANG_KNOETERICH.length ? RANG_KNOETERICH[idx] : RANG_KNOETERICH_WEITER;
+  const urkunde = RANG_URKUNDE().map(z => `<p style="margin:4px 0;">${z}</p>`).join('');
+  return `
+    <div style="border-top:1px solid #5a4a2d;margin-top:12px;padding-top:10px;">
+      <b style="color:#f4d97a;">Beförderungszeremonie</b>
+      <div style="max-height:38vh;overflow-y:auto;text-align:left;background:rgba(0,0,0,.4);
+                  padding:10px;border-radius:8px;margin:8px 0;font-size:12px;">${urkunde}</div>
+      <p style="font-size:12px;">${RANG_ZEREMONIE_FIX[0]}</p>
+      <p style="font-size:12px;">${RANG_ZEREMONIE_FIX[1]}</p>
+      <p style="font-size:12px;color:#9a8a5f;">${RANG_ZEREMONIE_FIX[2]}</p>
+      <p style="font-size:12px;color:#9a8a5f;">${RANG_ZEREMONIE_FIX[3]}</p>
+      <p style="font-size:12px;font-style:italic;color:#c9b98a;">Knöterich: „${knSatz}“</p>
+    </div>`;
+}
+
+// --- Dienstbericht: Rechtsakt vs. abgeleiteter Wert (18.1). Bei einem Zehner-
+// schritt liegt die Urkunde erst im Jahresgespräch bereit; bei den Fünfer-
+// schritten dazwischen wird die Hebung direkt gemeldet. Die zwei Beats bei
+// Schicht 25 und 45 laufen hier, weil dort keine Zeremonie stattfindet — kein
+// neuer Merker nötig, amt.schichten passiert beide Werte genau einmal.
+const RANG_BEAT25 = [
+  'Sie sind jetzt Monstralamtsinspektor.',
+  'Das klingt höher als Monstralinspektor. Ist es nicht.',
+  'Amtsinspektor kommt vor Inspektor, mittlerer Dienst statt gehobener.',
+  'Ich weiß, das ist verwirrend. Es ist trotzdem richtig.',
+];
+const RANG_BEAT45_WORT = 'Kollege.';
+const RANG_BEAT45_ZEILEN = [
+  'Knöterich steht auf. Amtsrat a. D., gleicher Rang wie Sie jetzt.',
+  'Er setzt sich wieder. Mehr sagt er nicht.',
+];
+
+function rangBerichtBlock(){
+  const s = amt.schichten;
+  if(s === 0 || s % 5 !== 0) return '';
+  if(s % 10 === 0) return `<p style="font-size:12px;color:#f4d97a;">Eine Urkunde liegt zur Aushändigung bereit. Jahresgespräch folgt.</p>`;
+  let zeile = `<p style="font-size:12px;color:#f4d97a;">Die Stelle wurde gehoben. Neue Amtsbezeichnung: ${rangName()}, ${rangGruppeName()}, ${rangVerhaeltnis()}.</p>`;
+  if(s === 25) zeile += RANG_BEAT25.map(z => `<p style="font-size:12px;font-style:italic;color:#c9b98a;">Knöterich: „${z}“</p>`).join('');
+  if(s === 45) zeile += `<p style="font-size:12px;font-style:italic;color:#c9b98a;">Knöterich: „${RANG_BEAT45_WORT}“</p>` +
+    RANG_BEAT45_ZEILEN.map(z => `<p style="font-size:11px;color:#9a8a5f;">${z}</p>`).join('');
+  return zeile;
+}
+
+// --- Dienstausweis (18.8): Bildschirm aus dem Inventar, Bauform wie #kessel. ---
+const AUSWEIS_TEXTE = {
+  titel: 'DIENSTAUSWEIS',
+  labelAmt: 'Amtsbezeichnung',
+  labelVerh: 'Verhältnis',
+  labelPosten: 'Dienstposten',
+  posten: 'Außendienst, Sachgebiet 7',
+  labelGueltig: 'Gültig',
+  gueltig: 'bis heute Abend',
+  rueckgabe: 'Der Ausweis ist bei Dienstschluss unaufgefordert zurückzugeben.',
+  insignienUeberschrift: 'Insignien',
+};
+
+// --- Guard, Bauform wie knAssertCaps()/auftragAssertBrett() weiter oben. TDZ-
+// sicher: liest nur amt (deklariert und geladen weit oberhalb) und die Tabellen
+// aus diesem Block selbst, nichts aus AUFTRAG_TYPEN/BIOME_MOBS/DORF_FIGUREN.
+function rangAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('W6 Rang:', m, ...r); };
+  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal',
+                  'Slot','ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const text = (txt, feld) => {
+    if(!txt) return fehler('Text leer', feld);
+    if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', feld, txt);
+    if(EMOJI.test(txt))  fehler('Emoji im Figurentext', feld, txt);
+    for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', g, txt);
+  };
+
+  // (1) Tabellenform
+  for(const r of RAENGE){
+    if(!r.t) fehler('Rang ohne Bezeichnung', r);
+    if(!(r.g >= 0 && r.g < RANG_GRUPPEN.length)) fehler('Rang mit ungültiger Gruppe', r.t, r.g);
+    if(!(r.v >= 0 && r.v < RANG_VERH.length)) fehler('Rang mit ungültigem Verhältnis', r.t, r.v);
+    if('spitze' in r && r.spitze !== true) fehler('spitze-Feld gesetzt, aber nicht true', r.t);
+  }
+  // (2) Monotonie: eine gehobene Stelle sinkt nicht (18.2), das ist Beamtenrecht.
+  for(let i = 1; i < RAENGE.length; i++){
+    if(RAENGE[i].g < RAENGE[i-1].g) fehler('Laufbahngruppe sinkt', RAENGE[i].t);
+    if(RAENGE[i].v < RAENGE[i-1].v) fehler('Dienstverhältnis sinkt', RAENGE[i].t);
+  }
+  // (3) Ankerprüfung gegen 18.3/18.4 — fängt eine eingeschobene Zeile, die die
+  // halbe Laufbahn um fünf Schichten verschiebt.
+  if(RAENGE.length !== 19) fehler('RAENGE hat nicht 19 Einträge', RAENGE.length);
+  const ANKER = {0:'Monsterangelegenheitenanwärter', 6:'Monstralinspektor',
+                 10:'Obermonstralamtsrat', 18:'Monstralminister ohne Geschäftsbereich'};
+  for(const i in ANKER) if(!RAENGE[i] || RAENGE[i].t !== ANKER[i]) fehler('Anker stimmt nicht', i, ANKER[i], RAENGE[i] && RAENGE[i].t);
+
+  // (4)+(5)+(6) Abbildung mit Spiegelung, Wechselpunkte, Zeremonie-Kopplung.
+  // amt.schichten wird gespiegelt und exakt wiederhergestellt, kein saveAmt() —
+  // wörtlich das Idiom aus auftragAssertBrett().
+  const echt = amt.schichten;
+  let vorher = null;
+  for(let s = 0; s <= 200; s++){
+    amt.schichten = s;
+    const name = rangName();
+    if(!name || name.indexOf('undefined') >= 0) fehler('rangName() leer oder undefined', s, name);
+    const sollWechsel = s % 5 === 0 && s > 0;
+    if(sollWechsel && name === vorher) fehler('Kein Wechsel an Fünferschritt', s);
+    if(!sollWechsel && vorher !== null && name !== vorher) fehler('Wechsel außerhalb Fünferschritt', s);
+    if(s % 10 === 0 && s % 5 !== 0) fehler('Zeremonie-Kopplung verletzt', s);   // strukturell nie wahr, Beweis reicht
+    vorher = name;
+  }
+  amt.schichten = echt;
+
+  // (7) Römische Fortsetzung
+  for(let n = 2; n <= 500; n++){
+    const r = roemisch(n);
+    if(!r) fehler('roemisch() liefert leer', n);
+    if(/[0-9]/.test(r)) fehler('roemisch() enthält Ziffer', n, r);
+  }
+  amt.schichten = 95;   // Index 19, erste Fortsetzung jenseits von RAENGE
+  if(!rangName().endsWith(' II')) fehler('Erste römische Fortsetzung ist nicht II', rangName());
+  amt.schichten = echt;
+
+  // (8) Insignien: genau zwei mit echter Wirkung, Prädikate driften nie von
+  // ihrem Tabelleneintrag ab — dieselbe Regel wie beim Rang selbst.
+  const wirkende = INSIGNIEN.filter(i => i.wirkung);
+  if(wirkende.length !== 2) fehler('Nicht genau zwei wirkende Insignien', wirkende.length);
+  for(const i of INSIGNIEN) if(typeof i.wenn !== 'function') fehler('Insignie ohne wenn()', i.n);
+  for(let s = 0; s <= 200; s += 5){
+    amt.schichten = s;
+    if(rangZeichnungsbefugt() !== INSIGNIE.zeichnung.wenn()) fehler('Zeichnungsbefugnis-Prädikat driftet', s);
+    if(rangSchluessel() !== INSIGNIE.schluessel.wenn()) fehler('Schlüssel-Prädikat driftet', s);
+  }
+  amt.schichten = echt;
+
+  // (9) Formregeln und Sperrvermerk über alle neuen Texte dieser Phase.
+  RANG_GRUPPEN.forEach((t,i) => text(t, 'Gruppe '+i));
+  RANG_VERH.forEach((t,i) => text(t, 'Verhältnis '+i));
+  RAENGE.forEach(r => text(r.t, 'Rang'));
+  INSIGNIEN.forEach(i => text(i.n, 'Insignie'));
+  RANG_URKUNDE().forEach(z => text(z, 'Urkunde'));
+  RANG_ZEREMONIE_FIX.forEach(z => text(z, 'Zeremonie-Fixzeile'));
+  RANG_KNOETERICH.forEach(z => text(z, 'Knöterich-Zeremonie'));
+  text(RANG_KNOETERICH_WEITER, 'Knöterich-Zeremonie-Weiter');
+  RANG_BEAT25.forEach(z => text(z, 'Beat25'));
+  text(RANG_BEAT45_WORT, 'Beat45-Wort');
+  RANG_BEAT45_ZEILEN.forEach(z => text(z, 'Beat45-Zeile'));
+  for(const k in AUSWEIS_TEXTE) text(AUSWEIS_TEXTE[k], 'Ausweis:'+k);
+
+  // Zusätzlich die tatsächlich gerenderten Blöcke selbst, nicht nur die Tabellen
+  // dahinter — Bauform wie auftragAssertBrett() prüft def.titel(a)/def.satz(a),
+  // nicht nur die Rohtabelle. Fängt inline zusammengesetzte Sätze (Dienstbericht-
+  // Vorlagen, Panel-Überschriften), die in keiner Tabelle stehen.
+  const strip = html => html.replace(/<[^>]+>/g, ' ');
+  for(let s = 0; s <= 100; s += 5){
+    amt.schichten = s;
+    const roh = rangBerichtBlock();
+    if(roh) text(strip(roh), 'Dienstbericht-Block s='+s);   // '' ist erwartet außerhalb der Fünferschritte
+  }
+  for(let s = 10; s <= 100; s += 10){
+    amt.schichten = s;
+    text(strip(rangZeremonieBlock()), 'Zeremonie-Block s='+s);
+  }
+  amt.schichten = echt;
+
+  console.assert(ok, 'W6 Rang: Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+rangAssert();
+
 function showJahresgespraech(){
   MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
   const idx = (Math.floor(amt.schichten/10) - 1) % JAHRES_BONI.length;
@@ -6760,6 +7143,7 @@ function showJahresgespraech(){
     <div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;margin:14px 0;border:1px solid #5a4a2d;">
       <b>${b.name}</b><br><span style="font-size:12px;color:#c9b98a;">${b.text}</span>
     </div>
+    ${rangZeremonieBlock()}
     <button onclick="showDorf()">WEITER</button>
   `;
   document.getElementById('overlay').style.display = 'flex';
@@ -7111,6 +7495,7 @@ function showDorf(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>AMT FÜR MONSTERANGELEGENHEITEN</h1>
     <p style="font-size:12px;color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
+    <p style="font-size:12px;color:#c9b98a;">${rangName()} · ${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
     <button onclick="startShift()">NÄCHSTE SCHICHT ANTRETEN</button>
   `;
@@ -7133,6 +7518,7 @@ window.addEventListener('keydown', e => {
     if(invOpen) toggleInventory();
     else if(spellTreeOpen) toggleSpellTree();
     else if(kesselOpen) toggleKessel();
+    else if(ausweisOpen) toggleAusweis();
     else if(schlossOpen) schlossZu();
     else if(amtFensterOpen) amtFensterSchliessen();
     else if(kammer) knAbbruchKammer();          // Abbruch der Kammer, ohne Beute, ohne Softlock
@@ -7462,7 +7848,7 @@ function bakeUiSkin(){
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
-  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel']){
+  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis']){
     const el = document.querySelector(sel); if(!el) continue;
     el.style.borderImageSource = `url("${frameUrl}")`;
     el.style.borderImageSlice = '2 2 5 2';
