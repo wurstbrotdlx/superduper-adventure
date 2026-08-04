@@ -955,7 +955,7 @@ const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
 const lerp = (a,b,t)=> a+(b-a)*t;
 // Math.hypot ist wegen Overflow-Schutz ~5x langsamer als der direkte Weg und läuft
 // hier zehntausendfach pro Frame. sqDist vermeidet die Wurzel ganz, wo nur verglichen wird.
-const dist2 = (ax,ay,bx,by)=>{ const dx=ax-bx, dy=ay-by; return Math.sqrt(dx*dx+dy*dy); };
+const dist = (ax,ay,bx,by)=>{ const dx=ax-bx, dy=ay-by; return Math.sqrt(dx*dx+dy*dy); };
 const sqDist = (ax,ay,bx,by)=>{ const dx=ax-bx, dy=ay-by; return dx*dx+dy*dy; };
 const angDiff = (a,b)=>{ let d=(a-b)%(Math.PI*2); if(d>Math.PI)d-=Math.PI*2; if(d<-Math.PI)d+=Math.PI*2; return Math.abs(d); };
 
@@ -2207,10 +2207,14 @@ function takeZutat(noun, adj){
 //  (Die Poststelle, nur Grasland). Text unverändert aus blaetter-serie-a-b.md
 //  übernommen. Kein Blatt verrät Kesselgrammatik oder eine Fluch-Ableitung,
 //  siehe Sperrvermerk dort. Reihenfolge beim Fund ist absichtlich egal.
+//  Zusagen-Bilanz 2026-08-04: a1/a5 verorteten den Vorgang fälschlich in
+//  Zuständigkeitsbereich VI, den die Weltbibel als abgeschlossen führt
+//  (Kapitel 3/9/15). Die Welt selbst ist Bereich VII. Auf VII korrigiert,
+//  synchron mit blaetter-serie-a-b.md und phase-w2-aktenfunde.md.
 // ===========================================================================
 const BLAETTER = {
   a1:  {serie:'A', n:1,  minDiff:3, lines:['Aktenzeichen 1-0-2.',
-        'Der Zuständigkeitsbereich VI meldet Waffenstillstandsbruch.',
+        'Der Zuständigkeitsbereich VII meldet Waffenstillstandsbruch.',
         'Ursache: eine Grenzfrage, ungeklärt seit der Gründung.',
         'Gegenseite: Fürst Nachtrag, vertreten durch sich selbst.',
         'Weiteres Vorgehen wird nachgereicht.']},
@@ -2228,7 +2232,7 @@ const BLAETTER = {
         'Die Stelle ist vorläufig.',
         'Vermerk am Rand, andere Handschrift: „Vorläufig seit wann?"']},
   a5:  {serie:'A', n:5,  minDiff:3, lines:['Aktenzeichen 1-0-3.',
-        'Gründungsverfügung der Stelle für den Zuständigkeitsbereich VI.',
+        'Gründungsverfügung der Stelle für den Zuständigkeitsbereich VII.',
         'Personalstärke: fünf, zuzüglich Registratur.',
         'Amtssitz: Vordermühl, vorbehaltlich Bestätigung.',
         'Die Bestätigung steht noch aus.']},
@@ -2471,7 +2475,7 @@ function pickTarget(prio, maxRange, fx = player.x, fy = player.y){
   let best = null, bestV = Infinity;
   for(const m of monsters){
     if(m.dead) continue;
-    const d = dist2(fx, fy, m.x, m.y);
+    const d = dist(fx, fy, m.x, m.y);
     if(d > maxRange) continue;
     const v = (prio === 'lowhp') ? m.hp : d;       // absolute HP vs. Distanz
     if(v < bestV){ bestV = v; best = m; }
@@ -2479,7 +2483,7 @@ function pickTarget(prio, maxRange, fx = player.x, fy = player.y){
   return best;
 }
 function validateLock(){
-  if(lockedTarget && (lockedTarget.dead || dist2(player.x, player.y, lockedTarget.x, lockedTarget.y) > 350))
+  if(lockedTarget && (lockedTarget.dead || dist(player.x, player.y, lockedTarget.x, lockedTarget.y) > 350))
     lockedTarget = null;
   return lockedTarget;
 }
@@ -2585,7 +2589,7 @@ function placeMonsters(){
   if(currentLevel === 1){
     for(let i=0;i<55;i++){
       const tx=ri(4,MW-5), ty=ri(4,MH-5);
-      if(!walkT(tx,ty) || dist2(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
+      if(!walkT(tx,ty) || dist(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
       if(inVillageT(tx,ty)) continue;            // G5: das Dorf bleibt monsterfrei
       const biome = ty<26 ? 'snow' : (ty>54 ? 'sand' : 'grass');
@@ -2656,7 +2660,7 @@ function tryAttack(dir){
 
   for(const m of monsters){
     if(m.dead) continue;
-    const dToMon = dist2(player.x, player.y, m.x, m.y);
+    const dToMon = dist(player.x, player.y, m.x, m.y);
     const mAngle = Math.atan2(m.y - player.y, m.x - player.x);
     // Erweiteter Cleave Arc (1.6 Rad = sehr breit), Wirkung 'Reichweite' öffnet ihn weiter
     if(dToMon < derived.range && angDiff(mAngle, dir) < derived.arc){
@@ -2746,7 +2750,7 @@ function killMon(m){
   // Fluch 'Zerplatzer': sterbende Gegner in der Nähe treffen zurück. 0.6s-Bremse ist
   // zwingend, sonst löst ein Ultimate im Schattenland hurtPlayer() bis zu 130x im
   // selben Frame aus (Sofort-Tod, Sound-Knacken, Floater-Überlauf).
-  if(CFX.platz && player.platzCd <= 0 && !player.dead && dist2(player.x, player.y, m.x, m.y) < 70){
+  if(CFX.platz && player.platzCd <= 0 && !player.dead && dist(player.x, player.y, m.x, m.y) < 70){
     player.platzCd = 0.6; hurtPlayer(Math.min(6 + player.level, Math.round(derived.maxHp*0.08)));
   }
 
@@ -2989,11 +2993,11 @@ function castSpell(sp, target){                          // target: optionaler W
     sfx.magic(); addShake(8,0.25);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.4, maxT:0.4});
     kamFlamme(player.x, player.y, sp.radius, zweig);
-    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
   } else if(sp.type === 'chain'){
     sfx.zap(); addShake(8,0.2);
-    let targets = monsters.filter(m=>!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.range)
-                          .sort((a,b)=>dist2(player.x,player.y,a.x,a.y)-dist2(player.x,player.y,b.x,b.y)).slice(0, sp.chain);
+    let targets = monsters.filter(m=>!m.dead && dist(player.x,player.y,m.x,m.y) < sp.range)
+                          .sort((a,b)=>dist(player.x,player.y,a.x,a.y)-dist(player.x,player.y,b.x,b.y)).slice(0, sp.chain);
     let px=player.x, py=player.y;
     for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sd, true, Math.atan2(t.y-py, t.x-px), zweig); px=t.x; py=t.y; }
   } else if(sp.type === 'aoe_target'){
@@ -3005,17 +3009,17 @@ function castSpell(sp, target){                          // target: optionaler W
       for(let i=0;i<7;i++) magicEffects.push({type:'flame', x:tx+rr(-sp.radius*0.6, sp.radius*0.6),
         y:ty+rr(-sp.radius*0.45, sp.radius*0.45), sc:rr(2.2,4), t:rr(0.45,0.8), maxT:0.8});
     spawnImpactParticles(tx, ty, 30, null);
-    for(const m of monsters){ if(!m.dead && dist2(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-ty,m.x-tx), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-ty,m.x-tx), zweig); } }
   } else if(sp.type === 'slow_field'){
     sfx.magic(); addShake(6,0.3);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.6, maxT:0.6});
     kamFlamme(player.x, player.y, sp.radius, zweig);
-    for(const m of monsters){ if(!m.dead && dist2(player.x,player.y,m.x,m.y) < sp.radius){ m.slowT = sp.slow; hurtMon(m, sd, false, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist(player.x,player.y,m.x,m.y) < sp.radius){ m.slowT = sp.slow; hurtMon(m, sd, false, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
   } else if(sp.type === 'ultimate'){
     sfx.warp(); sfx.crit(); addShake(35, 1.2); addHitStop(0.12);
     floaters.push({x:player.x, y:player.y-60, txt:'KONFETTI-KATAKLYSMUS!', col:'#ffd54a', t:2.5, big:true});
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:900, color:'#ffffff', t:0.7, maxT:0.7});
-    for(const m of [...monsters]){ if(m.dead) continue; if(dist2(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
+    for(const m of [...monsters]){ if(m.dead) continue; if(dist(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
     for(let i=0;i<160;i++){ const a=rr(0,Math.PI*2), d=rr(40,700); spawnImpactParticles(player.x+Math.cos(a)*d, player.y+Math.sin(a)*d, 3, null); }
     kn.counters.ultimates = (kn.counters.ultimates||0) + 1;
     if(kn.counters.ultimates >= 2) knRandnotiz('ultimate');
@@ -4860,7 +4864,7 @@ function update(dt){
       if(shiftT <= 0){ shiftT = 0; shiftEndPending = true; }
     } else {
       overtimeT += dt;
-      const kampfNah = monsters.some(m => !m.dead && dist2(player.x, player.y, m.x, m.y) < 220);
+      const kampfNah = monsters.some(m => !m.dead && dist(player.x, player.y, m.x, m.y) < 220);
       if((!kampfNah && !kammer && !schlossOpen) || overtimeT >= 60){
         state = 'feierabend'; endShift('zeit'); return;
       }
@@ -4959,7 +4963,7 @@ function update(dt){
 
   // Items aufsammeln. Wirkung 'Anziehung' vergrößert den Einzugsradius.
   for(let i = drops.length - 1; i >= 0; i--){
-    if(dist2(player.x, player.y, drops[i].x, drops[i].y) < 26 + FX.magnet*14){
+    if(dist(player.x, player.y, drops[i].x, drops[i].y) < 26 + FX.magnet*14){
       knIdleT = 0;   // Loot-Aufnahme zählt als "echte Aktion" (Steckenbleib/Untätigkeit)
       if(drops[i].kind === 'gold'){
         // Wirkung 'Goldsegen' erhöht, Fluch 'Fundsteuer' behält einen Anteil ein
@@ -4988,7 +4992,7 @@ function update(dt){
   }
 
   // Portal Interaction
-  if(portal && dist2(player.x, player.y, portal.x, portal.y) < 30){
+  if(portal && dist(player.x, player.y, portal.x, portal.y) < 30){
     portal = null; loadLevel2();
   }
 
@@ -5066,13 +5070,13 @@ function update(dt){
       projectiles.splice(i, 1); continue;
     }
     for(const m of monsters){
-      if(!m.dead && dist2(p.x, p.y, m.x, m.y) < m.r + (p.r||15)){
+      if(!m.dead && dist(p.x, p.y, m.x, m.y) < m.r + (p.r||15)){
         hurtMon(m, p.dmg, true, Math.atan2(p.vy, p.vx), p.zweig);
         if(p.slow) m.slowT = p.slow;
         spawnImpactParticles(p.x, p.y, 20, p.color || '#ff6600');
         if(p.aoe){
           magicEffects.push({type:'ring', x:p.x, y:p.y, rad:p.aoe, color:p.color||'#ff9f4a', t:0.3, maxT:0.3});
-          for(const m2 of monsters){ if(m2!==m && !m2.dead && dist2(p.x,p.y,m2.x,m2.y) < p.aoe) hurtMon(m2, Math.round(p.dmg*0.6), false, Math.atan2(m2.y-p.y,m2.x-p.x), p.zweig); }
+          for(const m2 of monsters){ if(m2!==m && !m2.dead && dist(p.x,p.y,m2.x,m2.y) < p.aoe) hurtMon(m2, Math.round(p.dmg*0.6), false, Math.atan2(m2.y-p.y,m2.x-p.x), p.zweig); }
         }
         projectiles.splice(i, 1); break;
       }
@@ -5083,7 +5087,7 @@ function update(dt){
   for(let i = enemyBolts.length - 1; i >= 0; i--){
     const p = enemyBolts[i]; p.x += p.vx * dt; p.y += p.vy * dt; p.t -= dt;
     if(p.t <= 0){ enemyBolts.splice(i, 1); continue; }
-    if(!player.dead && dist2(p.x, p.y, player.x, player.y) < player.r + (p.r||7)){
+    if(!player.dead && dist(p.x, p.y, player.x, player.y) < player.r + (p.r||7)){
       hurtPlayer(p.dmg);
       spawnImpactParticles(p.x, p.y, 12, p.color || '#c77dff');
       enemyBolts.splice(i, 1);
@@ -5114,7 +5118,7 @@ function update(dt){
     if(m.slowT > 0) m.slowT -= dt;
     const spd = m.def.speed * (m.slowT > 0 ? 0.4 : 1);
 
-    const pd = dist2(m.x, m.y, player.x, player.y);
+    const pd = dist(m.x, m.y, player.x, player.y);
     if(!m.aggro && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
 
     // Kammerwache mit Rückenregel: dreht sich nur begrenzt schnell zum Spieler,
@@ -6185,7 +6189,7 @@ function touchAttack(sx, sy){
   let tx = mouse.wx, ty = mouse.wy;
   // Auto-Aim: Tap nahe Monster (<=90px) snappt aufs Monster
   let best = null, bd = 90;
-  for(const m of monsters){ if(m.dead) continue; const d = dist2(tx, ty, m.x, m.y); if(d < bd){ bd = d; best = m; } }
+  for(const m of monsters){ if(m.dead) continue; const d = dist(tx, ty, m.x, m.y); if(d < bd){ bd = d; best = m; } }
   if(!best) best = pickTarget(targetPriority, 200);   // kein Snap-Kandidat am Tap-Punkt -> Priority-Ziel um den Spieler
   if(best){ tx = best.x; ty = best.y; }
   tryAttack(Math.atan2(ty - player.y, tx - player.x));
@@ -6348,7 +6352,7 @@ function attackDragEnd(e){
     let best = null, bd = Infinity;
     for(const m of monsters){                        // Snap: nächstes lebendes Monster nahe Fadenkreuz
       if(m.dead) continue;
-      const d = dist2(lockAim.wx, lockAim.wy, m.x, m.y);
+      const d = dist(lockAim.wx, lockAim.wy, m.x, m.y);
       if(d < m.r + 60 && d < bd){ bd = d; best = m; }
     }
     lockedTarget = best;                             // Release über leerem Boden = Lock lösen
@@ -6425,16 +6429,28 @@ function prewarmMonsterTints(){
 }
 
 // Boot-Assertion: jeder RIG_ANIM-Key muss in SHEETS existieren (sonst unsichtbare
-// Leichen/Mobs, s. G3-Notizen), und n <= cols (sonst blutet ein Anim in die
-// Nachbarzeile, s. drawSpriteAt-Zeilenberechnung). Nur console.warn, kein throw.
+// Leichen/Mobs, s. G3-Notizen), und jedes Sheet in SHEETS muss genug Zeilen für
+// seine n Frames haben (sonst liest drawSpriteAt über das Blatt hinaus). Nur
+// console.warn, kein throw.
+// Zusagen-Bilanz 2026-08-04 (C3): die zweite Prüfung lief vorher nur über
+// RIG_ANIM und feuerte schon bei n>cols. Das war ein Fehlalarm bei jedem
+// mehrzeiligen Sheet (dun1_plate, dun2_plate, cfcloud — alle drei n>cols per
+// Design, drawSpriteAt() bricht über cols korrekt in die nächste Zeile um).
+// Jetzt läuft sie über ganz SHEETS und prüft echten Überlauf: die letzte
+// gebrauchte Zeile (rowStart + Zeilen für n Frames) gegen die im Bild
+// tatsächlich vorhandenen Zeilen.
 function assertRigRegistrations(){
   for(const rig in RIG_ANIM){
     for(const anim in RIG_ANIM[rig]){
       const key = RIG_ANIM[rig][anim];
-      const s = SHEETS[key];
-      if(!s) console.warn(`RIG_ANIM['${rig}']['${anim}'] = '${key}' fehlt in SHEETS`);
-      else if(s.n > s.cols) console.warn(`SHEETS['${key}']: n=${s.n} > cols=${s.cols}, Anim blutet in Nachbarzeile`);
+      if(!SHEETS[key]) console.warn(`RIG_ANIM['${rig}']['${anim}'] = '${key}' fehlt in SHEETS`);
     }
+  }
+  for(const key in SHEETS){
+    const s = SHEETS[key];
+    const rowsInSheet = Math.floor(s.img.height / s.fh);
+    const lastRowUsed = (s.rowStart||0) + Math.floor((s.n - 1) / s.cols);
+    if(lastRowUsed >= rowsInSheet) console.warn(`SHEETS['${key}']: n=${s.n} Frames zu ${s.cols} je Zeile ab rowStart=${s.rowStart||0} lesen Zeile ${lastRowUsed}, Blatt hat nur ${rowsInSheet}`);
   }
 }
 

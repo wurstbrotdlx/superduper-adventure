@@ -22,8 +22,8 @@ Bestehende Systeme, auf denen du aufbaust:
 
 * 3 Biome (Grasland, Frostkamm, Aschewüste) plus Schattenland über ein Zufallsportal (Level 5 bis 11)
 * 21 Monstertypen auf 2 Rigs (Goblin, Skelett) mit Farb-Tint und Skalierung. 14 sind aktiv, 7 sind fertig definiert, aber in keinem Biom-Roster verdrahtet (mummy, golem, spider, bat, stalfos, mage, zweiter Boss)
-* Zauberbaum: 11 Sprüche, 3 Zweige (Feuer, Frost, Arkan), 1 Skillpunkt pro Level-Up, Ultimate auf `R`
-* Steuerung: WASD, Space/Klick Angriff, Q Trank, E Zauber, R Ultimate, T Zauberbaum, I Inventar, K Kessel, M Musik, Esc schließt Menüs. Touch: virtueller Joystick links, Kampf-Cluster rechts
+* Zauberbaum: 11 Sprüche, 3 Zweige (Feuer, Frost, Arkan), 2 Skillpunkte und 1 Zauberpunkt pro Level-Up, Ultimate auf `R`
+* Steuerung: WASD, Space/Klick Angriff, Q (auch `1`) Trank, E Zauber, R Ultimate, T Zauberbaum, I Inventar, K Kessel, M Musik, Esc schließt Menüs. Touch: virtueller Joystick links, Kampf-Cluster rechts
 * Kein Blut, Treffer und Tode zerplatzen in Konfetti. Das bleibt so.
 
 ## Regressionsschutz: das hier NICHT kaputtmachen
@@ -234,9 +234,9 @@ Schicht startet, endet, Übertrag stimmt, Kladde überlebt garantiert jeden Tod,
 * Überstunden: bei Zeitablauf setzt `shiftEndPending`, danach läuft `overtimeT` weiter, bis kein Gegner nah ist und weder Kammer noch Symbolschloss offen sind, spätestens aber 60 Sekunden. Kein Abbruch mitten im Kampf.
 * Zutaten-Übertrag sortiert nach `zutatRar()` absteigend und kappt auf `CONFIG.zutatenMitnahmeBasis + amt.ausbauten.kontingent*2`. Stapel werden dabei geteilt, der Rest gilt als eingezogen.
 * `shiftKillsByType` und `shiftKillsTotal` werden **nur** bei `CONFIG.schichtModus === true` gefüllt. Außerhalb des Schichtmodus liest man dort 0.
-* `stats.goldTotal` ist deklariert, aber tot: es wird nirgends erhöht. Gold läuft direkt über zwei `player.gold +=`-Stellen (Truhe und Drop-Aufnahme). Nicht darauf aufbauen, ohne es vorher zu verdrahten.
+* `stats.goldTotal` war deklariert, aber tot: es wurde nirgends erhöht. **In R9/F45 ersatzlos entfernt.** Gold läuft weiterhin direkt über zwei `player.gold +=`-Stellen (Truhe und Drop-Aufnahme).
 * Jahresgespräch bei `amt.schichten % 10 === 0`, Bonus über `(Math.floor(amt.schichten/10) - 1) % JAHRES_BONI.length`. Läuft im Kreis, geht also nie aus.
-* **Falle:** Der Jahresbonus „Dienstsiegel" schreibt in `CONFIG.kammerNachwachsen`, aber `saveAmt()` serialisiert nur `amt`, nicht `CONFIG`. Der Bonus überlebt den Reload nicht und wird bei jedem fünften Jahresgespräch erneut vergeben. Die vier anderen Boni liegen als `amt.bonus*` richtig. Wer das repariert, muss den Wert nach `amt` ziehen.
+* **Falle, behoben in R2/F1:** Der Jahresbonus „Dienstsiegel" schrieb ursprünglich in `CONFIG.kammerNachwachsen`, das `saveAmt()` nicht mitserialisierte, der Bonus überlebte also keinen Reload und wurde bei jedem fünften Jahresgespräch erneut vergeben. Seit R2/F1 liegt er als `amt.bonusNachwachsen` (Deckel 80), wird geladen und gespeichert wie die vier anderen `amt.bonus*`-Boni und in `k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen)` verbraucht (index.html:3754). Mindestens 40 Sekunden Nachwachszeit bleiben also immer.
 * `CONFIG.kammerTueren` wird an zwei Stellen gesetzt: einmal beim Laden des Amt-Stands (`+=`, damit der Ausbau schon in der allerersten Schicht wirkt) und einmal pro Schicht in `startShift()` als Zuweisung `2 + amt.ausbauten.tueren`. Die Zuweisung verhindert, dass sich der Ausbau über die Schichten aufaddiert. Nicht in ein `+=` ändern.
 * `STARTFLUCH_WAHL` enthält bewusst nur milde Flüche. Ein harter Fluch könnte eine Schicht schon beim Antritt unspielbar machen.
 * Die Startwaffe steht hart in `startShift()` (`BASES[1]` plus `AFFIXES[0]`), der gekaufte Startfluch hängt sich als `player.equip.weapon.fluch` daran.
@@ -257,7 +257,7 @@ Amtsrat a. D. Knöterich vom Amt für Monsterangelegenheiten. Er siezt den Spiel
 
 **Wo er steht.** Zum Zeitpunkt dieser Phase gab es kein begehbares Dorf: das Amt aus Phase 4 war ein Overlay-Panel, kein Ort. Knöterich steht deshalb als **Außenstelle neben dem Kessel-Prop** (**seit G5 liegt das Dorf um genau diese Stelle herum, sein Standort ist damit mitten im Dorf und bleibt unverändert**) (`KESSEL_T = {x:15, y:41}`, `KESSEL` in Pixeln, gezeichnet über `DRAW_KESSEL` / `drawKessel()`). Setz ihn auf eine begehbare Nachbarkachel, nicht auf den Kessel. Er hat keine KI, keine Kollision, keine Trefferbox und läuft nie mit. `placeMonsters()` darf nicht auf seine Kachel spawnen.
 
-`SPAWN` liegt bei `{x:12.5*TS, y:40.5*TS}`, der Kessel bei Kachel 15/41, das sind rund **97 Pixel** Abstand. Der Spieler steht beim Start also außerhalb des 58-Pixel-Radius der Kontextaktion. Das ist für die Blase relevant, siehe unten.
+`SPAWN` liegt bei `{x:12.5*TS, y:40.5*TS}`, der Kessel bei Kachel 15/41, das sind **105,6 Pixel** Abstand (nachgerechnet, nicht die ursprünglich geschätzten 97). Knöterichs Standplatz `KN_POS` liegt näher, **54,4 Pixel** vom Spawn, und damit **innerhalb** des 58-Pixel-Radius der Kontextaktion, sobald `kn.history` Einträge hat: ab der zweiten Schicht bietet `AKT_NACHFRAGE` sich also schon am Spawn an (index.html:4128, :4140). Das ist für die Blase relevant, siehe unten.
 
 **Sprite aus Bestand, keine neue Kunst.** `hero_idle` plus ein **fest gewähltes** Element aus `HAIRS` (nicht zufällig, er ist immer derselbe), beides grau getönt über den vorhandenen Cache `tintedSheet(key, color, alpha)` und etwas kleiner skaliert, gezeichnet mit `drawSpriteAt()` wie in `drawPlayer()`. **Kein `ctx.filter`**: das ist keine Nummer aus dem Regressionsschutz-Block, sondern eine Code-Regel, siehe die Kommentare bei `index.html:3722` und `index.html:3837`. Getönt wird ausschließlich über `tintedSheet()`.
 
@@ -390,7 +390,7 @@ Knöterichs Running Gag ist „Ich führe Buch". Schwellenzeilen statt Zufallsze
 | Wert | Zustand | Verwendung |
 |---|---|---|
 | `stats.kills` (~1225, erhöht ~1577) | Sitzungszähler, kein Reset bei `startShift()`, **nicht** persistiert | nur für Sitzungs-Gags, nicht für Lebenszeit-Schwellen |
-| `stats.goldTotal` (~1225) | **tot**, wird nirgends erhöht | nicht benutzen. Goldfund-Randnotiz hängt am Einzelbetrag in den beiden `player.gold +=`-Stellen |
+| `stats.goldTotal` (~1225) | **in R9/F45 entfernt** (war deklariert, nie erhöht) | nicht mehr vorhanden. Goldfund-Randnotiz hängt am Einzelbetrag in den beiden `player.gold +=`-Stellen |
 | `shiftKillsByType`, `shiftKillsTotal` | pro Schicht, und nur befüllt bei `CONFIG.schichtModus === true` (~1578) | nur für schichtgebundene Zeilen |
 | `amt.schichten` | persistent, wird **erst am Schichtende** erhöht (~4104) | laufende Schichtnummer ist `amt.schichten + 1` |
 
@@ -457,7 +457,7 @@ Beachte den vorhandenen Kommentar über `CFX.gruss`: der Fluch Grußpflicht biet
 
 **Figur und Kanäle**
 * Figur steht sichtbar neben dem Kessel, grau getönt, kein `ctx.filter`, verschwindet in Kammer und Schattenland, blockiert keinen Weg und bekommt keine Monster auf die Kachel.
-* Blase erscheint am Spawn (97 Pixel Abstand liegen im 150-Pixel-Radius) und verschwindet beim Weggehen.
+* Blase erscheint am Spawn (105,6 Pixel Abstand zum Kessel, 54,4 Pixel zu Knöterich, beide liegen im 150-Pixel-Radius) und verschwindet beim Weggehen.
 * Randnotizen halten 40 Sekunden Abstand, wiederholen keine Zeile direkt und laufen nie gleichzeitig mit einem Zettel.
 * Zähler-Gags feuern an ihren Schwellen und überleben den Reload. Der Kammer-Abbruch-Zähler zählt **nicht** hoch, wenn die Truhe geplündert wurde, wenn der Spieler in der Kammer stirbt oder wenn eine Schicht startet.
 * Kopf erscheint im Dienstbericht, nicht in Amt und Jahresgespräch. Im Jahresgespräch steht genau ein Satz.
@@ -557,7 +557,7 @@ Alle sechs Zonen hörbar unterscheidbar und trotzdem als ein Thema erkennbar. Zo
 
 ### Umsetzungsnotizen aus Phase 6
 
-* Ersetzt komplett den alten `// --- AUDIO SYSTEM ---`-Block. `sfx.*`-API zu 100 % unverändert (dieselben 13 Methoden, dieselben Parameter), kein einziger der 13 Aufrufer im Rest der Datei musste angefasst werden. `playTone()`s erster Parameter heißt jetzt `hz` statt `freq`, reine Namenskollision mit der neuen `freq(note, oct)`-Funktion, keine Verhaltensänderung.
+* Ersetzt komplett den alten `// --- AUDIO SYSTEM ---`-Block. `sfx.*`-API zu 100 % unverändert (dieselben 13 Methoden, dieselben Parameter), keiner der rund 40 Aufrufer im Rest der Datei musste angefasst werden. `playTone()`s erster Parameter heißt jetzt `hz` statt `freq`, reine Namenskollision mit der neuen `freq(note, oct)`-Funktion, keine Verhaltensänderung.
 * Die 70ms-Bremse auf Crit- und Sterbe-Sound (Regressionsschutz Punkt 9) sitzt in `hurtMon()`/`killMon()`, also außerhalb des Audio-Blocks, und blieb unangetastet.
 * Notenraster ist `[startStep, note, oct, lengthSteps]` auf 16tel-Basis, kein Notenereignis für Pausen (die entstehen einfach als Lücke zwischen zwei Einträgen). Akkorde/Perkussion sind reine Flags in `perc`, `prepareZone()` expandiert sie einmalig zu absoluten Step-Listen (`everyN()`, `perBar()`), keine Berechnung pro Tick.
 * Gain-Stellschrauben, falls Balance nicht passt: `musicVolTarget` (Default 0.45, deckt sich mit dem HTML-Slider), `sfxBus.gain` (0.22), `master.gain` (0.85, vor dem Compressor). Musik- und SFX-Pfad sind seit dieser Phase unabhängige Busse, vorher liefen beide durch dieselbe `masterGain`.

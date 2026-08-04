@@ -216,6 +216,8 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 - `CF_MANIFEST` bewusst **nicht** nach `index.html` verschoben. Bleibt als JSON neben den Assets; G2/G3 tragen nur die tatsächlich gebrauchte, handverlesene Teilmenge als Code-Tabelle ein (passend zu Regressionsregel 7 „Framezahlen hart im Code").
 - Von den 886 Sheets sind 447 „niedrige Confidence" (< 0.15) — bei den 29 Prioritätsrigs 5-fach handgeprüft und plausibel, der Rest (418, Gebäude/Tiere/Deko) ist unkritisch für G1–G3 und wird erst geprüft, wenn eine Phase das jeweilige Sheet tatsächlich braucht. Niedrige Confidence heißt hier meist nur „mehrere Teiler-Harmonien lagen nah beieinander" (z.B. 32 vs. 16 vs. 64), nicht zwangsläufig „falsches Raster" — das bestätigt der Handcheck.
 
+**Nachtrag (Zusagen-Bilanz 2026-08-04):** die Zahl 29 in diesem Abschnitt ist veraltet. `tools/sheet-audit.overrides.json` führt heute 30 Einträge in `_castTable`, davon 10 mit `checked:false` (Slime_Big, Goblin_Spearman, Goblin_Thief, 3 der 4 Knights außer Templar, Orc_Grunt, Orc_Peon, Cowling_2, Cowling_Mage_2 — Angel_2 ist inzwischen bestätigt und zählt nicht mehr dazu). Die Confidence-Bilanz steht heute bei 442 von 886 Sheets unter 0,15 (Rest 413), nicht 447/418. Ursache in beiden Fällen: spätere Phasen (G1–G3) haben weitere Sheets geprüft und der Cast-Tabelle hinzugefügt, ohne diesen G0-Abschnitt nachzuziehen.
+
 **Verifikation:** `git diff -- index.html` leer. Spiel unter `http://localhost:8378/adventure/index.html` gestartet, Konsole ohne Fehler (siehe unten).
 
 ### G1 — Kammern-Interieur
@@ -299,8 +301,11 @@ Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**,
 2. **Der Held hat keine „Seiten"-Richtung im landläufigen Sinn, sondern eine feine
    Kopf-Profil-Variante** unter den 3 Down/Side/Up-Reihen jeder Animation (Nase/Haar-
    Silhouette leicht asymmetrisch). Diese mittlere Reihe ist die, die zum bestehenden
-   Links/Rechts-Flip passt und wurde für alle 6 Anims verwendet (idle=1, walk=9,
-   run=45, attack=18, cast=24, hurt=15).
+   Links/Rechts-Flip passt und wurde für alle Anims verwendet (idle=1, walk=9,
+   run=45, attack=18, cast=24, hurt=15). **Nachtrag (R9/F68):** `walk` (Zeile 9)
+   wurde wieder entfernt, `player.anim` kennt für Bewegung nur `run`. Seither 5
+   Anims, 32 statt 36 gebackene Frames, siehe `CF_HERO_ANIMS` im Code und die
+   G2-Umsetzungsnotizen unten.
 3. **Ausrüstungs-Layer sind winzig, nicht bugged.** `Chest`/`Legs`/`Feet` liefern pro
    Frame nur 2–6 opake Pixel (Bounding-Box-Messung), weil der ganze Chibi-Körper nur
    ~17 px hoch ist. Erst am 8×-Crop wird sichtbar, dass Hemd/Hose/Schuh trotzdem
@@ -319,7 +324,7 @@ Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**,
   `recalc()` (Ausrüstungswechsel, Skillpunkt, Schichtstart) wird — falls sich
   Rüstungs-/Stiefel-Stufe oder Frisur seit dem letzten Bake geändert haben
   (Dirty-Check über einen `"tier|tier|hair"`-Schlüssel) — ein Offscreen-Canvas mit
-  allen 36 benötigten Frames (6 Anims) neu zusammengesetzt: Legs → Feet → Body →
+  allen 32 benötigten Frames (5 Anims, seit R9/F68 ohne `walk`) neu zusammengesetzt: Legs → Feet → Body →
   Chest → Haar → Hände, in dieser Reihenfolge. Ergebnis landet als ganz normaler
   Eintrag `SHEETS['hero_baked']`, `drawPlayer()` blittet daraus nur noch **ein**
   Sprite pro Frame (Regressionsregel 4/10). Gemessen: Bake ~23 ms (einmalig, wie
@@ -778,7 +783,7 @@ diese Session, bevor G5 begann — keine Vermischung mit dem G5-Diff).
 
 **Entscheidungen:**
 
-- **Dorf-Rechteck** `VILLAGE = {x0:6,y0:33,x1:24,y1:47}` (18×15 Kacheln), deckt
+- **Dorf-Rechteck** `VILLAGE = {x0:6,y0:33,x1:24,y1:47}` (19×15 Kacheln, `x1`/`y1` inklusive gezählt), deckt
   beide Gebäude-Cluster inklusive Fassadenhöhe ab. Wird in `genMap()` an exakt der
   Stelle freigeräumt, an der bisher nur der 5×4-Kessel-Anger stand (Reihenfolge
   Streuung → Teiche/Lava → Freiräumung bleibt unverändert, sonst würden Bäume im
@@ -925,6 +930,8 @@ automatisierter Test-Runner existiert):**
 | Sunnyside | `git status --short` zeigt `assets/Characters|Tileset|Elements|UI` nicht mehr, `assets/` enthält nur `cf/`, `git grep -i sunnyside -- index.html` nur noch Historie |
 | Build | `node tools/build-single.mjs` → 99 Dateien, 1009 KB eingebettet, `dist/index.html` 1339 KB (G4-Referenz 2046 KB — der Sunnyside-Wegfall macht sich direkt bemerkbar). Statisch geprüft (Skript-Syntax, keine `assets/Characters` o.ä.-Referenz, `ASSET_BLOBS` gefüllt, neue Sheet-Keys enthalten) und **interaktiv per `python3 -m http.server` aus `dist/` bedient**: 0 Konsolenfehler, 0 „Sprite fehlt", identisch zum Dev-Server. `file://`-Doppelklick im Sandbox-Browser dieser Sitzung nicht möglich (liegt außerhalb des Projektordners, Tool liefert nur einen statischen Snapshot) — Matthias bitte einmal von Hand gegenchecken, wie in G1 |
 | **GitHub-Pages-Live-Check** | Sandbox-Browser dieser Sitzung zeigte über die echte `https://wurstbrotdlx.github.io/…`-URL massenhaft „Sprite fehlt"-Warnungen und teils veralteten Anzeigestand trotz frischer Navigation — bei identischem, per `curl` verifiziertem Server-Inhalt und fehlerfreiem lokalem Test derselben Datei (`python3 -m http.server`). Eindeutig ein Tool-Artefakt des Sandbox-Browsers (großer, fast nur aus `data:`-URIs bestehender Seiteninhalt von echtem Fremd-Host), kein Build-/Codefehler. **Von Matthias in echtem Browser gegengecheckt: funktioniert.** Live auf GitHub Pages verifiziert. |
+
+**Nachtrag (Zusagen-Bilanz 2026-08-04):** Die Ladelisten-Zahlen in den Verifikationstabellen (G4: 319, G5: 335) waren beim jeweiligen Phasenabschluss korrekt und bleiben als Zeitmarke stehen. `SHEET_LIST` zählt heute **312** Einträge: R9/F68 hat die 23 `walk`-Registrierungen des Helden (Body, Hände, 6 Frisuren, je 5 Chest-/Legs-/Feet-Dateien) wieder entfernt, siehe G2-Nachtrag oben. Außerdem gilt die G4-Zeile „einzige `n>cols`-Auffälligkeit ist `dun1_plate`/`dun2_plate`" seit G5 nicht mehr uneingeschränkt: `cfcloud` (4 Frames auf einem 2×2-Raster) kam mit dem Wetter-System dazu und ist derselbe, beabsichtigte Fall — `drawSpriteAt()` bricht über `cols` in die nächste Zeile um, das ist kein Fehler.
 
 **Für ein mögliches G6 zum Mitnehmen:** Alpha-Lauflängen-Scan (`px[x,y][3]>0`
 in einer Zeile) ist der Weg, um Zellgrenzen in einem Sheet mit uneinheitlicher

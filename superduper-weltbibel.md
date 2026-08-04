@@ -526,7 +526,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Blatt-Drop an der bestehenden Kammertruhe, Wahrscheinlichkeit an die Kammerstufe gekoppelt.
 * Dritter Reiter in der Kladde, Liste plus Lesefenster.
 * Persistenz im bestehenden `sda_kladde_v1`, nicht in einem neuen Schlüssel. Damit erbt die Geschichte die Todesimmunität automatisch.
-* Erst 16 Blätter (Serien A und B) bauen, testen, dann den Rest.
+* Erst 18 Blätter (Serien A und B) bauen, testen, dann den Rest. (Zählfehler korrigiert: Serie A hat 12, Serie B hat 6, macht 18, nicht 16 — siehe `blaetter-serie-a-b.md`, Kopfzeile, und die Umsetzung in W2.)
 
 **Abnahme:** Blätter überleben Tod, Schichtende und Reload. Kein Blatt verrät Kesselgrammatik, geprüft Blatt für Blatt, Ergebnis in den Abschlussbericht. Zeichendeckel gilt auch hier.
 
@@ -544,7 +544,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Vierter Reiter im Amt-Panel. Drei generierte Dienstaufträge pro Schicht, einer wählbar.
 * Fortschritt läuft über bereits existierende Zähler (`shiftKillsByType`, `shiftKillsTotal`, Kammer- und Kessel-Ereignisse). Möglichst kein neuer Zähler.
 * Erfüllung zahlt Gold, also in die bestehende Ausbau-Ökonomie.
-* Achtung, bekannte Falle: `stats.goldTotal` ist tot. Nicht darauf aufbauen.
+* Achtung, bekannte Falle **war**: `stats.goldTotal` war tot (nie erhöht). In R9/F45 ersatzlos entfernt, das Feld existiert nicht mehr. Wer W4 baut, braucht ohnehin einen neuen Zähler.
 
 **Abnahme:** Ein Auftrag pro Schicht, Erfüllung eindeutig prüfbar, Abbruch ohne Strafe, Aufträge nie unerfüllbar (kein Auftrag auf ein Monster, das im gewählten Biom nicht spawnt).
 

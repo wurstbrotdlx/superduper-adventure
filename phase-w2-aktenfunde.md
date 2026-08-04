@@ -10,6 +10,8 @@ Kein neues Persistenz-System, kein neuer Zeichenschritt, kein neuer Dienstzettel
 
 **Sperrvermerk, unverändert aus Kapitel 12:** kein Blatt darf Kesselgrammatik oder eine Fluch-Ableitung verraten. Die 18 Blätter aus `blaetter-serie-a-b.md` sind bereits dagegen geprüft (siehe deren Kopfzeile). Wer den Text beim Einbau umformuliert oder kürzt, muss die Prüfung wiederholen, nicht nur den Zeichendeckel.
 
+**Nachtrag (Zusagen-Bilanz 2026-08-04):** Blatt A1 und Blatt A5 nannten ursprünglich Zuständigkeitsbereich VI, den die Weltbibel als abgeschlossen führt. Die Welt selbst ist Bereich VII. In `index.html`, `blaetter-serie-a-b.md` und hier auf VII korrigiert.
+
 ### Datentabelle `BLAETTER`
 
 Neben `KLADDE_KEY` einsetzen (`index.html:1970`, direkt vor `const kladde = ...`), also **vor** dem ersten `noteKladde()`-Aufruf und vor `truheOeffnen()`. Gleiche TDZ-Regel wie bei allen bisherigen Datentabellen im Projekt (`ZUTAT_NOUNS`, `HINWEISE`, `ZONES`): Tabellen stehen vor ihrer ersten Verwendung, sonst Absturz beim Laden.
@@ -24,7 +26,7 @@ Neben `KLADDE_KEY` einsetzen (`index.html:1970`, direkt vor `const kladde = ...`
 // ===========================================================================
 const BLAETTER = {
   a1:  {serie:'A', n:1,  minDiff:3, lines:['Aktenzeichen 1-0-2.',
-        'Der Zuständigkeitsbereich VI meldet Waffenstillstandsbruch.',
+        'Der Zuständigkeitsbereich VII meldet Waffenstillstandsbruch.',
         'Ursache: eine Grenzfrage, ungeklärt seit der Gründung.',
         'Gegenseite: Fürst Nachtrag, vertreten durch sich selbst.',
         'Weiteres Vorgehen wird nachgereicht.']},
@@ -42,7 +44,7 @@ const BLAETTER = {
         'Die Stelle ist vorläufig.',
         'Vermerk am Rand, andere Handschrift: „Vorläufig seit wann?"']},
   a5:  {serie:'A', n:5,  minDiff:3, lines:['Aktenzeichen 1-0-3.',
-        'Gründungsverfügung der Stelle für den Zuständigkeitsbereich VI.',
+        'Gründungsverfügung der Stelle für den Zuständigkeitsbereich VII.',
         'Personalstärke: fünf, zuzüglich Registratur.',
         'Amtssitz: Vordermühl, vorbehaltlich Bestätigung.',
         'Die Bestätigung steht noch aus.']},
@@ -250,7 +252,7 @@ function toggleBlatt(id){ blaetterOffen = blaetterOffen === id ? null : id; rend
 ### Was in W2 ausdrücklich nicht angefasst wird
 
 * Kein Knöterich-Hook. Kein neuer Dienstzettel, keine neue Randnotiz, kein neuer Zettel-Text, der einen Aktenfund ankündigt. Der bestehende Floater-Text „+ Aktenfund" ist die einzige Rückmeldung, analog zu den Zutaten-Floatern direkt daneben im selben Codeblock.
-* Kein neuer Sound. Die Audio-Phase (Phase 6) gilt als abgeschlossen, `sfx.*` bleibt zu 100 % unverändert, kein 14. Aufrufer kommt dazu.
+* Kein neuer Sound. Die Audio-Phase (Phase 6) gilt als abgeschlossen, `sfx.*` bleibt zu 100 % unverändert, keine 14. Methode kommt dazu.
 * Serien C bis F (Brandabschnitt, Eisablage, Berichte einer Dienstreise, Post von drüben) aus Kapitel 12 der Weltbibel. Die sind laut Kapitel 14 ausdrücklich „danach" dran, nicht Teil von W2.
 * Kein Sperrvermerk-Refactor an `CFX.schweigen`. Siehe Begründung oben bei `findeBlatt()`.
 * Keine Änderung an `rollKammerZutat()`, `k.tier` oder der Zutatenmenge `n`. Der Aktenfund läuft komplett daneben her.

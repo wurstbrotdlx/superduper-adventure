@@ -8,6 +8,8 @@ Inhaltslieferung zu Kapitel 12 der `superduper-weltbibel.md` ("Aktenfunde: wie d
 
 **Blatt A4 und Blatt E10 sind die bestehenden Musterblätter aus Kapitel 12 und werden hier unverändert als Blatt A4 übernommen** (E10 gehört zu Serie E, nicht Teil dieser Lieferung).
 
+**Nachtrag (Zusagen-Bilanz 2026-08-04):** Blatt A1 und Blatt A5 verorteten den Vorgang ursprünglich im Zuständigkeitsbereich VI. Die Weltbibel führt die Welt selbst als Zuständigkeitsbereich VII und Bereich VI ausdrücklich als abgeschlossen, Material für ein zweites Spiel (Kapitel 3, 9, 15). Auf VII korrigiert, synchron mit `index.html` und `phase-w2-aktenfunde.md`.
+
 ---
 
 ### Serie A. Der Vorgang — 12 Blätter
@@ -15,7 +17,7 @@ Inhaltslieferung zu Kapitel 12 der `superduper-weltbibel.md` ("Aktenfunde: wie d
 Fundort: alle Biome, ab Kammerstufe 3. Erzählbogen: Kriegserklärung, Waffenstillstand, Aussetzung, Gründung der Stelle, die drei Ausfertigungen, der Verbleib jeder einzelnen, und der stille Vermerk, dass der Vorgang immer noch offen ist. Reihenfolge beim Fund ist egal, deshalb ist jedes Blatt für sich verständlich.
 
 > **Serie A, Blatt 1.** Aktenzeichen 1-0-2.
-> Der Zuständigkeitsbereich VI meldet Waffenstillstandsbruch.
+> Der Zuständigkeitsbereich VII meldet Waffenstillstandsbruch.
 > Ursache: eine Grenzfrage, ungeklärt seit der Gründung.
 > Gegenseite: Fürst Nachtrag, vertreten durch sich selbst.
 > Weiteres Vorgehen wird nachgereicht.
@@ -37,7 +39,7 @@ Fundort: alle Biome, ab Kammerstufe 3. Erzählbogen: Kriegserklärung, Waffensti
 > Vermerk am Rand, andere Handschrift: „Vorläufig seit wann?"
 
 > **Serie A, Blatt 5.** Aktenzeichen 1-0-3.
-> Gründungsverfügung der Stelle für den Zuständigkeitsbereich VI.
+> Gründungsverfügung der Stelle für den Zuständigkeitsbereich VII.
 > Personalstärke: fünf, zuzüglich Registratur.
 > Amtssitz: Vordermühl, vorbehaltlich Bestätigung.
 > Die Bestätigung steht noch aus.
