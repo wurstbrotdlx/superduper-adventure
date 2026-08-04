@@ -539,7 +539,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 **Abnahme:** Keine Figur blockiert einen Weg, keine bekommt Monster auf die Kachel, keine neue Trefferbox, `AKT_`-Konstanten kollidieren nicht mit der Grußpflicht.
 
-### W4: Schwarzes Brett — OFFEN
+### W4: Schwarzes Brett — ERLEDIGT
 
 * Vierter Reiter im Amt-Panel. Drei generierte Dienstaufträge pro Schicht, einer wählbar.
 * Fortschritt läuft über bereits existierende Zähler (`shiftKillsByType`, `shiftKillsTotal`, Kammer- und Kessel-Ereignisse). Möglichst kein neuer Zähler.

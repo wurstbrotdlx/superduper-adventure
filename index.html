@@ -2500,8 +2500,8 @@ function pickAdj(biome, mr){
 function pouchTotal(){ let s = 0; for(const z of player.pouch) s += z.count; return s; }
 function addZutat(noun, adj, n){
   if(!kn.pending.zutat1 && !kn.seen.zutat1){ kn.pending.zutat1 = true; saveKn(); }   // erste Zutat aufgenommen
-  for(const z of player.pouch) if(z.noun === noun && z.adj === adj){ z.count += n; return z; }
-  const z = {noun, adj, count:n}; player.pouch.push(z); return z;
+  for(const z of player.pouch) if(z.noun === noun && z.adj === adj){ z.count += n; auftragEreignis('zutat'); return z; }
+  const z = {noun, adj, count:n}; player.pouch.push(z); auftragEreignis('zutat'); return z;   // W4
 }
 function takeZutat(noun, adj){
   for(let i=0; i<player.pouch.length; i++){
@@ -2679,10 +2679,18 @@ player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0
 // die persistierten Werte lädt loadAmt() erst beim CONFIG-Block nach.
 let amt = {bankGold:0, schichten:0,
   ausbauten:{startLevel:0, kontingent:0, tueren:0, vermutungen:false, startFluchUnlocked:false, startFluch:null},
-  bonusManaRegen:0, bonusSpeed:0, bonusPotions:0, bonusStartGold:0, bonusNachwachsen:0};
+  bonusManaRegen:0, bonusSpeed:0, bonusPotions:0, bonusStartGold:0, bonusNachwachsen:0,
+  // W4: brett = die drei gewürfelten Aushänge der laufenden Schicht {schicht, liste:[a,a,a]}.
+  // auftrag = der angenommene Aushang, ohne Fortschritt (der läuft in shiftT-Laufzeitfeldern
+  // unten, nicht hier — sonst wäre jeder Kill ein localStorage-Schreibvorgang).
+  brett:null, auftrag:null, auftraegeErfuellt:0};
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
 let shiftT=0, shiftEndPending=false, overtimeT=0,
-    shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[];
+    shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[],
+    // W4: Fortschritt des laufenden Aushangs. Bedeutung typabhängig, siehe AUFTRAG_TYPEN[].stand.
+    // Reset in startShift(), neben shiftKillsByType. auftragSoll/auftragOrtSoll sind die
+    // Weltgarantie-Kontingente für placeMonsters(), ebenfalls dort gesetzt.
+    auftragStand=0, auftragVerletzt=false, auftragFertig=false, auftragSoll=0, auftragOrtSoll=0;
 
 const stats = {kills:0};
 let derived = {};
@@ -2903,17 +2911,55 @@ const BIOME_MOBS = {
   sand:  ['crab','scorpion','scorpion','sandmage'],
 };
 
+// W4: die einzigen Monstertypen, auf die ein Dienstauftrag lauten darf. Wird aus
+// BIOME_MOBS abgeleitet und nie von Hand gepflegt: wer den Roster ändert, ändert
+// automatisch die Aushänge mit. Jeder der neun Typen kommt in genau einem Biom vor,
+// deshalb ist AUFTRAG_BIOM eine eindeutige Rückabbildung (von auftragAssertBrett geprüft).
+const AUFTRAG_MOBS = [], AUFTRAG_BIOM = {};
+for(const b in BIOME_MOBS) for(const t of BIOME_MOBS[b]){
+  if(AUFTRAG_MOBS.indexOf(t) < 0){ AUFTRAG_MOBS.push(t); AUFTRAG_BIOM[t] = b; }
+}
+// Amtliche Biomnamen aus W1 (phase-w1-terminologie.md), Nominativ für Titel, Dativ für Sätze.
+const BIOM_AMT = {
+  snow:  {nom:'Die Eisablage',      dat:'in der Eisablage'},
+  grass: {nom:'Ablage A',           dat:'in Ablage A'},
+  sand:  {nom:'Der Brandabschnitt', dat:'im Brandabschnitt'},
+};
+
+// W4: Weltgarantie. Die Oberwelt wächst nicht nach (placeMonsters läuft genau einmal
+// je Schicht) — ein Aushang auf einen seltenen Typ wie 'crab' hätte ohne diesen Eingriff
+// nur rund 3,5 Ziele im ganzen Kartenpool. Deshalb reserviert der laufende Aushang Plätze
+// in der bestehenden Setzschleife: dieselbe makeMon-Zeile, nur mit gelenkter Typ- bzw.
+// Bandwahl, bis das Soll steht. Kein neuer Spawner, kein Frame-Aufwand.
+// Bewusst TDZ-sicher: liest ausschließlich amt.auftrag und BIOME_MOBS, nie AUFTRAG_TYPEN —
+// placeMonsters() läuft schon beim Skriptstart, lange vor der Tabelle weiter unten.
+function auftragTypBevorzugen(typ, biome){
+  const a = amt.auftrag;
+  if(!a || auftragSoll <= 0) return typ;
+  if(a.typ !== 'menge' && a.typ !== 'sammlung') return typ;
+  if(!BIOME_MOBS[biome] || BIOME_MOBS[biome].indexOf(a.par) < 0) return typ;
+  auftragSoll--; return a.par;
+}
+function auftragOrtBand(){
+  const a = amt.auftrag;
+  if(!a || a.typ !== 'ort' || auftragOrtSoll <= 0) return null;
+  return a.par === 'snow' ? [4,25] : a.par === 'sand' ? [55, MH-5] : [26,54];
+}
+
 function placeMonsters(){
   monsters.length = 0; boss = null; lockedTarget = null;
   if(currentLevel === 1){
     for(let i=0;i<55;i++){
-      const tx=ri(4,MW-5), ty=ri(4,MH-5);
+      const band = auftragOrtBand();                                       // W4
+      const tx=ri(4,MW-5), ty = band ? ri(band[0], band[1]) : ri(4,MH-5);   // W4
       if(!walkT(tx,ty) || dist(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
       if(inVillageT(tx,ty)) continue;            // G5: das Dorf bleibt monsterfrei
       const biome = ty<26 ? 'snow' : (ty>54 ? 'sand' : 'grass');
       const roster = BIOME_MOBS[biome];
-      makeMon(roster[Math.floor(rng()*roster.length)], tx*TS+16, ty*TS+16);
+      makeMon(auftragTypBevorzugen(roster[Math.floor(rng()*roster.length)], biome),   // W4
+              tx*TS+16, ty*TS+16);
+      if(band) auftragOrtSoll--;                 // W4: erst zählen, wenn wirklich gesetzt
     }
   }
 }
@@ -2926,6 +2972,7 @@ function loadLevel2(){
   monsters.length = 0; drops.length = 0; lockedTarget = null;
   initFloorGraphics(); // Map ändert sich optisch in Schatten-Biom
   floaters.push({x:player.x, y:player.y-40, txt:'MASSENVORGANG ERÖFFNET', col:'#ff0055', t:4.0, big:true});
+  auftragEreignis('ablage');   // W4
 }
 
 function moveEnt(e,dx,dy){
@@ -3057,6 +3104,7 @@ function dropZutat(m, x, y){
 function killMon(m){
   m.dead = true; stats.kills++; knIdleT = 0;   // Kill zählt als "echte Aktion" (Steckenbleib/Untätigkeit)
   if(CONFIG.schichtModus){ shiftKillsByType[m.type] = (shiftKillsByType[m.type]||0) + 1; shiftKillsTotal++; }
+  auftragEreignis('kill', m);   // W4
   // Leiche spielt die Sterbe-Animation zu Ende und blendet dann aus
   const dKey = monAnim(m.def, 'death');
   corpses.push({x:m.x, y:m.y, def:m.def, key:dKey, t:0, dur:animLen(dKey, m.def.deathFps || 11) + 1.4, flip:m.facingLeft});
@@ -3096,7 +3144,9 @@ function killMon(m){
 
   // Portal Event Logic: erscheint zufällig irgendwann zwischen Spieler-Level 5 und 11
   if(currentLevel === 1 && !portal && player.level >= 5){
-    const chance = player.level >= 11 ? 1 : 0.05 + (player.level-5)*0.03;
+    // W4: mit laufendem Reise-Aushang ist das Portal ab Stufe 5 garantiert.
+    const chance = (player.level >= 11 || (amt.auftrag && amt.auftrag.typ === 'reise')) ? 1
+                 : 0.05 + (player.level-5)*0.03;
     if(Math.random() < chance){
       // Immer mit Abstand: früher landete das Portal im Fallback exakt auf dem Spieler,
       // der dann ungefragt im selben Frame ins Schattenland gesogen wurde.
@@ -3172,6 +3222,7 @@ function drinkPotion(){
   kn.counters.traenke = (kn.counters.traenke||0) + 1;
   if(KN_TRAENKE_GAGS[kn.counters.traenke]) knShowLineGated('traenke', KN_TRAENKE_GAGS[kn.counters.traenke]);
   saveKn();
+  auftragEreignis('trank');   // W4
 }
 
 // ===================== MAGIE-SYSTEM =====================
@@ -3294,6 +3345,7 @@ function castSpell(sp, target){                          // target: optionaler W
   }
   if(CFX.goldz) player.gold = Math.max(0, player.gold - Math.min(player.gold, kosten));   // Fluch 'Verwaltungsgebühr'
   player.spellCd = CFX.zunge ? 0.75 : 0.28;                                                // Fluch 'Langsame Zunge'
+  auftragEreignis('zauber');   // W4: nach allen Frühabbrüchen (Mana/Leben/Cooldown), der Zauber ist jetzt sicher
   player.castT = 0.42;                                   // Zauber-Animation des Helden
   if(!kn.flags.hatGezaubert){ kn.flags.hatGezaubert = true; saveKn(); }   // Wissenslücke 'nie gezaubert' geschlossen
   const aim = target || aimPoint();
@@ -3398,6 +3450,13 @@ const AMT_KEY = 'sda_amt_v1';
     if(typeof o.bonusPotions === 'number') amt.bonusPotions = o.bonusPotions;
     if(typeof o.bonusStartGold === 'number') amt.bonusStartGold = o.bonusStartGold;
     if(typeof o.bonusNachwachsen === 'number') amt.bonusNachwachsen = o.bonusNachwachsen;
+    // W4: nur strukturell geprüft (kein Tabellenzugriff — AUFTRAG_TYPEN existiert an dieser
+    // Stelle noch nicht, das wäre ein TDZ-ReferenceError). Die Typprüfung gegen die Tabelle
+    // läuft als eigene Migration direkt hinter AUFTRAG_TYPEN.
+    if(o.brett && Array.isArray(o.brett.liste) && o.brett.liste.length === 3
+       && typeof o.brett.schicht === 'number') amt.brett = o.brett;
+    if(o.auftrag && typeof o.auftrag.typ === 'string') amt.auftrag = o.auftrag;
+    if(typeof o.auftraegeErfuellt === 'number') amt.auftraegeErfuellt = o.auftraegeErfuellt;
   }catch(_){}
 })();
 function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }catch(_){} }
@@ -3843,8 +3902,8 @@ const spielerTx = ()=> Math.floor(player.x / TS);
 const spielerTy = ()=> Math.floor(player.y / TS);
 
 // --- Türen in der Oberwelt --------------------------------------------------
-function wuerfleTuer(t){
-  t.diff = rri(1, 5);
+function wuerfleTuer(t, festDiff){
+  t.diff = festDiff || rri(1, 5);   // W4: fester Wert erzwingt eine Kammergarantie, siehe setzeKammerTueren()
   t.tier = clamp(t.diff - 1, 0, 4);   // Schild und Beute lesen dasselbe Feld
   t.cd = 0;
   // R6/F31: Set-Wahl wie beim Betreten (diff 1-2 -> Set 0). Die Keys hängen allein
@@ -3872,6 +3931,17 @@ function setzeKammerTueren(){
         break;
       }
     }
+  }
+  // W4: Kammergarantie. Bei sechs Türen und diff = rri(1,5) wäre P(keine Tür mit
+  // Aufwand 5) = (4/5)^6 = 26 Prozent — Statistik reicht nicht für "nie unerfüllbar".
+  // Deshalb wird die höchste gewürfelte Tür notfalls auf das Ziel hochgesetzt.
+  // TDZ-sicher (nur amt.auftrag), weil setzeKammerTueren() auch beim Skriptstart
+  // läuft, lange vor AUFTRAG_TYPEN weiter unten.
+  const auftragK = amt.auftrag;
+  if(auftragK && auftragK.typ === 'kammer' && kammerTueren.length){
+    let best = kammerTueren[0];
+    for(const d of kammerTueren) if(d.diff > best.diff) best = d;
+    if(best.diff < auftragK.ziel) wuerfleTuer(best, auftragK.ziel);
   }
 }
 
@@ -4087,6 +4157,7 @@ function rollKammerZutat(tier, biome){
 function truheOeffnen(){
   const k = kammer; if(!k || k.truhe.auf) return;
   k.truhe.auf = true; k.geleert = true;
+  auftragEreignis('kammer', k);   // W4
   k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen);
   const gold = rri(40, 80) * (1 + k.diff);
   player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
@@ -4577,8 +4648,28 @@ function renderAmtFenster(){
     <h2>🏛 Amtsstube <span style="cursor:pointer;font-size:14px;" onclick="amtFensterSchliessen()">✖</span></h2>
     <p style="font-size:12px;color:#9a8a5f;margin:0 0 8px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
     <div style="text-align:left;">${rows}</div>
+    ${auftragFensterBlock()}
     <button onclick="amtFeierabendNehmen()" style="width:100%;margin-top:12px;">FEIERABEND NEHMEN</button>
   `;
+}
+// W4: laufender Aushang, als eigene Funktion statt Inline-IIFE, weil renderAmtFenster()
+// sonst schon zwei Bildschirmbreiten lang wäre. CONFIG.schichtModus-Wächter nicht
+// überflüssig: ein Spielstand aus dem Schichtmodus kann einen veralteten amt.auftrag tragen.
+function auftragFensterBlock(){
+  const a = CONFIG.schichtModus ? amt.auftrag : null;
+  if(!a) return '';
+  const def = AUFTRAG_TYPEN[a.typ];
+  const farbe = auftragFertig ? '#8fdc8f' : auftragVerletzt ? '#ff8f8f' : '#c9b98a';
+  const zeile = auftragFertig  ? `Erfüllt. ${a.lohn} Gold verbucht.`
+              : auftragVerletzt ? 'Hinfällig. Ohne Folgen.'
+              : `Stand: ${auftragStandWert(a)} von ${a.ziel}`;
+  return `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #5a4a2d;text-align:left;">
+    <div style="font-size:12px;color:#f4d97a;"><b>${def.titel(a)}</b></div>
+    <div style="font-size:11px;color:#9a8a5f;">${def.satz(a)}</div>
+    <div style="font-size:12px;color:${farbe};margin-top:3px;">${zeile}</div>
+    ${auftragFertig || auftragVerletzt ? '' : `<div style="font-size:10px;color:#9a8a5f;margin-top:5px;">
+      <span style="cursor:pointer;text-decoration:underline;" onclick="auftragZurueckgeben()">Aushang zurückgeben</span></div>`}
+  </div>`;
 }
 function amtFeierabendNehmen(){
   amtFensterSchliessen();
@@ -5034,6 +5125,7 @@ function brew(){
   noteKladde('fl', topAdj, fluchKey);
   if(stufe >= 3) kladde.unikate[wirkKey] = wk.unikat;
   kladde.crafts++; saveKladde();
+  auftragEreignis('kessel', {rar});   // W4
   if(!kn.pending.craft1 && !kn.seen.craft1){ kn.pending.craft1 = true; }
   kn.flags.hatGekocht = true; saveKn();
 
@@ -6378,12 +6470,22 @@ function startShift(){
 
   CONFIG.kammerTueren = 2 + amt.ausbauten.tueren; setzeKammerTueren();
 
+  // W4: Weltgarantie-Kontingente vor placeMonsters() setzen, nicht danach.
+  // Sammlung braucht das Dreifache: dropZutat() fällt nur bei einem Teil der
+  // Kills, plus Reserve. Menge/Ort bekommen Puffer für Kartenecken, die in
+  // einer Schicht realistisch nicht abgelaufen werden.
+  const auftragS = amt.auftrag;
+  auftragSoll    = !auftragS ? 0 : auftragS.typ === 'menge' ? auftragS.ziel + 2
+                              : auftragS.typ === 'sammlung' ? auftragS.ziel * 3 : 0;
+  auftragOrtSoll = (auftragS && auftragS.typ === 'ort') ? auftragS.ziel + 3 : 0;
+
   recalc(); player.hp = derived.maxHp; player.mana = derived.maxMana;
   knCheckFluchEquipped();   // Startfluch-Ausbau kann ohne equipItemFromBag() einen Fluch anlegen
   initFloorGraphics(); placeMonsters();
 
   shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0;
   shiftKillsByType = {}; shiftKillsTotal = 0;
+  auftragStand = 0; auftragVerletzt = false; auftragFertig = false;   // W4
 
   document.getElementById('overlay').style.display = 'none'; MUS.muffle(false);
   state = 'play'; updateHUD();
@@ -6400,6 +6502,9 @@ function startShift(){
 function endShift(reason){
   if(kesselOpen) toggleKessel();
   if(amtFensterOpen) amtFensterSchliessen();
+  // W4: vor allen weiteren Änderungen prüfen, solange player.gold noch der
+  // ungeteilte Schichtstand ist (Bilanz-Aufträge lesen genau den).
+  const auftragBericht = auftragSchichtende();
 
   const carryGold = Math.round(player.gold * CONFIG.goldUebertragAnteil);
   const kontingent = CONFIG.zutatenMitnahmeBasis + amt.ausbauten.kontingent*2;
@@ -6428,6 +6533,7 @@ function endShift(reason){
   const ueberstunden = Math.max(0, Math.round(overtimeT));
   const mitgenommen = carryPouch.reduce((s,z) => s+z.count, 0);
 
+  amt.auftrag = null;   // W4: Aushang gilt für eine Schicht, das nächste Brett hängt in showDorf()
   saveAmt();
 
   const titel = reason === 'tod' ? 'FEIERABEND' : reason === 'amt' ? 'FEIERABEND' : 'DIENSTSCHLUSS';
@@ -6442,7 +6548,7 @@ function endShift(reason){
       <b>🧑‍💼 Dienstbericht</b><br>
       Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
       Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
-      Überstunden: ${ueberstunden}s<br>
+      Überstunden: ${ueberstunden}s<br>${auftragBericht ? '      ' + auftragBericht + '<br>' : ''}
       Beuteanteil nach Abzug: 💰 ${carryGold} (von ${player.gold})
     </div>
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
@@ -6493,9 +6599,291 @@ function unlockStartFluch(){
 }
 function waehleStartFluch(k){ amt.ausbauten.startFluch = k; saveAmt(); showDorf(); }
 
+// ===========================================================================
+//  W4: SCHWARZES BRETT — Dienstaufträge, Weltbibel Kapitel 11 + 14
+//  Drei Aushänge je Schicht, einer wählbar, Fortschritt über bestehende Zähler
+//  (shiftKillsByType, player.pouch, player.gold, Kammer-/Kessel-Ereignisse).
+//  Muss NACH aktStand() (oben) stehen: auftragAssertBrett() ruft sich selbst
+//  sofort auf und würfelt dabei über alle Aktstände, das wäre vor aktStand()
+//  ein TDZ-ReferenceError.
+// ===========================================================================
+
+// Drei Pools, ein Aushang je Pool. Bietet das Brett immer eine billige, eine
+// mittlere und eine teure Möglichkeit, und drei verschiedene Typen sind per
+// Konstruktion garantiert (auftragAssertBrett prüft das zusätzlich nach).
+const AUFTRAG_POOLS = [
+  ['menge','sammlung','verzicht'],
+  ['ort','kammer','beglaubigung','verfahren'],
+  ['bilanz','kammer','menge','reise'],
+];
+
+const AUFTRAG_BEMERKUNGEN = [
+  'Frist: heute. Es ist immer heute.',
+  'Nicht erfüllbar bei ungünstigem Wetter. Wetter ist nicht vorgesehen.',
+  'Bei Rückfragen wenden Sie sich an die Amtsleitung.',
+  'Abbruch ist zulässig und wird nicht vermerkt.',
+  'Ein Aushang gilt für eine Schicht. Danach hängt ein neuer.',
+  'Die Vergütung ist eine Aufwandsentschädigung.',
+];
+
+// Nur vier der neun Typen brauchen zaehle() — die übrigen fünf lesen einen
+// Zustand, der ohnehin schon existiert (shiftKillsByType, player.pouch,
+// player.gold, shiftKillsTotal). zaehle() liefert immer den NEUEN Wert von
+// auftragStand, kein Delta — nur so funktioniert Math.max() ohne Sonderfall.
+// st = Pool-Index (0/1/2) beim Würfeln, bestimmt Lohnstufe und Zielgröße.
+const AUFTRAG_TYPEN = {
+
+  menge: {
+    wuerfle:(st,stufe)=>({par: AUFTRAG_MOBS[rri(0, AUFTRAG_MOBS.length-1)],
+                          ziel: st===0 ? 4+stufe : 9+stufe*2}),
+    titel: a => `Vorgangslage ${BIOM_AMT[AUFTRAG_BIOM[a.par]].nom}`,
+    satz:  a => `${MONDEF[a.par].name} (${MONDEF[a.par].art}), ${a.ziel} Stück.`,
+    stand: a => shiftKillsByType[a.par] || 0,
+    sofort:true, pruefePar: a => AUFTRAG_MOBS.indexOf(a.par) >= 0 && a.ziel > 0},
+
+  ort: {
+    wuerfle:(st,stufe)=>({par: ['snow','grass','sand'][rri(0,2)], ziel: 8+stufe*2}),
+    titel: a => `Rundgang ${BIOM_AMT[a.par].nom}`,
+    satz:  a => `${a.ziel} Vorgänge, erledigt ${BIOM_AMT[a.par].dat}.`,
+    zaehle:(a,was,info)=> was==='kill' && zutatBiome(info.y)===a.par ? auftragStand+1 : auftragStand,
+    stand: () => auftragStand,
+    sofort:true, pruefePar: a => !!BIOME_MOBS[a.par]},
+
+  kammer: {
+    wuerfle:(st,stufe)=>({par:'', ziel: st===1 ? clamp(2+Math.floor(stufe/2),2,3)
+                                        : clamp(4+Math.floor(stufe/3),4,5)}),
+    titel: () => 'Aktenschrank, verschlossen',
+    satz:  a => `Öffnen Sie einen Vorgang ab Aufwand ${a.ziel}.`,
+    zaehle:(a,was,info)=> was==='kammer' ? Math.max(auftragStand, info.diff) : auftragStand,
+    stand: () => auftragStand,
+    sofort:true, pruefePar: a => a.ziel >= 1 && a.ziel <= 5},
+
+  // "mitführen" statt "zurückbringen": endShift() kappt den Beutel auf ein
+  // kleines Kontingent (CONFIG.zutatenMitnahmeBasis, Grundwert 5). Ein
+  // "zurückbringen" wäre bei größerem Ziel von vornherein unerfüllbar.
+  sammlung: {
+    wuerfle:(st,stufe)=>({par: AUFTRAG_MOBS[rri(0, AUFTRAG_MOBS.length-1)], ziel: 3+stufe}),
+    titel: () => 'Bestandsaufnahme',
+    satz:  a => `Führen Sie ${a.ziel} Stück ${ZUTAT_NOUNS[a.par].n} mit.`,
+    stand: a => pouchZaehle(a.par),
+    sofort:true, pruefePar: a => AUFTRAG_MOBS.indexOf(a.par) >= 0 && !!ZUTAT_NOUNS[a.par]},
+
+  // Sperrvermerk: die Auflage ist eine reine Ergebniseigenschaft des fertigen
+  // Stücks (Stückzahl oder Güte), nie Slot/Wirkung/Fluch/Zutatenzahl — das wäre
+  // Kesselgrammatik. auftragAssertBrett() erzwingt genau diese zwei Varianten.
+  beglaubigung: {
+    wuerfle:(st,stufe)=> rri(0,1) ? {par:'anzahl', ziel: 2+Math.floor(stufe/2)}
+                                  : {par:'guete',  ziel: stufe < 2 ? 1 : 2},
+    titel: () => 'Prüfung der Nebenbestimmungen',
+    satz:  a => a.par==='anzahl' ? `Beglaubigen Sie ${a.ziel} Stück.`
+                                 : `Beglaubigen Sie ein Stück ab Güte ${RARITY[a.ziel].name}.`,
+    zaehle:(a,was,info)=> was!=='kessel' ? auftragStand
+                        : a.par==='anzahl' ? auftragStand+1 : Math.max(auftragStand, info.rar),
+    stand: () => auftragStand,
+    sofort:true, pruefePar: a => (a.par==='anzahl' && a.ziel<=4) || (a.par==='guete' && a.ziel>=1 && a.ziel<=2)},
+
+  // sofort:false — Bedingung muss beim Schichtende gelten, sonst wäre sofortiger
+  // Feierabend die billigste Erfüllung.
+  verzicht: {
+    wuerfle:(st,stufe)=>({par:'', ziel: 10+stufe*3}),
+    titel: () => 'Nüchternheitsgebot, freiwillig',
+    satz:  a => `${a.ziel} Vorgänge ohne einen Schluck.`,
+    bruch: (a,was) => was === 'trank',
+    stand: () => shiftKillsTotal,
+    sofort:false, pruefePar: a => a.ziel <= 30},
+
+  verfahren: {
+    wuerfle:(st,stufe)=>({par:'', ziel: 12+stufe*3}),
+    titel: () => 'Dienst nach Vorschrift',
+    satz:  a => `${a.ziel} Vorgänge, nur in Nahbearbeitung.`,
+    bruch: (a,was) => was === 'zauber',
+    stand: () => shiftKillsTotal,
+    sofort:false, pruefePar: a => a.ziel <= 30},
+
+  // Erst ab Akt II angeboten (Schicht 1 gehört Knöterichs Onboarding), Portal-
+  // Erscheinen bei laufendem Aushang hart auf Chance 1 gesetzt (siehe loadLevel2-Umfeld).
+  reise: {
+    wenn: () => aktStand() >= 2,
+    wuerfle:()=>({par:'', ziel:1}),
+    titel: () => 'Fehlleitung, geplant',
+    satz:  () => 'Betreten Sie Ablage V.',
+    zaehle:(a,was)=> was==='ablage' ? 1 : auftragStand,
+    stand: () => auftragStand,
+    sofort:true, pruefePar: a => a.ziel === 1},
+
+  bilanz: {
+    wuerfle:(st,stufe)=>({par:'', ziel: 500+stufe*250}),
+    titel: () => 'Wirtschaftlichkeit',
+    satz:  a => `Schichtende mit mindestens ${a.ziel} Gold.`,
+    stand: () => player.gold,
+    sofort:false, pruefePar: a => a.ziel <= 1500},
+};
+
+const AUFTRAG_LOHN = [150, 240, 330];                        // Grundwert je Pool-Index st
+const auftragLohn = st => AUFTRAG_LOHN[st] + rri(0,7)*10;    // 150..220 / 240..310 / 330..400
+
+// Regressionsfalle: nur rri (Math.random) verwenden, nie ri/R — der gesiegelte
+// mulberry32-Strom erzeugt die Weltkarte und darf hier nicht mitlaufen.
+function auftragWuerfeln(){
+  const stufe = aktStand() - 1;               // 0..4, keine eigene Persistenz
+  const liste = [], genommen = {};
+  for(let st = 0; st < 3; st++){
+    const frei = AUFTRAG_POOLS[st].filter(k => !genommen[k]
+                   && (!AUFTRAG_TYPEN[k].wenn || AUFTRAG_TYPEN[k].wenn()));
+    const typ = frei[rri(0, frei.length-1)];
+    const def = AUFTRAG_TYPEN[typ];
+    const p = def.wuerfle(st, stufe);
+    genommen[typ] = true;
+    // Nörgels Amtsleitungs-Bemerkung (Index 2) liegt Kapitel 11 zufolge ab
+    // Schicht 1 immer aus — der mittlere Aushang (st===1) trägt sie deshalb fest.
+    liste.push({typ, st, ziel:p.ziel, par:p.par||'', bm: st===1 ? 2 : rri(0, AUFTRAG_BEMERKUNGEN.length-1),
+                lohn: auftragLohn(st)});
+  }
+  return liste;
+}
+
+// Aushang aus einem älteren Spielstand, dessen Typschlüssel es nicht mehr gibt,
+// wird stillschweigend fallengelassen. Kein saveAmt() hier — das wäre ein
+// localStorage-Schreibvorgang bei jedem Seitenaufruf; der nächste saveAmt() räumt auf.
+(function auftragMigration(){
+  if(amt.auftrag && !AUFTRAG_TYPEN[amt.auftrag.typ]) amt.auftrag = null;
+  if(amt.brett && amt.brett.liste.some(a => !AUFTRAG_TYPEN[a.typ])) amt.brett = null;
+})();
+
+// --- W4: Aushang-Assertion, Bauform wie knAssertCaps() weiter oben. Beweist
+// beim Start zwei Dinge: (1) kein würfelbarer Aushang kann unerfüllbar sein,
+// (2) kein erzeugter Text sprengt Zeichendeckel, Formregeln oder Sperrvermerk.
+// amt.schichten wird gespiegelt und exakt wiederhergestellt, kein saveAmt().
+function auftragAssertBrett(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('W4 Aushang:', m, ...r); };
+  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal',
+                  'Slot','ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const text = (txt, cap, feld) => {
+    if(!txt) return fehler('Text leer', feld);
+    if(txt.length > cap) fehler('Zeichendeckel', feld, JSON.stringify(txt), txt.length, '>', cap);
+    if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', feld, txt);
+    if(EMOJI.test(txt))  fehler('Emoji im Figurentext', feld, txt);
+    for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', g, txt);
+  };
+
+  // (0) Das abgeleitete Roster ist die Abnahmezusage wörtlich: "kein Auftrag auf
+  // ein Monster, das im gewählten Biom nicht spawnt".
+  for(const t of AUFTRAG_MOBS){
+    if(!MONDEF[t]) fehler('Typ ohne MONDEF-Eintrag', t);
+    else {
+      if(MONDEF[t].reserved) fehler('reservierter Typ im Aushang-Roster', t);
+      if(MONDEF[t].boss)     fehler('Boss im Aushang-Roster', t);
+      if(!MONDEF[t].art)     fehler('Typ ohne Vorgangsart, Satz wäre unvollständig', t);
+    }
+    if(!ZUTAT_NOUNS[t]) fehler('Typ ohne ZUTAT_NOUNS, Sammlung wäre unerfüllbar', t);
+    let n = 0; for(const b in BIOME_MOBS) if(BIOME_MOBS[b].indexOf(t) >= 0) n++;
+    if(n === 0) fehler('Typ spawnt in keinem Biom', t);
+    if(n > 1)   fehler('Typ in mehreren Biomen, AUFTRAG_BIOM wäre mehrdeutig', t);
+  }
+  for(const b in BIOM_AMT) if(!BIOME_MOBS[b]) fehler('BIOM_AMT kennt ein Biom, das es nicht gibt', b);
+  for(const b in BIOME_MOBS) if(!BIOM_AMT[b]) fehler('Biom ohne amtlichen Namen', b);
+
+  for(const l of AUFTRAG_BEMERKUNGEN) text(l, 70, 'Bemerkung');
+
+  // (1) Alle Aktstände durchwürfeln, viele Läufe je Stand.
+  const echt = amt.schichten, gesehenGesamt = {};
+  for(let sch = 0; sch <= 60; sch++){
+    amt.schichten = sch;
+    for(let n = 0; n < 40; n++){
+      const liste = auftragWuerfeln();
+      if(liste.length !== 3) fehler('Brett hat nicht drei Aushänge', sch, liste.length);
+      const gesehen = {};
+      for(const a of liste){
+        const def = AUFTRAG_TYPEN[a.typ];
+        if(!def){ fehler('Unbekannter Typ', a.typ); continue; }
+        if(gesehen[a.typ]) fehler('Doppelter Typ auf einem Brett', a.typ, sch);
+        gesehen[a.typ] = true; gesehenGesamt[a.typ] = true;
+        if(a.lohn < 150 || a.lohn > 400) fehler('Lohn außerhalb 150..400', a.typ, a.lohn);
+        if(!(a.ziel > 0))               fehler('Ziel nicht positiv', a.typ, a.ziel);
+        if(!def.pruefePar(a))           fehler('Parameter nicht erreichbar', a.typ, a.par, a.ziel);
+        if(a.bm < 0 || a.bm >= AUFTRAG_BEMERKUNGEN.length) fehler('Bemerkungs-Index', a.bm);
+        if(a.typ === 'reise' && sch < 10) fehler('Reise schon in Akt I angeboten', sch);
+        text(def.titel(a), 36, 'Titel');
+        text(def.satz(a),  60, 'Satz');
+      }
+      if(liste[1].bm !== 2) fehler('Amtsleitungs-Bemerkung fehlt auf dem mittleren Aushang', sch);
+    }
+  }
+  amt.schichten = echt;
+  for(const k in AUFTRAG_TYPEN) if(!gesehenGesamt[k]) fehler('Typ nie gewürfelt, toter Tabelleneintrag', k);
+
+  console.assert(ok, 'W4: Aushang-Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+auftragAssertBrett();
+
+// ===========================================================================
+//  W4: Trichter. Acht bestehende Fundstellen melden, WAS passiert ist; was das
+//  für den laufenden Aushang bedeutet, entscheidet allein AUFTRAG_TYPEN. Kein
+//  Ereignis erhöht einen Zähler, der anderswo schon existiert — dort ist das
+//  Ereignis nur der Anlass, neu zu lesen (Doppelzählung ist damit strukturell
+//  ausgeschlossen).
+// ===========================================================================
+function auftragEreignis(was, info){
+  if(!CONFIG.schichtModus) return;
+  const a = amt.auftrag;
+  if(!a || auftragFertig || auftragVerletzt) return;
+  const def = AUFTRAG_TYPEN[a.typ]; if(!def) return;
+  if(def.bruch && def.bruch(a, was, info)){
+    auftragVerletzt = true;
+    floaters.push({x:player.x, y:player.y-46, txt:'Aushang hinfällig', col:'#ff8f8f', t:2.0});
+    return;
+  }
+  if(def.zaehle) auftragStand = def.zaehle(a, was, info);
+  if(!def.sofort && was !== 'schichtende') return;
+  if(def.stand(a) >= a.ziel) auftragZahle(a, was);
+}
+
+function auftragZahle(a, was){
+  auftragFertig = true;
+  amt.bankGold += a.lohn; amt.auftraegeErfuellt++; saveAmt();
+  // Der Lohn geht in die Bank, nicht in player.gold: er wird deshalb vom
+  // 50-Prozent-Verwaltungskostenanteil in endShift() nicht angeschnitten.
+  if(was !== 'schichtende')
+    floaters.push({x:player.x, y:player.y-52, txt:'Aushang erfüllt · ' + a.lohn + ' Gold',
+                   col:'#f4d97a', t:2.6, big:true});
+  if(amtFensterOpen) renderAmtFenster();
+}
+
+const pouchZaehle = noun => { let s=0; for(const z of player.pouch) if(z.noun===noun) s+=z.count; return s; };
+const auftragStandWert = a => Math.min(a.ziel, AUFTRAG_TYPEN[a.typ].stand(a));
+
+function auftragSchichtende(){
+  const a = amt.auftrag; if(!CONFIG.schichtModus || !a) return '';
+  auftragEreignis('schichtende');
+  const def = AUFTRAG_TYPEN[a.typ];
+  return `Aushang: ${def.titel(a)} · ` + (auftragFertig ? `erfüllt, ${a.lohn} Gold`
+        : auftragVerletzt ? 'hinfällig' : `offen, ${auftragStandWert(a)} von ${a.ziel}`);
+}
+
+function auftragZurueckgeben(){ amt.auftrag = null; saveAmt(); renderAmtFenster(); }
+
+// Rollt genau einmal je Schicht. Nach einem Reload mitten in der Schicht ist
+// amt.schichten unverändert, das Brett bleibt also dasselbe und der angenommene
+// Aushang bleibt gültig.
+function auftragBrettSichern(){
+  if(!CONFIG.schichtModus) return;
+  if(amt.brett && amt.brett.schicht === amt.schichten) return;
+  amt.brett = {schicht: amt.schichten, liste: auftragWuerfeln()};
+  amt.auftrag = null; saveAmt();
+}
+
+function waehleAuftrag(i){
+  amt.auftrag = (i < 0 || !amt.brett) ? null : amt.brett.liste[i];
+  saveAmt(); showDorf();                    // exakt die Form von waehleStartFluch()
+}
+
 // Dorf-Hub "Amt für Monsterangelegenheiten" zwischen den Schichten. Wie die anderen
 // Overlay-Screens (Start/Tod/Sieg) ein reines innerHTML-Panel, keine neue Renderpath-Berührung.
 function showDorf(){
+  auftragBrettSichern();   // W4: würfelt nur, wenn noch kein Brett für diese Schicht hängt
   MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
   const rows = AUSBAU_DEFS.map(d => {
     const lvl = amt.ausbauten[d.key], maxed = lvl >= d.max, cost = maxed ? 0 : d.cost(lvl);
@@ -6518,10 +6906,29 @@ function showDorf(){
     <div style="margin-top:6px;">${fluchChoices}</div>
   </div>`;
 
+  // W4: Schwarzes Brett, vierte und letzte Sektion. auftragBrettSichern() oben
+  // garantiert amt.brett für die kommende Schicht (amt.schichten, noch nicht erhöht).
+  const brettRow = !CONFIG.schichtModus ? '' : `
+    <div style="padding:10px 0 4px;border-top:1px solid #5a4a2d;margin-top:8px;">
+      <b>Schwarzes Brett</b>
+      <span style="font-size:11px;color:#9a8a5f;">· ein Aushang je Schicht, Abbruch jederzeit</span>
+    </div>` + amt.brett.liste.map((a, i) => {
+      const def = AUFTRAG_TYPEN[a.typ], gew = !!amt.auftrag && amt.auftrag.typ === a.typ;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #3a2f1a;${gew?'background:rgba(122,90,16,.30);':''}">
+        <div><b>${def.titel(a)}</b>
+          <br><span style="font-size:11px;color:#9a8a5f;">${def.satz(a)}</span>
+          <br><span style="font-size:10px;color:#7a6a45;font-style:italic;">${AUFTRAG_BEMERKUNGEN[a.bm]}</span></div>
+        <button onclick="waehleAuftrag(${i})" style="font-size:12px;padding:6px 10px;margin:0;${gew?'background:#7a5a10;':''}">${gew?'ANGENOMMEN':'💰'+a.lohn}</button>
+      </div>`;
+    }).join('') + `
+    <div style="padding:6px 0;text-align:right;">
+      <button onclick="waehleAuftrag(-1)" style="font-size:10px;margin:2px;padding:4px 7px;${amt.auftrag?'':'background:#7a5a10;'}">Kein Aushang</button>
+    </div>`;
+
   document.getElementById('ovPanel').innerHTML = `
     <h1>AMT FÜR MONSTERANGELEGENHEITEN</h1>
-    <p style="font-size:12px;color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}</p>
-    <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}</div>
+    <p style="font-size:12px;color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
+    <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
     <button onclick="startShift()">NÄCHSTE SCHICHT ANTRETEN</button>
   `;
   document.getElementById('overlay').style.display = 'flex';
