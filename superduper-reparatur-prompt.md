@@ -1,6 +1,8 @@
 # SuperDuper Adventure, Reparatur der Restfunde R1 bis R9
 
-Umbauauftrag, kein Prüfauftrag. Grundlage ist `ABGLEICH-2026-07-27.md`, Abschnitt "Funde". Die neun Brecher F1 bis F9 sind erledigt. Offen sind **F10 bis F83**, aufgeteilt in neun Bauabschnitte.
+> **Stand 04.08.2026: alle neun Bauabschnitte sind erledigt.** R1 bis R9 sind gebaut, abgenommen und committet. Was von diesem Auftrag bleibt, sind die zwei offenen Lücken ganz unten (adversariale Gegenprobe, Zusagen-Bilanz). Wer hier einen Auftrag sucht, findet ihn dort, nicht in den Abschnitten.
+
+Umbauauftrag, kein Prüfauftrag. Grundlage ist `ABGLEICH-2026-07-27.md`, Abschnitt "Funde". Die neun Brecher F1 bis F9 sind erledigt. Es folgten **F10 bis F83**, aufgeteilt in neun Bauabschnitte.
 
 **Ein Bauabschnitt pro Session.** Nicht zwei, nicht alle. Wer mehr als einen Abschnitt in eine Session packt, verliert den Überblick über die Regressionsregeln und committet Vermischtes.
 
@@ -126,7 +128,7 @@ Bewusst **nicht** angefasst, mit Begründung:
 
 Abnahme gelaufen, über die acht sichtbaren Bildschirme statt über Codestellen (Regel aus F83): Syntaxcheck `new Function()` auf den Skriptinhalt fehlerfrei; im Browser 300 Frames mit 25 Zaubern ohne Exception bei 0,34 ms/Frame (Referenz 0,6); `knAssertCaps()` liefert `true` und schreibt nichts; vollständiger Kanal-Scan über die Datei findet **null** sichtbare Gedankenstriche (die verbleibenden 94 stehen in Kommentaren), null Totenköpfe, null sichtbare Vorkommen von `Abaddon`, `Blutmagie`, `Sterbende`, `getötet`, `Level`, `HORDE`, `METZELN`; Schildbreiten mit `ctx.measureText` gegenmessen (`GEBÜHREN-` 48,6px, `BESCHEID` 43,2px gegen 66px Innenbreite, einzeilig wären es 86,4px).
 
-### R6: Renderpfad und Regressionsschutz. — OFFEN
+### R6: Renderpfad und Regressionsschutz. — ERLEDIGT (Commit `81ef6d9`)
 
 Der Regressionsblock ist hier Prüfmaßstab, nicht Hintergrundlektüre.
 
@@ -140,7 +142,21 @@ Der Regressionsblock ist hier Prüfmaßstab, nicht Hintergrundlektüre.
 
 Abnahme: nach dem Umbau 300 Frames mit Zaubern ohne Exception, und das Frame-Budget in der Horde nicht schlechter als vorher (Referenz etwa 0,6 ms).
 
-### R7: Audio-Feinschliff. — OFFEN
+**Umsetzungsnotizen R6.** Alle sieben Funde am Code nachgeprüft, keiner widerlegt, zwei greifen weiter als gemeldet.
+
+* **F30** `TINT_CACHE` ist jetzt dreistufig als Map (Sheet, Farbe, Alpha) statt `key+'|'+color+'|'+alpha` bei jedem Zeichenaufruf. Gemessen 37 Aufrufe pro Frame bei 45 Monstern in der Horde, also tatsächlich die einzige Allokation, die mit der Hordengröße skaliert.
+* **F31** `kammer.dkGate/dkGateAnim/dkPlate/dkStairs/dkPillar` entstehen beim Kammeraufbau, `t.dkGate/dkGateAnim` in `wuerfleTuer()`. Betraf Tor, Platte, Treppe, Rune, Säule und beide Zweige der Kammertür. **Zwei Quellen, zwei Ablageorte:** `kammer.set` und `t.diff` sind nicht dasselbe, wer nur eines ablegt, erwischt die Hälfte.
+* **F32** `vis()` auf Modulebene gezogen, die Cull-Grenzen als Modulvariablen. Der aktive Zauber steht als `activeSpell` neben `activeSpellId` und wird an denselben zwei Stellen gesetzt; `updateHUD()` suchte ihn bisher pro Frame linear über `SPELLS.find`.
+* **F29** Neues `setAttr(id, name, v)` mit Dirty-Check nach dem Muster von `setStyle`, der letzte ungeschützte HUD-Schreibpfad. Gemessen: statt rund 300 nur noch 2 `title`-Schreibvorgänge in 300 Frames. Die Tooltip-Strings sind konstant und werden einmal gebaut (`spellTitel`/`ULT_TITEL`), nicht pro Frame für den Vergleich. **Über den Fund hinaus:** die `else`-Zweige setzen den Titel jetzt zurück, weil `startShift()` `spellsKnown` leert, ohne `activeSpellId` zu leeren, und der Tooltip der Vorschicht sonst am Knopf stehen bliebe.
+* **F41** Sechs `Math.hypot` im Frame-Pfad ersetzt. **Der Bericht nennt zwei Stellen, die die Wurzel nicht brauchen, es sind drei:** auch die Richtungswahl der NPCs vergleicht `distHome` nur gegen `NPC_HOME_R`. Alle drei laufen jetzt über `sqDist` gegen `NPC_HOME_R*NPC_HOME_R`.
+* **F34** `image-rendering:pixelated` an `.orbWrap` und `#touchCluster .tBtn` (deckt `#attackBtn` mit ab). `round_brown.png` ist 16x16 und wird auf 78 bis 84px hochgezogen; der Unterschied ist im Screenshot deutlich sichtbar, die laufzeitgebundene Frage aus dem Bericht ist damit beantwortet.
+* **F73** `DASH_5_4`/`DASH_6_6`/`DASH_AUS` statt `setLineDash`-Literalen, `DOLCH_OFFS`, `SCHILD_FONT`-Tabelle, Klingen-Verlauf über einen Cache mit Skalarvergleich statt `createLinearGradient` pro Frame, zwei `rgba()`-Strings durch `globalAlpha` ersetzt, und `setStyle` nutzt einen zweistufigen Cache statt `id+'|'+prop` (gemessen 11 Aufrufe pro Frame).
+
+Abnahme R6: Syntaxcheck über `new Function` fehlerfrei; 300 Frames mit 25 Zaubern in der Horde und auf der Oberwelt ohne Exception, Konsole leer; `knAssertCaps()` liefert `true`; 25 Kammern beider Sets mit allen Modulen je 40 Frames gezeichnet, keine Exception; NPCs bleiben nach 3000 Frames 22 von 40px vom Anker entfernt. Frame-Budget bei 1280x800, unmittelbar abwechselnd gegen `d9f3b1a` gemessen: Horde 45 Monster 0,645/0,675 gegen 0,673/0,651 ms, Horde 60 Monster 0,693/0,700 gegen 0,701/0,700 ms, Oberwelt ohne Horde 0,250/0,261 gegen 0,266/0,248 ms. Also unverändert im Rauschen, nicht schlechter.
+
+Nebenbefund, nicht repariert und nicht R6-Sache: vier `Math.hypot` stehen weiter in den Touch-Handlern (`updateJoyVec`, Zauber- und Angriffs-Drag). Die sind event-getrieben, nicht Frame-Pfad, und drei brauchen die Länge wirklich (Normalisierung, Vergleich gegen einen Bildschirmradius). Regel 3 spricht von Hot Paths, `touchmove` feuert aber bis 120 Hz; wer dort einmal ohnehin arbeitet, kann auf direktes `Math.sqrt` umstellen.
+
+### R7: Audio-Feinschliff. — ERLEDIGT (Commit `f2f9928`)
 
 * **F21** `MUS.duck(ms)` steht in der Schnittstellenliste, existiert aber nicht. Der erste Aufrufer bekommt einen TypeError, und zwar spät.
 * **F35** Zonenwechsel wartet bis zu vier Takte statt bis zur nächsten Taktgrenze, im Extremfall 12,6 Sekunden. Entweder Mechanik angleichen oder Planzeile `gameplay:508` ehrlich machen. **Achtung**, keine reine Kosmetik: `stepIdx` wird beim Wechsel auf 0 gesetzt.
@@ -150,6 +166,19 @@ Abnahme: nach dem Umbau 300 Frames mit Zaubern ohne Exception, und das Frame-Bud
 * **F48** `MUS.swell()` hat keinen Aufrufer. Anschließen (Stufenaufstieg, Truhe, Bosssieg) oder streichen.
 
 Das meiste hier ist nur im Hören zu beurteilen. Was nicht am Code entschieden werden kann, **als laufzeitgebunden melden statt als erledigt zählen**.
+
+**Umsetzungsnotizen R7.** Fünf Funde repariert, einer ohne Codeeingriff erledigt, zwei Teilbehauptungen des Berichts widerlegt.
+
+* **F35** Zonenwechsel schaltet an der Taktgrenze statt am Ende der Viertaktphrase (`z._totalSteps` zu `z._stepsPerBar`). Wartezeit gemessen: Kammer 12,63s auf 3,16s, Schattenland 9,60 auf 2,40, Oberwelt 8,57 auf 2,14, Dorf 7,83 auf 1,96, Boss 6,86 auf 1,71, Amt 4,62 auf 1,15. Die Zahlen des Berichts stimmen auf die erste Nachkommastelle. Gefahrlos, weil die neue Zone weiterhin bei `stepIdx` 0 einsetzt und damit jedes in `prepareZone()` gebackene Raster an seinem Kopf beginnt; verkürzt wird nur die abgehende Zone. Planzeile `gameplay:508` nennt jetzt den gebauten Ausdruck.
+* **F49** `gotoZone()` hebt den Wunsch auf, wenn er auf die laufende Zone zeigt. Ohne das legte ein Hin und Zurück über die Dorfgrenze innerhalb einer Phrase an der nächsten Grenze einen Duck auf eine unveränderte Zone. **Der Vergleich gehört nicht in `MUS.goto`:** dort stünde `requestedZone` auf der abbestellten Zone und der Idempotenz-Guard schluckte jeden weiteren Wechsel zurück. Invariante danach: `pendingZone` gesetzt genau dann, wenn `requestedZone` und `currentZoneKey` auseinanderliegen. **Berichtsteil „startet die Phrase neu" widerlegt:** am Altstand war `stepIdx = 0` an einer Phrasengrenze wirkungsgleich. Mit F35 wäre er wahr geworden.
+* **F50** `initAudio()` überträgt den bereits abgeleiteten Muffle-Zustand in den frischen Graphen (`MUS.muffle()` ohne Argument, also über die Ableitung aus R2/F36, kein zweiter Wahrheitsträger). Am Altstand gemessen, während der Startbildschirm steht: Hall 0,22 und Pegel 0,27 gedämpft, Lowpass 20000. Jetzt 600.
+* **F51** `shadowland.scale` von äolisch auf phrygisch. Der Lead spielt das Bb seit Phase 6, die Skalentabelle nicht. **Kein Klangunterschied auf diesem Stand:** `sting()` liest nur die Indizes 0, 3, 5 und 6, Index 1 ist die geänderte Stelle. Kammer und Boss bleiben äolisch, so steht es im Plan.
+* **F48** `MUS.swell()` hängt am Bosssieg. Von den drei vorgesehenen Anlässen der einzige, der selten genug ist: `killMon()` läuft hinter dem Tot-Guard in `hurtMon()` und feuert höchstens einmal je Boss, der `!kammer`-Zweig hält den Alten Schrecken raus. Stufenaufstieg und Truhe bewusst nicht. **Nebenbemerkung des Berichts überholt:** `swellGain` umgeht die Stummschaltung nicht mehr, F3 hat ihn auf `musicBus` umgehängt.
+* **F21 ohne Codeeingriff.** `MUS` hat sechs Methoden, ein `duck(ms)` wurde nie gebaut und nie abgenommen (die Abnahmeliste in `gameplay:566` zählt es nicht mit). `duckToFx(ms, depth)` ist audiointern und hat die andere Signatur; ein Wrapper hätte eine Tiefe erfinden müssen, die kein Aufrufer benutzt. Deshalb Planzeile `gameplay:509` korrigiert statt Code ergänzt.
+
+Abnahme R7: `node --check` über den Skriptinhalt fehlerfrei; 300 Frames mit 25 Zaubern bei 46 Monstern ohne Exception, Konsole leer; `knAssertCaps()` true; Frame-Budget A/B über `git stash` mit Reload, 1280x800, 48 Monster, Median aus 9x300 nach 3 Warmläufen: vorher 0,468 ms, nachher 0,363 ms, also nicht schlechter (der Vorsprung ist Drift, R7 fasst den Renderpfad nicht an).
+
+Laufzeitgebunden offen: F51 ist nur am Code entschieden, gegengehört wurde die phrygische Stufe nicht, weil sie auf diesem Stand nirgends klingt. Sobald eine Stinger-Variante Index 1 anfasst, gehört sie geprüft.
 
 ### R8: Grafik-Restposten. — ERLEDIGT
 
