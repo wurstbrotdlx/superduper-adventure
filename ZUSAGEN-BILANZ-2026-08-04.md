@@ -313,6 +313,8 @@ Nachgerechnet wurde mit Node gegen die aus `index.html` extrahierten Tabellen (A
 
 17 Zusagen, 2 Abweichungen.
 
+> **Nachtrag (nach W7).** Fund 14 ist erledigt, in der billigeren der beiden dort genannten Varianten: am `keydown`-Handler steht jetzt ein Kommentar mit der vollständigen Tastenbelegung, inklusive `1` und `m` und der Begründung, warum die Ziffernreihe eine Kollisionsgefahr ist. Diese Tabelle bleibt unverändert, sie ist ein datierter Prüfstand. Die Zeilennummern oben beziehen sich auf Commit `073c127`; `index.html` ist seither um rund 1700 Zeilen gewachsen — such nach dem Bezeichner.
+
 ---
 
 ## Funde, nach Schwere

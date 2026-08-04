@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Das Monstralministerium</title>
+<!-- Wappen des Ministeriums (weltbibel:756): drei gefaecherte Blaetter, darueber ein
+     Stempel, darunter eine kleine Flamme. Inline als Data-URI, kein externes Asset:
+     tools/build-single.mjs ersetzt nur die ASSET_BLOBS-Markerzeile und loest
+     <link href> nicht auf, eine assets/favicon.png wuerde im Pages-Build fehlen. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d0a14'/%3E%3Cg stroke='%234a3c22' stroke-width='1'%3E%3Crect x='4' y='12' width='9' height='13' fill='%23a08f62' transform='rotate(-24 8.5 18.5)'/%3E%3Crect x='19' y='12' width='9' height='13' fill='%23a08f62' transform='rotate(24 23.5 18.5)'/%3E%3Crect x='11.5' y='11' width='9' height='14' fill='%23f0e4c4'/%3E%3C/g%3E%3Ccircle cx='16' cy='7.5' r='4.2' fill='none' stroke='%23f4d97a' stroke-width='2.2'/%3E%3Cpath d='M16 25c2.4 2 2.4 4.2 0 5.6c-2.4-1.4-2.4-3.6 0-5.6z' fill='%23ff9a3c'/%3E%3C/svg%3E">
 <style>
   html,body{margin:0;padding:0;overflow:hidden;background:#05030a;font-family:'Courier New',ui-monospace,monospace;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;overscroll-behavior:none;}
   #game{position:fixed;inset:0;display:block;cursor:crosshair;image-rendering:pixelated;touch-action:none;-webkit-tap-highlight-color:transparent;}
@@ -6796,11 +6801,23 @@ function respawnPlayer(){
   knPlayStartT = gameT;
 }
 
+// Der Kampf-Tod-Ausgang. Er existiert seit vor W1 und bleibt der einfachere der
+// beiden Enden: Boss tot, außerhalb einer Kammer, zwei Sekunden später hier.
+// Mechanisch unverändert — killMon() und die Siegweiche sind nicht angefasst.
+//
+// Geändert ist nur der Ton (Fund F27, der Bildschirm stand als einziger noch im
+// vor-W1-Register). Die Pointe des Unterschieds zu vorgangPanelHtml() bleibt
+// ausdrücklich erhalten: wer zustellt, schließt einen Vorgang. Wer nur tötet,
+// hat einen Sachverhalt ohne Aktenzeichen, und das Haus weiß nichts damit
+// anzufangen. Kein Sperrvermerk in Reichweite, kein Hinweis auf die Zustellung
+// als bessere Variante — das wäre ein Questmarker.
 function winGame(){
   state = 'win';
   document.getElementById('ovPanel').innerHTML = `
-    <h1 style="color:#a855f7">VORGANG ABGESCHLOSSEN</h1>
-    <p>Fürst Nachtrag ist zu den Akten genommen. Der Sammelvorgang gilt als erledigt.</p>
+    <h1 style="color:#a855f7">SACHVERHALT ERLEDIGT</h1>
+    <p>Fürst Nachtrag ist zu den Akten genommen. Die Akten liegen noch dort, wo er stand.</p>
+    <p style="font-size:12px;color:#9a8a5f;">Ein Aktenzeichen wird nicht vergeben. Es fehlt die Anschrift, an die man die Erledigung hätte richten können. Das Haus vermerkt: Vorgang 1 bleibt offen, der Anlass ist entfallen.</p>
+    <p style="font-size:12px;font-style:italic;color:#c9b98a;">Trepp trägt den Brief zurück in den Sack. Er sagt nichts.</p>
     <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -8692,6 +8709,13 @@ window.addEventListener('keydown', e => {
   if(k === 'w') keysDown.w = true; if(k === 'a') keysDown.a = true;
   if(k === 's') keysDown.s = true; if(k === 'd') keysDown.d = true;
   if(e.code === 'Space'){ e.preventDefault(); if(state==='play') tryAttack(aimAngle()); }
+  // Vollständige Belegung, damit sie nicht wieder nur in einer Plandatei steht
+  // (ZUSAGEN-BILANZ-2026-08-04.md, Fund 14): w a s d Bewegung, Space Angriff,
+  // q und 1 Trank, e Zauber, r Ultimate, i Inventar, t Zauberbaum, m Musik,
+  // k Kessel, f Kontextaktion, Esc schließt Panels der Reihe nach.
+  // '1' ist die Zweitbelegung für den Trank. Sie ist bewusst dokumentiert: die
+  // Ziffernreihe ist genau der Bereich, in den eine spätere Schnellwahl greifen
+  // würde, und dann kollidiert sie stumm.
   if(k === 'q' || k === '1') drinkPotion();
   if(k === 'e') castActiveSpell();
   if(k === 'r') castUltimate();
