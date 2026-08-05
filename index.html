@@ -1670,10 +1670,20 @@ const MUS = {
 // G4: G_WATER war deklariert, aber nie geschrieben (kein Teich-Feature nutzte es) —
 // umgewidmet zu G_LAVA für die Aschewüste. Reine Optik, begehbar wie die Eisteiche
 // (Nutzerentscheidung, s. Umsetzungsnotizen G4), deshalb in WALKABLE unten dabei.
+// W-Groß bringt mit G_OCEAN wieder Wasser auf die Karte, bewusst unter neuem
+// Namen: G_WATER zurückzuholen würde die obige Umwidmungs-Historie zur Lüge machen.
 const G_GRASS=0, G_PATH=1, G_LAVA=2, G_TREE=3, G_ROCK=4, G_TALL=5, G_SAND=6, G_SNOW=7, G_ICE=8, G_CACTUS=9, G_ICE_TREE=10;
 // Nur in Kammern (Phase 2): Wand, geschobener Block, eingebrochene Bodenplatte.
 // Alle drei sind nicht begehbar — WALKABLE ist eine Whitelist, sie stehen einfach nicht drin.
 const G_WALL=11, G_BLOCK=12, G_GAP=13;
+// W-Groß: offenes Meer rund um die Landmasse ("Die Tilgung"). Nicht begehbar,
+// steht schlicht nicht in der WALKABLE-Whitelist.
+const G_OCEAN=14;
+// W-Groß: Strandsaum am Meer. Eigener Typ und nicht einfach G_SAND, weil der
+// Boden-Bake die Oberwelt nach BAND einfärbt und nicht nach Kacheltyp: G_SAND im
+// Grasband käme sonst als Gras heraus (G_SAND kam vor der Küste nur im Sandband
+// vor, deshalb fiel das nie auf). Begehbar wie jeder andere Untergrund.
+const G_BEACH=15;
 // Kammer-Zustand steht bewusst hier oben: computeTile() läuft schon beim
 // Kartenbau und fragt `kammer` ab — eine spätere let-Deklaration wäre ein TDZ-Fehler.
 let kammer = null;      // aktive Kammer oder null (Oberwelt)
@@ -1682,8 +1692,18 @@ const map = new Uint8Array(MW*MH);
 const inB = (x,y)=> x>=0 && y>=0 && x<MW && y<MH;
 const T = (x,y)=> map[x+y*MW];
 const setT = (x,y,v)=>{ if(inB(x,y)) map[x+y*MW]=v; };
-const WALKABLE = t => t===G_GRASS||t===G_PATH||t===G_TALL||t===G_SAND||t===G_SNOW||t===G_ICE||t===G_LAVA;
+const WALKABLE = t => t===G_GRASS||t===G_PATH||t===G_TALL||t===G_SAND||t===G_SNOW||t===G_ICE||t===G_LAVA||t===G_BEACH;
 const walkT = (x,y)=> inB(x,y) && WALKABLE(T(x,y));
+// W-Groß: gehört die Kachel zur Hauptlandmasse (Flutfüllung ab SPAWN, s. genMap)?
+// Und: liegt sie auf einer reinen Deko-Insel, die kein Setzer bespielen darf?
+const landmasse = new Uint8Array(MW*MH);
+const inselMaske = new Uint8Array(MW*MH);
+// Setz-Prädikat für ALLE Spawner (Monster, Kammertüren, Viecher, Deko, Horde).
+// Begehbar allein genügt seit der Küste nicht mehr: eine begehbare Kachel kann
+// auf einer unerreichbaren Insel liegen. In der Kammer entfällt die Prüfung, dort
+// ist die Karte komplett überschrieben und die Landmassen-Maske bedeutungslos.
+const reachbar = (tx,ty)=> kammer ? walkT(tx,ty) : (walkT(tx,ty) && landmasse[tx+ty*MW] === 1);
+const reachbarPx = (x,y)=> reachbar(Math.floor(x/TS), Math.floor(y/TS));
 const walkPx = (x,y)=> walkT(Math.floor(x/TS), Math.floor(y/TS));
 function circleWalkable(x,y,r){ return walkPx(x-r,y-r)&&walkPx(x+r,y-r)&&walkPx(x-r,y+r)&&walkPx(x+r,y+r); }
 
@@ -2071,6 +2091,9 @@ const TILE_TINT = {
   snow:       ['#eaf6ff', 0.82],
   ice:        ['#f2fbff', 0.74],
   shadowDirt: ['#2e0f42', 0.74],
+  shadowDeep: ['#1a0630', 0.72],   // W-Groß: die Tilgung im Schattenland
+  tiefsee:    ['#2f6ea8', 0.45],   // W-Groß: offenes Meer, dunkler als die Eisteiche
+  strand:     ['#e8d59a', 0.55],   // W-Groß: Strandsaum, heller als der Dorfpfad
 };
 
 const TILE_CACHE = {};
@@ -2167,7 +2190,15 @@ function computeTile(x, y){
   if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
     return t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
   } else if(currentLevel === 2){                 // Schattenland: echtes Pilzland-Lila statt Umfärbung
+    // Der Ozean braucht hier einen EIGENEN Zweig: dieser Ast wird vor jedem
+    // Kacheltyp-Test erreicht, sonst würde die Tilgung im Schattenland als
+    // begehbar aussehendes Pilzland gemalt (Level 2 teilt sich dieselbe Karte).
+    if(t === G_OCEAN) return pickCfTile(CF_TILE.water, x, y, 'shadowDeep');
     return (t===G_PATH || t===G_WALL) ? pickCfTile(CF_TILE.path, x, y, 'shadowDirt') : pickCfTile(CF_TILE.shroom, x, y);
+  } else if(t === G_OCEAN){                        // Die Tilgung: offenes Meer, nicht begehbar
+    return pickCfTile(CF_TILE.water, x, y, 'tiefsee');
+  } else if(t === G_BEACH){                        // Strandsaum, unabhängig vom Band
+    return pickCfTile(CF_TILE.path, x, y, 'strand');
   } else if(t === G_PATH || t === G_WALL){         // G_WALL = Dorf-Footprints, backen wie Pfad (F38)
     return pickCfTile(CF_TILE.path, x, y);
   } else if(t === G_ICE){
@@ -2260,11 +2291,17 @@ const MINI_COL = {
   schnee: [214,232,246], eis: [176,214,238], gras: [62,124,72], sand: [206,178,116],
   vulkan: [176,92,46], lava: [168,64,32], pfad: [150,132,104], wand: [90,80,70],
   pilz: [90,50,110], schattenpfad: [58,30,74],
+  meer: [26,44,86], schattenmeer: [16,6,34], strand: [222,204,150],
 };
 function miniColorFor(x, y){
   const t = T(x,y);
   if(kammer) return t === G_WALL ? MINI_COL.wand : MINI_COL.pfad;
-  if(currentLevel === 2) return (t===G_PATH || t===G_WALL) ? MINI_COL.schattenpfad : MINI_COL.pilz;
+  if(currentLevel === 2){
+    if(t === G_OCEAN) return MINI_COL.schattenmeer;
+    return (t===G_PATH || t===G_WALL) ? MINI_COL.schattenpfad : MINI_COL.pilz;
+  }
+  if(t === G_OCEAN) return MINI_COL.meer;
+  if(t === G_BEACH) return MINI_COL.strand;
   if(t === G_PATH || t === G_WALL) return MINI_COL.pfad;
   if(t === G_ICE) return MINI_COL.eis;
   if(t === G_LAVA) return MINI_COL.lava;
@@ -2392,7 +2429,153 @@ function genMap(){
   for(const b of VILLAGE_BUILDINGS)
     for(let y=b.y0; y<b.y0+b.h; y++)
       for(let x=b.x0; x<b.x0+b.w; x++) setT(x,y,G_WALL);
-  for(let i=0;i<MW;i++){ for(let b=0;b<2;b++){ setT(i,b,G_TREE); setT(i,MH-1-b,G_TREE); setT(b,i,G_TREE); setT(MW-1-b,i,G_TREE); } }
+  // === W-Groß: Küste statt Rechteckrahmen ===================================
+  // Hier stand bis W-Groß ein 2 Kacheln dicker Baumrahmen um die ganze Welt.
+  // Der Platz im Ablauf ist bewusst genau dieser: NACH der Vegetationsstreuung
+  // (die schützt nur G_PATH — liefe die Küste vorher, stünden Bäume, Felsen und
+  // Kakteen im offenen Meer) und VOR der trees/decos/critters/npcs-Sammlung
+  // unten (sonst schwebten Sprites auf neuem Wasser und Viecher könnten in einer
+  // Tasche eingeschlossen werden, die danach geflutet wird).
+
+  // (1) Form der Küste: je Kante EINE Einrückungsfunktion über die Längskoordinate,
+  // als Summe dreier Sinus. Bewusst kein 2D-Rauschen: weil die Einrückung nur von
+  // einer Koordinate abhängt, ist jede Spalte ein einziger zusammenhängender
+  // senkrechter Landlauf und jede Zeile ein waagerechter. Die Landmasse kann sich
+  // damit konstruktionsbedingt nicht abschnüren, und die drei Biombänder bleiben
+  // als breite Zonen lesbar. Maximale Einrückung 10+14+7+3 = 34 Kacheln.
+  const K_BASIS = 10, K_AMP = [14, 7, 3], K_PER = [MW/1.5, MW/5, MW/16];
+  const kPhase = ()=> [R(0, Math.PI*2), R(0, Math.PI*2), R(0, Math.PI*2)];
+  const phNord = kPhase(), phSued = kPhase(), phWest = kPhase(), phOst = kPhase();
+  const einrueckung = (u, ph)=> Math.max(2, K_BASIS
+    + K_AMP[0]*Math.sin(2*Math.PI*u/K_PER[0] + ph[0])
+    + K_AMP[1]*Math.sin(2*Math.PI*u/K_PER[1] + ph[1])
+    + K_AMP[2]*Math.sin(2*Math.PI*u/K_PER[2] + ph[2]));
+  for(let y=0;y<MH;y++){
+    const west = einrueckung(y, phWest), ost = einrueckung(y, phOst);
+    for(let x=0;x<MW;x++){
+      const nord = einrueckung(x, phNord), sued = einrueckung(x, phSued);
+      if(x < west || x > MW-1-ost || y < nord || y > MH-1-sued) setT(x, y, G_OCEAN);
+    }
+  }
+
+  // (2) Buchten: ausschliesslich KONVEXE Ellipsen, aus dem Land geschnitten. Eine
+  // konvexe Form kann die Landmasse nicht trennen und kein Monster einklemmen —
+  // aus einer konvexen Bucht läuft man geradeaus wieder heraus. L-Formen, Haken
+  // und schmale Fjorde sind hier verboten: das Spiel hat keinerlei Wegfindung
+  // (Monster steuern per atan2 auf den Spieler zu), solche Geometrie wäre die
+  // klassische Falle, in der ein Verfolger endgültig hängen bliebe.
+  for(let n=0; n<ri(6,10); n++){
+    const kante = ri(0,3);                       // 0 Nord, 1 Süd, 2 West, 3 Ost
+    const laengs = ri(20, (kante<2 ? MW : MH)-21);
+    const halbLaengs = R(8,18), halbTief = R(12,30);
+    let cx, cy, ax, ay;
+    if(kante === 0){ cx=laengs; cy=einrueckung(laengs,phNord);      ax=halbLaengs; ay=halbTief; }
+    else if(kante === 1){ cx=laengs; cy=MH-1-einrueckung(laengs,phSued); ax=halbLaengs; ay=halbTief; }
+    else if(kante === 2){ cy=laengs; cx=einrueckung(laengs,phWest);      ax=halbTief;   ay=halbLaengs; }
+    else { cy=laengs; cx=MW-1-einrueckung(laengs,phOst);                 ax=halbTief;   ay=halbLaengs; }
+    for(let y=Math.floor(cy-ay); y<=Math.ceil(cy+ay); y++){
+      for(let x=Math.floor(cx-ax); x<=Math.ceil(cx+ax); x++){
+        if(!inB(x,y) || inVillageT(x,y)) continue;
+        const dx=(x-cx)/ax, dy=(y-cy)/ay;
+        if(dx*dx + dy*dy <= 1) setT(x, y, G_OCEAN);
+      }
+    }
+  }
+
+  // (3) Inseln vor der Küste: reine Optik. Der Spieler kann nicht schwimmen, eine
+  // erreichbare Insel bräuchte eine Landbrücke — und eine Landbrücke ist ein
+  // Korridor, also genau die Geometrie, die ohne Wegfindung gefährlich ist.
+  // Deshalb: sichtbar, aber von JEDEM Setzer ausgespart (s. reachbar()).
+  inselMaske.fill(0);
+  for(let n=0; n<ri(4,8); n++){
+    for(let versuch=0; versuch<200; versuch++){
+      const cx = ri(6, MW-7), cy = ri(6, MH-7), rad = R(3, 8);
+      if(T(cx,cy) !== G_OCEAN) continue;
+      // Nur im offenen Meer, mindestens 4 Kacheln von jedem Land entfernt.
+      let freiRundum = true;
+      for(let y=Math.floor(cy-rad-4); y<=Math.ceil(cy+rad+4) && freiRundum; y++)
+        for(let x=Math.floor(cx-rad-4); x<=Math.ceil(cx+rad+4); x++)
+          if(inB(x,y) && T(x,y) !== G_OCEAN){ freiRundum = false; break; }
+      if(!freiRundum) continue;
+      const bandTyp = biomeAtT(cy) === 'snow' ? G_SNOW : (biomeAtT(cy) === 'sand' ? G_SAND : G_GRASS);
+      for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
+        for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
+          if(!inB(x,y)) continue;
+          if(Math.hypot(x-cx, y-cy) > rad - rng()*0.8) continue;
+          setT(x, y, bandTyp); inselMaske[x+y*MW] = 1;
+        }
+      }
+      break;
+    }
+  }
+
+  // (4) Harter Kartenrand: die äußersten 2 Kacheln sind immer Meer. Die Kamera ist
+  // in der Oberwelt nicht geklemmt, man sieht also über die Kante hinaus — deshalb
+  // färbt render() den Hintergrund dort ebenfalls tiefseeblau statt schwarz.
+  for(let i=0;i<Math.max(MW,MH);i++) for(let b=0;b<2;b++){
+    if(i<MW){ setT(i,b,G_OCEAN); setT(i,MH-1-b,G_OCEAN); }
+    if(i<MH){ setT(b,i,G_OCEAN); setT(MW-1-b,i,G_OCEAN); }
+  }
+
+  // (5) Strand: Land bis 2 Kacheln ans Meer wird Sand, im Schneeband Eis. Das ist
+  // der Schritt, der die Küste absichtsvoll aussehen lässt statt abgeschnitten.
+  {
+    const strand = [];
+    for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+      if(T(x,y) === G_OCEAN) continue;
+      let nahMeer = false;
+      for(let dy=-2; dy<=2 && !nahMeer; dy++) for(let dx=-2; dx<=2; dx++)
+        if(inB(x+dx,y+dy) && T(x+dx,y+dy) === G_OCEAN){ nahMeer = true; break; }
+      if(nahMeer) strand.push(x, y);
+    }
+    for(let i=0;i<strand.length;i+=2){
+      const x = strand[i], y = strand[i+1];
+      if(inVillageT(x,y)) continue;
+      // Im Schnee gefrorenes Ufer, sonst Sandsaum. Das Sandband bekommt keinen
+      // eigenen Saum: dort trifft ohnehin Wüste aufs Meer, ein zweiter Sandton
+      // wäre nur ein Streifen ohne Aussage.
+      if(biomeAtT(y) === 'snow') setT(x, y, G_ICE);
+      else if(biomeAtT(y) !== 'sand') setT(x, y, G_BEACH);
+    }
+  }
+
+  // (6) Zusammenhang beweisen, nicht hoffen. Flutfüllung ab SPAWN über alles, was
+  // NICHT Meer ist — bewusst topologisch und nicht über WALKABLE: die 8-25%
+  // Vegetationsstreuung zählt sonst als Wand, und ein einziger Baum, der eine
+  // Landenge verstopft, würde die ganze Halbinsel dahinter löschen (still, und bei
+  // jedem Startwert anders). Alles, was die Flut nicht erreicht und keine Deko-Insel
+  // ist, wird Meer — das räumt zugleich versehentliche Lagunen weg.
+  // Datenstrukturen bewusst festgenagelt: bei 102400 Zellen wäre eine Warteschlange
+  // mit .shift() quadratisch (Sekunden eingefrorener Tab), ein Set von Schlüsseln
+  // kostete Megabyte. Uint8Array-Maske + Int32Array-Ring mit Kopfindex: ~0,4 MB.
+  {
+    landmasse.fill(0);
+    const schlange = new Int32Array(MW*MH);
+    let kopf = 0, ende = 0;
+    const start = Math.floor(SPAWN.x/TS) + Math.floor(SPAWN.y/TS)*MW;
+    landmasse[start] = 1; schlange[ende++] = start;
+    while(kopf < ende){
+      const i = schlange[kopf++], x = i % MW, y = (i / MW) | 0;
+      if(x > 0      && !landmasse[i-1]  && T(x-1,y) !== G_OCEAN){ landmasse[i-1]  = 1; schlange[ende++] = i-1; }
+      if(x < MW-1   && !landmasse[i+1]  && T(x+1,y) !== G_OCEAN){ landmasse[i+1]  = 1; schlange[ende++] = i+1; }
+      if(y > 0      && !landmasse[i-MW] && T(x,y-1) !== G_OCEAN){ landmasse[i-MW] = 1; schlange[ende++] = i-MW; }
+      if(y < MH-1   && !landmasse[i+MW] && T(x,y+1) !== G_OCEAN){ landmasse[i+MW] = 1; schlange[ende++] = i+MW; }
+    }
+    let geflutet = 0;
+    for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+      const i = x+y*MW;
+      if(landmasse[i] || inselMaske[i] || T(x,y) === G_OCEAN) continue;
+      setT(x, y, G_OCEAN); geflutet++;
+    }
+    // Nachweis in die Konsole: wie viel begehbares Land trägt jedes Band? Ein Band
+    // mit 0 wäre sofort ein Fehler (kein Aushang, keine Kammertür dort erfüllbar).
+    const proBand = {};
+    for(const b of BIOME_BANDS) proBand[b.key] = 0;
+    for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) if(reachbar(x,y)) proBand[biomeAtT(y)]++;
+    console.log('Weltform: erreichbare Kacheln je Band', proBand, '| abgeschnittenes Land geflutet:', geflutet);
+    for(const b of BIOME_BANDS) if(proBand[b.key] < 500)
+      console.error('Weltform: Band zu klein, Aufträge dort unerfüllbar', b.key, proBand[b.key]);
+  }
   for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) {
     const t = T(x,y);
     if(t===G_TREE || t===G_ICE_TREE || t===G_CACTUS || t===G_ROCK)
@@ -2405,7 +2588,7 @@ function genMap(){
   // --- Deko: Pilze und hohes Gras auf begehbarem Grund, rein optisch ---------
   decos.length = 0;
   for(let y=3;y<MH-3;y++) for(let x=3;x<MW-3;x++){
-    if(!walkT(x,y) || T(x,y)===G_PATH) continue;
+    if(!reachbar(x,y) || T(x,y)===G_PATH) continue;   // W-Groß: keine Deko auf Deko-Inseln
     const t = T(x,y);
     // Neu in G4: hohes Gras bekommt erstmals ein Sprite (Nutzerentscheidung) —
     // sparsam gestreut (~1/6 der G_TALL-Kacheln), nicht jede einzelne.
@@ -2443,7 +2626,7 @@ function genMap(){
   for(let i=0;i<18;i++){
     for(let tries=0; tries<40; tries++){
       const tx = ri(VILLAGE.x0-22, VILLAGE.x1+22), ty = ri(VILLAGE.y0-16, VILLAGE.y1+16);
-      if(!walkT(tx,ty) || inVillageT(tx,ty)) continue;   // G5: Dorfplatz bleibt den NPCs vorbehalten
+      if(!reachbar(tx,ty) || inVillageT(tx,ty)) continue;   // G5: Dorfplatz bleibt den NPCs vorbehalten
       // Beide Sheet-Keys beim Spawn fest anlegen (nicht im Draw-Case zusammenbauen,
       // Regressionsregel 4 — 130-Mob-Horde-Lektion gilt auch für Ambiente-Tiere).
       const art = CRITTERS[i % CRITTERS.length];   // W-Groß: 40 Tiere aus 5 Arten, reihum
@@ -3486,7 +3669,7 @@ function placeMonsters(){
     for(let i=0;i<55;i++){
       const band = auftragOrtBand();                                       // W4
       const tx=ri(4,MW-5), ty = band ? ri(band[0], band[1]) : ri(4,MH-5);   // W4
-      if(!walkT(tx,ty) || dist(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
+      if(!reachbar(tx,ty) || dist(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
       if(inVillageT(tx,ty)) continue;            // G5: das Dorf bleibt monsterfrei
       const biome = biomeAtT(ty);
@@ -4561,7 +4744,7 @@ function setzeKammerTueren(){
     for(let n = 0; n < CONFIG.kammerTueren; n++){
       for(let versuch = 0; versuch < 300; versuch++){
         const tx = ri(5, MW-6), ty = ri(b[1], b[2]);
-        if(!walkT(tx, ty) || !walkT(tx, ty+1)) continue;                    // davor muss man stehen können
+        if(!reachbar(tx, ty) || !reachbar(tx, ty+1)) continue;              // davor muss man stehen können
         if(sqDist(tx*TS, ty*TS, SPAWN.x, SPAWN.y) < (12*TS)*(12*TS)) continue;
         if(inVillageT(tx, ty)) continue;                                    // G5: Dorfplatz bleibt türenfrei
         let zuNah = false;
@@ -6209,7 +6392,7 @@ function update(dt){
       const a = Math.random() * Math.PI * 2;
       const d = Math.random() * 150 + 400; // Spawnen außerhalb des Screens
       const sx = player.x + Math.cos(a) * d, sy = player.y + Math.sin(a) * d;
-      if(walkPx(sx, sy)){
+      if(reachbarPx(sx, sy)){   // W-Groß: die Horde darf nicht ins Meer oder auf eine Insel
         const r = Math.random();
         const type = r<0.55 ? 'shadow' : (r<0.85 ? 'demon' : (r<0.95 ? 'shadowghost' : 'shadowmage'));
         makeMon(type, sx, sy);
@@ -6538,7 +6721,11 @@ const BIG_PAD = 190;
 const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
 
 function render(){
-  ctx.fillStyle = '#05030a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Grund unter der Welt. In der Oberwelt tiefseeblau statt schwarz: die Kamera
+  // ist dort nicht an die Weltgrenzen geklemmt, an der Küste sieht man also über
+  // den Kartenrand hinaus — offenes Meer liest sich richtig, schwarze Leere nicht.
+  ctx.fillStyle = (currentLevel === 1 && !kammer) ? '#122a52' : '#05030a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.save();
 
   let sx = 0, sy = 0;
