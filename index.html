@@ -5376,7 +5376,9 @@ function renderInventory(){
     const item = player.equip[key];
     el.innerHTML = item ? `<span class="lbl">${SLOT_DE[key]}</span><span style="font-size:26px;line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${SLOT_DE[key]}</span>`;
     el.className = 'eqSlot ' + (item ? `rar${item.rar}` : '');
-    bindTooltip(el, item, true, () => { player.equip[key] = null; dropItemToFloor(item); recalc(); knCheckFluchEquipped(); renderInventory(); }, () => unequipItem(key));
+    // R10/F52: Budget-Flag gilt nur im Equip-Slot. Ohne Reset behauptet der Tooltip
+    // am aufgehobenen Stück weiter "Dieser Fluch ruht".
+    bindTooltip(el, item, true, () => { item.fluchRuht = false; player.equip[key] = null; dropItemToFloor(item); recalc(); knCheckFluchEquipped(); renderInventory(); }, () => unequipItem(key));
   }
 
   const bagGrid = document.getElementById('bagGrid'); bagGrid.innerHTML = '';
@@ -5558,13 +5560,16 @@ function renderKladde(){
   }
   // Phase 4 Dorf-Ausbau "Vermutungen": zeigt für noch nie gekochte Adjektive die
   // tatsächliche Wirkung/den Fluch aus der Datentabelle als gehedgte Vermutung an.
+  // R10/F75: Sieben Adjektive tragen ein fl2, das ab Stufe 2 statt fl greift (Kessel,
+  // fluchKey oben). Ohne den Zusatz wäre die bezahlte Vermutung für die schlicht falsch.
   if(amt.ausbauten.vermutungen){
+    const kurzFluch = k => FLUCH[k] ? FLUCH[k].kurz : k;
     const unbeobachtet = ZUTAT_ADJ.filter(d => !kladde.adj[d.a]);
     if(unbeobachtet.length){
       parts.push('<div class="klHead">VERMUTUNGEN</div>');
       for(const d of unbeobachtet){
         const wn = WIRKUNG[d.wirk] ? WIRKUNG[d.wirk].name : d.wirk;
-        const fn = FLUCH[d.fl] ? FLUCH[d.fl].kurz : d.fl;
+        const fn = d.fl2 ? `${kurzFluch(d.fl)}, verstärkt eher ${kurzFluch(d.fl2)}` : kurzFluch(d.fl);
         parts.push(`<div class="kl" style="color:#9a8a5f;">«${d.a}» wirkt vermutlich wie ${wn} (${fn}).</div>`);
       }
     }
