@@ -94,6 +94,14 @@
   #tooltip .fluch{color:#ff8f8f;}
   #tooltip .hint{margin-top:8px;font-size:10px;color:#9a8a5f;font-style:italic;}
 
+  /* --- Vollbildkarte (L) — W-Groß: Ausgleich für das Minimap-Fenster, das bei
+     großer Karte nur noch einen Ausschnitt zeigt statt der ganzen Welt. --- */
+  #fullmap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px));z-index:21;display:none;
+       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
+  #fullmap h2{margin:0 0 8px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #fullmapCanvas{display:block;width:100%;height:auto;aspect-ratio:1/1;border:2px solid #4c4030;border-radius:6px;background:#0a0810;image-rendering:pixelated;}
+  #fullmapLegend{margin-top:8px;font-size:10px;color:#9a8a5f;line-height:1.5;}
+
   /* --- Kessel & Kladde (K) --- */
   #kessel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 32px));max-height:86vh;overflow-y:auto;z-index:21;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
@@ -388,7 +396,7 @@
 <body>
 <canvas id="game"></canvas>
 <div id="zone">📍 Grasland, Ablage A (Stufe 1)</div>
-<canvas id="minimap" width="128" height="128"></canvas>
+<canvas id="minimap" width="128" height="128" title="Vollbildkarte (L)" style="cursor:pointer"></canvas>
 <div id="bossbar"><span id="bossname">Schattenfürst · Fürst Nachtrag</span><div id="bossback"><div id="bossfill"></div></div></div>
 <div id="hud">
   <div class="orbWrap hpOrb"><div id="hpFill"></div><div class="orbTicks" id="hpTicks"></div><div class="orbTxt" id="hpTxt">60</div></div>
@@ -453,6 +461,12 @@
   </div>
 </div>
 
+<div id="fullmap">
+  <h2>🗺️ KARTE <span style="cursor:pointer" id="closeFullmapBtn">✖</span></h2>
+  <canvas id="fullmapCanvas" width="480" height="480"></canvas>
+  <div id="fullmapLegend">🔵 Ihr · 🟡 Vordermühl · 🟢 Kessel · 🔴 Monster · 🟣 Portal</div>
+</div>
+
 <div id="kessel">
   <h2>🍲 KESSEL <span style="cursor:pointer" id="closeKesselBtn">✖</span></h2>
   <div id="kesselSub">Amtlich zugelassener Feldkessel. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
@@ -507,19 +521,51 @@
 <script>
 'use strict';
 
-const TS = 32, MW = 80, MH = 80;
+const TS = 32, MW = 320, MH = 320;   // W-Groß: Kante x4 (80 -> 320), Fläche x16
+
+// Ein Ort für die Biombänder. Ersetzt acht Kopien der Literale 26/54 plus drei
+// abweichende Randtabellen (W-Groß, Umsetzungsnotizen). Proportionen exakt wie
+// beim alten MH=80 (Schneegrenze 25, Sandgrenze 55), nur an MH gekoppelt statt
+// fest verdrahtet — eine Kartenvergrößerung muss hier nichts anfassen.
+const SNOW_Y1 = Math.round(MH * 0.325) - 1;    // 25 bei MH=80
+const SAND_Y0 = Math.round(MH * 0.6875);       // 55 bei MH=80
+const BIOME_BANDS = [
+  {key:'snow',  y0:0,         y1:SNOW_Y1},
+  {key:'grass', y0:SNOW_Y1+1, y1:SAND_Y0-1},
+  {key:'sand',  y0:SAND_Y0,   y1:MH-1},
+];
+const biomeAtT  = ty => ty <= SNOW_Y1 ? 'snow' : (ty >= SAND_Y0 ? 'sand' : 'grass');
+const biomeAtPx = y  => biomeAtT(Math.floor(y / TS));
+// Zeilenbereich eines Biombands, eingerückt nur an der ÄUSSEREN Weltkante (y=0
+// bzw. y=MH-1) — genau das Muster, das auftragOrtBand() bisher von Hand trug
+// ([4,25] Schnee / [26,54] Gras / [55,MH-5] Sand): Gras berührt keine Weltkante
+// und bleibt unverändert, Schnee/Sand rücken am Kartenrand ab. Bewusst NICHT
+// symmetrisch eingerückt — die innere Bandgrenze bleibt exakt, weil sie schon
+// die Biomgrenze ist.
+const bandRange = (key, edgeInset) => {
+  const b = BIOME_BANDS.find(z => z.key === key);
+  const y0 = b.y0 === 0    ? b.y0 + edgeInset : b.y0;
+  const y1 = b.y1 === MH-1 ? b.y1 - edgeInset : b.y1;
+  return [y0, y1];
+};
+// Kammertür-Bänder: eigene, ungleiche Einrückung je Seite (aus den bisherigen
+// Handwerten [4,24]/[28,52]/[56,76] zurückgerechnet), NICHT das Edge-Muster
+// von bandRange() — Türen halten überall Abstand zur Biomgrenze, nicht nur
+// zum Kartenrand, damit ein Tür-Vordergrund nie im Nachbarbiom steht.
+const TUER_BAND_INSET = {snow:[4,1], grass:[2,2], sand:[1,3]};   // [oben, unten]
+const tuerBandRange = key => {
+  const b = BIOME_BANDS.find(z => z.key === key), [top, bot] = TUER_BAND_INSET[key];
+  return [b.y0 + top, b.y1 - bot];
+};
+
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d', {alpha: false}); // Performance!
 
-// Gecachter Boden für Blut und Performance
-const floorCanvas = document.createElement('canvas');
-floorCanvas.width = MW * TS; floorCanvas.height = MH * TS;
-const floorCtx = floorCanvas.getContext('2d', {alpha: false});
-
-// Minimap-Hintergrund: ändert sich nur bei Levelwechsel, wird einmal auf 128px
-// gebacken statt jeden Frame aus dem 2560x2560-Boden heruntergerechnet.
-const miniBg = document.createElement('canvas');
-miniBg.width = miniBg.height = 128;
+// Boden- und Minimap-Cache: siehe computeTile()/bakeChunk()/bakeMinimap() weiter
+// unten, direkt bei refreshFloor(). Bis W-Groß gab es hier ein einziges
+// MW*TS-Quadrat-Canvas ("floorCanvas") — bei Kante x4 wären das 10240x10240px
+// (~419MB), über dem Canvas-Limit von Safari/iOS. Ersetzt durch einen Chunk-
+// Cache (256x256px-Kacheln), der nur das Sichtfenster hält.
 
 // ===========================================================================
 //  Sprite-Engine — Cute Fantasy (Kenmi, itch.io) seit G5 ausnahmslos. Bis G4
@@ -1045,7 +1091,11 @@ const DOLCH_OFFS = [-0.35, 0.35];                                  // zwei Schli
 const SCHILD_FONT = ['13px serif','14px serif','15px serif','16px serif','17px serif'];   // Stufe 0..4
 
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
-const rng = mulberry32(20260721);
+// Startwert W-Groß bewusst gebumpt (war 20260721): die Karte ist mit MW=MH=320,
+// verschobenem Dorf und dem Wegfall des toten Pfadlaufs ohnehin eine andere Welt.
+// Ein unveränderter Startwert würde nur die falsche Erwartung wecken, es käme
+// dieselbe Karte heraus wie vorher.
+const rng = mulberry32(20260805);
 const R = (a,b)=> a+rng()*(b-a);
 const ri = (a,b)=> Math.floor(R(a,b+1));
 const rr = (a,b)=> a+Math.random()*(b-a);
@@ -1624,7 +1674,7 @@ const G_GRASS=0, G_PATH=1, G_LAVA=2, G_TREE=3, G_ROCK=4, G_TALL=5, G_SAND=6, G_S
 // Nur in Kammern (Phase 2): Wand, geschobener Block, eingebrochene Bodenplatte.
 // Alle drei sind nicht begehbar — WALKABLE ist eine Whitelist, sie stehen einfach nicht drin.
 const G_WALL=11, G_BLOCK=12, G_GAP=13;
-// Kammer-Zustand steht bewusst hier oben: initFloorGraphics() läuft schon beim
+// Kammer-Zustand steht bewusst hier oben: computeTile() läuft schon beim
 // Kartenbau und fragt `kammer` ab — eine spätere let-Deklaration wäre ein TDZ-Fehler.
 let kammer = null;      // aktive Kammer oder null (Oberwelt)
 let owSave = null;      // eingefrorene Oberwelt, solange eine Kammer läuft
@@ -1637,11 +1687,25 @@ const walkT = (x,y)=> inB(x,y) && WALKABLE(T(x,y));
 const walkPx = (x,y)=> walkT(Math.floor(x/TS), Math.floor(y/TS));
 function circleWalkable(x,y,r){ return walkPx(x-r,y-r)&&walkPx(x+r,y-r)&&walkPx(x-r,y+r)&&walkPx(x+r,y+r); }
 
-const SPAWN = {x:12.5*TS, y:40.5*TS};
-const ARENA = {x:68, y:40};
+// W-Groß: Das Dorf wandert in die Kartenmitte. Alle Tabellen unten bleiben im
+// alten 80er-Raster geschrieben (Dorfmitte lag bei (15,40)) — DORF_DX/DORF_DY
+// verschiebt sie genau EINMAL, direkt an ihrer Definitionsstelle. Nicht an den
+// 15+ Lesestellen (Quest-Reservierungen, Kammertür-Sperrzone, sichere Zone,
+// NPC-Wanderleine, Windmühle, Viecher-/Wolkenband, ...) — eine übersehene Stelle
+// hätte sonst einen NPC oder eine Quest-Reservierung mitten im Nirgendwo gelassen.
+// Bei MW=MH=80 ist die Verschiebung 0, das alte Layout bliebe also bitgleich.
+const DORF_DX = Math.round(MW/2) - 15;
+const DORF_DY = Math.round(MH/2) - 40;
+
+const SPAWN = {x:(12.5+DORF_DX)*TS, y:(40.5+DORF_DY)*TS};
+// Schattenland-Sprungziel (loadLevel2()) — bewusst NICHT dorf-relativ, sondern
+// ein eigener Platz Richtung Kartenrand, sonst läge die Massenvorgang-Arena direkt
+// neben dem Dorf. Begehbarkeit wird nach genMap() geprüft und bei Bedarf auf die
+// nächste begehbare Kachel nachgezogen (s. nudgeToWalkable-Aufruf nach genMap()).
+const ARENA = {x: Math.round(MW*0.72), y: Math.round(MH/2)};
 // Kessel am Dorfanger neben dem Startpunkt. Reine Landmarke: bedienbar ist er
 // über die Taste K, damit niemand mit vollem Beutel zurücklaufen muss.
-const KESSEL_T = {x:15, y:41};
+const KESSEL_T = {x:15+DORF_DX, y:41+DORF_DY};
 const KESSEL = {x:KESSEL_T.x*TS + TS/2, y:KESSEL_T.y*TS + TS - 4};
 // Phase 5: Knöterichs Standort, vorgezogen aus dem großen Knöterich-Block weiter unten
 // (sda_knoeterich_v1), weil placeMonsters() gleich beim Laden einmal synchron läuft
@@ -1652,14 +1716,16 @@ const KN_POS = {x: KN_T.x*TS + TS/2, y: KN_T.y*TS + TS - 4};
 // G5: Dorf-Rechteck um Kessel/Spawn/Knöterich, in Kacheln (inklusive Grenzen).
 // Deckt beide Gebäude-Cluster inklusive Fassadenhöhe ab, damit genMap() dort gar
 // nicht erst Bäume/Felsen streut (Streuung läuft vor der Freiräumung, s. genMap).
-const VILLAGE = {x0:6, y0:33, x1:24, y1:47};
+const VILLAGE = {x0:6+DORF_DX, y0:33+DORF_DY, x1:24+DORF_DX, y1:47+DORF_DY};
 function inVillageT(tx, ty){ return tx >= VILLAGE.x0 && tx <= VILLAGE.x1 && ty >= VILLAGE.y0 && ty <= VILLAGE.y1; }
 function inVillagePx(x, y){ return inVillageT(Math.floor(x/TS), Math.floor(y/TS)); }
 
 // Gebäude-Footprints: {x0,y0,w,h} = blockierte Kacheln (Fußabdruck, nicht die volle
 // Sprite-Höhe — die Fassade ragt optisch darüber hinaus, wie bei cfwindmill schon
 // seit G4 üblich). sheet zeigt auf die oben registrierten 'big'-Decos. amt:true
-// markiert das Gebäude, das scanAktion()/AKT_AMT anbietet.
+// markiert das Gebäude, das scanAktion()/AKT_AMT anbietet. Literale bewusst im
+// alten 80er-Raster belassen (vgl. figuren-dorf.md) — die Schleife danach
+// verschiebt sie einmalig um DORF_DX/DORF_DY, bevor AMT_TUER daraus abgeleitet wird.
 const VILLAGE_BUILDINGS = [
   {sheet:'cfbld_amt',     x0:10, y0:35, w:8, h:2, amt:true},
   {sheet:'cfbld_haus1',   x0:7,  y0:35, w:3, h:2},
@@ -1668,6 +1734,7 @@ const VILLAGE_BUILDINGS = [
   {sheet:'cfbld_haus3',   x0:14, y0:44, w:5, h:2},
   {sheet:'cfbld_scheune', x0:19, y0:44, w:4, h:2},
 ];
+for(const b of VILLAGE_BUILDINGS){ b.x0 += DORF_DX; b.y0 += DORF_DY; }
 // Fußpunkt der Amt-Tür für die Kontext-Aktion (Mitte der Südkante des Footprints).
 const AMT_TUER = (() => {
   const b = VILLAGE_BUILDINGS.find(b => b.amt);
@@ -1960,6 +2027,9 @@ const DORF_FIGUREN = [
      ],
    }},
 ];
+// Literale oben bewusst im alten 80er-Raster (vgl. figuren-dorf.md) — einmalig
+// um DORF_DX/DORF_DY verschoben, bevor genMap() die Anker liest (:2443 unten).
+for(const f of DORF_FIGUREN){ f.tx += DORF_DX; f.ty += DORF_DY; }
 let trees = [];
 const decos = [];      // Pilze, Windmühle, Dorf-Gebäude (big:true) — reine Optik, keine Kollision
 const critters = [];   // Hühner/Schafe/Kühe, wandern im Grasland
@@ -2089,67 +2159,205 @@ const tileHash = (x,y)=> (Math.imul(x, 73856093) ^ Math.imul(y, 19349663)) >>> 0
 // damit deren Streuung nicht mitwandert.
 const fmix32 = h => { h^=h>>>16; h=Math.imul(h,0x85ebca6b); h^=h>>>13; h=Math.imul(h,0xc2b2ae35); h^=h>>>16; return h>>>0; };
 
-function initFloorGraphics(){
-  if(!assetsReady) return;                       // wird nach dem Laden nachgeholt
-  floorCtx.imageSmoothingEnabled = false;
-  for(let y=0;y<MH;y++){
-    for(let x=0;x<MW;x++){
-      const t = T(x,y), px = x*TS, py = y*TS;
-      let tile;
-      if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
-        tile = t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
-      } else if(currentLevel === 2){                 // Schattenland: echtes Pilzland-Lila statt Umfärbung
-        tile = (t===G_PATH || t===G_WALL) ? pickCfTile(CF_TILE.path, x, y, 'shadowDirt') : pickCfTile(CF_TILE.shroom, x, y);
-      } else if(t === G_PATH || t === G_WALL){         // G_WALL = Dorf-Footprints, backen wie Pfad (F38)
-        tile = pickCfTile(CF_TILE.path, x, y);
-      } else if(t === G_ICE){
-        tile = pickCfTile(CF_TILE.water, x, y, 'ice');
-      } else if(t === G_LAVA){                        // reine Optik, begehbar wie Eisteiche
-        tile = pickCfTile(CF_TILE.lava, x, y);
-      } else if(y < 26){
-        tile = pickCfTile(CF_TILE.grass, x, y, 'snow');   // Schneeband: eingefärbtes Gras (kein Schnee-Tileset im Pack)
-      } else if(y > 54){
-        tile = pickCfTile(CF_TILE.volcano, x, y);
-      } else {
-        tile = pickCfTile(CF_TILE.grass, x, y);
-      }
-      if(tile) floorCtx.drawImage(tile, px, py);
+// Bodenkachel für (x,y): reine Funktion von Map-Inhalt, Kammer- und Levelstatus.
+// Herausgelöst aus initFloorGraphics(), damit ein späterer Cache (Chunk- statt
+// Vollkarten-Bake) denselben Rumpf pro Zelle statt pro Vollbake aufrufen kann.
+function computeTile(x, y){
+  const t = T(x,y);
+  if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
+    return t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
+  } else if(currentLevel === 2){                 // Schattenland: echtes Pilzland-Lila statt Umfärbung
+    return (t===G_PATH || t===G_WALL) ? pickCfTile(CF_TILE.path, x, y, 'shadowDirt') : pickCfTile(CF_TILE.shroom, x, y);
+  } else if(t === G_PATH || t === G_WALL){         // G_WALL = Dorf-Footprints, backen wie Pfad (F38)
+    return pickCfTile(CF_TILE.path, x, y);
+  } else if(t === G_ICE){
+    return pickCfTile(CF_TILE.water, x, y, 'ice');
+  } else if(t === G_LAVA){                        // reine Optik, begehbar wie Eisteiche
+    return pickCfTile(CF_TILE.lava, x, y);
+  }
+  const b = biomeAtT(y);
+  if(b === 'snow') return pickCfTile(CF_TILE.grass, x, y, 'snow');   // Schneeband: eingefärbtes Gras (kein Schnee-Tileset im Pack)
+  if(b === 'sand') return pickCfTile(CF_TILE.volcano, x, y);
+  return pickCfTile(CF_TILE.grass, x, y);
+}
+
+// --- Boden-Chunk-Cache (W-Groß) ---------------------------------------------
+// Ersetzt das frühere Vollkarten-Canvas (floorCanvas, MW*TS im Quadrat). Statt
+// einmalig 6400 (heute) bzw. 102400 (bei MW=320) Kacheln vorzubacken, backt
+// dieser Cache nur 8x8-Kachel-Blöcke (256x256px) und immer erst dann, wenn ein
+// Block tatsächlich sichtbar wird. Jeder Block bleibt danach exakt wie früher
+// das ganze floorCanvas: opak, schwarz grundiert, Kacheln bitgleich darüber —
+// Kompositing bleibt identisch, nur der Ausschnitt ist kleiner.
+const CH = 8, CHPX = CH * TS;
+const CHUNKS_X = Math.ceil(MW / CH), CHUNKS_Y = Math.ceil(MH / CH);
+const CHUNK_CAP = 96;                          // ~25MB bei 256x256x4 Byte, weniger als das alte floorCanvas
+const chunks = new Map();                      // Schlüssel 'cx,cy' -> Canvas. Map-Reihenfolge = Einfüge-/LRU-Alter.
+
+function bakeChunk(cx, cy){
+  const c = makeCanvas(CHPX, CHPX), cc = c.getContext('2d', {alpha: false});
+  cc.imageSmoothingEnabled = false;
+  cc.fillStyle = '#000'; cc.fillRect(0, 0, CHPX, CHPX);   // gleicher schwarzer Grund wie {alpha:false} vorher
+  const x0 = cx * CH, y0 = cy * CH;
+  for(let y = y0; y < y0 + CH && y < MH; y++){
+    for(let x = x0; x < x0 + CH && x < MW; x++){
+      const tile = computeTile(x, y);
+      if(tile) cc.drawImage(tile, (x - x0) * TS, (y - y0) * TS);
     }
   }
+  return c;
+}
+function getChunk(cx, cy){
+  const key = cx + ',' + cy;
+  let c = chunks.get(key);
+  if(c !== undefined){ chunks.delete(key); chunks.set(key, c); return c; }   // LRU: ans Ende
+  if(!assetsReady) return null;                  // erst backen, wenn Sheets da sind (refreshFloor() holt das nach)
+  c = bakeChunk(cx, cy);
+  chunks.set(key, c);
+  if(chunks.size > CHUNK_CAP) chunks.delete(chunks.keys().next().value);   // älteste (am längsten ungenutzte) raus
+  return c;
+}
+// Ein geänderter Tile kann in dunWallTile()'s 9-Slice-Test (der testet auch die
+// Diagonalen, s. dunWallTile oben) das Aussehen ALLER 8 Nachbarn ändern, nicht
+// nur der orthogonalen — deshalb wird hier immer die volle Moore-Nachbarschaft
+// ungültig gemacht, nicht nur die geänderte Zelle. Nachbarn können in einem
+// anderen Chunk liegen als die Zelle selbst; invalidateTile trifft dann genau
+// diesen anderen Chunk.
+function invalidateTile(x, y){ chunks.delete(Math.floor(x/CH) + ',' + Math.floor(y/CH)); }
+function invalidateMoore(x, y){
+  for(let dy = -1; dy <= 1; dy++) for(let dx = -1; dx <= 1; dx++) invalidateTile(x+dx, y+dy);
+}
+
+// --- Konfetti-Dekale (W-Groß) ------------------------------------------------
+// splatConfetti() malte bisher dauerhaft in floorCanvas. Ohne Vollkarten-Canvas
+// gibt es dafür keinen Platz mehr — Ringpuffer statt Bodenfarbe, pro Frame
+// gegen das Sichtfenster gekappt gezeichnet, alte Krümel fallen beim Nachrücken
+// einfach hinten raus. Reset in refreshFloor() entspricht dem alten Verhalten:
+// jeder Neubau (Levelwechsel, Kammer, Schicht, Respawn) löschte die Krümel auch
+// bisher schon, weil er das ganze Canvas überschrieb.
+const DECAL_MAX = 1200;                        // ~150-400 Kills Vorgeschichte je nach Konfettimenge/Kill
+const decalX = new Float32Array(DECAL_MAX), decalY = new Float32Array(DECAL_MAX);
+const decalW = new Float32Array(DECAL_MAX), decalH = new Float32Array(DECAL_MAX);
+const decalCol = new Uint8Array(DECAL_MAX);
+let decalN = 0, decalHead = 0;
+
+function refreshFloor(){
+  chunks.clear();
+  decalN = 0; decalHead = 0;
   bakeMinimap();
+}
+
+// bakeMinimap() buk bisher floorCanvas auf 128px herunter — bei MW=320 wäre das
+// eine 320:1-Verkleinerung (unlesbar) UND floorCanvas gibt es nicht mehr. Neu:
+// ein eigener Farb-Bake über den ganzen MW*MH-Kachelraum (miniFull), unabhängig
+// von geladenen Sheets (reine Tile-Farbe, kein Sprite) — deshalb entfällt auch
+// der alte "Assets noch nicht da"-Sonderfall. renderMinimap() blittet daraus ein
+// spielerzentriertes Fenster (MINI_SPAN Kacheln) statt der ganzen Karte.
+// Bewusst hier oben (vor genMap()): refreshFloor() ruft bakeMinimap() bereits
+// beim Kartenbau (genMap() läuft synchron beim Skriptstart) — eine spätere
+// const-Deklaration von miniFullCtx wäre ein TDZ-Fehler, exakt wie beim
+// Kammer-Zustand oben (:1659).
+const MINI_COL = {
+  schnee: [214,232,246], eis: [176,214,238], gras: [62,124,72], sand: [206,178,116],
+  vulkan: [176,92,46], lava: [168,64,32], pfad: [150,132,104], wand: [90,80,70],
+  pilz: [90,50,110], schattenpfad: [58,30,74],
+};
+function miniColorFor(x, y){
+  const t = T(x,y);
+  if(kammer) return t === G_WALL ? MINI_COL.wand : MINI_COL.pfad;
+  if(currentLevel === 2) return (t===G_PATH || t===G_WALL) ? MINI_COL.schattenpfad : MINI_COL.pilz;
+  if(t === G_PATH || t === G_WALL) return MINI_COL.pfad;
+  if(t === G_ICE) return MINI_COL.eis;
+  if(t === G_LAVA) return MINI_COL.lava;
+  const b = biomeAtT(y);
+  if(b === 'snow') return MINI_COL.schnee;
+  if(b === 'sand') return MINI_COL.vulkan;
+  return MINI_COL.gras;
+}
+const miniFull = document.createElement('canvas');
+miniFull.width = MW; miniFull.height = MH;
+const miniFullCtx = miniFull.getContext('2d');
+
+function bakeMinimap(){
+  const id = miniFullCtx.createImageData(MW, MH), data = id.data;
+  for(let y = 0; y < MH; y++){
+    for(let x = 0; x < MW; x++){
+      const col = miniColorFor(x, y), i = (x + y*MW) * 4;
+      data[i] = col[0]; data[i+1] = col[1]; data[i+2] = col[2]; data[i+3] = 255;
+    }
+  }
+  miniFullCtx.putImageData(id, 0, 0);
+}
+
+// Kacheln im 128px-Fenster. 96 in 128px ≈ dieselbe Informationsdichte wie
+// früher (80 Kacheln in 128px) — bei MW=MH=80 (heute) klemmt span unten auf
+// die Kartengröße, das Fenster zeigt dann die ganze Karte wie bisher.
+const MINI_SPAN = 96;
+let miniCtx = null;
+function renderMinimap(){
+  if(!miniCtx){ miniCtx = el('minimap').getContext('2d'); miniCtx.imageSmoothingEnabled = false; }
+  const mctx = miniCtx;
+  const span = Math.min(MINI_SPAN, MW, MH);
+  const sx0 = clamp(Math.floor(player.x/TS) - Math.floor(span/2), 0, Math.max(0, MW - span));
+  const sy0 = clamp(Math.floor(player.y/TS) - Math.floor(span/2), 0, Math.max(0, MH - span));
+  const scale = 128 / span;
+  mctx.clearRect(0, 0, 128, 128);
+  mctx.drawImage(miniFull, sx0, sy0, span, span, 0, 0, 128, 128);
+  // Marker in Fensterkoordinaten. clampToEdge=true zeigt bei Zielen außerhalb des
+  // Fensters (Kessel, Portal, Truhe) eine Richtung am Rand, statt sie einfach
+  // verschwinden zu lassen — sonst wäre der Kessel auf großer Karte unauffindbar.
+  const mark = (wx, wy, size, fill, clampToEdge) => {
+    let px = (wx/TS - sx0) * scale, py = (wy/TS - sy0) * scale;
+    const out = px < 0 || px > 128 || py < 0 || py > 128;
+    if(out){ if(!clampToEdge) return; px = clamp(px, 3, 125); py = clamp(py, 3, 125); }
+    mctx.fillStyle = fill; mctx.fillRect(px - size/2, py - size/2, size, size);
+  };
+  for(const m of monsters) if(!m.dead) mark(m.x, m.y, 2, 'rgba(255,80,80,.85)', false);
+  if(currentLevel === 1){
+    mark((VILLAGE.x0+VILLAGE.x1)/2*TS, (VILLAGE.y0+VILLAGE.y1)/2*TS, 4, '#ffd76a', true);   // Dorf-Marker (neu, W-Groß)
+    mark(KESSEL.x, KESSEL.y, 3, '#6aff8f', true);
+  }
+  mark(player.x, player.y, 3, '#5c86ff', false);   // Spieler ist per Definition immer im Fenster
+  if(portal) mark(portal.x, portal.y, 4, '#ff00ff', true);
+  // Wirkung 'Aktenlage': ungeöffnete Truhe bzw. Kammertüren auf der Karte
+  if(FX.karte){
+    if(kammer && kammer.truhe && !kammer.truhe.auf) mark(kammer.truhe.x, kammer.truhe.y, 4, '#f4d97a', true);
+    else if(currentLevel === 1) for(const t of kammerTueren) if(t.cd <= 0) mark(t.x, t.y, 3, '#f4d97a', false);
+  }
 }
 
 function genMap(){
   trees = []; map.fill(G_GRASS);
   for(let y=0;y<MH;y++){
     for(let x=0;x<MW;x++){
-      if(y < 26) setT(x,y,G_SNOW);
-      else if(y > 54) setT(x,y,G_SAND);
-      else setT(x,y,G_GRASS);
+      const b0 = biomeAtT(y);
+      setT(x, y, b0 === 'snow' ? G_SNOW : (b0 === 'sand' ? G_SAND : G_GRASS));
     }
   }
-  let px=SPAWN.x/TS, py=SPAWN.y/TS, guard=0;
-  while((px!==ARENA.x || py!==ARENA.y) && guard++<5000){
-    setT(px,py,G_PATH); setT(px+1,py,G_PATH); setT(px,py+1,G_PATH); setT(px+1,py+1,G_PATH);
-    if(rng()<0.2) { px+=ri(-1,1); py+=ri(-1,1); }
-    else if(rng()<0.5) px+=Math.sign(ARENA.x-px); else py+=Math.sign(ARENA.y-py);
-    px=clamp(px,4,MW-5); py=clamp(py,4,MH-5);
-  }
+  // (W-Groß entfernt: ein SPAWN->ARENA-Pfadlauf stand hier, war aber seit jeher
+  // wirkungslos — SPAWN.x/TS = 12.5 blieb durch ri(-1,1)/Math.sign()/clamp() für
+  // immer gebrochen, setT() auf einem Uint8Array verpuffte an jeder Bruchzahl
+  // still, und die Abbruchbedingung px===ARENA.x griff nie. 5000 Leerläufe,
+  // keine einzige geschriebene Kachel — das Dorf-Rechteck weiter unten ist und
+  // war der einzige echte G_PATH-Ursprung der Oberwelt.)
   for(let y=2;y<MH-2;y++){
     for(let x=2;x<MW-2;x++){
       const t = T(x,y); if(t===G_PATH) continue;
       const r = rng();
-      if(y < 26){ if(r < 0.08) setT(x,y,G_ICE_TREE); }
-      else if(y > 54){ if(r < 0.06) setT(x,y,G_CACTUS); else if(r < 0.10) setT(x,y,G_ROCK); }
+      const b1 = biomeAtT(y);
+      if(b1 === 'snow'){ if(r < 0.08) setT(x,y,G_ICE_TREE); }
+      else if(b1 === 'sand'){ if(r < 0.06) setT(x,y,G_CACTUS); else if(r < 0.10) setT(x,y,G_ROCK); }
       else { if(r < 0.08) setT(x,y,G_TREE); else if(r < 0.22) setT(x,y,G_TALL); else if(r < 0.25) setT(x,y,G_ROCK); }
     }
   }
-  // Gefrorene Teiche: zusammenhängende Flecken statt einzelner Kacheln (nur Optik, begehbar)
-  for(let n=0;n<26;n++){
-    const cx = ri(5, MW-6), cy = ri(4, 23), rad = rr(1.6, 3.2);
+  // Gefrorene Teiche: zusammenhängende Flecken statt einzelner Kacheln (nur Optik,
+  // begehbar). Zahl W-Groß 26 -> 300 (~x12, bewusst etwas unter den x16 der Fläche,
+  // sonst wirkt die Karte schachbrettartig statt organisch — GEGENPROBE-W).
+  const EIS_TEICHE_N = 300, [EIS_CY0, EIS_CY1] = bandRange('snow', 4);
+  for(let n=0;n<EIS_TEICHE_N;n++){
+    const cx = ri(5, MW-6), cy = ri(EIS_CY0, EIS_CY1), rad = rr(1.6, 3.2);
     for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
       for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
-        if(!inB(x,y) || y >= 26) continue;
+        if(!inB(x,y) || biomeAtT(y) !== 'snow') continue;
         if(T(x,y) !== G_SNOW && T(x,y) !== G_ICE_TREE) continue;   // Bäume weichen dem Teich
         if(Math.hypot(x-cx, y-cy) > rad - rng()*0.7) continue;
         setT(x,y,G_ICE);
@@ -2158,11 +2366,13 @@ function genMap(){
   }
   // Lavatümpel im Wüstenband: reine Optik, begehbar (Nutzerentscheidung), gleiches
   // Fleck-statt-Einzelkachel-Muster wie die Eisteiche oben, kleinerer Radius.
-  for(let n=0;n<16;n++){
-    const cx = ri(5, MW-6), cy = ri(56, MH-5), rad = rr(1.0, 2.0);
+  // Zahl W-Groß 16 -> 180 (gleiches ~x12-Verhältnis wie bei den Eisteichen).
+  const LAVA_TUEMPEL_N = 180, [LAVA_CY0, LAVA_CY1] = bandRange('sand', 1);
+  for(let n=0;n<LAVA_TUEMPEL_N;n++){
+    const cx = ri(5, MW-6), cy = ri(LAVA_CY0, LAVA_CY1), rad = rr(1.0, 2.0);
     for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
       for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
-        if(!inB(x,y) || y <= 54) continue;
+        if(!inB(x,y) || biomeAtT(y) !== 'sand') continue;
         if(T(x,y) !== G_SAND && T(x,y) !== G_CACTUS) continue;   // Felsen bleiben stehen
         if(Math.hypot(x-cx, y-cy) > rad - rng()*0.7) continue;
         setT(x,y,G_LAVA);
@@ -2176,7 +2386,7 @@ function genMap(){
     for(let x=VILLAGE.x0; x<=VILLAGE.x1; x++) setT(x,y,G_PATH);
   // Gebäude-Footprints blockieren (G_WALL, s. VILLAGE_BUILDINGS oben). WALKABLE ist
   // eine Whitelist, G_WALL steht nicht drin — bereits ausreichend für Kollision.
-  // initFloorGraphics() backt G_WALL in der Oberwelt wie G_PATH: die Sprites sind
+  // computeTile() backt G_WALL in der Oberwelt wie G_PATH: die Sprites sind
   // schmaler als ihr Footprint (das Amt lässt 18px links frei, F38), das Gebäude
   // deckt die Kachel also NICHT vollständig ab.
   for(const b of VILLAGE_BUILDINGS)
@@ -2205,14 +2415,15 @@ function genMap(){
       continue;
     }
     if(rng() > 0.022) continue;
-    const sand = y > 54;
+    const sand = biomeAtT(y) === 'sand';
     if(sand) continue;                                     // Wüste bleibt karg (nur Vulkanpflanzen als "Bäume")
     decos.push({x:x*TS+TS/2, y:y*TS+TS-4, sheet:rng()<0.5?'cfmush1':'cfmush2',
                 phase:rng()*10, scale:1.4});
   }
   // Windmühle als Landmarke, ostwärts neben dem Dorf (G5 hat das alte (19,36)
   // ans neue Markt-Gebäude verloren — s. VILLAGE_BUILDINGS, Umsetzungsnotizen G5).
-  decos.push({x:26*TS, y:38*TS, sheet:'cfwindmill', phase:0, scale:1, big:true});
+  // Literal im alten 80er-Raster (26,38), per DORF_DX/DORF_DY mitverschoben.
+  decos.push({x:(26+DORF_DX)*TS, y:(38+DORF_DY)*TS, sheet:'cfwindmill', phase:0, scale:1, big:true});
   // G5: Dorf-Gebäude als 'big'-Decos, Fußanker Mitte der Südkante des Footprints
   // (gleiche Konvention wie jede andere Fußpunkt-Prop hier).
   for(const b of VILLAGE_BUILDINGS){
@@ -2222,15 +2433,21 @@ function genMap(){
   trees.sort((a,b)=>a.y-b.y); decos.sort((a,b)=>a.y-b.y);
 
   // --- Ambiente-Tiere im Grasland (nur Optik, kollidieren mit nichts) ---
+  // W-Groß: 5 -> 18 Tiere. Der alte Bereich ri(8,MW-9)/ri(30,50) meinte "Weideland
+  // rund ums Dorf" und war an die alte Dorflage gepinnt — jetzt relativ zu VILLAGE,
+  // sonst stünden die Hühner 145 Kacheln vom Dorf entfernt in der Wildnis.
+  // Zahl bewusst NICHT mit der Fläche skaliert: der Weidegürtel wächst ja nicht mit,
+  // 40 Tiere darin ergaben einen Streichelzoo (~29 gleichzeitig im Bild).
   critters.length = 0;
   const CRITTERS = ['chicken','sheep','cow','pig','chicken'];
-  for(let i=0;i<5;i++){
+  for(let i=0;i<18;i++){
     for(let tries=0; tries<40; tries++){
-      const tx = ri(8, MW-9), ty = ri(30, 50);
+      const tx = ri(VILLAGE.x0-22, VILLAGE.x1+22), ty = ri(VILLAGE.y0-16, VILLAGE.y1+16);
       if(!walkT(tx,ty) || inVillageT(tx,ty)) continue;   // G5: Dorfplatz bleibt den NPCs vorbehalten
       // Beide Sheet-Keys beim Spawn fest anlegen (nicht im Draw-Case zusammenbauen,
       // Regressionsregel 4 — 130-Mob-Horde-Lektion gilt auch für Ambiente-Tiere).
-      critters.push({x:tx*TS+16, y:ty*TS+16, sheetIdle:`cf${CRITTERS[i]}_idle`, sheetWalk:`cf${CRITTERS[i]}_walk`, flip:false,
+      const art = CRITTERS[i % CRITTERS.length];   // W-Groß: 40 Tiere aus 5 Arten, reihum
+      critters.push({x:tx*TS+16, y:ty*TS+16, sheetIdle:`cf${art}_idle`, sheetWalk:`cf${art}_walk`, flip:false,
                      vx:0, vy:0, restT:rr(0,3), phase:rr(0,10)});
       break;
     }
@@ -2264,14 +2481,38 @@ function genMap(){
 
   // G5: Wolkenschatten übers Grasland, driften über die ganze Kartenbreite (nicht
   // nur übers Dorf), persistent wie trees/decos (kein Neubacken bei startShift()).
+  // W-Groß: 5 -> 20 Wolken, und das Band folgt jetzt dem Grasband statt den alten
+  // Literalen 28/52 (die waren an die alte Bandlage gepinnt).
   weatherClouds.length = 0;
-  for(let i=0;i<5;i++){
-    weatherClouds.push({x: rr(0, MW*TS), y: rr(28*TS, 52*TS), vx: rr(6,14)*(Math.random()<0.5?1:-1), variant: ri(0,3)});
+  const [WOLK_Y0, WOLK_Y1] = bandRange('grass', 2);
+  for(let i=0;i<20;i++){
+    weatherClouds.push({x: rr(0, MW*TS), y: rr(WOLK_Y0*TS, WOLK_Y1*TS), vx: rr(6,14)*(Math.random()<0.5?1:-1), variant: ri(0,3)});
   }
 
-  initFloorGraphics();
+  refreshFloor();
 }
 genMap();
+
+// W-Groß: ARENA ist das Sprungziel von loadLevel2() und wird dort UNGEPRÜFT
+// gesetzt (player.x = ARENA.x*TS). moveEnt() bewegt nur, wenn circleWalkable()
+// besteht — landete der Sprung auf einer nicht begehbaren Kachel, säße der
+// Spieler im Schattenland unbeweglich fest, könnte shadowKills nie erreichen und
+// käme nicht mehr heraus. Seit dem Wegfall des toten Pfadlaufs ist loadLevel2()
+// zudem der EINZIGE Leser von ARENA, es würde also nirgends sonst auffallen.
+// Deshalb: einmal nach dem Kartenbau auf die nächste begehbare Kachel nachziehen.
+(function arenaAufBegehbaresZiehen(){
+  if(walkT(ARENA.x, ARENA.y)) return;
+  for(let r = 1; r < Math.max(MW, MH); r++){
+    for(let dy = -r; dy <= r; dy++) for(let dx = -r; dx <= r; dx++){
+      if(Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;   // nur der Ring, nicht die Fläche
+      const nx = ARENA.x + dx, ny = ARENA.y + dy;
+      if(!walkT(nx, ny)) continue;
+      console.warn('Weltform: ARENA lag auf', T(ARENA.x, ARENA.y), '- verschoben nach', nx, ny);
+      ARENA.x = nx; ARENA.y = ny; return;
+    }
+  }
+  console.error('Weltform: keine begehbare Kachel für ARENA gefunden');
+})();
 
 const RARITY = [
   {key:0, name:'Gewöhnlich',  col:'#e8e8e0'},
@@ -2817,7 +3058,7 @@ const PRUEF_GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'd
 function blaetterAssert(){
   const TRUHE_SERIEN = ['A', 'B', 'C', 'D'];
   const SCHATTEN_SERIEN = ['E', 'F'];
-  const TRUHE_BIOME = ['grass', 'snow', 'sand'];
+  const TRUHE_BIOME = BIOME_BANDS.map(b => b.key);
   const SOLL = {A:12, B:6, C:8, D:8, E:10, F:4};
   const EMOJI = PRUEF_EMOJI;
   const GEHEIM = PRUEF_GEHEIM;
@@ -3050,6 +3291,13 @@ recalc(); player.hp = derived.maxHp;
 const monsters=[], drops=[], floaters=[], projectiles=[], magicEffects=[], particles=[], enemyBolts=[];
 let boss=null, state='menu', gameT=0, invOpen=false;
 const cam={x:0,y:0}, mouse={x:0,y:0, wx:0, wy:0, moved:false};
+// Kamera ohne Nachlauf auf den Spieler setzen. Der normale Lauf lerpt mit 0.1 pro
+// Frame (s. update()) — das war auf der alten 80er-Karte ein kaum sichtbarer
+// Ruck über ~1300px, seit W-Groß aber ein mehrsekündiger Schwenk quer über 5000px,
+// jedes Mal wenn der Spieler gesetzt (statt gelaufen) wird: Spielstart, Schicht-
+// beginn, Wiedereinstieg nach dem Tod, Sprung ins Schattenland. betreteKammer()
+// machte genau das schon immer von Hand (:4703), jetzt brauchen es alle.
+function camSnap(){ cam.x = player.x - canvas.width/2; cam.y = player.y - canvas.height/2; }
 
 // Zielpunkt für Tastatur/Klick: solange die Maus nie bewegt wurde (reines WASD-Spiel),
 // zielt das Spiel automatisch auf den nächsten Gegner statt in die Bildschirmecke.
@@ -3229,7 +3477,7 @@ function auftragOrtBand(){
   if(auftragOrtSoll <= 0) return null;                  // GW5: TDZ-sicher, siehe oben
   const a = CONFIG.schichtModus ? amt.auftrag : null;
   if(!a || a.typ !== 'ort') return null;
-  return a.par === 'snow' ? [4,25] : a.par === 'sand' ? [55, MH-5] : [26,54];
+  return bandRange(a.par, 4);
 }
 
 function placeMonsters(){
@@ -3241,7 +3489,7 @@ function placeMonsters(){
       if(!walkT(tx,ty) || dist(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
       if(inVillageT(tx,ty)) continue;            // G5: das Dorf bleibt monsterfrei
-      const biome = ty<26 ? 'snow' : (ty>54 ? 'sand' : 'grass');
+      const biome = biomeAtT(ty);
       const roster = BIOME_MOBS[biome];
       makeMon(auftragTypBevorzugen(roster[Math.floor(rng()*roster.length)], biome),   // W4
               tx*TS+16, ty*TS+16);
@@ -3254,9 +3502,14 @@ placeMonsters();
 function loadLevel2(){
   currentLevel = 2; schattenlandActive = true;
   sfx.warp(); addShake(25, 1.0);
-  player.x = ARENA.x * TS; player.y = ARENA.y * TS;
+  // Kachel-MITTE, nicht Kachelecke: ARENA.x*TS landete auf dem Eckpunkt, wodurch
+  // der Kollisionskreis (player.r) in vier Kacheln gleichzeitig griff. War eine
+  // Kachel davon blockiert, saß der Spieler im Schattenland unbeweglich fest —
+  // ohne Ausweg, weil moveEnt() jede Richtung verweigert. SPAWN umgeht das seit
+  // jeher über seine .5-Koordinaten; ARENA tat es nicht.
+  player.x = tileMid(ARENA.x); player.y = tileMid(ARENA.y); camSnap();
   monsters.length = 0; drops.length = 0; lockedTarget = null;
-  initFloorGraphics(); // Map ändert sich optisch in Schatten-Biom
+  refreshFloor(); // Map ändert sich optisch in Schatten-Biom
   floaters.push({x:player.x, y:player.y-40, txt:'MASSENVORGANG ERÖFFNET', col:'#ff0055', t:4.0, big:true});
   auftragEreignis('ablage');   // W4
 }
@@ -3284,13 +3537,18 @@ function spawnImpactParticles(x, y, count=12, color='#ffd700'){
   }
 }
 
-// Dauerhaftes Konfetti-Krümel auf die gecachte Ebene malen (statt Blut)
+// Dauerhaftes Konfetti-Krümel (statt Blut) — landet jetzt im Ringpuffer aus
+// refreshFloor() (decalX/Y/W/H/Col), nicht mehr in einer gecachten Bodenebene.
+// Verhalten unverändert: gleiche Menge, gleiche Streuung, gleiche Farbpalette.
 function splatConfetti(x, y, isSchatten){
   const amount = rri(3, 8);
-  for(let i=0; i<amount; i++) {
-    floorCtx.fillStyle = confettiCol();
-    const rx = x + rr(-18, 18), ry = y + rr(-18, 18);
-    floorCtx.fillRect(rx, ry, rr(2, 4), rr(2, 4));
+  for(let i=0; i<amount; i++){
+    const idx = decalHead;
+    decalX[idx] = x + rr(-18, 18); decalY[idx] = y + rr(-18, 18);
+    decalW[idx] = rr(2, 4); decalH[idx] = rr(2, 4);
+    decalCol[idx] = Math.floor(Math.random() * CONFETTI.length);
+    decalHead = (decalHead + 1) % DECAL_MAX;
+    if(decalN < DECAL_MAX) decalN++;
   }
 }
 
@@ -3375,8 +3633,7 @@ function hurtMon(m, d, crit, hitAngle, quelle){
 function zutatBiome(y){
   if(kammer) return kammer.biome;      // in der Kammer zählt das Biom der Tür, nicht das y-Band
   if(currentLevel === 2) return 'shadow';
-  const ty = y / TS;
-  return ty < 26 ? 'snow' : (ty > 54 ? 'sand' : 'grass');
+  return biomeAtPx(y);
 }
 // name/rar werden beim Drop einmal gebacken: der Renderpfad zeichnet sie jeden
 // Frame und darf dafür keine Strings zusammensetzen.
@@ -4266,7 +4523,11 @@ document.querySelectorAll('.knToneBtn').forEach(b => {
 knApplyToneUI();
 
 const KAM_W = 13, KAM_H = 15;      // Raumkantenlänge in Kacheln, Wände eingerechnet
-const KAM_X0 = 3, KAM_Y0 = 33;     // linke obere Ecke des Korridors (6 Räume passen in MW=80)
+// Linke obere Ecke des Korridors. Bewusst unabhängig von der Oberwelt-Anordnung:
+// betreteKammer() sichert die Karte in owSave.mapCopy und macht dann map.fill(G_WALL),
+// die Kammer überschreibt also ohnehin alles. Die Ecke muss nur so liegen, dass die
+// sechs 13x15-Räume (3 + 5*12 + 12 = 75 Kacheln breit) ins map-Array passen.
+const KAM_X0 = 3, KAM_Y0 = 33;
 const KAM_TY = KAM_Y0 + 7;         // Zeile, in der alle Tore sitzen (Raummitte)
 const KAM_SYM = ['◆','●','▲','■','✦','✚'];
 const KAM_ZWEIG_COL = ['#ff9f4a', '#7ad6ff', '#c77dff'];
@@ -4295,7 +4556,7 @@ function wuerfleTuer(t, festDiff){
 
 function setzeKammerTueren(){
   kammerTueren.length = 0;
-  const baender = [['snow', 4, 24], ['grass', 28, 52], ['sand', 56, 76]];
+  const baender = BIOME_BANDS.map(b => [b.key, ...tuerBandRange(b.key)]);
   for(const b of baender){
     for(let n = 0; n < CONFIG.kammerTueren; n++){
       for(let versuch = 0; versuch < 300; versuch++){
@@ -4452,7 +4713,7 @@ function betreteKammer(tuer){
 
   player.x = k.start.x; player.y = k.start.y;
   cam.x = player.x - canvas.width/2; cam.y = player.y - canvas.height/2;
-  initFloorGraphics();
+  refreshFloor();
   aktSperre = 0.5;                          // Tastenwiederholung soll nicht sofort zurückreisen
   sfx.warp(); addShake(12, 0.5);
   floaters.push({x: player.x, y: player.y - 46, txt: 'KAMMER · SCHWIERIGKEIT ' + k.diff, col:'#f4d97a', t: 3.0, big: true});
@@ -4491,24 +4752,17 @@ function setzeWaechter(r, n, k){
   }
 }
 
-// Boden einer einzelnen Kachel nachbacken — ein Tor darf keinen Komplettbake
-// auslösen, das wären 6400 drawImage mitten im Spiel.
-function malBoden(x, y){
-  const t = T(x,y);
-  const tile = t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
-  if(tile) floorCtx.drawImage(tile, x*TS, y*TS);
-}
-// Wandkacheln lesen ihre Nachbarn für die Kantenmaske — wer begehbar wird,
-// ändert also auch die Optik der Wände ringsum, nicht nur die eigene Kachel.
-function malBodenUmfeld(x, y){
-  for(let dy = -1; dy <= 1; dy++) for(let dx = -1; dx <= 1; dx++) malBoden(x+dx, y+dy);
-}
-
+// malBoden()/malBodenUmfeld() sind mit dem Chunk-Cache entfallen — ihr einziger
+// Zweck war, einen Komplettbake (6400 drawImage) beim Türöffnen zu vermeiden.
+// invalidateMoore() (bei computeTile()/bakeChunk()) übernimmt das jetzt über
+// Chunk-Ungültigkeit statt über Neuzeichnen: billiger, und deckt exakt dieselbe
+// Nachbarschaft ab (Wandkacheln lesen ihre Nachbarn für die Kantenmaske, auch
+// diagonal — wer begehbar wird, ändert also die Optik der Wände ringsum).
 function oeffneTor(i, still){
   const tor = kammer.tore[i]; if(!tor || tor.offen) return;
   tor.offen = true;
   tor.openT = gameT;
-  for(let dy = -1; dy <= 1; dy++){ setT(tor.tx, tor.ty+dy, G_PATH); malBodenUmfeld(tor.tx, tor.ty+dy); }
+  for(let dy = -1; dy <= 1; dy++){ setT(tor.tx, tor.ty+dy, G_PATH); invalidateMoore(tor.tx, tor.ty+dy); }
   const tmx = tileMid(tor.tx), tmy = tor.ty*TS + TS - 2;
   trees = trees.filter(p => !(Math.abs(p.x - tmx) < 2 && Math.abs(p.y - tmy) < TS*1.6));
   bakeMinimap();
@@ -4535,7 +4789,7 @@ function verlasseKammer(){
   kammer = null; owSave = null; aktSperre = 0.5;
   if(schlossOpen) schlossZu();
   setStyle('bossbar', 'display', boss && !boss.dead ? 'block' : 'none');
-  initFloorGraphics();
+  refreshFloor();
   sfx.warp();
 }
 
@@ -4656,11 +4910,11 @@ function bauBloecke(mod, r){
 }
 function bloeckeZurueck(mod){
   for(const b of mod.bloecke){
-    if(T(b.tx, b.ty) === G_BLOCK) setT(b.tx, b.ty, G_PATH);
+    if(T(b.tx, b.ty) === G_BLOCK){ setT(b.tx, b.ty, G_PATH); invalidateMoore(b.tx, b.ty); }
   }
   for(const b of mod.bloecke){
     b.tx = b.sx; b.ty = b.sy; b.x = tileMid(b.tx); b.y = tileMid(b.ty);
-    setT(b.tx, b.ty, G_BLOCK);
+    setT(b.tx, b.ty, G_BLOCK); invalidateMoore(b.tx, b.ty);
   }
   // Wer beim Zurücksetzen genau auf einem Startfeld steht, säße sonst im Block fest
   if(!circleWalkable(player.x, player.y, player.r)){ player.x = mod.rune.x; player.y = mod.rune.y; }
@@ -4680,6 +4934,7 @@ function aufBloecke(mod, dt){
         if(walkT(nx, ny)){
           for(const b of mod.bloecke) if(b.tx === tx && b.ty === ty){
             setT(tx, ty, G_PATH); setT(nx, ny, G_BLOCK);
+            invalidateMoore(tx, ty); invalidateMoore(nx, ny);
             b.tx = nx; b.ty = ny; b.x = tileMid(nx); b.y = tileMid(ny);
             mod.cd = 0.22; sfx.hit(false);
           }
@@ -4841,7 +5096,7 @@ function aufBrechen(mod, dt){
   if(tx > mod.fx1){ mod.fertig = true; return; }
   if(tx < mod.fx0 || ty < mod.fy0 || ty > mod.fy1) return;
   if(mod.fy0 + mod.pfad[tx - mod.fx0] === ty) return;              // trägt
-  setT(tx, ty, G_GAP);
+  setT(tx, ty, G_GAP); invalidateMoore(tx, ty);
   mod.kaputt.push({x: tileMid(tx), y: tileMid(ty)});
   player.x = mod.start.x; player.y = mod.start.y;
   mod.zeigT = 1.8;
@@ -5506,6 +5761,7 @@ function fillZutatGrid(grid, onPick){
 // ===========================================================================
 let kesselOpen = false, kesselTab = 'kessel';
 let ausweisOpen = false;   // W6: Dienstausweis, gleiche Bauform wie kesselOpen
+let fullmapOpen = false;   // W-Groß: Vollbildkarte, gleiche Bauform wie kesselOpen
 const potSlots = [null, null, null];               // je {noun, adj}
 
 function addToPot(z){
@@ -5748,6 +6004,44 @@ function toggleAusweis(){
   MUS.muffle();   // offenes Panel dämpft die Musik
 }
 
+// W-Groß: Vollbildkarte — Ausgleich dafür, dass die Minimap seit dem Fenster
+// (renderMinimap()) nicht mehr die ganze Welt zeigt. Nutzt denselben miniFull-
+// Farb-Bake wie die Minimap, aber ungefenstert über die ganze Karte skaliert.
+function renderFullmap(){
+  const cv = el('fullmapCanvas'), fctx = cv.getContext('2d');
+  fctx.imageSmoothingEnabled = false;
+  fctx.clearRect(0, 0, cv.width, cv.height);
+  fctx.drawImage(miniFull, 0, 0, MW, MH, 0, 0, cv.width, cv.height);
+  const scale = cv.width / MW;   // Karte ist immer quadratisch (MW === MH)
+  const mark = (wx, wy, size, fill) => {
+    fctx.fillStyle = fill;
+    fctx.fillRect((wx/TS)*scale - size/2, (wy/TS)*scale - size/2, size, size);
+  };
+  if(currentLevel === 1){
+    mark((VILLAGE.x0+VILLAGE.x1)/2*TS, (VILLAGE.y0+VILLAGE.y1)/2*TS, 8, '#ffd76a');
+    mark(KESSEL.x, KESSEL.y, 6, '#6aff8f');
+    for(const m of monsters) if(!m.dead) mark(m.x, m.y, 3, 'rgba(255,80,80,.85)');
+    // Wirkung 'Aktenlage': dieselbe Freischalt-Regel wie renderMinimap() — sonst
+    // würde die Vollbildkarte den gekauften Effekt wertlos machen.
+    if(FX.karte) for(const t of kammerTueren) if(t.cd <= 0) mark(t.x, t.y, 5, '#f4d97a');
+  }
+  if(portal) mark(portal.x, portal.y, 7, '#ff00ff');
+  if(FX.karte && kammer && kammer.truhe && !kammer.truhe.auf) mark(kammer.truhe.x, kammer.truhe.y, 7, '#f4d97a');
+  mark(player.x, player.y, 6, '#5c86ff');
+}
+function toggleFullmap(){
+  fullmapOpen = !fullmapOpen;
+  el('fullmap').style.display = fullmapOpen ? 'block' : 'none';
+  if(fullmapOpen){
+    if(invOpen) toggleInventory();
+    if(kesselOpen) toggleKessel();
+    if(ausweisOpen) toggleAusweis();
+    renderFullmap();
+    knIdleT = 0;
+  }
+  MUS.muffle();
+}
+
 // Passbild-Ausschnitt aus dem bestehenden Held-Bake (SHEETS['hero_baked']), Idle-
 // Frame 0, kein Zappeln auf einem Lichtbild. Kein neues Sheet, kein zweites Bake.
 // player.hair würfelt startShift() pro Schicht neu (18.8: "jeden Tag ein anderes
@@ -5785,6 +6079,8 @@ el('closeKesselBtn').onclick = toggleKessel;
 el('kesselBtn').onclick = toggleKessel;
 el('closeAusweisBtn').onclick = toggleAusweis;
 el('ausweisBtn').onclick = toggleAusweis;
+el('closeFullmapBtn').onclick = toggleFullmap;
+el('minimap').onclick = toggleFullmap;   // Handy: Tippen auf die Minimap öffnet die Vollbildkarte
 el('closeSchlossBtn').onclick = schlossZu;
 el('aktionBtn').onclick = fuehreAktion;
 function knAbbruchKammer(){
@@ -5920,10 +6216,10 @@ function update(dt){
       }
     }
   } else if(!kammer){
-    const ty = player.y / TS;                       // Biom-Anzeige statt statischem "Grasland"
+    const zb = biomeAtPx(player.y);                  // Biom-Anzeige statt statischem "Grasland"
     setTxt('zone', (inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage (Stufe ' + player.level + ')'   // G5
-                 : ty < 26 ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
-                 : ty > 54 ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
+                 : zb === 'snow' ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
+                 : zb === 'sand' ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
                            : '📍 Grasland, Ablage A (Stufe ' + player.level + ')') + schichtHudSuffix());
   }
   if(schattenlandActive){
@@ -6003,11 +6299,11 @@ function update(dt){
     if(cl.x < -80) cl.x = MW*TS + 80; else if(cl.x > MW*TS + 80) cl.x = -80;
   }
   if(currentLevel === 1 && !kammer){
-    const pyT = player.y / TS;
-    if(pyT < 26 && weatherSnow.length < WEATHER_SNOW_CAP && Math.random() < 0.6){
+    const pyB = biomeAtPx(player.y);
+    if(pyB === 'snow' && weatherSnow.length < WEATHER_SNOW_CAP && Math.random() < 0.6){
       weatherSnow.push({x: cam.x + rr(-40, canvas.width+40), y: cam.y - 20, vx: rr(-8,8), vy: rr(28,48), life: rr(3,5)});
     }
-    if(pyT > 54){
+    if(pyB === 'sand'){
       windGustT -= dt;
       if(windGustT <= 0 && weatherWind.length < WEATHER_WIND_CAP){
         windGustT = rr(4, 9);
@@ -6246,11 +6542,51 @@ function render(){
   ctx.save();
 
   let sx = 0, sy = 0;
-  if(shakeT > 0){ sx = rr(-shakeInt, shakeInt); sy = rr(-shakeInt, shakeInt); }
+  // Ganzzahlig runden: cam.x/y sind über Math.floor schon ganzzahlig, der Wackel-
+  // offset war es nicht. Beim alten Vollkarten-Canvas fiel das nicht auf (ein
+  // einziges Bild kann keine Naht in sich haben), seit dem Chunk-Cache erzeugt
+  // eine gebrochene translate sichtbare Fugen zwischen den 54 Einzelbildern.
+  if(shakeT > 0){ sx = Math.round(rr(-shakeInt, shakeInt)); sy = Math.round(rr(-shakeInt, shakeInt)); }
   ctx.translate(-Math.floor(cam.x) + sx, -Math.floor(cam.y) + sy);
 
-  // Caching Layer zeichnen (Super schnell, mit dauerhaftem Blut!)
-  ctx.drawImage(floorCanvas, 0, 0);
+  // Sichtfenster zuerst: Chunk-Auswahl, Dekale und (weiter unten) drops/particles/
+  // trees/decos/Entitäten teilen sich dieselben Grenzen (R6/F32-Prinzip, jetzt auch
+  // für den Boden). Vorher stand das erst nach den Partikeln — hierher gezogen,
+  // weil der Boden jetzt selbst gekappt werden muss (kein Vollkarten-Canvas mehr).
+  cullL = cam.x - 80; cullR = cam.x + canvas.width + 80;
+  cullT = cam.y - 120; cullB = cam.y + canvas.height + 80;
+
+  // Boden-Chunks zeichnen: nur die sichtbaren 256x256px-Blöcke, mit 1 Chunk Rand
+  // (der Kamera-Wackler sx/sy bleibt weit darunter, siehe addShake-Aufrufe).
+  // Die Oberwelt-Kamera ist nicht an die Weltgrenzen geklemmt (nur kammerKamera()
+  // klemmt) — deshalb hier hart auf 0..CHUNKS_X/Y-1 klemmen, sonst läse getChunk()
+  // über den Rand des map-Arrays hinaus.
+  {
+    const ox = Math.floor(cam.x) - sx, oy = Math.floor(cam.y) - sy;
+    const cx0 = Math.max(0, Math.floor(ox / CHPX) - 1);
+    const cx1 = Math.min(CHUNKS_X - 1, Math.floor((ox + canvas.width) / CHPX) + 1);
+    const cy0 = Math.max(0, Math.floor(oy / CHPX) - 1);
+    const cy1 = Math.min(CHUNKS_Y - 1, Math.floor((oy + canvas.height) / CHPX) + 1);
+    for(let cy = cy0; cy <= cy1; cy++){
+      for(let cx = cx0; cx <= cx1; cx++){
+        const c = getChunk(cx, cy);
+        if(c) ctx.drawImage(c, cx*CHPX, cy*CHPX);
+      }
+    }
+  }
+
+  // Konfetti-Dekale (vormals dauerhaft im floorCanvas): nach Farbe gebündelt, damit
+  // fillStyle nicht pro Krümel wechselt, gegen das Sichtfenster gekappt.
+  for(let ci = 0; ci < CONFETTI.length; ci++){
+    let anyThisColor = false;
+    for(let k = 0; k < decalN; k++){
+      if(decalCol[k] !== ci) continue;
+      const dx = decalX[k], dy = decalY[k];
+      if(dx < cullL || dx > cullR || dy < cullT || dy > cullB) continue;
+      if(!anyThisColor){ ctx.fillStyle = CONFETTI[ci]; anyThisColor = true; }
+      ctx.fillRect(dx, dy, decalW[k], decalH[k]);
+    }
+  }
 
   if(kammer) drawKammerBoden();          // Zielfelder, Plattenspur, Lichtstrahl liegen flach
 
@@ -6262,6 +6598,7 @@ function render(){
   }
 
   for(const d of drops){
+    if(!vis(d.x, d.y)) continue;   // W-Groß: bislang ungekappt, bei 600 Mobs zu viele gleichzeitig
     const bob = Math.sin(gameT*3 + d.x*0.1) * 2;
     const gf = animFrame('glint', gameT + d.x*0.017, 9);
     ctx.save(); ctx.textAlign = 'center'; ctx.font = '17px serif';
@@ -6289,6 +6626,7 @@ function render(){
   }
 
   for(const p of particles){
+    if(!vis(p.x, p.y)) continue;   // W-Groß: bislang ungekappt, ein Flächenzauber sättigt sonst den Pool sichtbar
     ctx.fillStyle = p.color; ctx.globalAlpha = Math.min(1, p.life / p.maxLife);
     if(p.confetti){
       ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
@@ -6336,9 +6674,8 @@ function render(){
     for(const w of weatherWind) drawSprite('cfwind', animFrame('cfwind', w.phase, 14, false), w.x, w.y, 2, w.vx < 0);
   }
 
-  cullL = cam.x - 80; cullR = cam.x + canvas.width + 80;
-  cullT = cam.y - 120; cullB = cam.y + canvas.height + 80;
-
+  // cullL/R/T/B stehen schon (ganz oben in render() gesetzt, für Boden-Chunks
+  // und Dekale) — hier nur noch die Zeichenliste damit befüllen.
   drawCount = 0;
   // trees/decos entstehen zeilenweise und sind damit nach y sortiert: statt aller
   // ~2000 Props nur das sichtbare Band anfassen.
@@ -6689,7 +7026,11 @@ function drawProp(t){
     drawShadowEllipse(t.x, t.y, 11);
     // Felsen nehmen die Farbe ihres Bandes an: Sandstein in der Wüste, Reif im
     // Schnee. Kammerwände bringen ihre Färbung als t.tint selbst mit.
-    const tint = t.tint || (ty > 54 ? '#d9b070' : (ty < 26 ? '#dfeeff' : null));
+    // ty ist der Fußpunkt (t.y/TS, mit dem +TS-2-Versatz gebrochen) und liegt an der
+    // Bandgrenze knapp über dem ganzzahligen Kachelwert — deshalb hier bewusst gegen
+    // SAND_Y0-1/SNOW_Y1+1 statt gegen biomeAtT(), sonst kippt die letzte Zeile jedes
+    // Bands beim Runden auf die falsche Farbe (unverändertes Verhalten von vorher).
+    const tint = t.tint || (ty > SAND_Y0-1 ? '#d9b070' : (ty < SNOW_Y1+1 ? '#dfeeff' : null));
     const rf = Math.floor(t.phase) % 8;
     drawSprite('cfrock', rf, t.x, t.y+2, 1.8, (t.phase|0) & 1, tint, t.tint ? 0.66 : 0.5);
     return;
@@ -6759,31 +7100,6 @@ function drawMon(m){
   }
 }
 
-function bakeMinimap(){
-  const c = miniBg.getContext('2d');
-  if(assetsReady){ c.imageSmoothingEnabled = true; c.drawImage(floorCanvas, 0, 0, 128, 128); }
-  else { c.fillStyle = currentLevel === 1 ? '#3fa04a' : '#1e0c29'; c.fillRect(0,0,128,128); }
-}
-
-let miniCtx = null;
-function renderMinimap(){
-  if(!miniCtx){ miniCtx = el('minimap').getContext('2d'); miniCtx.imageSmoothingEnabled = false; }
-  const mctx = miniCtx;
-  mctx.drawImage(miniBg, 0, 0);
-  const scale = 128 / MW;
-  mctx.fillStyle = 'rgba(255,80,80,.85)';
-  for(const m of monsters) if(!m.dead) mctx.fillRect((m.x/TS)*scale - 1, (m.y/TS)*scale - 1, 2, 2);
-  if(currentLevel === 1){ mctx.fillStyle = '#6aff8f'; mctx.fillRect((KESSEL.x/TS)*scale - 1, (KESSEL.y/TS)*scale - 1, 3, 3); }
-  mctx.fillStyle = '#5c86ff'; mctx.fillRect((player.x/TS)*scale - 1, (player.y/TS)*scale - 1, 3, 3);
-  if(portal){ mctx.fillStyle = '#ff00ff'; mctx.fillRect((portal.x/TS)*scale - 2, (portal.y/TS)*scale - 2, 4, 4); }
-  // Wirkung 'Aktenlage': ungeöffnete Truhe bzw. Kammertüren auf der Karte
-  if(FX.karte){
-    mctx.fillStyle = '#f4d97a';
-    if(kammer && kammer.truhe && !kammer.truhe.auf) mctx.fillRect((kammer.truhe.x/TS)*scale - 2, (kammer.truhe.y/TS)*scale - 2, 4, 4);
-    else if(currentLevel === 1) for(const t of kammerTueren) if(t.cd <= 0) mctx.fillRect((t.x/TS)*scale - 1, (t.y/TS)*scale - 1, 3, 3);
-  }
-}
-
 const ULT_SPELL = SPELLS.find(s => s.ultimate);
 // Der Tooltip eines Spruchs ändert sich nie. Einmal gebaut, danach vergleicht der
 // Dirty-Check aus setAttr denselben String — sonst entstünde er pro Frame neu (R6/F29).
@@ -6840,6 +7156,7 @@ function updateHUD(){
 
 function showStartScreen(){
   state = 'menu';
+  camSnap();   // hinter dem Startbild soll das Dorf stehen, nicht die Kartenecke
   document.getElementById('ovPanel').innerHTML = `
     <h1>DAS MONSTRAL MINISTERIUM</h1>
     <h3>Erledigen. Beglaubigen. Feierabend.</h3>
@@ -6867,16 +7184,17 @@ function respawnPlayer(){
   currentLevel = 1; schattenlandActive = false; shadowKills = 0; boss = null; portal = null;
   monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   particles.length = 0; corpses.length = 0; floaters.length = 0;
-  player.x = SPAWN.x; player.y = SPAWN.y; player.dead = false; player.hurtT = 0;
+  player.x = SPAWN.x; player.y = SPAWN.y; camSnap(); player.dead = false; player.hurtT = 0;
   player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
   player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
   player.hp = Math.max(1, Math.round(derived.maxHp * 0.5)); player.mana = derived.maxMana;
   if(kesselOpen) toggleKessel();                                                   // gibt auch die Zutaten aus dem Topf zurück
   if(ausweisOpen) toggleAusweis();
+  if(fullmapOpen) toggleFullmap();
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;   // Eingaben, die den Tod überlebt haben
   attackTouch = null; lockedTarget = null;
   el('bossbar').style.display = 'none';
-  initFloorGraphics(); placeMonsters();
+  refreshFloor(); placeMonsters();
   el('overlay').style.display = 'none'; MUS.muffle(false);
   state = 'play'; updateHUD();
   knPlayStartT = gameT;
@@ -6966,6 +7284,7 @@ function startShift(){
   particles.length = 0; corpses.length = 0; floaters.length = 0;
   if(kesselOpen) toggleKessel();
   if(ausweisOpen) toggleAusweis();
+  if(fullmapOpen) toggleFullmap();
   if(invOpen) toggleInventory();
   if(spellTreeOpen) toggleSpellTree();
   if(amtFensterOpen) amtFensterSchliessen();
@@ -6973,7 +7292,7 @@ function startShift(){
   attackTouch = null; lockedTarget = null;
   el('bossbar').style.display = 'none';
 
-  player.x = SPAWN.x; player.y = SPAWN.y; player.dead = false; player.hurtT = 0;
+  player.x = SPAWN.x; player.y = SPAWN.y; camSnap(); player.dead = false; player.hurtT = 0;
   player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
   player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
   player.level = 1 + amt.ausbauten.startLevel; player.xp = 0;
@@ -7001,7 +7320,7 @@ function startShift(){
 
   recalc(); player.hp = derived.maxHp; player.mana = derived.maxMana;
   knCheckFluchEquipped();   // Startfluch-Ausbau kann ohne equipItemFromBag() einen Fluch anlegen
-  initFloorGraphics(); placeMonsters();
+  refreshFloor(); placeMonsters();
 
   shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0;
   shiftKillsByType = {}; shiftKillsTotal = 0;
@@ -7027,6 +7346,7 @@ function startShift(){
 function endShift(reason){
   if(kesselOpen) toggleKessel();
   if(ausweisOpen) toggleAusweis();
+  if(fullmapOpen) toggleFullmap();
   if(amtFensterOpen) amtFensterSchliessen();
   // W4: vor allen weiteren Änderungen prüfen, solange player.gold noch der
   // ungeteilte Schichtstand ist (Bilanz-Aufträge lesen genau den).
@@ -7818,7 +8138,7 @@ function vorgangAssert(){
       else biomeGesehen[z.biome] = (biomeGesehen[z.biome]||0) + 1;
     } else if(z.biome) fehler('Ablage-V-Adresszeile hat ein Biom', id);
   }
-  for(const b of ['snow','grass','sand']) if(biomeGesehen[b] !== 1) fehler('Biom nicht genau einmal vergeben', b, biomeGesehen[b]||0);
+  for(const b of BIOME_BANDS.map(z=>z.key)) if(biomeGesehen[b] !== 1) fehler('Biom nicht genau einmal vergeben', b, biomeGesehen[b]||0);
   if(VORGANG_ANSCHRIFT !== 'An Fürst Nachtrag, zu Händen, persönlich.') fehler('Anschrift-Wortlaut driftet', VORGANG_ANSCHRIFT);
 
   // (2) Vollständigkeit: SERIE_AKT deckt genau die in BLAETTER vorkommenden
@@ -7939,7 +8259,7 @@ function vorgangAssert(){
     kladde.vorgang = {};
     for(let z = 1; z <= 4; z++) if(maske & (1 << (z - 1))) kladde.vorgang[z] = true;
     const attrappe = [];
-    for(const b of ['snow', 'grass', 'sand']) for(let i = 0; i < 2; i++) attrappe.push({biome:b, diff:3});
+    for(const b of BIOME_BANDS.map(z=>z.key)) for(let i = 0; i < 2; i++) attrappe.push({biome:b, diff:3});
     markiereAdressTueren(attrappe);
     const proZeile = {};
     for(const t of attrappe){
@@ -8211,6 +8531,22 @@ function auftragAssertBrett(){
   }
   for(const b in BIOM_AMT) if(!BIOME_MOBS[b]) fehler('BIOM_AMT kennt ein Biom, das es nicht gibt', b);
   for(const b in BIOME_MOBS) if(!BIOM_AMT[b]) fehler('Biom ohne amtlichen Namen', b);
+
+  // (0b) BIOME_BANDS ist die einzige Quelle für Biomgrenzen (W-Groß): sie muss
+  // [0, MH-1] lückenlos und überlappungsfrei kacheln, und exakt dieselben
+  // Schlüssel wie BIOME_MOBS/BIOM_AMT tragen — sonst driftet die einzige echte
+  // Karten-Wahrheit (BIOME_BANDS) unbemerkt von den textbasierten Tabellen weg.
+  {
+    const sorted = [...BIOME_BANDS].sort((a,b) => a.y0 - b.y0);
+    if(sorted[0].y0 !== 0) fehler('BIOME_BANDS beginnt nicht bei y=0', sorted[0].key, sorted[0].y0);
+    if(sorted[sorted.length-1].y1 !== MH-1) fehler('BIOME_BANDS endet nicht bei MH-1', sorted[sorted.length-1].key, sorted[sorted.length-1].y1);
+    for(let i=1;i<sorted.length;i++) if(sorted[i].y0 !== sorted[i-1].y1+1) fehler('BIOME_BANDS hat Lücke oder Überlappung', sorted[i-1].key, sorted[i].key);
+    for(const b of BIOME_BANDS){
+      if(!BIOME_MOBS[b.key]) fehler('BIOME_BANDS kennt ein Biom, das BIOME_MOBS nicht hat', b.key);
+      if(!BIOM_AMT[b.key])   fehler('BIOME_BANDS kennt ein Biom, das BIOM_AMT nicht hat', b.key);
+    }
+    for(const b in BIOME_MOBS) if(!BIOME_BANDS.find(z=>z.key===b)) fehler('BIOME_MOBS kennt ein Biom, das nicht auf der Karte liegt (BIOME_BANDS)', b);
+  }
 
   for(const l of AUFTRAG_BEMERKUNGEN) text(l, 70, 'Bemerkung');
 
@@ -9013,21 +9349,24 @@ window.addEventListener('keydown', e => {
   // Vollständige Belegung, damit sie nicht wieder nur in einer Plandatei steht
   // (ZUSAGEN-BILANZ-2026-08-04.md, Fund 14): w a s d Bewegung, Space Angriff,
   // q und 1 Trank, e Zauber, r Ultimate, i Inventar, t Zauberbaum, m Musik,
-  // k Kessel, f Kontextaktion, Esc schließt Panels der Reihe nach.
+  // k Kessel, l Vollbildkarte, f Kontextaktion, Esc schließt Panels der Reihe nach.
   // '1' ist die Zweitbelegung für den Trank. Sie ist bewusst dokumentiert: die
   // Ziffernreihe ist genau der Bereich, in den eine spätere Schnellwahl greifen
-  // würde, und dann kollidiert sie stumm.
+  // würde, und dann kollidiert sie stumm. 'l' (Landkarte) statt 'm': m ist schon
+  // die Musik-Taste, W-Groß durfte sie nicht verdrängen.
   if(k === 'q' || k === '1') drinkPotion();
   if(k === 'e') castActiveSpell();
   if(k === 'r') castUltimate();
   if(k === 'i') toggleInventory(); if(k === 't') toggleSpellTree(); if(k === 'm') toggleMusic();
   if(k === 'k') toggleKessel();
+  if(k === 'l') toggleFullmap();
   if(k === 'f') fuehreAktion();
   if(k === 'escape'){                          // Panels schließen ohne Tastenraten
     if(invOpen) toggleInventory();
     else if(spellTreeOpen) toggleSpellTree();
     else if(kesselOpen) toggleKessel();
     else if(ausweisOpen) toggleAusweis();
+    else if(fullmapOpen) toggleFullmap();
     else if(schlossOpen) schlossZu();
     else if(amtFensterOpen) amtFensterSchliessen();
     else if(kammer) knAbbruchKammer();          // Abbruch der Kammer, ohne Beute, ohne Softlock
@@ -9389,7 +9728,7 @@ function bakeUiSkin(){
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
-  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis']){
+  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap']){
     const el = document.querySelector(sel); if(!el) continue;
     el.style.borderImageSource = `url("${frameUrl}")`;
     el.style.borderImageSlice = '2 2 5 2';
@@ -9427,7 +9766,7 @@ loadAssets().then(() => {
   bakeAllNpcSheets();
   assertRigRegistrations();   // GW26c: jetzt sind npc_baked_bramsche/_lott/_pahl da
   npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
-  initFloorGraphics();
+  refreshFloor();
   showStartScreen();
   requestAnimationFrame(loop);
 });
