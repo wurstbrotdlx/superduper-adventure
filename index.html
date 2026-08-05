@@ -4097,7 +4097,11 @@ function knBegruessungLine(){
   // eine Spur wärmer. Sie steht als EIGENE Sprosse ganz oben und wird nicht
   // angehängt: der Schichtzähler frisst den Deckel sonst vollständig auf, und
   // die Belohnung wäre auf jedem Rang unsichtbar.
-  let line = (langFertig('giesskanne') ? anredeVersuch(t => t + '. Schön, dass Sie da sind.', st, 44) : null)
+  // GW8: Suffix von 26 auf 20 Zeichen gekürzt. Mit dem alten Satz passte die
+  // einzige Belohnung dieses Langvorgangs auf 7 von 19 Rängen unter den Deckel,
+  // und ausgerechnet auf den Rängen 0 bis 2 nicht — also in den Schichten, in
+  // denen der Strang typischerweise abgeschlossen wird. Jetzt sind es 15.
+  let line = (langFertig('giesskanne') ? anredeVersuch(t => t + '. Gut, Sie zu sehen.', st, 44) : null)
              || anredeVersuch(t => t + '. ' + knOrdinal(n) + ' Schicht.', st, 44)
              || anredePunkt(st, 44)
              || (knOrdinal(n) + ' Schicht. Die Akte wird dick.');
@@ -7461,8 +7465,15 @@ function anredeFormen(i){
   // der benannten Ränge: dort hängt eine römische Ziffer hinten dran, und
   // 'Geschäftsbereich II(in)' wäre die Klammer am Zählwerk statt am Substantiv.
   const ohneKlammer = t.indexOf(' / ') >= 0 || s > letzt;
-  const mitKlammer = ohneKlammer ? [] : [ANREDE_HERR + t + '(in)', t + '(in)'];
-  return mitKlammer.concat([ANREDE_HERR + t, t, basis]);
+  // GW7: 'Herr oder Frau <Titel>' steht jetzt VOR der Klammerform ohne Anrede.
+  // Vorher war die Reihenfolge rein nach Länge sortiert, und weil '(in)' nur
+  // vier Zeichen kostet und 'Herr oder Frau ' fünfzehn, gewann die Klammerform
+  // praktisch immer: auf genau einem von 81 durchgerechneten Rängen sagte
+  // Knöterich die Vollform. 18.5 verlangt sie ausdrücklich "jedes Mal". Mit
+  // dieser Reihenfolge sind es die Ränge 9, 11 und 12 — mehr trägt der 44er-
+  // Deckel nicht, der Rest bleibt bewusst offen und ist dokumentiert.
+  const mitKlammer = ohneKlammer ? [] : [ANREDE_HERR + t + '(in)', ANREDE_HERR + t, t + '(in)'];
+  return ohneKlammer ? [ANREDE_HERR + t, t, basis] : mitKlammer.concat([t, basis]);
 }
 // Baut die längste Fassung, die unter den Deckel passt. null = keine passt,
 // dann nimmt der Aufrufer seinen eigenen Rückfall. Gleiches Muster wie das
@@ -7592,7 +7603,13 @@ function anredeAssert(){
   // die warmGesehen-Prüfung unten liefe grundlos rot. Muster aus vorgangAssert().
   CONFIG.schichtModus = true;
   let warmGesehen = false, rekordGesehen = false;
-  for(const rek of [0, 99]) for(const giess of [false, true]){
+  // GW19: rek 9 ist mitgeprüft, weil das Suffix seit GW7/GW8 nur noch für
+  // EINSTELLIGE Rekorde unter den Deckel passt — die längere Anredezeile und
+  // die häufiger sichtbare Gießkannen-Wärme fressen ihn sonst auf. Der Guard
+  // fordert deshalb Sichtbarkeit für irgendeinen Rekordwert, nicht für den
+  // längsten. Dass ' Rekord 99.' nirgends mehr erscheint, ist hingenommen und
+  // in phase-anrede.md unter "Bewusst offen" vermerkt.
+  for(const rek of [0, 9, 99]) for(const giess of [false, true]){
     kn.counters.maxKillsSchicht = rek;
     kladde.lang = giess ? {giesskanne: LANGVORGAENGE.giesskanne.stufen} : {};
     for(let s = 0; s <= 5000; s++){
@@ -7601,7 +7618,7 @@ function anredeAssert(){
       text(l, 44, 'knBegruessung rek=' + rek + ' giess=' + giess + ' s=' + s);
       // 18.5 verlangt die Anrede jedes Mal: der letzte Boden darf nie greifen.
       if(l.indexOf('Die Akte wird dick') >= 0) fehler('Knöterich fällt aus der Anrede', s, l);
-      if(giess && l.indexOf('Schön, dass Sie da sind') >= 0) warmGesehen = true;
+      if(giess && l.indexOf('Gut, Sie zu sehen') >= 0) warmGesehen = true;   // GW8
       if(rek > 0 && l.indexOf(' Rekord ') >= 0) rekordGesehen = true;
     }
   }

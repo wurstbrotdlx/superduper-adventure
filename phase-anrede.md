@@ -204,6 +204,6 @@ Server auf Port 8378 über das Browser-Pane, `index.html` im Wurzelverzeichnis, 
 
 ## Bewusst offen gelassen (Nachtrag)
 
-* **Das Rekord-Suffix ist fast unsichtbar geworden.** Sein Code ist unverändert, aber die längere Anredezeile hat seine Sichtbarkeit von rund 190 auf rund 30 Schichten gedrückt. Seit GW19 prüft `anredeAssert()`, dass es überhaupt noch irgendwo passt.
+* **Das Rekord-Suffix ist fast unsichtbar geworden.** Sein Code ist unverändert, aber die längere Anredezeile hat seine Sichtbarkeit von rund 190 auf rund 30 Schichten gedrückt. Seit GW19 prüft `anredeAssert()`, dass es überhaupt noch irgendwo passt. *(Nachtrag nach GW7/GW8: mit der neuen Sprossenreihenfolge und der häufiger sichtbaren Gießkannen-Wärme passt es nur noch für **einstellige** Rekorde, auf vier bis fünf Rängen. `Rekord 99.` erscheint nirgends mehr. Hingenommen — der Guard fordert Sichtbarkeit für irgendeinen Rekordwert, nicht für den längsten.)*
 * **Rangstufe 0 bekommt die Vollform nicht.** `Herr oder Frau Monsterangelegenheitenanwärter(in).` ist 50 Zeichen und bricht den 48er-Deckel um zwei. Betrifft die Schichten 1 bis 4 und Pommers Antragstitel dauerhaft.
 * **Knöterichs „Herr oder Frau" erscheint auf genau einem von 81 gemessenen Rängen** (Rang 11). Die Sprossenleiter setzt die kürzere Klammerform davor, und der 44er-Deckel schlägt überall sonst zu. Ob die Reihenfolge gedreht wird, ist eine Entscheidung über den Klang des Spiels, keine Korrektur — siehe GW7 im Gegenprobe-Bericht.
