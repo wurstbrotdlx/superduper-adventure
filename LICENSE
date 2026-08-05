@@ -1,0 +1,47 @@
+Das Monstralministerium
+Ministerium für Monsterangelegenheiten
+
+Dieses Repo enthält dreierlei mit unterschiedlicher Rechtslage. Wer etwas
+weiterverwenden will, liest zuerst diesen Abschnitt, dann den Lizenztext.
+
+1. Quellcode — MIT, siehe unten.
+   Die Spiel-Engine in `index.html` (Rendering, Kampf, Speicherstände, Guards),
+   die Werkzeuge unter `tools/` und `serve.py`.
+
+2. Grafik — NICHT von dieser Lizenz gedeckt.
+   Die Pixel-Art stammt aus "Cute Fantasy" von Kenmi (kenmi-art.itch.io) unter
+   Premium-Lizenz. Sie erlaubt kommerzielle Nutzung und Modifikation, untersagt
+   aber die Weiterverteilung der Dateien, auch modifiziert. Deshalb liegen weder
+   `Graphics/` noch `assets/cf/**` in diesem Repo. Wer das Spiel selbst bauen
+   will, braucht eine eigene Lizenz von Kenmi. Details in CREDITS.md.
+
+3. Spielinhalte — alle Rechte vorbehalten.
+   Welt, Figuren, Dialoge, Amtsdeutsch und Plandokumente: `superduper-*.md`,
+   `phase-*.md`, `figuren-dorf.md`, `blaetter-serie-a-b.md` sowie sämtliche
+   Textinhalte in `index.html`. Copyright (c) 2026 Matthias Weber. Lesen, forken
+   und für eigene Zwecke bauen ist ausdrücklich in Ordnung; Veröffentlichung
+   eines abgeleiteten Spiels mit diesen Texten braucht Absprache.
+
+--------------------------------------------------------------------------------
+
+MIT License (gilt für Punkt 1, Quellcode)
+
+Copyright (c) 2026 Matthias Weber
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -48,6 +48,7 @@ Das Spiel prüft sich beim Laden selbst. Sieben selbstaufrufende Guards (`knAsse
 | `figuren-dorf.md`, `blaetter-serie-a-b.md` | Inhaltslieferungen (Figurentexte, Aktenfunde) |
 | `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md` | Datierte Prüfberichte. Ihre Zeilennummern sind Stände, keine Wegweiser. |
 | `CREDITS.md` | Grafik-Lizenzen |
+| `LICENSE` | Code MIT, Grafik nicht gedeckt, Spielinhalte vorbehalten |
 
 Drei Regeln, die beim Mitarbeiten nicht optional sind: Jede Phasenüberschrift trägt `— ERLEDIGT` oder `— OFFEN`, nachgezogen im selben Commit. Jede Bauphase bekommt ein Phasendokument. Und es wird live verifiziert statt behauptet — kein „sollte funktionieren".
 
