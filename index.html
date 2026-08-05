@@ -4318,13 +4318,20 @@ function setzeKammerTueren(){
   // gesiegelte Weltgenerator-Strom darf hier nicht mitlaufen (Falle wie bei
   // auftragWuerfeln()). Eine Tür darf zugleich W4-Garantietür und
   // Adresskammer sein, deshalb erst hier, nach der Garantie oben.
-  if(vorgangAdressAkt()){
-    for(const id in ADRESS_ZEILEN){
-      const z = ADRESS_ZEILEN[id];
-      if(!z.biome || vorgangHat(id)) continue;
-      const kand = kammerTueren.filter(t => t.biome === z.biome);
-      if(kand.length) kand[Math.floor(Math.random() * kand.length)].adr = id;
-    }
+  if(vorgangAdressAkt()) markiereAdressTueren(kammerTueren);
+}
+
+// GW16: Die Markierung steht als eigene Funktion da, damit vorgangAssert() genau
+// den Code prueft, der auch im Spiel laeuft — keine Abschrift davon. Sie schreibt
+// ausschliesslich t.adr auf die uebergebene Liste, liest ADRESS_ZEILEN und
+// vorgangHat(), und ruft weder saveKladde() noch den gesiegelten Weltstrom.
+// Damit ist sie in einem Guard aufrufbar, der beim Laden laeuft.
+function markiereAdressTueren(tueren){
+  for(const id in ADRESS_ZEILEN){
+    const z = ADRESS_ZEILEN[id];
+    if(!z.biome || vorgangHat(id)) continue;
+    const kand = tueren.filter(t => t.biome === z.biome);
+    if(kand.length) kand[Math.floor(Math.random() * kand.length)].adr = id;
   }
 }
 
@@ -7342,6 +7349,10 @@ function rangAssert(){
   // amt.schichten wird gespiegelt und exakt wiederhergestellt, kein saveAmt() —
   // wörtlich das Idiom aus auftragAssertBrett().
   const echt = amt.schichten;
+  // GW26i: try/finally. Der Guard laeuft auf Skriptebene, nach loadAmt() und vor
+  // jedem Speichern. Wirft eine gerufene Funktion mitten im Sweep, blieb
+  // amt.schichten auf dem Simulationswert stehen und riss den Skriptrest mit.
+  try {
   let vorher = null;
   for(let s = 0; s <= 200; s++){
     amt.schichten = s;
@@ -7427,7 +7438,7 @@ function rangAssert(){
     amt.schichten = s;
     text(strip(rangZeremonieBlock()), 'Zeremonie-Block s='+s);
   }
-  amt.schichten = echt;
+  } finally { amt.schichten = echt; }
 
   console.assert(ok, 'W6 Rang: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
@@ -7776,6 +7787,7 @@ function vorgangAssert(){
   };
   const schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
         vorgangEcht = kladde.vorgang, bonusEcht = amt.bonusNachwachsen, craftsEcht = kladde.crafts;
+  try {   // GW26i: fuenf Spiegel, alle im finally
 
   // (1) Tabellenform: vier Zeilen, Zeilen 1-3 mit je einem der drei Biome,
   // Zeile 4 ohne Biom. Ankerprüfung auf den zusammengesetzten Wortlaut.
@@ -7898,7 +7910,44 @@ function vorgangAssert(){
   if(vorgangBestandBlock() !== '') fehler('vorgangBestandBlock() bei leerem Bestand nicht leer');
   kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
   text(strip(vorgangBestandBlock()), 'Bestandblock voll');
+
+  // (11) GW16: die Adresskammer-Markierung, auf einer Attrappenliste. Bis hierher
+  // war die gesamte W5-Verdrahtung von keinem Guard erfasst — die Abnahmezeilen
+  // zu Markierung und selbstheilendem Schild stuetzten sich auf eine einmalige
+  // Konsolensitzung, und W7 hat drawKammerTuer() seither wieder angefasst.
+  // Geprueft werden die Invarianten, die unabhaengig davon gelten, welche Tuer
+  // der Zufall trifft.
+  for(let maske = 0; maske < 16; maske++){
+    kladde.vorgang = {};
+    for(let z = 1; z <= 4; z++) if(maske & (1 << (z - 1))) kladde.vorgang[z] = true;
+    const attrappe = [];
+    for(const b of ['snow', 'grass', 'sand']) for(let i = 0; i < 2; i++) attrappe.push({biome:b, diff:3});
+    markiereAdressTueren(attrappe);
+    const proZeile = {};
+    for(const t of attrappe){
+      if(!t.adr) continue;
+      proZeile[t.adr] = (proZeile[t.adr] || 0) + 1;
+      const z = ADRESS_ZEILEN[t.adr];
+      if(!z) { fehler('Markierung mit unbekannter Adresszeile', t.adr); continue; }
+      if(z.biome !== t.biome) fehler('Adresszeile im falschen Biom markiert', t.adr, z.biome, t.biome);
+      if(vorgangHat(t.adr)) fehler('bereits gefundene Adresszeile erneut markiert', t.adr, maske);
+      // Das Sonderschild sondert genau dann, wenn die Zeile noch fehlt — die
+      // Selbstheilung aus dem Phasendokument. Auf einer markierten Tuer muss
+      // sie in dieser Maske also greifen.
+      if(!(t.adr && !vorgangHat(t.adr))) fehler('Sonderschild greift auf markierter Tuer nicht', t.adr, maske);
+    }
+    for(const id in ADRESS_ZEILEN){
+      const z = ADRESS_ZEILEN[id], soll = (z.biome && !vorgangHat(id)) ? 1 : 0;
+      if((proZeile[id] || 0) !== soll)
+        fehler('Markierungen je Adresszeile', id, 'ist', proZeile[id] || 0, 'soll', soll, 'maske', maske);
+    }
+  }
   kladde.vorgang = vorgangEcht;
+  } finally {
+    amt.schichten = schichtenEcht; CONFIG.schichtModus = modusEcht;
+    kladde.vorgang = vorgangEcht; amt.bonusNachwachsen = bonusEcht;
+    kladde.crafts = craftsEcht;
+  }
 
   console.assert(ok, 'W5 Vorgang: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
@@ -8149,6 +8198,7 @@ function auftragAssertBrett(){
 
   // (1) Alle Aktstände durchwürfeln, viele Läufe je Stand.
   const echt = amt.schichten, gesehenGesamt = {};
+  try {   // GW26i
   for(let sch = 0; sch <= 60; sch++){
     amt.schichten = sch;
     for(let n = 0; n < 40; n++){
@@ -8171,7 +8221,7 @@ function auftragAssertBrett(){
       if(liste[1].bm !== 2) fehler('Amtsleitungs-Bemerkung fehlt auf dem mittleren Aushang', sch);
     }
   }
-  amt.schichten = echt;
+  } finally { amt.schichten = echt; }
   for(const k in AUFTRAG_TYPEN) if(!gesehenGesamt[k]) fehler('Typ nie gewürfelt, toter Tabelleneintrag', k);
 
   console.assert(ok, 'W4: Aushang-Assertion fehlgeschlagen, siehe Konsole.');
