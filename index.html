@@ -3728,7 +3728,9 @@ const CONFIG = {
   kammerNachwachsen: 120,   // Sekunden, bis eine geleerte Kammer neu versiegelt ist
   schichtModus: true,       // Phase 4: Dienst nach Vorschrift. false = alte Todesregel (halbes HP, kein Reset)
   schichtDauer: 900,        // Sekunden pro Schicht (~15 Minuten)
-  goldUebertragAnteil: 0.5, // Anteil des Golds, der die Schicht überlebt
+  goldUebertragAnteil: 0.5, // Anteil des Golds, der am Gürtel die Schicht überlebt. Der Rest
+                            // ist kein Verlust, sondern der Zufluss der Amtskasse (endShift):
+                            // ein Regler, zwei Größen, die einander zu 100 Prozent ergänzen.
   zutatenMitnahmeBasis: 5,  // Grund-Kontingent mitnehmbarer Zutaten je Schicht, gezählt in Stücken (endShift teilt Stapel)
 };
 
@@ -7030,8 +7032,13 @@ function endShift(reason){
     carryPouch.push({noun:z.noun, adj:z.adj, count:take});
     rest -= take; eingezogen += (z.count - take);
   }
+  // F19: Die Amtskasse bekommt den einbehaltenen Rest, nicht ein zweites Mal denselben
+  // Übertrag. Vorher wurde carryGold doppelt verbucht — am Gürtel und auf der Bank —,
+  // womit 100 Prozent der Beute überlebten, obwohl der Regler 0.5 heißt. Die Summe der
+  // beiden Buchungen ist jetzt genau player.gold.
+  const abgabe = player.gold - carryGold;
   pendingCarryGold = carryGold; pendingCarryPouch = carryPouch;
-  amt.bankGold += carryGold; amt.schichten++;
+  amt.bankGold += abgabe; amt.schichten++;
 
   // Phase 5: Dienstzettel 'feierabend1' latcht hier (Auslöser = #overlay öffnet sich,
   // seine eigene Sperrzone), erscheint deshalb erst in der Folgeschicht. maxKillsSchicht
@@ -7067,7 +7074,7 @@ function endShift(reason){
       Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
       Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
       Überstunden: ${ueberstunden}s<br>${auftragBericht ? '      ' + auftragBericht + '<br>' : ''}
-      Beuteanteil nach Abzug: 💰 ${carryGold} (von ${player.gold})
+      Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse)
     </div>
     ${rangBerichtBlock()}
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
