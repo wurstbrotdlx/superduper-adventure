@@ -127,8 +127,8 @@ Optik: `cfnpc_chloe` (Chef_Chloe, wandert). Heimatanker: Kachel (10, 42).
 I. „Ich zähle mit, aber ich frage schon.“ (36)
 II. „Jetzt fragt endlich jemand mit mir.“ (35)
 III. „Ein leerer Stuhl. Genau mein Problem.“ (37)
-IV. „Ich habe nur gefragt, wer lesen kann.“ (37)
-V. „Vielleicht braucht er nur eine Antwort.“ (39)
+IV. „Fragen Sie Nörgel. Er kann das lesen.“ (37)   *(W5, `45912f6`: umformuliert, siehe `phase-w5-vorgang.md`. Vorher: „Ich habe nur gefragt, wer lesen kann.“)*
+V. „Ich komme mit. Ich habe ja gefragt.“ (35)   *(W5, `45912f6`. Vorher: „Vielleicht braucht er nur eine Antwort.“)*
 
 **Prüfnotiz:** kein Fund.
 
@@ -177,7 +177,7 @@ Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: 
 I. „Noch ein Formular, noch keine Antwort.“ (38)
 II. „Jetzt braucht auch Zwirn die Amtsleitung.“ (41)
 III. „Die Stelle ist leer, ich bin es nicht.“ (38)
-IV. „Niemand fragt mich. Jetzt fragen alle.“ (38)
+IV. „Gelesen und gezeichnet. Ich bin im Dienst.“ (42)   *(W5, `45912f6`. Vorher: „Niemand fragt mich. Jetzt fragen alle.“)*
 V. „Auch jetzt ist es nicht meine Zuständigkeit.“ (44)
 
 **Prüfnotiz:** kein Fund. Dass Nörgel die Dienstbericht-Bemerkungen schreibt (Kapitel 8, „Die Auflösung“), wird hier nicht ausgesprochen — das bleibt der Spielbeobachtung überlassen, kein Text erklärt es.
@@ -343,4 +343,8 @@ V. „Es wird still. Auffällig still hier.“ (36)
 
 ## Zusammenfassung Zeichendeckel-Nachweis
 
-Alle 11 Figuren × (6 Grundzeilenpaare + 5 Aktzeilen) plus Bramsches 8 Fragen/Antworten und 3 Abweisungen plus Lotts und Pahls je 21 Anlass-Zeilen (7 Anlässe × 3) wurden gegengezählt: kein `z1` über 48, kein `z2` über 32, keine Aktzeile über 44 Zeichen. Die Werte stehen in Klammern hinter jeder Zeile oben, zur Kontrolle beim Einbau in `knAssertCaps()`-Erweiterung.
+Alle 11 Figuren × (6 Grundzeilenpaare + 5 Aktzeilen) plus Bramsches 8 Fragen/Antworten und 3 Abweisungen plus Lotts und Pahls je 21 Anlass-Zeilen**paare** (7 Anlässe × 3 Paare = 42 Zeilen je Figur) wurden gegengezählt: kein `z1` über 48, kein `z2` über 32, keine Aktzeile über 44 Zeichen.
+
+*(Korrektur GW23: der Satz stimmte in zwei Punkten nicht. Erstens sind es Zeilen**paare**, also 84 Zeilen statt 42. Zweitens stehen die Klammerwerte **nicht** hinter jeder Zeile: 209 von 293 tragen einen, alle 84 Lott/Pahl-Anlasszeilen nicht. Die Zählung kann für diese 84 in der beschriebenen Form nicht stattgefunden haben. Sachlich halten sie den Deckel — unabhängig nachgerechnet, Maxima 40 und 32.)*
+
+*(Korrektur GW22: die dreistufige Prüfung galt unter der Bedingung „solange kein Text umformuliert wird“. W5 hat drei Aktzeilen umformuliert (siehe oben). Sie sind gegen Sperrvermerk und Formregeln nachgeprüft: sauber. Seit GW14 prüft `knAssertCaps()` beides ohnehin maschinell mit, die Bedingung hängt also nicht mehr an einer einmaligen Sitzung.)*

@@ -1,8 +1,8 @@
 ## W4: Schwarzes Brett — Dienstaufträge, drei je Schicht, einer wählbar — ERLEDIGT
 
-Umbau-Prompt zu Bauabschnitt W4 aus `superduper-weltbibel.md`, Kapitel 11 ("Dienstaufträge: der Schichtinhalt") und Kapitel 14. Anders als bei W2/W3 gab es keine fertige Inhaltslieferung: Kapitel 11 liefert einen Baukasten aus neun Auftragstypen mit Musterformulierungen, keine ausformulierten Sätze. Die Texte in `AUFTRAG_TYPEN` unten sind diese Phase selbst, dreistufig gegen Sperrvermerk, Humor-Grundgesetz, Formregeln und Zeichendeckel geprüft über `auftragAssertBrett()` (Abschnitt „Der Guard" unten), nicht in einer separaten Prüfsession.
+Umbau-Prompt zu Bauabschnitt W4 aus `superduper-weltbibel.md`, Kapitel 11 ("Dienstaufträge: der Schichtinhalt") und Kapitel 14. Anders als bei W2/W3 gab es keine fertige Inhaltslieferung: Kapitel 11 liefert einen Baukasten aus neun Auftragstypen mit Musterformulierungen, keine ausformulierten Sätze. Die Texte in `AUFTRAG_TYPEN` unten sind diese Phase selbst, gegen Sperrvermerk, Formregeln und Zeichendeckel geprüft über `auftragAssertBrett()` (Abschnitt „Der Guard" unten), nicht in einer separaten Prüfsession. *(Korrektur GW: das Humor-Grundgesetz aus Kapitel 13 prüft der Guard **nicht** — es ist maschinell nicht prüfbar. Diese Stufe ist Handlesung geblieben.)*
 
-Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Commit `3af7099` geprüft. Zeilennummern verschieben sich beim Arbeiten, die Bezeichner nicht: such nach dem Bezeichner, nimm die Zeile nur als Wegweiser.
+Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Commit `06c3456` geprüft. Zeilennummern verschieben sich beim Arbeiten, die Bezeichner nicht: such nach dem Bezeichner, nimm die Zeile nur als Wegweiser.
 
 ### Grundsatz: was diese Phase nicht ist
 
@@ -110,6 +110,8 @@ Muss nach `aktStand()` stehen (weiter oben im Skript): der Guard ruft sich beim 
 
 ### Der Trichter: `auftragEreignis()` und acht bestehende Fundstellen (`index.html:6829`)
 
+*(Korrektur GW: acht **Ereignisarten** an **neun** Aufrufstellen — `addZutat()` feuert auf beiden Return-Pfaden.)*
+
 ```js
 function auftragEreignis(was, info){
   if(!CONFIG.schichtModus) return;
@@ -155,11 +157,11 @@ Kein Ereignis erhöht einen Zähler, der anderswo schon existiert — dort ist d
 * Ein Auftrag pro Schicht: `auftragBrettSichern()` würfelt nur bei `brett.schicht !== amt.schichten`, `waehleAuftrag()` überschreibt statt anzuhängen, `endShift()` setzt `amt.auftrag = null`.
 * Erfüllung eindeutig prüfbar: jeder Typ hat genau ein `stand(a)` gegen genau ein `a.ziel`, live in der Amtsstube sichtbar.
 * Abbruch ohne Strafe: drei Wege, kein Abzug, kein Zähler, kein Sperrfenster (live geprüft).
-* Nie unerfüllbar: alle drei Weltgarantien live erzwungen und mehrfach geprüft (siehe oben), Roster- und Textprüfung zusätzlich über `auftragAssertBrett()` bei jedem Laden.
+* Nie unerfüllbar **im Sinne der Weltbibel** (kein Auftrag auf ein Monster, das im gewählten Biom nicht spawnt): die drei Weltgarantien sind live erzwungen, Roster- und Textprüfung laufen über `auftragAssertBrett()` bei jedem Laden. *(Korrektur GW2: die schärfere Lesart hielt nicht. `menge` verlangte ab Akt IV bis zu 17 Exemplare eines Typs, ein Biom trägt rund 15 bis 18 Spawns, und `auftragTypBevorzugen()` ersetzt nur den Typ, nie die Zahl. Das Ziel ist auf 11 gedeckelt. Drei Typen — `reise`, `beglaubigung`, `bilanz` — haben ohnehin keine harte Garantie, sondern eine Wahrscheinlichkeitsaussage.)*
 * Sperrvermerk: Guard sperrt Kesselgrammatik-Begriffe strukturell und textuell, Beglaubigung kennt nur zwei zulässige Auflagen.
 * Formregeln: Guard prüft Zeichendeckel, Gedankenstrich, Emoji auf jedem erzeugten Text.
-* `CONFIG.schichtModus = false` bricht nichts: drei Wächter (`auftragEreignis`, `auftragBrettSichern`, `auftragFensterBlock`) machen W4 vollständig inert.
-* Regressionsschutz unverletzt: keine Allokation je Frame im Trichterpfad (`auftragEreignis` ist ein Tabellen-Lookup plus höchstens ein Feld-Update), `saveAmt()` nur bei Auszahlung/Auswahl/Rückgabe, nie im laufenden Trichter selbst.
+* `CONFIG.schichtModus = false` bricht nichts: fünf Wächter (`auftragEreignis`, `auftragBrettSichern`, `auftragFensterBlock`, `auftragSchichtende`, `waehleAuftrag`) machen W4 inert. *(Korrektur GW5: es waren drei genannte, und drei Welteingriffe trugen gar keinen — `auftragTypBevorzugen()`, `auftragOrtBand()` und der Kammer-Garantieblock lasen `amt.auftrag` roh und lenkten Monstertyp, Monsterband und Türschwierigkeit auch im alten Modus. Nachgezogen.)*
+* Regressionsschutz unverletzt: keine Allokation je Frame im Trichterpfad (`auftragEreignis` ist ein Tabellen-Lookup plus höchstens ein Feld-Update), `saveAmt()` nur bei Auszahlung/Auswahl/Rückgabe/Brettsicherung, nie im laufenden Trichter selbst. *(Korrektur GW: vier Stellen, nicht drei. Und seit W7 steht `langEreignis()` als erste Zeile in `auftragEreignis()` — die Allokationsaussage gilt nur noch für den W4-Anteil, `langEreignis()` iteriert die Strangtabelle und kann `saveKladde()` auslösen.)*
 * Persistenz: Reload im Dorf hält Brett und Auswahl, Reload in der Schicht hält den Aushang, Fortschritt beginnt bei null (live geprüft, Abschnitt „Live geprüft").
 
 ## Bewusst offen für spätere Bauabschnitte
@@ -185,3 +187,11 @@ Node-Syntaxcheck (`node --check`) über den extrahierten Skriptblock nach jedem 
 * `CONFIG.schichtModus = false`: `auftragFensterBlock()` liefert `''` trotz gesetztem `amt.auftrag`, `auftragBrettSichern()`/`auftragEreignis()` greifen nicht.
 * Persistenz: `saveAmt()` mit gesetztem Brett/Auftrag/Zähler, Seiten-Reload, alle Werte identisch wiederhergestellt.
 * Konsole blieb über alle Prüfungen leer, keine einzige Exception.
+
+---
+
+## Nachtrag: bewusst offen gelassen
+
+* **Die Akt-III-Eskalation der Amtsleitungs-Bemerkung fehlt.** Kapitel 11 der Weltbibel sagt: „Der letzte Satz erscheint absichtlich ab Schicht 1 und **wird ab Akt III unerträglich**." Gebaut ist nur die feste Platzierung auf dem mittleren Aushang; die Eskalation gibt es nicht. Das ist eine Lücke gegenüber Kapitel 11, keine übersehene Zusage dieses Dokuments — hier festgehalten, damit sie nicht ein zweites Mal als Fund auftaucht.
+* **`amt.auftraegeErfuellt` ist unbenutzt geblieben.** Das Feld war als Erzählsignal für W5 gedacht. W5, W6 und W7 haben es nicht aufgegriffen; es wird geschrieben, gespeichert, geladen und nirgends gelesen. Entweder ein späterer Abschnitt greift es auf, oder es fällt weg — das ist eine offene Entscheidung, kein Fehler.
+

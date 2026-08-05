@@ -168,8 +168,8 @@ const DORF_FIGUREN = [
      'Ich zähle mit, aber ich frage schon.',
      'Jetzt fragt endlich jemand mit mir.',
      'Ein leerer Stuhl. Genau mein Problem.',
-     'Ich habe nur gefragt, wer lesen kann.',
-     'Vielleicht braucht er nur eine Antwort.',
+     'Fragen Sie Nörgel. Er kann das lesen.',        // W5 45912f6
+     'Ich komme mit. Ich habe ja gefragt.',          // W5 45912f6
    ]},
 
   {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:22, ty:41, opt:'wander', sheet:'fin',
@@ -202,7 +202,7 @@ const DORF_FIGUREN = [
      'Noch ein Formular, noch keine Antwort.',
      'Jetzt braucht auch Zwirn die Amtsleitung.',
      'Die Stelle ist leer, ich bin es nicht.',
-     'Niemand fragt mich. Jetzt fragen alle.',
+     'Gelesen und gezeichnet. Ich bin im Dienst.',   // W5 45912f6
      'Auch jetzt ist es nicht meine Zuständigkeit.',
    ]},
 
@@ -664,3 +664,22 @@ Node-Syntaxcheck (`node --check`) über den extrahierten Skriptblock, danach liv
 * `aktStand()` gegen `amt.schichten` 0/9/10/19/20/39/40/49/60 geprüft: liefert 1/1/2/2/3/4/5/5/5, exakt wie in Kapitel 9 vorgegeben.
 * **Ein Fund beim Einbau, sofort korrigiert:** `sc:PLAYER_SC*0.92` im ursprünglichen Spawn-Block hätte einen `ReferenceError` durch die Temporal Dead Zone ausgelöst (`genMap()` läuft vor der `PLAYER_SC`-Deklaration). Verschoben in `DRAW_NPC`, siehe Nachtrag oben. Alle anderen Blöcke liefen im ersten Anlauf fehlerfrei.
 * Bei der Live-Prüfung fiel auf, dass das automatisierte Browser-Tab als `document.hidden` läuft und `requestAnimationFrame` dadurch kaum tickt — reines Artefakt der Testumgebung, kein Spielfehler. Umgangen durch direkte Aufrufe von `scanAktion()`/`update()`/`render()` über die Konsole.
+
+
+---
+
+## Nachtrag: was seit W3 nachgezogen wurde
+
+*(GW12 und elf weitere „überholt"-Verdikte der Gegenprobe vom 2026-08-05. Der Mechanikteil oben beschreibt den Stand von `3af7099` und ist als solcher weiterhin lesbar — nur eben nicht mehr als Beschreibung des heutigen Codes.)*
+
+* **`npcCycle()` hat einen Vorlauf und einen Anhang.** Erste Anweisung ist `langAnsprechen(fig.key)` (W7) mit früher Rückkehr; der Modulo läuft über `fig.grund.concat(langZusatz())`, also `+ 2` statt `+ 1`. **Index 0 ist seit der Anrede-Phase die Anredezeile**, nicht die erste Grundzeile. Milbs Aktzeile erscheint deshalb beim achten `F`, nicht beim siebten.
+* **`npcSprechen()` schreibt in den Spielstand.** Über `langAnsprechen()` → `langEreignis()` → `saveKladde()`. Die Zusage „schreibt ausschließlich in die vorhandenen Blasenfelder" galt bei `3af7099` und gilt seit W7 nicht mehr. Wer `npcCycle()` anfasst, fasst den Fortschritt von sieben Langvorgängen an.
+* **Bramsche zählt statt zu schalten.** Aus `bramscheFragePending` (Boolean) ist `bramscheFragen` (Zähler) geworden; `startShift()` setzt ihn auf `1 + (langFertig('anlage3') ? 1 : 0)`. Ab `rangSchluessel()` (Schicht 55) entfällt die Abweisung ganz — stattdessen wird die Frage neu scharf gestellt und `npcCycle()` aufgerufen. „Eine Frage pro Schicht" gilt ab diesem Rang nicht mehr.
+* **`letzterAnlass` wird verbraucht.** Die Anrede-Phase nullt ihn nach der Ausgabe, damit der Hintermühl-Langvorgang überhaupt erreichbar ist. Der Chor kommentiert ein Ereignis also einmal, nicht dauerhaft. *(GW4: der Merker stand außerdem vor dem Ton-Gate und wurde bei geschlossenem Gate in jedem Frame neu gesetzt, was den Verbrauch aushebelte. Behoben.)*
+* **Drei Sitzungsvariablen, nicht zwei:** `letzterAnlass`, `bramscheFragen`, `bramscheLastAntwort`.
+* **`aktStand()` steht nicht mehr neben `nachSchicht()`,** sondern unter dem `amt`-Literal — W5 hat es wegen einer TDZ-Falle nach oben gezogen. Heute lesen es neun Stellen, nicht drei; die tragende Eigenschaft (alle Leser unterhalb der Deklaration) hält weiter.
+* **Drei Aktzeilen sind umformuliert** (Lisbeth IV/V, Nörgel IV, W5 `45912f6`). Der Codeblock weiter oben und `figuren-dorf.md` sind nachgezogen.
+* **`drawBubble()` alloziert doch etwas pro Frame:** zwei `ctx.measureText()`-Aufrufe je sichtbarer Blase, also bis zu 24 statt 2, seit es elf Blasen gleichzeitig geben kann. Keine JS-Objektallokation im Rumpf, aber die Formulierung „alloziert nichts" trug nie.
+* **`assertRigRegistrations()` deckte die drei gebackenen NPC-Sheets nicht ab** — es läuft vor `bakeAllNpcSheets()`. Seit GW26c läuft es ein zweites Mal danach.
+* **Der Zusatz „— deckt auch W3-Figuren ab"** im zitierten `placeMonsters()`-Kommentar existiert im Code nicht und hat nie existiert. Die Aussage stimmt trotzdem: `if(inVillageT(tx,ty)) continue;` hält das Dorf monsterfrei.
+* **`antworten[].frage`** (acht Strings) wird zur Laufzeit nie gelesen — reine Herkunftsdokumentation im Code.

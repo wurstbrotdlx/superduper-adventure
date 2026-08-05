@@ -4080,7 +4080,12 @@ function knRandnotiz(anlass){
 }
 
 // 18.5: Knöterich spricht immer vollständig, immer korrekt, immer inklusive
-// "Herr oder Frau" an. Jedes Mal. Deshalb zwei Anläufe statt einem: erst die
+// "Herr oder Frau" an. Jedes Mal. GEMESSEN wird die Vorschrift nicht erfuellt:
+// auf genau einem von 81 durchgerechneten Raengen erscheint "Herr oder Frau",
+// weil anredeFormen() die kuerzere Klammerform davorsetzt und der 44er-Deckel
+// ueberall sonst zuschlaegt. Das ist eine offene Entscheidung (Reihenfolge der
+// Sprossen drehen aendert den Klang des Spiels), kein uebersehener Fehler.
+// Drei Anlaeufe, nicht zwei, seit W7 die Giesskannen-Sprosse davorgesetzt hat:
 // Anrede samt Schichtzähler, dann die Anrede allein. Die zweite passt immer,
 // die längste Sprosse ohne Zähler ist 43 Zeichen lang — die alte Grundzeile
 // bleibt nur als dritter Boden stehen, erreicht wird sie nie.
@@ -4262,7 +4267,8 @@ const spielerTy = ()=> Math.floor(player.y / TS);
 // --- Türen in der Oberwelt --------------------------------------------------
 function wuerfleTuer(t, festDiff){
   t.diff = festDiff || rri(1, 5);   // W4: fester Wert erzwingt eine Kammergarantie, siehe setzeKammerTueren()
-  t.tier = clamp(t.diff - 1, 0, 4);   // Schild und Beute lesen dasselbe Feld
+  t.tier = clamp(t.diff - 1, 0, 4);   // Beute liest t.tier; das SCHILD liest seit W7 den
+                                      // abgeleiteten Anzeigewert aus langKammerWert()
   t.cd = 0;
   // R6/F31: Set-Wahl wie beim Betreten (diff 1-2 -> Set 0). Die Keys hängen allein
   // an diff und werden hier mitgewürfelt, statt in drawKammerTuer() pro Tür pro Frame.
@@ -8179,7 +8185,9 @@ auftragAssertBrett();
 // ===========================================================================
 
 // Ereignisarten, die langEreignis() kennt. Die ersten sieben sind die
-// bestehenden W4-Trichterarten, die letzten vier kommen mit W7 dazu.
+// bestehenden W4-Trichterarten, die letzten DREI kommen mit W7 dazu:
+//  ansprechen, jahresbonus, amtstube. 'schichtende' ist W4-Bestand und wird
+//  aus auftragSchichtende() gefeuert, nicht neu.
 const LANG_EREIGNISSE = ['kill','kammer','kessel','trank','zauber','ablage','zutat',
                          'ansprechen','schichtende','jahresbonus','amtstube'];
 
@@ -8454,6 +8462,11 @@ LANGVORGAENGE.gutachter = {
     const kam = roh & 15, gez = (roh >> 8) & 15;
     // Höchstens eine Kammer je Schicht, sonst wäre die Buchführung in einer
     // einzigen Schicht erledigt und "über mehrere Schichten" eine Behauptung.
+    // GW26f: langSchicht ist Laufzeitzustand und ueberlebt keinen Reload,
+    // waehrend kladde.lang persistiert — ein Neuladen mitten in der Schicht gibt
+    // also einen zweiten Kammer-Slot. Bewusst hingenommen, gedeckelt durch
+    // kam < 3. Gleiche Toleranz wie beim Nachbarstrang dorffest, die dort schon
+    // vermerkt war und hier fehlte.
     if(was === 'kammer' && gez >= 1 && kam < 3 && !langSchicht.gutachter){
       langSchicht.gutachter = true;
       return (kam + 1) | (gez << 8);
@@ -8612,7 +8625,9 @@ function langAssert(){
   // (2) Kein toter Strang: jeder muss über eine Ereignisfolge bis stufen
   // kommen. Der Guard ruft NIE langEreignis() — das würde saveKladde()
   // auslösen und den echten Spielstand überschreiben. Er ruft d.schritt()
-  // direkt, das ist eine reine Funktion, und schreibt auf den Spiegel.
+  // direkt und schreibt auf den Spiegel. ACHTUNG: rein sind diese schritt()
+  // nicht alle — dorffest und gutachter schreiben langSchicht. Punkt (3) unten
+  // setzt das Flag deshalb zurueck und prueft ueber langEreignis().
   // Dieselbe Warnung trägt vorgangAssert() für findeAdresszeile().
   CONFIG.schichtModus = true;
   const rohEnde = {};   // der erreichte Endzustand je Strang, für (10)

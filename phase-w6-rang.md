@@ -8,7 +8,7 @@ Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Co
 
 Kein neues `amt`-Feld, keine `loadAmt()`-Ladezeile, kein zweiter Zähler neben `amt.schichten`. Amtsbezeichnung, Laufbahngruppe und Dienstverhältnis sind **abgeleitet**, exakt wie der bestehende `aktStand()` — eine Beförderung ist kein Ereignis mit Nebenwirkung, sondern eine Eigenschaft der Zahl `amt.schichten`. Nichts wird angewendet, nichts gespeichert, jedes Neurendern ist von selbst idempotent. Das ist strikt anders als `showJahresgespraech()`, das mit `JAHRES_BONI[i].apply(); saveAmt();` einen echten Seiteneffekt hat.
 
-Die Anrede der Figuren (18.5) wird **nicht** gebaut: kein Titel wird an `DORF_FIGUREN`-Zeilen durchgereicht, keine der sieben Charakterisierungen. Das bleibt ausdrücklich offen. *(Nachtrag: mit `phase-anrede.md` nachgezogen. `rangName()` ist dort in `rangNameVon(i)` und einen Aufruf mit der eigenen Stufe zerlegt worden, weil 18.5 die Nachbarstufen braucht; die Aussage über `DORF_FIGUREN` gilt weiterhin — die Grundzeilen sind unangetastet, die Anrede ist ein eigener Zyklusschritt.)* Ebenso nicht gebaut: alles aus 18.9 bis 18.11 (Wappen, Ränge der Gegenseite, Titelmaschine) außer den zwei Wahlsprüchen als Zeilen in Urkunde/Ausweis — es entsteht keine Heraldik.
+Die Anrede der Figuren (18.5) wird **nicht** gebaut: kein Titel wird an `DORF_FIGUREN`-Zeilen durchgereicht, keine der sieben Charakterisierungen. Das bleibt ausdrücklich offen. *(Nachtrag: mit `phase-anrede.md` nachgezogen. `rangName()` ist dort in `rangNameVon(i)` und einen Aufruf mit der eigenen Stufe zerlegt worden, weil 18.5 die Nachbarstufen braucht; die Aussage über `DORF_FIGUREN` gilt weiterhin — die Grundzeilen sind unangetastet, die Anrede ist ein eigener Zyklusschritt.)* Ebenso nicht gebaut: alles aus 18.9 bis 18.11 (Wappen, Ränge der Gegenseite, Titelmaschine) — es entsteht keine Heraldik. *(Korrektur GW26a: hier stand, die zwei Wahlsprüche aus 18.9 seien als Zeilen in Urkunde/Ausweis gebaut. Sie existieren nicht, in keinem Commit; `RANG_URKUNDE` und `AUSWEIS_TEXTE` enthalten keinen. Das widersprach auch dem eigenen Abschnitt weiter unten.)*
 
 ### Die Formel, die alles trägt: `rangStufe()` neben `aktStand()` (`index.html:6750`ff.)
 
@@ -38,14 +38,14 @@ function rangName(){
 
 ### Insignien: `INSIGNIEN`, zwei mit echter Wirkung (`index.html:6751`ff.)
 
-Eine Wahrheitsquelle je Insignie, gleiches Prinzip wie beim Rang selbst — sonst die Falle aus Fund F1 (zwei Stellen behaupten dasselbe, driften auseinander). Sieben sind reine Deko-Namen, zwei wirken:
+Eine Wahrheitsquelle je Insignie, gleiches Prinzip wie beim Rang selbst — sonst die Falle aus Fund F1 (zwei Stellen behaupten dasselbe, driften auseinander). Sechs sind reine Deko-Namen, zwei tragen `wirkung:true`, und das Dienstsiegel hat seit W5 einen mechanischen Leser, ohne das Flag zu führen *(Korrektur GW: „sieben Deko" stimmt seit W5 nicht mehr; 18.7 markiert drei als echt)*:
 
 ```js
 {n:'Zeichnungsbefugnis', k:'zeichnung', wirkung:true, wenn:()=> rangGruppe() >= 2},   // ab Schicht 30
 {n:'Zweiter Schlüssel zur Registratur', k:'schluessel', wirkung:true, wenn:()=> rangGruppe() >= 3},   // ab Schicht 55
 ```
 
-Das Dienstsiegel hängt bewusst am bestehenden Jahresbonus `amt.bonusNachwachsen`, nicht am Rang, genau wie 18.7 es beschreibt. Zeichnungsbefugnis hat in W6 keinen mechanischen Verbraucher — ihr Verbraucher ist „Zustellen" in W5 — aber zwei echte Leser: die Insignienliste des Dienstausweises und der Guard, sonst wäre sie totes Prädikat.
+Das Dienstsiegel hängt bewusst am bestehenden Jahresbonus `amt.bonusNachwachsen`, nicht am Rang, genau wie 18.7 es beschreibt. Zeichnungsbefugnis hat in W6 keinen mechanischen Verbraucher — ihr Verbraucher ist „Zustellen" in W5 — aber Leser. *(Korrektur GW: zum Zeitpunkt von W6 hatte `rangZeichnungsbefugt()` **keinen** wirksamen Leser — die Insignienliste ruft `INSIGNIEN[i].wenn()` direkt, nicht das Prädikat, und der Guard-Vergleich war eine Tautologie. Heute liest `vorgangZustellbar()` es echt.)*
 
 ### Beförderungszeremonie: `rangZeremonieBlock()`, Einbau in `showJahresgespraech()`
 
@@ -104,7 +104,7 @@ TDZ-sicher: liest nur `amt` (weit oberhalb deklariert und geladen) und die Tabel
 * Der Audiokern — `ZONES.office`, Scheduler, `MUS` bleiben Zeile für Zeile unverändert.
 * `bakeHeroSheet()`, `SHEETS`, `loadAssets()` — das Lichtbild liest den vorhandenen Bake.
 * Der Renderloop — keine neue Zeichenstelle, keine Prädikatabfrage pro Frame.
-* `#ovPanel` — keine `id` im Inneren, weiter nur über `document.getElementById`. Die Zahl der Schreibstellen bleibt sieben, W6 erweitert zwei bestehende Templates.
+* `#ovPanel` — W6 erweitert zwei bestehende Templates und fügt keine Schreibstelle hinzu. *(Korrektur GW21: die Zahl war schon vor W6 **acht**, nicht sieben — W5 hatte sie erhöht und das auch dokumentiert. Und „keine `id` im Inneren" gilt für sieben der acht: `showLoading()` setzt `<p id="loadTxt">`. Funktional harmlos, der Leser prüft per Null-Guard, aber die Zusage ist absolut formuliert und wird von drei späteren Dokumenten zitiert.)*
 * `RANDNOTIZ.levelup` und Lotts `anlass.levelup` — geprüft: beide hängen am Charakter-Stufenaufstieg (`gainXP()` → `knRandnotiz('levelup')`), nicht an `amt.schichten`. Sie werden durch W6 richtiger, nicht falscher, und bleiben deshalb unverändert.
 * Die sieben wirkungslosen Insignien existieren nur als Namen — kein Sprite, kein Dorfobjekt, das ist Grafikarbeit.
 * Akt V, Zustellen, Ausfertigung — waren bei W6 noch nicht gebaut, Zeichnungsbefugnis war nur ein Prädikat mit zwei Lesern (Ausweis, Guard). W5 hat ihr jetzt einen dritten, mechanischen Leser gegeben: `vorgangZustellbar()` in `scanAktion()`. Ebenso bekam das Dienstsiegel in W5 einen `k:'siegel'`-Schlüssel (bewusst ohne `wirkung:true`, damit die Zwei-Insignien-Zählung hier unten unverändert bleibt) für `rangDienstsiegel()`, den Puzzleteil-1-Leser im Schlusspanel. Siehe `phase-w5-vorgang.md`.

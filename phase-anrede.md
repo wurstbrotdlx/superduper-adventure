@@ -40,7 +40,7 @@ if(rangNameVon(rangStufe()) !== name) fehler('rangNameVon() driftet von rangName
 
 Das eigentliche Problem dieser Phase ist kein erzählerisches, sondern ein Zeichendeckel. Der längste benannte Titel ist `Monstralminister ohne Geschäftsbereich` mit 38 Zeichen, `z1` deckelt bei 48, und jenseits Rang 18 hängt `roemisch()` unbegrenzt weiter an. Ein fester Rahmen wie `'Verzeihung, ' + t + '.'` ist mit solchen Titeln nicht baubar.
 
-Statt eines Rahmens gibt es fünf absteigende Fassungen und einen Versuch je Fassung. Das ist wörtlich das Muster des Rekord-Suffixes in `knBegruessungLine()`: bauen, Länge prüfen, sonst zurückfallen.
+Statt eines Rahmens gibt es eine Leiter absteigender Fassungen und einen Versuch je Fassung. *(Korrektur GW18: „fünf" stimmt nur nominell. Auf allen 19 benannten Rängen sind die letzten beiden Sprossen derselbe String, und die Sprosse `Herr oder Frau <Titel>` ist nie wählbar, weil die kürzere Klammerform davorsteht — effektiv drei. Die Dublette ist kein toter Code: ab Rang 19 trägt die Grundtitel-Sprosse die Kette, wenn die römische Ziffer den Titel über den Deckel schiebt.)* Das ist wörtlich das Muster des Rekord-Suffixes in `knBegruessungLine()`: bauen, Länge prüfen, sonst zurückfallen.
 
 ```js
 const ANREDE_HERR = 'Herr oder Frau ';
@@ -85,7 +85,7 @@ Acht stehen wörtlich in 18.5. Trepp, Milb und Fass kommen dort nicht vor, bekom
 
 Drei Sonderfälle verdienen eine Begründung.
 
-**Zwirn** liest `rangStufe() + 1`. Am oberen Ende geht die Schmeichelei nicht aus, weil `roemisch()` weiterzählt: aus `… II` wird `… III`. Erst wenn beide Fassungen auf die Grundtitel-Sprosse zurückfallen, legen sie sich zusammen; das passiert jenseits Schicht 200 und ist hingenommen, nicht behoben. `anredeAssert()` prüft die Schmeichelei deshalb nur, solange es über dem Spieler einen benannten Rang gibt.
+**Zwirn** liest `rangStufe() + 1`. Am oberen Ende geht die Schmeichelei nicht aus, weil `roemisch()` weiterzählt: aus `… II` wird `… III`. Erst wenn beide Fassungen auf die Grundtitel-Sprosse zurückfallen, legen sie sich zusammen; das passiert erst bei Schicht 1520 und ist hingenommen, nicht behoben. *(Korrektur GW: „jenseits Schicht 200" war um Faktor 7,6 daneben; der Guard-Kommentar nannte sogar „ab Schicht 90+".)* `anredeAssert()` prüft die Schmeichelei deshalb nur, solange es über dem Spieler einen benannten Rang gibt.
 
 **Bramsche** liest die Schriftform vor. Hat der Deckel oder die Paarform die Klammer weggenommen, sagt sie stattdessen, dass es genau so geschrieben steht. Sie liest immer, was dasteht, und das ist ebenfalls Charakter, kein Rückfall.
 
@@ -93,7 +93,7 @@ Drei Sonderfälle verdienen eine Begründung.
 
 ### Der Eingriff: `npcCycle()`
 
-Der Eingriff sitzt in `npcCycle()`, nicht in `npcSprechen()`. Damit bleiben die beiden Sonderpfade — Bramsches Frage/Antwort/Abweisung und der Lott/Pahl-Anlasschor — **per Konstruktion** unberührt: sie erreichen `npcCycle()` gar nicht erst, und es braucht keine einzige Abfrage, die sie ausnimmt.
+Der Eingriff sitzt in `npcCycle()`, nicht in `npcSprechen()`. Damit bleiben die beiden Sonderpfade — Bramsches Frage/Antwort/Abweisung und der Lott/Pahl-Anlasschor — unberührt — mit **einer Ausnahme**: der Bramsche-Zweig ruft `npcCycle()` selbst auf, sobald `rangSchluessel()` greift (ab Schicht 55), und dort ersetzt die Anredezeile die frühere Grundzeile. *(Korrektur GW11: „per Konstruktion, sie erreichen `npcCycle()` gar nicht erst" war schon bei Abfassung falsch — der Zweig stand bereits im Code. Dass die Live-Prüfung eine Abweisung sah, beweist, dass sie unter Schicht 55 lief und diesen Pfad nie berührt hat. Der Lott/Pahl-Pfad ist ebenfalls nicht unberührt: Fund A ändert ihn direkt.)*
 
 ```js
 function npcCycle(n, fig){
@@ -187,3 +187,23 @@ Server auf Port 8378 über das Browser-Pane, `index.html` im Wurzelverzeichnis, 
 * Lisbeths fünf Varianten über die Schichten 1 bis 6 durchgezählt, sie wechseln je Schicht und wiederholen sich erst nach fünf.
 * Sichtprüfung im Canvas: Bramsches Anredeblase steht vollständig im Kasten, kein Überlauf über den Rahmen. `drawBubble()` bricht nicht um, deshalb ist der Guard und nicht das Auge der Beweis — die Sichtprüfung bestätigt nur, dass die gemessene Länge auch der gezeichneten entspricht.
 * Die Konsole blieb über alle Prüfungen hinweg leer.
+
+
+---
+
+## Nachtrag: was W7 an dieser Phase verändert hat
+
+*(Sechs „überholt"-Verdikte der Gegenprobe vom 2026-08-05.)*
+
+* **`knBegruessungLine()` hat drei Anläufe, nicht zwei.** W7 hat die Gießkannen-Sprosse als eigene erste Sprosse davorgesetzt. Der Codekommentar sagte weiterhin „zwei Anläufe"; korrigiert.
+* **Der Selbstaufruf von `anredeAssert()` steht unten hinter `langAssert();`,** nicht unmittelbar hinter dem Rangblock. `knBegruessungLine()` liest seit W7 `langFertig()`, und von der alten Stelle aus wäre das ein TDZ-ReferenceError. Derselbe Umzug betraf `vorgangAssert()`.
+* **Ein dritter Spiegel.** Der Guard spiegelt neben `amt.schichten` und `kn.counters.maxKillsSchicht` auch `kladde.lang` — und seit GW6 zusätzlich `CONFIG.schichtModus`. Alle vier stehen jetzt in einem `try/finally`.
+* **`npcCycle()` kann die Anrede überspringen.** Läuft ein Langvorgang, kehrt `langAnsprechen()` früh zurück, ohne den Zeiger zu bewegen; bei Nörgel schieben sich `langZusatz()`-Zeilen zwischen Grund- und Aktzeile. „Sechs Grundzeilen und Aktzeile unverändert danach, in unveränderter Reihenfolge" gilt so nicht mehr.
+* **`knBegruessungLine()` hat zwei Aufrufer,** nicht einen: `startShift()` und `anredeAssert()` selbst. Das galt schon bei Abfassung und ist der Grund, warum der Selbstaufruf wandern musste.
+* **Vier der elf Figuren sprechen den Spieler vorschriftsgemäß ohne Titel an** (Zapf „Chef.", Lott und Pahl „Der Neue.", Lisbeth fragt nach dem Namen). Die Abnahmezeile „alle elf sprechen mit Titel an" war zu absolut formuliert.
+
+## Bewusst offen gelassen (Nachtrag)
+
+* **Das Rekord-Suffix ist fast unsichtbar geworden.** Sein Code ist unverändert, aber die längere Anredezeile hat seine Sichtbarkeit von rund 190 auf rund 30 Schichten gedrückt. Seit GW19 prüft `anredeAssert()`, dass es überhaupt noch irgendwo passt.
+* **Rangstufe 0 bekommt die Vollform nicht.** `Herr oder Frau Monsterangelegenheitenanwärter(in).` ist 50 Zeichen und bricht den 48er-Deckel um zwei. Betrifft die Schichten 1 bis 4 und Pommers Antragstitel dauerhaft.
+* **Knöterichs „Herr oder Frau" erscheint auf genau einem von 81 gemessenen Rängen** (Rang 11). Die Sprossenleiter setzt die kürzere Klammerform davor, und der 44er-Deckel schlägt überall sonst zu. Ob die Reihenfolge gedreht wird, ist eine Entscheidung über den Klang des Spiels, keine Korrektur — siehe GW7 im Gegenprobe-Bericht.

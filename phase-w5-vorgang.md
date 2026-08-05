@@ -183,13 +183,15 @@ function zustellen(){
 2. Die vier Puzzleteile (`VORGANG_PUZZLE`) plus „Der Vorgang 1 wird geschlossen."
 3. Abspann als Scrollblock, `location.reload()`.
 
-**Fehlende Puzzleteile blockieren nie**, der Text passt sich an (`p.frei() ? p.text : p.sonst`). Teil 1 (Der Stift) ist faktisch nie leer: `JAHRES_BONI[3]` (Dienstsiegel) fällt deterministisch bei Schicht 40, dem Beginn von Akt V. Teil 3 (dreifache Ausfertigung) liest `kladde.crafts > 0`. Teile 2 und 4 (Zeuge, Gegenzeichnung) sind reiner Text ohne Bedingung — die eigene Zeichnungsbefugnis reicht für die Gegenzeichnung ausdrücklich nicht, das übernimmt Sturz.
+**Fehlende Puzzleteile blockieren nie**, der Text passt sich an (`p.frei() ? p.text : p.sonst`). Teil 1 (Der Stift) **kann im gesamten Akt IV leer sein**: `JAHRES_BONI[3]` (Dienstsiegel) fällt erst bei Schicht 40, „Zustellen" geht aber schon ab Schicht 30. *(Korrektur GW10: hier stand „faktisch nie leer". Im Fenster 30 bis 39 — genau dem Akt, in dem die Ausfertigung eingesammelt wird — greift die Trepp-Bleistift-Fassung, und der Kern-Callback aus Kapitel 9 („hat es nie benutzt") bleibt auf dem schnellsten legalen Weg ungesehen.)* Teil 3 (dreifache Ausfertigung) liest `kladde.crafts > 0`. Teile 2 und 4 (Zeuge, Gegenzeichnung) sind reiner Text ohne Bedingung — die eigene Zeichnungsbefugnis reicht für die Gegenzeichnung ausdrücklich nicht, das übernimmt Sturz.
 
 Für Teil 1 eine Wahrheitsquelle: `INSIGNIEN` bekam `k:'siegel'` am bestehenden Dienstsiegel-Eintrag, bewusst **ohne** `wirkung:true` — `rangAssert()` zählt hart genau zwei wirkende Insignien (Zeichnungsbefugnis, Registraturschlüssel), das bleibt W6. `rangDienstsiegel()` ist die neue, einzige Leserstelle.
 
 Der vierte Takt der Amtshymne bleibt Text, aus demselben Grund wie in W6: `MUS` hat keine Takt-/Stop-API. Der Abspann trägt die Zeile „Der Amtsmarsch läuft heute einmal ganz durch. Niemand ruft dazwischen." als Callback zur W6-Zeremonie, ohne Audioeingriff außer dem bestehenden `MUS.goto('office')`.
 
-### Der Guard: `vorgangAssert()` (direkt hinter `rangAssert();`)
+### Der Guard: `vorgangAssert()` (Selbstaufruf hinter `langAssert();`)
+
+*(Korrektur GW: bei `45912f6` stand er direkt hinter `rangAssert();`. W7 hat ihn nach unten verschoben, weil `vorgangPanelHtml()` seither `langFertig()` liest — von der alten Stelle aus ein TDZ-ReferenceError. Der Grund steht im Code an der Definition.)*
 
 Bauform wörtlich wie `rangAssert()`. Zehn Prüfblöcke: Tabellenform der vier Adresszeilen (Biom-Zuordnung, Ankerprüfung auf `VORGANG_ANSCHRIFT`), Vollständigkeit von `SERIE_AKT` gegen die tatsächlich in `BLAETTER` vorkommenden Serien, Gatter-Sweep über `amt.schichten` 0-60 (nie ein Rücksprung, Schwellen exakt bei 10/20/30/40), der Abnahmesatz mit gespiegeltem `schichtModus=false`, Bestandsprädikate über alle 16 Teilmengen von `kladde.vorgang` (ohne `findeAdresszeile()` aufzurufen — die schriebe `saveKladde()` und überschriebe den echten Stand), W6-Kopplung (`INSIGNIE.siegel`, `rangDienstsiegel()`, `rangZeichnungsbefugt()` exakt ab Schicht 30), das Kreuzprodukt Ausfertigung × Zeichnungsbefugnis (genau eine von vier Kombinationen zustellbar), die drei Aktzeilen-Anker, Formregeln/Sperrvermerk über jede neue Tabelle, und zuletzt die tatsächlich gerenderten Blöcke HTML-gestrippt (`vorgangJahresBlock()` für zehn Schichtwerte, alle drei Schlusspanel-Schritte inklusive beider Fassungen der bedingten Puzzleteile, `vorgangBestandBlock()` leer und voll).
 
@@ -197,7 +199,7 @@ Alle Spiegel (`amt.schichten`, `CONFIG.schichtModus`, `kladde.vorgang`, `amt.bon
 
 ## Was in W5 ausdrücklich nicht angefasst wird
 
-* `killMon()` und die bestehende Siegweiche (`m.def.boss && !kammer` → `winGame()`) — bleiben Zeile für Zeile unverändert, der Kampf-Tod-Ausgang existiert weiter parallel zu Zustellen.
+* Die bestehende **Siegweiche** in `killMon()` (`m.def.boss && !kammer` → `winGame()`) — bleibt Zeile für Zeile unverändert (byte-identisch gegen `ad72e37` geprüft), *(Korrektur GW9: hier stand „`killMon()` und die Siegweiche". `killMon()` selbst wurde in W5 sehr wohl angefasst — zwei Zeilen geändert, vier plus Kommentar hinzugefügt; dieses Dokument beschreibt den Einbau neunzig Zeilen weiter oben selbst.)* der Kampf-Tod-Ausgang existiert weiter parallel zu Zustellen.
 * Die Horde-Spawner-Logik selbst (`monsters.length < 130 && (!boss || boss.dead)`) — pausiert bereits, solange der Boss lebt, `zustellen()` nutzt nur den `state`-Wechsel.
 * `blaetterAssert()`, `BLAETTER`, `BLAETTER_KEYS`, die Zählzeile „N von 48" — die vier Adresszeilen laufen über einen eigenen Bestand.
 * Die Anrede der Figuren (18.5) — bleibt offen, wie in W6 vermerkt.
@@ -206,7 +208,7 @@ Alle Spiegel (`amt.schichten`, `CONFIG.schichtModus`, `kladde.vorgang`, `amt.bon
 
 ## Abnahme W5
 
-* Aktstand bleibt abgeleitet über `aktStand()`, keine zweite Wahrheitsquelle — `vorgangAssert()` prüft das über den gesamten Gatter-Sweep.
+* Aktstand bleibt abgeleitet über `aktStand()`, keine zweite Wahrheitsquelle. *(Korrektur GW: der Gatter-Sweep prüft `serieFrei()` und beweist das **nicht** — er liefe unverändert durch, wenn daneben ein `amt.akt` gepflegt würde. Die Aussage stimmt, der Beleg trug nicht.)*
 * Serien C-F schalten in Biom-Reihenfolge über Akt 2-5 frei, A/B bleiben ungegated — live am Sweep 0/9/10/19/20/29/30/39/40/50 bestätigt.
 * `CONFIG.schichtModus = false` bricht nichts: alle Serien bleiben offen, Adresskammern werden nicht markiert, `vorgangZustellbar()` bleibt falsch — live geprüft.
 * Vier Adresszeilen aus drei Sonderkammern (je ein Biom) plus Ablage-V-Drop, garantiert statt gewürfelt, Sonderschild selbstheilend nach dem Fund.
@@ -239,3 +241,22 @@ Node-Syntaxcheck nach jedem Bauschritt, danach live im Browser (`preview_start` 
 * `update(0.5)` während `state==='zustellung'`: `monsters.length` und `boss.hp` unverändert — der Kampf ist nachweislich eingefroren, nicht nur pausiert per Konvention.
 * Abnahme-Gegenprobe `schichtModus=false`: alle Serien frei, `vorgangAdressAkt()` falsch, unabhängig von `amt.schichten`.
 * Konsole blieb über alle Prüfungen leer, keine einzige Exception.
+
+---
+
+## Nachtrag: Korrektur zur Weltbibel, vollständig
+
+*(GW26e. Der Abschnitt oben deklarierte nur eine der drei Änderungen, die `45912f6` an `superduper-weltbibel.md` vorgenommen hat. Wo die Soll-Autorität im selben Commit an den Bau angepasst wird, kann sie den Bau nicht mehr widerlegen — deshalb muss die Liste vollständig sein.)*
+
+* **Kapitel 9** („Vier Kammern, vier Bereiche, ein Blatt pro Kammer") wurde auf drei Sonderkammern plus Ablage V umgeschrieben. Im Fließtext oben begründet, im Korrekturabschnitt nicht deklariert.
+* **Kapitel 3, „Kammer-Sonderfall"** wurde neu gefasst („es gibt genau eine je Biom, und nur in Akt IV"). Nirgends deklariert.
+* **Kapitel 14**, Statusmarker — erwartbar und unstrittig.
+
+## Nachtrag: was der Guard nicht deckt
+
+*(GW16. Die Abnahmezeilen zu garantiertem Drop, selbstheilendem Schild, den vier Randbedingungen von „Zustellen" und dem eingefrorenen Kampf stützen sich weiterhin auf eine einmalige Konsolensitzung.)*
+
+`vorgangAssert()` enthält keinen der folgenden Bezeichner: `setzeKammerTueren`, `findeAdresszeile`, `drawKammerTuer`, `truheOeffnen`, `killMon`, `scanAktion`, `zustellen`. Die gesamte W5-Verdrahtung ist damit unasserted, und W7 hat `drawKammerTuer` und `renderBlaetter` seither bereits wieder angefasst, ohne dass sich etwas gemeldet hätte.
+
+Ein Guard-Block dafür ist **bewusst nicht** nachgereicht worden: `findeAdresszeile()` ruft `saveKladde()` und `setzeKammerTueren()` würfelt aus dem gesiegelten Weltstrom — beides verbietet sich in einem Guard, der beim Laden läuft. Eine Prüfung, die nur die reinen Prädikate nachrechnet, sähe nach Abdeckung aus und wäre keine. Der ehrliche Zwischenstand ist dieser Absatz.
+
