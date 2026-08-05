@@ -3189,15 +3189,21 @@ const BIOM_AMT = {
 // Bewusst TDZ-sicher: liest ausschließlich amt.auftrag und BIOME_MOBS, nie AUFTRAG_TYPEN —
 // placeMonsters() läuft schon beim Skriptstart, lange vor der Tabelle weiter unten.
 function auftragTypBevorzugen(typ, biome){
-  const a = amt.auftrag;
-  if(!a || auftragSoll <= 0) return typ;
+  // GW5: auftragSoll ZUERST. Der Zähler steht oben bei den Modulvariablen und ist
+  // beim Skriptstart 0 — erst startShift() setzt ihn, und das läuft lange nach
+  // CONFIG. Damit ist der CONFIG-Zugriff unten aus dem Skriptstart-Aufruf von
+  // placeMonsters() heraus unerreichbar und die Funktion bleibt TDZ-sicher.
+  if(auftragSoll <= 0) return typ;
+  const a = CONFIG.schichtModus ? amt.auftrag : null;   // Inertheit, Muster auftragEreignis()
+  if(!a) return typ;
   if(a.typ !== 'menge' && a.typ !== 'sammlung') return typ;
   if(!BIOME_MOBS[biome] || BIOME_MOBS[biome].indexOf(a.par) < 0) return typ;
   auftragSoll--; return a.par;
 }
 function auftragOrtBand(){
-  const a = amt.auftrag;
-  if(!a || a.typ !== 'ort' || auftragOrtSoll <= 0) return null;
+  if(auftragOrtSoll <= 0) return null;                  // GW5: TDZ-sicher, siehe oben
+  const a = CONFIG.schichtModus ? amt.auftrag : null;
+  if(!a || a.typ !== 'ort') return null;
   return a.par === 'snow' ? [4,25] : a.par === 'sand' ? [55, MH-5] : [26,54];
 }
 
@@ -3719,7 +3725,7 @@ const AMT_KEY = 'sda_amt_v1';
     const raw = localStorage.getItem(AMT_KEY); if(!raw) return;
     const o = JSON.parse(raw);
     if(typeof o.bankGold === 'number') amt.bankGold = o.bankGold;
-    if(typeof o.schichten === 'number') amt.schichten = o.schichten;
+    if(typeof o.schichten === 'number') amt.schichten = Math.max(0, o.schichten | 0);   // GW3
     if(o.ausbauten) Object.assign(amt.ausbauten, o.ausbauten);
     if(typeof o.bonusManaRegen === 'number') amt.bonusManaRegen = o.bonusManaRegen;
     if(typeof o.bonusSpeed === 'number') amt.bonusSpeed = o.bonusSpeed;
@@ -4024,9 +4030,16 @@ function knShowLineGated(anlass, line){
   return true;
 }
 function knRandnotiz(anlass){
-  letzterAnlass = anlass;   // W3: Lott/Pahl kommentieren das, unabhängig von Knöterichs eigenen Gates
   const pool = RANDNOTIZ[anlass]; if(!pool || !pool.length) return false;
   if(!knLineErlaubt(anlass)) return false;   // Gates vor Pool-Auswahl, hurtMon ist Hot Path
+  // GW4: Der Merker steht HINTER dem Gate. Vorher stand er in der ersten Zeile,
+  // "unabhängig von Knöterichs Gates" — mit der Folge, dass knTick() ihn bei
+  // geschlossenem Gate in JEDEM Frame neu setzte (der Merker knIdleNotizDone
+  // wird nur im Erfolgsfall gesetzt). Auf den Tonstellungen "Dienstlich" und
+  // "Schweigt" war der Verbrauch in npcSprechen() damit dauerhaft ausgehebelt:
+  // Lott und Pahl erreichten npcCycle() nie, und der Langvorgang Hintermühl
+  // hing fest, weil langAnsprechen() nur von dort gerufen wird.
+  letzterAnlass = anlass;   // W3: Lott/Pahl kommentieren, was Knöterich gerade bemerkt hat
   let line = pool[Math.floor(Math.random()*pool.length)];
   if(pool.length > 1){ let guard = 0; while(line === knRandLastLine[anlass] && guard++ < 8) line = pool[Math.floor(Math.random()*pool.length)]; }
   if(knShowLineGated(anlass, line)){ knRandLastLine[anlass] = line; return true; }
@@ -4249,7 +4262,7 @@ function setzeKammerTueren(){
   // Deshalb wird die höchste gewürfelte Tür notfalls auf das Ziel hochgesetzt.
   // TDZ-sicher (nur amt.auftrag), weil setzeKammerTueren() auch beim Skriptstart
   // läuft, lange vor AUFTRAG_TYPEN weiter unten.
-  const auftragK = amt.auftrag;
+  const auftragK = CONFIG.schichtModus ? amt.auftrag : null;   // GW5
   if(auftragK && auftragK.typ === 'kammer' && kammerTueren.length){
     let best = kammerTueren[0];
     for(const d of kammerTueren) if(d.diff > best.diff) best = d;
@@ -6929,7 +6942,9 @@ function startShift(){
 
   shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0;
   shiftKillsByType = {}; shiftKillsTotal = 0;
-  auftragStand = 0; auftragVerletzt = false; auftragFertig = false;   // W4
+  auftragStand = 0; auftragVerletzt = false;                          // W4
+  auftragFertig = !!(amt.auftrag && amt.auftrag.bezahlt);             // GW1: bezahlt bleibt bezahlt
+  letzterAnlass = null;                                               // GW4: kein Anlass über den Schichtwechsel
   langSchicht = {};                                                   // W7: Einmal-je-Schicht-Merker
 
   document.getElementById('overlay').style.display = 'none'; MUS.muffle(false);
@@ -7067,7 +7082,11 @@ const ROEM = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],
 function roemisch(n){ let r = '', v = Math.max(1, n|0); for(const [w,z] of ROEM) while(v >= w){ r += z; v -= w; } return r; }
 
 const rangStufe = () => Math.floor(amt.schichten / 5);
-const rangDef   = () => RAENGE[Math.min(rangStufe(), RAENGE.length - 1)];
+// GW3: beidseitig klemmen. rangNameVon() klemmt nach unten, rangDef() klemmte
+// nur nach oben — ein negativer amt.schichten aus einem manipulierten Spielstand
+// lieferte undefined, und weil rangAssert() auf Skriptebene läuft, riss der
+// TypeError das gesamte Inline-Skript beim Laden mit.
+const rangDef   = () => RAENGE[Math.max(0, Math.min(rangStufe(), RAENGE.length - 1))];
 // rangNameVon() ist die Wahrheitsquelle, rangName() nur der Aufruf mit der
 // eigenen Stufe. 18.5 braucht die Nachbarstufen: Zwirn schmeichelt einen Rang
 // zu hoch, Milb stuft einen zu niedrig ein. Eine Rechnung, kein zweiter Ort.
@@ -7461,7 +7480,12 @@ function anredeAssert(){
   // (4) Knöterichs Begrüßung, Einzeiler-Deckel 44, über dieselbe Schichtreihe
   // und beide Rekord-Zustände. Steht hier statt in knAssertCaps(), s. Kommentar
   // dort. kn.counters wird gespiegelt und exakt zurückgesetzt, kein saveKn().
-  const rekEcht = kn.counters.maxKillsSchicht, langEcht = kladde.lang;
+  // GW6: schichtModus wird für den Sweep erzwungen. Seit langFertig() den Modus
+  // mitliest, wäre die Gießkannen-Wärme bei schichtModus=false unsichtbar und
+  // die warmGesehen-Prüfung unten liefe grundlos rot. Muster aus vorgangAssert().
+  const rekEcht = kn.counters.maxKillsSchicht, langEcht = kladde.lang,
+        modusEcht = CONFIG.schichtModus;
+  CONFIG.schichtModus = true;
   let warmGesehen = false;
   for(const rek of [0, 99]) for(const giess of [false, true]){
     kn.counters.maxKillsSchicht = rek;
@@ -7479,6 +7503,7 @@ function anredeAssert(){
   // sonst ist sie gebaut und unerreichbar.
   if(!warmGesehen) fehler('Die Gießkannen-Wärme passt auf keinem Rang unter den Deckel');
   kn.counters.maxKillsSchicht = rekEcht; kladde.lang = langEcht;
+  CONFIG.schichtModus = modusEcht;
   amt.schichten = echt;
 
   console.assert(ok, 'Anrede 18.5: Assertion fehlgeschlagen, siehe Konsole.');
@@ -7831,12 +7856,16 @@ const AUFTRAG_BEMERKUNGEN = [
 const AUFTRAG_TYPEN = {
 
   menge: {
+    // GW2: Der Deckel 11 ist eine Weltgrenze, keine Balance-Setzung.
+    // auftragTypBevorzugen() ersetzt nur den TYP eines ohnehin gesetzten
+    // Monsters, nie deren ZAHL. Ein Biom trägt rund 15 bis 18 Spawns, nach
+    // Ablehnungen weniger — ab ziel 15 wäre der Aushang unerfüllbar.
     wuerfle:(st,stufe)=>({par: AUFTRAG_MOBS[rri(0, AUFTRAG_MOBS.length-1)],
-                          ziel: st===0 ? 4+stufe : 9+stufe*2}),
+                          ziel: st===0 ? 4+stufe : Math.min(11, 9+stufe*2)}),
     titel: a => `Vorgangslage ${BIOM_AMT[AUFTRAG_BIOM[a.par]].nom}`,
     satz:  a => `${MONDEF[a.par].name} (${MONDEF[a.par].art}), ${a.ziel} Stück.`,
     stand: a => shiftKillsByType[a.par] || 0,
-    sofort:true, pruefePar: a => AUFTRAG_MOBS.indexOf(a.par) >= 0 && a.ziel > 0},
+    sofort:true, pruefePar: a => AUFTRAG_MOBS.indexOf(a.par) >= 0 && a.ziel > 0 && a.ziel <= 11},
 
   ort: {
     wuerfle:(st,stufe)=>({par: ['snow','grass','sand'][rri(0,2)], ziel: 8+stufe*2}),
@@ -8341,8 +8370,12 @@ const langKammerWert = t => (!CONFIG.schichtModus || langFertig('gutachter')) ? 
 
 const langRoh    = k => kladde.lang[k] | 0;
 const langStufe  = k => { const d = LANGVORGAENGE[k]; return d.stufe ? d.stufe(langRoh(k)) : langRoh(k); };
-const langFertig = k => langStufe(k) >= LANGVORGAENGE[k].stufen;
-const langLaeuft = k => LANGVORGAENGE[k].wenn() && !langFertig(k);
+// GW6: Inertheit ist Ladeseite, nicht nur Schreibseite. langEreignis() schreibt
+// bei schichtModus=false nichts, aber loadKladde() lädt kladde.lang unbedingt —
+// ein Spielstand aus dem Schichtmodus liess deshalb Abspann-Absatz, Nörgels
+// Zusatzzeilen und die Gießkannen-Wärme auch im alten Modus erscheinen.
+const langFertig = k => CONFIG.schichtModus && langStufe(k) >= LANGVORGAENGE[k].stufen;
+const langLaeuft = k => CONFIG.schichtModus && LANGVORGAENGE[k].wenn() && !langFertig(k);
 
 // Der Trichter. Hängt an auftragEreignis(), deckt damit alle acht bestehenden
 // Fundstellen mit einer Zeile ab. Bewusst kein CFX.schweigen-Guard, gleiche
@@ -8394,6 +8427,7 @@ function langAnsprechen(key){
 // Zusätzliche Grundzeilen aus fortgeschrittenen Strängen. Sie hängen sich hinten
 // an fig.grund an, statt eine der sechs zu ersetzen.
 function langZusatz(key){
+  if(!CONFIG.schichtModus) return [];   // GW6
   let out = [];
   for(const k in LANGVORGAENGE){
     const d = LANGVORGAENGE[k];
@@ -8443,6 +8477,10 @@ function langAssert(){
   // Spiegel. Alles wird am Ende exakt zurückgesetzt, ohne saveAmt()/saveKladde().
   const langEcht = kladde.lang, schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
         flagsEcht = langSchicht, manaEcht = amt.bonusManaRegen, vorgangEcht = kladde.vorgang;
+  // GW6: alle Punkte außer (5) prüfen die schichtModus=true-Semantik. Seit
+  // langFertig()/langLaeuft() den Modus mitlesen, muss er dafür gesetzt sein,
+  // sonst liefe der Bramsche-Punkt (7) bei schichtModus=false grundlos rot.
+  CONFIG.schichtModus = true;
 
   // (1) Tabellenform.
   for(const k in LANGVORGAENGE){
@@ -8616,6 +8654,11 @@ function auftragEreignis(was, info){
 
 function auftragZahle(a, was){
   auftragFertig = true;
+  // GW1: Die Sperre muss den Reload überleben. auftragFertig ist Laufzeitzustand
+  // und wird von startShift() genullt, amt.auftrag dagegen persistiert — ohne
+  // dieses Flag zahlt derselbe Aushang nach jedem Neuladen erneut. Kein neues
+  // amt-Feld: die Eigenschaft hängt am ohnehin serialisierten Aushangobjekt.
+  a.bezahlt = true;
   amt.bankGold += a.lohn; amt.auftraegeErfuellt++; saveAmt();
   // Der Lohn geht in die Bank, nicht in player.gold: er wird deshalb vom
   // 50-Prozent-Verwaltungskostenanteil in endShift() nicht angeschnitten.
