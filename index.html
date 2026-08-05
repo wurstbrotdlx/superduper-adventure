@@ -2787,6 +2787,14 @@ const BLAETTER = {
 };
 const BLAETTER_KEYS = Object.keys(BLAETTER);
 
+// GW20: Gemeinsame Pruefvokabeln aller acht Guards. Die Sperrliste stand bis
+// hierher fuenfmal, der Emoji-Bereich sechsmal als identische Kopie im File.
+// Sie waren deckungsgleich, aber jede Kopie ist eine Gelegenheit zu driften,
+// ohne dass es jemand bemerkt. Eine Quelle, ein Ort, vor dem ersten Guard.
+const PRUEF_EMOJI  = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+const PRUEF_GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'dreimal',
+                      'Slot', 'ergibt', 'bewirkt', 'Wirkung entsteht', 'Fluch entsteht', 'Alter'];
+
 // Guard, Bauform wie knAssertCaps()/auftragAssertBrett() weiter unten. Beweist
 // beim Start, dass keine Serie "still vorhanden" ist, d.h. in BLAETTER_KEYS
 // mitgezählt wird (Zählzeile "N von 48"), aber über keinen Fundweg erreichbar
@@ -2795,14 +2803,18 @@ const BLAETTER_KEYS = Object.keys(BLAETTER);
 // Liste hier bewusst als Literal, nicht aus BIOME_MOBS/BIOM_AMT gelesen: beide
 // werden erst deutlich weiter unten deklariert, ein Zugriff hier liefe in die
 // TDZ, siehe Übergabe-Falle.
-(function blaetterAssert(){
+// GW24: Funktionsdeklaration statt IIFE. Als benannter Funktionsausdruck
+// existierte der Name nur im eigenen Rumpf — der Guard lief genau einmal beim
+// Laden und liess sich danach nie wieder aufrufen. Ausgerechnet der Guard mit
+// der vollstaendigsten Pruefdimension war damit der einzige, den eine spaetere
+// Gegenprobe nicht befragen konnte. Verhalten identisch, nur nachpruefbar.
+function blaetterAssert(){
   const TRUHE_SERIEN = ['A', 'B', 'C', 'D'];
   const SCHATTEN_SERIEN = ['E', 'F'];
   const TRUHE_BIOME = ['grass', 'snow', 'sand'];
   const SOLL = {A:12, B:6, C:8, D:8, E:10, F:4};
-  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
-  const GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'dreimal',
-                  'Slot', 'ergibt', 'bewirkt', 'Wirkung entsteht', 'Fluch entsteht', 'Alter'];
+  const EMOJI = PRUEF_EMOJI;
+  const GEHEIM = PRUEF_GEHEIM;
   let ok = true;
   const fehler = (m, ...r) => { ok = false; console.error('Aktenfunde:', m, ...r); };
 
@@ -2831,7 +2843,9 @@ const BLAETTER_KEYS = Object.keys(BLAETTER);
   for(const s in SOLL) if(gesehen[s] !== SOLL[s]) fehler('Serie hat falsche Blattzahl', s, 'ist', gesehen[s] || 0, 'soll', SOLL[s]);
   if(BLAETTER_KEYS.length !== 48) fehler('Gesamtzahl ist nicht 48', BLAETTER_KEYS.length);
   if(!ok) console.error('Aktenfunde: Guard fehlgeschlagen, siehe obige Zeilen.');
-})();
+  return ok;
+}
+blaetterAssert();
 
 const KLADDE_KEY = 'sda_kladde_v1';
 const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorgang:{}, lang:{}};
@@ -3891,6 +3905,12 @@ function knAssertCaps(){
   // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
   // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
   for(const fig of DORF_FIGUREN){
+    // GW14: Strukturzusicherung. Ohne sie fiele eine Figur mit zu kurzer Tabelle
+    // stumm aus — drawBubble() steigt bei leerem Text wortlos aus, und der Guard
+    // iterierte nur, was da ist, statt zu prüfen, dass alles da ist.
+    if(fig.grund.length !== 6) rows.push([null,0,'Figur ' + fig.key + ' hat ' + fig.grund.length + ' Grundzeilenpaare statt 6']);
+    if(fig.akt.length !== 5)   rows.push([null,0,'Figur ' + fig.key + ' hat ' + fig.akt.length + ' Aktzeilen statt 5']);
+    if(!(fig.opt === 'wander' ? fig.sheet : fig.hair)) rows.push([null,0,'Figur ' + fig.key + ' ohne Sprite bzw. Haarfarbe']);
     for(const p of fig.grund) rows.push([p.z1,48],[p.z2,32]);
     for(const a of fig.akt) rows.push([a,44]);
     if(fig.antworten) for(const qa of fig.antworten) rows.push([qa.z1,48],[qa.z2,32]);
@@ -3907,10 +3927,23 @@ function knAssertCaps(){
   // in anredeAssert(), unmittelbar hinter dem Rangblock.
   for(let n=1;n<=12;n++) rows.push([knOrdinal(n)+' Schicht. Die Akte wird dick.',44]);
   let ok = true;
-  for(const [txt,cap] of rows){
-    if(txt && txt.length > cap){ ok = false; console.error('Knöterich Zeichendeckel verletzt:', JSON.stringify(txt), txt.length, '>', cap); }
+  const fehler = (m, ...r) => { ok = false; console.error('Knöterich:', m, ...r); };
+  // GW14: Bis hierher prüfte dieser Guard ausschließlich die Länge — als einziger
+  // der Text-Guards. DORF_FIGUREN ist mit rund 350 Strings der grösste
+  // Sprechblasenkorpus des Spiels, und Kapitel 7 der Weltbibel nennt ihn
+  // ausdruecklich als sperrvermerkrelevant. Der Bestand war sauber, aber nichts
+  // hielt ihn sauber: die dreistufige Pruefung aus figuren-dorf.md war eine
+  // einmalige Sitzung, und W5 hat seither drei Zeilen umformuliert.
+  for(const [txt,cap,strukturfehler] of rows){
+    if(strukturfehler){ fehler(strukturfehler); continue; }
+    if(typeof txt !== 'string' || !txt) continue;   // z2t und optionale Felder duerfen fehlen
+    if(txt.length > cap) fehler('Zeichendeckel verletzt:', JSON.stringify(txt), txt.length, '>', cap);
+    if(txt.indexOf('undefined') >= 0) fehler('undefined im Text:', txt);
+    if(/[—–]/.test(txt)) fehler('Gedankenstrich:', txt);
+    if(PRUEF_EMOJI.test(txt)) fehler('Emoji:', txt);
+    for(const g of PRUEF_GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text:', g, txt);
   }
-  console.assert(ok, 'Knöterich: Zeichendeckel-Assertion fehlgeschlagen, siehe Konsole.');
+  console.assert(ok, 'Knöterich: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
 }
 knAssertCaps();
@@ -7170,7 +7203,9 @@ const RANG_KNOETERICH_WEITER = 'Weiter geht es trotzdem. Vermerkt, wie immer.';
 
 function rangZeremonieBlock(){
   const idx = Math.floor(amt.schichten/10) - 1;   // 0 bei Schicht 10, gleiche Rechnung wie oben
-  const knSatz = idx < RANG_KNOETERICH.length ? RANG_KNOETERICH[idx] : RANG_KNOETERICH_WEITER;
+  // GW13: idx >= 0 ist Pflicht. Bei Schicht 0 wurde idx zu -1, die obere Schranke
+  // war erfuellt, und RANG_KNOETERICH[-1] rendete woertlich Knoeterich: "undefined".
+  const knSatz = idx >= 0 && idx < RANG_KNOETERICH.length ? RANG_KNOETERICH[idx] : RANG_KNOETERICH_WEITER;
   const urkunde = RANG_URKUNDE().map(z => `<p style="margin:4px 0;">${z}</p>`).join('');
   return `
     <div style="border-top:1px solid #5a4a2d;margin-top:12px;padding-top:10px;">
@@ -7232,11 +7267,11 @@ const AUSWEIS_TEXTE = {
 function rangAssert(){
   let ok = true;
   const fehler = (m, ...r) => { ok = false; console.error('W6 Rang:', m, ...r); };
-  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
-  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal',
-                  'Slot','ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const EMOJI = PRUEF_EMOJI;
+  const GEHEIM = PRUEF_GEHEIM;
   const text = (txt, feld) => {
     if(!txt) return fehler('Text leer', feld);
+    if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', feld, txt);   // GW13
     if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', feld, txt);
     if(EMOJI.test(txt))  fehler('Emoji im Figurentext', feld, txt);
     for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', g, txt);
@@ -7256,10 +7291,42 @@ function rangAssert(){
   }
   // (3) Ankerprüfung gegen 18.3/18.4 — fängt eine eingeschobene Zeile, die die
   // halbe Laufbahn um fünf Schichten verschiebt.
+  // GW15: vollstaendige Sollkonstante statt vier Ankern. Die vier Anker fingen
+  // eine eingeschobene Zeile, aber keine Verfaelschung: vertauschte Titel,
+  // gesenkte Gruppe, geaendertes Verhaeltnis blieben unbemerkt. Das hier ist
+  // bewusst eine ZWEITE, unabhaengige Abschrift aus 18.3/18.4 — nicht eine
+  // Kopie, die das Lesen der Quelle ersetzt, sondern der Gegenpart, gegen den
+  // die Quelle geprueft wird.
   if(RAENGE.length !== 19) fehler('RAENGE hat nicht 19 Einträge', RAENGE.length);
-  const ANKER = {0:'Monsterangelegenheitenanwärter', 6:'Monstralinspektor',
-                 10:'Obermonstralamtsrat', 18:'Monstralminister ohne Geschäftsbereich'};
-  for(const i in ANKER) if(!RAENGE[i] || RAENGE[i].t !== ANKER[i]) fehler('Anker stimmt nicht', i, ANKER[i], RAENGE[i] && RAENGE[i].t);
+  const SOLL = [
+    ['Monsterangelegenheitenanwärter',        0, 0, false],
+    ['Monstralamtsgehilfe',                   0, 0, false],
+    ['Monstralamtsmeister',                   0, 1, true ],
+    ['Monstralsekretär',                      1, 1, false],
+    ['Monstralobersekretär',                  1, 1, false],
+    ['Monstralamtsinspektor',                 1, 1, true ],
+    ['Monstralinspektor',                     2, 2, false],
+    ['Monstraloberinspektor',                 2, 2, false],
+    ['Monstralamtmann / Monstralamtfrau',     2, 2, false],
+    ['Monstralamtsrat',                       2, 2, false],
+    ['Obermonstralamtsrat',                   2, 2, true ],
+    ['Monstralrat',                           3, 2, false],
+    ['Obermonstralrat',                       3, 2, false],
+    ['Monstraldirigent',                      3, 2, false],
+    ['Erster Monstraldirigent',               3, 2, false],
+    ['Monstraldirektor',                      3, 2, false],
+    ['Leitender Monstraldirektor',            3, 2, false],
+    ['Generalmonstraldirektor',               3, 2, false],
+    ['Monstralminister ohne Geschäftsbereich',3, 2, true ],
+  ];
+  SOLL.forEach(([t, g, v, spitze], i) => {
+    const r = RAENGE[i];
+    if(!r) return fehler('Rang fehlt', i, t);
+    if(r.t !== t) fehler('Rangbezeichnung weicht von 18.3/18.4 ab', i, t, r.t);
+    if(r.g !== g) fehler('Laufbahngruppe weicht ab', t, g, r.g);
+    if(r.v !== v) fehler('Dienstverhältnis weicht ab', t, v, r.v);
+    if(!!r.spitze !== spitze) fehler('Spitzenamt-Kennzeichnung weicht ab', t, spitze, !!r.spitze);
+  });
 
   // (4)+(5)+(6) Abbildung mit Spiegelung, Wechselpunkte, Zeremonie-Kopplung.
   // amt.schichten wird gespiegelt und exakt wiederhergestellt, kein saveAmt() —
@@ -7270,11 +7337,23 @@ function rangAssert(){
     amt.schichten = s;
     const name = rangName();
     if(!name || name.indexOf('undefined') >= 0) fehler('rangName() leer oder undefined', s, name);
-    if(rangNameVon(rangStufe()) !== name) fehler('rangNameVon() driftet von rangName() ab', s, name);
+    // rangNameVon(rangStufe()) !== rangName() stand hier bis GW15 als "Drift-
+    // Beweis". rangName() IST per Definition rangNameVon(rangStufe()) — die
+    // Zeile verglich eine Funktion mit ihrem eigenen Rumpf und ist ersatzlos
+    // gestrichen, damit sie niemand mehr als Beleg zitiert.
     const sollWechsel = s % 5 === 0 && s > 0;
     if(sollWechsel && name === vorher) fehler('Kein Wechsel an Fünferschritt', s);
     if(!sollWechsel && vorher !== null && name !== vorher) fehler('Wechsel außerhalb Fünferschritt', s);
-    if(s % 10 === 0 && s % 5 !== 0) fehler('Zeremonie-Kopplung verletzt', s);   // strukturell nie wahr, Beweis reicht
+    // GW15: echte Kopplungspruefung. Vorher stand hier s%10===0 && s%5!==0 —
+    // fuer ganze Zahlen die leere Menge, also nie ausloesbar. Geprueft wird
+    // jetzt der tatsaechliche Uebergang: an jedem Zehnerschritt (Jahresgespraech
+    // in nachSchicht()) muss auch eine Hebung stattgefunden haben. Ein Umbau von
+    // nachSchicht() auf %12 oder von rangStufe() auf /4 faellt hier auf.
+    if(s > 0){
+      const hebung = rangStufe() > Math.floor((s - 1) / 5);
+      if(hebung !== (s % 5 === 0)) fehler('Hebung nicht exakt am Fünferschritt', s);
+      if(s % 10 === 0 && !hebung) fehler('Jahresgespräch ohne Beförderung', s);
+    }
     vorher = name;
   }
   amt.schichten = echt;
@@ -7294,10 +7373,16 @@ function rangAssert(){
   const wirkende = INSIGNIEN.filter(i => i.wirkung);
   if(wirkende.length !== 2) fehler('Nicht genau zwei wirkende Insignien', wirkende.length);
   for(const i of INSIGNIEN) if(typeof i.wenn !== 'function') fehler('Insignie ohne wenn()', i.n);
-  for(let s = 0; s <= 200; s += 5){
+  // GW15: echte Schwellenpruefung. Vorher verglichen diese zwei Zeilen
+  // rangZeichnungsbefugt() mit INSIGNIE.zeichnung.wenn() — und ersteres IST
+  // per Definition ein Aufruf von letzterem. Eine Sabotage BEIDER Schwellen
+  // (30 auf 15, Schluessel auf immer) liess den Guard gruen. Jetzt stehen die
+  // Schwellen aus 18.7 als Zahl da, und der Sweep laeuft in Einerschritten,
+  // damit die Kante selbst getroffen wird und nicht nur ihre Umgebung.
+  for(let s = 0; s <= 200; s++){
     amt.schichten = s;
-    if(rangZeichnungsbefugt() !== INSIGNIE.zeichnung.wenn()) fehler('Zeichnungsbefugnis-Prädikat driftet', s);
-    if(rangSchluessel() !== INSIGNIE.schluessel.wenn()) fehler('Schlüssel-Prädikat driftet', s);
+    if(rangZeichnungsbefugt() !== (s >= 30)) fehler('Zeichnungsbefugnis nicht exakt ab Schicht 30', s, rangZeichnungsbefugt());
+    if(rangSchluessel() !== (s >= 55)) fehler('Schlüssel nicht exakt ab Schicht 55', s, rangSchluessel());
   }
   amt.schichten = echt;
 
@@ -7325,7 +7410,10 @@ function rangAssert(){
     const roh = rangBerichtBlock();
     if(roh) text(strip(roh), 'Dienstbericht-Block s='+s);   // '' ist erwartet außerhalb der Fünferschritte
   }
-  for(let s = 10; s <= 100; s += 10){
+  // GW13: Sweep beginnt bei 0, nicht bei 10. Genau der ausgelassene Wert war der
+  // einzige, an dem der Block kaputt war: idx wurde -1 und rendete woertlich
+  // Knoeterich: "undefined". text() prueft jetzt zusaetzlich darauf.
+  for(let s = 0; s <= 100; s += 10){
     amt.schichten = s;
     text(strip(rangZeremonieBlock()), 'Zeremonie-Block s='+s);
   }
@@ -7437,25 +7525,38 @@ function anredeZeile(key){ const f = ANREDE[key]; return f ? f() : {z1: rangName
 function anredeAssert(){
   let ok = true;
   const fehler = (m, ...r) => { ok = false; console.error('Anrede 18.5:', m, ...r); };
-  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+  const EMOJI = PRUEF_EMOJI;
   const text = (txt, cap, feld) => {
     if(typeof txt !== 'string' || !txt) return fehler('leer', feld, JSON.stringify(txt));
     if(txt.length > cap)        fehler('Zeichendeckel verletzt', feld, JSON.stringify(txt), txt.length, '>', cap);
     if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', feld, txt);
     if(/[—–]/.test(txt))        fehler('Gedankenstrich', feld, txt);
     if(EMOJI.test(txt))         fehler('Emoji', feld, txt);
+    // GW20: als einziger Guard mit eigenem text()-Helfer liess dieser die
+    // Sperrliste weg. Risiko gering (Rangtitel, Hoeflichkeitsformeln), aber er
+    // ist die teuerste Textpruefung im Projekt und sparte die billigste Zeile.
+    for(const g of PRUEF_GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk', feld, g, txt);
   };
 
   // (1) Jede Figur aus DORF_FIGUREN hat eine Form, und keine Form ist verwaist.
   for(const fig of DORF_FIGUREN) if(!ANREDE[fig.key]) fehler('Figur ohne Anredeform', fig.key);
   for(const k in ANREDE) if(!DORF_FIGUREN.some(f => f.key === k)) fehler('Anredeform ohne Figur', k);
 
+  // GW26i: alle vier Spiegel stehen vor dem try, damit finally sie sieht, und
+  // der Block umfasst BEIDE Sweeps — nicht nur den zweiten.
+  const echt = amt.schichten, rekEcht = kn.counters.maxKillsSchicht,
+        langEcht = kladde.lang, modusEcht = CONFIG.schichtModus;
+  try {
+
   // (2) Deckelsweep über alle Figuren und den gesamten Laufbahnverlauf, weit
   // über RAENGE hinaus in die römische Fortsetzung. amt.schichten wird
   // gespiegelt und exakt wiederhergestellt, kein saveAmt() — Idiom aus
   // rangAssert()/auftragAssertBrett().
-  const echt = amt.schichten;
-  for(let s = 0; s <= 5000; s += 5){
+  // GW17: Einerschritte. Der Sweep lief in Fünferschritten, und ANREDE.lisbeth
+  // indiziert mit amt.schichten % 5 — der Index war damit IMMER 0, und vier der
+  // fünf Lisbeth-Zeilenpaare (acht Strings) sah weder dieser Guard noch
+  // knAssertCaps(). Schrittweite und Modulo müssen teilerfremd sein.
+  for(let s = 0; s <= 5000; s++){
     amt.schichten = s;
     for(const k in ANREDE){
       const a = anredeZeile(k);
@@ -7483,28 +7584,34 @@ function anredeAssert(){
   // GW6: schichtModus wird für den Sweep erzwungen. Seit langFertig() den Modus
   // mitliest, wäre die Gießkannen-Wärme bei schichtModus=false unsichtbar und
   // die warmGesehen-Prüfung unten liefe grundlos rot. Muster aus vorgangAssert().
-  const rekEcht = kn.counters.maxKillsSchicht, langEcht = kladde.lang,
-        modusEcht = CONFIG.schichtModus;
   CONFIG.schichtModus = true;
-  let warmGesehen = false;
+  let warmGesehen = false, rekordGesehen = false;
   for(const rek of [0, 99]) for(const giess of [false, true]){
     kn.counters.maxKillsSchicht = rek;
     kladde.lang = giess ? {giesskanne: LANGVORGAENGE.giesskanne.stufen} : {};
-    for(let s = 0; s <= 5000; s += 5){
+    for(let s = 0; s <= 5000; s++){
       amt.schichten = s;
       const l = knBegruessungLine();
       text(l, 44, 'knBegruessung rek=' + rek + ' giess=' + giess + ' s=' + s);
       // 18.5 verlangt die Anrede jedes Mal: der letzte Boden darf nie greifen.
       if(l.indexOf('Die Akte wird dick') >= 0) fehler('Knöterich fällt aus der Anrede', s, l);
       if(giess && l.indexOf('Schön, dass Sie da sind') >= 0) warmGesehen = true;
+      if(rek > 0 && l.indexOf(' Rekord ') >= 0) rekordGesehen = true;
     }
   }
   // Die Gießkannen-Belohnung muss auf mindestens einem Rang sichtbar sein,
   // sonst ist sie gebaut und unerreichbar.
   if(!warmGesehen) fehler('Die Gießkannen-Wärme passt auf keinem Rang unter den Deckel');
+  // GW19: dasselbe für das Rekord-Suffix. Es galt als "unverändert", weil sein
+  // Code unverändert war — durch die längere Anredezeile ist seine Sichtbarkeit
+  // aber von rund 190 auf rund 30 Schichten eingebrochen, und niemand hat es
+  // bemerkt, weil kein Guard danach sah.
+  if(!rekordGesehen) fehler('Das Rekord-Suffix passt auf keinem Rang unter den Deckel');
+  } finally {
   kn.counters.maxKillsSchicht = rekEcht; kladde.lang = langEcht;
   CONFIG.schichtModus = modusEcht;
   amt.schichten = echt;
+  }
 
   console.assert(ok, 'Anrede 18.5: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
@@ -7604,8 +7711,8 @@ function vorgangPanelHtml(schritt){
       ${langFertig('dorffest') ? '<p>Zwirns elf Absagen liegen bei. Sie werden mitgeheftet, nicht widerrufen. Der elfte Anlauf war der letzte nötige.</p>' : ''}
       <p>Nörgel wird entfristet. Er beschwert sich über die Feierlichkeit.</p>
       <p>Dorffest in Vordermühl. Lott und Pahl finden die Musik zu laut.</p>
-      <p>Ganz zuletzt bringt Trepps Nachfolgerin einen Umschlag ins leere Amt. Aufschrift: Vorgang 2.</p>
       <p>Der Amtsmarsch läuft heute einmal ganz durch. Niemand ruft dazwischen.</p>
+      <p>Ganz zuletzt bringt Trepps Nachfolgerin einen Umschlag ins leere Amt. Aufschrift: Vorgang 2.</p>
     </div>
     <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>`;
 }
@@ -7635,11 +7742,11 @@ function zustellen(){
 function vorgangAssert(){
   let ok = true;
   const fehler = (m, ...r) => { ok = false; console.error('W5 Vorgang:', m, ...r); };
-  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
-  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal',
-                  'Slot','ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const EMOJI = PRUEF_EMOJI;
+  const GEHEIM = PRUEF_GEHEIM;
   const text = (txt, feld) => {
     if(!txt) return fehler('Text leer', feld);
+    if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', feld, txt);   // GW13
     if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', feld, txt);
     if(EMOJI.test(txt))  fehler('Emoji im Text', feld, txt);
     for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', g, feld, txt);
@@ -7954,8 +8061,13 @@ function auftragWuerfeln(){
   const stufe = aktStand() - 1;               // 0..4, keine eigene Persistenz
   const liste = [], genommen = {};
   for(let st = 0; st < 3; st++){
-    const frei = AUFTRAG_POOLS[st].filter(k => !genommen[k]
+    let frei = AUFTRAG_POOLS[st].filter(k => !genommen[k]
                    && (!AUFTRAG_TYPEN[k].wenn || AUFTRAG_TYPEN[k].wenn()));
+    // GW26j: Rueckfall auf den ungefilterten Pool. Heute strukturell unmoeglich,
+    // weil bilanz exklusiv in Pool 2 liegt und nur reise ein wenn() traegt. Ein
+    // zusaetzliches Gate machte daraus rri(0,-1) -> frei[0] -> undefined ->
+    // TypeError beim Laden, also einen Totalausfall statt einer Guard-Meldung.
+    if(!frei.length) frei = AUFTRAG_POOLS[st].slice();
     const typ = frei[rri(0, frei.length-1)];
     const def = AUFTRAG_TYPEN[typ];
     const p = def.wuerfle(st, stufe);
@@ -7983,9 +8095,8 @@ function auftragWuerfeln(){
 function auftragAssertBrett(){
   let ok = true;
   const fehler = (m, ...r) => { ok = false; console.error('W4 Aushang:', m, ...r); };
-  const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
-  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal',
-                  'Slot','ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const EMOJI = PRUEF_EMOJI;
+  const GEHEIM = PRUEF_GEHEIM;
   const text = (txt, cap, feld) => {
     if(!txt) return fehler('Text leer', feld);
     if(txt.length > cap) fehler('Zeichendeckel', feld, JSON.stringify(txt), txt.length, '>', cap);
@@ -8461,9 +8572,8 @@ function langBestandBlock(){
 function langAssert(){
   let ok = true;
   const fehler = (m, ...r) => { ok = false; console.error('W7 Langvorgang:', m, ...r); };
-  const EMOJI  = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
-  const GEHEIM = ['Substantiv','Adjektiv','Seltenheit','drei gleiche','dreimal','Slot',
-                  'ergibt','bewirkt','Wirkung entsteht','Fluch entsteht','Alter'];
+  const EMOJI  = PRUEF_EMOJI;
+  const GEHEIM = PRUEF_GEHEIM;
   const strip  = html => String(html).replace(/<[^>]+>/g, ' ');
   const text = (txt, cap, feld) => {
     if(typeof txt !== 'string' || !txt) return fehler('leer', feld, JSON.stringify(txt));
@@ -8481,6 +8591,11 @@ function langAssert(){
   // langFertig()/langLaeuft() den Modus mitlesen, muss er dafür gesetzt sein,
   // sonst liefe der Bramsche-Punkt (7) bei schichtModus=false grundlos rot.
   CONFIG.schichtModus = true;
+  // GW26i: try/finally. Die Guards setzen sechs Spiegel und stellten sie erst
+  // nach allen Schleifen zurueck. Wirft eine gerufene Funktion, blieben sie
+  // korrumpiert stehen — und weil der Guard auf Skriptebene laeuft, nach
+  // loadAmt() und vor jedem Speichern, riss das den Rest des Skripts mit.
+  try {
 
   // (1) Tabellenform.
   for(const k in LANGVORGAENGE){
@@ -8518,10 +8633,25 @@ function langAssert(){
     }
     if(stufeVon(roh) < d.stufen) fehler('Strang nie abschliessbar, toter Tabelleneintrag', k, stufeVon(roh), 'von', d.stufen);
     rohEnde[k] = roh;
+  }
 
-    // (3) Idempotenz auf dem Endzustand: kein Ereignis bewegt ihn noch.
-    for(const was of d.hoert) for(const info of LANG_PROBEN[was] || [null])
-      if(d.schritt(was, info, roh) !== roh) fehler('schritt() ist auf dem Endzustand nicht idempotent', k, was);
+  // (3) Der Endzustand hält. GW18: Bis hierher rief dieser Punkt d.schritt()
+  // direkt auf und liess langSchicht dabei stehen — für dorffest war er damit
+  // strukturell immer wahr, weil dessen schritt() das Schichtflag als erste
+  // Bedingung prüft. Mit frischem Flag ist d.schritt() für dorffest NICHT
+  // idempotent (roh 11 wird 12); die Zeile, die den Endzustand wirklich hält,
+  // ist der Stufendeckel in langEreignis() — und genau an dem lief der Guard
+  // vorbei. Jetzt wird der echte Pfad geprüft, samt Deckel, Monotoniefilter,
+  // wenn()-Gate und info.nur.
+  //
+  // Seiteneffektfrei bleibt das, weil ALLE sieben Stränge gleichzeitig auf
+  // ihrem Endwert stehen: der Deckel überspringt jeden, dirty bleibt false,
+  // saveKladde() wird nie erreicht.
+  kladde.lang = Object.assign({}, rohEnde); langSchicht = {};
+  for(const was of LANG_EREIGNISSE) for(const info of LANG_PROBEN[was] || [null]) langEreignis(was, info);
+  for(const k in rohEnde){
+    if((kladde.lang[k] | 0) !== rohEnde[k])
+      fehler('Endzustand bewegt sich noch', k, rohEnde[k], '->', kladde.lang[k]);
   }
   kladde.lang = {}; langSchicht = {};
 
@@ -8541,7 +8671,19 @@ function langAssert(){
         text(z.z1, 48, 'zusatz z1 ' + k + ' st=' + st);
         if(z.z2) text(z.z2, 32, 'zusatz z2 ' + k + ' st=' + st);
       }
-      if(d.bestand) text(d.bestand(st), 0, 'bestand ' + k + ' st=' + st);
+      // GW18: bestand() liest bei probezeit und gutachter den ROHWERT aus
+      // kladde.lang, nicht die uebergebene Stufe. Mit leerem kladde.lang sah es
+      // also immer 0 — geprueft wurden im Spiel unmoegliche Kombinationen,
+      // waehrend die realen Zwischenstrings ("4 von 6 Bemerkungen gesammelt,
+      // 3 vorgelegt") nie erzeugt wurden. Jetzt wird der Rohwert mitgesetzt.
+      if(d.bestand){
+        const vorher = kladde.lang[k];
+        kladde.lang[k] = rohEnde[k];
+        text(d.bestand(st), 0, 'bestand ' + k + ' st=' + st + ' (Endrohwert)');
+        kladde.lang[k] = 0;
+        text(d.bestand(st), 0, 'bestand ' + k + ' st=' + st + ' (Rohwert 0)');
+        if(vorher === undefined) delete kladde.lang[k]; else kladde.lang[k] = vorher;
+      }
     }
   }
 
@@ -8552,6 +8694,15 @@ function langAssert(){
   for(const s in SERIE_AKT){ amt.schichten = SERIE_AKT[s] * 10; if(!serieFrei(s)) fehler('W7 blockiert eine Blattserie', s); }
   amt.schichten = 200;
   for(const k in AUFTRAG_TYPEN) if(AUFTRAG_TYPEN[k].wenn && !AUFTRAG_TYPEN[k].wenn()) fehler('W7 blockiert einen Auftragstyp', k);
+  // GW18: die zwei Prädikate, die das Phasendokument mitzählt, aber nie geprüft
+  // wurden. Zusätzlich der schmale Punkt des Wertebereichs statt nur des
+  // großzügigen: bei Schicht 30 muss der Adress-Akt offen sein und die
+  // Zeichnungsbefugnis stehen, sonst hängt Akt IV an einem Strang.
+  if(!vorgangAdressAkt()) fehler('W7 blockiert den Adress-Akt bei Schicht 200');
+  if(!rangZeichnungsbefugt()) fehler('W7 blockiert die Zeichnungsbefugnis bei Schicht 200');
+  amt.schichten = 30;
+  if(!vorgangAdressAkt()) fehler('W7 blockiert den Adress-Akt bei Schicht 30');
+  if(!rangZeichnungsbefugt()) fehler('W7 blockiert die Zeichnungsbefugnis bei Schicht 30');
 
   // (6) Milbs Schild. Über alle t.diff und beide Strangzustände: es liegt nie
   // über dem echten Wert (sonst wäre ein W4-Aushang schwerer als angekündigt),
@@ -8606,9 +8757,11 @@ function langAssert(){
   for(const was of LANG_EREIGNISSE) for(const info of LANG_PROBEN[was] || [null]) langEreignis(was, info);
   for(const k in kladde.lang) fehler('W7 ist bei schichtModus=false nicht inert', k, kladde.lang[k]);
 
+  } finally {
   CONFIG.schichtModus = modusEcht; amt.schichten = schichtenEcht;
   kladde.lang = langEcht; kladde.vorgang = vorgangEcht;
   amt.bonusManaRegen = manaEcht; langSchicht = flagsEcht;
+  }
 
   console.assert(ok, 'W7 Langvorgang: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
@@ -9134,9 +9287,13 @@ loadAssets().then(() => {
   assetsReady = true;
   bakeHeroSheet();
   assertRigRegistrations();
+  // GW26c: zweiter Lauf weiter unten, nach bakeAllNpcSheets(). Der Guard hier
+  // sieht die drei gebackenen NPC-Sheets noch nicht — sie entstehen erst
+  // danach in dieser Kette. Er ist idempotent und seiteneffektfrei.
   prewarmMonsterTints();
   bakeUiSkin();
   bakeAllNpcSheets();
+  assertRigRegistrations();   // GW26c: jetzt sind npc_baked_bramsche/_lott/_pahl da
   initFloorGraphics();
   showStartScreen();
   requestAnimationFrame(loop);
