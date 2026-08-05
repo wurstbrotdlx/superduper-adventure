@@ -783,15 +783,21 @@ addSheet('cfbld_scheune', 'cf/deco/Buildings/Barn_Base_Red.png',       1, 'grid'
 // NPC-Staffage: 64x64-Raster wie Angel_1/2 (CF_RIGS oben), idle=Zeile1/walk=Zeile4
 // per Crop bestätigt (mittlere mittlere Down/Side/Up-Zeile = Seitenansicht, gleiche
 // Regel wie bei den Monster-Rigs aus G3). Nur Idle/Lauf gebraucht, keine Kampf-Anims.
+// Fußlinie ist CF_ANCHOR.ay (40), nicht 60: die Blätter teilen sich das Raster mit dem
+// Helden, die Bounding-Box endet in allen zwölf geprüften Reihen bei y=40. Mit ay:60
+// hing die Figur 20 Pixel über ihrem eigenen Schatten und wurde von allem verdeckt,
+// was nach ihr sortiert wird. npcAnkerAssert() unten hält das fest.
+// Die Blätter sind unterschiedlich groß (384x448 bis 576x832, Fin hat 9 Spalten statt 6),
+// deshalb kommen cols und rows aus der Bildbreite, nicht aus einer Annahme.
 const CF_NPCS = {
-  bob:   {file:'NPCs/Farmer_Bob.png',      fw:64, fh:64, ax:32, ay:60},
-  katy:  {file:'NPCs/Bartender_Katy.png',  fw:64, fh:64, ax:32, ay:60},
-  mike:  {file:'NPCs/Miner_Mike.png',      fw:64, fh:64, ax:32, ay:60},
-  bruno: {file:'NPCs/Bartender_Bruno.png', fw:64, fh:64, ax:32, ay:60},
-  chloe: {file:'NPCs/Chef_Chloe.png',      fw:64, fh:64, ax:32, ay:60},
-  buba:  {file:'NPCs/Farmer_Buba.png',     fw:64, fh:64, ax:32, ay:60},
-  jack:  {file:'NPCs/Lumberjack_Jack.png', fw:64, fh:64, ax:32, ay:60},
-  fin:   {file:'NPCs/Fisherman_Fin.png',   fw:64, fh:64, ax:32, ay:60},
+  bob:   {file:'NPCs/Farmer_Bob.png',      fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
+  katy:  {file:'NPCs/Bartender_Katy.png',  fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
+  mike:  {file:'NPCs/Miner_Mike.png',      fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
+  bruno: {file:'NPCs/Bartender_Bruno.png', fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
+  chloe: {file:'NPCs/Chef_Chloe.png',      fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
+  buba:  {file:'NPCs/Farmer_Buba.png',     fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
+  jack:  {file:'NPCs/Lumberjack_Jack.png', fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
+  fin:   {file:'NPCs/Fisherman_Fin.png',   fw:64, fh:64, ax:32, ay:CF_ANCHOR.ay},
 };
 for(const nkey in CF_NPCS){
   const nd = CF_NPCS[nkey];
@@ -2920,6 +2926,11 @@ const malWort = n => MAL[n] || (n + '-mal');
 
 const keysDown = {w:false, a:false, s:false, d:false};
 const PLAYER_SC = 1.8;                                   // Skalierung des CF-Helden (hero_baked), G3s psc-Grundwert (1,2) ist PLAYER_SC/1,5
+// Dorffiguren: eine Skalierung für alle elf, egal ob Held-Komposit (Bramsche, Lott,
+// Pahl) oder CF_NPCS-Blatt. Vorher bekamen nur die drei Komposite PLAYER_SC*0.92, die
+// acht Blatt-Figuren standen auf 1 und waren damit halb so groß wie der Held, an dem
+// sie vorbeiliefen. 0.92 bleibt: Staffage eine Spur kleiner als der Spieler.
+const NPC_SC = PLAYER_SC * 0.92;
 const player = {
   x:SPAWN.x, y:SPAWN.y, r:10, hp:70, mana:40, maxMana:40, level:1, xp:0, gold:0, potions:2,
   dir:0, faceLeft:false, mvx:0, mvy:0, attackCd:0, swingT:0, swingDir:0, attackMode:'sword', hurtT:0, dead:false,
@@ -6380,7 +6391,7 @@ function render(){
       case DRAW_NPC: { drawShadowEllipse(o.x, o.y+4, 9);   // G5: Dorf-Staffage, gleiches Muster wie DRAW_CRITTER
                       const nmoving = !!(o.vx||o.vy);
                       const nkey = nmoving ? o.sheetWalk : o.sheetIdle;
-                      const nsc = o.fest ? PLAYER_SC * 0.92 : 1;   // W3: Komposit-Figuren im Held-Maßstab
+                      const nsc = NPC_SC;   // W3: alle elf Dorffiguren im Held-Maßstab, Komposit wie Blatt
                       drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, nsc, o.flip, o.tint, o.tintA);
                       if(o.key === 'bramsche') drawAnlage3(o.x + 14, o.y + 6);
                       if(o.bubbleText1 && gameT < o.bubbleHideAt) drawBubble(o.x, o.y, o.bubbleText1, o.bubbleText2);
@@ -9327,6 +9338,38 @@ function assertRigRegistrations(){
   }
 }
 
+// Ankerprüfung für alles, was auf zwei Beinen auf dem Boden steht: Held, die drei
+// Komposit-Figuren und die acht CF_NPCS-Blätter. Der Anker ay ist die Fußlinie — die
+// unterste undurchsichtige Pixelzeile des Frames muss dort liegen, sonst hängt die
+// Figur über ihrem Schatten oder steckt im Boden. Genau das war acht Blätter lang
+// falsch (ay:60 statt 40) und fiel keinem Guard auf, weil bis hierher nur Zeilenzahl
+// und Registrierung geprüft wurden, nie Bildinhalt.
+//
+// Läuft einmal nach dem Laden, liest 17 Frames à 64x64. getImageData kann bei einem
+// fremdorigin geladenen Blatt werfen (getönte Canvas-Kopien sind unkritisch, die
+// entstehen hier lokal) — deshalb in try/catch: ein Wurf auf Skriptebene würde den
+// gesamten Rest des Inline-Skripts mitreißen.
+function npcAnkerAssert(){
+  const keys = ['hero_baked'];
+  for(const f of DORF_FIGUREN) keys.push(f.opt === 'fest' ? `npc_baked_${f.key}` : `cfnpc_${f.sheet}_idle`);
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const x = c.getContext('2d', {willReadFrequently:true});
+  for(const key of [...new Set(keys)]){
+    const s = SHEETS[key];
+    if(!s || !s.img){ console.warn(`npcAnkerAssert: SHEETS['${key}'] fehlt`); continue; }
+    let botY = -1;
+    try {
+      x.clearRect(0, 0, 64, 64);
+      x.drawImage(s.img, 0, (s.rowStart||0)*s.fh, s.fw, s.fh, 0, 0, s.fw, s.fh);
+      const d = x.getImageData(0, 0, s.fw, s.fh).data;
+      for(let py = s.fh - 1; py >= 0 && botY < 0; py--)
+        for(let px = 0; px < s.fw; px++) if(d[(py*s.fw+px)*4+3] > 8){ botY = py; break; }
+    } catch(e){ console.warn(`npcAnkerAssert: ${key} nicht lesbar (${e.name}) — Ankerprüfung übersprungen`); continue; }
+    if(botY < 0){ console.warn(`npcAnkerAssert: ${key} Frame 0 ist leer`); continue; }
+    if(Math.abs(botY - s.ay) > 2) console.warn(`npcAnkerAssert: ${key} Fußlinie bei y=${botY}, Anker ay=${s.ay} — Figur ${botY < s.ay ? 'schwebt' : 'steckt im Boden'} um ${Math.abs(botY - s.ay)} Pixel`);
+  }
+}
+
 // G5: UI-Skin. SHEETS[key].img.src ist bereits die richtige URL für den jeweiligen
 // Kontext (Dev-Server: relativer Pfad, dist/index.html-Build: data:-URI aus
 // ASSET_BLOBS) — kein CSS-url() auf eine Datei nötig, das würde der Build nicht
@@ -9383,6 +9426,7 @@ loadAssets().then(() => {
   bakeUiSkin();
   bakeAllNpcSheets();
   assertRigRegistrations();   // GW26c: jetzt sind npc_baked_bramsche/_lott/_pahl da
+  npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
   initFloorGraphics();
   showStartScreen();
   requestAnimationFrame(loop);

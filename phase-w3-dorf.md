@@ -12,7 +12,7 @@ Kein neues Panel, kein neuer `localStorage`-Schlüssel, kein Dialogbaum, keine A
 
 ### Fünf neue NPC-Sprites registrieren: `CF_NPCS` (`index.html:741`)
 
-Die fünf zusätzlichen Dorfbewohner-PNGs liegen bereits in `assets/cf/deco/NPCs/` (kopiert aus der Rohbibliothek, gleicher Weg wie `README.md` ihn vorsieht), sind aber noch nicht registriert. Alle acht teilen dasselbe 64×64-Raster, Anker Fußmitte (`ax:32, ay:60`), idle=Zeile1/walk=Zeile4 — bestätigt gegen die echten IHDR-Maße der Dateien (Bruno/Chloe 384×448, Buba 384×832, Jack 384×640, Fin 576×832, letzteres mit 9 statt 6 Spalten, was `addSheet` automatisch aus der Bildbreite berechnet, kein Sonderfall nötig):
+Die fünf zusätzlichen Dorfbewohner-PNGs liegen bereits in `assets/cf/deco/NPCs/` (kopiert aus der Rohbibliothek, gleicher Weg wie `README.md` ihn vorsieht), sind aber noch nicht registriert. Alle acht teilen dasselbe 64×64-Raster, Anker Fußmitte (`ax:32, ay:60`), idle=Zeile1/walk=Zeile4 — die Rastermaße bestätigt gegen die echten IHDR-Maße der Dateien *(Korrektur vom 2026-08-05: der Anker war es nicht. Ein IHDR belegt die Rastergröße, nie die Fußlinie. `ay:60` war falsch, richtig ist `CF_ANCHOR.ay` (40) — siehe Nachtrag am Dokumentende.)* (Bruno/Chloe 384×448, Buba 384×832, Jack 384×640, Fin 576×832, letzteres mit 9 statt 6 Spalten, was `addSheet` automatisch aus der Bildbreite berechnet, kein Sonderfall nötig):
 
 ```js
 const CF_NPCS = {
@@ -683,3 +683,19 @@ Node-Syntaxcheck (`node --check`) über den extrahierten Skriptblock, danach liv
 * **`assertRigRegistrations()` deckte die drei gebackenen NPC-Sheets nicht ab** — es läuft vor `bakeAllNpcSheets()`. Seit GW26c läuft es ein zweites Mal danach.
 * **Der Zusatz „— deckt auch W3-Figuren ab"** im zitierten `placeMonsters()`-Kommentar existiert im Code nicht und hat nie existiert. Die Aussage stimmt trotzdem: `if(inVillageT(tx,ty)) continue;` hält das Dorf monsterfrei.
 * **`antworten[].frage`** (acht Strings) wird zur Laufzeit nie gelesen — reine Herkunftsdokumentation im Code.
+
+---
+
+## Nachtrag 2026-08-05: Dorfbewohner zu klein und teils unsichtbar
+
+Gemeldet beim Anspielen: die Dorffiguren sind zu klein, manche gar nicht zu sehen. Zwei Ursachen, beide in W3 eingebaut, beide von keinem Guard gedeckt.
+
+**1. Falscher Anker.** `CF_NPCS` registrierte alle acht Blätter mit `ay:60`. Die Fußlinie liegt in jedem der zwölf nachgemessenen Frames bei `y=40`, genau wie beim Helden (`CF_ANCHOR = {ax:32, ay:40}`, dort seit G2 per Bounding-Box belegt). `drawSpriteAt()` zeichnet mit `-s.ay` als Ursprung, die Figur stand also 20 Pixel über ihrem eigenen Schatten und über ihrer eigenen Sortierposition. Das ist die Unsichtbarkeit: die Tiefensortierung nutzt `o.y`, gezeichnet wird 20 Pixel höher — alles, was danach sortiert wird (Häuser, Marktstände, Bäume), legt sich über die Figur. Die Zusage in Zeile 15 dieses Dokuments, der Anker sei „bestätigt gegen die echten IHDR-Maße", trug nie: ein IHDR nennt Bildbreite und -höhe, nicht die Fußlinie im Frame.
+
+**2. Zwei Maßstäbe für eine Staffage.** `DRAW_NPC` rechnete `const nsc = o.fest ? PLAYER_SC * 0.92 : 1`. Die drei Held-Komposite (Bramsche, Lott, Pahl) standen damit auf 1,66, die acht Blatt-Figuren auf 1 — halb so groß wie der Held, an dem sie vorbeilaufen. Gemessene Inhaltshöhen bei Skalierung 1: Bruno 18 px, Bob 22 px, Chloe 28 px gegen 36 px beim Helden. Jetzt gilt `NPC_SC = PLAYER_SC * 0.92` für alle elf. Dass die acht untereinander weiter 18 bis 28 Pixel messen, ist die Vorlage und bleibt: Chloe trägt eine Kochmütze, Bruno ist gedrungen gezeichnet.
+
+**Neuer Guard `npcAnkerAssert()`.** Prüft nach dem Laden für den Helden, die drei Komposite und die acht Blätter, dass die unterste undurchsichtige Pixelzeile des ersten Frames auf ±2 Pixel beim Anker `ay` liegt, und meldet Richtung und Abstand („schwebt" / „steckt im Boden"). Zwei Sabotagen sind live gefahren und wurden beide gemeldet: `cfnpc_chloe_idle` auf `ay=60` → „schwebt um 20 Pixel" (also wörtlich der Fehler, der hier acht Blätter lang stand), `hero_baked` auf `ay=30` → „steckt im Boden um 10 Pixel". Sauberer Lauf: still. `getImageData` steht in `try/catch` — ein Wurf auf Skriptebene würde den Rest des Inline-Skripts mitreißen (Fundklasse GW26i).
+
+**Was der Guard weiterhin nicht deckt:** ob die Skalierung *ästhetisch* stimmt. Er misst die Fußlinie, nicht die Größe. `NPC_SC` ist eine Setzung, kein Beweis.
+
+**Abnahme:** live geprüft am Dev-Server, Vorher/Nachher am selben Kameraausschnitt. Vorher standen die acht Blatt-Figuren sichtbar über ihren Schatten und waren rund halb so hoch wie der Spieler; nachher stehen alle elf auf ihren Schatten und im selben Maßstab. Konsole nach dem Laden still, `node --check` grün.
