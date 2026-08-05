@@ -3606,6 +3606,8 @@ function makeMon(type,x,y){
   const m = { type, def: d, x, y, r: d.r, hp: d.hp, maxHp: d.hp, aggro: false, atkT: rr(0,0.5), flash: 0, dead: false, kx: 0, ky: 0,
     bobPhase: rr(0, Math.PI*2), wanderT: rr(0,2), wanderDx:0, wanderDy:0, slowT: 0, facingLeft:false,
     animT: rr(0,1), anim:'idle', actT:0, alertT:0, moving:false,
+    // W-Groß: Heimatpunkt und Leinen-Zähler für die Aufgabe-Regel weiter unten.
+    homeX: x, homeY: y, leashT: 0, stuckT: 0,
     regel: null, faceAng: 0, gruss: false };   // regel: Kammer-Sonderregel (Phase 2); gruss: Fluch 'Grußpflicht' (Phase 3)
   monsters.push(m);
   if(d.boss) boss=m;
@@ -3663,21 +3665,51 @@ function auftragOrtBand(){
   return bandRange(a.par, 4);
 }
 
+// W-Groß: Zielzahl gesetzter Oberwelt-Monster. Die alte Schleife lief 55 Mal und
+// zählte VERSUCHE, nicht Treffer — jedes continue (Wasser, Dorf, Knöterichs Kachel,
+// Spawn-Ring) verbrannte einen Platz, die echte Bevölkerung lag bei rund 49.
+// 600 auf ~84000 Landkacheln entspricht ungefähr der alten Dichte von 49/6400.
+const ZIEL_MOBS = 600;
+// Monsterfreier Gürtel um das DORFRECHTECK, in Kacheln. Vorher war es ein
+// Pixelkreis von 8 Kacheln um den Punkt SPAWN — falsche Form und zu klein: sicher
+// sein muss das Dorf als Fläche, nicht ein Punkt darin. 40 Kacheln sind rund
+// zehn Sekunden Fußweg in jeder Richtung, bevor der erste Kampf kommt.
+const DORF_BANN = 40;
+const nahDorf = (tx,ty)=> tx > VILLAGE.x0-DORF_BANN && tx < VILLAGE.x1+DORF_BANN
+                       && ty > VILLAGE.y0-DORF_BANN && ty < VILLAGE.y1+DORF_BANN;
+
+// W-Groß: bildschirmnahe Monster. Ein Rand von 320px über den Bildschirm hinaus,
+// damit nichts sichtbar "aufwacht" — Monster sollen bereits laufen, wenn sie ins
+// Bild kommen. Die Liste wird pro Frame in update() gefüllt und nie neu allokiert.
+const NAH_RAND = 320;
+const nahListe = [];
+const nahAmBild = m => m.x > cam.x - NAH_RAND && m.x < cam.x + canvas.width + NAH_RAND
+                    && m.y > cam.y - NAH_RAND && m.y < cam.y + canvas.height + NAH_RAND;
+// Aufgabe-Regel für Verfolger: zu weit weg vom Spieler ODER zu weit vom eigenen
+// Heimatpunkt. Beides nötig — die erste Grenze löst den Verfolger, die zweite
+// verhindert, dass eine lange Jagd das halbe Biom leerräumt.
+const LEASH_PX = 620, LEASH_HOME = 1400;
+
 function placeMonsters(){
   monsters.length = 0; boss = null; lockedTarget = null;
   if(currentLevel === 1){
-    for(let i=0;i<55;i++){
+    // Treffer zählen statt Versuche. Die Versuchsschranke ist Pflicht, nicht Zierde:
+    // ein ungünstiger Küsten-Startwert darf das Laden nicht aufhängen.
+    let gesetzt = 0, versuche = 0;
+    while(gesetzt < ZIEL_MOBS && versuche++ < ZIEL_MOBS*40){
       const band = auftragOrtBand();                                       // W4
       const tx=ri(4,MW-5), ty = band ? ri(band[0], band[1]) : ri(4,MH-5);   // W4
-      if(!reachbar(tx,ty) || dist(tx*TS,ty*TS, SPAWN.x, SPAWN.y)<=8*TS) continue;
+      if(!reachbar(tx,ty)) continue;
+      if(nahDorf(tx,ty)) continue;               // G5/W-Groß: Dorf samt Umland bleibt monsterfrei
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
-      if(inVillageT(tx,ty)) continue;            // G5: das Dorf bleibt monsterfrei
       const biome = biomeAtT(ty);
       const roster = BIOME_MOBS[biome];
       makeMon(auftragTypBevorzugen(roster[Math.floor(rng()*roster.length)], biome),   // W4
               tx*TS+16, ty*TS+16);
+      gesetzt++;
       if(band) auftragOrtSoll--;                 // W4: erst zählen, wenn wirklich gesetzt
     }
+    if(gesetzt < ZIEL_MOBS) console.warn('Weltform: nur', gesetzt, 'von', ZIEL_MOBS, 'Monstern gesetzt');
   }
 }
 placeMonsters();
@@ -4174,11 +4206,21 @@ function enemyCast(m){
 //  Schwere Kammern sind damit der einzige verlässliche Weg zu seltenen Zutaten.
 // ===========================================================================
 
+// Türen je Biom ohne Dorf-Ausbau. W-Groß von 2 auf 5: sechs Türen auf der
+// sechzehnfachen Fläche wären praktisch unauffindbar gewesen, und der
+// Hauptvorgang (Adresszeilen 1-3) hängt an genau diesen Türen. Eine Konstante
+// für alle drei Leser (CONFIG unten, AUSBAU_DEFS, startShift) — vorher stand die
+// 2 dreimal getrennt im Code und wäre beim Ändern auseinandergelaufen.
+const KAMMERTUEREN_BASIS = 5;
+
 const CONFIG = {
-  kammerTueren: 2,          // Türen je Biom (Phase 4: Dorf-Ausbau erhöht das)
+  kammerTueren: KAMMERTUEREN_BASIS,   // Türen je Biom, Dorf-Ausbau erhöht das (s. startShift)
   kammerNachwachsen: 120,   // Sekunden, bis eine geleerte Kammer neu versiegelt ist
   schichtModus: true,       // Phase 4: Dienst nach Vorschrift. false = alte Todesregel (halbes HP, kein Reset)
-  schichtDauer: 900,        // Sekunden pro Schicht (~15 Minuten)
+  // W-Groß von 900 auf 1500: der Weltdurchmesser ist vier Mal so groß und das Dorf
+  // liegt jetzt mittig, jede Biom-Reise ist also Hin- UND Rückweg. Bei 135 px/s
+  // Grundtempo kostet eine Kartenquerung rund 76 Sekunden statt 19.
+  schichtDauer: 1500,       // Sekunden pro Schicht (~25 Minuten)
   goldUebertragAnteil: 0.5, // Anteil des Golds, der am Gürtel die Schicht überlebt. Der Rest
                             // ist kein Verlust, sondern der Zufluss der Amtskasse (endShift):
                             // ein Regler, zwei Größen, die einander zu 100 Prozent ergänzen.
@@ -4741,27 +4783,42 @@ function setzeKammerTueren(){
   kammerTueren.length = 0;
   const baender = BIOME_BANDS.map(b => [b.key, ...tuerBandRange(b.key)]);
   for(const b of baender){
+    let gesetzt = 0;
     for(let n = 0; n < CONFIG.kammerTueren; n++){
-      for(let versuch = 0; versuch < 300; versuch++){
-        const tx = ri(5, MW-6), ty = ri(b[1], b[2]);
+      // W-Groß: 800 statt 300 Versuche. Mit Meer, gekapptem Land und dem breiten
+      // Dorfbann verwirft die Schleife jetzt deutlich mehr Kandidaten.
+      for(let versuch = 0; versuch < 800; versuch++){
+        // Die ERSTE Tür jedes Bandes wird nah ans Dorf gezwungen (~70 Kacheln
+        // Umkreis, ins Band geklemmt). Ohne das kostet die erste Kammer einer
+        // Schicht auf der großen Karte mehrere Minuten Fußweg — und der
+        // Hauptvorgang (Adresszeilen 1-3) hängt an genau diesen Türen.
+        const nahDran = n === 0 && versuch < 500;
+        const tx = nahDran ? ri(Math.max(5, VILLAGE.x0-70), Math.min(MW-6, VILLAGE.x1+70)) : ri(5, MW-6);
+        const ty = nahDran ? clamp(ri(VILLAGE.y0-70, VILLAGE.y1+70), b[1], b[2]) : ri(b[1], b[2]);
         if(!reachbar(tx, ty) || !reachbar(tx, ty+1)) continue;              // davor muss man stehen können
-        if(sqDist(tx*TS, ty*TS, SPAWN.x, SPAWN.y) < (12*TS)*(12*TS)) continue;
-        if(inVillageT(tx, ty)) continue;                                    // G5: Dorfplatz bleibt türenfrei
+        if(nahDorf(tx, ty)) continue;                                       // W-Groß: gleiche Bannzone wie bei den Monstern
+        // Mindestabstand W-Groß 12 -> 40 Kacheln (sqDist in KACHELN, nicht Pixeln):
+        // auf der sechzehnfachen Fläche klumpten Türen sonst sichtbar zusammen.
         let zuNah = false;
-        for(const d of kammerTueren) if(sqDist(tx, ty, d.tx, d.ty) < 144){ zuNah = true; break; }
+        for(const d of kammerTueren) if(sqDist(tx, ty, d.tx, d.ty) < 1600){ zuNah = true; break; }
         if(zuNah) continue;
         const t = {tx, ty, x: tileMid(tx), y: ty*TS + TS - 2, biome: b[0], diff:1, tier:0, cd:0};
         wuerfleTuer(t);
         kammerTueren.push(t);
+        gesetzt++;
         break;
       }
     }
+    // Ein Band ohne Tür wäre kein Schönheitsfehler: markiereAdressTueren() braucht
+    // je Biom mindestens eine, sonst ist der Hauptvorgang unerfüllbar.
+    if(gesetzt === 0) console.error('Weltform: kein Platz für eine Kammertür im Band', b[0]);
   }
-  // W4: Kammergarantie. Bei sechs Türen und diff = rri(1,5) wäre P(keine Tür mit
-  // Aufwand 5) = (4/5)^6 = 26 Prozent — Statistik reicht nicht für "nie unerfüllbar".
-  // Deshalb wird die höchste gewürfelte Tür notfalls auf das Ziel hochgesetzt.
-  // TDZ-sicher (nur amt.auftrag), weil setzeKammerTueren() auch beim Skriptstart
-  // läuft, lange vor AUFTRAG_TYPEN weiter unten.
+  // W4: Kammergarantie. Bei diff = rri(1,5) ist P(keine Tür mit Aufwand 5) =
+  // (4/5)^Türzahl — bei den früheren sechs Türen 26 Prozent, bei den 15 seit
+  // W-Groß noch 3,5 Prozent. Statistik reicht in beiden Fällen nicht für "nie
+  // unerfüllbar", deshalb wird die höchste gewürfelte Tür notfalls auf das Ziel
+  // hochgesetzt. TDZ-sicher (nur amt.auftrag), weil setzeKammerTueren() auch beim
+  // Skriptstart läuft, lange vor AUFTRAG_TYPEN weiter unten.
   const auftragK = CONFIG.schichtModus ? amt.auftrag : null;   // GW5
   if(auftragK && auftragK.typ === 'kammer' && kammerTueren.length){
     let best = kammerTueren[0];
@@ -6474,6 +6531,15 @@ function update(dt){
   cam.y = lerp(cam.y, player.y - canvas.height / 2, 0.1);
   if(kammer) kammerKamera();      // Korridor mittig halten statt halbes Bild Leere zu zeigen
 
+  // W-Groß: Nahliste. Alles, was pro Frame über ALLE Monster laufen müsste
+  // (Trennung, Projektiltreffer), läuft stattdessen nur über die bildschirmnahen.
+  // Bei 600 statt 49 Monstern wäre die O(n^2)-Trennung sonst 360000
+  // Paarprüfungen pro Frame statt der früheren 2400. Steht direkt hinter der
+  // Kamera, weil nahAmBild() cam liest, und vor allen Verbrauchern (Projektile,
+  // Monsterschleife). Wird nie neu allokiert (Regressionsregel 4).
+  nahListe.length = 0;
+  for(const m of monsters) if(!m.dead && nahAmBild(m)) nahListe.push(m);
+
   // G5: Wetter-Update — reine Optik, eigene Sub-Caps (WEATHER_SNOW_CAP/WEATHER_WIND_CAP),
   // kein particles[]-Producer (Regressionsregel: MAX_PARTICLES gilt nur für spawnImpactParticles,
   // ein zweiter Producer müsste eigenständig deckeln, was hier über die Sub-Caps passiert).
@@ -6521,14 +6587,17 @@ function update(dt){
       spawnImpactParticles(p.x, p.y, 12, p.color || '#ff6600');
       projectiles.splice(i, 1); continue;
     }
-    for(const m of monsters){
+    // W-Groß: Trefferprüfung über die Nahliste statt über alle Monster. Ein
+    // Geschoss fliegt immer im Bild — ein Monster 5000px entfernt konnte es nie
+    // treffen, wurde vorher aber trotzdem jedes Frame mit Math.hypot geprüft.
+    for(const m of nahListe){
       if(!m.dead && dist(p.x, p.y, m.x, m.y) < m.r + (p.r||15)){
         hurtMon(m, p.dmg, true, Math.atan2(p.vy, p.vx), p.zweig);
         if(p.slow) m.slowT = p.slow;
         spawnImpactParticles(p.x, p.y, 20, p.color || '#ff6600');
         if(p.aoe){
           magicEffects.push({type:'ring', x:p.x, y:p.y, rad:p.aoe, color:p.color||'#ff9f4a', t:0.3, maxT:0.3});
-          for(const m2 of monsters){ if(m2!==m && !m2.dead && dist(p.x,p.y,m2.x,m2.y) < p.aoe) hurtMon(m2, Math.round(p.dmg*0.6), false, Math.atan2(m2.y-p.y,m2.x-p.x), p.zweig); }
+          for(const m2 of nahListe){ if(m2!==m && !m2.dead && dist(p.x,p.y,m2.x,m2.y) < p.aoe) hurtMon(m2, Math.round(p.dmg*0.6), false, Math.atan2(m2.y-p.y,m2.x-p.x), p.zweig); }
         }
         projectiles.splice(i, 1); break;
       }
@@ -6562,16 +6631,48 @@ function update(dt){
     if(m.dead){ monsters.splice(i, 1); continue; }
     const mx0 = m.x, my0 = m.y, wasAggro = m.aggro;
 
+    // Schlaf für ferne, nicht aggrierte Monster: nur die Uhren laufen weiter.
+    // Ein eingefrorener slowT/flash/atkT wäre ein Fehler, der erst beim
+    // Wiedersehen sichtbar würde. Aggrierte ticken immer voll durch, sie jagen
+    // ja gerade — und lockedTarget ebenso, sonst zielte die Handy-Zielautomatik
+    // (Fangreichweite bis 420px, mehr als eine halbe Telefonbreite) auf ein
+    // Monster, das gar nicht reagiert.
+    if(!m.aggro && m !== lockedTarget && !nahAmBild(m)){
+      if(m.flash > 0) m.flash -= dt;
+      m.atkT -= dt;
+      if(m.slowT > 0) m.slowT -= dt;
+      if(m.leashT > 0) m.leashT -= dt;
+      m.wanderT -= dt;
+      continue;
+    }
+
     if(Math.abs(m.kx) > 0.1 || Math.abs(m.ky) > 0.1){
       moveEnt(m, m.kx * dt, m.ky * dt);
       m.kx = lerp(m.kx, 0, 0.15); m.ky = lerp(m.ky, 0, 0.15);
     }
     if(m.flash > 0) m.flash -= dt; m.atkT -= dt;
     if(m.slowT > 0) m.slowT -= dt;
+    if(m.leashT > 0) m.leashT -= dt;
     const spd = m.def.speed * (m.slowT > 0 ? 0.4 : 1);
 
     const pd = dist(m.x, m.y, player.x, player.y);
-    if(!m.aggro && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
+    // Aggro wurde bis W-Groß NIE wieder gelöscht: ein einmal aufgeschrecktes
+    // Monster verfolgte den Spieler über die ganze Karte, bis ins Dorf hinein.
+    // Auf 80x80 fiel das kaum auf, auf 320x320 mit Buchten und ganz ohne
+    // Wegfindung (Monster steuern per atan2) ist es zweierlei Fehler: der
+    // Verfolger strandet an der erstbesten Küstenkante, und die Aggro-Menge
+    // wächst über eine Schicht monoton, bis alle gleichzeitig am Spieler hängen.
+    // Nur Oberwelt: die Schattenhorde SOLL ewig jagen, die Kammer ist ein Raum.
+    if(m.aggro && currentLevel === 1 && !kammer){
+      if(pd > LEASH_PX || sqDist(m.x, m.y, m.homeX, m.homeY) > LEASH_HOME*LEASH_HOME){
+        m.aggro = false; m.leashT = 3; m.stuckT = 0;   // Sperre gegen sofortiges Wiederaufschrecken
+      } else if(pd > m.def.atkRange && Math.abs(m.x-mx0) + Math.abs(m.y-my0) < 0.3){
+        // Steckenbleiber: jagt, kommt aber nicht vom Fleck (Küstenkante, Baumriegel).
+        m.stuckT += dt;
+        if(m.stuckT > 2.5){ m.aggro = false; m.leashT = 4; m.stuckT = 0; }
+      } else m.stuckT = 0;
+    }
+    if(!m.aggro && m.leashT <= 0 && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
 
     // Kammerwache mit Rückenregel: dreht sich nur begrenzt schnell zum Spieler,
     // sonst wäre "von hinten" nie erreichbar.
@@ -6615,10 +6716,14 @@ function update(dt){
         if(m.atkT <= 0){ m.atkT = m.def.atkCd; m.actT = 0.45; hurtPlayer(rri(m.def.dmg[0], m.def.dmg[1])); }
       } else {
         const a = Math.atan2(player.y - m.y, player.x - m.x);
-        // Soft Avoidance für Horde-Verhalten. Bei 130 Mobs sind das 17k Paarprüfungen
-        // pro Frame — deshalb erst zwei Achsenvergleiche, Wurzel gar nicht.
+        // Soft Avoidance für Horde-Verhalten. Läuft seit W-Groß über die Nahliste
+        // statt über alle Monster: bei 600 Oberwelt-Mobs wären das 360k
+        // Paarprüfungen pro Frame, bei typisch 25 bildschirmnahen sind es 625.
+        // Sichtbar ist der Unterschied nicht — Ausweichen zählt nur dort, wo man
+        // es sieht. Innerhalb der Liste weiter erst zwei Achsenvergleiche, Wurzel
+        // gar nicht.
         let sepX = 0, sepY = 0;
-        for(const other of monsters){
+        for(const other of nahListe){
             if(other === m || other.dead) continue;
             const dx = m.x - other.x; if(dx > 15 || dx < -15) continue;
             const dy = m.y - other.y; if(dy > 15 || dy < -15) continue;
@@ -7449,8 +7554,10 @@ const AUSBAU_DEFS = [
    desc:'Startet jede Schicht eine Stufe höher.', unit:l=>`Stufe ${1+l}`},
   {key:'kontingent', name:'Größeres Zutaten-Kontingent', max:10, cost:l=>30*(l+1),
    desc:'Mehr Zutaten überstehen den Schichtwechsel.', unit:l=>`${CONFIG.zutatenMitnahmeBasis+l*2} Zutaten`},
+  // Grundwert kommt aus KAMMERTUEREN_BASIS, damit hier und in startShift() nicht
+  // zwei Zahlen nebeneinander stehen, die auseinanderlaufen können.
   {key:'tueren', name:'Mehr Kammertüren', max:2, cost:l=>80*(l+1),
-   desc:'Eine zusätzliche Kammertür pro Biom.', unit:l=>`${2+l} Türen/Biom`},
+   desc:'Eine zusätzliche Kammertür pro Biom.', unit:l=>`${KAMMERTUEREN_BASIS+l} Türen/Biom`},
 ];
 
 const JAHRES_BONI = [
@@ -7494,7 +7601,7 @@ function startShift(){
   player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
   if(amt.ausbauten.startFluch) player.equip.weapon.fluch = amt.ausbauten.startFluch;
 
-  CONFIG.kammerTueren = 2 + amt.ausbauten.tueren; setzeKammerTueren();
+  CONFIG.kammerTueren = KAMMERTUEREN_BASIS + amt.ausbauten.tueren; setzeKammerTueren();
 
   // W4: Weltgarantie-Kontingente vor placeMonsters() setzen, nicht danach.
   // Sammlung braucht das Dreifache: dropZutat() fällt nur bei einem Teil der
