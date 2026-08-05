@@ -87,6 +87,8 @@ Der Bereich ist keine Fantasy-Landkarte, sondern ein Archiv, das über die Ufer 
 | Das Schild an der Kammertür | Gebührenbescheid | Nennt Aufwand (Stufe 1 bis 5) und zu erwartenden Ertrag (Tier). Ein ehrliches Schild ist in dieser Welt eine kleine Sensation. Deshalb glaubt es auch niemand. |
 | Die Rätselmodule | Mitwirkungspflicht | Bevor ein Vorgang geöffnet wird, muss der Antragsteller die fehlenden Angaben beibringen. Deshalb Druckplatten, Symbolschlösser und Reihenfolgen. |
 | Der Fluss | Die Ablage | Ein sehr langsamer Fluss. Wer lange genug hineinschaut, sieht Papier. |
+| Das Meer ringsum | Die Tilgung | Wo der Zuständigkeitsbereich endet. Was hier hineingerät, gilt als getilgt, und getilgt ist im Amtsdeutsch keine Aussage darüber, ob es noch da ist. Niemand geht hinein. Es steht keine Vorschrift dazu, das genügt. |
+| Die Inseln vor der Küste | Ausgelagerte Bestände | Man sieht sie liegen. Es gibt keinen Weg hin. In den Unterlagen sind sie als erreichbar geführt, seit vierzig Jahren, und niemand hat das je nachgeprüft. |
 | Das Dorf | Vordermühl an der Ablage | Sechzig Seelen, ein Gasthaus, ein Amt. Es gab einmal ein Hintermühl. Das gilt als abgeschlossen. |
 
 **Kammer-Sonderfall.** Selten trägt eine Kammertür kein Gebührenbescheid, sondern nur ein Aktenzeichen. Diese Kammern gehören zum Vorgang 1, es gibt genau eine je Biom, und nur in Akt IV. Innen liegt keine bessere Beute, sondern eine Adresszeile — kein Aktenfund der 48, sondern ein eigener Bestand (W5).
@@ -620,6 +622,8 @@ Kapitel 10, die sieben noch offenen Nebenstränge. Nummer 4 (Lisbeths sechster P
 | Ablage auf Eis | Frostkamm | zurückgestellte Vorgänge |
 | Der Brandabschnitt | Aschewüste | die Aktenvernichtung |
 | Ablage V | Schattenland | der ungeleerte Papierkorb |
+| Die Tilgung | das Meer | die Grenze des Zuständigkeitsbereichs |
+| Ausgelagerte Bestände | die Inseln | angeblich erreichbar, nie geprüft |
 | Erledigung | draufhauen | Abschluss eines Vorgangs |
 | Aktenkonfetti | Konfetti | geschredderte Akte |
 | Sachbestand | Zutat | Bestandteil eines Vorgangs |

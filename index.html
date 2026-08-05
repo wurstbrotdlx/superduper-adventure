@@ -3640,10 +3640,13 @@ const BIOM_AMT = {
 };
 
 // W4: Weltgarantie. Die Oberwelt wächst nicht nach (placeMonsters läuft genau einmal
-// je Schicht) — ein Aushang auf einen seltenen Typ wie 'crab' hätte ohne diesen Eingriff
-// nur rund 3,5 Ziele im ganzen Kartenpool. Deshalb reserviert der laufende Aushang Plätze
-// in der bestehenden Setzschleife: dieselbe makeMon-Zeile, nur mit gelenkter Typ- bzw.
-// Bandwahl, bis das Soll steht. Kein neuer Spawner, kein Frame-Aufwand.
+// je Schicht) — ein Aushang auf einen seltenen Typ wie 'crab' träfe ohne diesen Eingriff
+// nur den Anteil, den der Zufall ihm im Roster seines Bandes zuteilt (bei 600 Monstern
+// auf drei Bänder und vier Roster-Einträge rund 50 Stück, aber verstreut über die ganze
+// Karte). Deshalb reserviert der laufende Aushang Plätze in der bestehenden
+// Setzschleife: dieselbe makeMon-Zeile, nur mit gelenkter Typ- bzw. Bandwahl und
+// zusätzlich in eine Scheibe ums Dorf gezwungen (AUFTRAG_NAH), bis das Soll steht.
+// Kein neuer Spawner, kein Frame-Aufwand.
 // Bewusst TDZ-sicher: liest ausschließlich amt.auftrag und BIOME_MOBS, nie AUFTRAG_TYPEN —
 // placeMonsters() läuft schon beim Skriptstart, lange vor der Tabelle weiter unten.
 function auftragTypBevorzugen(typ, biome){
@@ -3675,6 +3678,27 @@ const ZIEL_MOBS = 600;
 // sein muss das Dorf als Fläche, nicht ein Punkt darin. 40 Kacheln sind rund
 // zehn Sekunden Fußweg in jeder Richtung, bevor der erste Kampf kommt.
 const DORF_BANN = 40;
+// Deckel für den 'menge'-Aushang. Er ist das Minimum aus ZWEI Grenzen, und das
+// ist der eigentliche Befund von W-Groß: bis hierher war die bindende Grenze die
+// Zahl der Spawns (der alte Handwert 11 stand neben dem Satz "ein Biom trägt
+// rund 15 bis 18"). Mit 600 Monstern trägt ein Biom rund 50 Stück eines Typs,
+// die Spawn-Grenze bindet also gar nicht mehr — die bindende Grenze ist jetzt
+// die UHR. Beide Grenzen stehen deshalb ausgeschrieben da, statt dass eine von
+// ihnen unbemerkt wirkungslos wird:
+//   Weltgrenze: 600 Monster / 3 Bänder / 4 Roster-Einträge, mal 0.6 für
+//               Ablehnungen und für Kartenecken, die niemand abläuft.
+//   Uhrgrenze:  der alte, im Spiel erprobte Wert 11, angehoben im Verhältnis der
+//               Schichtdauer (900 -> 1500 s). Damit bleibt das Zeitbudget JE KILL
+//               erhalten: früher 11 Kills in 900 s (82 s je Stück), jetzt bis 17
+//               in 1500 s (88 s je Stück). Ohne diese Grenze würde der Deckel bei
+//               30 liegen und nie binden — der Aushang wäre stillschweigend
+//               schwerer geworden, ohne dass es jemand entschieden hätte.
+const MENGE_WELT = Math.floor(ZIEL_MOBS / 3 / 4 * 0.6);
+const MENGE_UHR  = Math.round(11 * 1500 / 900);
+const MENGE_DECKEL = Math.max(4, Math.min(MENGE_WELT, MENGE_UHR));
+// Umkreis ums Dorf (Kacheln), in dem die Weltgarantie ihre reservierten Monster
+// setzt. Weit genug für Abwechslung, nah genug für eine Schicht Fußweg.
+const AUFTRAG_NAH = 90;
 const nahDorf = (tx,ty)=> tx > VILLAGE.x0-DORF_BANN && tx < VILLAGE.x1+DORF_BANN
                        && ty > VILLAGE.y0-DORF_BANN && ty < VILLAGE.y1+DORF_BANN;
 
@@ -3698,7 +3722,18 @@ function placeMonsters(){
     let gesetzt = 0, versuche = 0;
     while(gesetzt < ZIEL_MOBS && versuche++ < ZIEL_MOBS*40){
       const band = auftragOrtBand();                                       // W4
-      const tx=ri(4,MW-5), ty = band ? ri(band[0], band[1]) : ri(4,MH-5);   // W4
+      // W-Groß: reservierte Plätze (Weltgarantie für den laufenden Aushang)
+      // werden zusätzlich in eine Scheibe ums Dorf gezwungen. auftragOrtBand()
+      // erzwingt nur das y-BAND — ein garantiertes Ziel konnte damit 300 Kacheln
+      // seitlich liegen und war in einer Schicht nicht erreichbar. Der Aushang
+      // ist nur dann eine Garantie, wenn er auch ablaufbar ist.
+      const reserviert = !!band || auftragSoll > 0;
+      const tx = reserviert
+        ? ri(Math.max(4, VILLAGE.x0-AUFTRAG_NAH), Math.min(MW-5, VILLAGE.x1+AUFTRAG_NAH))
+        : ri(4, MW-5);
+      const ty = band ? ri(band[0], band[1])
+               : reserviert ? clamp(ri(VILLAGE.y0-AUFTRAG_NAH, VILLAGE.y1+AUFTRAG_NAH), 4, MH-5)
+               : ri(4, MH-5);
       if(!reachbar(tx,ty)) continue;
       if(nahDorf(tx,ty)) continue;               // G5/W-Groß: Dorf samt Umland bleibt monsterfrei
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
@@ -6457,7 +6492,12 @@ function update(dt){
     }
   } else if(!kammer){
     const zb = biomeAtPx(player.y);                  // Biom-Anzeige statt statischem "Grasland"
+    // W-Groß: am Strand nennt das HUD die Küste, nicht das Band. Die Tilgung ist
+    // laut Weltbibel ein eigener Ort mit eigener Aktenbedeutung, also bekommt sie
+    // auch eine eigene Zeile — sonst stünde der Spieler am Meer und läse "Grasland".
+    const amStrand = T(Math.floor(player.x/TS), Math.floor(player.y/TS)) === G_BEACH;
     setTxt('zone', (inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage (Stufe ' + player.level + ')'   // G5
+                 : amStrand      ? '📍 Küste, Am Rand der Tilgung (Stufe ' + player.level + ')'
                  : zb === 'snow' ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
                  : zb === 'sand' ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
                            : '📍 Grasland, Ablage A (Stufe ' + player.level + ')') + schichtHudSuffix());
@@ -6970,7 +7010,8 @@ function render(){
   // und Dekale) — hier nur noch die Zeichenliste damit befüllen.
   drawCount = 0;
   // trees/decos entstehen zeilenweise und sind damit nach y sortiert: statt aller
-  // ~2000 Props nur das sichtbare Band anfassen.
+  // Props (seit W-Groß rund 8000 Bäume/Felsen und 2000 Deko) nur das sichtbare
+  // Band anfassen. Die binäre Suche ist der Grund, warum die Zahl wachsen durfte.
   for(let i = firstAtY(trees, cullT); i < trees.length && trees[i].y < cullB; i++){
     const t = trees[i];
     if(t.x > cullL && t.x < cullR) pushDraw(t.y, DRAW_TREE, t);
@@ -7452,7 +7493,7 @@ function showStartScreen(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>DAS MONSTRAL MINISTERIUM</h1>
     <h3>Erledigen. Beglaubigen. Feierabend.</h3>
-    <p>Drei Biome, versiegelte Kammern, ein Kessel. Draufhauen mit Klick oder Leertaste, auf dem Handy rechte Bildschirmhälfte. Den Rest erklärt das Amt.</p>
+    <p>Drei Biome bis ans Meer, versiegelte Kammern, ein Kessel. Draufhauen mit Klick oder Leertaste, auf dem Handy rechte Bildschirmhälfte. Karte auf L. Den Rest erklärt das Amt.</p>
     <button onclick="startGame()">Dienst antreten</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -7604,13 +7645,16 @@ function startShift(){
   CONFIG.kammerTueren = KAMMERTUEREN_BASIS + amt.ausbauten.tueren; setzeKammerTueren();
 
   // W4: Weltgarantie-Kontingente vor placeMonsters() setzen, nicht danach.
-  // Sammlung braucht das Dreifache: dropZutat() fällt nur bei einem Teil der
+  // Sammlung braucht das Vierfache: dropZutat() fällt nur bei einem Teil der
   // Kills, plus Reserve. Menge/Ort bekommen Puffer für Kartenecken, die in
-  // einer Schicht realistisch nicht abgelaufen werden.
+  // einer Schicht realistisch nicht abgelaufen werden. W-Groß hat die Puffer
+  // angehoben (2->ziel, 3->ziel*2, x3->x4): auf der sechzehnfachen Fläche ist
+  // "die Ecke, die man nicht abläuft" viel mehr Karte als vorher, die
+  // Reservierungen sind zugleich ein viel kleinerer Anteil der 600 Plätze.
   const auftragS = amt.auftrag;
-  auftragSoll    = !auftragS ? 0 : auftragS.typ === 'menge' ? auftragS.ziel + 2
-                              : auftragS.typ === 'sammlung' ? auftragS.ziel * 3 : 0;
-  auftragOrtSoll = (auftragS && auftragS.typ === 'ort') ? auftragS.ziel + 3 : 0;
+  auftragSoll    = !auftragS ? 0 : auftragS.typ === 'menge' ? auftragS.ziel * 2
+                              : auftragS.typ === 'sammlung' ? auftragS.ziel * 4 : 0;
+  auftragOrtSoll = (auftragS && auftragS.typ === 'ort') ? auftragS.ziel * 3 : 0;
 
   recalc(); player.hp = derived.maxHp; player.mana = derived.maxMana;
   knCheckFluchEquipped();   // Startfluch-Ausbau kann ohne equipItemFromBag() einen Fluch anlegen
@@ -8552,6 +8596,11 @@ function vorgangAssert(){
   for(let maske = 0; maske < 16; maske++){
     kladde.vorgang = {};
     for(let z = 1; z <= 4; z++) if(maske & (1 << (z - 1))) kladde.vorgang[z] = true;
+    // Türzahl je Biom bewusst als Literal und NICHT aus CONFIG.kammerTueren:
+    // der Guard soll die Markierung prüfen, nicht den gerade eingestellten
+    // Dorf-Ausbau mitspiegeln. 2 ist der Bodenwert, der immer da sein muss —
+    // seit W-Groß liefert das Spiel mit KAMMERTUEREN_BASIS=5 mehr. Weniger zu
+    // prüfen als vorhanden ist, ist die harmlose Richtung.
     const attrappe = [];
     for(const b of BIOME_BANDS.map(z=>z.key)) for(let i = 0; i < 2; i++) attrappe.push({biome:b, diff:3});
     markiereAdressTueren(attrappe);
@@ -8667,19 +8716,26 @@ const AUFTRAG_BEMERKUNGEN = [
 const AUFTRAG_TYPEN = {
 
   menge: {
-    // GW2: Der Deckel 11 ist eine Weltgrenze, keine Balance-Setzung.
+    // GW2: Der Deckel ist eine Weltgrenze, keine Balance-Setzung.
     // auftragTypBevorzugen() ersetzt nur den TYP eines ohnehin gesetzten
-    // Monsters, nie deren ZAHL. Ein Biom trägt rund 15 bis 18 Spawns, nach
-    // Ablehnungen weniger — ab ziel 15 wäre der Aushang unerfüllbar.
+    // Monsters, nie deren ZAHL — ein Ziel über dem, was ein Biom trägt, wäre
+    // schlicht unerfüllbar. W-Groß leitet den Deckel deshalb aus ZIEL_MOBS ab,
+    // statt ihn als Handzahl zu führen: 600 Monster auf drei Bänder, ein Roster
+    // von vier Einträgen je Band, mal 0.6 für Ablehnungen und für Kartenecken,
+    // die in einer Schicht realistisch nicht ablaufen werden.
     wuerfle:(st,stufe)=>({par: AUFTRAG_MOBS[rri(0, AUFTRAG_MOBS.length-1)],
-                          ziel: st===0 ? 4+stufe : Math.min(11, 9+stufe*2)}),
+                          ziel: st===0 ? 4+stufe : Math.min(MENGE_DECKEL, 9+stufe*2)}),
     titel: a => `Vorgangslage ${BIOM_AMT[AUFTRAG_BIOM[a.par]].nom}`,
     satz:  a => `${MONDEF[a.par].name} (${MONDEF[a.par].art}), ${a.ziel} Stück.`,
     stand: a => shiftKillsByType[a.par] || 0,
-    sofort:true, pruefePar: a => AUFTRAG_MOBS.indexOf(a.par) >= 0 && a.ziel > 0 && a.ziel <= 11},
+    sofort:true, pruefePar: a => AUFTRAG_MOBS.indexOf(a.par) >= 0 && a.ziel > 0 && a.ziel <= MENGE_DECKEL},
 
   ort: {
-    wuerfle:(st,stufe)=>({par: ['snow','grass','sand'][rri(0,2)], ziel: 8+stufe*2}),
+    // W-Groß: Ziel von 8+stufe*2 auf 6+stufe gesenkt. Nicht wegen der Monsterzahl
+    // — davon gibt es jetzt mehr —, sondern wegen der Uhr: ein Band ist 320 mal
+    // rund 110 Kacheln, der Rundgang ist der Aushang, den die große Karte am
+    // stärksten trifft.
+    wuerfle:(st,stufe)=>({par: BIOME_BANDS[rri(0, BIOME_BANDS.length-1)].key, ziel: 6+stufe}),
     titel: a => `Rundgang ${BIOM_AMT[a.par].nom}`,
     satz:  a => `${a.ziel} Vorgänge, erledigt ${BIOM_AMT[a.par].dat}.`,
     zaehle:(a,was,info)=> was==='kill' && zutatBiome(info.y)===a.par ? auftragStand+1 : auftragStand,
