@@ -893,6 +893,8 @@ Repro: Tonregler auf **„Dienstlich"** oder **„Schweigt"** (`knLineErlaubt()`
 
 **Stimmte nie.**
 
+**ERLEDIGT am 06.08.2026, zweite Variante gewählt.** `vorgangZustellbar()` verlangt jetzt zusätzlich `aktStand() >= 5`, die Abnahme lautet „ab Schicht 41". Mitgezogen: der Kreuzprodukt-Assert wurde zu einem Sollwert-Sweep über 0/30/39/40 (behebt zugleich GW15), `langAssert()` Block 4 prüft bei Schicht 40 statt 30, und `vorgangBestandBlock()` hängt im Fenster 30 bis 39 einen Halbsatz an („Zugestellt wird im fünften Akt."). Ohne diesen Halbsatz hätte die Änderung eine stumme Sperre erzeugt: der Kessel-Reiter meldet Vollständigkeit, am Fürsten wird wortlos nichts angeboten. Siehe `GW-RESTFUNDE-2026-08-06.md`.
+
 ---
 
 ### GW11 · „Per Konstruktion unberührt" ist für Bramsche falsch (G5)
@@ -1120,7 +1122,7 @@ Damit gebrochen ist zugleich die Bedingung aus `phase-w3-dorf.md:645`: „keine 
 
 **GW26a · Die zwei Wahlsprüche aus 18.9 existieren nicht** (G4). `phase-w6-rang.md:11` nennt sie als eingebaut; `grep` über `index.html` liefert null Treffer, auch in `ad72e37`. `phase-w6-rang.md:129` behauptet das Gegenteil und deckt sich mit dem Code. Einzige Zusage im Paket, deren Gegenstand komplett fehlt. **Stimmte nie.**
 
-**GW26b · `amt.auftraegeErfuellt` wird geschrieben, gespeichert, geladen und nie gelesen** (G7). Drei Vorkommen im ganzen File. Als Vorleistung für W5 gedacht, von W5, W6 und W7 nicht aufgegriffen. Durch GW1 zusätzlich inflationierbar. **Stimmt nicht mehr.**
+**GW26b · `amt.auftraegeErfuellt` wird geschrieben, gespeichert, geladen und nie gelesen** (G7). Drei Vorkommen im ganzen File. Als Vorleistung für W5 gedacht, von W5, W6 und W7 nicht aufgegriffen. Durch GW1 zusätzlich inflationierbar. **Stimmt nicht mehr.** **ERLEDIGT am 06.08.2026: ersatzlos gestrichen**, alle drei Vorkommen. Kein Migrationscode, `loadAmt()` ist eine Feld-Whitelist und `saveAmt()` schreibt `amt` als Vollersatz.
 
 **GW26c · `assertRigRegistrations()` sieht die drei gebackenen NPC-Sheets nicht** (G1). Der Guard läuft an Position 2 der Ladekette, `bakeAllNpcSheets()` erst an Position 5. `phase-w3-dorf.md:660` führt ihn als Beleg für genau diese drei Sheets an. Der Nachweis kann nur eine manuelle Konsolenabfrage gewesen sein. Behebbar mit einer Zeile: den Guard ein zweites Mal aufrufen, er ist idempotent und seiteneffektfrei. **Stimmte nie.**
 
@@ -1192,8 +1194,8 @@ Nichts davon wurde umgesetzt. Alles wartet auf Freigabe.
 
 19. **GW7, Sprossenreihenfolge umstellen** auf `[HERR+t+'(in)', HERR+t, t+'(in)', t]`. Bringt „Herr oder Frau" von 1 auf 7 Ränge im 44er-Kanal. Ändert den Klang des Spiels — das ist eine Entscheidung, keine Korrektur.
 20. **GW8, Gießkannen-Suffix kürzen.** Nur wenn die einzige Belohnung des Strangs wirken soll.
-21. **GW10, `vorgangZustellbar` an `aktStand() >= 5` binden.** Füllt Puzzleteil 1 im Regelfall, ändert aber die Abnahme „ab Schicht 30".
-22. **GW26b, `amt.auftraegeErfuellt` streichen** — nur wenn entschieden ist, dass kein Bauabschnitt es mehr liest.
+21. ~~**GW10, `vorgangZustellbar` an `aktStand() >= 5` binden.**~~ **ERLEDIGT 06.08.2026.** Füllt Puzzleteil 1 im Regelfall, Abnahme lautet jetzt „ab Schicht 41".
+22. ~~**GW26b, `amt.auftraegeErfuellt` streichen**~~ **ERLEDIGT 06.08.2026.** Entschieden: kein Bauabschnitt liest es mehr, Feld entfernt.
 
 ### Dokument ändern
 

@@ -6,7 +6,7 @@ Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Co
 
 ### Grundsatz: was diese Phase nicht ist
 
-Kein neues Panel, kein neuer `localStorage`-Schlüssel, kein neuer Reitermechanismus, keine zweite Währung, kein Questmarker auf der Minimap. Die Weltbibel schreibt „Vierter Reiter im Amt-Panel", aber ein Reiter existiert im ganzen Projekt nur am Kessel (`switchKesselTab()`, W2). Das Amt hat zwei reiterlose Flächen: `showDorf()` (zwischen den Schichten) und `#amtFenster`/`renderAmtFenster()` (in der Welt, F-Taste). Entscheidung dieser Phase (mit Matthias abgestimmt): Auswahl als vierte gestapelte Sektion in `showDorf()`, laufender Auftrag und Fortschritt in `renderAmtFenster()`. Drei Pools mit neun Typen, ein Trichter statt neun verstreuter Zähler, drei neue `amt`-Felder — mehr Systemeingriff als W2/W3, aber ausschließlich Verdrahtung auf Bestehendes (`shiftKillsByType`, `player.pouch`, `player.gold`, `placeMonsters()`, `setzeKammerTueren()`).
+Kein neues Panel, kein neuer `localStorage`-Schlüssel, kein neuer Reitermechanismus, keine zweite Währung, kein Questmarker auf der Minimap. Die Weltbibel schreibt „Vierter Reiter im Amt-Panel", aber ein Reiter existiert im ganzen Projekt nur am Kessel (`switchKesselTab()`, W2). Das Amt hat zwei reiterlose Flächen: `showDorf()` (zwischen den Schichten) und `#amtFenster`/`renderAmtFenster()` (in der Welt, F-Taste). Entscheidung dieser Phase (mit Matthias abgestimmt): Auswahl als vierte gestapelte Sektion in `showDorf()`, laufender Auftrag und Fortschritt in `renderAmtFenster()`. Drei Pools mit neun Typen, ein Trichter statt neun verstreuter Zähler, zwei neue `amt`-Felder *(GW26b: es waren drei, `amt.auftraegeErfuellt` ist am 06.08.2026 ersatzlos entfallen)* — mehr Systemeingriff als W2/W3, aber ausschließlich Verdrahtung auf Bestehendes (`shiftKillsByType`, `player.pouch`, `player.gold`, `placeMonsters()`, `setzeKammerTueren()`).
 
 **Sperrvermerk, unverändert aus Kapitel 7 und 12:** kein Aushangtext erklärt oder deutet an, wie die Beglaubigung im Kessel rechnet. Zwei der neun Typen liegen nah an der Linie: „Sammlung" nennt eine Zutatenart (Substantiv=Slot-Nähe), „Beglaubigung" nennt eine Auflage (Fluch=Auflage-Nähe). Beide Texte stellen nur die Aufgabe, nie die Begründung. `auftragAssertBrett()` prüft das strukturell (nur zwei zulässige Beglaubigungs-Auflagen, `anzahl`/`guete`, beides reine Ergebniseigenschaften) und textuell (Begriffsliste gegen Kesselgrammatik-Wörter).
 
@@ -146,7 +146,7 @@ Kein Ereignis erhöht einen Zähler, der anderswo schon existiert — dort ist d
 
 ## Was in W4 ausdrücklich nicht angefasst wird
 
-* Kein neues Panel, kein neuer Reitermechanismus, kein `localStorage`-Schlüssel außer den drei neuen `amt`-Feldern (die im bestehenden `sda_amt_v1` mitlaufen).
+* Kein neues Panel, kein neuer Reitermechanismus, kein `localStorage`-Schlüssel außer den zwei neuen `amt`-Feldern (die im bestehenden `sda_amt_v1` mitlaufen). *(GW26b: bis 06.08.2026 drei.)*
 * Kein Dialogbaum, keine Antwortauswahl, kein Questmarker auf der Minimap, keine zweite Währung — die Verbotsliste aus Kapitel 14 gilt unverändert.
 * Kein `amt.akt`-Feld, keine Ausfertigung, keine Kontextaktion „Zustellen", kein Rangsystem — das ist W5.
 * Kein neuer Sound. `sfx.*` bleibt unverändert.
@@ -166,7 +166,7 @@ Kein Ereignis erhöht einen Zähler, der anderswo schon existiert — dort ist d
 
 ## Bewusst offen für spätere Bauabschnitte
 
-* **W5** (Der Vorgang) kann `amt.auftraegeErfuellt` als Erzählsignal lesen (z. B. für einen Absatz im Jahresgespräch), das ist hier nicht vorweggenommen.
+* ~~**W5** (Der Vorgang) kann `amt.auftraegeErfuellt` als Erzählsignal lesen (z. B. für einen Absatz im Jahresgespräch), das ist hier nicht vorweggenommen.~~ *(GW26b, entschieden am 06.08.2026: W5, W6 und W7 haben es nicht aufgegriffen, das Feld ist ersatzlos gestrichen. Wer das Erzählsignal später doch will, fängt bei null an — der historische Stand ist aus keiner anderen gespeicherten Größe rekonstruierbar.)*
 * Die Balance der Lohnstaffel (150 bis 400 Gold) ist eine Setzung dieser Phase, keine aus dem Spiel abgeleitete Zahl — siehe „Ungeprüft" in `ZUSAGEN-BILANZ-2026-08-04.md` zur Bank-Balance insgesamt.
 * Pommer/Nörgel könnten künftig auf einen erfüllten oder hinfälligen Aushang reagieren (über `letzterAnlass` wie in W3), hier nicht gebaut, um keinen achten Anlass in `knRandnotiz()` vorwegzunehmen.
 
@@ -181,11 +181,11 @@ Node-Syntaxcheck (`node --check`) über den extrahierten Skriptblock nach jedem 
 * Kammergarantie: 20 erzwungene Läufe mit Ziel 5 (natürliche Trefferchance 74 %) liefern 20-mal eine Tür mit `diff===5`.
 * Menge-Garantie: 15 erzwungene Läufe mit Ziel 8 auf `crab` (natürlich ~3,5/Schicht) liefern 10 bis 14 Treffer.
 * Ort-Garantie: 10 erzwungene Läufe mit Ziel 8 auf `sand` liefern 19 bis 26 Treffer.
-* Trichter, alle neun Typen einzeln durchgespielt: Kammer (Zahlung exakt `+lohn` auf `amt.bankGold`, `auftraegeErfuellt+1`, Floater „Aushang erfüllt · 300 Gold", zweites Ereignis zahlt nicht erneut), Verfahren (Zauber löst `auftragVerletzt` aus, Floater „Aushang hinfällig", kein Abzug, kein weiterer Fortschritt danach), Sammlung/Reise/Beglaubigung-Güte (je ein Ereignis genügt), Beglaubigung-Anzahl (zwei Ereignisse nötig, nach dem ersten korrekt noch nicht fertig), Menge/Ort/Verzicht/Bilanz über direkte Zustandsprüfung (`stand()` liest `shiftKillsByType`/`shiftKillsTotal`/`player.gold` korrekt).
+* Trichter, alle neun Typen einzeln durchgespielt: Kammer (Zahlung exakt `+lohn` auf `amt.bankGold`, Floater „Aushang erfüllt · 300 Gold", zweites Ereignis zahlt nicht erneut), Verfahren (Zauber löst `auftragVerletzt` aus, Floater „Aushang hinfällig", kein Abzug, kein weiterer Fortschritt danach), Sammlung/Reise/Beglaubigung-Güte (je ein Ereignis genügt), Beglaubigung-Anzahl (zwei Ereignisse nötig, nach dem ersten korrekt noch nicht fertig), Menge/Ort/Verzicht/Bilanz über direkte Zustandsprüfung (`stand()` liest `shiftKillsByType`/`shiftKillsTotal`/`player.gold` korrekt).
 * Amtsstube (`amtFensterOeffnen()`): zeigt Titel, Satz, „Stand: 3 von 6", Rückgabe-Link; `auftragZurueckgeben()` löscht den Aushang ohne Folgen.
 * Dienstbericht: „Aushang: Vorgangslage Ablage A · offen, 3 von 6" erscheint korrekt vor der Beuteanteil-Zeile, keine leere Zeile, wenn kein Aushang lief.
 * `CONFIG.schichtModus = false`: `auftragFensterBlock()` liefert `''` trotz gesetztem `amt.auftrag`, `auftragBrettSichern()`/`auftragEreignis()` greifen nicht.
-* Persistenz: `saveAmt()` mit gesetztem Brett/Auftrag/Zähler, Seiten-Reload, alle Werte identisch wiederhergestellt.
+* Persistenz: `saveAmt()` mit gesetztem Brett/Auftrag/Zähler, Seiten-Reload, alle Werte identisch wiederhergestellt. *(GW26b: der Zähler ist seit 06.08.2026 weg, Brett und Auftrag bleiben.)*
 * Konsole blieb über alle Prüfungen leer, keine einzige Exception.
 
 ---
@@ -193,5 +193,5 @@ Node-Syntaxcheck (`node --check`) über den extrahierten Skriptblock nach jedem 
 ## Nachtrag: bewusst offen gelassen
 
 * **Die Akt-III-Eskalation der Amtsleitungs-Bemerkung fehlt.** Kapitel 11 der Weltbibel sagt: „Der letzte Satz erscheint absichtlich ab Schicht 1 und **wird ab Akt III unerträglich**." Gebaut ist nur die feste Platzierung auf dem mittleren Aushang; die Eskalation gibt es nicht. Das ist eine Lücke gegenüber Kapitel 11, keine übersehene Zusage dieses Dokuments — hier festgehalten, damit sie nicht ein zweites Mal als Fund auftaucht.
-* **`amt.auftraegeErfuellt` ist unbenutzt geblieben.** Das Feld war als Erzählsignal für W5 gedacht. W5, W6 und W7 haben es nicht aufgegriffen; es wird geschrieben, gespeichert, geladen und nirgends gelesen. Entweder ein späterer Abschnitt greift es auf, oder es fällt weg — das ist eine offene Entscheidung, kein Fehler.
+* **`amt.auftraegeErfuellt` ist gestrichen (GW26b, 06.08.2026).** Das Feld war als Erzählsignal für W5 gedacht. W5, W6 und W7 haben es nicht aufgegriffen; es wurde geschrieben, gespeichert, geladen und nirgends gelesen. Die offene Entscheidung ist gefallen: ersatzlos entfernt. Kein Migrationscode nötig, `loadAmt()` ist eine Feld-Whitelist und `saveAmt()` schreibt `amt` vollständig neu, das Feld räumt sich beim nächsten Speichern von selbst aus dem `localStorage`.
 

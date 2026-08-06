@@ -2391,7 +2391,14 @@ function genMap(){
   // sonst wirkt die Karte schachbrettartig statt organisch — GEGENPROBE-W).
   const EIS_TEICHE_N = 300, [EIS_CY0, EIS_CY1] = bandRange('snow', 4);
   for(let n=0;n<EIS_TEICHE_N;n++){
-    const cx = ri(5, MW-6), cy = ri(EIS_CY0, EIS_CY1), rad = rr(1.6, 3.2);
+    // R statt rr: rr hängt an Math.random und lief damit AUSSERHALB des gesiegelten
+    // Stroms. Der Radius entschied aber mit, wie viele G_ICE_TREE-Kacheln zu
+    // begehbarem Eis werden — die Karte war deshalb bei gleichem Startwert von
+    // Laden zu Laden verschieden (gemessen: begehbare Schneekacheln 24592 gegen
+    // 24189 bei zwei Läufen mit 20260805). Ein Kartenfehlerbericht war so nie
+    // nachstellbar. Gleiche Regel wie umgekehrt bei auftragLohn(), nur in die
+    // andere Richtung: Welt = ri/R, Laufzeit = rr/rri.
+    const cx = ri(5, MW-6), cy = ri(EIS_CY0, EIS_CY1), rad = R(1.6, 3.2);
     for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
       for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
         if(!inB(x,y) || biomeAtT(y) !== 'snow') continue;
@@ -2406,7 +2413,7 @@ function genMap(){
   // Zahl W-Groß 16 -> 180 (gleiches ~x12-Verhältnis wie bei den Eisteichen).
   const LAVA_TUEMPEL_N = 180, [LAVA_CY0, LAVA_CY1] = bandRange('sand', 1);
   for(let n=0;n<LAVA_TUEMPEL_N;n++){
-    const cx = ri(5, MW-6), cy = ri(LAVA_CY0, LAVA_CY1), rad = rr(1.0, 2.0);
+    const cx = ri(5, MW-6), cy = ri(LAVA_CY0, LAVA_CY1), rad = R(1.0, 2.0);   // R statt rr, siehe Eisteiche
     for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
       for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
         if(!inB(x,y) || biomeAtT(y) !== 'sand') continue;
@@ -2573,8 +2580,19 @@ function genMap(){
     for(const b of BIOME_BANDS) proBand[b.key] = 0;
     for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) if(reachbar(x,y)) proBand[biomeAtT(y)]++;
     console.log('Weltform: erreichbare Kacheln je Band', proBand, '| abgeschnittenes Land geflutet:', geflutet);
-    for(const b of BIOME_BANDS) if(proBand[b.key] < 500)
-      console.error('Weltform: Band zu klein, Aufträge dort unerfüllbar', b.key, proBand[b.key]);
+    // Schwelle bandproportional statt Handzahl. Die alten 500 stammen aus MH=80,
+    // wo ein Band 2000 bis 2320 Kacheln hatte — also rund ein Viertel. Bei MH=320
+    // sind 500 noch 1,5 Prozent eines Bandes: der Wächter hätte 98 Prozent
+    // Landverlust verschwiegen. Ein Viertel hält die alte Absicht und hängt an MH,
+    // wie SNOW_Y1/SAND_Y0 weiter oben. Gemessen über sechs Startwerte (20260805,
+    // 20260721, 1, 424242, 11111111, 987654321): der kleinste Istwert war 20760
+    // (Sand, 64,9 Prozent), der strengste Sollwert ist 8000 — Abstand Faktor 2,6.
+    for(const b of BIOME_BANDS){
+      const soll = Math.round((b.y1 - b.y0 + 1) * MW * 0.25);
+      if(proBand[b.key] < soll)
+        console.error('Weltform: Band zu klein, Aufträge dort unerfüllbar',
+                      b.key, proBand[b.key], 'von mindestens', soll);
+    }
   }
   for(let y=0;y<MH;y++) for(let x=0;x<MW;x++) {
     const t = T(x,y);
@@ -3380,7 +3398,10 @@ let amt = {bankGold:0, schichten:0,
   // W4: brett = die drei gewürfelten Aushänge der laufenden Schicht {schicht, liste:[a,a,a]}.
   // auftrag = der angenommene Aushang, ohne Fortschritt (der läuft in shiftT-Laufzeitfeldern
   // unten, nicht hier — sonst wäre jeder Kill ein localStorage-Schreibvorgang).
-  brett:null, auftrag:null, auftraegeErfuellt:0};
+  // GW26b: auftraegeErfuellt ersatzlos gestrichen. Wurde geschrieben, gespeichert
+  // und geladen, aber von W5, W6 und W7 nie gelesen. Ein Feld, das nur sich selbst
+  // zählt, ist kein Erzählsignal, sondern ein Migrationsrisiko.
+  brett:null, auftrag:null};
 // W3: Aktstand aus der bestehenden Schichtzahl abgeleitet, nichts Neues
 // gespeichert. Deckt sich mit Kapitel 9: Akt I = Schicht 1-10 (amt.schichten
 // 0-9), ... Akt V ab Schicht 41 (amt.schichten >= 40), gedeckelt bei 5.
@@ -3689,10 +3710,14 @@ const DORF_BANN = 40;
 //               Ablehnungen und für Kartenecken, die niemand abläuft.
 //   Uhrgrenze:  der alte, im Spiel erprobte Wert 11, angehoben im Verhältnis der
 //               Schichtdauer (900 -> 1500 s). Damit bleibt das Zeitbudget JE KILL
-//               erhalten: früher 11 Kills in 900 s (82 s je Stück), jetzt bis 17
-//               in 1500 s (88 s je Stück). Ohne diese Grenze würde der Deckel bei
+//               erhalten: früher 11 Kills in 900 s (82 s je Stück), jetzt bis 18
+//               in 1500 s (83 s je Stück). Ohne diese Grenze würde der Deckel bei
 //               30 liegen und nie binden — der Aushang wäre stillschweigend
 //               schwerer geworden, ohne dass es jemand entschieden hätte.
+//               (Korrektur 06.08.2026: hier stand "bis 17" und "88 s je Stück".
+//               Math.round(11*1500/900) ist 18 — der Kommentar widersprach dem
+//               Ausdruck zwei Zeilen unter ihm. Die Absicht des Werts stimmt
+//               weiter: 82 s je Kill vorher, 83 s nachher.)
 const MENGE_WELT = Math.floor(ZIEL_MOBS / 3 / 4 * 0.6);
 const MENGE_UHR  = Math.round(11 * 1500 / 900);
 const MENGE_DECKEL = Math.max(4, Math.min(MENGE_WELT, MENGE_UHR));
@@ -4282,7 +4307,11 @@ const AMT_KEY = 'sda_amt_v1';
     if(o.brett && Array.isArray(o.brett.liste) && o.brett.liste.length === 3
        && typeof o.brett.schicht === 'number') amt.brett = o.brett;
     if(o.auftrag && typeof o.auftrag.typ === 'string') amt.auftrag = o.auftrag;
-    if(typeof o.auftraegeErfuellt === 'number') amt.auftraegeErfuellt = o.auftraegeErfuellt;
+    // GW26b: die Ladezeile für auftraegeErfuellt ist hier ersatzlos entfallen.
+    // loadAmt() ist eine Feld-Whitelist, ein alter Stand mit dem Feld wird also
+    // schlicht nicht mehr gelesen; saveAmt() schreibt amt komplett neu und räumt
+    // es beim nächsten Speichern von selbst aus dem localStorage. Kein delete,
+    // kein Aufräum-saveAmt() hier — das wäre ein Schreibvorgang bei jedem Aufruf.
   }catch(_){}
 })();
 function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }catch(_){} }
@@ -8371,16 +8400,27 @@ function vorgangBestandBlock(){
   const zeilen = [1,2,3,4].map(id => vorgangHat(id)
     ? `<div class="kl">${ADRESS_ZEILEN[id].lines[ADRESS_ZEILEN[id].lines.length - 1]}</div>`
     : `<div class="kl klEmpty">Adresszeile ${id}: noch nicht gefunden.</div>`).join('');
-  const voll = vorgangAusfertigung()
-    ? `<div class="kl" style="color:#f4d97a;">Die Ausfertigung ist vollständig. ${VORGANG_ANSCHRIFT}</div>` : '';
+  // GW10: die Zeile behauptete Vollständigkeit auch dort, wo das Zustellen noch
+  // gesperrt ist (Akt IV, amt.schichten 30 bis 39). Am Fürsten wird in diesem
+  // Fenster wortlos nichts angeboten, und der Spieler erschlägt ihn stattdessen.
+  // Ein halber Satz statt eines Erklärsystems: er nennt den Akt, nicht die
+  // Bedingung, und liest vorgangZustellbar() statt ein zweites Prädikat
+  // aufzumachen (die F1-Falle aus 18.7).
+  const voll = !vorgangAusfertigung() ? ''
+    : `<div class="kl" style="color:#f4d97a;">Die Ausfertigung ist vollständig. ${VORGANG_ANSCHRIFT}`
+      + `${vorgangZustellbar() ? '' : ' Zugestellt wird im fünften Akt.'}</div>`;
   return `<div class="klHead">DIE ANSCHRIFT</div>${zeilen}${voll}`;
 }
 
 // Akt V, die vier Finale-Puzzleteile (Kapitel 9). Teil 1 und 3 haben eine
 // echte Bedingung, sind aber nie hart blockierend: der Text passt sich an,
 // Zustellen wird nie verweigert. Ein Erklärsystem für ein fehlendes Teil ist
-// verboten, und Teil 1 ist ohnehin faktisch nie leer (JAHRES_BONI Index 3
-// fällt deterministisch bei Schicht 40, dem Beginn von Akt V).
+// verboten. Teil 1 ist seit GW10 im Regelfall gefüllt, weil vorgangZustellbar()
+// jetzt aktStand() >= 5 verlangt und JAHRES_BONI Index 3 (Dienstsiegel) bei
+// derselben Schwelle fällt, amt.schichten === 40. Die sonst-Fassung bleibt
+// trotzdem stehen: showJahresgespraech() hängt am WEITER-Knopf des
+// Dienstberichts, amt.schichten steht aber schon vorher gespeichert da. Wer auf
+// dem Bericht neu lädt, bekommt das Siegel nie. "Nie leer" wäre wieder falsch.
 const VORGANG_PUZZLE = [
   {frei: () => rangDienstsiegel(),
    text: 'Er braucht einen Stift. Das Dienstsiegel liegt bereit, seit einem Jahresgespräch. Er benutzt es zum ersten Mal.',
@@ -8393,7 +8433,14 @@ const VORGANG_PUZZLE = [
   {frei: () => true,
    text: 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“'},
 ];
-const vorgangZustellbar = () => vorgangAusfertigung() && rangZeichnungsbefugt();
+// GW10, dritte Bedingung. Das Dienstsiegel (JAHRES_BONI Index 3, siehe
+// showJahresgespraech()) fällt bei amt.schichten === 40 — exakt der Sprung von
+// aktStand() auf 5. Ohne diese Bindung war das Zustellen schon ab Schicht 30
+// möglich und Puzzleteil 1 im ganzen Fenster 30 bis 39 leer, also genau in dem
+// Akt, in dem die Ausfertigung eingesammelt wird. Deckt sich mit Weltbibel
+// Kapitel 9 ("Akt V, Schicht 41 bis 50"). aktStand() steht weit oberhalb (bei
+// den amt-Feldern), kein TDZ.
+const vorgangZustellbar = () => vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
 
 // Eine Schreibstelle, drei Schritte. #ovPanel-Schreibstellen steigen dadurch
 // von sieben auf acht.
@@ -8545,17 +8592,25 @@ function vorgangAssert(){
   }
   amt.schichten = schichtenEcht;
 
-  // (7) Zustell-Vorbedingung: Kreuzprodukt Ausfertigung × Zeichnungsbefugnis,
-  // genau eine der vier Kombinationen ist wahr.
+  // (7) Zustell-Vorbedingung: Ausfertigung × Schichtschwelle, gegen einen
+  // ausgeschriebenen Sollwert statt gegen eine Trefferzahl. GW10: seit
+  // vorgangZustellbar() zusätzlich aktStand() >= 5 verlangt, reichen zwei
+  // Schichtwerte nicht mehr. 39 ist der Randwert, bei dem die alte Fassung noch
+  // wahr war, 40 der neue Kipppunkt (dieselbe Schwelle wie JAHRES_BONI Index 3).
+  // Die frühere Kreuzproduktzählung konnte gar nicht anders als aufgehen: bei
+  // zwei fixierten Faktoren ist genau eine von vier Kombinationen wahr, egal was
+  // die Funktion tut.
   let zustellbarCount = 0;
   for(const ausf of [false, true]){
     kladde.vorgang = ausf ? {1:true, 2:true, 3:true, 4:true} : {};
-    for(const zb of [false, true]){
-      amt.schichten = zb ? 30 : 0;
+    for(const s of [0, 30, 39, 40]){
+      amt.schichten = s;
+      const soll = ausf && s >= 40;
+      if(vorgangZustellbar() !== soll) fehler('vorgangZustellbar() weicht vom Sollwert ab', 'ausfertigung=', ausf, 'schichten=', s);
       if(vorgangZustellbar()) zustellbarCount++;
     }
   }
-  if(zustellbarCount !== 1) fehler('vorgangZustellbar() nicht genau einmal wahr im Kreuzprodukt', zustellbarCount);
+  if(zustellbarCount !== 1) fehler('vorgangZustellbar() nicht genau einmal wahr im Sweep', zustellbarCount);
   kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht;
 
   // (8) Aktzeilen-Anker: die drei geänderten Zeilen stehen an den erwarteten
@@ -8585,7 +8640,14 @@ function vorgangAssert(){
   kladde.vorgang = {};
   if(vorgangBestandBlock() !== '') fehler('vorgangBestandBlock() bei leerem Bestand nicht leer');
   kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
-  text(strip(vorgangBestandBlock()), 'Bestandblock voll');
+  // GW10: beide Fassungen der Vollständigkeitszeile, nicht nur die, die der echte
+  // Spielstand gerade trifft. Bei Schicht 30 muss der Akt-V-Halbsatz stehen (die
+  // Ausfertigung ist vollständig, zugestellt wird trotzdem nicht), bei 40 nicht.
+  amt.schichten = 30; text(strip(vorgangBestandBlock()), 'Bestandblock voll, Akt IV');
+  if(vorgangBestandBlock().indexOf('fünften Akt') < 0) fehler('Bestandblock nennt bei Schicht 30 den Akt nicht');
+  amt.schichten = 40; text(strip(vorgangBestandBlock()), 'Bestandblock voll, Akt V');
+  if(vorgangBestandBlock().indexOf('fünften Akt') >= 0) fehler('Bestandblock nennt bei Schicht 40 immer noch den Akt');
+  amt.schichten = schichtenEcht;
 
   // (11) GW16: die Adresskammer-Markierung, auf einer Attrappenliste. Bis hierher
   // war die gesamte W5-Verdrahtung von keinem Guard erfasst — die Abnahmezeilen
@@ -9475,8 +9537,11 @@ function langAssert(){
 
   // (4) Blockadefreiheit. Mit leerem kladde.lang bleibt der Hauptvorgang genau
   // so erreichbar wie vor W7 — kein Strang ist Bedingung für irgendetwas.
-  amt.schichten = 30; kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
-  if(!vorgangZustellbar()) fehler('W7 blockiert den Hauptvorgang: Zustellen nicht möglich bei Schicht 30 mit vollem Bestand');
+  // GW10: Schicht 40 statt 30. Die Zustellung hängt seither zusätzlich an
+  // aktStand() >= 5; bei 30 wäre der Fehlschlag kein W7-Befund, sondern die neue
+  // Aktschwelle. Der Adress-Akt und die Zeichnungsbefugnis bleiben unten bei 30.
+  amt.schichten = 40; kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+  if(!vorgangZustellbar()) fehler('W7 blockiert den Hauptvorgang: Zustellen nicht möglich bei Schicht 40 mit vollem Bestand');
   for(const s in SERIE_AKT){ amt.schichten = SERIE_AKT[s] * 10; if(!serieFrei(s)) fehler('W7 blockiert eine Blattserie', s); }
   amt.schichten = 200;
   for(const k in AUFTRAG_TYPEN) if(AUFTRAG_TYPEN[k].wenn && !AUFTRAG_TYPEN[k].wenn()) fehler('W7 blockiert einen Auftragstyp', k);
@@ -9598,7 +9663,7 @@ function auftragZahle(a, was){
   // dieses Flag zahlt derselbe Aushang nach jedem Neuladen erneut. Kein neues
   // amt-Feld: die Eigenschaft hängt am ohnehin serialisierten Aushangobjekt.
   a.bezahlt = true;
-  amt.bankGold += a.lohn; amt.auftraegeErfuellt++; saveAmt();
+  amt.bankGold += a.lohn; saveAmt();
   // Der Lohn geht in die Bank, nicht in player.gold: er wird deshalb vom
   // 50-Prozent-Verwaltungskostenanteil in endShift() nicht angeschnitten.
   if(was !== 'schichtende')
