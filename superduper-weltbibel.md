@@ -135,7 +135,7 @@ Daraus folgt sauber:
 * **Tod heißt Dienstschluss.** Es stirbt niemand. Die Schicht endet, der Außendienst geht nach Hause, morgen kommt jemand anderes. Der Dienstbericht ist die Abrechnung dieses einen Tages.
 * **Level, Zauber und Ausrüstung sind weg.** Persönliche Qualifikation ist nicht übertragbar. Steht so im Vorgang.
 * **Die Kladde bleibt. Immer.** Die Kladde gehört nicht dem Außendienst, sie liegt im Amt und ist an den Tisch gekettet. Wissen ist Amtsvermögen. Das ist die Fiktion für die härteste Regel im ganzen Projekt, und sie ist wasserdicht.
-* **Gold zur Hälfte.** Der Rest ist Verwaltungskostenanteil. Das ist eine Frechheit. Niemand beschwert sich, weil die Beschwerde ein Formular wäre und Formulare bekanntlich lebendig werden.
+* **Gold zur Hälfte.** Der Rest ist Verwaltungskostenanteil. Das ist eine Frechheit. Niemand beschwert sich, weil die Beschwerde ein Formular wäre und Formulare bekanntlich lebendig werden. *(Seit 20.08.2026 steht das im Code: `goldAufteilung()` teilt die Schichtbeute in Gürtel, Amtskasse und Verwaltungskostenanteil, letzterer verlässt das Spiel. Die Hälfte am Gürtel ist der Bruttoanteil, wie dieser Satz es sagt. Bis dahin gab es keinen Verlust, Gürtel und Kasse waren zwei Hälften desselben Topfes. Zahlen und Herleitung in `KAMMER-MESSUNG-2026-08-20.md`, Abschnitt 9.)*
 * **Zutaten bis zum Kontingent.** Der Rest wird eingezogen und kommt in die Registratur. Da liegt er dann. Und wartet.
 
 ---

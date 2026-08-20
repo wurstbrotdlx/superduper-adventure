@@ -4805,11 +4805,85 @@ const CONFIG = {
   // liegt jetzt mittig, jede Biom-Reise ist also Hin- UND Rückweg. Bei 135 px/s
   // Grundtempo kostet eine Kartenquerung rund 76 Sekunden statt 19.
   schichtDauer: 1500,       // Sekunden pro Schicht (~25 Minuten)
-  goldUebertragAnteil: 0.5, // Anteil des Golds, der am Gürtel die Schicht überlebt. Der Rest
-                            // ist kein Verlust, sondern der Zufluss der Amtskasse (endShift):
-                            // ein Regler, zwei Größen, die einander zu 100 Prozent ergänzen.
+  goldUebertragAnteil: 0.5, // Anteil des Golds, der am Gürtel die Schicht überlebt. Weltbibel
+                            // Kapitel 5, "Gold zur Hälfte", wörtlich: es ist der Bruttoanteil,
+                            // nicht der Anteil an einem Rest.
+  // Der Verwaltungskostenanteil (Entscheidung vom 20.08.2026). Weltbibel Kapitel 5
+  // nennt ihn beim Namen und das Namensregister führt als Spielbegriff dazu "das
+  // verlorene Gold" — in einer Spalte, die sonst durchgehend den Spielbegriff nennt.
+  // Bis hierher gab es keinen Verlust: Gürtel und Amtskasse waren zwei Hälften
+  // desselben Topfes, es überlebten 100 Prozent (siehe F19). Jetzt sind es drei
+  // Empfänger, und die beiden Gold-Flüche (Verwaltungsgebühr, Goldschwund) haben
+  // wieder etwas, das ihnen entgehen kann. Aufteilung bei den Vorgabewerten:
+  // 50 Prozent Gürtel, 30 Prozent Amtskasse, 20 Prozent weg.
+  verwaltungskosten: 0.2,
   zutatenMitnahmeBasis: 5,  // Grund-Kontingent mitnehmbarer Zutaten je Schicht, gezählt in Stücken (endShift teilt Stapel)
 };
+
+// Die Schichtabrechnung als eigene, reine Funktion — endShift() ist mit DOM,
+// Zutatenkontingent und Speicherpfad verwoben und von einem Guard nicht
+// erreichbar. Hier steht nur die Rechnung, und die ist prüfbar.
+//
+// Reihenfolge ist Absicht: der Gürtelanteil zuerst und auf den Bruttowert, weil
+// Weltbibel Kapitel 5 "Gold zur Hälfte" sagt und nicht "die Hälfte von dem, was
+// übrig ist". Der Verwaltungskostenanteil danach, ebenfalls brutto. Die Kasse
+// bekommt, was bleibt — sie ist der Rest und kann deshalb nie negativ werden,
+// auch nicht bei unsinnig gesetzten Reglern. Das Minimum in der zweiten Zeile
+// ist genau dieser Schutz.
+function goldAufteilung(gold){
+  const g = Math.max(0, Math.round(gold));
+  const guertel = Math.min(g, Math.round(g * CONFIG.goldUebertragAnteil));
+  const verwaltung = Math.min(g - guertel, Math.round(g * CONFIG.verwaltungskosten));
+  return { guertel, verwaltung, kasse: g - guertel - verwaltung };
+}
+
+// Guard, Bauform wie die übrigen. Prüft die Erhaltungsgröße, nicht die Formel:
+// dass die drei Empfänger zusammen exakt die Beute ergeben, keiner negativ wird
+// und der Gürtelanteil der Weltbibel-Zusage entspricht. Spiegelt CONFIG und
+// stellt es im finally wieder her.
+function goldAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('Schichtabrechnung:', m, ...r); };
+  const uebertragEcht = CONFIG.goldUebertragAnteil, kostenEcht = CONFIG.verwaltungskosten;
+  try {
+    // (1) Erhaltung und Vorzeichen über einen breiten Wertebereich, inklusive der
+    // ungeraden Beträge, an denen sich Rundungsfehler zeigen.
+    for(const [u, k] of [[0.5, 0.2], [0.5, 0], [1, 0.2], [0, 0], [0.9, 0.9]]){
+      CONFIG.goldUebertragAnteil = u; CONFIG.verwaltungskosten = k;
+      for(const g of [0, 1, 3, 7, 41, 99, 100, 101, 443, 1500, 3851]){
+        const a = goldAufteilung(g);
+        if(a.guertel + a.verwaltung + a.kasse !== g)
+          fehler('Summe der drei Empfänger weicht von der Beute ab', 'gold=', g, a, 'regler=', u, k);
+        if(a.guertel < 0 || a.verwaltung < 0 || a.kasse < 0)
+          fehler('negativer Empfänger', 'gold=', g, a, 'regler=', u, k);
+        if(!Number.isInteger(a.guertel) || !Number.isInteger(a.verwaltung) || !Number.isInteger(a.kasse))
+          fehler('nicht ganzzahlig', 'gold=', g, a);
+      }
+    }
+    // (2) Die Weltbibel-Zusage aus Kapitel 5, an den Vorgabewerten: der Gürtel
+    // trägt die Hälfte des BRUTTOwerts, nicht die Hälfte eines Restes.
+    CONFIG.goldUebertragAnteil = uebertragEcht; CONFIG.verwaltungskosten = kostenEcht;
+    for(const g of [100, 443, 1000]){
+      const a = goldAufteilung(g);
+      if(a.guertel !== Math.round(g * CONFIG.goldUebertragAnteil))
+        fehler('Gürtelanteil ist nicht der Bruttoanteil', 'gold=', g, a);
+      if(a.verwaltung !== Math.round(g * CONFIG.verwaltungskosten))
+        fehler('Verwaltungskostenanteil ist nicht der Bruttoanteil', 'gold=', g, a);
+    }
+    // (3) Der Anteil verlässt das Spiel wirklich: bei gesetztem Regler ist die
+    // Summe aus Gürtel und Kasse echt kleiner als die Beute. Ohne diesen Punkt
+    // liefe der Guard auch dann grün, wenn der Verlust nur umgebucht würde.
+    if(CONFIG.verwaltungskosten > 0){
+      const a = goldAufteilung(1000);
+      if(a.guertel + a.kasse >= 1000) fehler('kein echter Verlust trotz gesetztem Verwaltungskostenanteil', a);
+    }
+  } finally {
+    CONFIG.goldUebertragAnteil = uebertragEcht; CONFIG.verwaltungskosten = kostenEcht;
+  }
+  console.assert(ok, 'Schichtabrechnung: Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+goldAssert();
 
 // Amt-Speicherstand laden, bevor irgendetwas (Kammertüren, HUD) danach fragt.
 const AMT_KEY = 'sda_amt_v1';
@@ -8341,7 +8415,7 @@ function endShift(reason){
   // ungeteilte Schichtstand ist (Bilanz-Aufträge lesen genau den).
   const auftragBericht = auftragSchichtende();
 
-  const carryGold = Math.round(player.gold * CONFIG.goldUebertragAnteil);
+  const { guertel: carryGold, kasse: abgabe, verwaltung } = goldAufteilung(player.gold);
   const kontingent = CONFIG.zutatenMitnahmeBasis + amt.ausbauten.kontingent*2;
   const sorted = player.pouch.slice().sort((a,b) => zutatRar(b) - zutatRar(a));
   let rest = kontingent, carryPouch = [], eingezogen = 0, zutatenGesamt = 0;
@@ -8352,11 +8426,10 @@ function endShift(reason){
     carryPouch.push({noun:z.noun, adj:z.adj, count:take});
     rest -= take; eingezogen += (z.count - take);
   }
-  // F19: Die Amtskasse bekommt den einbehaltenen Rest, nicht ein zweites Mal denselben
-  // Übertrag. Vorher wurde carryGold doppelt verbucht — am Gürtel und auf der Bank —,
-  // womit 100 Prozent der Beute überlebten, obwohl der Regler 0.5 heißt. Die Summe der
-  // beiden Buchungen ist jetzt genau player.gold.
-  const abgabe = player.gold - carryGold;
+  // F19 gab der Amtskasse den einbehaltenen Rest statt einer zweiten Kopie des
+  // Übertrags. Seit dem 20.08.2026 sind es drei Empfänger statt zweier: der
+  // Verwaltungskostenanteil verlässt das Spiel. Die Summe der drei ist weiterhin
+  // exakt player.gold, das rechnet goldAufteilung() vor und goldAssert() nach.
   pendingCarryGold = carryGold; pendingCarryPouch = carryPouch;
   amt.bankGold += abgabe; amt.schichten++;
 
@@ -8394,7 +8467,7 @@ function endShift(reason){
       Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
       Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
       Überstunden: ${ueberstunden}s<br>${auftragBericht ? '      ' + auftragBericht + '<br>' : ''}
-      Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse)
+      Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse, ${verwaltung} Verwaltungskostenanteil)
     </div>
     ${rangBerichtBlock()}
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
