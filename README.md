@@ -49,7 +49,7 @@ Das Spiel prüft sich beim Laden selbst. Acht selbstaufrufende Guards (`knAssert
 | `phase-m1-monsterkatalog.md` | Bauabschnitt M1: der Katalog im Code, Entscheidungen und Prüfprotokoll |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 22 Gegner, 5 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
 | `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
-| `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md` | Datierte Prüfberichte. Ihre Zeilennummern sind Stände, keine Wegweiser. |
+| `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md`, `GEGENPROBE-2026-08-04.md`, `GEGENPROBE-W-2026-08-05.md`, `GW-RESTFUNDE-2026-08-06.md`, `KAMMER-MESSUNG-2026-08-20.md` | Datierte Prüf- und Messberichte. Ihre Zeilennummern sind Stände, keine Wegweiser, und ihr Inhalt wird nicht rückwirkend umgeschrieben. Was sie überholt, steht im jeweils neueren Bericht oder im Phasendokument. |
 | `CREDITS.md` | Grafik-Lizenzen |
 | `LICENSE` | Code MIT, Grafik nicht gedeckt, Spielinhalte vorbehalten |
 
