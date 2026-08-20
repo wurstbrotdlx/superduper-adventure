@@ -81,9 +81,12 @@ Der Bereich ist keine Fantasy-Landkarte, sondern ein Archiv, das über die Ufer 
 | Grasland | Die Grüne Wiese, Ablage A | Wo Dinge auf der grünen Wiese geplant und danach vergessen wurden. Harmlos, sonnig, voller Kleinkram. |
 | Frostkamm | Die Ablage auf Eis | Vorgänge, die zur Klärung zurückgestellt wurden. Alles hier steht mitten in der Bewegung still und wartet. Die Monster stehen manchmal in Reihen. |
 | Aschewüste | Der Brandabschnitt | Hier hat es gebrannt. Amtlich: ordnungsgemäße Aktenvernichtung. Inoffiziell: es hat sehr genau das gebrannt, was jemand nicht mehr sehen wollte. |
+| Moorbruch | Die Nassablage | Was nass geworden ist, gilt als unlesbar und bleibt trotzdem in Kraft. Hier liegt alles, was man weder entziffern noch wegwerfen darf. Zwischen Ablage A und dem Brandabschnitt. |
+| Steinfeld | Der Altbestand | Vorgänge aus einer Zeit, in der das Amt noch anders hieß. Niemand ist mehr zuständig, und niemand traut sich, das aktenkundig zu machen. Ganz im Norden, hinter der Eisablage. |
 | Schattenland | Ablage V, der Vorbehalt | Der Papierkorb, den niemand geleert hat. Alles Gelöschte liegt hier und ist beleidigt. |
 | Das Zufallsportal | Ein Zustellungsfehler | Kein Tor. Eine Fehlleitung. Der Bereich verschickt sich gelegentlich selbst an die falsche Adresse. |
 | Kammern | Verschlossene Vorgänge | Aktenschränke. Innen ist alles noch so, wie es war. Draußen hängt ein Gebührenbescheid. |
+| Das Innere einer Kammer | Die Untere Registratur | Was hinter der Tür liegt, ist überall dasselbe Haus: dieselben Gänge, dieselben Wachen, dieselbe Beute. Die Kammern sind keine Räume nebeneinander, sondern Zugänge zu einem einzigen Bestand unter dem Bereich. Deshalb ist die Untere Registratur ein eigener Fundort, obwohl ihre Türen in jedem Biom stehen. |
 | Das Schild an der Kammertür | Gebührenbescheid | Nennt Aufwand (Stufe 1 bis 5) und zu erwartenden Ertrag (Tier). Ein ehrliches Schild ist in dieser Welt eine kleine Sensation. Deshalb glaubt es auch niemand. |
 | Die Rätselmodule | Mitwirkungspflicht | Bevor ein Vorgang geöffnet wird, muss der Antragsteller die fehlenden Angaben beibringen. Deshalb Druckplatten, Symbolschlösser und Reihenfolgen. |
 | Der Fluss | Die Ablage | Ein sehr langsamer Fluss. Wer lange genug hineinschaut, sieht Papier. |
@@ -137,9 +140,9 @@ Daraus folgt sauber:
 
 ---
 
-## 6. Bestiarium: die 21 Vorgangsarten
+## 6. Bestiarium: die 31 Vorgangsarten
 
-Alle 21 bestehenden Monstertypen, mit ihrer Aktenbedeutung. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
+Alle Monstertypen mit ihrer Aktenbedeutung: einundzwanzig aus dem Bestand, zehn dazu aus Bauabschnitt M1. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
 
 Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan.
 
@@ -173,6 +176,23 @@ Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan
 | Schattenspukt | Das Erinnerungsschreiben | Fliegt, ist halb durchsichtig, kommt immer wieder. Beide Wortbedeutungen gemeint. |
 | Der Alte Schrecken | Der Sammelvorgang | Dutzende kleine Vorgänge, zur gemeinsamen Bearbeitung zusammengefasst. Deshalb so groß und so unförmig. Er war einmal lauter Kleinigkeiten. |
 | Schattenfürst | Fürst Nachtrag | Siehe Figuren. Er ist kein Monster. Er ist der Adressat. |
+
+### Neu mit M1: zehn weitere Vorgangsarten
+
+Gebaut nach derselben Regel, erst die Vorgangsart, dann das Monster. Werte und Begründung stehen in `monsterkatalog-stufe-1-10.md`, der Einbau in `phase-m1-monsterkatalog.md`.
+
+| Monster | Vorgangsart | Warum es sich so verhält |
+|---|---|---|
+| Wandelnder Ablagestapel | Der Posteingang | Zwölf Jahre nicht abgearbeitet und inzwischen hoch genug, um zurückzufallen. |
+| Der Zustellbote | Der Zustellversuch | Er war da. Du warst nicht da. Ihn zu fassen ist vorgesehen und praktisch nie möglich. |
+| Blubberakte | Der Rücklauf | Was einmal untergegangen ist, kommt wieder hoch, sobald jemand am Ufer steht. |
+| Der Moorbescheid | Der durchweichte Bescheid | Unlesbar geworden und trotzdem in Kraft. Lesbarkeit ist keine Wirksamkeitsvoraussetzung. |
+| Der Amtsschimmel | Die Fristverlängerung | Er entscheidet nichts. Er verlängert, und was er verlängert, lebt länger. |
+| Der Fristläufer | Die Fristsetzung | Setzt eine Frist, die niemand beantragt hat, und ist weg, bevor jemand widersprechen kann. |
+| Papierstaub-Skarabäus | Die Aktenvernichtung | Er lebt von dem, was nach dem Brand übrig blieb, und ist gegen Feuer deshalb gleichgültig. |
+| Die Sammelmahnung | Die Mahnstufe | Dieselbe Sache, dreimal, gleichlautend. Einzeln Papier, zu dritt ein Titel. |
+| Der Aktenbote | Der Zuschlag | Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. |
+| Die Sammelverfügung | Der Sammelbescheid | Alles, was je gegen dich lief, zusammengefasst und in einem Mantel aus Papier vorgetragen. |
 
 **Regel für neue Monster:** erst die Vorgangsart erfinden, dann das Monster. Nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein Monster.
 

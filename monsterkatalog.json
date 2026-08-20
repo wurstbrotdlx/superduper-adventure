@@ -1,7 +1,7 @@
 [
   {
-    "id": "wa_vordruckling",
-    "name": "Vordruckling",
+    "id": "slime",
+    "name": "Chuchu",
     "biom": "Wald",
     "sollstufe": 1,
     "ertragsklasse": "A1",
@@ -18,19 +18,19 @@
     },
     "schaden_pro_treffer": 3,
     "angriffsintervall_s": 1.2,
-    "tempo": 40,
+    "tempo": 38,
     "angriffsmuster": [
       {
         "name": "Anlehnen",
         "vorwarnzeit_ms": 300,
         "reichweite": "nah (26)",
-        "effekt": "schiebt leicht zurück, kein Effekt darüber hinaus"
+        "effekt": "Grundtreffer, schiebt leicht zurück"
       },
       {
         "name": "Formfehler abgeben",
         "vorwarnzeit_ms": 350,
-        "reichweite": "nah (26)",
-        "effekt": "ersetzt den Grundtreffer, hinterlässt ein Blatt am Boden"
+        "reichweite": "nah (30)",
+        "effekt": "ersetzt jeden vierten Grundtreffer, breiter Klecks statt Stoss"
       }
     ],
     "berechnete_ttk_s": 2.0,
@@ -43,19 +43,66 @@
         "chance": 0.35
       },
       {
-        "item": "Goblin-Zeh",
-        "chance": 0.1
-      },
-      {
         "item": "Kupfermünzen",
         "chance": 0.6
       }
     ],
     "konter_in_einem_satz": "Einfach draufhalten, aber nie stehen bleiben, wo drei von ihnen zusammenlaufen.",
-    "flavor_de": "Ein Stapel Formulare, der gelernt hat, beleidigt zu sein. Er will nichts von dir außer einer Unterschrift, notfalls mit Gewalt."
+    "flavor_de": "Ausgelaufene Tinte, formlos im Wortsinn. Sie will nichts von dir außer einer Unterschrift, notfalls mit Gewalt."
   },
   {
-    "id": "wa_ablagestapel",
+    "id": "goblin",
+    "name": "Grünhaut",
+    "biom": "Wald",
+    "sollstufe": 2,
+    "ertragsklasse": "A1",
+    "anforderungstyp": [
+      "B7"
+    ],
+    "hp": 50,
+    "resistenzen": {
+      "physisch": 0,
+      "feuer": -0.2,
+      "eis": 0.1,
+      "gift": 0,
+      "magie": 0.1
+    },
+    "schaden_pro_treffer": 4,
+    "angriffsintervall_s": 0.9,
+    "tempo": 78,
+    "angriffsmuster": [
+      {
+        "name": "Lautstark vortragen",
+        "vorwarnzeit_ms": 280,
+        "reichweite": "nah (26)",
+        "effekt": "Grundtreffer, schnell und ungeduldig"
+      },
+      {
+        "name": "Aus dem hohen Gras",
+        "vorwarnzeit_ms": 420,
+        "reichweite": "nah (34)",
+        "effekt": "Eröffnung aus der Deckung, doppelte Wucht auf den ersten Treffer"
+      }
+    ],
+    "berechnete_ttk_s": 2.6,
+    "xp": 20,
+    "gold_min": 7,
+    "gold_max": 15,
+    "loot": [
+      {
+        "item": "Goblin-Zeh",
+        "chance": 0.35
+      },
+      {
+        "item": "Beschwerdeschrift",
+        "chance": 0.2
+      }
+    ],
+    "konter_in_einem_satz": "Hohes Gras nicht blind durchqueren, wer sie kommen sieht, hat schon gewonnen.",
+    "flavor_de": "Laut, kurz, zahlreich, und im Grunde hat sie recht. Das macht es nicht angenehmer."
+  },
+  {
+    "id": "ablagestapel",
     "name": "Wandelnder Ablagestapel",
     "biom": "Wald",
     "sollstufe": 2,
@@ -79,13 +126,13 @@
         "name": "Umkippen",
         "vorwarnzeit_ms": 420,
         "reichweite": "nah (30)",
-        "effekt": "kurzer Rückstoß, danach 0,6 s wehrlos am Boden"
+        "effekt": "Grundtreffer, danach 0,6 s wehrlos am Boden"
       },
       {
         "name": "Loseblattlawine",
         "vorwarnzeit_ms": 600,
         "reichweite": "Kegel (90)",
-        "effekt": "ersetzt den Grundtreffer, trifft breit statt hart"
+        "effekt": "ersetzt jeden dritten Grundtreffer, trifft breit statt hart"
       }
     ],
     "berechnete_ttk_s": 10.1,
@@ -94,30 +141,25 @@
     "gold_max": 34,
     "loot": [
       {
+        "item": "Loseblattbündel",
+        "chance": 0.35
+      },
+      {
         "item": "Chuchu-Gallert",
-        "chance": 0.25
-      },
-      {
-        "item": "Goblin-Zeh",
-        "chance": 0.3
-      },
-      {
-        "item": "Holzschild-Rohling",
-        "chance": 0.12
+        "chance": 0.15
       }
     ],
-    "konter_in_einem_satz": "Von der Seite schlagen und die 0,6 s nach dem Umkippen zum Nachladen nutzen.",
+    "konter_in_einem_satz": "Von der Seite schlagen und die 0,6 s nach dem Umkippen zum Nachsetzen nutzen.",
     "flavor_de": "Zwölf Jahre unbearbeiteter Posteingang, jetzt mit Beinen. Feuer wäre gnädig, für beide Seiten."
   },
   {
-    "id": "wa_schamane",
-    "name": "Waldschamane im Widerspruch",
+    "id": "greenmage",
+    "name": "Waldschamane",
     "biom": "Wald",
     "sollstufe": 3,
     "ertragsklasse": "A3",
     "anforderungstyp": [
-      "B3",
-      "B7"
+      "B3"
     ],
     "hp": 380,
     "resistenzen": {
@@ -127,7 +169,7 @@
       "gift": 0.2,
       "magie": 0.4
     },
-    "schaden_pro_treffer": 37,
+    "schaden_pro_treffer": 33,
     "angriffsintervall_s": 1.9,
     "tempo": 44,
     "angriffsmuster": [
@@ -135,13 +177,13 @@
         "name": "Widerspruchsbolzen",
         "vorwarnzeit_ms": 420,
         "reichweite": "fern (130)",
-        "effekt": "gerader Bolzen, sichtbares Aufleuchten vor dem Wurf"
+        "effekt": "Bolzen, der Stab leuchtet vorher sichtbar auf"
       },
       {
-        "name": "Aus dem Unterholz",
-        "vorwarnzeit_ms": 500,
-        "reichweite": "nah (40)",
-        "effekt": "Eröffnung aus der Deckung, ersetzt den ersten Grundtreffer"
+        "name": "Anlage zum Schreiben",
+        "vorwarnzeit_ms": 520,
+        "reichweite": "fern (130)",
+        "effekt": "ersetzt jeden dritten Bolzen, laengere Ansage, dafür schwerer"
       }
     ],
     "berechnete_ttk_s": 13.0,
@@ -154,19 +196,15 @@
         "chance": 0.4
       },
       {
-        "item": "Chuchu-Gallert",
-        "chance": 0.15
-      },
-      {
         "item": "Widerspruchsformular",
         "chance": 0.2
       }
     ],
     "konter_in_einem_satz": "Sofort die Distanz schließen, im Nahkampf ist er aus Papier.",
-    "flavor_de": "Er widerspricht allem, auch der Schwerkraft, aber nur schriftlich. Der Bolzen ist die Anlage zum Schreiben."
+    "flavor_de": "Er greift aus der Entfernung an, weil ein Widerspruch schriftlich erhoben wird. Der Bolzen ist die Anlage zum Schreiben."
   },
   {
-    "id": "wa_zustellbote",
+    "id": "zustellbote",
     "name": "Der Zustellbote",
     "biom": "Wald",
     "sollstufe": 3,
@@ -174,7 +212,7 @@
     "anforderungstyp": [
       "B4"
     ],
-    "hp": 230,
+    "hp": 295,
     "resistenzen": {
       "physisch": 0.55,
       "feuer": 0.2,
@@ -196,32 +234,28 @@
         "name": "Abgabefenster",
         "vorwarnzeit_ms": 700,
         "reichweite": "nah (34)",
-        "effekt": "er bleibt 1,4 s stehen und quittiert, in dieser Zeit fällt seine Resistenz auf 0"
+        "effekt": "alle 6 s bleibt er 1,4 s stehen und quittiert, in dieser Zeit fällt jede Resistenz auf 0"
       }
     ],
-    "berechnete_ttk_s": 20.9,
-    "xp": 526,
+    "berechnete_ttk_s": 26.9,
+    "xp": 675,
     "gold_min": 54,
     "gold_max": 113,
     "loot": [
       {
-        "item": "Kurierschuhe-Sohle",
+        "item": "Botensohle",
         "chance": 0.3
-      },
-      {
-        "item": "Goblin-Zeh",
-        "chance": 0.25
       },
       {
         "item": "Benachrichtigungszettel",
         "chance": 0.45
       }
     ],
-    "konter_in_einem_satz": "Nicht hinterherlaufen, sondern das 1,4 s lange Abgabefenster abwarten und dort den ganzen Schaden hineinlegen.",
-    "flavor_de": "Er war da. Du warst nur leider nicht da, wo er war. Der Zettel im Baum sagt, du sollst es beim Amt versuchen."
+    "konter_in_einem_satz": "Nicht hinterherlaufen, sondern das Abgabefenster abwarten und dort allen Schaden hineinlegen.",
+    "flavor_de": "Er war da. Du warst leider nicht da, wo er war. Der Zettel im Baum sagt, du sollst es beim Amt versuchen."
   },
   {
-    "id": "su_blubberakte",
+    "id": "blubberakte",
     "name": "Blubberakte",
     "biom": "Sumpf",
     "sollstufe": 3,
@@ -243,16 +277,16 @@
     "tempo": 46,
     "angriffsmuster": [
       {
-        "name": "Auftauchen",
-        "vorwarnzeit_ms": 400,
-        "reichweite": "nah (24)",
-        "effekt": "Blasen an der Oberfläche sind die Vorwarnung, dann der Erstschlag"
-      },
-      {
         "name": "Schmatzen",
         "vorwarnzeit_ms": 300,
         "reichweite": "nah (24)",
-        "effekt": "Grundtreffer, verlangsamt kurz um ein Viertel"
+        "effekt": "Grundtreffer, verlangsamt kurz um die Haelfte"
+      },
+      {
+        "name": "Auftauchen",
+        "vorwarnzeit_ms": 400,
+        "reichweite": "nah (28)",
+        "effekt": "Blasen an der Oberfläche sind die Vorwarnung, dann der Erstschlag"
       }
     ],
     "berechnete_ttk_s": 2.4,
@@ -265,19 +299,15 @@
         "chance": 0.35
       },
       {
-        "item": "Geisterschleier",
-        "chance": 0.08
-      },
-      {
         "item": "Aufgeweichtes Blatt",
         "chance": 0.25
       }
     ],
-    "konter_in_einem_satz": "Auf die Blasen achten und nicht über offenes Wasser laufen, dann sind sie einzeln und harmlos.",
-    "flavor_de": "Eine Akte, die im Moor lag, bis sie das Blubbern gelernt hat. Sie ist noch immer nass und noch immer nicht bearbeitet."
+    "konter_in_einem_satz": "Auf die Blasen achten und nicht über offenes Wasser laufen, dann kommen sie einzeln.",
+    "flavor_de": "Was einmal untergegangen ist, kommt wieder hoch, sobald jemand am Ufer steht. Noch immer nass, noch immer unbearbeitet."
   },
   {
-    "id": "su_moorbescheid",
+    "id": "moorbescheid",
     "name": "Der Moorbescheid",
     "biom": "Sumpf",
     "sollstufe": 4,
@@ -301,13 +331,13 @@
         "name": "Durchweichen",
         "vorwarnzeit_ms": 450,
         "reichweite": "nah (30)",
-        "effekt": "schwerer, langsamer Schlag, Grundtreffer"
+        "effekt": "schwerer, langsamer Grundtreffer"
       },
       {
         "name": "Faulgasstoß",
         "vorwarnzeit_ms": 550,
         "reichweite": "Kegel (70)",
-        "effekt": "ersetzt den Grundtreffer, sperrt 4 s lang die Trankwirkung"
+        "effekt": "ersetzt jeden dritten Grundtreffer, sperrt 4 s lang die Trankwirkung"
       }
     ],
     "berechnete_ttk_s": 10.0,
@@ -320,19 +350,15 @@
         "chance": 0.4
       },
       {
-        "item": "Geisterschleier",
-        "chance": 0.2
-      },
-      {
         "item": "Versiegelte Zweitschrift",
         "chance": 0.15
       }
     ],
     "konter_in_einem_satz": "Anzünden. Nass gewordenes Papier hält Stahl aus, aber keine Flamme.",
-    "flavor_de": "Seit dreißig Jahren im Moor, seit dreißig Jahren bestandskräftig. Trocken wäre er nur ein Blatt."
+    "flavor_de": "Unlesbar geworden und trotzdem in Kraft. Lesbarkeit ist keine Wirksamkeitsvoraussetzung."
   },
   {
-    "id": "su_amtsschimmel",
+    "id": "amtsschimmel",
     "name": "Der Amtsschimmel",
     "biom": "Sumpf",
     "sollstufe": 5,
@@ -341,7 +367,7 @@
       "B4",
       "B6"
     ],
-    "hp": 470,
+    "hp": 560,
     "resistenzen": {
       "physisch": 0.15,
       "feuer": -0.3,
@@ -349,25 +375,25 @@
       "gift": 0.5,
       "magie": 0.3
     },
-    "schaden_pro_treffer": 56,
+    "schaden_pro_treffer": 85,
     "angriffsintervall_s": 1.8,
     "tempo": 118,
     "angriffsmuster": [
-      {
-        "name": "Wiedervorlage",
-        "vorwarnzeit_ms": 500,
-        "reichweite": "fern (150)",
-        "effekt": "heilt einen Nachbarn um 12 Prozent, sichtbarer Faden zwischen beiden"
-      },
       {
         "name": "Ausweichschritt",
         "vorwarnzeit_ms": 350,
         "reichweite": "nah (28)",
         "effekt": "Grundtreffer im Zurückweichen, er bleibt nie stehen"
+      },
+      {
+        "name": "Wiedervorlage",
+        "vorwarnzeit_ms": 500,
+        "reichweite": "fern (150)",
+        "effekt": "heilt jeden dritten Takt einen Nachbarn um 12 Prozent und steht dabei 1,2 s offen"
       }
     ],
-    "berechnete_ttk_s": 13.9,
-    "xp": 366,
+    "berechnete_ttk_s": 16.6,
+    "xp": 436,
     "gold_min": 54,
     "gold_max": 113,
     "loot": [
@@ -376,20 +402,16 @@
         "chance": 0.45
       },
       {
-        "item": "Feuchte Bescheinigung",
-        "chance": 0.18
-      },
-      {
         "item": "Wiedervorlagemappe",
         "chance": 0.2
       }
     ],
-    "konter_in_einem_satz": "Zuerst ihn, nicht die Geheilten, und ihn nur an der Wand oder im Wasser stellen, wo er nicht ausweichen kann.",
-    "flavor_de": "Er kämpft nicht, er verlängert. Alles, was er anschaut, bekommt eine neue Frist und dadurch neue Gesundheit."
+    "konter_in_einem_satz": "Zuerst ihn, nicht die Geheilten, und ihn nur an der Wand oder im Wasser stellen.",
+    "flavor_de": "Er entscheidet nichts, er verlängert. Alles, was er anschaut, bekommt eine neue Frist und dadurch neue Gesundheit."
   },
   {
-    "id": "su_irrlicht",
-    "name": "Irrlicht der Fristsetzung",
+    "id": "fristlaeufer",
+    "name": "Der Fristläufer",
     "biom": "Sumpf",
     "sollstufe": 5,
     "ertragsklasse": "A4",
@@ -405,7 +427,7 @@
       "gift": 0.4,
       "magie": 0.1
     },
-    "schaden_pro_treffer": 130,
+    "schaden_pro_treffer": 195,
     "angriffsintervall_s": 2.0,
     "tempo": 132,
     "angriffsmuster": [
@@ -413,13 +435,13 @@
         "name": "Fristablauf",
         "vorwarnzeit_ms": 650,
         "reichweite": "fern (170)",
-        "effekt": "schwerer Einzelschlag, der Countdown über dem Kopf ist die Vorwarnung"
+        "effekt": "schwerer Fernschlag, der Countdown über dem Kopf ist die Vorwarnung"
       },
       {
         "name": "Verwehen",
         "vorwarnzeit_ms": 400,
         "reichweite": "kein Schaden",
-        "effekt": "setzt 1,2 s aus und ist dabei unverwundbar, danach 2 s offen"
+        "effekt": "jeder dritte Takt: 1,2 s unverwundbar, danach 2 s offen"
       }
     ],
     "berechnete_ttk_s": 23.9,
@@ -428,23 +450,19 @@
     "gold_max": 178,
     "loot": [
       {
-        "item": "Irrlicht-Funke",
+        "item": "Fristfunke",
         "chance": 0.4
-      },
-      {
-        "item": "Sumpfgallert",
-        "chance": 0.2
       },
       {
         "item": "Fristsetzungsbescheid",
         "chance": 0.3
       }
     ],
-    "konter_in_einem_satz": "Schlagen, sobald das Verwehen endet, und in der Fristablauf-Vorwarnung seitlich raus.",
-    "flavor_de": "Es setzt Fristen, die niemand beantragt hat, und läuft dann weg, bevor man widersprechen kann. Sehr amtlich."
+    "konter_in_einem_satz": "Schlagen, sobald das Verwehen endet, und in der Fristablauf-Vorwarnung seitlich heraus.",
+    "flavor_de": "Er setzt Fristen, die niemand beantragt hat, und ist weg, bevor jemand widersprechen kann. Sehr amtlich."
   },
   {
-    "id": "wu_skarabaeus",
+    "id": "skarabaeus",
     "name": "Papierstaub-Skarabäus",
     "biom": "Wüste",
     "sollstufe": 4,
@@ -474,7 +492,7 @@
         "name": "Staubwolke",
         "vorwarnzeit_ms": 400,
         "reichweite": "nah (40)",
-        "effekt": "ersetzt den Grundtreffer, nimmt 1 s lang Sicht statt Leben"
+        "effekt": "ersetzt jeden vierten Grundtreffer, nimmt 1 s lang Sicht statt Leben"
       }
     ],
     "berechnete_ttk_s": 2.5,
@@ -487,76 +505,67 @@
         "chance": 0.35
       },
       {
-        "item": "Skorpionstachel",
-        "chance": 0.1
-      },
-      {
         "item": "Sandiger Vordruck",
         "chance": 0.25
       }
     ],
     "konter_in_einem_satz": "Eis, notfalls Stahl. Wer hier Feuer wirft, bezahlt zehn Sekunden für nichts.",
-    "flavor_de": "Er frisst Aktenstaub und hat davon einen Panzer bekommen, der nicht brennt. Das ist im Brandabschnitt eine Karriere."
+    "flavor_de": "Er lebt von dem, was nach dem Brand uebrig blieb, und ist gegen Feuer deshalb gleichgueltig. Im Brandabschnitt ist das eine Karriere."
   },
   {
-    "id": "wu_steinbescheid",
-    "name": "Der Steinbescheid",
+    "id": "crab",
+    "name": "Klippkrabbe",
     "biom": "Wüste",
     "sollstufe": 5,
     "ertragsklasse": "A2",
     "anforderungstyp": [
-      "B2",
-      "B5"
+      "B2"
     ],
-    "hp": 415,
+    "hp": 285,
     "resistenzen": {
-      "physisch": 0.55,
-      "feuer": 0.4,
+      "physisch": 0.4,
+      "feuer": 0.35,
       "eis": -0.35,
       "gift": 0.2,
-      "magie": 0.1
+      "magie": 0
     },
-    "schaden_pro_treffer": 31,
-    "angriffsintervall_s": 2.2,
-    "tempo": 24,
+    "schaden_pro_treffer": 22,
+    "angriffsintervall_s": 1.4,
+    "tempo": 36,
     "angriffsmuster": [
       {
-        "name": "Absetzen",
-        "vorwarnzeit_ms": 500,
-        "reichweite": "nah (34)",
-        "effekt": "schwerer Grundtreffer, kurzer Bodenriss davor"
+        "name": "Klammern",
+        "vorwarnzeit_ms": 400,
+        "reichweite": "nah (28)",
+        "effekt": "Grundtreffer, hält dich 0,5 s fest statt dich wegzustossen"
       },
       {
-        "name": "Rechtskraft",
-        "vorwarnzeit_ms": 800,
-        "reichweite": "Ring (110)",
-        "effekt": "ersetzt den Grundtreffer, Druckwelle rundum, weit sichtbar"
+        "name": "Zangengriff",
+        "vorwarnzeit_ms": 550,
+        "reichweite": "nah (32)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, doppelte Haltezeit, dafür weniger Wucht"
       }
     ],
     "berechnete_ttk_s": 12.0,
-    "xp": 221,
+    "xp": 220,
     "gold_min": 37,
     "gold_max": 78,
     "loot": [
       {
-        "item": "Golem-Splitter",
-        "chance": 0.35
+        "item": "Krabbenschere",
+        "chance": 0.4
       },
       {
-        "item": "Panzerspan",
-        "chance": 0.25
-      },
-      {
-        "item": "Beglaubigter Brocken",
-        "chance": 0.15
+        "item": "Verkohlte Klammer",
+        "chance": 0.2
       }
     ],
-    "konter_in_einem_satz": "Frost macht den Stein spröde, danach reicht Geduld.",
-    "flavor_de": "Er ist nicht besonders wütend, er ist nur rechtskräftig. Dagegen hilft kein Argument, nur Temperatur."
+    "konter_in_einem_satz": "Nicht im Griff stehen bleiben wollen, sondern vorher seitlich weg, dann greift die Klammer ins Leere.",
+    "flavor_de": "Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Verkohlt ist sie sowieso schon."
   },
   {
-    "id": "wu_nachforderung",
-    "name": "Nachforderungsskorpion",
+    "id": "scorpion",
+    "name": "Sandskorpion",
     "biom": "Wüste",
     "sollstufe": 6,
     "ertragsklasse": "A3",
@@ -571,7 +580,7 @@
       "gift": 0.7,
       "magie": -0.2
     },
-    "schaden_pro_treffer": 118,
+    "schaden_pro_treffer": 158,
     "angriffsintervall_s": 2.4,
     "tempo": 96,
     "angriffsmuster": [
@@ -579,7 +588,7 @@
         "name": "Nachforderung",
         "vorwarnzeit_ms": 450,
         "reichweite": "nah (28)",
-        "effekt": "sehr harter Einzelstich, Stachel hebt sichtbar an"
+        "effekt": "sehr harter Einzelstich, der Stachel hebt sichtbar an"
       },
       {
         "name": "Zweite Nachforderung",
@@ -598,20 +607,16 @@
         "chance": 0.45
       },
       {
-        "item": "Krabbenschere",
-        "chance": 0.15
-      },
-      {
         "item": "Nachforderungsbescheid",
         "chance": 0.25
       }
     ],
-    "konter_in_einem_satz": "Nach jedem gehobenen Stachel einen Schritt raus, dann fällt die zweite Nachforderung weg.",
-    "flavor_de": "Der erste Bescheid war zu niedrig, sagt er, und stellt das sofort richtig. Zweimal."
+    "konter_in_einem_satz": "Nach jedem gehobenen Stachel einen Schritt heraus, dann fällt die zweite Nachforderung weg.",
+    "flavor_de": "Kommt schnell, kommt hinterher, sticht genau einmal. Der erste Bescheid war zu niedrig, sagt er, und stellt das sofort richtig."
   },
   {
-    "id": "wu_duenenpriester",
-    "name": "Dünenpriester der Verfügung",
+    "id": "sandmage",
+    "name": "Dünenpriester",
     "biom": "Wüste",
     "sollstufe": 7,
     "ertragsklasse": "A4",
@@ -627,21 +632,21 @@
       "gift": 0.2,
       "magie": 0.2
     },
-    "schaden_pro_treffer": 171,
+    "schaden_pro_treffer": 257,
     "angriffsintervall_s": 2.0,
     "tempo": 104,
     "angriffsmuster": [
       {
+        "name": "Sandwurf",
+        "vorwarnzeit_ms": 400,
+        "reichweite": "fern (130)",
+        "effekt": "Grundtreffer aus sicherer Entfernung"
+      },
+      {
         "name": "Verfügung",
         "vorwarnzeit_ms": 900,
         "reichweite": "fern (160)",
-        "effekt": "gibt allen Skorpionen im Umkreis 25 Prozent mehr Schaden, 2,4 s Standzeit"
-      },
-      {
-        "name": "Sandschritt",
-        "vorwarnzeit_ms": 350,
-        "reichweite": "nah (26)",
-        "effekt": "Grundtreffer beim Zurückweichen, er hält Abstand von rund 140"
+        "effekt": "gibt jeden dritten Takt einem Nachbarn 25 Prozent mehr Schaden und steht dabei 2,4 s offen"
       }
     ],
     "berechnete_ttk_s": 29.9,
@@ -654,27 +659,23 @@
         "chance": 0.45
       },
       {
-        "item": "Skorpionstachel",
-        "chance": 0.2
-      },
-      {
         "item": "Verfügung in Abschrift",
         "chance": 0.3
       }
     ],
-    "konter_in_einem_satz": "Das 2,4 s lange Verfügungsfenster ist die einzige Gelegenheit, ihn einzuholen, alles andere ist Hinterherlaufen.",
-    "flavor_de": "Er kämpft nie selbst, er verfügt nur, dass andere es tun. Sein Stab hat mehr Dienstjahre als das Amt."
+    "konter_in_einem_satz": "Das Verfügungsfenster ist die einzige Gelegenheit, ihn einzuholen, alles andere ist Hinterherlaufen.",
+    "flavor_de": "Er ordnet aus sicherer Entfernung an, dass andere es tun. Sein Stab hat mehr Dienstjahre als das Amt."
   },
   {
-    "id": "ho_umlauf",
-    "name": "Umlauffledermaus",
+    "id": "bat",
+    "name": "Fledermaus",
     "biom": "Höhle",
     "sollstufe": 6,
     "ertragsklasse": "A1",
     "anforderungstyp": [
       "B1"
     ],
-    "hp": 72,
+    "hp": 90,
     "resistenzen": {
       "physisch": 0,
       "feuer": -0.2,
@@ -696,11 +697,11 @@
         "name": "Umlaufmappe",
         "vorwarnzeit_ms": 300,
         "reichweite": "nah (20)",
-        "effekt": "ersetzt den Grundtreffer, hängt dir 2 s lang eine Sichtbehinderung an"
+        "effekt": "ersetzt jeden vierten Grundtreffer, hängt dir 1,5 s Sichtbehinderung an"
       }
     ],
-    "berechnete_ttk_s": 1.6,
-    "xp": 23,
+    "berechnete_ttk_s": 2.0,
+    "xp": 29,
     "gold_min": 20,
     "gold_max": 42,
     "loot": [
@@ -709,20 +710,16 @@
         "chance": 0.4
       },
       {
-        "item": "Spinnenbein",
-        "chance": 0.08
-      },
-      {
         "item": "Umlaufmappe",
         "chance": 0.2
       }
     ],
-    "konter_in_einem_satz": "Breit schlagen statt zielen, der Schwarm stirbt an einem einzigen guten Hieb.",
-    "flavor_de": "Sie trägt eine Mappe von A nach B und wieder zurück, seit niemand mehr weiß, was in der Mappe ist."
+    "konter_in_einem_satz": "Breit schlagen statt zielen, der Schwarm fällt an einem einzigen guten Hieb.",
+    "flavor_de": "Kreist, landet nie, kommt bei jedem einmal vorbei. Was in der Mappe ist, weiß seit Jahren niemand mehr."
   },
   {
-    "id": "ho_deckenlauerer",
-    "name": "Der Deckenlauerer",
+    "id": "spider",
+    "name": "Höhlenspinne",
     "biom": "Höhle",
     "sollstufe": 7,
     "ertragsklasse": "A2",
@@ -743,16 +740,16 @@
     "tempo": 52,
     "angriffsmuster": [
       {
-        "name": "Fallenlassen",
-        "vorwarnzeit_ms": 550,
-        "reichweite": "nah (34)",
-        "effekt": "Schatten am Boden ist die Vorwarnung, Eröffnung mit doppelter Wucht"
-      },
-      {
         "name": "Nachfassen",
         "vorwarnzeit_ms": 400,
         "reichweite": "nah (30)",
         "effekt": "Grundtreffer, zieht dich ein Stück zu sich"
+      },
+      {
+        "name": "Fallenlassen",
+        "vorwarnzeit_ms": 550,
+        "reichweite": "nah (34)",
+        "effekt": "der Schatten am Boden ist die Vorwarnung, Eröffnung mit doppelter Wucht"
       }
     ],
     "berechnete_ttk_s": 13.0,
@@ -765,19 +762,15 @@
         "chance": 0.4
       },
       {
-        "item": "Panzerspan",
-        "chance": 0.2
-      },
-      {
         "item": "Deckenprotokoll",
         "chance": 0.15
       }
     ],
-    "konter_in_einem_satz": "Vor dem Betreten nach oben schauen, danach ist er nur noch langsam und dick.",
-    "flavor_de": "Er hängt seit Jahren an der Decke der Registratur und wartet auf jemanden, der zuständig ist. Du bist zuständig."
+    "konter_in_einem_satz": "Vor dem Betreten nach oben schauen, danach ist sie nur noch langsam und dick.",
+    "flavor_de": "Spinnt Faeden zwischen Dingen, die nichts miteinander zu tun haben, und wartet darüber auf jemanden, der zuständig ist."
   },
   {
-    "id": "ho_sammelmahnung",
+    "id": "sammelmahnung",
     "name": "Die Sammelmahnung",
     "biom": "Höhle",
     "sollstufe": 8,
@@ -808,7 +801,7 @@
         "name": "Gleichlaut",
         "vorwarnzeit_ms": 600,
         "reichweite": "nah (30)",
-        "effekt": "stehen drei beieinander, schlagen sie gleichzeitig, Vorwarnung färbt alle drei"
+        "effekt": "jeder dritte Takt: alle Mahnungen im Umkreis von 120 sagen denselben Schlag an und fuehren ihn gleichzeitig aus"
       }
     ],
     "berechnete_ttk_s": 14.1,
@@ -817,12 +810,8 @@
     "gold_max": 174,
     "loot": [
       {
-        "item": "Skelettknöchel",
+        "item": "Mahnsiegel",
         "chance": 0.35
-      },
-      {
-        "item": "Irrlicht-Funke",
-        "chance": 0.15
       },
       {
         "item": "Mahnbescheid, dritte Stufe",
@@ -830,11 +819,62 @@
       }
     ],
     "konter_in_einem_satz": "Aufbrechen und einzeln erledigen, ein gleichlautender Dreierschlag kostet die halbe Leiste.",
-    "flavor_de": "Drei Mahnungen desselben Vorgangs, die sich einig sind. Einzeln sind sie Papier, zu dritt sind sie ein Vollstreckungstitel."
+    "flavor_de": "Dieselbe Sache, dreimal, gleichlautend. Einzeln sind sie Papier, zu dritt sind sie ein Vollstreckungstitel."
   },
   {
-    "id": "ho_bestandskraft",
-    "name": "Steingolem der Bestandskraft",
+    "id": "mage",
+    "name": "Irrlichtmagier",
+    "biom": "Höhle",
+    "sollstufe": 8,
+    "ertragsklasse": "A3",
+    "anforderungstyp": [
+      "B3"
+    ],
+    "hp": 850,
+    "resistenzen": {
+      "physisch": -0.15,
+      "feuer": 0.2,
+      "eis": 0.2,
+      "gift": 0.3,
+      "magie": 0.5
+    },
+    "schaden_pro_treffer": 131,
+    "angriffsintervall_s": 2.2,
+    "tempo": 46,
+    "angriffsmuster": [
+      {
+        "name": "Fußnote",
+        "vorwarnzeit_ms": 500,
+        "reichweite": "fern (140)",
+        "effekt": "Bolzen, der beim Einschlag hell aufleuchtet"
+      },
+      {
+        "name": "Verweis",
+        "vorwarnzeit_ms": 380,
+        "reichweite": "fern (140)",
+        "effekt": "ersetzt jeden dritten Bolzen, schneller angesagt, dafür halbe Wucht"
+      }
+    ],
+    "berechnete_ttk_s": 12.3,
+    "xp": 427,
+    "gold_min": 83,
+    "gold_max": 174,
+    "loot": [
+      {
+        "item": "Irrlicht-Funke",
+        "chance": 0.4
+      },
+      {
+        "item": "Randbemerkung",
+        "chance": 0.25
+      }
+    ],
+    "konter_in_einem_satz": "Er leuchtet, verweist und hält nichts aus, also hin und zuschlagen.",
+    "flavor_de": "Leuchtet, verweist, fuehrt nirgendwohin. Wer ihm folgt, steht am Ende vor einer weiteren Fußnote."
+  },
+  {
+    "id": "golem",
+    "name": "Steingolem",
     "biom": "Höhle",
     "sollstufe": 9,
     "ertragsklasse": "A4",
@@ -858,13 +898,13 @@
         "name": "Faustschlag",
         "vorwarnzeit_ms": 700,
         "reichweite": "nah (36)",
-        "effekt": "sehr schwerer Grundtreffer, Arm hebt weit sichtbar an"
+        "effekt": "sehr schwerer Grundtreffer, der Arm hebt weit sichtbar an"
       },
       {
         "name": "Unanfechtbar",
         "vorwarnzeit_ms": 900,
         "reichweite": "Ring (130)",
-        "effekt": "ersetzt den Grundtreffer, Druckwelle, danach 3 s Erschöpfung ohne Angriff"
+        "effekt": "ersetzt jeden dritten Grundtreffer, Druckwelle rundum, danach 3 s Erschöpfung ohne Angriff"
       }
     ],
     "berechnete_ttk_s": 34.0,
@@ -877,19 +917,15 @@
         "chance": 0.5
       },
       {
-        "item": "Panzerspan",
-        "chance": 0.25
-      },
-      {
         "item": "Unanfechtbarer Beschluss",
         "chance": 0.12
       }
     ],
-    "konter_in_einem_satz": "Stahl prallt ab, also Manapool leeren, in der Erschöpfung nachladen und den Kreislauf so lange fahren, bis er fällt.",
-    "flavor_de": "Er ist bestandskräftig geworden und weiß das. Schwerter sind gegen ihn kein zulässiges Rechtsmittel, Magie schon."
+    "konter_in_einem_satz": "Stahl prallt ab, also Manapool leeren, in der Erschöpfung nachladen und den Kreislauf fahren, bis er fällt.",
+    "flavor_de": "Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon."
   },
   {
-    "id": "ru_aktenbote",
+    "id": "aktenbote",
     "name": "Der Aktenbote",
     "biom": "Ruine",
     "sollstufe": 8,
@@ -906,21 +942,21 @@
       "gift": 0.2,
       "magie": 0.1
     },
-    "schaden_pro_treffer": 21,
+    "schaden_pro_treffer": 32,
     "angriffsintervall_s": 1.4,
     "tempo": 88,
     "angriffsmuster": [
-      {
-        "name": "Zuschlag",
-        "vorwarnzeit_ms": 400,
-        "reichweite": "fern (120)",
-        "effekt": "gibt einem Nachbarn 20 Prozent mehr Schaden, kein eigener Schaden"
-      },
       {
         "name": "Aktenkante",
         "vorwarnzeit_ms": 300,
         "reichweite": "nah (24)",
         "effekt": "Grundtreffer, schmal und schnell"
+      },
+      {
+        "name": "Zuschlag",
+        "vorwarnzeit_ms": 400,
+        "reichweite": "fern (120)",
+        "effekt": "gibt jeden dritten Takt einem Nachbarn 25 Prozent mehr Schaden, kein eigener Schaden"
       }
     ],
     "berechnete_ttk_s": 2.2,
@@ -933,20 +969,16 @@
         "chance": 0.35
       },
       {
-        "item": "Schattenfetzen",
-        "chance": 0.15
-      },
-      {
         "item": "Zuschlagsverfügung",
         "chance": 0.25
       }
     ],
     "konter_in_einem_satz": "Zuerst die Boten, dann alles andere, sie sind so weich wie ihr Zuschlag hart ist.",
-    "flavor_de": "Er trägt nichts Eigenes bei außer der Nachricht, dass jetzt alle härter zuschlagen dürfen. Und daran hält sich hier jeder."
+    "flavor_de": "Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. Daran hält sich hier jeder."
   },
   {
-    "id": "ru_mumie",
-    "name": "Mumie der versiegelten Akte",
+    "id": "mummy",
+    "name": "Mumie",
     "biom": "Ruine",
     "sollstufe": 9,
     "ertragsklasse": "A2",
@@ -975,7 +1007,7 @@
         "name": "Siegelstaub",
         "vorwarnzeit_ms": 600,
         "reichweite": "Kegel (80)",
-        "effekt": "ersetzt den Grundtreffer, sperrt 5 s lang die Trankwirkung"
+        "effekt": "ersetzt jeden dritten Grundtreffer, sperrt 5 s lang die Trankwirkung"
       }
     ],
     "berechnete_ttk_s": 14.0,
@@ -988,20 +1020,16 @@
         "chance": 0.45
       },
       {
-        "item": "Geisterschleier",
-        "chance": 0.2
-      },
-      {
         "item": "Versiegelte Akte",
         "chance": 0.18
       }
     ],
-    "konter_in_einem_satz": "Feuer an die Binden und während der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.",
-    "flavor_de": "Versiegelt, verschnürt, seit vierhundert Jahren nicht geöffnet. Sie hält das für Datenschutz."
+    "konter_in_einem_satz": "Feuer an die Binden, und während der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.",
+    "flavor_de": "Banderole drum, Siegel drauf, nie geöffnet. Langsam, aber sehr geduldig, und sie hält das für Datenschutz."
   },
   {
-    "id": "ru_knochenritter",
-    "name": "Knochenritter der Dienstvorschrift",
+    "id": "stalfos",
+    "name": "Knochenritter",
     "biom": "Ruine",
     "sollstufe": 9,
     "ertragsklasse": "A3",
@@ -1022,16 +1050,16 @@
     "tempo": 82,
     "angriffsmuster": [
       {
-        "name": "Aus der Nische",
-        "vorwarnzeit_ms": 600,
-        "reichweite": "nah (40)",
-        "effekt": "Eröffnung aus der Wand, weit ausholender Bogen"
-      },
-      {
         "name": "Dienstweg",
         "vorwarnzeit_ms": 450,
         "reichweite": "nah (34)",
         "effekt": "Grundtreffer, immer exakt drei Schläge, dann 1,6 s Pause"
+      },
+      {
+        "name": "Aus der Nische",
+        "vorwarnzeit_ms": 600,
+        "reichweite": "nah (40)",
+        "effekt": "Eröffnung aus der Wand, weit ausholender Bogen"
       }
     ],
     "berechnete_ttk_s": 18.1,
@@ -1044,19 +1072,15 @@
         "chance": 0.45
       },
       {
-        "item": "Hundszahn",
-        "chance": 0.15
-      },
-      {
         "item": "Dienstvorschrift, Randfassung",
         "chance": 0.2
       }
     ],
-    "konter_in_einem_satz": "Die drei Schläge des Dienstwegs ausweichen und in der Pause zuschlagen, er weicht davon nie ab.",
-    "flavor_de": "Er hält sich an die Vorschrift, auch beim Töten: drei Schläge, dann Pause, dann Bericht. Die Pause ist dein Rechtsmittel."
+    "konter_in_einem_satz": "Den drei Schlaegen des Dienstwegs ausweichen und in der Pause zuschlagen, er weicht davon nie ab.",
+    "flavor_de": "Reine Form, bewaffnet, korrekt, unbeirrbar. Er hält sich auch beim Töten an die Reihenfolge, und die Pause ist dein Rechtsmittel."
   },
   {
-    "id": "ru_sammelverfuegung",
+    "id": "sammelverfuegung",
     "name": "Die Sammelverfügung",
     "biom": "Ruine",
     "sollstufe": 10,
@@ -1073,16 +1097,10 @@
       "gift": 0.6,
       "magie": 0.45
     },
-    "schaden_pro_treffer": 336,
+    "schaden_pro_treffer": 359,
     "angriffsintervall_s": 2.2,
     "tempo": 112,
     "angriffsmuster": [
-      {
-        "name": "Anhörung",
-        "vorwarnzeit_ms": 800,
-        "reichweite": "fern (180)",
-        "effekt": "schwerer Fernschlag, sie bleibt dafür 1,8 s stehen"
-      },
       {
         "name": "Zurückverweisen",
         "vorwarnzeit_ms": 400,
@@ -1090,10 +1108,16 @@
         "effekt": "Grundtreffer, stößt dich weit zurück und sie zieht sich nach"
       },
       {
+        "name": "Anhörung",
+        "vorwarnzeit_ms": 800,
+        "reichweite": "fern (180)",
+        "effekt": "jeder dritte Takt: schwerer Fernschlag, sie bleibt dafür stehen"
+      },
+      {
         "name": "Aktenmantel",
         "vorwarnzeit_ms": 500,
         "reichweite": "kein Schaden",
-        "effekt": "zieht 2,5 s lang alle Resistenzen auf 0,8 hoch, das Blatt darunter bleibt aber brennbar"
+        "effekt": "jeder fuenfte Takt: 2,5 s lang alle Resistenzen auf 0,8, das Blatt darunter bleibt brennbar"
       }
     ],
     "berechnete_ttk_s": 35.9,
@@ -1102,19 +1126,15 @@
     "gold_max": 334,
     "loot": [
       {
-        "item": "Fürstenkrone-Fragment",
-        "chance": 0.1
+        "item": "Urschrift-Siegel",
+        "chance": 0.4
       },
       {
         "item": "Ruferzunge",
-        "chance": 0.3
-      },
-      {
-        "item": "Sammelverfügung, Urschrift",
-        "chance": 0.4
+        "chance": 0.2
       }
     ],
     "konter_in_einem_satz": "Nur während der Anhörung stehen bleiben und Feuer legen, im Aktenmantel gar nicht erst schlagen.",
-    "flavor_de": "Sie fasst alles zusammen, was je gegen dich lief, und trägt es in einem Mantel aus Papier vor sich her. Papier."
+    "flavor_de": "Alles, was je gegen dich lief, zusammengefasst und in einem Mantel aus Papier vorgetragen. Papier."
   }
 ]
