@@ -46,6 +46,8 @@ Das Spiel prüft sich beim Laden selbst. Sieben selbstaufrufende Guards (`knAsse
 | `superduper-reparatur-prompt.md` | Reparaturrunden R1 bis R9 |
 | `phase-*.md` | Eine Bauanleitung je Bauabschnitt, mit Abnahme und Prüfprotokoll |
 | `figuren-dorf.md`, `blaetter-serie-a-b.md` | Inhaltslieferungen (Figurentexte, Aktenfunde) |
+| `monsterkatalog-stufe-1-10.md` | Balancing-Lieferung: 20 Gegner, 5 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
+| `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
 | `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md` | Datierte Prüfberichte. Ihre Zeilennummern sind Stände, keine Wegweiser. |
 | `CREDITS.md` | Grafik-Lizenzen |
 | `LICENSE` | Code MIT, Grafik nicht gedeckt, Spielinhalte vorbehalten |
