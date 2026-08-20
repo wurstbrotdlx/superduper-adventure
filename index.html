@@ -4332,7 +4332,24 @@ function killMon(m){
   // MUS.swell() hing bis hierher ohne Aufrufer im Code. Der Bosssieg ist der einzige der drei
   // vorgesehenen Anlässe, der selten genug ist: killMon() läuft hinter dem Tot-Guard in hurtMon()
   // und feuert deshalb höchstens einmal je Boss, der !kammer-Zweig hält den Alten Schrecken raus.
-  if(m.def.boss && !kammer){ el('bossbar').style.display='none'; MUS.swell(); setTimeout(()=>{ if(state==='play') winGame(); }, 2000); }
+  // Die Vertagung (Entscheidung vom 20.08.2026). Solange die Ausfertigung im
+  // Bestand liegt und noch nicht zugestellt werden darf, endet der Kampf-Tod
+  // nicht das Spiel: der Fürst ist der Nachtrag zu Vorgang 1, und ein offener
+  // Vorgang lässt sich nicht erschlagen. Anlass war GW10 — seit die Zustellung
+  // an Akt V hängt, liegen zehn Schichten zwischen "Ausfertigung vollständig"
+  // und "Zustellen wird angeboten", und wer den Fürsten in diesem Fenster legt,
+  // bekam zwingend den kleineren Ausgang. Der Kampf selbst bleibt unverändert,
+  // der Boss stirbt, die Beute fällt; es entfällt allein der Siegbildschirm.
+  // Die Zeilen nennen den Zustand, nicht den Weg dorthin: ein Hinweis auf die
+  // Zustellung wäre ein Questmarker, siehe den Kommentar an winGame().
+  if(m.def.boss && !kammer){
+    el('bossbar').style.display='none'; MUS.swell();
+    if(vorgangVertagt()){
+      floaters.push({x:m.x, y:m.y-46, txt:VERTAGT_ZEILEN[0], col:'#ff0055', t:4.5, big:true});
+      floaters.push({x:m.x, y:m.y-24, txt:VERTAGT_ZEILEN[1], col:'#c9b98a', t:5.0});
+      floaters.push({x:m.x, y:m.y-8,  txt:VERTAGT_ZEILEN[2], col:'#c9b98a', t:5.5});
+    } else setTimeout(()=>{ if(state==='play') winGame(); }, 2000);
+  }
 }
 
 function gainXP(x){
@@ -9047,6 +9064,24 @@ const VORGANG_PUZZLE = [
 // den amt-Feldern), kein TDZ.
 const vorgangZustellbar = () => vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
 
+// Die Vertagung. Wer die Ausfertigung im Bestand hat, aber noch nicht zustellen
+// darf, kann den Fürsten nicht mehr über killMon() zum Spielende bringen: ein
+// offener Vorgang lässt sich nicht erschlagen. Der Fürst ist ein Nachtrag, kein
+// Wesen. Ab Akt V ist die Vertagung falsch und der Kampf-Tod wieder ein
+// gültiges Ende — dort ist er eine Entscheidung des Spielers und keine Folge
+// einer Schwelle, die ihm niemand genannt hat.
+//
+// Eigene Funktion statt eines Ausdrucks in der Siegweiche, damit vorgangAssert()
+// genau den Term prüft, der im Spiel läuft, statt einer Abschrift davon (Bauform
+// wie markiereAdressTueren(), GW16). Kein neues Feld, kein neues Prädikat: sie
+// liest ausschließlich die beiden bestehenden.
+const vorgangVertagt = () => vorgangAusfertigung() && !vorgangZustellbar();
+
+// Die drei Zeilen der Vertagung als Tabelle, nicht als Literale in killMon():
+// so laufen sie durch die Formregeln in vorgangAssert() Block 9 wie jeder andere
+// Text dieser Phase. Reihenfolge ist die Anzeigereihenfolge von oben nach unten.
+const VERTAGT_ZEILEN = ['VERTAGT', 'Der Sachverhalt ist erledigt.', 'Der Vorgang nicht.'];
+
 // Eine Schreibstelle, drei Schritte. #ovPanel-Schreibstellen steigen dadurch
 // von sieben auf acht.
 function vorgangPanelHtml(schritt){
@@ -9218,7 +9253,13 @@ function vorgangAssert(){
   // Die frühere Kreuzproduktzählung konnte gar nicht anders als aufgehen: bei
   // zwei fixierten Faktoren ist genau eine von vier Kombinationen wahr, egal was
   // die Funktion tut.
-  let zustellbarCount = 0;
+  //
+  // Derselbe Sweep trägt seit dem 20.08.2026 die Vertagung. Ihr Sollwert ist
+  // bewusst in anderen Größen ausgeschrieben als ihre Definition: die Funktion
+  // liest rangZeichnungsbefugt() und aktStand(), der Sollwert hier nur den
+  // Schichtwert. Verschöbe jemand eine der beiden Schwellen, bliebe die
+  // Definition mit sich selbst einig und dieser Punkt fiele trotzdem.
+  let zustellbarCount = 0, vertagtCount = 0;
   for(const ausf of [false, true]){
     kladde.vorgang = ausf ? {1:true, 2:true, 3:true, 4:true} : {};
     for(const s of [0, 30, 39, 40]){
@@ -9226,9 +9267,13 @@ function vorgangAssert(){
       const soll = ausf && s >= 40;
       if(vorgangZustellbar() !== soll) fehler('vorgangZustellbar() weicht vom Sollwert ab', 'ausfertigung=', ausf, 'schichten=', s);
       if(vorgangZustellbar()) zustellbarCount++;
+      const sollVertagt = ausf && s < 40;
+      if(vorgangVertagt() !== sollVertagt) fehler('vorgangVertagt() weicht vom Sollwert ab', 'ausfertigung=', ausf, 'schichten=', s);
+      if(vorgangVertagt()) vertagtCount++;
     }
   }
   if(zustellbarCount !== 1) fehler('vorgangZustellbar() nicht genau einmal wahr im Sweep', zustellbarCount);
+  if(vertagtCount !== 3) fehler('vorgangVertagt() nicht genau dreimal wahr im Sweep', vertagtCount);
   kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht;
 
   // (8) Aktzeilen-Anker: die drei geänderten Zeilen stehen an den erwarteten
@@ -9245,6 +9290,8 @@ function vorgangAssert(){
   VORGANG_JAHRES.forEach((e,i) => { text(e.zwirn, 'Jahres-Zwirn '+i); if(e.hinweis) text(e.hinweis, 'Jahres-Hinweis '+i); });
   text(VORGANG_JAHRES_WEITER, 'Jahres-Weiter');
   VORGANG_PUZZLE.forEach((p,i) => { text(p.text, 'Puzzle '+i); if(p.sonst) text(p.sonst, 'Puzzle-Sonst '+i); });
+  VERTAGT_ZEILEN.forEach((l,i) => text(l, 'Vertagung '+i));
+  if(VERTAGT_ZEILEN.length !== 3) fehler('VERTAGT_ZEILEN hat nicht drei Zeilen', VERTAGT_ZEILEN.length);
 
   // (10) Gerenderte Blöcke, HTML-gestrippt — Muster rangAssert().
   const strip = html => html.replace(/<[^>]+>/g, ' ');

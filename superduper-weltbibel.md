@@ -386,6 +386,8 @@ Ablage V. Der Fürst. Der Kampf läuft ganz normal, weil er den Spieler für die
 
 **Und dann:** Wer die Ausfertigung dabei hat, bekommt an ihm eine Kontextaktion. Nicht "Angreifen". **"Zustellen."** Ein Tastendruck. Der Kampf hört auf.
 
+**Und wer ihn stattdessen erschlägt?** Der hat einen erledigten Sachverhalt und keinen geschlossenen Vorgang. Wer die Ausfertigung dabei hat, aber noch nicht zustellen darf, bekommt nicht einmal das: der Fürst wird vertagt und steht beim nächsten Massenvorgang wieder da. Ein offener Vorgang lässt sich nicht erschlagen. Das ist keine Strafe und kein Hinweis, es ist Verwaltungsrecht. (Umsetzung siehe Kapitel 14, W5.)
+
 Er liest. Er liest lange. Dann sagt er den Satz, auf den das ganze Spiel hinausläuft:
 
 > "Vierhundert Jahre. Und Sie kommen einfach vorbei."
@@ -576,9 +578,9 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Aktstand bleibt **abgeleitet** aus `amt.schichten` über das bestehende `aktStand()`, kein `amt`-Feld, keine `loadAmt()`-Ladezeile — dieselbe Korrektur wie beim Rang in W6 (siehe Zeile 563). Der Halbsatz „hochgezählt im bestehenden Jahresgespräch" bleibt korrekt, `aktStand()` springt genau am Zehnerschritt.
 * Pro Akt: ein zusätzlicher Absatz im Jahresgespräch-Panel, ein geänderter Satz bei drei Figuren (Lisbeth, Nörgel — die übrigen Aktzeilen passten bereits aus W3), eine freigeschaltete Blattserie (C-F, in Biom-Reihenfolge über Akt 2-5).
 * Vier Adress-Kammern in Akt IV: drei Sonderkammern (eine je Biom) mit Sonderschild, garantiertem Blatt-Drop, plus eine vierte Zeile über den Schattenland-Fundkanal in Ablage V (siehe Zeile 353).
-* Akt V: eine neue Kontextaktion **Zustellen** am Boss, angeboten nur mit Ausfertigung im Bestand, Zeichnungsbefugnis (W6) und erreichtem Akt V (`aktStand() >= 5`, also ab Schicht 41). *(GW10, 06.08.2026: die dritte Bedingung kam nach. Ohne sie war Zustellen schon ab Schicht 31 möglich, das Dienstsiegel fällt aber erst bei Schicht 41 — Puzzleteil 1 des Finales blieb dadurch im ganzen Akt IV leer, also genau der Kern-Callback aus Kapitel 9.)* Sie beendet den Kampf und öffnet das Schlusspanel. Der Kampf selbst bleibt vollständig unverändert — das Finale ist ein Ausweg, keine Umschreibung. Der bestehende Kampf-Tod-Ausgang (`winGame()`) bleibt parallel bestehen.
+* Akt V: eine neue Kontextaktion **Zustellen** am Boss, angeboten nur mit Ausfertigung im Bestand, Zeichnungsbefugnis (W6) und erreichtem Akt V (`aktStand() >= 5`, also ab Schicht 41). *(GW10, 06.08.2026: die dritte Bedingung kam nach. Ohne sie war Zustellen schon ab Schicht 31 möglich, das Dienstsiegel fällt aber erst bei Schicht 41 — Puzzleteil 1 des Finales blieb dadurch im ganzen Akt IV leer, also genau der Kern-Callback aus Kapitel 9.)* Sie beendet den Kampf und öffnet das Schlusspanel. Der Kampf selbst bleibt vollständig unverändert — das Finale ist ein Ausweg, keine Umschreibung. Der bestehende Kampf-Tod-Ausgang (`winGame()`) bleibt parallel bestehen. *(Präzisiert am 20.08.2026: parallel heißt ab Akt V. Wer die Ausfertigung im Bestand trägt und noch nicht zustellen darf, kann den Fürsten nicht mehr zum Spielende erschlagen — der Vorgang wird vertagt, die Schicht läuft weiter. Ein offener Vorgang lässt sich nicht erschlagen, und das Fenster ohne Zustellmöglichkeit ist seit GW10 zehn Schichten lang. Siehe `phase-w5-vorgang.md`, „Die Vertagung".)*
 
-**Abnahme:** Wer nie zustellt, spielt das Spiel wie bisher weiter, unendlich. Wer zustellt, sieht das Ende. Beides ist ein gültiger Zustand. `CONFIG.schichtModus = false` bricht nichts, dort läuft die Geschichte über die Blätter allein.
+**Abnahme:** Wer nie zustellt, spielt das Spiel wie bisher weiter, unendlich. Wer zustellt, sieht das Ende. Beides ist ein gültiger Zustand. *(Nachtrag 20.08.2026: „wie bisher weiter" gilt jetzt auch für den, der den Fürsten im Fenster vor Akt V erlegt. Er sieht die Vertagung und spielt weiter, statt auf einem Endbildschirm zu stehen, während seine Ausfertigung ungezustellt in der Kladde liegt.)* `CONFIG.schichtModus = false` bricht nichts, dort läuft die Geschichte über die Blätter allein.
 
 ### W6: Rang und Laufbahn — ERLEDIGT
 
