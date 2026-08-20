@@ -9062,7 +9062,16 @@ const VORGANG_PUZZLE = [
 // Akt, in dem die Ausfertigung eingesammelt wird. Deckt sich mit Weltbibel
 // Kapitel 9 ("Akt V, Schicht 41 bis 50"). aktStand() steht weit oberhalb (bei
 // den amt-Feldern), kein TDZ.
-const vorgangZustellbar = () => vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
+// Das Modus-Gate (Entscheidung vom 20.08.2026) steht bewusst vorn, im Muster
+// von vorgangAdressAkt(). Die W5-Abnahme sagt seit jeher „CONFIG.schichtModus =
+// false bricht nichts, vorgangZustellbar() bleibt falsch", die Funktion las
+// CONFIG aber nirgends. Materiell stimmte die Zusage trotzdem: ohne
+// vorgangAdressAkt() wird keine Adresskammer markiert und die vierte Zeile fällt
+// nicht, ein reiner Nicht-Schichtmodus-Stand kommt also nie an eine Ausfertigung.
+// Falsch war sie nur für einen aus dem Schichtmodus mitgebrachten Stand, wo
+// kladde.vorgang und amt.schichten persistiert danebenliegen. Dieselbe Klasse
+// hat GW5 für W4 und GW6 für W7 geschlossen; das hier war der letzte Rest.
+const vorgangZustellbar = () => CONFIG.schichtModus && vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
 
 // Die Vertagung. Wer die Ausfertigung im Bestand hat, aber noch nicht zustellen
 // darf, kann den Fürsten nicht mehr über killMon() zum Spielende bringen: ein
@@ -9075,7 +9084,12 @@ const vorgangZustellbar = () => vorgangAusfertigung() && rangZeichnungsbefugt() 
 // genau den Term prüft, der im Spiel läuft, statt einer Abschrift davon (Bauform
 // wie markiereAdressTueren(), GW16). Kein neues Feld, kein neues Prädikat: sie
 // liest ausschließlich die beiden bestehenden.
-const vorgangVertagt = () => vorgangAusfertigung() && !vorgangZustellbar();
+// Dasselbe Gate, und es ist hier keine Formalie: ohne den ersten Term wäre die
+// Vertagung im Nicht-Schichtmodus mit mitgebrachtem Vollbestand dauerhaft wahr
+// (vorgangZustellbar() ist dort jetzt immer falsch). Ein solcher Stand hätte
+// dann gar kein Ende mehr, weder Zustellung noch Kampf-Tod. Im Nicht-
+// Schichtmodus läuft der Vorgang nicht, also wird dort auch nichts vertagt.
+const vorgangVertagt = () => CONFIG.schichtModus && vorgangAusfertigung() && !vorgangZustellbar();
 
 // Die drei Zeilen der Vertagung als Tabelle, nicht als Literale in killMon():
 // so laufen sie durch die Formregeln in vorgangAssert() Block 9 wie jeder andere
@@ -9213,6 +9227,17 @@ function vorgangAssert(){
   CONFIG.schichtModus = false; amt.schichten = 0;
   for(const serie in SERIE_AKT) if(!serieFrei(serie)) fehler('schichtModus=false sperrt eine Serie', serie);
   if(vorgangAdressAkt()) fehler('schichtModus=false, aber vorgangAdressAkt() ist wahr');
+  // Die Zusage wörtlich, seit dem Modus-Gate vom 20.08.2026 auch belegbar: ein
+  // aus dem Schichtmodus mitgebrachter Vollbestand stellt hier nicht zu und
+  // vertagt auch nichts. Vorher las vorgangZustellbar() CONFIG nirgends, die
+  // Zeile hätte diesen Punkt gar nicht prüfen können.
+  kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+  for(const s of [40, 60]){
+    amt.schichten = s;
+    if(vorgangZustellbar()) fehler('schichtModus=false, aber vorgangZustellbar() ist wahr', s);
+    if(vorgangVertagt())    fehler('schichtModus=false, aber vorgangVertagt() ist wahr', s);
+  }
+  kladde.vorgang = vorgangEcht;
   CONFIG.schichtModus = modusEcht; amt.schichten = schichtenEcht;
 
   // (5) Bestandsprädikate, alle 16 Teilmengen. findeAdresszeile() darf hier nie
@@ -9259,6 +9284,10 @@ function vorgangAssert(){
   // liest rangZeichnungsbefugt() und aktStand(), der Sollwert hier nur den
   // Schichtwert. Verschöbe jemand eine der beiden Schwellen, bliebe die
   // Definition mit sich selbst einig und dieser Punkt fiele trotzdem.
+  // Der Modus wird für den Sweep erzwungen, Muster langAssert()/GW6: seit dem
+  // Modus-Gate vom 20.08.2026 hinge der ganze Sollwertblock sonst am echten
+  // CONFIG-Wert und liefe bei schichtModus=false ins Leere, statt zu fallen.
+  CONFIG.schichtModus = true;
   let zustellbarCount = 0, vertagtCount = 0;
   for(const ausf of [false, true]){
     kladde.vorgang = ausf ? {1:true, 2:true, 3:true, 4:true} : {};
@@ -9274,7 +9303,7 @@ function vorgangAssert(){
   }
   if(zustellbarCount !== 1) fehler('vorgangZustellbar() nicht genau einmal wahr im Sweep', zustellbarCount);
   if(vertagtCount !== 3) fehler('vorgangVertagt() nicht genau dreimal wahr im Sweep', vertagtCount);
-  kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht;
+  kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht; CONFIG.schichtModus = modusEcht;
 
   // (8) Aktzeilen-Anker: die drei geänderten Zeilen stehen an den erwarteten
   // Indizes von lisbeth.akt/noergel.akt.
