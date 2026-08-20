@@ -34,7 +34,7 @@ python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</sc
 
 Das fängt Syntaxfehler, **nicht** die Temporal Dead Zone. Der häufigste echte Fehler in diesem Projekt ist ein `ReferenceError` beim Laden, weil eine Funktion, die schon auf Skriptebene läuft, eine erst später deklarierte Konstante liest. Den findet nur der Browser mit offener Konsole.
 
-Das Spiel prüft sich beim Laden selbst. Acht selbstaufrufende Guards (`knAssertCaps`, `blaetterAssert`, `rangAssert`, `anredeAssert`, `vorgangAssert`, `auftragAssertBrett`, `langAssert`, `monsterAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit und seit M1 auch die Kampfwerte gegen den Referenzspieler. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium.
+Das Spiel prüft sich beim Laden selbst. Neun selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung und seit M1 die Kampfwerte gegen den Referenzspieler. Dazu kommt `npcAnkerAssert()`, der als einziger nicht auf Skriptebene läuft, sondern erst hinter `loadAssets()`, weil er die gebackenen Blätter liest. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
 
 ## Dokumente
 

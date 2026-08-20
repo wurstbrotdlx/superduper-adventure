@@ -131,3 +131,27 @@ Zwei Lesarten, beide vertretbar:
 2. **Der Anteil ist das, was das Amt einbehält.** Verloren ist er dann aus Sicht des Außendienstlers, der ihn nicht mit nach Hause nimmt, und die Amtskasse ist genau dieser Anteil. Dann beschreibt der heutige Code die Weltbibel korrekt und nur die mittlere Registerspalte ist unglücklich formuliert.
 
 Welche gilt, ist eine Frage an den Autor der Weltbibel und keine, die eine Messung beantwortet. Sie ist hier festgehalten, damit sie nicht wieder verschwindet.
+
+---
+
+## 9. Nachtrag vom selben Tag: entschieden, und was das an den Zahlen oben ändert
+
+**Entscheidung:** ein dritter Empfänger. Der Verwaltungskostenanteil verlässt das Spiel, `CONFIG.verwaltungskosten = 0.2`. Aufteilung damit **50 Prozent Gürtel, 30 Prozent Amtskasse, 20 Prozent weg**, beide Anteile auf den Bruttowert gerechnet, die Kasse bekommt den Rest und kann deshalb nie negativ werden.
+
+Der Gürtelanteil bleibt bewusst der **Brutto**anteil: Weltbibel Kapitel 5 sagt „Gold zur Hälfte" und nicht „die Hälfte von dem, was übrig ist". Damit ist der Satz jetzt wörtlich wahr, und der Verwaltungskostenanteil ist das, wonach er im Namensregister heißt.
+
+Die Rechnung ist als eigene Funktion `goldAufteilung()` aus `endShift()` herausgezogen, weil `endShift()` mit DOM, Zutatenkontingent und Speicherpfad verwoben und für einen Guard nicht erreichbar ist. `goldAssert()` prüft die Erhaltungsgröße statt der Formel: die drei Empfänger ergeben zusammen exakt die Beute, keiner wird negativ, alle drei sind ganzzahlig, die beiden Anteile sind Bruttoanteile, und bei gesetztem Regler ist Gürtel plus Kasse **echt kleiner** als die Beute. Ohne diesen letzten Punkt liefe der Guard auch dann grün, wenn der Verlust nur umgebucht würde.
+
+**Was das an Abschnitt 4 und 5 ändert.** Im eingeschwungenen Zustand gilt weiterhin `carry = beute`, die Kasse bekommt aber nicht mehr die volle Beute, sondern **60 Prozent** davon (`0,3 · (carry + beute)`).
+
+| Spielweise | Bankzufluss je Schicht | Schichten bis Vollausbau |
+|---|---|---|
+| nur Oberwelt, eingeschwungen | 170 | **23** |
+| Oberwelt plus Kammern bei 180 s Rätselzeit | rund 1190 | **3** |
+| Oberwelt plus Kammern bei 120 s | rund 1690 | **2 bis 3** |
+
+Die Oberweltzeile landet damit zufällig wieder bei den 23 Schichten, die der Bericht vom 06.08. nannte — aus einer anderen Rechnung und mit einer anderen Begründung.
+
+**Die Preise sind unverändert geblieben**, wie in Abschnitt 6 empfohlen. Der Verwaltungskostenanteil bremst beide Kanäle proportional statt nur den langsamen, und er gibt den beiden Gold-Flüchen ihre Angriffsfläche zurück: `Verwaltungsgebühr` und `Goldschwund` zehren am Gürtelgold, und das ist seit heute wieder ein Betrag, der verloren gehen kann.
+
+**Gemessen nach der Änderung**, echter Schichtabschluss mit 443 Gold: 222 mitgenommen, 132 an die Amtskasse, 89 Verwaltungskostenanteil, Summe exakt 443. Alle neun Guards true, `console.error` abgefangen und leer. Zwei Sabotagen gefahren, beide gemeldet: der Verlust nur umgebucht (18 Meldungen, Erhaltungsgröße) und der Gürtelanteil vom Rest statt vom Bruttowert gerechnet (3 Meldungen, Bruttoanteil).
