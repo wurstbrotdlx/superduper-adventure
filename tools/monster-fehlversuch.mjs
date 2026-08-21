@@ -56,13 +56,26 @@ const proben = await page.evaluate(() => {
         () => { MONDEF.slime.res.physisch = MONDEF.slime._q; });
 
   raus.push(['unveraenderter Katalog (muss gruen sein)', monsterAssert()]);
+
+  // --- Z2: Proben gegen zauberAssert() -------------------------------------
+  const zprobe = (name, hin, zurueck) => { hin(); const ok = zauberAssert(); zurueck(); raus.push([name, ok]); };
+  zprobe('gainXP vergibt Punkte unter der Befugnisstufe',
+        () => { window._eGainXP = gainXP;
+                gainXP = function(x){ player.xp += x; let need = 35*Math.pow(player.level,1.35);
+                  while(player.xp >= need){ player.xp -= need; player.level++; player.spellPoints += 1; need = 35*Math.pow(player.level,1.35); } }; },
+        () => { gainXP = window._eGainXP; });
+  zprobe('spellUnlockable ignoriert die Befugnisstufe',
+        () => { window._eUnl = spellUnlockable;
+                spellUnlockable = function(sp){ return !player.spellsKnown[sp.id] && player.spellPoints > 0 && sp.req.every(spellKnown); }; },
+        () => { spellUnlockable = window._eUnl; });
+  raus.push(['unveraenderte Zauberbefugnis (muss gruen sein)', zauberAssert()]);
   console.error = echt;
   return raus;
 });
 
 let offen = 0;
 for(const [name, gruen] of proben){
-  const letzte = name.startsWith('unveraenderter');
+  const letzte = name.startsWith('unveraenderte');
   const gut = letzte ? gruen : !gruen;
   if(!gut) offen++;
   console.log((gut ? 'ok       ' : 'BEFUND   ') + (letzte ? (gruen ? 'gruen    ' : 'ROT      ') : (gruen ? 'DURCHGELASSEN ' : 'gemeldet ')) + name);

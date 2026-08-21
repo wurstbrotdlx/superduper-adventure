@@ -315,7 +315,7 @@
     "anforderungstyp": [
       "B5"
     ],
-    "hp": 385,
+    "hp": 345,
     "resistenzen": {
       "physisch": 0.5,
       "feuer": -0.5,
@@ -883,7 +883,7 @@
       "B2",
       "B5"
     ],
-    "hp": 1220,
+    "hp": 1100,
     "resistenzen": {
       "physisch": 0.9,
       "feuer": 0,
@@ -908,8 +908,8 @@
         "effekt": "ersetzt jeden dritten Grundtreffer, Druckwelle rundum, danach 3 s Erschöpfung ohne Angriff"
       }
     ],
-    "berechnete_ttk_s": 34.0,
-    "xp": 1654,
+    "berechnete_ttk_s": 34.1,
+    "xp": 1657,
     "gold_min": 144,
     "gold_max": 302,
     "loot": [
@@ -1091,7 +1091,7 @@
       "B4",
       "B5"
     ],
-    "hp": 1240,
+    "hp": 1120,
     "resistenzen": {
       "physisch": 0.7,
       "feuer": -0.35,
@@ -1122,8 +1122,8 @@
         "effekt": "jeder fuenfte Takt: 2,5 s lang alle Resistenzen auf 0,8, das Blatt darunter bleibt brennbar"
       }
     ],
-    "berechnete_ttk_s": 35.9,
-    "xp": 1857,
+    "berechnete_ttk_s": 36.0,
+    "xp": 1864,
     "gold_min": 159,
     "gold_max": 334,
     "loot": [

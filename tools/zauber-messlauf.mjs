@@ -44,7 +44,32 @@ const ergebnis = await page.evaluate(() => {
     const red = Math.min(0.6, derived.armor/(derived.armor+30));
     schaden += Math.max(1, Math.round(raw * (1 - red)));
   };
-  const px = player.x, py = player.y;
+  // Z2: Arena VOR dem Dorf, nicht darin. Seit M2 gilt auf der Dorfflaeche das
+  // Hausrecht (Monster verlieren dort sofort die Aggro und gehen heim), und der
+  // Startpunkt des Spielers liegt mitten im Dorf. Eine Messung dort misst also
+  // Gegner, die gar nicht kaempfen duerfen. Die Arena wandert deshalb nach
+  // Osten, bis sie hinter dem Bannguertel auf begehbarem Boden steht.
+  // Und zwar auf einer LICHTUNG: ein einzelner begehbarer Punkt reicht nicht,
+  // Kiter und Fernkaempfer laufen sonst in die erstbeste Baumkante und die
+  // Messung misst das Gelaende statt den Gegner. Verlangt wird ein freies
+  // Rechteck von 16 x 7 Kacheln.
+  // 12 x 5 Kacheln, nicht groesser: eine 16 x 7-Lichtung existiert auf der
+  // erzeugten Karte schlicht nirgends (nachgemessen), die Suche liefe dann bis
+  // zur Ostkante ins Wasser und die Messung saehe nur noch -1/0.
+  const frei = (x0, y0) => {
+    for(let yy = y0 - 2; yy <= y0 + 2; yy++)
+      for(let xx = x0 - 2; xx <= x0 + 9; xx++)
+        if(!reachbar(xx, yy)) return false;
+    return true;
+  };
+  let ax = Math.floor(player.x / TS), ay = Math.floor(player.y / TS), gefunden = false;
+  suche: for(; ax < MW - 20; ax++)
+    for(let dy = 0; dy <= 40; dy++) for(const vz of [1, -1]){
+      const yy = Math.floor(player.y / TS) + dy * vz;
+      if(dorfAbstand(ax, yy) >= DORF_BANN + 8 && frei(ax, yy)){ ay = yy; gefunden = true; break suche; }
+    }
+  if(!gefunden) console.warn('Messlauf: keine Lichtung gefunden, Arena evtl. unsauber');
+  const px = ax * TS + 16, py = ay * TS + 16;
 
   function refBuild(stufe){
     const [affix, armor] = REF[stufe];
@@ -60,6 +85,9 @@ const ergebnis = await page.evaluate(() => {
 
   function lauf(typ, n, art, zauberId){
     const d = MONDEF[typ];
+    // Z2: unter der Befugnisstufe gibt es die Zauberroute schlicht nicht. Die
+    // Zeile sagt das dann, statt eine bedeutungslose Zahl zu zeigen.
+    if(art !== 'nah' && d.kat.stufe < ZAUBER_AB_STUFE) return {t: -2, schaden: 0};
     refBuild(d.kat.stufe);
     monsters.length = 0; enemyBolts.length = 0; projectiles.length = 0; magicEffects.length = 0;
     drops.length = 0; boss = null; state = 'play'; schaden = 0;
@@ -80,12 +108,16 @@ const ergebnis = await page.evaluate(() => {
       let nah = leb[0], nd = 1e9;
       for(const m of leb){ const dd = Math.hypot(m.x-player.x, m.y-player.y); if(dd < nd){ nd = dd; nah = m; } }
       for(const m of leb) m.leashT = 0;            // Aggro haelt, sonst misst man nur die Leine
-      if(art === 'nah'){
+      if(art === 'nah' || art === 'mix'){
         const a = Math.atan2(nah.y - player.y, nah.x - player.x);
         if(nd > derived.range * 0.75){
           moveEnt(player, Math.cos(a) * Math.min(derived.speed*DT, nd), Math.sin(a) * Math.min(derived.speed*DT, nd));
         }
         tryAttack(a);
+        // Z2, die gewollte Spielweise: der Nahkampf erarbeitet das Mana, der
+        // Spruch ist der Payoff, sobald er bezahlt ist. Kein Ausweichen, kein
+        // Kiten, einfach beides im selben Kampf.
+        if(art === 'mix' && sp && player.mana >= sp.mana) castSpell(sp, {wx: nah.x, wy: nah.y});
       } else {
         if(nd < 180){                               // Abstand halten, wie im echten Spiel
           // Ueber moveEnt und mit derselben Zauberbremse wie im Spiel: wer die
@@ -97,6 +129,26 @@ const ergebnis = await page.evaluate(() => {
         castSpell(sp, {wx: nah.x, wy: nah.y});      // Maus liegt auf dem Gegner
       }
       update(DT); camSnap(); t += DT; state = 'play';
+      // Kaefig: die Lichtung ist 12 x 5 Kacheln, und wer aus ihr hinausflieht
+      // (Kiter, Fernkaempfer), steckt ohne Wegfindung in der ersten Baumkante
+      // fest. Dann misst der Lauf das Gelaende, nicht den Gegner. Am Rand der
+      // Lichtung ist Schluss, wie in einer Arena.
+      for(const m of monsters) if(!m.dead){
+        if(m.x < px - 60)  m.x = px - 60;
+        if(m.x > px + 280) m.x = px + 280;
+        if(m.y < py - 70)  m.y = py - 70;
+        if(m.y > py + 70)  m.y = py + 70;
+      }
+      // Auch der Spieler bleibt in der Arena. Sonst zieht sich der Abstands-
+      // lauf westwaerts aus dem Kaefig zurueck, waehrend die Gegner an dessen
+      // Rand haengen, und die Spalte "genommener Schaden" zeigt eine Null, die
+      // nichts bedeutet. In der Arena gilt: wer dauerzaubert, steht praktisch
+      // (Z4-Bremse), und wer steht, wird eingeholt. Genau das soll die Messung
+      // zeigen duerfen.
+      if(player.x < px - 60)  player.x = px - 60;
+      if(player.x > px + 280) player.x = px + 280;
+      if(player.y < py - 70)  player.y = py - 70;
+      if(player.y > py + 70)  player.y = py + 70;
     }
     return {t: -1, schaden};
   }
@@ -107,18 +159,19 @@ const ergebnis = await page.evaluate(() => {
     const nah  = lauf(typ, n, 'nah');
     const funk = lauf(typ, n, 'fern', 'funke');
     const kett = lauf(typ, n, 'fern', 'kettenblitz');
+    const mixL = lauf(typ, n, 'mix', 'funke');
     raus.push({typ, n, stufe: MONDEF[typ].kat.stufe, maxHp: derived.maxHp,
       nahT:+nah.t.toFixed(1), nahS:nah.schaden, funkT:+funk.t.toFixed(1), funkS:funk.schaden,
-      kettT:+kett.t.toFixed(1), kettS:kett.schaden});
+      kettT:+kett.t.toFixed(1), kettS:kett.schaden, mixT:+mixL.t.toFixed(1), mixS:mixL.schaden});
   }
   return raus;
 });
 
-console.log('Gegner            Soll  Leiste |   Nahkampf    |  Funke aus Distanz |  Kettenblitz');
-console.log('                              |  s / Schaden  |    s / Schaden     |   s / Schaden');
+console.log('Gegner            Soll  Leiste |   Nahkampf    |  Funke aus Distanz |  Kettenblitz     |  Nahkampf+Funke');
+console.log('                              |  s / Schaden  |    s / Schaden     |   s / Schaden    |   s / Schaden');
 for(const r of ergebnis){
-  const f=(t,s)=>`${String(t).padStart(5)} / ${String(s).padStart(4)}`;
-  console.log(`${(r.typ+' x'+r.n).padEnd(17)} ${String(r.stufe).padEnd(4)} ${String(r.maxHp).padStart(4)}   | ${f(r.nahT,r.nahS)}  |   ${f(r.funkT,r.funkS)}    |  ${f(r.kettT,r.kettS)}`);
+  const f=(t,s)=> t === -2 ? '  keine Befugnis' : `${String(t).padStart(5)} / ${String(s).padStart(4)}`;
+  console.log(`${(r.typ+' x'+r.n).padEnd(17)} ${String(r.stufe).padEnd(4)} ${String(r.maxHp).padStart(4)}   | ${f(r.nahT,r.nahS)}  |   ${f(r.funkT,r.funkS)}    |  ${f(r.kettT,r.kettS)}   |  ${f(r.mixT,r.mixS)}`);
 }
 if(fehler.length) console.log('(Seitenfehler:', fehler[0] + ' — fehlende Grafik, vor dieser Phase vorhanden)');
 await browser.close();

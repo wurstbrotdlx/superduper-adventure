@@ -512,7 +512,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B5"
     ],
-    "hp": 385,
+    "hp": 345,
     "resistenzen": {
       "physisch": 0.5,
       "feuer": -0.5,
@@ -1080,7 +1080,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B2",
       "B5"
     ],
-    "hp": 1220,
+    "hp": 1100,
     "resistenzen": {
       "physisch": 0.9,
       "feuer": 0,
@@ -1105,8 +1105,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "ersetzt jeden dritten Grundtreffer, Druckwelle rundum, danach 3 s Erschöpfung ohne Angriff"
       }
     ],
-    "berechnete_ttk_s": 34.0,
-    "xp": 1654,
+    "berechnete_ttk_s": 34.1,
+    "xp": 1657,
     "gold_min": 144,
     "gold_max": 302,
     "loot": [
@@ -1288,7 +1288,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B4",
       "B5"
     ],
-    "hp": 1240,
+    "hp": 1120,
     "resistenzen": {
       "physisch": 0.7,
       "feuer": -0.35,
@@ -1319,8 +1319,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "jeder fuenfte Takt: 2,5 s lang alle Resistenzen auf 0,8, das Blatt darunter bleibt brennbar"
       }
     ],
-    "berechnete_ttk_s": 35.9,
-    "xp": 1857,
+    "berechnete_ttk_s": 36.0,
+    "xp": 1864,
     "gold_min": 159,
     "gold_max": 334,
     "loot": [
@@ -1353,7 +1353,7 @@ Gerechnet mit `tools/monsterkatalog.py`, nicht von Hand. Sollwerte in Klammern.
 | Waldschamane | 3 | A3 | physisch | 13,0 s (12 bis 25) | 251 | 19,34 (19,33) | 8,6 s (6 bis 10) | ok |
 | Der Zustellbote | 3 | A4 | physisch | 26,9 s (20 bis 40) | 675 | 25,12 (25,13) | 4,4 s (3 bis 6) | ok |
 | Blubberakte | 3 | A1 | physisch | 2,4 s (1 bis 3) | 23 | 9,51 (9,67) | 45,3 s (über 30) | ok |
-| Der Moorbescheid | 4 | A2 | feuer | 10,0 s (8 bis 15) | 161 | 16,06 (16,08) | 20,1 s (15 bis 25) | ok |
+| Der Moorbescheid | 4 | A2 | feuer | 10,0 s (8 bis 15) | 161 | 16,13 (16,08) | 20,1 s (15 bis 25) | ok |
 | Der Amtsschimmel | 5 | A3 | physisch | 16,6 s (12 bis 25) | 436 | 26,27 (26,27) | 9,0 s (6 bis 10) | ok |
 | Der Fristläufer | 5 | A4 | physisch | 23,9 s (20 bis 40) | 817 | 34,14 (34,14) | 4,2 s (3 bis 6) | ok |
 | Papierstaub-Skarabäus | 4 | A1 | physisch | 2,5 s (1 bis 3) | 29 | 11,6 (11,49) | 36,9 s (über 30) | ok |
@@ -1364,11 +1364,11 @@ Gerechnet mit `tools/monsterkatalog.py`, nicht von Hand. Sollwerte in Klammern.
 | Höhlenspinne | 7 | A2 | physisch | 13,0 s (8 bis 15) | 293 | 22,47 (22,5) | 19,1 s (15 bis 25) | ok |
 | Die Sammelmahnung | 8 | A3 | physisch | 14,1 s (12 bis 25) | 491 | 34,83 (34,82) | 7,5 s (6 bis 10) | ok |
 | Irrlichtmagier | 8 | A3 | physisch | 12,3 s (12 bis 25) | 427 | 34,84 (34,82) | 9,5 s (6 bis 10) | ok |
-| Steingolem | 9 | A4 | magie | 34,0 s (20 bis 40) | 1654 | 48,59 (48,58) | 5,0 s (3 bis 6) | ok |
+| Steingolem | 9 | A4 | magie | 34,1 s (20 bis 40) | 1657 | 48,59 (48,58) | 5,0 s (3 bis 6) | ok |
 | Der Aktenbote | 8 | A1 | physisch | 2,2 s (1 bis 3) | 39 | 17,42 (17,41) | 38,1 s (über 30) | ok |
 | Mumie | 9 | A2 | physisch | 14,0 s (8 bis 15) | 366 | 26,14 (26,16) | 17,9 s (15 bis 25) | ok |
 | Knochenritter | 9 | A3 | physisch | 18,1 s (12 bis 25) | 675 | 37,37 (37,37) | 6,5 s (6 bis 10) | ok |
-| Die Sammelverfügung | 10 | A4 | feuer | 35,9 s (20 bis 40) | 1857 | 51,76 (51,75) | 4,0 s (3 bis 6) | ok |
+| Die Sammelverfügung | 10 | A4 | feuer | 36,0 s (20 bis 40) | 1864 | 51,77 (51,75) | 4,0 s (3 bis 6) | ok |
 
 Alle zwanzig Zeilen liegen in ihren Bändern. Die XP-Rate weicht nirgends mehr als ein Prozent
 vom Sollwert ab, der Rest ist Rundung auf ganze XP.
@@ -1417,12 +1417,12 @@ abgeleitet sind.
 
 | Gegner | physisch | Feuer | Eis | Gift | Magie |
 |---|---|---|---|---|---|
-| Der Moorbescheid | 22,4 s | **10,0 s** | 17,7 s | 150,4 s * | 17,7 s |
-| Papierstaub-Skarabäus | **2,5 s** | 11,2 s | 1,2 s | 2,4 s * | 1,7 s |
-| Klippkrabbe | **12,0 s** | wirkungslos | wirkungslos | 27,8 s * | wirkungslos |
-| Steingolem | 185,7 s | 47,7 s | 47,7 s | 119,1 s * | **34,0 s** |
-| Mumie | **14,0 s** | wirkungslos | wirkungslos | 449,2 s * | wirkungslos |
-| Die Sammelverfügung | 58,2 s | **35,9 s** | 88,1 s | 121,1 s * | 88,1 s |
+| Der Moorbescheid | 20,1 s | **10,0 s** | 17,6 s | 149,7 s * | 17,6 s |
+| Papierstaub-Skarabäus | **2,5 s** | 12,4 s | 1,3 s | 2,7 s * | 1,9 s |
+| Klippkrabbe | **12,0 s** | wirkungslos | wirkungslos | 30,9 s * | wirkungslos |
+| Steingolem | 167,4 s | 47,7 s | 47,7 s | 119,4 s * | **34,1 s** |
+| Mumie | **14,0 s** | wirkungslos | wirkungslos | 499,1 s * | wirkungslos |
+| Die Sammelverfügung | 52,6 s | **36,0 s** | 88,4 s | 121,5 s * | 88,4 s |
 
 \* Giftwerte sind rechnerisch mitgeführt, aber nicht erreichbar: der Spieler hat keine
 Giftquelle. Sie stehen hier, damit ein späterer Kesseltrank nicht neu gegen die Tabelle
@@ -1610,4 +1610,28 @@ Sonderprüfer, eine seltene Aufwertung EINER Instanz eines A1-Gegners. Beides si
 Eigenschaften der Karte und der Instanz, nicht der Vorgangsart. Sie stehen in
 `phase-m2-nahfeld-und-namen.md` und werden von `monsterAssert()` gegen dieselben Bänder
 gerechnet wie alles andere hier.
+
+### 3.10 Nachtrag Z2: die Zauberbefugnis und die neue Manarechnung
+
+Mit Z2 (`phase-z2-zauberbefugnis.md`) gilt: der erste Zauberpunkt kommt beim Aufstieg
+auf Stufe 4, die passive Manaregeneration faellt von 8 auf 2 je Sekunde, und jeder
+Waffenschwung mit mindestens einem Treffer laedt 4 Mana. Fuer diesen Katalog folgt daraus
+eine neue Zauberleistung:
+
+    Manarate im Kampf = 2 + 4 * 1,3 Schwuenge/s = 7,2 Mana/s
+    ZAUBER_DPS        = 7,2 / 5 * 16 = 23.04 (vorher 25,6)
+
+Die Rechnung nimmt an, dass der Spieler das Mana AM GEGNER erarbeitet. Das traegt auch
+beim Steingolem, dessen Sollroute Magie ist: die Treffer-Ladung haengt am Treffer, nicht
+am Schaden, seine 0,9 Physisch-Resistenz aendert an der Manarechnung nichts. Die drei
+Gegner mit Zauber-Sollroute (Moorbescheid, Steingolem, Sammelverfuegung) haben dadurch
+rund zehn Prozent weniger Lebenspunkte, ihre Sollzeiten sind unveraendert. Reines
+Zauberspammen aus der Distanz liegt bei 6,4 Schaden je Sekunde und ist damit gegen
+nichts oberhalb eines Formfehlers eine Route. Genau das war der Auftrag.
+
+Zwei Stufen des Katalogs (1 bis 3) liegen jetzt VOR der Befugnis. Fuer sie existiert
+keine Zauberroute, und der Messlauf schreibt in diese Zellen "keine Befugnis" statt
+einer Zahl. Kein Eintrag dieser Stufen hat eine Zauber-Sollroute, der Katalog bleibt
+also in sich geschlossen; die Kopplung der Konstanten prueft `zauberAssert()` in
+`index.html` bei jedem Laden.
 
