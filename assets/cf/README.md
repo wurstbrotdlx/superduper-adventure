@@ -137,6 +137,17 @@ letzten zwei geladenen Sunnyside-Sheets).
 |---|---|---|
 | `deco/Buildings/` | `Inn_Blue.png`, `House_1_Wood_Base_Red.png`, `House_2_Wood_Base_Blue.png`, `House_3_Stone_Base_Blue.png`, `Market_Stalls.png`, `Barn_Base_Red.png` (aus `Cute_Fantasy/Buildings/Buildings/…`) | Dorf-Gebäude als `big:true`-Decos, Amt = Inn (größtes, eindeutigstes Gebäude im Pack) |
 | `deco/NPCs/` | `Farmer_Bob.png`, `Bartender_Katy.png`, `Miner_Mike.png` (aus `Cute_Fantasy/NPCs (Premade)/`) | Dorf-Staffage, 64×64-Raster wie Angel_1/2, idle=Zeile1/walk=Zeile4 per Crop bestätigt |
+
+**Fünf weitere NPC-Blätter sind optional** (G6, siehe `phase-g6-dorfsicht.md`). `CF_NPCS` in
+`index.html` trägt acht Einträge, kopiert wurden nur die drei oben. Die fünf anderen —
+`Lumberjack_Jack.png`, `Chef_Chloe.png`, `Fisherman_Fin.png`, `Farmer_Buba.png`,
+`Bartender_Bruno.png`, alle aus `Cute_Fantasy/NPCs (Premade)/` — fehlten damit im Spiel, und
+Zapf, Lisbeth, Trepp, Milb und Fass standen unsichtbar im Dorf. Seit G6 fällt jede Figur ohne
+Blatt auf ein Held-Komposit zurück (Frisur/Kleidung je Figur in `DORF_FIGUREN.gestalt`), das
+Spiel ist also vollständig ohne sie. Wer die fünf Dateien lizenziert hat und hierher kopiert,
+bekommt beim nächsten Laden automatisch die Originalsprites: `npcBlaetter()` fragt `SHEETS`,
+nicht eine Liste im Code. Der Start meldet in einer Zeile, welche Figuren gerade als Komposit
+laufen.
 | `deco/Weather/` | `Clouds.png`, `Wind_Anim.png` (aus `Cute_Fantasy/Weather effects/`) | Grasland-Wolkenschatten, Aschewüste-Windböen. Schnee (Frostkamm) braucht kein Sprite, reine Canvas-Punkte |
 | `ui/` | `frame_brown.png`, `round_brown.png`, `glint_strip.png`, `alert.png` | UI-Skin-Rahmen/Rundknöpfe, glint-/alert-Ersatz — alle vier sind Einzelzell-Ausschnitte, siehe Ausnahme unten |
 

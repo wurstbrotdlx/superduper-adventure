@@ -612,15 +612,63 @@ const ctx = canvas.getContext('2d', {alpha: false}); // Performance!
 const ASSETS = 'assets/';
 // Cute-Fantasy-Frisuren (Phase G2): 6 Style x 1 Farbe, damit die Zufallsvielfalt
 // der 6 Sunnyside-Frisuren erhalten bleibt, ohne alle 30 Style/Farb-Kombis zu laden.
+// P1: art ist die Lesart der Frisur, nicht die Wahrheit über die Person. Sie
+// entscheidet allein, welche Gestalten der Einstellungsvordruck beim Schichtantritt
+// noch zur Auswahl stellt (siehe GESTALT_WAHL unten). Vergeben ist sie an der
+// Silhouette der sechs Blätter, gegen die echten PNGs angesehen und nicht aus dem
+// Dateinamen geraten: 1 Kurzhaarschnitt, 2 kurze Tolle, 3 Undercut, 4 langer
+// Seitenscheitel, 5 langes offenes Haar, 6 hochgesteckter Knoten. Wer eine Zuordnung
+// anders liest, ändert genau einen Buchstaben in dieser Tabelle; gestaltAssert()
+// unten hält nur fest, dass beide Lesarten überhaupt besetzt bleiben.
 const CF_HAIR = [
-  {key:'h1', file:'Head/Hair_1/Hair_1_Brown.png'},
-  {key:'h2', file:'Head/Hair_2/Hair_2_Blonde.png'},
-  {key:'h3', file:'Head/Hair_3/Hair_3_Black.png'},
-  {key:'h4', file:'Head/Hair_4/Hair_4_Ginger.png'},
-  {key:'h5', file:'Head/Hair_5/Hair_5_Grey.png'},
-  {key:'h6', file:'Head/Hair_6/Hair_6_Brown.png'},
+  {key:'h1', file:'Head/Hair_1/Hair_1_Brown.png',  art:'m'},
+  {key:'h2', file:'Head/Hair_2/Hair_2_Blonde.png', art:'m'},
+  {key:'h3', file:'Head/Hair_3/Hair_3_Black.png',  art:'m'},
+  {key:'h4', file:'Head/Hair_4/Hair_4_Ginger.png', art:'w'},
+  {key:'h5', file:'Head/Hair_5/Hair_5_Grey.png',   art:'w'},
+  {key:'h6', file:'Head/Hair_6/Hair_6_Brown.png',  art:'w'},
 ];
 const HAIRS = CF_HAIR.map(h => h.key);
+
+// P1: Die Haarfarben des Außendienstes. Sie stehen bewusst neben den fünf
+// Naturtönen des Pakets und nicht in ihrer Reihe: der Spieler soll sich auf einem
+// vollen Dorfplatz und in einer Horde in einem Blick selbst finden. Das Blatt wird
+// dafür nicht ausgetauscht (das Grafikpaket hat diese Farben nicht), sondern
+// umgefärbt, siehe haarBlatt() weiter unten.
+// Die Namen sind Bürobedarf. Das ist kein Gag am Rand: das Haus benennt nichts
+// nach dem, wonach es aussieht, sondern nach dem, wo es herkommt.
+const CF_HAARTON = [
+  {key:'warn',   name:'Warnorange',        hex:'#ff7a18'},
+  {key:'sirene', name:'Sirenenrot',        hex:'#ff2d55'},
+  {key:'durch',  name:'Durchschlagrosa',   hex:'#ff3ecb'},
+  {key:'deckel', name:'Aktendeckelviolett',hex:'#a855f7'},
+  {key:'stempel',name:'Stempelblau',       hex:'#2f7bff'},
+  {key:'kanzlei',name:'Kanzleitürkis',     hex:'#16e0d8'},
+  {key:'ablage', name:'Ablagegrün',        hex:'#39e13a'},
+  {key:'marker', name:'Leuchtmarkergelb',  hex:'#d8ff1f'},   // ins Grüne gezogen: reines Gelb käme Blond zu nahe
+];
+const HAARTOENE = CF_HAARTON.map(t => t.key);
+const haarTonDef = key => CF_HAARTON.find(t => t.key === key) || CF_HAARTON[0];
+const haarHex = key => haarTonDef(key).hex;
+
+// P1: Die drei Antworten auf die einzige Frage, die der Einstellungsvordruck dem
+// Spieler stellt. 'egal' ist der Auslieferungszustand und steht deshalb zuletzt:
+// wer nichts angibt, hat nichts abgewählt.
+const GESTALT_WAHL = [
+  {key:'m',    kurz:'männlich',  feld:'männlich gelesen'},
+  {key:'w',    kurz:'weiblich',  feld:'weiblich gelesen'},
+  {key:'egal', kurz:'darauf lege ich keinen Wert', feld:'ohne Angabe'},
+];
+const GESTALT_STD = 'egal';
+const gestaltDef = k => GESTALT_WAHL.find(g => g.key === k) || GESTALT_WAHL[GESTALT_WAHL.length - 1];
+// Die Frisuren, die zu einer Wahl passen. Läuft eine Lesart leer, weil jemand
+// CF_HAIR umgeschrieben hat, fällt sie auf alle zurück statt auf nichts: eine
+// Schicht ohne Kopf wäre ein Fehler, keine Aussage. gestaltAssert() meldet es.
+function haareNach(wahl){
+  if(wahl !== 'm' && wahl !== 'w') return HAIRS;
+  const l = CF_HAIR.filter(h => h.art === wahl).map(h => h.key);
+  return l.length ? l : HAIRS;
+}
 
 // Einzeldatei-Build: `node tools/build-single.mjs` ersetzt genau die nächste Zeile
 // durch eine Tabelle Pfad -> data:-URI und schreibt das Ergebnis nach dist/.
@@ -855,12 +903,28 @@ addSheet('cf_bolt', 'cf/deco/Other/Skeleton_Mage_Projectile.png', 8, 'grid', {fw
 // Maße per Node-PNG-Header gemessen (kein sheet-audit.mjs — das Werkzeug ist für
 // Sprite-Raster gebaut, nicht für monolithische Einzelbilder, s. G4-Lektion für
 // Flächentexturen, hier trifft dieselbe Einschränkung sinngemäß zu).
-addSheet('cfbld_amt',     'cf/deco/Buildings/Inn_Blue.png',            1, 'grid', {fw:240, fh:192, ax:120, ay:190});
-addSheet('cfbld_haus1',   'cf/deco/Buildings/House_1_Wood_Base_Red.png',1,'grid', {fw:96,  fh:128, ax:48,  ay:126});
-addSheet('cfbld_haus2',   'cf/deco/Buildings/House_2_Wood_Base_Blue.png',1,'grid',{fw:144, fh:128, ax:72,  ay:126});
-addSheet('cfbld_haus3',   'cf/deco/Buildings/House_3_Stone_Base_Blue.png',1,'grid',{fw:144, fh:128, ax:72,  ay:126});
-addSheet('cfbld_markt',   'cf/deco/Buildings/Market_Stalls.png',       1, 'grid', {fw:192, fh:48,  ax:96,  ay:46});
-addSheet('cfbld_scheune', 'cf/deco/Buildings/Barn_Base_Red.png',       1, 'grid', {fw:128, fh:144, ax:64,  ay:142});
+// G6: Maße, Anker UND die gemessene Deckfläche stehen ab hier genau einmal, in
+// CF_BLD, und werden von drei Seiten gelesen: addSheet() registriert daraus das
+// Blatt, VILLAGE_BUILDINGS hängt den Fußabdruck dran, dorfSichtAssert() rechnet
+// damit nach, ob eine Fassade eine Dorffigur zudeckt. Zwei getrennte Tabellen
+// wären die F1-Falle, eine Zahl an zwei Orten.
+// deck = die undurchsichtige Fläche des PNG, relativ zum Fußanker (links, rechts,
+// oben, unten). Nicht das Frame-Rechteck: die Blätter haben teils breite leere
+// Ränder (Inn_Blue 10px links, Barn 13px), und mit dem vollen Rechteck gerechnet
+// meldet der Guard Verdeckungen, die es auf dem Schirm nicht gibt. Werte per
+// Alpha-Bounding-Box am PNG gemessen, gleiche Methode wie überall sonst hier.
+const CF_BLD = {
+  amt:     {file:'Inn_Blue.png',              fw:240, fh:192, ax:120, ay:190, deck:{l:-110, r:120, o:-186, u:-11}},
+  haus1:   {file:'House_1_Wood_Base_Red.png', fw:96,  fh:128, ax:48,  ay:126, deck:{l:-35,  r:35,  o:-125, u:-11}},
+  haus2:   {file:'House_2_Wood_Base_Blue.png',fw:144, fh:128, ax:72,  ay:126, deck:{l:-59,  r:61,  o:-125, u:-11}},
+  haus3:   {file:'House_3_Stone_Base_Blue.png',fw:144,fh:128, ax:72,  ay:126, deck:{l:-61,  r:59,  o:-125, u:-11}},
+  markt:   {file:'Market_Stalls.png',         fw:192, fh:48,  ax:96,  ay:46,  deck:{l:-95,  r:95,  o:-36,  u:2}},
+  scheune: {file:'Barn_Base_Red.png',         fw:128, fh:144, ax:64,  ay:142, deck:{l:-51,  r:51,  o:-128, u:-11}},
+};
+for(const bk in CF_BLD){
+  const b = CF_BLD[bk];
+  addSheet(`cfbld_${bk}`, `cf/deco/Buildings/${b.file}`, 1, 'grid', {fw:b.fw, fh:b.fh, ax:b.ax, ay:b.ay});
+}
 
 // NPC-Staffage: 64x64-Raster wie Angel_1/2 (CF_RIGS oben), idle=Zeile1/walk=Zeile4
 // per Crop bestätigt (mittlere mittlere Down/Side/Up-Zeile = Seitenansicht, gleiche
@@ -883,8 +947,12 @@ const CF_NPCS = {
 };
 for(const nkey in CF_NPCS){
   const nd = CF_NPCS[nkey];
-  addSheet(`cfnpc_${nkey}_idle`, `cf/deco/${nd.file}`, 6, 'grid', {fw:nd.fw, fh:nd.fh, ax:nd.ax, ay:nd.ay, rowStart:1});
-  addSheet(`cfnpc_${nkey}_walk`, `cf/deco/${nd.file}`, 6, 'grid', {fw:nd.fw, fh:nd.fh, ax:nd.ax, ay:nd.ay, rowStart:4});
+  // G6: optional. Fünf der acht Dateien liegen nicht im Grafikpaket, und das ist
+  // seit G6 ein vorgesehener Zustand statt eines stillen Fehlers: npcBlaetter()
+  // gibt diesen Figuren ein Held-Komposit. Ohne die Marke meldete loadAssets()
+  // dafür zehn Warnungen bei jedem Start.
+  addSheet(`cfnpc_${nkey}_idle`, `cf/deco/${nd.file}`, 6, 'grid', {fw:nd.fw, fh:nd.fh, ax:nd.ax, ay:nd.ay, rowStart:1, optional:true});
+  addSheet(`cfnpc_${nkey}_walk`, `cf/deco/${nd.file}`, 6, 'grid', {fw:nd.fw, fh:nd.fh, ax:nd.ax, ay:nd.ay, rowStart:4, optional:true});
 }
 
 // Wetter, rein optisch. Wolken: 4 Varianten im 2x2-Raster, zentrierter Anker (kein
@@ -942,9 +1010,18 @@ function loadAssets(){
     return p;
   }
   return Promise.all(SHEET_LIST.map(([key, url, n, mode, opt]) => {
-    const src = (ASSET_BLOBS && ASSET_BLOBS[url]) || url;
-    return loadImage(src).then(img => {
-      if(!img){ console.warn('Sprite fehlt:', url); assetsLoaded++; return; }
+    // G6: Im Einzeldatei-Build ist ASSET_BLOBS die vollständige Liste dessen, was
+    // build-single.mjs unter assets/ gefunden hat. Was dort fehlt, gibt es nicht,
+    // und ein Ladeversuch wäre ein sicherer 404 in der Konsole des Spielers.
+    // Im Quellbaum (ASSET_BLOBS null) wird geladen wie bisher.
+    const src = ASSET_BLOBS ? ASSET_BLOBS[url] : url;
+    return (src ? loadImage(src) : Promise.resolve(null)).then(img => {
+      // opt.optional heißt: dieses Blatt darf fehlen, der Aufrufer hat einen
+      // Ersatzweg. Bisher meldete jedes fehlende Blatt eine Warnung, und die
+      // fünf, die im Paket nie lagen, standen seit W3 dauerhaft in der Konsole.
+      // Eine erwartete Lücke ist keine Warnung; gemeldet wird sie trotzdem,
+      // gesammelt und einmal, von bakeAllNpcSheets().
+      if(!img){ if(!(opt && opt.optional)) console.warn('Sprite fehlt:', url); assetsLoaded++; return; }
       let fw, fh, cols, ax, ay;
       let rowStart = 0;
       if(mode === 'raw'){ fw = img.width; fh = img.height; cols = 1; ax = 0; ay = 0; }
@@ -993,6 +1070,96 @@ function tintedSheet(key, color, alpha){
   return c;
 }
 
+// ===========================================================================
+//  P1: Haar in einer Farbe, die es im Grafikpaket nicht gibt.
+// ===========================================================================
+// Nicht als Tönung: tintedSheet() legt mit 'source-atop' eine halbdurchsichtige
+// Fläche auf und lässt die Grundfarbe durchscheinen. Aus Schwarz (Hair_3) und
+// Grün wird dabei Dunkelgrün, aus Orange (Hair_4) und Blau ein Grau. Genau die
+// Unterscheidbarkeit, um die es hier geht, ginge damit verloren.
+//
+// Auch nicht über die Blendmodi 'screen' und 'color'. Das war der erste Bau und
+// funktionierte für vier der sechs Frisuren: 'color' setzt Farbton und Sättigung
+// und lässt die Helligkeit des Blattes stehen — und die Blätter sind eben nicht
+// gleich hell. Hair_3 ist schwarz, Hair_2 ist blond. Dasselbe Warnorange ergab
+// auf dem einen ein dunkles Braun und auf dem anderen ein blasses Pfirsich, und
+// blass war genau das, was hier nicht sein soll.
+//
+// Also pixelweise und mit gemessener Spanne. Je Blatt wird einmal ermittelt, wie
+// dunkel sein dunkelster und wie hell sein hellster undurchsichtiger Pixel ist.
+// Diese Spanne wird auf ein festes Band um die Helligkeit der Zielfarbe gelegt:
+// die Schattierung des Blattes bleibt in ihrer Abstufung erhalten (heller Pixel
+// bleibt heller Pixel), aber Ausgangslage und Umfang sind für alle sechs
+// Frisuren dieselben. Das Ergebnis ist auf jedem Blatt dieselbe Farbe.
+//
+// Einmal je Blatt und Farbe gebacken, danach aus dem Cache. Gebacken werden nur
+// die Zeilen, die der Key wirklich benutzt (gleiche Regel wie tintedSheet), das
+// sind bei den Haar-Layern 576x64 statt 576x3584.
+const HAAR_CACHE = new Map();
+const HAAR_BAND = 0.22;      // halbe Breite des Helligkeitsbands um die Zielfarbe
+
+// #rrggbb -> {h, s, l}. Klein gehalten und nur hier gebraucht: es gibt im ganzen
+// Spiel sonst keine Farbrechnung, eine allgemeine Farbbibliothek wäre Ballast.
+function hexHsl(hex){
+  const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b), l = (max+min)/2, d = max-min;
+  if(!d) return {h:0, s:0, l};
+  const s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+  const h = max === r ? ((g-b)/d + (g < b ? 6 : 0)) : max === g ? (b-r)/d + 2 : (r-g)/d + 4;
+  return {h: h/6, s, l};
+}
+function hslKanal(p, q, t){
+  if(t < 0) t += 1; if(t > 1) t -= 1;
+  if(t < 1/6) return p + (q-p)*6*t;
+  if(t < 1/2) return q;
+  if(t < 2/3) return p + (q-p)*(2/3 - t)*6;
+  return p;
+}
+
+function haarBlatt(key, hex){
+  const ck = key + '|' + hex;
+  const hit = HAAR_CACHE.get(ck); if(hit !== undefined) return hit;
+  const s = SHEETS[key]; if(!s || !s.img) return null;
+  const rows = Math.max(1, Math.ceil(s.n / s.cols));
+  const c = document.createElement('canvas');
+  c.width = s.img.width; c.height = rows * s.fh;
+  const cc = c.getContext('2d', {willReadFrequently:true});
+  cc.drawImage(s.img, 0, (s.rowStart||0)*s.fh, c.width, c.height, 0, 0, c.width, c.height);
+
+  let bild;
+  // getImageData wirft bei einem fremdorigin geladenen Blatt. Dann bleibt das
+  // Haar in seinem Naturton (blitHaarFrame fällt auf blitLayerFrame zurück),
+  // statt dass ein Wurf auf Skriptebene den Rest mitreißt. Gleiche Vorsicht wie
+  // in npcAnkerAssert().
+  try { bild = cc.getImageData(0, 0, c.width, c.height); }
+  catch(e){ HAAR_CACHE.set(ck, null); console.warn('haarBlatt: Blatt nicht lesbar', key, e.name); return null; }
+
+  const d = bild.data;
+  let lo = 1, hi = 0;
+  for(let i = 0; i < d.length; i += 4){
+    if(d[i+3] <= 8) continue;
+    const l = (Math.max(d[i], d[i+1], d[i+2]) + Math.min(d[i], d[i+1], d[i+2])) / 510;
+    if(l < lo) lo = l;
+    if(l > hi) hi = l;
+  }
+  const ziel = hexHsl(hex);
+  const l0 = Math.max(0.06, ziel.l - HAAR_BAND), l1 = Math.min(0.94, ziel.l + HAAR_BAND);
+  const spanne = hi - lo;
+  for(let i = 0; i < d.length; i += 4){
+    if(d[i+3] <= 8) continue;
+    const l = (Math.max(d[i], d[i+1], d[i+2]) + Math.min(d[i], d[i+1], d[i+2])) / 510;
+    const t = spanne > 0.001 ? (l - lo) / spanne : 0.5;
+    const L = l0 + t * (l1 - l0);
+    const q = L < 0.5 ? L * (1 + ziel.s) : L + ziel.s - L * ziel.s, p = 2*L - q;
+    d[i]   = Math.round(hslKanal(p, q, ziel.h + 1/3) * 255);
+    d[i+1] = Math.round(hslKanal(p, q, ziel.h) * 255);
+    d[i+2] = Math.round(hslKanal(p, q, ziel.h - 1/3) * 255);
+  }
+  cc.putImageData(bild, 0, 0);
+  HAAR_CACHE.set(ck, c);
+  return c;
+}
+
 // Zeichnet Frame mit Anker im aktuellen Transform-Ursprung (für exotische Skalierung).
 function drawSpriteAt(key, frame, tint, tintA){
   const s = SHEETS[key]; if(!s) return;
@@ -1038,11 +1205,23 @@ function blitLayerFrame(destCtx, key, frame, dx, dy){
   destCtx.drawImage(s.img, (i % s.cols)*s.fw, row*s.fh, s.fw, s.fh, dx, dy, s.fw, s.fh);
 }
 
+// P1: dasselbe für die umgefärbte Kopie. Sie enthält nur die Zeilen ab rowStart,
+// deshalb wird hier ohne den Zeilenversatz gelesen (gleiche Regel wie bei den
+// getönten Kopien in drawSpriteAt). hex leer heißt Naturton, dann läuft es über
+// den gewöhnlichen Weg, und die Dorffiguren bleiben unangetastet.
+function blitHaarFrame(destCtx, key, hex, frame, dx, dy){
+  if(!hex) return blitLayerFrame(destCtx, key, frame, dx, dy);
+  const s = SHEETS[key]; if(!s || !s.img) return;
+  const src = haarBlatt(key, hex); if(!src) return blitLayerFrame(destCtx, key, frame, dx, dy);
+  const i = ((frame|0) % s.n + s.n) % s.n;
+  destCtx.drawImage(src, (i % s.cols)*s.fw, ((i/s.cols)|0)*s.fh, s.fw, s.fh, dx, dy, s.fw, s.fh);
+}
+
 function bakeHeroSheet(){
   if(!assetsReady) return;                  // Assets noch nicht da — recalc() bäckt nach dem Laden nach
   const armorTier = player.equip.armor ? clamp(player.equip.armor.base.tier||0, 0, 4) : -1;
   const bootsTier  = player.equip.boots ? clamp(player.equip.boots.base.tier||0, 0, 4)  : -1;
-  const dirtyKey = `${armorTier}|${bootsTier}|${player.hair}`;
+  const dirtyKey = `${armorTier}|${bootsTier}|${player.hair}|${player.haarTon}`;
   if(dirtyKey === bakedFor) return;
   bakedFor = dirtyKey;
 
@@ -1061,7 +1240,7 @@ function bakeHeroSheet(){
       if(bootsTier >= 0) blitLayerFrame(bctx, `cffeet_${bootsTier}_${anim}`, f, dx, 0);
       blitLayerFrame(bctx, `cfbody_${anim}`, f, dx, 0);
       if(armorTier >= 0) blitLayerFrame(bctx, `cfchest_${armorTier}_${anim}`, f, dx, 0);
-      blitLayerFrame(bctx, `cfhair_${player.hair}_${anim}`, f, dx, 0);
+      blitHaarFrame(bctx, `cfhair_${player.hair}_${anim}`, haarHex(player.haarTon), f, dx, 0);
       blitLayerFrame(bctx, `cfhands_${anim}`, f, dx, 0);
     }
     offset += n;
@@ -1074,26 +1253,83 @@ function bakeHeroSheet(){
 
 // ===========================================================================
 //  W3: NPC-Komposit aus dem Helden-Rig (Bramsche, Lott, Pahl), gleiches Prinzip
-//  wie bakeHeroSheet(), aber nur Idle (6 Frames) und genau einmal gebacken —
-//  diese Figuren wechseln nie die Kleidung, ein Dirty-Check wäre Ballast.
+//  wie bakeHeroSheet(), aber genau einmal gebacken — diese Figuren wechseln nie
+//  die Kleidung, ein Dirty-Check wäre Ballast.
+//
+//  G6: nicht mehr nur Idle. Eine Figur, die wandert, braucht auch die Laufreihe,
+//  sonst schliddert sie im Standbild über den Platz. Welche Reihe wie viele
+//  Frames hat, steht in CF_HERO_ANIMS und wird von dort gelesen statt hier noch
+//  einmal behauptet.
 // ===========================================================================
-function bakeNpcSheet(key, chest, legs, feet, hair){
+const HERO_ANIM_N = {};
+for(const [anim, , n] of CF_HERO_ANIMS) HERO_ANIM_N[anim] = n;
+
+function bakeNpcSheet(key, gestalt, anim){
+  const n = HERO_ANIM_N[anim] || 6;
+  const chest = gestalt.chest ?? -1, legs = gestalt.legs ?? -1, feet = gestalt.feet ?? -1;
   const canvas = document.createElement('canvas');
-  canvas.width = 6 * 64; canvas.height = 64;
+  canvas.width = n * 64; canvas.height = 64;
   const bctx = canvas.getContext('2d');
-  for(let f = 0; f < 6; f++){
+  for(let f = 0; f < n; f++){
     const dx = f * 64;
-    if(legs >= 0) blitLayerFrame(bctx, `cflegs_${legs}_idle`, f, dx, 0);
-    if(feet >= 0) blitLayerFrame(bctx, `cffeet_${feet}_idle`, f, dx, 0);
-    blitLayerFrame(bctx, 'cfbody_idle', f, dx, 0);
-    if(chest >= 0) blitLayerFrame(bctx, `cfchest_${chest}_idle`, f, dx, 0);
-    blitLayerFrame(bctx, `cfhair_${hair}_idle`, f, dx, 0);
-    blitLayerFrame(bctx, 'cfhands_idle', f, dx, 0);
+    if(legs >= 0) blitLayerFrame(bctx, `cflegs_${legs}_${anim}`, f, dx, 0);
+    if(feet >= 0) blitLayerFrame(bctx, `cffeet_${feet}_${anim}`, f, dx, 0);
+    blitLayerFrame(bctx, `cfbody_${anim}`, f, dx, 0);
+    if(chest >= 0) blitLayerFrame(bctx, `cfchest_${chest}_${anim}`, f, dx, 0);
+    blitLayerFrame(bctx, `cfhair_${gestalt.hair}_${anim}`, f, dx, 0);
+    blitLayerFrame(bctx, `cfhands_${anim}`, f, dx, 0);
   }
-  SHEETS[`npc_baked_${key}`] = {img:canvas, cols:6, n:6, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
+  SHEETS[key] = {img:canvas, cols:n, n, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
 }
+
+// G6: Welches Blatt eine Dorffigur wirklich bekommt.
+//
+// Der Fund, der diesen Abschnitt erzwungen hat: fünf der acht in CF_NPCS
+// eingetragenen Blätter liegen gar nicht im Grafikpaket (Chef_Chloe,
+// Bartender_Bruno, Fisherman_Fin, Lumberjack_Jack, Farmer_Buba). loadAssets()
+// meldet sie als "Sprite fehlt", SHEETS bleibt für sie leer, drawSprite() kehrt
+// bei einem fehlenden Key still um — Zapf, Lisbeth, Trepp, Milb und Fass standen
+// also unsichtbar im Dorf. Ansprechbar, mit Blase, mit Namen über dem Kopf, aber
+// ohne Körper. Kein Guard hat das gemeldet, weil bis dahin nur Zeilenzahl und
+// Registrierung geprüft wurden.
+//
+// Statt sie an ein fremdes Blatt zu hängen (dann liefen zwei Figuren mit
+// demselben Gesicht herum), bekommen sie dasselbe Held-Komposit wie Bramsche,
+// Lott und Pahl, nur zusätzlich mit Laufreihe. Jede Figur trägt dafür in
+// gestalt:{} ihr eigenes Aussehen. Legt jemand die Blätter später ins Paket,
+// greift der erste Zweig hier von selbst wieder auf sie zu, ohne dass eine
+// Zeile zurückgebaut werden muss.
+function npcBlaetter(nd){
+  if(nd.opt !== 'fest' && (!assetsReady || SHEETS[`cfnpc_${nd.sheet}_idle`]))
+    return {idle:`cfnpc_${nd.sheet}_idle`, walk:`cfnpc_${nd.sheet}_walk`};
+  if(nd.opt === 'fest') return {idle:`npc_baked_${nd.key}`, walk:`npc_baked_${nd.key}`};
+  return {idle:`npc_baked_${nd.key}`, walk:`npc_baked_${nd.key}_lauf`};
+}
+
 function bakeAllNpcSheets(){
-  for(const f of DORF_FIGUREN) if(f.opt === 'fest') bakeNpcSheet(f.key, f.chest ?? -1, f.legs ?? -1, f.feet ?? -1, f.hair);
+  const ersetzt = [];
+  for(const f of DORF_FIGUREN){
+    if(f.opt === 'fest'){ bakeNpcSheet(`npc_baked_${f.key}`, f.gestalt, 'idle'); continue; }
+    if(SHEETS[`cfnpc_${f.sheet}_idle`]) continue;      // eigenes Blatt ist da, kein Ersatz nötig
+    bakeNpcSheet(`npc_baked_${f.key}`, f.gestalt, 'idle');
+    bakeNpcSheet(`npc_baked_${f.key}_lauf`, f.gestalt, 'run');
+    ersetzt.push(f.key);
+  }
+  // Eine Zeile statt zehn Warnungen, und sie sagt, was Sache ist: nicht "kaputt",
+  // sondern "nicht im Paket, Ersatz steht". Wer die Blätter lizenziert und nach
+  // assets/cf/deco/NPCs/ legt, sieht die Zeile beim nächsten Start verschwinden.
+  if(ersetzt.length) console.log(`G6 Dorfsicht: ${ersetzt.length} von ${Object.keys(CF_NPCS).length} NPC-Blättern`
+    + ` liegen nicht im Grafikpaket, diese Figuren laufen als Held-Komposit: ${ersetzt.join(', ')}.`);
+}
+
+// Die Blätter stehen auf den npcs-Einträgen, und die entstehen in genMap() beim
+// Skriptstart, lange bevor SHEETS gefüllt ist. Nach dem Laden wird deshalb
+// einmal nachgezogen. Ein zweiter Aufruf ist harmlos, npcBlaetter() ist rein.
+function npcBlaetterNachziehen(){
+  for(const n of npcs){
+    const b = npcBlaetter(n.figur);
+    n.sheetIdle = b.idle; n.sheetWalk = b.walk;
+  }
 }
 
 // DOM-Cache: getElementById war im Renderloop einer der teuersten Posten.
@@ -1782,20 +2018,32 @@ function inVillagePx(x, y){ return inVillageT(Math.floor(x/TS), Math.floor(y/TS)
 // markiert das Gebäude, das scanAktion()/AKT_AMT anbietet. Literale bewusst im
 // alten 80er-Raster belassen (vgl. figuren-dorf.md) — die Schleife danach
 // verschiebt sie einmalig um DORF_DX/DORF_DY, bevor AMT_TUER daraus abgeleitet wird.
+// G6: bld zeigt auf den Eintrag in CF_BLD, der Maße, Anker und Deckfläche hält.
+// sheet bleibt als Zeichenschlüssel stehen und wird daraus abgeleitet, damit
+// nirgends ein Gebäudename zweimal getippt steht.
 const VILLAGE_BUILDINGS = [
-  {sheet:'cfbld_amt',     x0:10, y0:35, w:8, h:2, amt:true},
-  {sheet:'cfbld_haus1',   x0:7,  y0:35, w:3, h:2},
-  {sheet:'cfbld_markt',   x0:18, y0:36, w:6, h:1},
-  {sheet:'cfbld_haus2',   x0:8,  y0:44, w:5, h:2},
-  {sheet:'cfbld_haus3',   x0:14, y0:44, w:5, h:2},
-  {sheet:'cfbld_scheune', x0:19, y0:44, w:4, h:2},
+  {bld:'amt',     x0:10, y0:35, w:8, h:2, amt:true},
+  {bld:'haus1',   x0:7,  y0:35, w:3, h:2},
+  {bld:'markt',   x0:18, y0:36, w:6, h:1},
+  {bld:'haus2',   x0:8,  y0:44, w:5, h:2},
+  {bld:'haus3',   x0:14, y0:44, w:5, h:2},
+  {bld:'scheune', x0:19, y0:44, w:4, h:2},
 ];
-for(const b of VILLAGE_BUILDINGS){ b.x0 += DORF_DX; b.y0 += DORF_DY; }
+for(const b of VILLAGE_BUILDINGS){ b.x0 += DORF_DX; b.y0 += DORF_DY; b.sheet = `cfbld_${b.bld}`; }
 // Fußpunkt der Amt-Tür für die Kontext-Aktion (Mitte der Südkante des Footprints).
 const AMT_TUER = (() => {
   const b = VILLAGE_BUILDINGS.find(b => b.amt);
   return {x: (b.x0 + b.w/2)*TS, y: (b.y0 + b.h)*TS - 2};
 })();
+// G6: Wo das Gebäudesprite auf der Karte wirklich Farbe hat, in Weltpixeln, und
+// bei welchem y es einsortiert wird. Eine Figur ist genau dann von diesem Haus
+// verdeckt, wenn ihr Sprite hier hineinragt UND ihr eigenes y kleiner ist als
+// anker (dann zeichnet der nach y sortierte Renderer das Haus nach ihr).
+// Dieselbe Rechnung, die auch die Deko-Position in genMap() setzt.
+function bldDeckung(b){
+  const g = CF_BLD[b.bld], px = (b.x0 + b.w/2)*TS, py = (b.y0 + b.h)*TS - 2;
+  return {l: px + g.deck.l, r: px + g.deck.r, o: py + g.deck.o, u: py + g.deck.u, anker: py};
+}
 
 // ===========================================================================
 //  DORF_FIGUREN (Bauabschnitt W3): elf ansprechbare Ensemble-Mitglieder aus
@@ -1805,9 +2053,28 @@ const AMT_TUER = (() => {
 //  siehe drawAnlage3()) sind nicht Teil dieser Tabelle. opt:'wander' nutzt ein
 //  Sprite aus CF_NPCS und wandert wie die bisherige Dorf-Staffage; opt:'fest'
 //  ist ein Held-Komposit (bakeNpcSheet()) und steht fest wie Knöterich.
+//
+//  G6, zwei Ergänzungen an derselben Tabelle:
+//
+//  gestalt:{} beschreibt jede Figur als Held-Komposit, also aus Frisur, Hemd,
+//  Hose und Schuhen. Bei opt:'fest' ist das seit W3 ihr Aussehen (die Felder
+//  hießen bis G6 hair/chest/legs und liegen jetzt nur eine Ebene tiefer). Bei
+//  opt:'wander' ist es der Ersatz für den Fall, dass ihr CF_NPCS-Blatt nicht im
+//  Grafikpaket liegt, siehe npcBlaetter(). Für fünf der acht ist das der
+//  Regelfall und nicht die Ausnahme.
+//
+//  Fünf Heimatanker sind gewandert: Zwirn 14/34 -> 16/38, Zapf 16/46 -> 16/47,
+//  Lisbeth 10/42 -> 8/40, Trepp 22/41 -> 22/40, Pommer 13/45 -> 13/47. Sie
+//  standen auf begehbaren Kacheln, aber innerhalb der Deckfläche eines Gebäudes,
+//  dessen Fußanker tiefer liegt als ihr eigener. Der Renderer sortiert nach y,
+//  das Haus wurde also nach ihnen gezeichnet und deckte sie zu: Zwirn zu hundert
+//  Prozent hinter dem Amt, Lisbeth zu 46 hinter dem Haus, die drei anderen erst,
+//  sobald die Wanderleine sie unter eine Fassade zog. dorfSichtAssert() rechnet
+//  das jetzt beim Laden nach, für jede Figur und die ganze Wanderleine.
 // ===========================================================================
 const DORF_FIGUREN = [
-  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', tx:14, ty:34, opt:'wander', sheet:'bob',
+  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', tx:16, ty:38, opt:'wander', sheet:'bob',
+   gestalt:{hair:'h1', chest:2, legs:2, feet:2},
    grund:[
      {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
      {z1:'Eine Genehmigung fehlt uns noch.', z2:'Da bin ich dran.'},
@@ -1824,7 +2091,8 @@ const DORF_FIGUREN = [
      'Wir werden das Fest feiern. Irgendwann.',
    ]},
 
-  {key:'bramsche', name:'Registratorin Ottilie Bramsche', tx:18, ty:37, opt:'fest', hair:'h3', chest:2, legs:2,
+  {key:'bramsche', name:'Registratorin Ottilie Bramsche', tx:18, ty:37, opt:'fest',
+   gestalt:{hair:'h3', chest:2, legs:2},
    grund:[
      {z1:'Ordnung ist, was man wiederfindet.', z2:'Alles andere ist Zufall.'},
      {z1:'In welcher Sache sprechen Sie mich an?', z2:'Ohne Antrag sage ich nichts.'},
@@ -1856,7 +2124,8 @@ const DORF_FIGUREN = [
      {z1:'Antrag für heute erledigt.', z2:'Morgen wieder.'},
    ]},
 
-  {key:'zapf', name:'Hausmeister Reinhold Zapf', tx:16, ty:46, opt:'wander', sheet:'jack',
+  {key:'zapf', name:'Hausmeister Reinhold Zapf', tx:16, ty:47, opt:'wander', sheet:'jack',
+   gestalt:{hair:'h1', chest:1, legs:1, feet:0},
    grund:[
      {z1:'Ich reparier das. Nicht fragen.', z2:'Weil sonst nichts läuft.'},
      {z1:'Das Regal wackelt. Ich keile es fest.', z2:'Sonst kippt hier alles um.'},
@@ -1873,7 +2142,8 @@ const DORF_FIGUREN = [
      'Nichts kaputt. Komisches Gefühl.',
    ]},
 
-  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', tx:10, ty:42, opt:'wander', sheet:'chloe',
+  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', tx:8, ty:40, opt:'wander', sheet:'chloe',
+   gestalt:{hair:'h6', chest:1, legs:0, feet:3},
    grund:[
      {z1:'Man erledigt Monster nicht.', z2:'Man beantwortet sie.'},
      {z1:'Und wenn er einfach nur wartet?', z2:'Das fragt hier keiner gern.'},
@@ -1890,7 +2160,8 @@ const DORF_FIGUREN = [
      'Ich komme mit. Ich habe ja gefragt.',
    ]},
 
-  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:22, ty:41, opt:'wander', sheet:'fin',
+  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:22, ty:40, opt:'wander', sheet:'fin',
+   gestalt:{hair:'h2', chest:2, legs:0, feet:1},
    grund:[
      {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Trepp.'},
      {z1:'Wenn ich kurz stören darf.', z2:'Der Brief ist immer im Sack.'},
@@ -1908,6 +2179,7 @@ const DORF_FIGUREN = [
    ]},
 
   {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', tx:8, ty:38, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
+   gestalt:{hair:'h1', chest:0, legs:0, feet:3},
    grund:[
      {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
      {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie.'},
@@ -1925,6 +2197,7 @@ const DORF_FIGUREN = [
    ]},
 
   {key:'milb', name:'Gutachter Dr. phil. Milb', tx:11, ty:39, opt:'wander', sheet:'buba',
+   gestalt:{hair:'h5', chest:2, legs:2, feet:1},
    grund:[
      {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
      {z1:'Diese Kammer würde ich einstufen.', z2:'Ungefragt, versteht sich.'},
@@ -1941,7 +2214,8 @@ const DORF_FIGUREN = [
      'Diesmal setze ich keine Note mehr an.',
    ]},
 
-  {key:'pommer', name:'Materialausgabe Herr Pommer', tx:13, ty:45, opt:'wander', sheet:'katy',
+  {key:'pommer', name:'Materialausgabe Herr Pommer', tx:13, ty:47, opt:'wander', sheet:'katy',
+   gestalt:{hair:'h2', chest:1, legs:0, feet:4},
    grund:[
      {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
      {z1:'Auf dem Antrag steht Montag. Nicht heute.', z2:'Kommen Sie am Montag wieder.'},
@@ -1959,6 +2233,7 @@ const DORF_FIGUREN = [
    ]},
 
   {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', tx:20, ty:39, opt:'wander', sheet:'bruno',
+   gestalt:{hair:'h3', chest:0, legs:2, feet:2},
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
      {z1:'Zum Letzten Stempel schließt nie zu früh.', z2:'Bleib, so lang du willst.'},
@@ -1975,7 +2250,8 @@ const DORF_FIGUREN = [
      'Es fühlt sich an wie ein letzter Abend.',
    ]},
 
-  {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', tx:9, ty:47, opt:'fest', hair:'h1',
+  {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', tx:9, ty:47, opt:'fest',
+   gestalt:{hair:'h1'},
    grund:[
      {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
      {z1:'Der Neue. Schlägt wieder alles kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
@@ -2029,7 +2305,8 @@ const DORF_FIGUREN = [
      ],
    }},
 
-  {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', tx:11, ty:47, opt:'fest', hair:'h4',
+  {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', tx:11, ty:47, opt:'fest',
+   gestalt:{hair:'h4'},
    grund:[
      {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
      {z1:'Sie kämpfen. Ich sehe nur zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
@@ -2741,8 +3018,11 @@ function genMap(){
       }
     }
     const homeX = tx*TS+16, homeY = ty*TS+16;
-    const idleKey = nd.opt === 'fest' ? `npc_baked_${nd.key}` : `cfnpc_${nd.sheet}_idle`;
-    const walkKey = nd.opt === 'fest' ? idleKey : `cfnpc_${nd.sheet}_walk`;
+    // G6: Die Blattwahl steht in npcBlaetter(), einer reinen Funktion, die auch
+    // npcAnkerAssert() und dorfSichtAssert() lesen. Hier läuft sie noch vor dem
+    // Laden, liefert also erst einmal die CF_NPCS-Keys; npcBlaetterNachziehen()
+    // korrigiert sie hinter loadAssets() für die Blätter, die nicht da sind.
+    const {idle: idleKey, walk: walkKey} = npcBlaetter(nd);
     // sc (Skalierung) wird bewusst nicht hier berechnet: PLAYER_SC ist an dieser
     // Stelle (genMap() läuft beim Skriptstart, lange vor der PLAYER_SC-Deklaration
     // weiter unten) noch in der TDZ. DRAW_NPC berechnet sc pro Zeichenschritt,
@@ -3470,10 +3750,19 @@ const PLAYER_SC = 1.8;                                   // Skalierung des CF-He
 // acht Blatt-Figuren standen auf 1 und waren damit halb so groß wie der Held, an dem
 // sie vorbeiliefen. 0.92 bleibt: Staffage eine Spur kleiner als der Spieler.
 const NPC_SC = PLAYER_SC * 0.92;
+// Wanderleine der Dorf-Staffage in Pixeln, rund 1,25 Kacheln. Stand bis G6 in
+// update() und wird jetzt auch von dorfSichtAssert() gelesen, der nachrechnet,
+// ob eine Figur auf ihrem Rundgang hinter einer Fassade verschwindet.
+const NPC_HOME_R = 40, NPC_HOME_R2 = NPC_HOME_R * NPC_HOME_R;
 const player = {
   x:SPAWN.x, y:SPAWN.y, r:10, hp:70, mana:40, maxMana:40, level:1, xp:0, gold:0, potions:2,
   dir:0, faceLeft:false, mvx:0, mvy:0, attackCd:0, swingT:0, swingDir:0, attackMode:'sword', hurtT:0, dead:false,
   anim:'idle', animT:0, castT:0, hair:HAIRS[Math.floor(Math.random()*HAIRS.length)],
+  // P1: Der Ton wird wie das Haar je Schicht neu gewuerfelt (startShift). Der
+  // Wert hier traegt nur den Bruchteil einer Sekunde zwischen Skriptstart und
+  // erstem Schichtantritt, amt ist an dieser Stelle noch nicht deklariert und
+  // die Dienstgestalt-Wahl damit noch nicht lesbar.
+  haarTon:HAARTOENE[Math.floor(Math.random()*HAARTOENE.length)],
   skills:{str:0, vit:0, agi:0, int:0}, skillPoints:0,
   spellPoints:0, spellsKnown:{}, spellCd:0,
   equip:{weapon:null, armor:null, shield:null, boots:null},
@@ -3510,7 +3799,13 @@ let amt = {bankGold:0, schichten:0,
   // bewilligte, noch nicht eingelöste Antrag {stand, haar} oder null; startShift()
   // löst ihn ein und leert ihn im selben Zug. Beides ist echter Zustand und
   // nicht ableitbar, anders als Rang und Aktstand.
-  wiederZahl:0, wiedereinsetzung:null};
+  wiederZahl:0, wiedereinsetzung:null,
+  // P1: Die eine Angabe, die der Einstellungsvordruck vom Spieler entgegennimmt
+  // (Blatt 1, Feld "Anrede der Person"). 'm', 'w' oder 'egal'. Sie entscheidet,
+  // aus welchen Frisuren der Schichtantritt die Gestalt des Tages zieht, und
+  // sonst nichts: kein Wert, kein Bonus, keine andere Zeile im Spiel hängt daran.
+  // 'egal' ist der Auslieferungszustand, nicht die dritte Option von zweien.
+  gestalt:GESTALT_STD};
 // W3: Aktstand aus der bestehenden Schichtzahl abgeleitet, nichts Neues
 // gespeichert. Deckt sich mit Kapitel 9: Akt I = Schicht 1-10 (amt.schichten
 // 0-9), ... Akt V ab Schicht 41 (amt.schichten >= 40), gedeckelt bei 5.
@@ -5256,10 +5551,15 @@ const AMT_KEY = 'sda_amt_v1';
     // allem, was eine Schicht je erreicht (der Stand ist die halbe Stufe), er
     // ist keine Balance-Zahl, sondern die Zusage, die dieser Kommentar macht.
     // Das Haar wird beim Einlösen gegen HAIRS geprüft, deshalb hier nur der Typ.
+    // P1: gegen die Tabelle geprüft, nicht nur auf Typ. Ein Stand mit einem
+    // Wert, den GESTALT_WAHL nicht kennt, würde sonst haareNach() stumm auf
+    // "alle" zurückfallen lassen und die Angabe wäre wirkungslos statt falsch.
+    if(typeof o.gestalt === 'string' && GESTALT_WAHL.some(g => g.key === o.gestalt)) amt.gestalt = o.gestalt;
     if(typeof o.wiederZahl === 'number') amt.wiederZahl = Math.min(WIEDER_ZAHL_DECKEL, Math.max(0, o.wiederZahl | 0));
     if(o.wiedereinsetzung && typeof o.wiedereinsetzung.stand === 'number')
       amt.wiedereinsetzung = {stand: wiederStandGeklemmt(o.wiedereinsetzung.stand),
-                              haar: typeof o.wiedereinsetzung.haar === 'string' ? o.wiedereinsetzung.haar : null};
+                              haar: typeof o.wiedereinsetzung.haar === 'string' ? o.wiedereinsetzung.haar : null,
+                              ton:  typeof o.wiedereinsetzung.ton  === 'string' ? o.wiedereinsetzung.ton  : null};
     // GW26b: die Ladezeile für auftraegeErfuellt ist hier ersatzlos entfallen.
     // loadAmt() ist eine Feld-Whitelist, ein alter Stand mit dem Feld wird also
     // schlicht nicht mehr gelesen; saveAmt() schreibt amt komplett neu und räumt
@@ -5423,7 +5723,12 @@ function knAssertCaps(){
     // iterierte nur, was da ist, statt zu prüfen, dass alles da ist.
     if(fig.grund.length !== 6) rows.push([null,0,'Figur ' + fig.key + ' hat ' + fig.grund.length + ' Grundzeilenpaare statt 6']);
     if(fig.akt.length !== 5)   rows.push([null,0,'Figur ' + fig.key + ' hat ' + fig.akt.length + ' Aktzeilen statt 5']);
-    if(!(fig.opt === 'wander' ? fig.sheet : fig.hair)) rows.push([null,0,'Figur ' + fig.key + ' ohne Sprite bzw. Haarfarbe']);
+    // G6: gestalt:{} gilt jetzt für jede Figur, bei opt:'fest' als Aussehen und
+    // bei opt:'wander' als Ersatz für ein fehlendes CF_NPCS-Blatt. Beides muss
+    // da sein, sonst steht die Figur unsichtbar im Dorf, und genau das war der
+    // Zustand, den dieser Guard hätte melden sollen und nicht gemeldet hat.
+    if(fig.opt === 'wander' && !fig.sheet) rows.push([null,0,'Figur ' + fig.key + ' ohne Sprite']);
+    if(!fig.gestalt || !fig.gestalt.hair) rows.push([null,0,'Figur ' + fig.key + ' ohne Gestalt']);
     for(const p of fig.grund) rows.push([p.z1,48],[p.z2,32]);
     for(const a of fig.akt) rows.push([a,44]);
     if(fig.antworten) for(const qa of fig.antworten) rows.push([qa.z1,48],[qa.z2,32]);
@@ -7387,6 +7692,8 @@ function toggleFullmap(){
 // Gesicht"), das Aussehen ist also bereits nicht konstant, ohne dass es je jemand
 // gezeigt hat. Ausschnitt an den Alpha-Bounding-Boxen des Idle-Frames gemessen,
 // bei Bedarf sy/sh nachjustieren, falls eine Frisur oben anstößt.
+// P1: Das Lichtbild braucht dafür keine Zeile. Es kommt aus demselben Bake wie der
+// Held, die Haarfarbe der Schicht steht also von selbst darauf.
 function renderAusweisFoto(){
   const cv = el('ausweisFoto'), c = cv.getContext('2d');
   c.imageSmoothingEnabled = false;
@@ -7404,6 +7711,7 @@ function renderAusweis(){
     <div><b>${AUSWEIS_TEXTE.labelAmt}:</b> ${rangName()}</div>
     <div><b>${AUSWEIS_TEXTE.labelVerh}:</b> ${rangVerhaeltnis()}</div>
     <div><b>${AUSWEIS_TEXTE.labelPosten}:</b> ${AUSWEIS_TEXTE.posten}</div>
+    <div><b>${AUSWEIS_TEXTE.labelHaar}:</b> ${haarTonDef(player.haarTon).name}</div>
     <div><b>${AUSWEIS_TEXTE.labelGueltig}:</b> ${AUSWEIS_TEXTE.gueltig}</div>`;
   const zeilen = INSIGNIEN.filter(i => i.wenn()).map(i => `<div>${i.n}</div>`).join('');
   el('ausweisInsignien').innerHTML = `<b style="color:#f4d97a;">${AUSWEIS_TEXTE.insignienUeberschrift}</b>${zeilen}`;
@@ -7945,7 +8253,6 @@ function update(dt){
   // (leichte Bias-Streuung ±0,6 rad, damit es nicht wie ein Schienenweg aussieht).
   // R6/F41: alle drei Ankerprüfungen vergleichen nur gegen den Radius, die Wurzel
   // wird nirgends gebraucht — deshalb sqDist gegen das Quadrat (Regressionsregel 3).
-  const NPC_HOME_R = 40, NPC_HOME_R2 = NPC_HOME_R * NPC_HOME_R;
   for(const n of npcs){
     if(n.fest) continue;   // W3: Held-Komposit-Figuren stehen fest wie Knöterich, keine Wanderung
     n.restT -= dt;
@@ -8930,8 +9237,22 @@ function startShift(){
   // Dasselbe Gesicht nur nach bewilligtem Antrag. Lisbeth fragt trotzdem weiter
   // nach dem Namen (ANREDE_LISBETH zykelt über amt.schichten, nicht über die
   // Person) — das ist ausdrücklich so gewollt und der bessere Gag.
+  //
+  // P1: Ohne Antrag zieht die Schicht ihre Gestalt nur noch aus den Frisuren,
+  // die zur Angabe auf Blatt 1 passen (haareNach), und ihre Haarfarbe aus
+  // CF_HAARTON statt aus dem Naturton des Blattes. Das ist die eine Stelle, an
+  // der beides gewürfelt wird: Schichtantritt und Wiederantritt nach einem
+  // Dienstende laufen beide hier durch.
+  //
+  // Mit Antrag bleibt beides stehen, auch wenn die Angabe seither eine andere
+  // ist. Eine Wiedereinsetzung setzt dieselbe Person wieder ein, das ist ihr
+  // ganzer Zweck (Weltbibel 18.2); sie an eine später geänderte Vorliebe
+  // anzupassen hieße, jemand anderen einzusetzen und es Berichtigung zu nennen.
+  const haarWahl = haareNach(amt.gestalt);
   player.hair = (wieder && HAIRS.indexOf(wieder.haar) >= 0) ? wieder.haar
-              : HAIRS[Math.floor(Math.random()*HAIRS.length)];
+              : haarWahl[Math.floor(Math.random()*haarWahl.length)];
+  player.haarTon = (wieder && HAARTOENE.indexOf(wieder.ton) >= 0) ? wieder.ton
+                 : HAARTOENE[Math.floor(Math.random()*HAARTOENE.length)];
   player.bag = new Array(24).fill(null);
   player.potions = 2 + (amt.bonusPotions||0);
   player.gold = pendingCarryGold + (amt.bonusStartGold||0); pendingCarryGold = 0;
@@ -9267,6 +9588,9 @@ const AUSWEIS_TEXTE = {
   posten: 'Außendienst, Sachgebiet 7',
   labelGueltig: 'Gültig',
   gueltig: 'bis heute Abend',
+  // P1: Das Haus trägt ein, was es sieht, und benennt es nach der Farbtabelle
+  // des Materiallagers. Die einzige Stelle, an der ein Tonname im Spiel steht.
+  labelHaar: 'Haarfarbe',
   rueckgabe: 'Der Ausweis ist bei Dienstschluss unaufgefordert zurückzugeben.',
   insignienUeberschrift: 'Insignien',
 };
@@ -11537,14 +11861,22 @@ const DIENSTBLATT = [
       ['Zweck der Stelle', 'die abschließende Bearbeitung herbeiführen'],
       ['Gegenstand der Bearbeitung', 'siehe Anlage 1'],
       ['Anlage 1', 'liegt nicht vor'],
+      // P1: das einzige Feld im ganzen Vordruck, das der Spieler selbst füllt.
+      // Es steht bewusst unter "Anlage 1 liegt nicht vor": das Haus weiß nicht,
+      // worum es geht, aber es weiß, wie es Sie anschreiben soll.
+      ['Anrede der Person', gestaltDef(amt.gestalt).feld],
     ],
+    // P1: Der Vordruck ist auszufüllen, nicht nur zu lesen. Die drei Knöpfe
+    // rendert dienstblattHtml() unter die Felder, siehe GESTALT_WAHL.
+    gestaltWahl: true,
     saetze: () => [
       'Die Stelle ist vorläufig eingerichtet. Vorläufig heißt: bis zur abschließenden Bearbeitung.',
       'Die Stelle besteht seit vierhundert Jahren.',
       'In dieser Zeit ist einiges liegen geblieben, und was liegen bleibt, steht irgendwann auf und geht nach draußen.',
       'Draußen ist Ihr Bereich.',
     ],
-    kn: ['Die meisten unterschreiben sofort. Lesen Sie ruhig.'],
+    kn: ['Die meisten unterschreiben sofort. Lesen Sie ruhig.',
+         'Ein Feld füllen Sie selbst aus. Es ist das einzige.'],
   },
   {
     nr: 2,
@@ -11613,9 +11945,45 @@ function dienstblattZeilen(b){
   return out;
 }
 
+// P1: Der Satz unter den drei Knöpfen. Er sagt die Pointe geradeheraus, weil
+// sie eine Zusage ist und keine Überraschung: das Haus nimmt die Angabe ernst,
+// trägt sie ein, und sie bleibt folgenlos für alles außer dem Gesicht.
+const GESTALT_TEXT = 'Das Haus besetzt die Stelle jeden Tag neu. Wen es dabei einstellt, geben Sie hier an. '
+                   + 'Auf Dienst, Bezahlung und Laufbahn wirkt sich die Angabe nicht aus.';
+
+// Die drei Knöpfe. Wie überall in diesem Panel steht der Zustand im onclick der
+// gerenderten Knöpfe, nicht in einer Modulvariablen (gleiche Regel wie bei
+// vorgangPanel(schritt) und showDienstblatt(nr, ziel)).
+function gestaltWahlHtml(nr, ziel){
+  const knopf = g => {
+    const an = amt.gestalt === g.key;
+    // Angekreuzt bleibt beim Gold des Panels, nicht angekreuzt wird ausgegraut.
+    // Keine eigene Textfarbe: #overlay button schreibt dunkel auf Gold, und ein
+    // heller Text auf dieser Fläche wäre nicht zu lesen. Das Kästchen steht als
+    // Zeichen da, die Systemschrift hat kein ☑.
+    return `<button onclick="gestaltWaehlen('${g.key}',${nr},'${ziel}')"
+      style="font-size:11px;padding:6px 12px;margin:4px 6px 0 0;${an ? '' : 'filter:grayscale(.6);opacity:.62;'}"
+      >${an ? '[X]' : '[ ]'} ${g.kurz}</button>`;
+  };
+  return `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:11px;text-align:left;">
+      <b style="color:#f4d97a;">Anrede der Person.</b>
+      <span style="color:#d8c898;">${GESTALT_TEXT}</span>
+      <div>${GESTALT_WAHL.map(knopf).join('')}</div>
+    </div>`;
+}
+
+// Übernimmt die Angabe und rendert dasselbe Blatt neu. Nicht mehr: die Gestalt
+// des Tages entsteht erst beim nächsten Schichtantritt (startShift), eine
+// laufende Schicht tauscht niemandem mitten im Dienst das Gesicht.
+function gestaltWaehlen(key, nr, ziel){
+  if(!GESTALT_WAHL.some(g => g.key === key)) return;
+  amt.gestalt = key; saveAmt();
+  showDienstblatt(nr, ziel);
+}
+
 // Ein Blatt als HTML. Bauform wie rangZeremonieBlock()/vorgangPanelHtml():
 // reine Funktion, kein Seiteneffekt, jedes Neurendern liefert dasselbe.
-function dienstblattHtml(b){
+function dienstblattHtml(b, ziel){
   const feld = (b.felder ? b.felder() : []).map(([k, v]) =>
     `<div style="display:flex;gap:10px;padding:4px 0;border-bottom:1px solid #3a2f1a;">
        <span style="flex:0 0 40%;color:#9a8a5f;">${k}</span>
@@ -11626,6 +11994,7 @@ function dienstblattHtml(b){
   const bed = (b.bedienung ? b.bedienung() : []).map(([k, v]) =>
     `<div style="padding:3px 0;"><b style="color:#f4d97a;">${k}.</b> <span style="color:#d8c898;">${v}</span></div>`).join('');
   const bedBox = bed ? `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:11px;">${bed}</div>` : '';
+  const wahlBox = b.gestaltWahl ? gestaltWahlHtml(b.nr, ziel) : '';
   const satz = (b.saetze ? b.saetze() : []).map(s =>
     `<p style="font-size:12px;color:#c9b98a;margin:6px 0 0;">${s}</p>`).join('');
   const kn = (b.kn || []).map(z =>
@@ -11633,6 +12002,9 @@ function dienstblattHtml(b){
   // Nur der Vordruckteil rollt. Die Schlusssätze und Knöterich stehen darunter
   // und bleiben immer sichtbar: auf Blatt 3 hängt genau dort der Grund, warum
   // man das hier überhaupt tut, und der darf nicht unter der Kante liegen.
+  // P1: Die drei Wahlknöpfe stehen aus demselben Grund unter der Rollkante und
+  // nicht darin. Sie sind das einzige Bedienelement im ganzen Vordruck, und ein
+  // Knopf, den man erst herunterrollen muss, ist ein Knopf, den man nicht sieht.
   return `
     <h1>${b.kopf}</h1>
     <p style="font-size:12px;color:#9a8a5f;">${b.unter} · ${b.lead}</p>
@@ -11640,6 +12012,7 @@ function dienstblattHtml(b){
       ${feld}${punkt}${bedBox}
     </div>
     <p id="dienstMehr" style="font-size:11px;color:#7a6a45;margin:4px 0 0;"></p>
+    ${wahlBox}
     <div style="text-align:left;">${satz}${kn}</div>`;
 }
 
@@ -11665,7 +12038,7 @@ function showDienstblatt(nr, ziel){
   // oder wenigstens zu Ende geblaettert, sonst unterschreibt man nichts.
   const raus = (ziel !== 'einstellung' && i < DIENSTBLATT_ANZ)
     ? `<div><button onclick="dienstblattEnde('${ziel}')" style="font-size:11px;padding:6px 14px;margin-top:8px;">SCHLIESSEN</button></div>` : '';
-  document.getElementById('ovPanel').innerHTML = dienstblattHtml(b) + `<div>${zurueck}${weiter}</div>${raus}`;
+  document.getElementById('ovPanel').innerHTML = dienstblattHtml(b, ziel) + `<div>${zurueck}${weiter}</div>${raus}`;
   document.getElementById('overlay').style.display = 'flex';
   // Ein abgeschnittener Vordruck sieht aus wie ein Fehler, nicht wie eine
   // Fortsetzung. Nach dem Rendern einmal messen und es dazuschreiben, wenn
@@ -11760,12 +12133,109 @@ function dienstAssert(){
   // (3) Erreichbarkeit. Die drei Einsprungpunkte haengen in onclick-Zeichenketten
   // (#ovPanel), also am globalen Namensraum. Ein Umbenennen faellt sonst erst
   // auf, wenn jemand den Knopf drueckt.
-  for(const n of ['showDienstblatt', 'dienstAntritt', 'dienstblattEnde'])
+  for(const n of ['showDienstblatt', 'dienstAntritt', 'dienstblattEnde', 'gestaltWaehlen'])
     if(typeof window[n] !== 'function') fehler('Einsprungpunkt fehlt im globalen Namensraum', n);
+
+  // (4) P1: Das Wahlfeld ist Vordrucktext und trägt dieselben Formregeln wie
+  // jede andere Zeile hier. Es steht nicht in felder(), landet also nicht von
+  // selbst in dienstblattZeilen() und braucht diese Zeilen.
+  text(GESTALT_TEXT, 'Blatt 1 Wahlfeld');
+  for(const g of GESTALT_WAHL){ text(g.kurz, 'Wahlknopf ' + g.key); text(g.feld, 'Wahlfeldwert ' + g.key); }
+  const wahlBlatt = DIENSTBLATT.filter(b => b.gestaltWahl);
+  if(wahlBlatt.length !== 1) fehler('Das Wahlfeld liegt auf', wahlBlatt.length, 'Blättern statt auf genau einem');
+  else if(!wahlBlatt[0].felder().some(([k]) => k === 'Anrede der Person'))
+    fehler('Blatt mit Wahlknöpfen hat kein Feld "Anrede der Person"');
 
   if(ok) console.log('W8 Einstellung: 3 Blätter, Formregeln und Sperrvermerk in Ordnung.');
 }
 dienstAssert();
+
+// ===========================================================================
+//  P1: DIE DIENSTGESTALT — die Person des Tages.
+//
+//  Zwei Dinge, die vorher fehlten und die derselbe Bauabschnitt regelt:
+//
+//  1. Der Außendienst war jeden Morgen ein anderer Mensch, sah aber jeden Morgen
+//     aus wie das Dorf: fünf Naturtöne aus demselben Paket, aus dem auch die
+//     Staffage gebaut ist. Auf einem vollen Dorfplatz und in einer Horde fand
+//     man sich nicht wieder. Die Haarfarbe kommt jetzt aus CF_HAARTON und ist
+//     absichtlich keine, die es in Vordermühl sonst gibt.
+//
+//  2. Wer der Mensch des Tages ist, war reiner Zufall und blieb es. Blatt 1
+//     nimmt dazu jetzt eine Angabe entgegen, und der Schichtantritt hält sich
+//     daran. Mehr tut sie nicht: kein Wert, kein Bonus, keine andere Zeile im
+//     Spiel liest amt.gestalt. Genau das ist der Witz an der Stelle, an der sie
+//     steht, direkt unter "Anlage 1 liegt nicht vor".
+//
+//  Die Grenze dieses Abschnitts, damit sie nicht später erweitert wird: das
+//  Haus kennt die Angabe, spricht sie aber nirgends aus. Die Anredeleiter aus
+//  18.5 bleibt unangetastet, "Herr oder Frau" bleibt "Herr oder Frau". Der
+//  Dienstposten kennt das Geschlecht der Person, die ihn heute bekleidet, immer
+//  noch nicht: er kennt nur einen Vermerk in einem Vordruck, und Vordrucke
+//  sprechen nicht.
+// ===========================================================================
+function gestaltAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('P1 Dienstgestalt:', m, ...r); };
+
+  // (1) Jede Frisur trägt genau eine gültige Lesart, und beide sind besetzt.
+  // Läuft eine leer, fällt haareNach() still auf alle zurück, und die Angabe auf
+  // Blatt 1 wäre wirkungslos statt falsch. Das ist der Fall, der sich beim
+  // Weiterschreiben von selbst einschleicht.
+  for(const h of CF_HAIR) if(h.art !== 'm' && h.art !== 'w') fehler('Frisur ohne gültige Lesart', h.key, h.art);
+  for(const art of ['m', 'w']){
+    const l = CF_HAIR.filter(h => h.art === art);
+    if(!l.length) fehler('Keine einzige Frisur mit der Lesart', art);
+  }
+  if(HAIRS.length !== CF_HAIR.length) fehler('HAIRS und CF_HAIR sind verschieden lang', HAIRS.length, CF_HAIR.length);
+
+  // (2) Die Auswahl liefert, was sie verspricht: 'm' nur Männliches, 'w' nur
+  // Weibliches, 'egal' alles, und nie eine leere Liste.
+  for(const g of GESTALT_WAHL){
+    const l = haareNach(g.key);
+    if(!l.length) fehler('Leere Frisurenauswahl für', g.key);
+    if(g.key === 'egal'){ if(l.length !== HAIRS.length) fehler('"Ohne Angabe" schränkt ein', l.length, 'von', HAIRS.length); }
+    else for(const k of l){
+      const h = CF_HAIR.find(x => x.key === k);
+      if(!h || h.art !== g.key) fehler('Auswahl', g.key, 'enthält eine fremde Frisur', k);
+    }
+  }
+  if(!GESTALT_WAHL.some(g => g.key === GESTALT_STD)) fehler('Der Auslieferungszustand steht nicht in der Tabelle', GESTALT_STD);
+  if(gestaltDef('gibtesnicht').key !== GESTALT_STD) fehler('Ein unbekannter Wert fällt nicht auf den Auslieferungszustand zurück');
+
+  // (3) Die Töne. Acht unterscheidbare Farben, alle als #rrggbb notiert, keine
+  // zweimal, und keine, die sich mit einem Naturton des Pakets verwechseln
+  // ließe: darum geht es bei dieser Änderung überhaupt.
+  const gesehen = new Set();
+  for(const t of CF_HAARTON){
+    if(!/^#[0-9a-f]{6}$/i.test(t.hex)) fehler('Kein sechsstelliger Farbwert', t.key, t.hex);
+    if(gesehen.has(t.hex)) fehler('Farbe doppelt vergeben', t.key, t.hex);
+    gesehen.add(t.hex);
+    if(!t.name) fehler('Ton ohne Namen', t.key);
+    // Sättigung im HSV-Sinn. Alles unter der Hälfte wäre ein Naturton.
+    const r = parseInt(t.hex.slice(1,3),16), g = parseInt(t.hex.slice(3,5),16), b = parseInt(t.hex.slice(5,7),16);
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    if(max === 0 || (max - min) / max < 0.5) fehler('Ton ist zu blass, um aufzufallen', t.key, t.hex);
+  }
+  if(CF_HAARTON.length < 4) fehler('Zu wenige Töne für eine erkennbare Abwechslung', CF_HAARTON.length);
+  if(haarHex('gibtesnicht') !== CF_HAARTON[0].hex) fehler('Unbekannter Ton fällt nicht auf den ersten zurück');
+
+  // (4) Der Loader nimmt nur an, was die Tabelle kennt. Gespiegelt geprüft,
+  // gleiche Bauform wie in wiederAssert(): echten Wert weg, Prüfwerte rein, im
+  // finally zurück. Kein saveAmt() in diesem Guard.
+  const eGestalt = amt.gestalt;
+  try {
+    for(const [wert, soll] of [['m','m'], ['w','w'], ['egal','egal'], ['x', null], ['', null]]){
+      amt.gestalt = GESTALT_STD;
+      if(GESTALT_WAHL.some(g => g.key === wert)) amt.gestalt = wert;
+      const erwartet = soll || GESTALT_STD;
+      if(amt.gestalt !== erwartet) fehler('Gespeicherter Wert', JSON.stringify(wert), 'ergibt', amt.gestalt, 'statt', erwartet);
+    }
+  } finally { amt.gestalt = eGestalt; }
+
+  if(ok) console.log('P1 Dienstgestalt: Lesarten, Auswahl und Haarfarben in Ordnung.');
+}
+gestaltAssert();
 
 // ===========================================================================
 //  W10: DIE WIEDEREINSETZUNG — Weltbibel Kapitel 5 und 18.2. Der eine Kauf,
@@ -11874,7 +12344,9 @@ function wiederBeantragen(){
   if(!wiederZulaessig() || !wiederBezahlbar() || amt.wiedereinsetzung) return;
   const g = wiederGebuehr();
   amt.bankGold -= g;
-  amt.wiedereinsetzung = {stand: wiederStand(), haar: player.hair};
+  // P1: Das Gesicht ist seit der Dienstgestalt zwei Angaben, Frisur und Ton.
+  // Beide gehoeren zur Person, beide kommen mit ihr zurueck.
+  amt.wiedereinsetzung = {stand: wiederStand(), haar: player.hair, ton: player.haarTon};
   amt.wiederZahl = Math.max(0, amt.wiederZahl | 0) + 1;
   saveAmt();
   const box = document.getElementById('wiederBox');
@@ -11944,7 +12416,7 @@ function wiederAssert(){
     // (5) 18.2: der Rang ist nicht Teil des Geschäfts. Weder Stand noch Gebühr
     // noch der bewilligte Antrag dürfen rangStufe() bewegen.
     const rangVorher = rangStufe();
-    amt.wiedereinsetzung = {stand: 9, haar: eHaar};
+    amt.wiedereinsetzung = {stand: 9, haar: eHaar, ton: player.haarTon};
     if(rangStufe() !== rangVorher) fehler('Der bewilligte Antrag hat den Rang verschoben', rangVorher, rangStufe());
     amt.wiedereinsetzung = null;
 
@@ -12384,7 +12856,7 @@ function assertRigRegistrations(){
 // gesamten Rest des Inline-Skripts mitreißen.
 function npcAnkerAssert(){
   const keys = ['hero_baked'];
-  for(const f of DORF_FIGUREN) keys.push(f.opt === 'fest' ? `npc_baked_${f.key}` : `cfnpc_${f.sheet}_idle`);
+  for(const f of DORF_FIGUREN) keys.push(npcBlaetter(f).idle);   // G6: dieselbe Blattwahl wie im Spiel
   const c = document.createElement('canvas'); c.width = 64; c.height = 64;
   const x = c.getContext('2d', {willReadFrequently:true});
   for(const key of [...new Set(keys)]){
@@ -12401,6 +12873,92 @@ function npcAnkerAssert(){
     if(botY < 0){ console.warn(`npcAnkerAssert: ${key} Frame 0 ist leer`); continue; }
     if(Math.abs(botY - s.ay) > 2) console.warn(`npcAnkerAssert: ${key} Fußlinie bei y=${botY}, Anker ay=${s.ay} — Figur ${botY < s.ay ? 'schwebt' : 'steckt im Boden'} um ${Math.abs(botY - s.ay)} Pixel`);
   }
+}
+
+// ===========================================================================
+//  G6: Steht die Belegschaft im Bild? Zwei Arten, unsichtbar zu sein, und beide
+//  waren im Dorf zu besichtigen, ohne dass ein Guard etwas gesagt hätte.
+//
+//  (1) Kein Blatt. Fünf der acht CF_NPCS-Dateien liegen nicht im Grafikpaket,
+//      drawSprite() kehrt bei einem fehlenden Key still um. npcBlaetter() gibt
+//      diesen Figuren jetzt ein Held-Komposit; hier wird nachgesehen, dass am
+//      Ende wirklich jede Figur ein Blatt hat, ganz gleich welchen Weg sie ging.
+//
+//  (2) Hinter der Fassade. Die Gebäude sind 'big'-Decos mit Fußanker an der
+//      Südkante ihres Footprints, gezeichnet wird nach y sortiert. Eine Figur,
+//      die NÖRDLICH dieser Ankerlinie steht, wird also vor dem Haus gezeichnet
+//      und vom Haus zugedeckt, obwohl sie auf einer freien Kachel steht. Beim
+//      Bürgermeister deckte das Amt hundert Prozent.
+//
+//  Gemessen wird an der undurchsichtigen Fläche (CF_BLD.deck und die Alphabox
+//  der Figur), nicht am Frame-Rechteck: die Blätter haben breite leere Ränder,
+//  und mit dem vollen Rechteck meldete der Guard Verdeckungen, die auf dem
+//  Schirm keine sind. Bei wandernden Figuren zählt nicht nur der Heimatanker,
+//  sondern die ganze Wanderleine: der Rundgang wird in sechzehn Richtungen
+//  abgetastet. Wirft nie, meldet nur.
+// ===========================================================================
+const DORF_SICHT_RUHE = 0.15;    // am Heimatanker praktisch frei stehen
+const DORF_SICHT_LEINE = 0.40;   // unterwegs darf eine Ecke hinter der Fassade verschwinden
+function dorfSichtAssert(){
+  let ok = true;
+  const warnen = (m, ...r) => { ok = false; console.warn('G6 Dorfsicht:', m, ...r); };
+
+  // Die undurchsichtige Fläche der Figur, relativ zum Fußanker. Aus dem Blatt
+  // gemessen statt angenommen, dieselbe Methode wie npcAnkerAssert (dessen
+  // Ergebnis hier nicht wiederverwendet wird: der misst nur die Fußlinie).
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const cx = c.getContext('2d', {willReadFrequently:true});
+  function figurBox(key){
+    const s = SHEETS[key]; if(!s || !s.img) return null;
+    try {
+      cx.clearRect(0, 0, 64, 64);
+      cx.drawImage(s.img, 0, (s.rowStart||0)*s.fh, s.fw, s.fh, 0, 0, s.fw, s.fh);
+      const d = cx.getImageData(0, 0, s.fw, s.fh).data;
+      let l = s.fw, r = -1, o = s.fh, u = -1;
+      for(let py = 0; py < s.fh; py++) for(let px = 0; px < s.fw; px++)
+        if(d[(py*s.fw+px)*4+3] > 8){
+          if(px < l) l = px; if(px > r) r = px;
+          if(py < o) o = py; if(py > u) u = py;
+        }
+      if(r < 0) return null;
+      return {l:(l - s.ax)*NPC_SC, r:(r + 1 - s.ax)*NPC_SC, o:(o - s.ay)*NPC_SC, u:(u + 1 - s.ay)*NPC_SC};
+    } catch(e){ return null; }   // fremdorigin geladenes Blatt, s. npcAnkerAssert
+  }
+
+  const haeuser = VILLAGE_BUILDINGS.map(bldDeckung);
+  const anteil = (box, x, y) => {
+    const l = x + box.l, r = x + box.r, o = y + box.o, u = y + box.u;
+    const flaeche = Math.max(1, (r - l) * (u - o));
+    let max = 0, wer = null;
+    for(const h of haeuser){
+      if(h.anker <= y) continue;                       // sortiert vor der Figur, deckt nichts zu
+      const bx = Math.min(r, h.r) - Math.max(l, h.l);
+      const by = Math.min(u, h.u) - Math.max(o, h.o);
+      if(bx <= 0 || by <= 0) continue;
+      const q = bx * by / flaeche;
+      if(q > max){ max = q; wer = h; }
+    }
+    return {q: max, wer};
+  };
+
+  for(const n of npcs){
+    const box = figurBox(n.sheetIdle);
+    if(!box){ warnen(`${n.key} hat kein lesbares Blatt (${n.sheetIdle}) und steht unsichtbar im Dorf`); continue; }
+    const ruhe = anteil(box, n.homeX, n.homeY);
+    if(ruhe.q > DORF_SICHT_RUHE)
+      warnen(`${n.key} steht am Heimatanker zu ${Math.round(ruhe.q*100)}% hinter einer Fassade`);
+    if(n.fest) continue;                               // ohne Wanderleine ist der Anker die ganze Wahrheit
+    let max = ruhe.q;
+    for(let i = 0; i < 16; i++){
+      const a = i * Math.PI / 8;
+      const q = anteil(box, n.homeX + Math.cos(a)*NPC_HOME_R, n.homeY + Math.sin(a)*NPC_HOME_R).q;
+      if(q > max) max = q;
+    }
+    if(max > DORF_SICHT_LEINE)
+      warnen(`${n.key} verschwindet auf seiner Wanderleine zu ${Math.round(max*100)}% hinter einer Fassade`);
+  }
+
+  if(ok) console.log(`G6 Dorfsicht: ${npcs.length} Dorffiguren haben ein Blatt und stehen im Bild.`);
 }
 
 // G5: UI-Skin. SHEETS[key].img.src ist bereits die richtige URL für den jeweiligen
@@ -12458,8 +13016,13 @@ loadAssets().then(() => {
   prewarmMonsterTints();
   bakeUiSkin();
   bakeAllNpcSheets();
+  // G6: erst backen, dann den npcs die Blätter zuweisen. genMap() lief beim
+  // Skriptstart und hat allen Wandernden ihren CF_NPCS-Key gegeben, auch denen,
+  // deren Datei gar nicht im Paket liegt. Jetzt ist bekannt, was wirklich da ist.
+  npcBlaetterNachziehen();
   assertRigRegistrations();   // GW26c: jetzt sind npc_baked_bramsche/_lott/_pahl da
   npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
+  dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst
   refreshFloor();
   showStartScreen();
   requestAnimationFrame(loop);
