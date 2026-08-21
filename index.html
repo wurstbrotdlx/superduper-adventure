@@ -956,6 +956,29 @@ const CF_RIGS = {
   // bat (F17) — ein eigenes Sterbebild hat das Blatt nicht.
   snail:             { file:'Snails/Snail_1.png', fw:32, fh:32, ax:16, ay:28,
     anims:{ idle:[0,2], walk:[3,2], run:[3,2], attack:[3,2], cast:[3,2], hurt:[0,2], death:[0,2] } },
+  // W-Lager: die Gruenhaut-Wachen. Beide Blaetter sind 48x48 im 6x13-Raster und
+  // damit zeilengleich mit dem laengst verbauten Goblin_Maceman — das Manifest
+  // fuehrte sie auf 32x32, was schon an der Arithmetik scheitert: 624 ist durch
+  // 32 nicht teilbar. Mit --rig unter beiden Annahmen gegen das PNG gemessen.
+  goblin_spearman:   { file:'Goblins/Goblin_Spearman.png', fw:48, fh:48, ax:24, ay:35,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },
+  goblin_archer:     { file:'Goblins/Goblin_Archer.png', fw:48, fh:48, ax:24, ay:41,
+    anims:{ idle:[1,4], walk:[4,6], run:[4,6], attack:[7,6], cast:[7,6], hurt:[11,2], death:[9,4] } },
+  // Das Ork-Blatt mischt DREI Raster uebereinander, und genau daran ist die
+  // G0-Heuristik gescheitert (G3-Notiz: "Raster-Konfidenz zu niedrig, ungeprueft"):
+  //   y   0..192  6 Zeilen a 32x32, je 6 Frames  -> Idle (0-2), Lauf (3-5)
+  //   y 192..384  3 Zeilen a 64x64, je 8 Frames  -> Angriff Down/Seite/Hoch
+  //   y 384..512  4 Zeilen a 32x32, je 4 Frames  -> Zeile 12 der Sturz (death),
+  //                                                 13-15 das Treffer-Aufblitzen
+  // Die Angriffszeile braucht die doppelte Zelle, weil der Waffenbogen ueber den
+  // Koerper hinausreicht; der Ork selbst bleibt gleich gross (Koerper 20-24px in
+  // beiden Rastern), es waechst nur der Rahmen. Deshalb die Anim-Ausnahme statt
+  // eines zweiten Rigs. Alle drei Bloecke mit --rig gegen das PNG gemessen.
+  orc_chief:         { file:'Orcs/Orc_Chief.png', fw:32, fh:32, ax:16, ay:30,
+    anims:{ idle:[1,6], walk:[4,6], run:[4,6],
+            attack:[4,8,{fw:64, fh:64, ax:30, ay:46}],
+            cast:  [4,8,{fw:64, fh:64, ax:30, ay:46}],
+            hurt:[14,4], death:[12,4] } },
   flying_skull:      { file:'Volcano/Flying_Skull.png', fw:32, fh:16, ax:16, ay:16,
     // Kein Down/Side/Up-Schema (8 Zeilen, Framezahl 6,6,3,3,2,2,6,6). Per Bildvergleich:
     // 0 Flug-Idle, 2 Flatter-Variante, 4 kompakte Tauch-Pose, 6+7 Schädel-Bruchstücke
@@ -973,7 +996,13 @@ for(const rig in CF_RIGS){
   const r = CF_RIGS[rig];
   for(const anim in r.anims){
     const [row, n] = r.anims[anim];
-    addSheet(`${rig}_${anim}`, `cf/enemies/${r.file}`, n, 'grid', {fw:r.fw, fh:r.fh, ax:r.ax, ay:r.ay, rowStart:row});
+    // W-Lager: ein Blatt darf pro Anim ein abweichendes Raster tragen. Gebraucht
+    // hat das erst das Ork-Blatt, das drei Raster uebereinander mischt (s. dort).
+    // Ohne Ausnahme faellt der Eintrag auf das Rig-Raster zurueck, alle bisherigen
+    // Rigs bleiben also unveraendert.
+    const o = r.anims[anim][2];
+    addSheet(`${rig}_${anim}`, `cf/enemies/${r.file}`, n, 'grid',
+      {fw:(o&&o.fw)||r.fw, fh:(o&&o.fh)||r.fh, ax:(o&&o.ax)||r.ax, ay:(o&&o.ay)||r.ay, rowStart:row});
   }
 }
 
@@ -1111,6 +1140,18 @@ for(const nkey in CF_NPCS){
 // Wetter, rein optisch. Wolken: 4 Varianten im 2x2-Raster, zentrierter Anker (kein
 // Fußpunkt, treiben über dem Boden). Wind: 14-Frame-Strip, Fußpunkt egal (waagerecht
 // über den Bildschirm, s. Wetter-Update).
+// W-Lager: die Ausstattung des Lagers. Raster je Blatt an den leeren Spalten und
+// Zeilen des PNG gemessen, nicht aus der Heuristik uebernommen — die taugt bei
+// Requisitenblaettern so wenig wie bei Flaechen-Tiles (G4-Lektion).
+// palisade_run.png ist eine handgeschnittene Einzelzelle (Quelle 32,48 16x32),
+// weil addSheet's 'grid' keinen Spaltenversatz kennt. Gleiche Ausnahme wie
+// crate/pot/cobweb aus G1 und die vier UI-Zellen aus G5.
+addSheet('camp_palisade', 'cf/deco/Camp/palisade_run.png', 1, 'grid', {fw:16, fh:32, ax:8, ay:31});
+addSheet('camp_gate',   'cf/deco/Camp/Palisade_Gate_Anim.png', 1, 'grid', {fw:48, fh:64, ax:24, ay:62});
+addSheet('camp_tent',   'cf/deco/Camp/Military_Tents.png', 1, 'grid', {fw:80, fh:96, ax:40, ay:83});
+addSheet('camp_tower',  'cf/deco/Camp/Lookout_Towers.png', 1, 'grid', {fw:72, fh:128, ax:36, ay:126, rowStart:1});
+addSheet('camp_banner', 'cf/deco/Camp/Banners_Anim.png', 4, 'grid', {fw:32, fh:32, ax:16, ay:30});
+addSheet('camp_pot',    'cf/deco/Camp/Campfire_Pot_Anim.png', 5, 'grid', {fw:48, fh:32, ax:24, ay:30});
 addSheet('cfcloud', 'cf/deco/Weather/Clouds.png', 4, 'grid', {fw:64, fh:64, ax:32, ay:32});
 addSheet('cfwind', 'cf/deco/Weather/Wind_Anim.png', 14, 'strip');
 
@@ -2180,6 +2221,21 @@ function inVillagePx(x, y){ return inVillageT(Math.floor(x/TS), Math.floor(y/TS)
 // G6: bld zeigt auf den Eintrag in CF_BLD, der Maße, Anker und Deckfläche hält.
 // sheet bleibt als Zeichenschlüssel stehen und wird daraus abgeleitet, damit
 // nirgends ein Gebäudename zweimal getippt steht.
+// === W-Lager: Das Lager der Beschwerden ===================================
+// Das siebte Katalogbiom, und das einzige, das ein einzelner Ort ist statt eines
+// Bandes oder einer Tuer. Die Gegenseite hat ihre Vertragsausfertigung nie
+// bekommen (Weltbibel Kapitel 2) und steht seither hinter einer Palisade. Sie
+// greift nicht an, sie wartet — deshalb tragen alle drei Bewohner lagerwache:true.
+// Literale wie ueberall hier im alten 80er-Raster, per DORF_DX/DORF_DY verschoben.
+const LAGER = {x0:34+DORF_DX, y0:34+DORF_DY, x1:52+DORF_DX, y1:46+DORF_DY};
+// Das Tor sitzt mittig in der Suedwand und ist drei Kacheln breit, also genau die
+// 48 Pixel des Torblatts. Es ist der einzige Weg hinein.
+const LAGER_TOR_X = Math.round((LAGER.x0 + LAGER.x1) / 2) - 1;
+// Das Lager ist wie das Dorf von der Monsterstreuung ausgenommen: seine Besatzung
+// steht fest (setzeLager()), und ein Chuchu, das zwischen den Zelten sitzt, waere
+// weder eine Wache noch ein Eindringling, sondern ein Setzfehler.
+const imLager = (tx,ty)=> tx >= LAGER.x0-1 && tx <= LAGER.x1+1 && ty >= LAGER.y0-1 && ty <= LAGER.y1+1;
+
 const VILLAGE_BUILDINGS = [
   {bld:'amt',     x0:10, y0:35, w:8, h:2, amt:true},
   {bld:'haus1',   x0:7,  y0:35, w:3, h:2},
@@ -2965,6 +3021,15 @@ function genMap(){
   for(const b of VILLAGE_BUILDINGS)
     for(let y=b.y0; y<b.y0+b.h; y++)
       for(let x=b.x0; x<b.x0+b.w; x++) setT(x,y,G_WALL);
+  // W-Lager: gleiche Reihenfolge und derselbe Grund wie beim Dorf-Rechteck oben —
+  // erst freiraeumen, dann blockieren, beides vor dem Baum- und Deko-Streuloop.
+  for(let y=LAGER.y0; y<=LAGER.y1; y++)
+    for(let x=LAGER.x0; x<=LAGER.x1; x++) setT(x,y,G_PATH);
+  for(let x=LAGER.x0; x<=LAGER.x1; x++){
+    setT(x, LAGER.y0, G_WALL);
+    if(x < LAGER_TOR_X || x > LAGER_TOR_X+2) setT(x, LAGER.y1, G_WALL);
+  }
+  for(let y=LAGER.y0; y<=LAGER.y1; y++){ setT(LAGER.x0, y, G_WALL); setT(LAGER.x1, y, G_WALL); }
   // === W-Groß: Küste statt Rechteckrahmen ===================================
   // Hier stand bis W-Groß ein 2 Kacheln dicker Baumrahmen um die ganze Welt.
   // Der Platz im Ablauf ist bewusst genau dieser: NACH der Vegetationsstreuung
@@ -3159,6 +3224,30 @@ function genMap(){
   for(const b of VILLAGE_BUILDINGS){
     decos.push({x:(b.x0 + b.w/2)*TS, y:(b.y0 + b.h)*TS - 2, sheet:b.sheet, phase:0, scale:1, big:true});
   }
+  // W-Lager: Palisade rundum, Tor in der Luecke, Ausstattung innen. Fussanker ist
+  // die Kachelunterkante, gleiche Konvention wie bei jeder anderen Fusspunkt-Prop.
+  {
+    // Skalierung 2: die MilitaryCamp-Blaetter sind 16-Pixel-Kunst wie die Tiles-Saetze
+    // (der Palisadenring misst 3x5 Kacheln in 48x80 Pixeln), waehrend die Gebaeude
+    // aus G5 schon in 32 Pixeln je Kachel vorliegen und deshalb 1 bleiben. Ohne
+    // die 2 steht die Palisade mit einer halben Kachel Luecke je Pfahl.
+    const lp = (tx, ty, sheet, ph) => decos.push({x:tx*TS + TS/2, y:(ty+1)*TS, sheet, phase:ph||0, scale:2, big:true});
+    for(let x=LAGER.x0; x<=LAGER.x1; x++){
+      lp(x, LAGER.y0, 'camp_palisade');
+      if(x < LAGER_TOR_X || x > LAGER_TOR_X+2) lp(x, LAGER.y1, 'camp_palisade');
+    }
+    for(let y=LAGER.y0+1; y<LAGER.y1; y++){ lp(LAGER.x0, y, 'camp_palisade'); lp(LAGER.x1, y, 'camp_palisade'); }
+    lp(LAGER_TOR_X + 1, LAGER.y1, 'camp_gate');
+    // Zwei Wachtuerme an den Nordecken, drei Zelte in der Nordhaelfte, Banner
+    // links und rechts vom Tor, der Kessel in der Mitte. Katapult und Kanone
+    // bleiben draussen: Belagerungsgeraet behauptet, dass etwas passiert.
+    lp(LAGER.x0 + 2, LAGER.y0 + 3, 'camp_tower');
+    lp(LAGER.x1 - 2, LAGER.y0 + 3, 'camp_tower');
+    for(const tx of [LAGER.x0 + 6, LAGER.x0 + 11, LAGER.x0 + 15]) lp(tx, LAGER.y0 + 6, 'camp_tent');
+    lp(LAGER_TOR_X - 2, LAGER.y1 - 1, 'camp_banner', 0.4);
+    lp(LAGER_TOR_X + 4, LAGER.y1 - 1, 'camp_banner', 1.7);
+    lp(Math.round((LAGER.x0+LAGER.x1)/2), LAGER.y0 + 8, 'camp_pot', 0.9);
+  }
   // Nach y sortiert halten — der Renderer sucht das sichtbare Band binär statt linear.
   trees.sort((a,b)=>a.y-b.y); decos.sort((a,b)=>a.y-b.y);
 
@@ -3351,6 +3440,11 @@ const ZUTAT_NOUNS = {
   teilbescheid:{n:'Teilbescheid-Gallert', g:'n', slot:'armor',  rar:1, icon:'🫧'},
   dienstweg:   {n:'Schneckenhaus',      g:'n', slot:'armor',  rar:2, icon:'🐌'},
   teilabhilfe: {n:'Teilabhilfe-Kern',   g:'m', slot:'weapon', rar:3, icon:'🔷'},
+  // W-Lager: Schild, Waffe und Rüstung, alle drei vor demselben Tor. Das ist die
+  // Signatur des Ortes — wer dorthin geht, holt sich eine Ausstattung, nicht eine Zutat.
+  vorbehalt:        {n:'Speerspitze',    g:'f', slot:'shield', rar:2, icon:'🔱'},
+  zwischennachricht:{n:'Pfeilschaft',    g:'m', slot:'weapon', rar:2, icon:'🏹'},
+  empfangsbekenntnis:{n:'Lagerpetschaft',g:'f', slot:'armor',  rar:4, icon:'🕯️'},
 };
 
 // Wirkungen: name = wie die Kladde sie nennt, fx = Aggregat-Schlüssel für die
@@ -4351,6 +4445,35 @@ const MONDEF = {
     muster:[{name:'Faustschlag', warn:700, art:'nah'},
              {name:'Unanfechtbar', warn:900, art:'ring', jede:3, reich:130, ruhe:3.0}]},
 
+  // --- Lager / Das Lager der Beschwerden, ein einzelner Ort im Grasband ---
+  // Werte aus tools/monsterkatalog.py. Alle drei tragen lagerwache:true — sie
+  // greifen nie von sich aus an (s. makeMon und die Aggro-Pruefung). Das ist
+  // keine Bequemlichkeit, sondern der Inhalt des Ortes: die Gegenseite wartet
+  // seit vierhundert Jahren auf eine Zustellung und hat keinen Grund, jemanden
+  // anzufallen, der ihr endlich etwas bringen koennte.
+  vorbehalt: {name:'Der Vorbehalt', art:'Der Vorbehalt', rig:'goblin_spearman', sc:1.7, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A2', stufe:5, biom:'Lager', route:'physisch', typen:'B2+B7'},
+    hp:290, dmg:[17,25], xp:210, speed:52, aggro:150, atkCd:1.6, atkRange:38, gold:[37,78],
+    res:{physisch:0.35, feuer:-0.2, eis:0.1, gift:0.1, magie:0.15},
+    reserved:true, lagerwache:true,
+    muster:[{name:'Auf Abstand halten', warn:420, art:'nah', reich:38},
+             {name:'Vorbehalten', warn:560, art:'nah', jede:3, reich:44, wucht:1.4}]},
+  zwischennachricht: {name:'Die Zwischennachricht', art:'Die Zwischennachricht', rig:'goblin_archer', sc:1.7, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A3', stufe:6, biom:'Lager', route:'physisch', typen:'B3+B4'},
+    hp:700, dmg:[75,107], xp:395, speed:64, aggro:190, atkCd:2.0, atkRange:150, gold:[64,134],
+    res:{physisch:-0.15, feuer:-0.1, eis:0.1, gift:0.2, magie:0.3},
+    ranged:true, bolt:{dmg:[75,107], speed:230, color:'#d8c89a', r:5}, kiter:{zurueck:0.3, tempo:1.0},
+    reserved:true, lagerwache:true,
+    muster:[{name:'Zwischennachricht', warn:460, art:'fern'},
+             {name:'Sachstand unverändert', warn:380, art:'fern', jede:3, wucht:0.6}]},
+  empfangsbekenntnis: {name:'Das Empfangsbekenntnis', art:'Das Empfangsbekenntnis', rig:'orc_chief', sc:2.3, psc:1.2, deathFps:5, glow:'#c9b98a', r:16,
+    kat:{klasse:'A4', stufe:7, biom:'Lager', route:'magie', typen:'B2+B5'},
+    hp:375, dmg:[144,206], xp:1004, speed:34, aggro:170, atkCd:2.5, atkRange:40, gold:[115,242],
+    res:{physisch:0.7, feuer:0.1, eis:0.1, gift:0.4, magie:-0.3},
+    reserved:true, lagerwache:true,
+    muster:[{name:'Zurückweisen', warn:700, art:'nah', reich:40},
+             {name:'Nicht empfangsberechtigt', warn:900, art:'ring', jede:3, reich:120, ruhe:2.5}]},
+
   // --- Stollen / Die Sperrablage, nur hinter dem teuersten Gebuehrenbescheid ---
   // M3. Werte aus tools/monsterkatalog.py, nicht von Hand gesetzt: dort stehen
   // Zielkampfzeit und Zielgefahrenbudget, hp/dmg/xp/gold fallen daraus. Wer hier
@@ -4735,7 +4858,7 @@ function placeMonsters(){
                : reserviert ? clamp(ri(VILLAGE.y0-AUFTRAG_NAH, VILLAGE.y1+AUFTRAG_NAH), 4, MH-5)
                : ri(4, MH-5);
       if(!reachbar(tx,ty)) continue;
-      if(nahDorf(tx,ty)) continue;               // G5/W-Groß: Dorf samt Umland bleibt monsterfrei
+      if(nahDorf(tx,ty) || imLager(tx,ty)) continue;   // G5/W-Groß: Dorf samt Umland bleibt monsterfrei; W-Lager: das Lager auch
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
       const biome = biomeAtT(ty);
       // M2: der Roster hängt jetzt an der Zone, nicht mehr allein am Band.
@@ -4758,13 +4881,17 @@ function placeMonsters(){
       const tx = ri(Math.max(4, VILLAGE.x0-NAHFELD_R), Math.min(MW-5, VILLAGE.x1+NAHFELD_R));
       const ty = ri(Math.max(4, VILLAGE.y0-NAHFELD_R), Math.min(MH-5, VILLAGE.y1+NAHFELD_R));
       if(dorfAbstand(tx,ty) >= NAHFELD_R) continue;    // Rechteckecken liegen außerhalb des Rings
-      if(!reachbar(tx,ty) || nahDorf(tx,ty)) continue;
+      if(!reachbar(tx,ty) || nahDorf(tx,ty) || imLager(tx,ty)) continue;
       if(tx===KN_T.x && ty===KN_T.y) continue;
       const roster = ZONEN_MOBS[0][biomeAtT(ty)];
       setzeMon(roster[Math.floor(rng()*roster.length)], tx, ty);
       nah++;
     }
     if(nah < NAHFELD_SOLL) console.warn('Weltform: Nahfeld nur', nah, 'von', NAHFELD_SOLL);
+    // W-Lager: die Besatzung zuletzt, damit sie jeden Neuaufbau ueberlebt. Sie
+    // stand zwischenzeitlich VOR placeMonsters() und wurde von dessen
+    // monsters.length = 0 jedes Mal stillschweigend wieder abgeraeumt.
+    setzeLager();
   }
 }
 
@@ -4774,6 +4901,24 @@ function setzeMon(typ, tx, ty){
   const m = makeMon(typ, tx*TS+16, ty*TS+16);
   if(katKlasse(typ) === 'A1' && rng() < ELITE_CHANCE) eliteMachen(m);
   return m;
+}
+// W-Lager: die Besatzung. Feste Plaetze statt Streuung — ein Lager, dessen Wachen
+// jedes Mal woanders stehen, ist kein Lager, sondern eine Lichtung mit Zaun. Die
+// Torfigur steht innen vor dem Tor, die Speere flankieren sie, die Schuetzen
+// stehen bei den Tuermen. reserved:true haelt alle drei aus jedem Bandroster
+// heraus, sie entstehen also ausschliesslich hier.
+function setzeLager(){
+  const mitte = Math.round((LAGER.x0 + LAGER.x1) / 2);
+  // Zwei Kacheln weiter innen als das Tor: das Torblatt ist bei Skalierung 2 rund
+  // 124 Pixel hoch, sortiert nach ihm und schnitt ihm sonst die Beine ab.
+  setzeMon('empfangsbekenntnis', LAGER_TOR_X + 1, LAGER.y1 - 4);
+  setzeMon('vorbehalt', LAGER_TOR_X - 2, LAGER.y1 - 3);
+  setzeMon('vorbehalt', LAGER_TOR_X + 4, LAGER.y1 - 3);
+  // Die Schuetzen an die Seitenwaende, nicht unter die Tuerme: die Zelte sind
+  // 192 Pixel hoch und deckten sie dort vollstaendig zu.
+  setzeMon('zwischennachricht', LAGER.x0 + 2, LAGER.y0 + 9);
+  setzeMon('zwischennachricht', LAGER.x1 - 2, LAGER.y0 + 9);
+  setzeMon('vorbehalt', mitte, LAGER.y0 + 9);
 }
 placeMonsters();
 
@@ -8383,7 +8528,11 @@ function update(dt){
         if(m.stuckT > 2.5){ m.aggro = false; m.leashT = 4; m.stuckT = 0; }
       } else m.stuckT = 0;
     }
-    if(!m.aggro && m.leashT <= 0 && !imDorf && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
+    // W-Lager: die Lagerwachen fallen hier heraus. Sie werden nie von Naehe
+    // aggressiv, sondern ausschliesslich davon, getroffen zu werden — hurtMon()
+    // setzt m.aggro, dieser Pfad nicht. Wer am Tor vorbeigeht, geht vorbei; wer
+    // zuschlaegt, hat angefangen. Das ist der Inhalt des Ortes, nicht seine Bequemlichkeit.
+    if(!m.aggro && !m.def.lagerwache && m.leashT <= 0 && !imDorf && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
 
     // Kammerwache mit Rückenregel: dreht sich nur begrenzt schnell zum Spieler,
     // sonst wäre "von hinten" nie erreichbar.

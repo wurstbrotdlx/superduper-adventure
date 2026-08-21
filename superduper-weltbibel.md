@@ -161,9 +161,9 @@ Und weil auch das eine Personalakte ist, endet sie mit der Schicht. Persönliche
 
 ---
 
-## 6. Bestiarium: die 34 Vorgangsarten
+## 6. Bestiarium: die 37 Vorgangsarten
 
-Alle Monstertypen mit ihrer Aktenbedeutung: einundzwanzig aus dem Bestand, zehn dazu aus Bauabschnitt M1, drei aus M3. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
+Alle Monstertypen mit ihrer Aktenbedeutung: einundzwanzig aus dem Bestand, zehn dazu aus Bauabschnitt M1, drei aus M3, drei aus W-Lager. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
 
 Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan.
 
@@ -214,6 +214,26 @@ Gebaut nach derselben Regel, erst die Vorgangsart, dann das Monster. Werte und B
 | Die Sammelmahnung | Die Mahnstufe | Dieselbe Sache, dreimal, gleichlautend. Einzeln Papier, zu dritt ein Titel. |
 | Der Aktenbote | Der Zuschlag | Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. |
 | Die Sammelverfügung | Der Sammelbescheid | Alles, was je gegen dich lief, zusammengefasst und in einem Mantel aus Papier vorgetragen. |
+
+### Neu mit W-Lager: das Lager der Beschwerden
+
+Ein umzäuntes Lager im Grasland, östlich des Dorfes. Alle drei gehören zum Goblin-Rig,
+und alle drei greifen **nie zuerst an**: die Gegenseite hat ihre Vertragsausfertigung nie
+bekommen (Kapitel 2) und wartet seither. Einbau in `phase-w-lager.md`.
+
+| Monster | Vorgangsart | Warum es sich so verhält |
+|---|---|---|
+| Der Vorbehalt | Der Vorbehalt | Hält dich auf Abstand, lässt nichts an sich heran. Er hat nicht vor, dich zu verletzen, er hat vor, dich nicht durchzulassen. |
+| Die Zwischennachricht | Die Zwischennachricht | Kommt von weit her, sagt nichts Neues, trifft trotzdem. Seit vierhundert Jahren derselbe Wortlaut. |
+| Das Empfangsbekenntnis | Das Empfangsbekenntnis | Liegt seit vierhundert Jahren bereit, unterschrieben von niemandem. Es kann nichts tun, außer warten, dass ihm etwas übergeben wird. |
+
+Das Lager ist die Antwort auf Lisbeths Frage, und zwar zum Anfassen: **„Und wenn er
+einfach nur wartet?"** Die Figur am Tor trägt bewusst **keinen Titel** — 18.10 lässt genau
+eine Ausnahme zu, und die trägt das Finale. Ein Empfangsbekenntnis ist das Formular, das
+eine Zustellung bestätigt und zurückgeht; ohne Dokument ist es nichts. Die Pointe des
+Ortes ist damit eine Verfahrensregel: **dem Lager kann nicht zugestellt werden, weil
+niemand darin empfangsberechtigt ist.** Der Einzige, der es wäre, heißt Nachtrag, ist
+Fürst, und ist unbenachrichtigt.
 
 ### Neu mit M3: die Sperrablage
 

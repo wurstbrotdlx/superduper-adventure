@@ -926,6 +926,162 @@
     "flavor_de": "Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon."
   },
   {
+    "id": "vorbehalt",
+    "name": "Der Vorbehalt",
+    "biom": "Lager",
+    "sollstufe": 5,
+    "ertragsklasse": "A2",
+    "anforderungstyp": [
+      "B2",
+      "B7"
+    ],
+    "hp": 290,
+    "resistenzen": {
+      "physisch": 0.35,
+      "feuer": -0.2,
+      "eis": 0.1,
+      "gift": 0.1,
+      "magie": 0.15
+    },
+    "schaden_pro_treffer": 21,
+    "angriffsintervall_s": 1.6,
+    "tempo": 52,
+    "angriffsmuster": [
+      {
+        "name": "Auf Abstand halten",
+        "vorwarnzeit_ms": 420,
+        "reichweite": "nah (38)",
+        "effekt": "Grundtreffer mit dem Speer, groessere Reichweite als der Griff vermuten laesst"
+      },
+      {
+        "name": "Vorbehalten",
+        "vorwarnzeit_ms": 560,
+        "reichweite": "nah (44)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, er stemmt den Speer vor und laesst nichts naeher heran"
+      }
+    ],
+    "berechnete_ttk_s": 11.4,
+    "xp": 210,
+    "gold_min": 37,
+    "gold_max": 78,
+    "loot": [
+      {
+        "item": "Speerspitze",
+        "chance": 0.4
+      },
+      {
+        "item": "Vorbehaltsvermerk",
+        "chance": 0.2
+      }
+    ],
+    "konter_in_einem_satz": "Der Speer ist lang, der Ork dahinter nicht. Einmal vorbei, und er hat nichts mehr.",
+    "flavor_de": "Haelt dich auf Abstand, laesst nichts an sich heran. Er hat nicht vor, dich zu verletzen, er hat vor, dich nicht durchzulassen."
+  },
+  {
+    "id": "zwischennachricht",
+    "name": "Die Zwischennachricht",
+    "biom": "Lager",
+    "sollstufe": 6,
+    "ertragsklasse": "A3",
+    "anforderungstyp": [
+      "B3",
+      "B4"
+    ],
+    "hp": 700,
+    "resistenzen": {
+      "physisch": -0.15,
+      "feuer": -0.1,
+      "eis": 0.1,
+      "gift": 0.2,
+      "magie": 0.3
+    },
+    "schaden_pro_treffer": 91,
+    "angriffsintervall_s": 2.0,
+    "tempo": 64,
+    "angriffsmuster": [
+      {
+        "name": "Zwischennachricht",
+        "vorwarnzeit_ms": 460,
+        "reichweite": "fern (150)",
+        "effekt": "Pfeil vom Wachturm, der Bogen spannt sichtbar vor"
+      },
+      {
+        "name": "Sachstand unveraendert",
+        "vorwarnzeit_ms": 380,
+        "reichweite": "fern (150)",
+        "effekt": "ersetzt jeden dritten Pfeil, schneller angesagt, dafür halbe Wucht"
+      }
+    ],
+    "berechnete_ttk_s": 13.5,
+    "xp": 395,
+    "gold_min": 64,
+    "gold_max": 134,
+    "loot": [
+      {
+        "item": "Pfeilschaft",
+        "chance": 0.4
+      },
+      {
+        "item": "Zwischennachricht",
+        "chance": 0.25
+      }
+    ],
+    "konter_in_einem_satz": "Sie steht oben und weicht nicht aus. Wer unter ihr steht, wird nicht getroffen.",
+    "flavor_de": "Kommt von weit her, sagt nichts Neues, trifft trotzdem. Seit vierhundert Jahren derselbe Wortlaut."
+  },
+  {
+    "id": "empfangsbekenntnis",
+    "name": "Das Empfangsbekenntnis",
+    "biom": "Lager",
+    "sollstufe": 7,
+    "ertragsklasse": "A4",
+    "anforderungstyp": [
+      "B2",
+      "B5"
+    ],
+    "hp": 375,
+    "resistenzen": {
+      "physisch": 0.7,
+      "feuer": 0.1,
+      "eis": 0.1,
+      "gift": 0.4,
+      "magie": -0.3
+    },
+    "schaden_pro_treffer": 175,
+    "angriffsintervall_s": 2.5,
+    "tempo": 34,
+    "angriffsmuster": [
+      {
+        "name": "Zurueckweisen",
+        "vorwarnzeit_ms": 700,
+        "reichweite": "nah (40)",
+        "effekt": "sehr schwerer Grundtreffer, er holt weit und sichtbar aus"
+      },
+      {
+        "name": "Nicht empfangsberechtigt",
+        "vorwarnzeit_ms": 900,
+        "reichweite": "Ring (120)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, Druckwelle rundum, danach 2,5 s Erschöpfung"
+      }
+    ],
+    "berechnete_ttk_s": 24.0,
+    "xp": 1004,
+    "gold_min": 115,
+    "gold_max": 242,
+    "loot": [
+      {
+        "item": "Ungezeichnetes Bekenntnis",
+        "chance": 0.5
+      },
+      {
+        "item": "Lagerpetschaft",
+        "chance": 0.15
+      }
+    ],
+    "konter_in_einem_satz": "Er faengt nie an. Wer ihn stehen laesst, hat den kuerzeren Weg. Wer nicht, braucht Mana: Stahl prallt am Panzer ab.",
+    "flavor_de": "Liegt seit vierhundert Jahren bereit, unterschrieben von niemandem. Es kann nichts tun, außer warten, dass ihm etwas uebergeben wird."
+  },
+  {
     "id": "dienstweg",
     "name": "Der Dienstweg",
     "biom": "Stollen",
