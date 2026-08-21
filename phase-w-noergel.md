@@ -66,8 +66,9 @@ Vier Stellen in `index.html`, zusammen rund dreißig Zeilen, davon acht Text.
 1. **`kn.flags.hatLagerGesehen: false`** neben die vier bestehenden Merker. Kein
    Ladecode, `loadKn()` macht `Object.assign`.
 2. **`knTick()` setzt ihn**, wenn der Spieler im Lager steht. Die anderen vier Merker
-   sitzen an ihrem Ereignis (`drinkPotion`, Kessel, Kammertür); „war am Lager" hat kein
-   Ereignis, weil Hingehen keins ist. Gemessen wird mit dem vorhandenen `imLager()`,
+   sitzen an ihrem Ereignis (Zauber gewirkt, Kessel gekocht, Kammertür betreten, Punkt
+   vergeben); „war am Lager" hat keins, weil Hingehen kein Ereignis ist, sondern ein
+   Zustand. Gemessen wird mit dem vorhandenen `imLager()`,
    nicht mit einem zweiten Rechteck — eine Wahrheitsquelle. Dessen Kachelrand ist dabei
    genau richtig: wer außen an der Palisade entlanggeht, war am Lager. Nach dem einen
    Mal kostet die Zeile nur noch die Boolean-Prüfung ganz vorn.
@@ -137,6 +138,7 @@ gewartet auf `frameNo > 0` (nicht auf `assetsReady`, siehe README).
 | Konsole im Einzeldatei-Build (`file://`) | **8 Guard-Zeilen, 0 Warnungen, 0 Fehler** |
 | `knAssertCaps()` | still, kein Zeichendeckel gerissen |
 | `node --check` auf den Skriptblock | sauber |
+| `node tools/menue-pruef.mjs` (U1, mit dem Merge dazugekommen) | **39 von 39 Prüfungen bestanden** |
 | Grafikdateien | 118 |
 
 **Der Gattertest**, ein Durchlauf, drei Feststellungen:
@@ -167,17 +169,20 @@ Bildschirmabzug mit Grafik darauf fällt unter die Lizenzgrenze aus `CREDITS.md`
 von innen mit sechs unbeteiligten Wachen, und je einer je neuer Zeile in der Sprechblase
 über Nörgel.
 
-### Zwei Fußnoten zum Bauzustand
+### Eine Fußnote zum Bauzustand
 
-- Dieser Bauabschnitt sitzt **auf `claude/grafik-durchgang-monstral-9mw2sy` auf**, nicht
-  auf `main`: das Lager selbst steckt noch im offenen Entwurf `superduper-adventure#11`
-  und ist nicht gemerged. Ohne es gäbe es hier nichts zu verbinden. Der Assets-Entwurf
-  (`superduper-adventure-assets#2`) **ist** inzwischen gemerged, die neun Lagerblätter
-  liegen also in `main` des Asset-Repos.
-- Der Zweig kennt **U1 noch nicht** (Menü schließen, `phase-u1-menue.md`, auf `main`
-  gemerged, nachdem dieser Zweig sein letztes Mal `main` gezogen hat). Das ist kein
-  Konflikt mit diesem Bauabschnitt: U1 fasst Panels an, hier wird nur gesprochen.
-  Beim Merge kommt U1 unverändert aus `main` mit.
+Dieser Bauabschnitt wurde **auf dem Zweig des Lagers gebaut**, weil das Lager beim
+Sitzungsbeginn noch im offenen Entwurf `superduper-adventure#11` steckte und es ohne
+es nichts zu verbinden gab. Während der Sitzung ist #11 nach `main` gegangen, ebenso
+U1 (Menü schließen, `phase-u1-menue.md`) und der Assets-Entwurf
+`superduper-adventure-assets#2` mit den neun Lagerblättern. Der Zweig hat `main`
+daraufhin gezogen (`67842e9`) und steht damit auf dem Stand, der wirklich ausgeliefert
+wird; der Entwurf zeigt jetzt auf `main` statt auf den Lager-Zweig.
+
+Das gesamte Prüfprotokoll oben ist **nach** diesem Merge noch einmal komplett gelaufen,
+nicht davor. Dazu `tools/menue-pruef.mjs` aus U1, das erst mit dem Merge dazukam:
+**39 von 39 Prüfungen bestanden.** U1 fasst Panels an, dieser Bauabschnitt lässt
+sprechen, und die beiden kommen sich nicht ins Gehege.
 
 ### Bewusst offen
 
