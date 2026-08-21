@@ -167,9 +167,12 @@ Zusätzlich abgelaufen, weil diese Phase den Kartenbau und den Ladeweg anfasst:
   fünf Figuren als Held-Komposit. Das ist keine Notlösung, die man wegwerfen muss: Bramsche,
   Lott und Pahl sehen seit W3 so aus. Es ist aber weniger Abwechslung als acht eigene Rigs,
   und der Weg zurück steht offen und kostet keinen Code.
+  *Erledigt am 21.08.2026, siehe `phase-g6-nachtrag-dorfblaetter.md`: die fünf PNGs liegen im
+  Assets-Repo, acht der elf Figuren tragen ihr eigenes Rig, und der Weg zurück kostete
+  tatsächlich keinen Code.*
 - **Im Quellbaum bleiben fünf 404 in der Netzwerkkonsole.** Die kommen vom Browser, nicht vom
   Spiel, und sie sind der ehrliche Hinweis. Im ausgelieferten Einzeldatei-Build entstehen sie
-  nicht mehr.
+  nicht mehr. *Mit demselben Nachtrag hinfällig: 104 angefragte Dateien, 104 gefunden.*
 - **Nicht angefasst: Bramsches Frisur.** `h3` ist der Undercut, und eine Registratorin Ottilie
   mit ausrasierten Seiten ist eine Designentscheidung aus W3, kein Fehler. Wer sie anders
   haben will, ändert einen Buchstaben in `DORF_FIGUREN`.

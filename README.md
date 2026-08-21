@@ -56,8 +56,10 @@ Eine Warnung, die immer da steht, ist keine: fünf `Sprite fehlt`-Zeilen standen
 | `phase-w8-anfang.md` | Bauabschnitt W8: Einstellungsvordruck, Dienstanweisung, Laufbahnziel, und warum der Anfang kein Prolog ist |
 | `phase-w10-wiedereinsetzung.md` | Bauabschnitt W10: der Antrag auf Wiedereinsetzung, die einzige Art, zweimal derselbe Mensch zu sein |
 | `phase-g6-dorfsicht.md` | Bauabschnitt G6: sechs von elf Dorffiguren waren nicht zu sehen. Fünf fehlende Sprite-Blätter, ein Bürgermeister hinter der Amtsfassade, und der Guard, der beides künftig meldet |
+| `phase-m3-stollen.md` | Bauabschnitt M3: das sechste Katalogbiom. Warum kein einziger kammerexklusiver Gegner in die Untere Registratur passte, ein dritter Kammersatz aus einem leeren Ordner, und eine Vorgangsart, die beim Erledigen in zwei kleinere zerfällt |
+| `phase-g6-nachtrag-dorfblaetter.md` | Die fünf offenen Dorf-Blätter aus G6, nachgelegt. Kein Code, aber die Entscheidung, wie `Fisherman_Fin` gerastert ist: 9 Spalten à 64, nicht 18 à 32 wie das Manifest führte |
 | `phase-p1-dienstgestalt.md` | Bauabschnitt P1: die Person des Tages bekommt eine Haarfarbe, die es im Dorf nicht gibt, und der Einstellungsvordruck nimmt zum ersten Mal eine Angabe des Spielers entgegen |
-| `monsterkatalog-stufe-1-10.md` | Die Lieferung: 22 Gegner, 5 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
+| `monsterkatalog-stufe-1-10.md` | Die Lieferung: 25 Gegner, 6 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
 | `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
 | `GRAFIK-BESTAND-2026-08-21.md` | Was in den lizenzierten Packs liegt, was das Spiel davon lädt (97 von 886 Dateien), und was der Rest wert wäre. Vorlage für einen Grafik-Durchgang, mit Aufwandsschätzung je Kandidat |
 | `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md`, `GEGENPROBE-2026-08-04.md`, `GEGENPROBE-W-2026-08-05.md`, `GW-RESTFUNDE-2026-08-06.md`, `KAMMER-MESSUNG-2026-08-20.md` | Datierte Prüf- und Messberichte. Ihre Zeilennummern sind Stände, keine Wegweiser, und ihr Inhalt wird nicht rückwirkend umgeschrieben. Was sie überholt, steht im jeweils neueren Bericht oder im Phasendokument. |

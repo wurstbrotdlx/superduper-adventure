@@ -1,11 +1,11 @@
-## Monsterkatalog, Sollstufe 1 bis 10: 22 Gegner in fünf Biomen — ERLEDIGT (eingebaut mit M1)
+## Monsterkatalog, Sollstufe 1 bis 10: 25 Gegner in 6 Biomen — ERLEDIGT (eingebaut mit M1, erweitert mit M3)
 
 Inhaltslieferung zu Kapitel 3 (Geographie) und Kapitel 6 (Bestiarium) der
-`superduper-weltbibel.md`, eingebaut in `index.html`. 22 Gegner, fünf Biome, vier
+`superduper-weltbibel.md`, eingebaut in `index.html`. 25 Gegner, 6 Biome, vier
 Ertragsklassen, feste Werte. Der Katalog sagt, welche Zahl ein Gegner trägt und warum, und
 er rechnet den Grund mit. Autorität für Welt, Namen und Ton bleibt die Weltbibel.
 
-**Der Katalog liegt auf dem Bestiarium, er ersetzt es nicht.** Zwölf der 22 Einträge sind
+**Der Katalog liegt auf dem Bestiarium, er ersetzt es nicht.** 12 der 25 Einträge sind
 Monster, die es im Spiel schon gab: sie behalten Namen, Vorgangsart und Rig und haben nur
 gerechnete Werte bekommen. Zehn sind neu. Kein Monster ist verschwunden, und die beiden
 Bänder, die der Auftrag nicht nannte (Eisablage und Ablage V), sind unangetastet geblieben.
@@ -20,7 +20,7 @@ kurze Sätze. Die Markierung in der Überschrift folgt der Repo-Regel aus der RE
 kein Fließtext.
 
 Zwei Vorgaben waren im Auftrag offen und sind hier gesetzt, weil ohne sie nichts zu rechnen
-ist: **N = 22 Gegner** und **X = Sollstufe 10**. Fünf Biome zu drei bis fünf Gegnern, jedes
+ist: **N = 25 Gegner** und **X = Sollstufe 10**. 6 Biome zu drei bis fünf Gegnern, jedes
 mit allen vier Ertragsklassen.
 
 ## 1. Rechenbasis
@@ -140,6 +140,7 @@ will, hat keine Wahl, wohin er geht:
 | Sumpf | Die Nassablage | Band südlich davon, 192 bis 239 | Im Sumpf liegen Rüstungszutaten mit feuchten Adjektiven, also alles für Selbstheilung und Abweisung. | 3 bis 5 |
 | Wüste | Der Brandabschnitt | Band ganz im Süden, 240 bis 319 | Der Brandabschnitt liefert Waffenzutaten mit glühenden Adjektiven, also Nachdruck und Wucht, und legt jedem Fund einen teuren Fluch bei. | 4 bis 7 |
 | Höhle | Die Untere Registratur | hinter jeder Kammertür, kein Band | Unter Tage fällt, was Panzerung und Aktenlage trägt, und nur dort. | 6 bis 9 |
+| Stollen | Die Sperrablage | hinter der teuersten Kammertür, kein Band | Eine Ebene unter der Registratur liegt, was niemand mehr anfassen sollte, und zahlt es in Rüstung und Waffe. | 9 bis 10 |
 | Ruine | Der Altbestand | Band ganz im Norden, 0 bis 63 | Der Altbestand ist die Quelle für Manafluss, Zauberkraft und Aktenkunde, und zahlt sie mit den härtesten Gegnern des Katalogs. | 8 bis 10 |
 
 Die Signatur steckt nicht im Substantiv, sondern im Adjektiv: das Substantiv einer Zutat
@@ -156,15 +157,15 @@ sieht man im selben Spiel, wie sich Kämpfe ohne Katalogwerte anfühlen.
 
 | Ertragsklasse | Gegner | Anforderungstypen |
 |---|---|---|
-| A1 Fleiß | 6 | B1, B5, B6, B7 |
-| A2 Geduld | 5 | B2, B5, B7 |
-| A3 Risiko | 6 | B1, B3, B4, B6, B7 |
+| A1 Fleiß | 7 | B1, B5, B6, B7 |
+| A2 Geduld | 6 | B2, B5, B7 |
+| A3 Risiko | 7 | B1, B2, B3, B4, B6, B7 |
 | A4 Meisterschaft | 5 | B2, B3, B4, B5, B6 |
 
 | Anforderungstyp | kommt vor in |
 |---|---|
 | B1 Schwarm | A1, A3 |
-| B2 Schadensschwamm | A2, A4 |
+| B2 Schadensschwamm | A2, A3, A4 |
 | B3 Glaskanone | A3, A4 |
 | B4 Kiter | A3, A4 |
 | B5 Resistenz-Gate | A1, A2, A4 |
@@ -179,7 +180,7 @@ Frage, die man beantworten muss.
 
 Kapitel 6 der Weltbibel hat dazu eine Regel: erst die Vorgangsart erfinden, dann das Monster,
 nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein Monster.
-Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind neu.
+12 der 25 tragen eine Vorgangsart, die schon im Bestiarium steht, 13 sind neu.
 
 | Gegner | Vorgangsart | Warum es sich so verhält | Im Bestiarium |
 |---|---|---|---|
@@ -201,6 +202,9 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
 | Die Sammelmahnung | Die Mahnstufe | Dieselbe Sache, dreimal, gleichlautend. Einzeln sind sie Papier, zu dritt sind sie ein Vollstreckungstitel. | neu |
 | Irrlichtmagier | Die Fußnote | Leuchtet, verweist, fuehrt nirgendwohin. Wer ihm folgt, steht am Ende vor einer weiteren Fußnote. | bekannt |
 | Steingolem | Die Bestandskraft | Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon. | bekannt |
+| Der Dienstweg | Der Dienstweg | Nimmt den laengstmoeglichen Weg, kommt an, ist nicht zu beschleunigen. Wer ihn abkuerzen will, faengt von vorne an. | neu |
+| Der Teilbescheid | Der Teilbescheid | Was nach der Teilabhilfe uebrig bleibt. Einzeln kaum der Rede wert, und genau deshalb kommen sie zu viert. | neu |
+| Die Teilabhilfe | Die Teilabhilfe | Man hilft ihr teilweise ab, und was uebrig bleibt, läuft als eigener Vorgang weiter. Zweimal. | neu |
 | Der Aktenbote | Der Zuschlag | Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. Daran hält sich hier jeder. | neu |
 | Mumie | Die versiegelte Akte | Banderole drum, Siegel drauf, nie geöffnet. Ein Siegel ist genau dazu da, dass niemand von aussen hineinwirkt, auch nicht mit Feuer. | bekannt |
 | Knochenritter | Die Dienstvorschrift | Reine Form, bewaffnet, korrekt, unbeirrbar. Er hält sich auch beim Töten an die Reihenfolge, und die Pause ist dein Rechtsmittel. | bekannt |
@@ -1137,6 +1141,161 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "flavor_de": "Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon."
   },
   {
+    "id": "dienstweg",
+    "name": "Der Dienstweg",
+    "biom": "Stollen",
+    "sollstufe": 9,
+    "ertragsklasse": "A2",
+    "anforderungstyp": [
+      "B5",
+      "B2"
+    ],
+    "hp": 180,
+    "resistenzen": {
+      "physisch": 0.6,
+      "feuer": 0,
+      "eis": 0.2,
+      "gift": 0.35,
+      "magie": -0.35
+    },
+    "schaden_pro_treffer": 48,
+    "angriffsintervall_s": 2.4,
+    "tempo": 18,
+    "angriffsmuster": [
+      {
+        "name": "Anhoeren",
+        "vorwarnzeit_ms": 520,
+        "reichweite": "nah (24)",
+        "effekt": "Grundtreffer, kommt langsam und kuendigt sich lange an"
+      },
+      {
+        "name": "Ueber den Dienstweg",
+        "vorwarnzeit_ms": 650,
+        "reichweite": "nah (24)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, er zieht sich erst ganz ins Haus zurück und faehrt dann schwerer wieder aus"
+      }
+    ],
+    "berechnete_ttk_s": 11.1,
+    "xp": 291,
+    "gold_min": 64,
+    "gold_max": 134,
+    "loot": [
+      {
+        "item": "Schneckenhaus",
+        "chance": 0.4
+      },
+      {
+        "item": "Laufzettel",
+        "chance": 0.25
+      }
+    ],
+    "konter_in_einem_satz": "Das Haus hält Stahl aus, der Zauber nicht. Wer kein Mana hat, geht einfach weiter.",
+    "flavor_de": "Nimmt den laengstmoeglichen Weg, kommt an, ist nicht zu beschleunigen. Wer ihn abkuerzen will, faengt von vorne an."
+  },
+  {
+    "id": "teilbescheid",
+    "name": "Der Teilbescheid",
+    "biom": "Stollen",
+    "sollstufe": 9,
+    "ertragsklasse": "A1",
+    "anforderungstyp": [
+      "B1"
+    ],
+    "hp": 145,
+    "resistenzen": {
+      "physisch": 0.1,
+      "feuer": -0.3,
+      "eis": 0,
+      "gift": 0.25,
+      "magie": 0
+    },
+    "schaden_pro_treffer": 19,
+    "angriffsintervall_s": 1.3,
+    "tempo": 44,
+    "angriffsmuster": [
+      {
+        "name": "Im Uebrigen",
+        "vorwarnzeit_ms": 320,
+        "reichweite": "nah (24)",
+        "effekt": "Grundtreffer, kurz und ohne Begruendung"
+      },
+      {
+        "name": "Anlage beigefuegt",
+        "vorwarnzeit_ms": 380,
+        "reichweite": "nah (28)",
+        "effekt": "ersetzt jeden vierten Grundtreffer, breiter Klecks statt Stoss"
+      }
+    ],
+    "berechnete_ttk_s": 2.4,
+    "xp": 44,
+    "gold_min": 29,
+    "gold_max": 61,
+    "loot": [
+      {
+        "item": "Teilbescheid-Gallert",
+        "chance": 0.35
+      },
+      {
+        "item": "Kupfermünzen",
+        "chance": 0.5
+      }
+    ],
+    "konter_in_einem_satz": "Breit schlagen, sie stehen ohnehin zu nah beieinander.",
+    "flavor_de": "Was nach der Teilabhilfe uebrig bleibt. Einzeln kaum der Rede wert, und genau deshalb kommen sie zu viert."
+  },
+  {
+    "id": "teilabhilfe",
+    "name": "Die Teilabhilfe",
+    "biom": "Stollen",
+    "sollstufe": 10,
+    "ertragsklasse": "A3",
+    "anforderungstyp": [
+      "B2",
+      "B7"
+    ],
+    "hp": 710,
+    "resistenzen": {
+      "physisch": 0.4,
+      "feuer": -0.3,
+      "eis": 0.15,
+      "gift": 0.35,
+      "magie": 0.1
+    },
+    "schaden_pro_treffer": 120,
+    "angriffsintervall_s": 1.8,
+    "tempo": 30,
+    "angriffsmuster": [
+      {
+        "name": "Abhilfe",
+        "vorwarnzeit_ms": 560,
+        "reichweite": "nah (34)",
+        "effekt": "schwerer Grundtreffer, sie wirft ihr ganzes Volumen nach vorn"
+      },
+      {
+        "name": "Im Uebrigen zurueckgewiesen",
+        "vorwarnzeit_ms": 700,
+        "reichweite": "Kegel (70)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, breite Welle, danach 0,8 s wehrlos"
+      }
+    ],
+    "berechnete_ttk_s": 16.0,
+    "xp": 636,
+    "gold_min": 102,
+    "gold_max": 214,
+    "loot": [
+      {
+        "item": "Teilabhilfe-Kern",
+        "chance": 0.45
+      },
+      {
+        "item": "Abhilfebescheid",
+        "chance": 0.2
+      }
+    ],
+    "konter_in_einem_satz": "Wer ihr abhilft, hat zwei Teilbescheide am Hals. Erst Platz schaffen, dann teilen.",
+    "flavor_de": "Man hilft ihr teilweise ab, und was uebrig bleibt, läuft als eigener Vorgang weiter. Zweimal."
+  },
+  {
     "id": "aktenbote",
     "name": "Der Aktenbote",
     "biom": "Ruine",
@@ -1379,6 +1538,9 @@ Gerechnet mit `tools/monsterkatalog.py`, nicht von Hand. Sollwerte in Klammern.
 | Die Sammelmahnung | 8 | A3 | physisch | 13,9 s (12 bis 25) | 485 | 34,81 (34,82) | 7,5 s (6 bis 10) | ok |
 | Irrlichtmagier | 8 | A3 | physisch | 12,2 s (12 bis 25) | 426 | 34,86 (34,82) | 9,5 s (6 bis 10) | ok |
 | Steingolem | 9 | A4 | magie | 33,9 s (20 bis 40) | 1648 | 48,57 (48,58) | 5,0 s (3 bis 6) | ok |
+| Der Dienstweg | 9 | A2 | magie | 11,1 s (8 bis 15) | 291 | 26,19 (26,16) | 22,2 s (15 bis 25) | ok |
+| Der Teilbescheid | 9 | A1 | physisch | 2,4 s (1 bis 3) | 44 | 18,57 (18,69) | 40,3 s (über 30) | ok |
+| Die Teilabhilfe | 10 | A3 | physisch | 16,0 s (12 bis 25) | 636 | 39,83 (39,81) | 8,5 s (6 bis 10) | ok |
 | Der Aktenbote | 8 | A1 | physisch | 2,2 s (1 bis 3) | 38 | 17,42 (17,41) | 37,4 s (über 30) | ok |
 | Mumie | 9 | A2 | physisch | 14,0 s (8 bis 15) | 366 | 26,14 (26,16) | 18,0 s (15 bis 25) | ok |
 | Knochenritter | 9 | A3 | physisch | 18,0 s (12 bis 25) | 674 | 37,36 (37,37) | 6,5 s (6 bis 10) | ok |
@@ -1409,6 +1571,9 @@ vom Sollwert ab, der Rest ist Rundung auf ganze XP.
 | Die Sammelmahnung | A3 | 3 | 7,5 s | 2,4 s | 500 ms | 350 ms |
 | Irrlichtmagier | A3 | 1 | 9,5 s | 9,5 s | 380 ms | 350 ms |
 | Steingolem | A4 | 1 | 5,0 s | 5,0 s | 700 ms | 350 ms |
+| Der Dienstweg | A2 | 2 | 22,2 s | 10,3 s | 520 ms | 250 ms |
+| Der Teilbescheid | A1 | 4 | 40,3 s | 8,4 s | 320 ms | 250 ms |
+| Die Teilabhilfe | A3 | 1 | 8,5 s | 8,5 s | 560 ms | 350 ms |
 | Der Aktenbote | A1 | 4 | 37,4 s | 7,7 s | 300 ms | 250 ms |
 | Mumie | A2 | 1 | 18,0 s | 18,0 s | 500 ms | 250 ms |
 | Knochenritter | A3 | 1 | 6,5 s | 6,5 s | 450 ms | 350 ms |
@@ -1416,7 +1581,7 @@ vom Sollwert ab, der Rest ist Rundung auf ganze XP.
 
 Die Mindestvorwarnung von 350 ms gilt laut Auftrag für A3 und A4 und ist überall eingehalten.
 Für A1 und A2 ist 250 ms als Hausregel gesetzt, damit kein Angriff ohne Ankündigung existiert.
-Alle 7 Gegner mit Rudelgröße über 1 fallen als Gruppe unter ihr Klassenband, am
+Alle 9 Gegner mit Rudelgröße über 1 fallen als Gruppe unter ihr Klassenband, am
 deutlichsten die Sammelmahnung mit 2,4 s. Das ist gewollt und der Grund, warum diese
 Gegner überhaupt Schwarm heißen: das Klassenband beschreibt den einzelnen Vorgang, der Rudelwert
 beschreibt den Fehler, mehrere davon gleichzeitig aufzumachen. Der Konter steht in derselben
@@ -1435,6 +1600,7 @@ abgeleitet sind.
 | Papierstaub-Skarabäus | **2,5 s** | 22,8 s | 2,4 s | 4,9 s * | 3,4 s |
 | Klippkrabbe | **12,0 s** | wirkungslos | wirkungslos | 58,3 s * | wirkungslos |
 | Steingolem | 167,6 s | 47,5 s | 47,5 s | 118,8 s * | **33,9 s** |
+| Der Dienstweg | 6,6 s | 15,0 s | 18,8 s | 23,1 s * | **11,1 s** |
 | Mumie | **14,0 s** | wirkungslos | wirkungslos | 991,7 s * | wirkungslos |
 | Die Sammelverfügung | 52,2 s | **35,8 s** | 87,9 s | 120,8 s * | 87,9 s |
 
@@ -1597,7 +1763,7 @@ Drei Punkte, die dieses Dokument benennt und nicht löst:
 
 Aus dem Spielbericht: sobald Magie zur Verfügung steht, lässt sich aus der Distanz
 spammen. Der erste Teil der Antwort steht in `phase-z1-zauberbalance.md` (Zaubern kostet
-wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der 22 Gegner sind gegen
+wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der 25 Gegner sind gegen
 alle drei Zauberzweige immun.** Sie sind der Ort, an dem die Waffe die einzige Antwort ist.
 
 | Gegner | Sollstufe | Klasse | Weichstelle | Sollzeit |

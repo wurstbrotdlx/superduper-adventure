@@ -115,9 +115,14 @@
     "hero_feet_3":          { "file": "Cute_Fantasy/Player/Feet/Shoes_1_Purple.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] }, "note": "fw/fh-Override noetig, s. _commentHero." },
     "hero_feet_4":          { "file": "Cute_Fantasy/Player/Feet/Shoes_1_Pink.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[9,4], "run":[45,9], "attack":[18,8], "cast":[24,5], "hurt":[15,4], "death":[15,4] }, "note": "fw/fh-Override noetig, s. _commentHero." },
     "hero_tool_sword":      { "file": "Cute_Fantasy/Player/Tools/Iron/Iron_Sword.png", "fw":64,"fh":64,"ax":32,"ay":32, "anims": { "blade":[2,1] }, "note": "Kein Anim-Rig: Zeile 2 ist das einzelne Klingenblatt, das drawPlayer als schwebendes Icon nutzt (addSheet cftool_sword, rowStart:2). 'blade' ist bewusst kein Kampf-Anim-Name." },
-    "npc_bob":              { "file": "Cute_Fantasy/NPCs (Premade)/Farmer_Bob.png", "fw":64,"fh":64,"ax":32,"ay":60, "anims": { "idle":[1,6], "walk":[4,6] }, "note": "F43: Dorf-Staffage aus CF_NPCS, nur Idle/Lauf verbaut (Seitenzeilen wie bei den 13-Zeilen-Monster-Rigs)." },
-    "npc_katy":             { "file": "Cute_Fantasy/NPCs (Premade)/Bartender_Katy.png", "fw":64,"fh":64,"ax":32,"ay":60, "anims": { "idle":[1,6], "walk":[4,6] } },
-    "npc_mike":             { "file": "Cute_Fantasy/NPCs (Premade)/Miner_Mike.png", "fw":64,"fh":64,"ax":32,"ay":60, "anims": { "idle":[1,6], "walk":[4,6] } }
+    "npc_bob":              { "file": "Cute_Fantasy/NPCs (Premade)/Farmer_Bob.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] }, "note": "F43: Dorf-Staffage aus CF_NPCS, nur Idle/Lauf verbaut (Seitenzeilen wie bei den 13-Zeilen-Monster-Rigs)." },
+    "npc_katy":             { "file": "Cute_Fantasy/NPCs (Premade)/Bartender_Katy.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] } },
+    "npc_mike":             { "file": "Cute_Fantasy/NPCs (Premade)/Miner_Mike.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] } },
+    "npc_bruno":            { "file": "Cute_Fantasy/NPCs (Premade)/Bartender_Bruno.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] } },
+    "npc_chloe":            { "file": "Cute_Fantasy/NPCs (Premade)/Chef_Chloe.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] } },
+    "npc_buba":             { "file": "Cute_Fantasy/NPCs (Premade)/Farmer_Buba.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] } },
+    "npc_jack":             { "file": "Cute_Fantasy/NPCs (Premade)/Lumberjack_Jack.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] } },
+    "npc_fin":              { "file": "Cute_Fantasy/NPCs (Premade)/Fisherman_Fin.png", "fw":64,"fh":64,"ax":32,"ay":40, "anims": { "idle":[1,6], "walk":[4,6] }, "note": "G6-Nachtrag: 576x832, also 9 Spalten a 64 - nicht 18 a 32, worauf die Heuristik tippte. Bei fw:32 spannt die Bounding-Box jeder Zeile die volle Zellbreite (0..32), die Figur laege mittendurch geschnitten; bei fw:64 sitzt sie mit 13px Breite mittig wie bei den sieben Geschwisterblaettern. Mit --rig gegen das PNG gemessen." }
   },
 
   "_g4Tiles": {
