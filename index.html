@@ -669,6 +669,23 @@
 
 const TS = 32, MW = 320, MH = 320;   // W-Groß: Kante x4 (80 -> 320), Fläche x16
 
+// === G7 Maßstab: EIN Vergrößerungsfaktor für die ganze Welt =================
+// Die Cute-Fantasy-Bibliothek ist durchgehend 16-Pixel-Kunst: eine Bodenkachel
+// misst 16x16, ein Haus 96x128 (also 6x8 Kacheln), ein Palisadenpfahl 16x32.
+// Der Bodenbacker rechnet das seit G4 um (bakeTile/bakeDunTile ziehen 16 Quell-
+// pixel auf TS), und G1 zeichnet Tore, Druckplatten und Treppen ebenfalls mit 2.
+// Damit steht der Faktor fest: TS/16. Wer ein Objekt aus dieser Bibliothek in
+// die Welt stellt, nimmt WELT_SC, sonst passt es nicht zum Boden, auf dem es
+// steht — genau das war der Befund, der G7 ausgelöst hat (Häuser halb so groß
+// wie der Boden unter ihnen, Bäume kniehoch neben dem Helden).
+//
+// NICHT betroffen sind die Figuren: PLAYER_SC (1,8), NPC_SC und die sc/psc-Werte
+// in MONDEF sind in G2/G3 und im Monsterkatalog M1 gegeneinander geeicht worden
+// und tragen die Kampfwahrnehmung. Sie liegen dicht an WELT_SC (der Held ist mit
+// 1,8 rund zehn Prozent unter der Bibliotheksgröße), und diese zehn Prozent sind
+// eine gewachsene Entscheidung, kein Fehler. G7 fasst sie deshalb nicht an.
+const WELT_SC = TS / 16;
+
 // Ein Ort für die Biombänder. Ersetzt acht Kopien der Literale 26/54 plus drei
 // abweichende Randtabellen (W-Groß, Umsetzungsnotizen). Proportionen exakt wie
 // beim alten MH=80 (Schneegrenze 25, Sandgrenze 55), nur an MH gekoppelt statt
@@ -2208,7 +2225,15 @@ const KN_POS = {x: KN_T.x*TS + TS/2, y: KN_T.y*TS + TS - 4};
 // G5: Dorf-Rechteck um Kessel/Spawn/Knöterich, in Kacheln (inklusive Grenzen).
 // Deckt beide Gebäude-Cluster inklusive Fassadenhöhe ab, damit genMap() dort gar
 // nicht erst Bäume/Felsen streut (Streuung läuft vor der Freiräumung, s. genMap).
-const VILLAGE = {x0:6+DORF_DX, y0:33+DORF_DY, x1:24+DORF_DX, y1:47+DORF_DY};
+// G7: aus 19x15 werden 38x35 Kacheln. Das ist keine Vergrößerung des Dorfes,
+// sondern dieselbe Ansammlung Häuser in ihrer richtigen Größe: das Amt allein
+// misst jetzt 15 statt 8 Kacheln in der Breite. Kessel (15/41), Spawn (12,5/40,5)
+// und Knöterich (13/41) bleiben, wo sie waren — das Dorf wächst um sie herum.
+// Die Grenzen sind aus den Gebäuden abgeleitet, nicht geschätzt: y0 liegt auf
+// der Dachkante des Amts (Fußlinie 34 minus 12 Kacheln Fassade), y1 zwei Reihen
+// unter der Südzeile, damit die vier Figuren davor (Zapf, Pommer, Lott, Pahl)
+// noch im Rechteck stehen.
+const VILLAGE = {x0:-3+DORF_DX, y0:22+DORF_DY, x1:34+DORF_DX, y1:56+DORF_DY};
 function inVillageT(tx, ty){ return tx >= VILLAGE.x0 && tx <= VILLAGE.x1 && ty >= VILLAGE.y0 && ty <= VILLAGE.y1; }
 function inVillagePx(x, y){ return inVillageT(Math.floor(x/TS), Math.floor(y/TS)); }
 
@@ -2227,7 +2252,13 @@ function inVillagePx(x, y){ return inVillageT(Math.floor(x/TS), Math.floor(y/TS)
 // bekommen (Weltbibel Kapitel 2) und steht seither hinter einer Palisade. Sie
 // greift nicht an, sie wartet — deshalb tragen alle drei Bewohner lagerwache:true.
 // Literale wie ueberall hier im alten 80er-Raster, per DORF_DX/DORF_DY verschoben.
-const LAGER = {x0:34+DORF_DX, y0:34+DORF_DY, x1:52+DORF_DX, y1:46+DORF_DY};
+// G7: um zehn Kacheln nach Osten gerückt. Das Lager selbst ist unverändert (seine
+// Requisiten standen schon im richtigen Maßstab, s. WELT_SC oben) — aber das Dorf
+// reicht jetzt bis x=34, und Palisade auf Dorfplatz wäre keine Grenze mehr. Der
+// Abstand zwischen Dorfkante und Palisade bleibt exakt der alte: zehn Kacheln,
+// also weiterhin innerhalb von DORF_BANN, damit dort auch weiterhin kein
+// Streumonster zwischen den Zelten steht.
+const LAGER = {x0:44+DORF_DX, y0:34+DORF_DY, x1:62+DORF_DX, y1:46+DORF_DY};
 // Das Tor sitzt mittig in der Suedwand und ist drei Kacheln breit, also genau die
 // 48 Pixel des Torblatts. Es ist der einzige Weg hinein.
 const LAGER_TOR_X = Math.round((LAGER.x0 + LAGER.x1) / 2) - 1;
@@ -2236,13 +2267,26 @@ const LAGER_TOR_X = Math.round((LAGER.x0 + LAGER.x1) / 2) - 1;
 // weder eine Wache noch ein Eindringling, sondern ein Setzfehler.
 const imLager = (tx,ty)=> tx >= LAGER.x0-1 && tx <= LAGER.x1+1 && ty >= LAGER.y0-1 && ty <= LAGER.y1+1;
 
+// G7: Breite und Höhe sind keine Schätzung mehr, sondern die Sprite-Maße in
+// Kacheln — w = CF_BLD.fw * WELT_SC / TS, also fw/16. Das Amt ist 240 Pixel breit
+// und deckt damit 15 Kacheln, nicht 8. h (die blockierten Sockelreihen) verdoppelt
+// sich mit dem Sprite, damit der Anteil aus G5 erhalten bleibt: gesperrt ist das
+// untere Drittel der Fassade, der Rest ragt begehbar darüber (die Figur läuft
+// dahinter und wird verdeckt, wie bei der Windmühle seit G4).
+// dorfMassstabAssert() unten rechnet w gegen CF_BLD nach, damit die beiden
+// Zahlen nicht auseinanderlaufen können.
+//
+// Anordnung wie seit G5: Nordzeile (Haus, Amt, Marktstände) mit gemeinsamer
+// Fußlinie auf y=34, Südzeile (zwei Häuser, Scheune) auf y=52, dazwischen der
+// Anger mit Kessel und Knöterich. Zwischen den Gebäuden bleibt je eine Kachel
+// Durchgang, damit man das Dorf nicht nur an den Enden verlassen kann.
 const VILLAGE_BUILDINGS = [
-  {bld:'amt',     x0:10, y0:35, w:8, h:2, amt:true},
-  {bld:'haus1',   x0:7,  y0:35, w:3, h:2},
-  {bld:'markt',   x0:18, y0:36, w:6, h:1},
-  {bld:'haus2',   x0:8,  y0:44, w:5, h:2},
-  {bld:'haus3',   x0:14, y0:44, w:5, h:2},
-  {bld:'scheune', x0:19, y0:44, w:4, h:2},
+  {bld:'amt',     x0:5,  y0:30, w:15, h:4, amt:true},
+  {bld:'haus1',   x0:-2, y0:30, w:6,  h:4},
+  {bld:'markt',   x0:21, y0:32, w:12, h:2},
+  {bld:'haus2',   x0:1,  y0:48, w:9,  h:4},
+  {bld:'haus3',   x0:12, y0:48, w:9,  h:4},
+  {bld:'scheune', x0:23, y0:48, w:8,  h:4},
 ];
 for(const b of VILLAGE_BUILDINGS){ b.x0 += DORF_DX; b.y0 += DORF_DY; b.sheet = `cfbld_${b.bld}`; }
 // Fußpunkt der Amt-Tür für die Kontext-Aktion (Mitte der Südkante des Footprints).
@@ -2255,10 +2299,68 @@ const AMT_TUER = (() => {
 // verdeckt, wenn ihr Sprite hier hineinragt UND ihr eigenes y kleiner ist als
 // anker (dann zeichnet der nach y sortierte Renderer das Haus nach ihr).
 // Dieselbe Rechnung, die auch die Deko-Position in genMap() setzt.
+// G7: deck ist in Blattpixeln gemessen, gezeichnet wird mit WELT_SC — der Faktor
+// muss also mit, sonst rechnet der Guard weiter mit der halben Fassade und meldet
+// eine freie Sicht, die es nicht gibt.
 function bldDeckung(b){
   const g = CF_BLD[b.bld], px = (b.x0 + b.w/2)*TS, py = (b.y0 + b.h)*TS - 2;
-  return {l: px + g.deck.l, r: px + g.deck.r, o: py + g.deck.o, u: py + g.deck.u, anker: py};
+  return {l: px + g.deck.l*WELT_SC, r: px + g.deck.r*WELT_SC,
+          o: py + g.deck.o*WELT_SC, u: py + g.deck.u*WELT_SC, anker: py};
 }
+
+// ===========================================================================
+//  G7: Steht das Dorf, oder steht es nur auf dem Papier? Vier Fragen, die man
+//  ohne eine einzige Bilddatei beantworten kann, weil alle Maße aus CF_BLD und
+//  VILLAGE_BUILDINGS kommen — deshalb läuft der Guard beim Skriptstart, nicht
+//  erst nach loadAssets() wie dorfSichtAssert().
+//
+//  (1) Deckt der Fußabdruck die Fassade? w ist die Sprite-Breite in Kacheln, und
+//      genau das war der Fehler vor G7: das Amt hatte w:8 bei einem Blatt, das
+//      bei WELT_SC fünfzehn Kacheln bedeckt. Ein zu schmaler Fußabdruck heißt,
+//      dass man durch die Hauswand läuft.
+//  (2) Stehen zwei Häuser ineinander? Verglichen werden die Sprite-Rechtecke,
+//      nicht die Fußabdrücke: zwei Dächer, die sich überschneiden, sind auch
+//      dann falsch, wenn die Sockel Abstand halten.
+//  (3) Liegt alles im Dorf-Rechteck? VILLAGE räumt den Boden frei und hält die
+//      Streuung draußen. Was darüber hinausragt, bekommt Bäume in die Fassade.
+//  (4) Berührt das Dorf das Lager? Beides räumt in genMap() denselben Boden
+//      frei, in fester Reihenfolge — eine Überschneidung wäre eine stille
+//      Palisade auf dem Dorfplatz.
+//
+//  Wirft nie, meldet nur (Bauform wie monsterAssert/knAssertCaps).
+// ===========================================================================
+function dorfMassstabAssert(){
+  let ok = true;
+  const warnen = (m, ...r) => { ok = false; console.warn('G7 Dorfmaßstab:', m, ...r); };
+  const kacheln = px => px * WELT_SC / TS;
+
+  const rechtecke = [];
+  for(const b of VILLAGE_BUILDINGS){
+    const g = CF_BLD[b.bld];
+    const sollW = kacheln(g.fw), sollH = kacheln(g.fh);
+    if(Math.abs(b.w - sollW) > 0.001)
+      warnen(`${b.bld}: Fußabdruck ist ${b.w} Kacheln breit, das Blatt deckt ${sollW}`);
+    if(b.h > sollH)
+      warnen(`${b.bld}: Fußabdruck ist ${b.h} Kacheln hoch, das Blatt nur ${sollH}`);
+    // Sprite-Rechteck: Fußanker ist die Mitte der Südkante, das Blatt steht darauf.
+    const mitte = b.x0 + b.w/2, unten = b.y0 + b.h;
+    const r = {bld:b.bld, x0: mitte - sollW/2, x1: mitte + sollW/2, y0: unten - sollH, y1: unten};
+    for(const a of rechtecke)
+      if(r.x0 < a.x1 && a.x0 < r.x1 && r.y0 < a.y1 && a.y0 < r.y1)
+        warnen(`${a.bld} und ${r.bld} überschneiden sich als Sprite`);
+    if(r.x0 < VILLAGE.x0 || r.x1 > VILLAGE.x1 + 1 || r.y0 < VILLAGE.y0 || r.y1 > VILLAGE.y1 + 1)
+      warnen(`${b.bld} ragt aus dem Dorf-Rechteck heraus`,
+             {x0:r.x0, x1:r.x1, y0:r.y0, y1:r.y1}, 'gegen', VILLAGE);
+    rechtecke.push(r);
+  }
+
+  if(VILLAGE.x0 <= LAGER.x1 + 1 && LAGER.x0 - 1 <= VILLAGE.x1 &&
+     VILLAGE.y0 <= LAGER.y1 + 1 && LAGER.y0 - 1 <= VILLAGE.y1)
+    warnen('Dorf-Rechteck und Lager berühren sich', VILLAGE, LAGER);
+
+  if(ok) console.log(`G7 Dorfmaßstab: ${VILLAGE_BUILDINGS.length} Gebäude decken ihren Fußabdruck, stehen frei und liegen im Dorf.`);
+}
+dorfMassstabAssert();
 
 // ===========================================================================
 //  DORF_FIGUREN (Bauabschnitt W3): elf ansprechbare Ensemble-Mitglieder aus
@@ -2286,9 +2388,19 @@ function bldDeckung(b){
 //  Prozent hinter dem Amt, Lisbeth zu 46 hinter dem Haus, die drei anderen erst,
 //  sobald die Wanderleine sie unter eine Fassade zog. dorfSichtAssert() rechnet
 //  das jetzt beim Laden nach, für jede Figur und die ganze Wanderleine.
+//
+//  G7: alle elf Anker sind mitgewandert, weil die Fassaden doppelt so groß und
+//  die Gebäudezeilen weiter auseinandergerückt sind. Die Regel dahinter ist die
+//  aus G6, nur mit den neuen Zahlen: die Nordzeile hat ihren Fußanker auf y=34,
+//  die Südzeile auf y=52, und die Wanderleine ist 40 Pixel (NPC_HOME_R) lang.
+//  Wer unter einer Fassade steht, muss also entweder mit ty>=35 unter der
+//  Nordzeile und mit ty<=42 über der Südzeile bleiben (der Anger), oder mit
+//  ty>=53 südlich vor der Südzeile stehen — dort ist er wieder der Nähere zur
+//  Kamera. Das ist die Aufteilung, die G5 schon hatte (Zapf, Pommer, Lott und
+//  Pahl standen vor der Südzeile), nur an den neuen Fußlinien.
 // ===========================================================================
 const DORF_FIGUREN = [
-  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', tx:16, ty:38, opt:'wander', sheet:'bob',
+  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob',
    gestalt:{hair:'h1', chest:2, legs:2, feet:2},
    grund:[
      {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
@@ -2306,7 +2418,7 @@ const DORF_FIGUREN = [
      'Wir werden das Fest feiern. Irgendwann.',
    ]},
 
-  {key:'bramsche', name:'Registratorin Ottilie Bramsche', tx:18, ty:37, opt:'fest',
+  {key:'bramsche', name:'Registratorin Ottilie Bramsche', tx:21, ty:36, opt:'fest',
    gestalt:{hair:'h3', chest:2, legs:2},
    grund:[
      {z1:'Ordnung ist, was man wiederfindet.', z2:'Alles andere ist Zufall.'},
@@ -2339,7 +2451,7 @@ const DORF_FIGUREN = [
      {z1:'Antrag für heute erledigt.', z2:'Morgen wieder.'},
    ]},
 
-  {key:'zapf', name:'Hausmeister Reinhold Zapf', tx:16, ty:47, opt:'wander', sheet:'jack',
+  {key:'zapf', name:'Hausmeister Reinhold Zapf', tx:17, ty:54, opt:'wander', sheet:'jack',
    gestalt:{hair:'h1', chest:1, legs:1, feet:0},
    grund:[
      {z1:'Ich reparier das. Nicht fragen.', z2:'Weil sonst nichts läuft.'},
@@ -2357,7 +2469,7 @@ const DORF_FIGUREN = [
      'Nichts kaputt. Komisches Gefühl.',
    ]},
 
-  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', tx:8, ty:40, opt:'wander', sheet:'chloe',
+  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe',
    gestalt:{hair:'h6', chest:1, legs:0, feet:3},
    grund:[
      {z1:'Man erledigt Monster nicht.', z2:'Man beantwortet sie.'},
@@ -2375,7 +2487,7 @@ const DORF_FIGUREN = [
      'Ich komme mit. Ich habe ja gefragt.',
    ]},
 
-  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:22, ty:40, opt:'wander', sheet:'fin',
+  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:28, ty:40, opt:'wander', sheet:'fin',
    gestalt:{hair:'h2', chest:2, legs:0, feet:1},
    grund:[
      {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Trepp.'},
@@ -2393,7 +2505,7 @@ const DORF_FIGUREN = [
      'Sieben Generationen, jetzt oder nie.',
    ]},
 
-  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', tx:8, ty:38, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
+  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
    gestalt:{hair:'h1', chest:0, legs:0, feet:3},
    grund:[
      {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
@@ -2426,7 +2538,7 @@ const DORF_FIGUREN = [
      ]},
    ]},
 
-  {key:'milb', name:'Gutachter Dr. phil. Milb', tx:11, ty:39, opt:'wander', sheet:'buba',
+  {key:'milb', name:'Gutachter Dr. phil. Milb', tx:8, ty:39, opt:'wander', sheet:'buba',
    gestalt:{hair:'h5', chest:2, legs:2, feet:1},
    grund:[
      {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
@@ -2444,7 +2556,7 @@ const DORF_FIGUREN = [
      'Diesmal setze ich keine Note mehr an.',
    ]},
 
-  {key:'pommer', name:'Materialausgabe Herr Pommer', tx:13, ty:47, opt:'wander', sheet:'katy',
+  {key:'pommer', name:'Materialausgabe Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy',
    gestalt:{hair:'h2', chest:1, legs:0, feet:4},
    grund:[
      {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
@@ -2462,7 +2574,7 @@ const DORF_FIGUREN = [
      'Zustellen steht nicht in meinem Bestand.',
    ]},
 
-  {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', tx:20, ty:39, opt:'wander', sheet:'bruno',
+  {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', tx:24, ty:38, opt:'wander', sheet:'bruno',
    gestalt:{hair:'h3', chest:0, legs:2, feet:2},
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
@@ -2480,7 +2592,7 @@ const DORF_FIGUREN = [
      'Es fühlt sich an wie ein letzter Abend.',
    ]},
 
-  {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', tx:9, ty:47, opt:'fest',
+  {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', tx:5, ty:54, opt:'fest',
    gestalt:{hair:'h1'},
    grund:[
      {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
@@ -2535,7 +2647,7 @@ const DORF_FIGUREN = [
      ],
    }},
 
-  {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', tx:11, ty:47, opt:'fest',
+  {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', tx:8, ty:54, opt:'fest',
    gestalt:{hair:'h4'},
    grund:[
      {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
@@ -3221,32 +3333,39 @@ function genMap(){
     // sparsam gestreut (~1/6 der G_TALL-Kacheln), nicht jede einzelne.
     if(t === G_TALL){
       if(rng() > 0.16) continue;
-      decos.push({x:x*TS+TS/2, y:y*TS+TS-2, sheet:'cftallgrass', phase:rng()*10, scale:1.3});
+      decos.push({x:x*TS+TS/2, y:y*TS+TS-2, sheet:'cftallgrass', phase:rng()*10, scale:WELT_SC});
       continue;
     }
     if(rng() > 0.022) continue;
     const bd = biomeAtT(y);
     if(bd === 'sand' || bd === 'ruine') continue;          // Wüste und Altbestand bleiben karg
     decos.push({x:x*TS+TS/2, y:y*TS+TS-4, sheet:rng()<0.5?'cfmush1':'cfmush2',
-                phase:rng()*10, scale:1.4});
+                phase:rng()*10, scale:WELT_SC});
   }
   // Windmühle als Landmarke, ostwärts neben dem Dorf (G5 hat das alte (19,36)
   // ans neue Markt-Gebäude verloren — s. VILLAGE_BUILDINGS, Umsetzungsnotizen G5).
-  // Literal im alten 80er-Raster (26,38), per DORF_DX/DORF_DY mitverschoben.
-  decos.push({x:(26+DORF_DX)*TS, y:(38+DORF_DY)*TS, sheet:'cfwindmill', phase:0, scale:1, big:true});
+  // G7: von (26,38) nach (38,30). Bei 26 stand sie ab jetzt mitten in den
+  // Marktständen (die reichen bis x=33) — sie steht weiter ostwärts neben dem
+  // Dorf, nur ist "neben dem Dorf" zwölf Kacheln weiter draußen als vorher.
+  // Zwischen Dorfkante (34) und Lagerpalisade (44) bleibt sie frei stehen.
+  decos.push({x:(38+DORF_DX)*TS, y:(30+DORF_DY)*TS, sheet:'cfwindmill', phase:0, scale:WELT_SC, big:true});
   // G5: Dorf-Gebäude als 'big'-Decos, Fußanker Mitte der Südkante des Footprints
   // (gleiche Konvention wie jede andere Fußpunkt-Prop hier).
   for(const b of VILLAGE_BUILDINGS){
-    decos.push({x:(b.x0 + b.w/2)*TS, y:(b.y0 + b.h)*TS - 2, sheet:b.sheet, phase:0, scale:1, big:true});
+    decos.push({x:(b.x0 + b.w/2)*TS, y:(b.y0 + b.h)*TS - 2, sheet:b.sheet, phase:0, scale:WELT_SC, big:true});
   }
   // W-Lager: Palisade rundum, Tor in der Luecke, Ausstattung innen. Fussanker ist
   // die Kachelunterkante, gleiche Konvention wie bei jeder anderen Fusspunkt-Prop.
   {
-    // Skalierung 2: die MilitaryCamp-Blaetter sind 16-Pixel-Kunst wie die Tiles-Saetze
-    // (der Palisadenring misst 3x5 Kacheln in 48x80 Pixeln), waehrend die Gebaeude
-    // aus G5 schon in 32 Pixeln je Kachel vorliegen und deshalb 1 bleiben. Ohne
-    // die 2 steht die Palisade mit einer halben Kachel Luecke je Pfahl.
-    const lp = (tx, ty, sheet, ph) => decos.push({x:tx*TS + TS/2, y:(ty+1)*TS, sheet, phase:ph||0, scale:2, big:true});
+    // Skalierung WELT_SC: die MilitaryCamp-Blaetter sind 16-Pixel-Kunst wie die
+    // Tiles-Saetze (der Palisadenring misst 3x5 Kacheln in 48x80 Pixeln). Ohne die
+    // 2 steht die Palisade mit einer halben Kachel Luecke je Pfahl.
+    // G7-Nachtrag: hier stand, die G5-Gebaeude laegen "schon in 32 Pixeln je
+    // Kachel vor und bleiben deshalb 1". Das war die falsche Annahme, die G7
+    // ausgeloest hat — auch die Haeuser sind 16-Pixel-Kunst. Das Lager war der
+    // einzige Ort, der von Anfang an richtig gerechnet hat, und ist der Grund,
+    // warum der Groessenunterschied ueberhaupt aufgefallen ist.
+    const lp = (tx, ty, sheet, ph) => decos.push({x:tx*TS + TS/2, y:(ty+1)*TS, sheet, phase:ph||0, scale:WELT_SC, big:true});
     for(let x=LAGER.x0; x<=LAGER.x1; x++){
       lp(x, LAGER.y0, 'camp_palisade');
       if(x < LAGER_TOR_X || x > LAGER_TOR_X+2) lp(x, LAGER.y1, 'camp_palisade');
@@ -7500,7 +7619,7 @@ function drawKammerObj(o){
       break;
     case 'block':
       drawShadowEllipse(o.x, o.y + 12, 13);
-      drawSprite('dun_crate', 0, o.x, o.y + 4, 1.5);
+      drawSprite('dun_crate', 0, o.x, o.y + 4, WELT_SC);
       break;
     case 'ziel': break;                                   // liegt flach im Bodenlayer
     case 'fackel':
@@ -7571,7 +7690,7 @@ function drawKammerObj(o){
       break;
     case 'truhe':
       drawShadowEllipse(o.x, o.y + 10, 16);
-      drawSprite('dun_chest', o.auf ? 7 : 0, o.x, o.y, 1.3);
+      drawSprite('dun_chest', o.auf ? 7 : 0, o.x, o.y, WELT_SC);
       if(!o.auf) drawSprite('glint', animFrame('glint', gameT, 9), o.x, o.y - 26, 2);
       break;
   }
@@ -8755,10 +8874,20 @@ function firstAtY(arr, y){
 // Sichtbarkeitsfenster der Zeichenliste. R6/F32: Grenzen und Prüfung lagen bis dahin
 // in render(), die Closure entstand damit pro Frame neu (Regressionsregel 4).
 let cullL = 0, cullR = 0, cullT = 0, cullB = 0;
-// Größter Fassaden-Überstand über den Fußpunkt (cfbld_amt: ay 190, ax 120). Die
-// 80er-Ränder unten sind exakt auf den Baum-Überstand kalibriert und bleiben —
-// big-Decos (Gebäude, Windmühle) bekommen nur in ihrer Schleife diesen Zuschlag (F37).
-const BIG_PAD = 190;
+// Zuschlag, um den die Sichtprüfung über den Bildrand hinausgreift. Ein Prop hängt
+// an seinem Fußpunkt und ragt von dort nach oben und zur Seite — wer knapp
+// unterhalb oder seitlich außerhalb steht, ist mit seiner Krone bzw. Fassade
+// trotzdem im Bild. Bekommt nur, wer ihn braucht, jeweils in seiner Schleife (F37).
+// Bis G6: BIG_PAD 190, der größte Fassaden-Überstand über den Fußpunkt
+// (cfbld_amt: ay 190, ax 120), und für Bäume gar keiner, weil der 80er-Kamerarand
+// bei 84 Pixeln Baumhöhe zufällig reichte.
+// G7: beide Zahlen hingen an Blattmaßen, und die Blätter werden jetzt mit WELT_SC
+// gezeichnet. Das Amt misst 384 Pixel in der Höhe und 480 in der Breite, also 240
+// zur Seite — mit 190 wäre am Bildrand das halbe Amt verschwunden. Ein Baum misst
+// 160 statt 84, der Kamerarand reicht ihm nicht mehr, also bekommt er einen
+// eigenen Zuschlag. Beide sind ihr Blattmaß plus etwas Luft, nicht geraten.
+const BIG_PAD = 400;
+const BAUM_PAD = 170;
 const vis = (x,y)=> x > cullL && x < cullR && y > cullT && y < cullB;
 
 function render(){
@@ -8908,7 +9037,7 @@ function render(){
   // trees/decos entstehen zeilenweise und sind damit nach y sortiert: statt aller
   // Props (seit W-Groß rund 8000 Bäume/Felsen und 2000 Deko) nur das sichtbare
   // Band anfassen. Die binäre Suche ist der Grund, warum die Zahl wachsen durfte.
-  for(let i = firstAtY(trees, cullT); i < trees.length && trees[i].y < cullB; i++){
+  for(let i = firstAtY(trees, cullT); i < trees.length && trees[i].y < cullB + BAUM_PAD; i++){
     const t = trees[i];
     if(t.x > cullL && t.x < cullR) pushDraw(t.y, DRAW_TREE, t);
   }
@@ -8950,10 +9079,10 @@ function render(){
                      (currentLevel === 2 && o.big) ? '#4a1866' : null, 0.72);
         }
         break;
-      case DRAW_CRITTER: { drawShadowEllipse(o.x, o.y+2, 8);
+      case DRAW_CRITTER: { drawShadowEllipse(o.x, o.y+2, 13);   // G7: Schatten wächst mit dem Tier (8 -> 13)
                          const moving = !!(o.vx||o.vy);
                          const ckey = moving ? o.sheetWalk : o.sheetIdle;
-                         drawSprite(ckey, animFrame(ckey, gameT + o.phase, moving ? 7 : 3), o.x, o.y+4, 1.15, o.flip); break; }
+                         drawSprite(ckey, animFrame(ckey, gameT + o.phase, moving ? 7 : 3), o.x, o.y+4, WELT_SC, o.flip); break; }
       case DRAW_NPC: { drawShadowEllipse(o.x, o.y+4, 9);   // G5: Dorf-Staffage, gleiches Muster wie DRAW_CRITTER
                       const nmoving = !!(o.vx||o.vy);
                       const nkey = nmoving ? o.sheetWalk : o.sheetIdle;
@@ -9240,14 +9369,26 @@ function drawPlayer(){
 // animFrame-Sway (Nutzerentscheidung, weicht bewusst vom Prompt-Wunsch ab,
 // s. Umsetzungsnotizen G4). Rock_1_Anim/Mushrooms_Purple sind Requisiten-
 // Varianten, keine echten Animationen — ebenfalls fester statt zeitbasierter Frame.
+// G7: alle Skalen hier laufen jetzt über WELT_SC. Bei den Kammer-Requisiten war
+// das die letzte Uneinheitlichkeit aus G1 — Tore, Druckplatten und Treppen wurden
+// dort schon mit 2 gezeichnet, Pfeiler (gar keine Angabe, also 1), Topf (1,6),
+// Spinnwebe (1,4), Kiste (1,5) und Truhe (1,3) nicht. Ein Pfeiler ist im Blatt
+// 16x48 und war damit eine halbe Kachel breit; jetzt ist er eine Kachel breit und
+// drei hoch, also ein Pfeiler.
+// Der Baum-Versatz ist mitgewachsen: die Blätter sind 80 Pixel hoch, die
+// Stammunterkante liegt 8 Pixel über dem Blattrand. Bei 1,05 fing +4 das fast
+// auf, bei WELT_SC sind es 16 Pixel Luft — der Baum schwebte sonst eine halbe
+// Kachel über seiner eigenen Kachel. 14 setzt ihn wieder wie vorher knapp in die
+// Kachel hinein (8*WELT_SC - 14 = 2 Pixel über der Kachelunterkante).
+const BAUM_DY = 14;
 function drawProp(t){
-  if(t.kt === 'pillar'){ drawSprite(kammer.dkPillar, t.variant, t.x, t.y); return; }
-  if(t.kt === 'pot'){ drawShadowEllipse(t.x, t.y + 3, 8); drawSprite('dun_pot', 0, t.x, t.y, 1.6); return; }
-  if(t.kt === 'cobweb'){ drawSprite('dun_cobweb', 0, t.x, t.y, 1.4); return; }
+  if(t.kt === 'pillar'){ drawSprite(kammer.dkPillar, t.variant, t.x, t.y, WELT_SC); return; }
+  if(t.kt === 'pot'){ drawShadowEllipse(t.x, t.y + 3, 10); drawSprite('dun_pot', 0, t.x, t.y, WELT_SC); return; }
+  if(t.kt === 'cobweb'){ drawSprite('dun_cobweb', 0, t.x, t.y, WELT_SC); return; }
   if(currentLevel === 2){
     // Schattenland: einheitliche dunkle Baumsilhouette, Art spielt keine Rolle
     // (identisch zum Vorgehen vor G4, nur der Sheet-Key ist neu).
-    drawSprite('cftree_oak', t.variant ? 2 : 1, t.x, t.y+4, 1.05, false, '#4a1866', 0.72);
+    drawSprite('cftree_oak', t.variant ? 2 : 1, t.x, t.y+BAUM_DY, WELT_SC, false, '#4a1866', 0.72);
     return;
   }
   if(t.type === G_ROCK){
@@ -9264,12 +9405,12 @@ function drawProp(t){
     // Zugriff rundet ihn selbst, dieselbe Absicht wie vorher, nur mit Namen.
     const tint = t.tint || FELS_TINT[biomeAtT(ty)] || null;
     const rf = Math.floor(t.phase) % 8;
-    drawSprite('cfrock', rf, t.x, t.y+2, 1.8, (t.phase|0) & 1, tint, t.tint ? 0.66 : 0.5);
+    drawSprite('cfrock', rf, t.x, t.y+2, WELT_SC, (t.phase|0) & 1, tint, t.tint ? 0.66 : 0.5);
     return;
   }
-  if(t.type === G_ICE_TREE){ drawSprite('cftree_spruce', t.variant ? 2 : 1, t.x, t.y+4, 1.05, false, '#cfe9ff', 0.5); return; }
-  if(t.type === G_CACTUS){ drawSprite('cfvolcplant', t.sp, t.x, t.y+2, 2.2); return; }
-  drawSprite(t.sp ? 'cftree_birch' : 'cftree_oak', t.variant ? 2 : 1, t.x, t.y+4, 1.05);
+  if(t.type === G_ICE_TREE){ drawSprite('cftree_spruce', t.variant ? 2 : 1, t.x, t.y+BAUM_DY, WELT_SC, false, '#cfe9ff', 0.5); return; }
+  if(t.type === G_CACTUS){ drawSprite('cfvolcplant', t.sp, t.x, t.y+2, WELT_SC); return; }
+  drawSprite(t.sp ? 'cftree_birch' : 'cftree_oak', t.variant ? 2 : 1, t.x, t.y+BAUM_DY, WELT_SC);
 }
 
 function drawCorpse(c){

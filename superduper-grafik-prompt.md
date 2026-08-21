@@ -783,6 +783,15 @@ diese Session, bevor G5 begann — keine Vermischung mit dem G5-Diff).
 
 **Entscheidungen:**
 
+> **Nachtrag G7** (`phase-g7-massstab.md`): Die Zahlen in diesem Abschnitt sind der Stand
+> von G5 und bleiben als Zeitmarke stehen. Zwei davon gelten nicht mehr. Die Gebäude
+> wurden hier mit Skalierung 1 gezeichnet, in der Annahme, Cute-Fantasy-Gebäude lägen in
+> 32 Pixeln je Kachel vor — sie liegen wie der Rest des Packs in 16 vor, waren damit halb
+> so groß wie ihr Grundstück, und laufen seit G7 auf `WELT_SC` (= `TS/16` = 2). Damit
+> verdoppeln sich auch die Fußabdrücke, und das Dorf-Rechteck misst heute 38×35 statt
+> 19×15 Kacheln (`VILLAGE = {x0:-3,y0:22,x1:34,y1:56}` im alten 80er-Raster). Die
+> Windmühle steht bei (38, 30), nicht mehr bei (26, 38).
+
 - **Dorf-Rechteck** `VILLAGE = {x0:6,y0:33,x1:24,y1:47}` (19×15 Kacheln, `x1`/`y1` inklusive gezählt), deckt
   beide Gebäude-Cluster inklusive Fassadenhöhe ab. Wird in `genMap()` an exakt der
   Stelle freigeräumt, an der bisher nur der 5×4-Kessel-Anger stand (Reihenfolge

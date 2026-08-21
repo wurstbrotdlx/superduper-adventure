@@ -17,6 +17,14 @@ Inhaltslieferung zu Bauabschnitt **W3** ("Das Dorf spricht") aus `superduper-wel
 
 **Nachtrag G6** (siehe `phase-g6-dorfsicht.md`): Von den acht NPC-Sprites liegen nur drei im Grafikpaket (Farmer_Bob, Bartender_Katy, Miner_Mike). Zapf, Lisbeth, Trepp, Milb und Fass hatten deshalb überhaupt kein Sprite und standen unsichtbar im Dorf; sie laufen jetzt ebenfalls als Held-Komposit, zusätzlich mit Laufreihe. Jede der elf Figuren trägt dafür eine eigene Gestalt (Frisur, Oberteil, Hose, Schuhe), unten je Figur vermerkt. Kommen die fehlenden Blätter ins Paket, greift der Code von selbst wieder darauf zu. Fünf Heimatanker sind in derselben Phase gewandert, weil sie hinter Gebäudefassaden lagen; die neuen Werte stehen unten, die alten daneben.
 
+**Nachtrag G7** (siehe `phase-g7-massstab.md`): Alle elf Heimatanker sind gewandert, und diesmal
+liegt es nicht an den Figuren, sondern am Dorf. Die Gebäude werden seit G7 mit `WELT_SC` gezeichnet
+und sind damit doppelt so groß wie vorher; die Nordzeile hat ihre Fußlinie auf Kachel 34, die
+Südzeile auf 52, dazwischen liegt der Anger. Wer unter einer Fassade steht, bleibt entweder mit
+ty zwischen 35 und 42 auf dem Anger oder mit ty ab 53 südlich vor der Südzeile — dort ist er wieder
+der Nähere zur Kamera und wird nicht zugedeckt. Die Regel ist dieselbe wie in G6, nur die Zahlen
+sind neue. `dorfSichtAssert()` bestätigt für alle elf freie Sicht, am Anker wie auf der Leine.
+
 ---
 
 **Nachtrag W-Nörgel** (siehe `phase-w-noergel.md`): Nörgel bekommt vier Zusatzzeilen, die
@@ -25,7 +33,7 @@ in seinem Abschnitt. Die sechs Grundzeilen und die fünf Aktzeilen bleiben unver
 
 ## Zwirn — Bürgermeister Alfons Zwirn
 
-Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (16, 38), vor dem Amt. **G6:** Anker von (14, 34) verschoben, dort stand er vollständig hinter der Amtsfassade; nicht auf (14, 38), weil er sonst die Kontextaktion der Amtstür überstimmt. Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 2, Schuhe Stufe 2.
+Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (17, 37), vor dem Amt. **G6:** Anker von (14, 34) verschoben, dort stand er vollständig hinter der Amtsfassade; nicht auf (14, 38), weil er sonst die Kontextaktion der Amtstür überstimmt. Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 2, Schuhe Stufe 2. **G7:** Anker von (16, 38) auf (17, 37), der Anger beginnt jetzt bei y=34, das Amt ist fünfzehn Kacheln breit.
 
 ### Grundzeilen (Kreislauf bei wiederholtem Ansprechen)
 
@@ -50,7 +58,7 @@ V. „Wir werden das Fest feiern. Irgendwann.“ (39)
 
 ## Bramsche — Registratorin Ottilie Bramsche
 
-Optik: Held-Komposit (`gestalt`: Haar h3 schwarz, Oberteil/Hose Stufe 2 Königsblau), stehend. Heimatanker: Kachel (18, 37). Der Kater Anlage 3 wird als einfache liegende Form direkt neben ihr gezeichnet, kein eigener Sprite, keine eigene Kontextaktion.
+Optik: Held-Komposit (`gestalt`: Haar h3 schwarz, Oberteil/Hose Stufe 2 Königsblau), stehend. Heimatanker: Kachel (21, 36). Der Kater Anlage 3 wird als einfache liegende Form direkt neben ihr gezeichnet, kein eigener Sprite, keine eigene Kontextaktion. **G7:** Anker von (18, 37) auf (21, 36), sie steht weiter am Ostrand des Amts, jetzt neben den Marktständen.
 
 ### Grundzeilen (Kreislauf)
 
@@ -94,7 +102,7 @@ V. „Ablage V ist offen. Ich lege nichts mehr ab.“ (44)
 
 ## Zapf — Hausmeister Reinhold Zapf
 
-Optik: `cfnpc_jack` (Lumberjack_Jack, wandert). Heimatanker: Kachel (16, 47). **G6:** Anker eine Kachel nach Süden, sonst wanderte er hinter Haus 3. Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h1 (kurz braun), Oberteil/Hose Stufe 1 (grün, Arbeitszeug), Schuhe Stufe 0.
+Optik: `cfnpc_jack` (Lumberjack_Jack, wandert). Heimatanker: Kachel (17, 54). **G6:** Anker eine Kachel nach Süden, sonst wanderte er hinter Haus 3. Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h1 (kurz braun), Oberteil/Hose Stufe 1 (grün, Arbeitszeug), Schuhe Stufe 0. **G7:** Anker von (16, 47) auf (17, 54), wieder vor der Südzeile, deren Fußlinie von 46 auf 52 gewandert ist.
 
 ### Grundzeilen (Kreislauf)
 
@@ -119,7 +127,7 @@ V. „Nichts kaputt. Komisches Gefühl.“ (32)
 
 ## Lisbeth — Praktikantin Lisbeth Fuhr
 
-Optik: `cfnpc_chloe` (Chef_Chloe, wandert). Heimatanker: Kachel (8, 40). **G6:** Anker von (10, 42) verschoben, dort war sie am Stand schon zu 46 Prozent von Haus 2 verdeckt. Das Blatt liegt nicht im Grafikpaket, sie läuft als Held-Komposit: Haar h6 (Knoten), Oberteil Stufe 1 (grün), Hose Stufe 0 (rot), Schuhe Stufe 3.
+Optik: `cfnpc_chloe` (Chef_Chloe, wandert). Heimatanker: Kachel (3, 40). **G6:** Anker von (10, 42) verschoben, dort war sie am Stand schon zu 46 Prozent von Haus 2 verdeckt. Das Blatt liegt nicht im Grafikpaket, sie läuft als Held-Komposit: Haar h6 (Knoten), Oberteil Stufe 1 (grün), Hose Stufe 0 (rot), Schuhe Stufe 3. **G7:** Anker von (8, 40) auf (3, 40), Westseite des Angers; Haus 2 ist neun statt fünf Kacheln breit.
 
 ### Grundzeilen (Kreislauf)
 
@@ -144,7 +152,7 @@ V. „Ich komme mit. Ich habe ja gefragt.“ (35)   *(W5, `45912f6`. Vorher: „
 
 ## Trepp — Zusteller Emil Trepp der Siebte
 
-Optik: `cfnpc_fin` (Fisherman_Fin, wandert, 9-spaltiges Sheet). Heimatanker: Kachel (22, 40). **G6:** Anker eine Kachel nach Norden, sonst wanderte er hinter die Scheune. Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h2 (blonde Tolle), Oberteil Stufe 2 (blau, wie eine Zustelluniform), Hose Stufe 0 (rot), Schuhe Stufe 1.
+Optik: `cfnpc_fin` (Fisherman_Fin, wandert, 9-spaltiges Sheet). Heimatanker: Kachel (28, 40). **G6:** Anker eine Kachel nach Norden, sonst wanderte er hinter die Scheune. Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h2 (blonde Tolle), Oberteil Stufe 2 (blau, wie eine Zustelluniform), Hose Stufe 0 (rot), Schuhe Stufe 1. **G7:** Anker von (22, 40) auf (28, 40), Ostseite des Angers, hinter den Marktständen vorbei.
 
 ### Grundzeilen (Kreislauf)
 
@@ -169,7 +177,7 @@ V. „Sieben Generationen, jetzt oder nie.“ (36)
 
 ## Nörgel — Sachbearbeiter auf Probe
 
-Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: Kachel (8, 38). Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 0, Schuhe Stufe 3.
+Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: Kachel (1, 36). Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 0, Schuhe Stufe 3. **G7:** Anker von (8, 38) auf (1, 36), Nordwestecke des Angers, neben Haus 1.
 
 ### Grundzeilen (Kreislauf)
 
@@ -213,7 +221,7 @@ was im Bild nicht steht.
 
 ## Milb — Gutachter Dr. phil. Milb
 
-Optik: `cfnpc_buba` (Farmer_Buba, wandert, neutral/ungetönt). Heimatanker: Kachel (11, 39). Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h5 (lang grau), Oberteil/Hose Stufe 2 (blau), Schuhe Stufe 1.
+Optik: `cfnpc_buba` (Farmer_Buba, wandert, neutral/ungetönt). Heimatanker: Kachel (8, 39). Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h5 (lang grau), Oberteil/Hose Stufe 2 (blau), Schuhe Stufe 1. **G7:** Anker von (11, 39) auf (8, 39), Anger, westlich der Mitte.
 
 ### Grundzeilen (Kreislauf)
 
@@ -238,7 +246,7 @@ V. „Diesmal setze ich keine Note mehr an.“ (37)
 
 ## Pommer — Materialausgabe Herr Pommer
 
-Optik: `cfnpc_katy` (Bartender_Katy, wandert). Heimatanker: Kachel (13, 47). **G6:** Anker zwei Kacheln nach Süden, sonst wanderte er hinter Haus 3. Ersatzgestalt, falls das Blatt fehlt: Haar h2, Oberteil Stufe 1, Hose Stufe 0, Schuhe Stufe 4.
+Optik: `cfnpc_katy` (Bartender_Katy, wandert). Heimatanker: Kachel (11, 54). **G6:** Anker zwei Kacheln nach Süden, sonst wanderte er hinter Haus 3. Ersatzgestalt, falls das Blatt fehlt: Haar h2, Oberteil Stufe 1, Hose Stufe 0, Schuhe Stufe 4. **G7:** Anker von (13, 47) auf (11, 54), wieder vor der Südzeile.
 
 ### Grundzeilen (Kreislauf)
 
@@ -263,7 +271,7 @@ V. „Zustellen steht nicht in meinem Bestand.“ (40)
 
 ## Fass — Wirt Bruno Fass, Gasthaus „Zum Letzten Stempel“
 
-Optik: `cfnpc_bruno` (Bartender_Bruno, wandert). Heimatanker: Kachel (20, 39). Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h3 (kurz schwarz), Oberteil Stufe 0 (rot), Hose Stufe 2 (blau), Schuhe Stufe 2.
+Optik: `cfnpc_bruno` (Bartender_Bruno, wandert). Heimatanker: Kachel (24, 38). Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h3 (kurz schwarz), Oberteil Stufe 0 (rot), Hose Stufe 2 (blau), Schuhe Stufe 2. **G7:** Anker von (20, 39) auf (24, 38), Ostseite, vor den Marktständen.
 
 ### Grundzeilen (Kreislauf)
 
@@ -288,7 +296,7 @@ V. „Es fühlt sich an wie ein letzter Abend.“ (39)
 
 ## Lott — auf der Bank am Dorfplatz
 
-Optik: Held-Komposit (`gestalt`: Haar h1 braun, keine Rüstungs-Layer wie Knöterich), stehend/sitzend fest. Heimatanker: Kachel (9, 47), neben Pahl.
+Optik: Held-Komposit (`gestalt`: Haar h1 braun, keine Rüstungs-Layer wie Knöterich), stehend/sitzend fest. Heimatanker: Kachel (5, 54), neben Pahl. **G7:** Anker von (9, 47) auf (5, 54), die Bank steht weiter vor der Südzeile.
 
 ### Grundzeilen, Basis-Variante (wenn seit Schichtbeginn nichts Nennenswertes passiert ist)
 
@@ -329,7 +337,7 @@ V. „Der Neue zieht los. Kein Kommentar heut.“ (40)
 
 ## Pahl — auf der Bank am Dorfplatz
 
-Optik: Held-Komposit (`gestalt`: Haar h4 ingwerfarben, keine Rüstungs-Layer), stehend/sitzend fest. Heimatanker: Kachel (11, 47), neben Lott.
+Optik: Held-Komposit (`gestalt`: Haar h4 ingwerfarben, keine Rüstungs-Layer), stehend/sitzend fest. Heimatanker: Kachel (8, 54), neben Lott. **G7:** Anker von (11, 47) auf (8, 54), die Bank steht weiter vor der Südzeile, neben Lott.
 
 ### Grundzeilen, Basis-Variante
 
