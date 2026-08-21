@@ -41,6 +41,33 @@ und nur eine Ebene tiefer gerutscht; für die acht wandernden Figuren ist es der
 ihr eigenes Blatt fehlt. `bakeNpcSheet()` backt dafür nicht mehr nur die Idle-Reihe, sondern
 auch die Laufreihe des Rigs, sonst schlitterte eine Ersatzfigur im Standbild über den Platz.
 
+**Die acht Gestalten sind gegeneinander gesetzt.** Beim ersten Durchgang waren sie einzeln
+vergeben und zwei Paare fielen zusammen: Trepp und Fass trugen dieselbe Frisur *und* dasselbe
+Oberteil (nur die Hose unterschied sie), Zapf und Lisbeth beide Grün. Auf einem Dorfplatz, auf
+dem fünf von elf Figuren Komposite sind, ist das ein Rückschritt gegenüber acht eigenen Rigs.
+Frisur und Oberteil bilden deshalb jetzt über **alle elf** Figuren ein eindeutiges Paar, die
+drei mit echtem Blatt eingerechnet, damit ihr Ersatz nicht auf einen Nachbarn fällt, falls
+auch ihre Datei einmal verschwindet:
+
+| Figur | Frisur | Oberteil | Hose | Schuhe |
+|---|---|---|---|---|
+| Zwirn | h1 kurz braun | Stufe 2 blau | 2 | 2 |
+| Bramsche | h3 kurz schwarz | Stufe 2 blau | 2 | – |
+| Zapf | h1 kurz braun | Stufe 1 grün | 1 | 0 |
+| Lisbeth | h6 Knoten | Stufe 1 grün | 0 rot | 3 |
+| Trepp | h2 blonde Tolle | Stufe 2 blau | 0 rot | 1 |
+| Nörgel | h1 kurz braun | Stufe 0 rot | 0 | 3 |
+| Milb | h5 lang grau | Stufe 2 blau | 2 | 1 |
+| Pommer | h2 blonde Tolle | Stufe 1 grün | 0 | 4 |
+| Fass | h3 kurz schwarz | Stufe 0 rot | 2 | 2 |
+| Lott | h1 kurz braun | bloß | – | – |
+| Pahl | h4 ingwer | bloß | – | – |
+
+Die Rüstungsstufen 3 und 4 (Eisen- und Goldplatte) bleiben ungenutzt: ein Hausmeister in
+Goldharnisch ist kein Dorf, sondern ein Witz auf Kosten der Figur. Damit stehen vier
+Oberteile zur Verfügung (bloß, rot, grün, blau) und sechs Frisuren, also 24 Paare für elf
+Figuren. Genug Luft, aber nicht so viel, dass man sie ungeprüft vergeben dürfte.
+
 Die Entscheidung fällt in `npcBlaetter()`, einer reinen Funktion, die drei Stellen lesen: der
 Kartenbau, `npcAnkerAssert()` und `dorfSichtAssert()`. Sie fragt `SHEETS` und nicht eine
 Liste im Code. **Wer die fünf Dateien lizenziert und nach `assets/cf/deco/NPCs/` legt, bekommt
@@ -126,6 +153,7 @@ Grafik aus dem Assets-Repo nach `assets/cf/` kopiert.
 | Figuren mit Blatt in `SHEETS` | 6 von 11 | **11 von 11** |
 | Am Anker sichtbar (unter 15 % verdeckt) | 9 von 11 | **11 von 11** |
 | Auf der Wanderleine sichtbar (unter 40 %) | 4 von 8 wandernden | **8 von 8** |
+| Eindeutige Paare aus Frisur und Oberteil | 9 von 11 | **11 von 11** |
 | `Sprite fehlt`-Warnungen beim Start | 5 | 0 (eine gesammelte Meldezeile) |
 | `npcAnkerAssert`-Meldungen | 5 | 0 |
 | Fehler in der Konsole | keine | keine |
