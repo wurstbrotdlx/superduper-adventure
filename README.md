@@ -106,6 +106,7 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je ei
 | `phase-w-noergel.md` | Bauabschnitt W-Nörgel: Nörgel und das Lager. Vier Zusatzzeilen, die erst kommen, wenn der Spieler selbst dort war, der Merker dafür, und warum es kein achter Langvorgang geworden ist |
 | `phase-m3-stollen.md` | Bauabschnitt M3: das sechste Katalogbiom. Warum kein einziger kammerexklusiver Gegner in die Untere Registratur passte, ein dritter Kammersatz aus einem leeren Ordner, und eine Vorgangsart, die beim Erledigen in zwei kleinere zerfällt |
 | `phase-g6-nachtrag-dorfblaetter.md` | Die fünf offenen Dorf-Blätter aus G6, nachgelegt. Kein Code, aber die Entscheidung, wie `Fisherman_Fin` gerastert ist: 9 Spalten à 64, nicht 18 à 32 wie das Manifest führte |
+| `phase-u2-menuegrafik.md` | Bauabschnitt U2: die Menüs bekommen Pack-Grafik statt CSS, das Pixelkunst nachahmt. Vier Zellen, die Regel „Formen aus dem Pack, Flächen bleiben dunkel", und warum eine richtig gemessene Koordinate noch keine passende Zelle ist |
 | `phase-u1-menue.md` | Bauabschnitt U1: neben ein Menü zu klicken war ein Angriff, das Menü blieb offen. Der Lauscher in der Einfangphase, warum es kein modaler Vorhang wurde, und ein Menü-Anstrich ohne neue Grafikdatei |
 | `phase-p1-dienstgestalt.md` | Bauabschnitt P1: die Person des Tages bekommt eine Haarfarbe, die es im Dorf nicht gibt, und der Einstellungsvordruck nimmt zum ersten Mal eine Angabe des Spielers entgegen |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 28 Gegner, 7 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
@@ -123,6 +124,7 @@ Drei Regeln, die beim Mitarbeiten nicht optional sind: Jede Phasenüberschrift t
 |---|---|
 | `tools/build-single.mjs` | Pages-Build: backt Grafik als Data-URIs in eine einzelne `dist/index.html` |
 | `tools/sheet-audit.mjs` | misst Raster und Anker der Sprite-Blätter, schreibt `assets/cf/manifest.json` |
+| `tools/ui-zellen.mjs` | schneidet die UI-Einzelzellen aus den `Cute_Fantasy_UI`-Blättern nach `assets/cf/ui/`. Die Koordinaten stehen als Tabelle im Quelltext; `--pruef` schneidet nichts, sondern rechnet nach, ob die Dateien noch dem Schnitt entsprechen. Braucht `Graphics/`. |
 | `tools/monsterkatalog.py` | rechnet den Monsterkatalog und schreibt `monsterkatalog-stufe-1-10.md` und `monsterkatalog.json`. Prüft dabei alle harten Invarianten und meldet jede Verletzung. |
 | `tools/monster-messlauf.mjs` | misst Kampfzeit und Gefahrenbudget im laufenden Spiel statt sie nachzurechnen. Braucht Playwright und einen lokalen Server. |
 | `tools/zauber-messlauf.mjs` | misst, was Abstandhalten kostet: Nahkampf gegen Zauberspam, je Gegnergruppe in Zeit und genommenem Schaden |
@@ -140,6 +142,7 @@ node tools/nahfeld-messlauf.mjs
 node tools/spaziergang-messlauf.mjs
 node tools/monster-fehlversuch.mjs
 node tools/menue-pruef.mjs
+node tools/ui-zellen.mjs --pruef         # braucht keinen Server, aber Graphics/
 ```
 
 ## Grafik
