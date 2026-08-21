@@ -238,6 +238,134 @@
   #overlay button{margin-top:18px;font-family:inherit;font-weight:bold;font-size:18px;padding:12px 34px;cursor:pointer;color:#1a1206;background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
   #overlay button:hover{filter:brightness(1.1);}
 
+  /* =====================================================================
+     U1 — Menue-Anmutung. Sieben Panels (#inv, #spellTree, #kessel, #schloss,
+     #ausweis, #fullmap, #amtFenster) tragen seit jeher dieselbe Rezeptur in
+     sieben Kopien: rgba(20,14,24,.96), 3px #8a6d3b, radius 10, padding 14.
+     Darueber legt bakeUiSkin() den Pixelrahmen aus UI_Frames.png (G5).
+     Was zwischen Rahmen und Inhalt fehlte, ergaenzt dieser Block:
+     ein Kopfband, das beim Scrollen stehen bleibt, ein Grund, der sich vom
+     Tageslicht der Karte absetzt, und ein Schliessknopf, der groesser ist
+     als ein Satzzeichen.
+
+     Ausdruecklich OHNE neue Grafikdatei: der Skin bleibt der aus G5, die
+     Schliessknoepfe bekommen das schon geladene round_brown.png (dieselbe
+     --cfui-round-Variable wie die Touch-Rundknoepfe). Was der Rest des
+     Cute_Fantasy_UI-Packs hergaebe, steht in GRAFIK-BESTAND-2026-08-21.md;
+     die Rohdateien liegen nicht im Repo, also wird hier nichts geraten.
+     ===================================================================== */
+
+  /* Grund. background-IMAGE, nicht die Kurzschrift: die Mobile-Breakpoints
+     setzen weiter unten background-color auf .93 (durchsichtiger, weil das
+     Panel dort fast den ganzen Schirm fuellt) — mit der Kurzschrift haetten
+     sie diesen Verlauf mitgeloescht. */
+  #inv, #spellTree, #kessel, #schloss, #ausweis, #fullmap, #amtFenster{
+    background-image:
+      linear-gradient(rgba(78,56,32,.38), rgba(78,56,32,0) 150px),
+      linear-gradient(rgba(24,17,28,.25), rgba(6,4,10,.45));
+    box-shadow:0 12px 46px rgba(0,0,0,.92);
+    animation:panelAuf .16s ease-out;
+  }
+  /* Nur Deckkraft, kein transform: die Panels tragen ihre Positionierung im
+     transform (translateY(-50%) bzw. translate(-50%,-50%), auf Mobil none),
+     eine Animation darauf wuerde genau die ueberschreiben. */
+  @keyframes panelAuf{from{opacity:0;}to{opacity:1;}}
+
+  /* Kopfband. position:sticky, weil #inv/#spellTree/#kessel/#ausweis
+     overflow-y:auto sind — vorher scrollte die Ueberschrift samt Schliess-
+     knopf aus dem Bild, und der Weg zurueck war Esc oder Hochscrollen.
+     top:-14px = negatives Panel-Padding, damit es buendig oben klebt. */
+  #inv > h2, #spellTree > h2, #kessel > h2, #schloss > h2,
+  #ausweis > h2, #fullmap > h2, #amtFenster > h2{
+    position:sticky;top:-14px;z-index:3;
+    margin:-14px -14px 12px;padding:10px 14px;gap:10px;
+    background:linear-gradient(#3d2e19,#261c0f 65%,#1b1309);
+    border-bottom:2px solid #7a5a10;border-radius:7px 7px 0 0;
+    box-shadow:0 1px 0 rgba(244,217,122,.20) inset, 0 4px 10px rgba(0,0,0,.55);
+    text-shadow:0 2px 0 #241a09, 0 0 12px rgba(244,217,122,.22);
+  }
+  /* #kessel setzt margin:0 0 2px, weil direkt darunter #kesselSub sitzt.
+     Das Band braucht denselben Abstand wie die anderen, der Untertitel
+     ruecht dafuer wieder heran. */
+  #kessel > h2{margin-bottom:8px;}
+  #kesselSub{margin-top:-2px;}
+
+  /* Schliessknopf. round_brown.png ist der Rundknopf aus UI_Buttons.png, den
+     G5 fuer Orbs und Touch-Cluster geschnitten hat — hier zum ersten Mal auch
+     im Menue. Fallback im var(), falls die lizenzierte Grafik fehlt: dann
+     bleibt ein Verlauf statt eines leeren Kastens. Dunkles Kreuz auf hellem
+     Knopf, gleiche Lesart wie #brewBtn (dunkle Schrift auf Gold). */
+  #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeSchlossBtn,
+  #closeAusweisBtn, #closeFullmapBtn, .panelZu{
+    flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    width:28px;height:28px;margin:-3px -4px -3px 0;
+    font-size:13px;line-height:1;color:#2e1d0a;
+    border-radius:50%;background-size:100% 100%;image-rendering:pixelated;
+    background-image:var(--cfui-round, linear-gradient(#c9a227,#8a6d3b));
+    text-shadow:0 1px 0 rgba(255,240,200,.45);
+    transition:filter .12s ease, transform .12s ease;
+  }
+  #closeInvBtn:hover, #closeSpellBtn:hover, #closeKesselBtn:hover,
+  #closeSchlossBtn:hover, #closeAusweisBtn:hover, #closeFullmapBtn:hover,
+  .panelZu:hover{filter:brightness(1.2);transform:scale(1.1);}
+
+  /* Felder und Knoepfe im Panel: eine gemeinsame Woelbung (Licht oben, Schatten
+     unten). Nur background-image — border-color und box-shadow bleiben frei,
+     die gehoeren den Seltenheitsklassen .rar0..4 und den Zustandsklassen. */
+  .bagSlot, .eqSlot, .zutTile, .potSlot, .symBtn, .kTab, .spellNode,
+  .knToneBtn, .ultNode, #schlossAnz, #statBox, #kesselResult{
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(255,236,192,.11), transparent 68%),
+      linear-gradient(rgba(255,255,255,.03), rgba(0,0,0,.30));
+  }
+  .bagSlot:hover, .eqSlot:hover, .zutTile:hover, .symBtn:hover, .potSlot:hover,
+  .kTab:hover, .knToneBtn:hover{
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(255,236,192,.18), transparent 68%),
+      linear-gradient(rgba(255,255,255,.06), rgba(0,0,0,.24));
+  }
+  .kTab.on{box-shadow:0 0 10px rgba(201,162,39,.30), 0 1px 0 rgba(244,217,122,.25) inset;}
+
+  /* Abschnittsueberschriften im Panel bekommen dieselbe Goldlinie wie das
+     Kopfband, damit ein langes Inventar in Kapitel zerfaellt statt in eine
+     Reihe gleich aussehender Kaesten. */
+  #skillBox h4, #zutBox h4, #musikBox h4{
+    border-bottom:1px solid rgba(201,162,39,.35);padding-bottom:4px;
+  }
+
+  /* Rollbalken. Der Systembalken ist hellgrau und der einzige Fleck im Panel,
+     der nicht aus dieser Welt stammt. */
+  #inv, #spellTree, #kessel, #ausweis{scrollbar-width:thin;scrollbar-color:#7a5f33 rgba(0,0,0,.35);}
+  #inv::-webkit-scrollbar, #spellTree::-webkit-scrollbar,
+  #kessel::-webkit-scrollbar, #ausweis::-webkit-scrollbar{width:10px;}
+  #inv::-webkit-scrollbar-track, #spellTree::-webkit-scrollbar-track,
+  #kessel::-webkit-scrollbar-track, #ausweis::-webkit-scrollbar-track{background:rgba(0,0,0,.35);}
+  #inv::-webkit-scrollbar-thumb, #spellTree::-webkit-scrollbar-thumb,
+  #kessel::-webkit-scrollbar-thumb, #ausweis::-webkit-scrollbar-thumb{
+    background:linear-gradient(#9a7c44,#5a4a2d);border-radius:6px;
+    border:2px solid transparent;background-clip:padding-box;}
+
+  /* Die drei scrollbaren Panels endeten bei 85vh/86vh und liefen damit auf einem
+     800px hohen Fenster bis y=744 — der Guertel beginnt bei 704, das Inventar lag
+     also ueber Manakugel und Stufenanzeige. Sie sind z-index 20 gegen 10, es war
+     kein Abschneiden, sondern ein Verdecken. Jetzt endet das Panel oberhalb des
+     HUD-Streifens (96px hoch, plus Luft). Auf Mobil ueberschreiben die
+     Breakpoints weiter unten diese Werte wie bisher. */
+  #inv, #spellTree, #kessel{
+    max-height:calc(100vh - 200px);
+    max-height:max(260px, calc(100dvh - 200px));
+  }
+
+  /* Der Schleier. Ausdruecklich KEIN modaler Vorhang: pointer-events:none, und
+     z-index 9 haelt ihn unter HUD (10), Dienstzettel (12) und Panels (20+).
+     Er verdunkelt nur die Welt. Ein klickfangendes Element ueber dem ganzen
+     Bild wuerde den Daumenfaecher kassieren, den die Mobile-Breakpoints
+     unterhalb des Panels bewusst frei lassen (349px, s. dort). */
+  #menuVeil{position:fixed;inset:0;z-index:9;pointer-events:none;opacity:0;
+    transition:opacity .18s ease;
+    background:radial-gradient(ellipse at 50% 45%, rgba(5,3,10,.26) 0%, rgba(5,3,10,.66) 100%);}
+  body.panelOffen #menuVeil{opacity:1;}
+
   /* --- Touch-Modus UI (nur body.touch, Desktop unverändert) --- */
   .touchOnly{display:none;}
   body.touch .touchOnly{display:flex;}
@@ -335,7 +463,9 @@
       top:64px; transform:none; box-sizing:border-box;
       max-height:calc(100vh - 349px);
       max-height:max(240px, calc(100dvh - 349px));
-      background:rgba(20,14,24,.93);
+      /* background-COLOR, nicht die Kurzschrift: die U1-Regel weiter oben legt
+         den Verlauf als background-image an, den die Kurzschrift mitloeschte. */
+      background-color:rgba(20,14,24,.93);
     }
 
     /* Kessel bleibt zentriert breit, aber top-verankert wie die anderen Panels */
@@ -344,21 +474,16 @@
       width:calc(100vw - 16px);
       max-height:calc(100vh - 341px);
       max-height:max(240px, calc(100dvh - 341px));
-      background:rgba(20,14,24,.93);
+      background-color:rgba(20,14,24,.93);
     }
     #schloss{
       top:56px; left:8px; transform:none; box-sizing:border-box;
-      width:calc(100vw - 16px); background:rgba(20,14,24,.93);
+      width:calc(100vw - 16px); background-color:rgba(20,14,24,.93);
     }
     #ausweis{
       top:56px; left:8px; transform:none; box-sizing:border-box;
       width:calc(100vw - 16px); max-height:calc(100vh - 96px); overflow-y:auto;
-      background:rgba(20,14,24,.93);
-    }
-    #closeSchlossBtn{
-      display:flex; align-items:center; justify-content:center;
-      width:44px; height:44px; margin:-13px -14px -13px 0;
-      font-size:20px; border-radius:8px; flex:0 0 auto;
+      background-color:rgba(20,14,24,.93);
     }
     #zutGrid, #invZutGrid{grid-template-columns:repeat(3,1fr);}
     .zutTile .zn{font-size:9px;}
@@ -366,13 +491,22 @@
     .potSlot .pn{font-size:9px;}
     .kTab{font-size:13px;}
 
-    /* --- Close-Buttons: 44px Tap-Target --- */
-    #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeAusweisBtn{
+    /* --- Close-Buttons: 44px Tap-Target ---
+       #closeFullmapBtn und der Amtsstuben-Knopf (.panelZu) fehlten hier: die
+       Vollbildkarte und die Amtsstube hatten auf Mobil ein Ziel von 20px, waehrend
+       die vier anderen Panels seit je 44px hatten. #closeSchlossBtn stand in einer
+       eigenen, wortgleichen Regel weiter oben; beide sind hier zusammengefasst.
+       Rundung und Rand-Abstand folgen jetzt dem U1-Kopfband (padding 10px 14px)
+       statt dem alten randlosen h2. */
+    #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeAusweisBtn,
+    #closeSchlossBtn, #closeFullmapBtn, .panelZu{
       display:flex; align-items:center; justify-content:center;
-      width:44px; height:44px; margin:-13px -14px -13px 0;
-      font-size:20px; border-radius:8px; flex:0 0 auto;
+      width:44px; height:44px; margin:-9px -8px -9px 0;
+      font-size:19px; border-radius:50%; flex:0 0 auto;
     }
-    #closeInvBtn:active, #closeSpellBtn:active, #closeKesselBtn:active, #closeAusweisBtn:active{background:rgba(201,162,39,.25);}
+    #closeInvBtn:active, #closeSpellBtn:active, #closeKesselBtn:active,
+    #closeAusweisBtn:active, #closeSchlossBtn:active, #closeFullmapBtn:active,
+    .panelZu:active{filter:brightness(1.35);}
 
     /* --- Zauberbaum: eine Spalte, horizontale Nodes --- */
     #spellCols{grid-template-columns:1fr; gap:0;}
@@ -429,6 +563,9 @@
 </div>
 <div id="touchCluster"><div class="tBtn" id="attackBtn">⚔️</div></div>
 
+<!-- U1: Schleier hinter offenen Menues. Rein optisch (pointer-events:none),
+     die Klick-daneben-Logik haengt am Zeigerziel, nicht an diesem Element. -->
+<div id="menuVeil"></div>
 <div id="inv">
   <h2>INVENTAR & BEFÄHIGUNG <span style="cursor:pointer" id="closeInvBtn">✖</span></h2>
   <div id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
@@ -5298,6 +5435,7 @@ function toggleSpellTree(){
   spellTreeOpen = !spellTreeOpen;
   document.getElementById('spellTree').style.display = spellTreeOpen ? 'block' : 'none';
   if(spellTreeOpen){ renderSpellTree(); knIdleT = 0; }
+  panelSicht();   // U1
   MUS.muffle();   // offenes Panel dämpft die Musik
 }
 
@@ -7225,8 +7363,9 @@ function amtFensterOeffnen(){
   el('amtFenster').style.display = 'block';
   renderAmtFenster();
   MUS.muffle();   // offenes Panel dämpft die Musik
+  panelSicht();   // U1
 }
-function amtFensterSchliessen(){ amtFensterOpen = false; el('amtFenster').style.display = 'none'; MUS.muffle(); }
+function amtFensterSchliessen(){ amtFensterOpen = false; el('amtFenster').style.display = 'none'; MUS.muffle(); panelSicht(); }
 function renderAmtFenster(){
   const rows = AUSBAU_DEFS.map(d => `<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;">
     <span>${d.name}</span><span style="color:#c9b98a;">${d.unit(amt.ausbauten[d.key])}</span></div>`).join('');
@@ -7234,7 +7373,7 @@ function renderAmtFenster(){
   // Panel ist nur im laufenden Dienst offen (fuehreAktion() sperrt alles außer state 'play'),
   // also +1 wie in knBegruessungLine(). showDorf()/showJahresgespraech() bleiben beim Rohwert.
   el('amtFenster').innerHTML = `
-    <h2>🏛 Amtsstube <span style="cursor:pointer;font-size:14px;" onclick="amtFensterSchliessen()">✖</span></h2>
+    <h2>🏛 Amtsstube <span class="panelZu" style="cursor:pointer;" onclick="amtFensterSchliessen()">✖</span></h2>
     <p style="font-size:12px;color:#9a8a5f;margin:0 0 4px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
     <p style="font-size:11px;color:#c9b98a;margin:0 0 8px;">${rangName()}<br>${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <div style="text-align:left;">${rows}</div>
@@ -7275,8 +7414,9 @@ function schlossAuf(mod){
   el('schloss').style.display = 'block';
   renderSchloss();
   MUS.muffle();   // offenes Panel dämpft die Musik
+  panelSicht();   // U1
 }
-function schlossZu(){ schlossOpen = false; schlossMod = null; el('schloss').style.display = 'none'; MUS.muffle(); }
+function schlossZu(){ schlossOpen = false; schlossMod = null; el('schloss').style.display = 'none'; MUS.muffle(); panelSicht(); }
 function schlossTippe(s){
   if(!schlossMod) return;
   schlossEin.push(s);
@@ -7559,7 +7699,7 @@ function bindTooltip(el, item, isEquipped, dropAction, clickAction, htmlFn){
   }, {passive:true});
 }
 
-function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen){ renderInventory(); knIdleT = 0; } MUS.muffle(); }
+function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen){ renderInventory(); knIdleT = 0; } MUS.muffle(); panelSicht(); }
 
 function addSkill(type){
   if(player.skillPoints > 0){
@@ -7942,6 +8082,7 @@ function toggleKessel(){
   }
   else clearPot();
   MUS.muffle();   // offenes Panel dämpft die Musik
+  panelSicht();   // U1
 }
 
 // W6: Dienstausweis, wortgleiche Form wie toggleKessel() oben.
@@ -7954,6 +8095,7 @@ function toggleAusweis(){
     knIdleT = 0;
   }
   MUS.muffle();   // offenes Panel dämpft die Musik
+  panelSicht();   // U1
 }
 
 // W-Groß: Vollbildkarte — Ausgleich dafür, dass die Minimap seit dem Fenster
@@ -7992,6 +8134,7 @@ function toggleFullmap(){
     knIdleT = 0;
   }
   MUS.muffle();
+  panelSicht();   // U1
 }
 
 // Passbild-Ausschnitt aus dem bestehenden Held-Bake (SHEETS['hero_baked']), Idle-
@@ -12818,6 +12961,100 @@ function showDorf(){
   document.getElementById('overlay').style.display = 'flex';
   state = 'feierabend';
 }
+
+// ===========================================================================
+//  U1: Ein Verzeichnis der Panels, und was daneben zu klicken heisst
+//
+//  Bis hierher wussten nur die Esc-Kette (unten) und drei ueber die Datei
+//  verstreute Aufraeum-Listen (respawnPlayer, startShift, endShift), welche
+//  Panels es ueberhaupt gibt — jede als unvollstaendige Kopie derselben
+//  Zeilen: respawnPlayer raeumt drei der sieben, endShift vier, startShift
+//  sechs (das Symbolschloss fehlt in allen dreien, weil es die Kammer
+//  ohnehin mitnimmt).
+//  Das hier ist dieselbe Liste einmal, benannt, und mit dem Schliesser dabei.
+//  Die Zustaende werden ueber Funktionen gelesen, nicht kopiert: `invOpen` &Co.
+//  sind Bindungen, die die Toggles umsetzen, kein Wert, den man einsammeln kann.
+//
+//  Reihenfolge = Esc-Reihenfolge, damit beide Wege dieselbe Vorstellung davon
+//  haben, was "oben" liegt.
+const PANEL_REGISTER = [
+  {id:'inv',        offen:() => invOpen,        zu:() => toggleInventory()},
+  {id:'spellTree',  offen:() => spellTreeOpen,  zu:() => toggleSpellTree()},
+  {id:'kessel',     offen:() => kesselOpen,     zu:() => toggleKessel()},
+  {id:'ausweis',    offen:() => ausweisOpen,    zu:() => toggleAusweis()},
+  {id:'fullmap',    offen:() => fullmapOpen,    zu:() => toggleFullmap()},
+  {id:'schloss',    offen:() => schlossOpen,    zu:() => schlossZu()},
+  {id:'amtFenster', offen:() => amtFensterOpen, zu:() => amtFensterSchliessen()},
+];
+
+function panelOffenIrgendwo(){ return PANEL_REGISTER.some(p => p.offen()); }
+
+// Setzt den Schleier. Wird am Ende jedes Oeffners und Schliessers gerufen —
+// eine Zeile je Toggle statt einer Abfrage pro Frame im Renderpfad.
+function panelSicht(){
+  document.body.classList.toggle('panelOffen', panelOffenIrgendwo());
+}
+
+// Die Inseln, die NICHT "daneben" sind. Alles andere im Bild ist Welt: das
+// Canvas selbst, und die durchklickbaren Einblendungen darueber (#zone,
+// #knZettel, #knRandnotiz, #tooltip stehen alle auf pointer-events:none, ihre
+// Klicks landen ohnehin am Canvas).
+const UI_INSELN = '#hud, #touchCluster, #minimap, #overlay, #menuVeil, '
+                + PANEL_REGISTER.map(p => '#' + p.id).join(', ');
+
+function istDanebenZiel(t){
+  return !(t instanceof Element) || !t.closest(UI_INSELN);
+}
+
+// Schliesst alle offenen Panels und meldet, ob es etwas zu schliessen gab.
+// Alle, nicht nur das oberste: Esc geht eine Ebene zurueck, das ist seine
+// Aufgabe. Ein Griff NEBEN die Menues ist keine Ebene, sondern ein Wegwischen —
+// und #inv (rechts) und #spellTree (links) koennen gleichzeitig offen stehen,
+// ein Klick in die Mitte liegt dann neben beiden.
+function panelsWegklicken(){
+  const offen = PANEL_REGISTER.filter(p => p.offen());
+  if(!offen.length) return false;
+  for(const p of offen) p.zu();
+  return true;
+}
+
+// Der eigentliche Wunsch: neben ein Menue klicken oder tippen schliesst es.
+// Zwei Dinge muessen dabei zusammenkommen.
+//
+// 1. Das Panel geht zu. 2. Der Druck, der es weggewischt hat, darf nicht auch
+//    noch ein Angriff sein. Die Angriffe haengen an canvas.mousedown und
+//    canvas.touchstart; ein Lauscher in der EINFANGPHASE am window laeuft vor
+//    ihnen, stopPropagation() schneidet sie dann ab. Deshalb capture:true.
+//
+// Kein modaler Vorhang, obwohl der einfacher waere: die Mobile-Breakpoints
+// verankern die Panels oben und lassen unten ~349px frei, damit Angriff,
+// Zauber, Trank und Ult mit offenem Panel erreichbar bleiben. Ein Element ueber
+// dem ganzen Bild kassierte genau das. Entschieden wird deshalb am Ziel des
+// Ereignisses (UI_INSELN), nicht an einer Flaeche.
+//
+// Gestoppt wird nur, was das Canvas trifft. Ein Klick daneben auf etwas
+// anderes (spaetere Einblendung mit eigenem Klickziel) schliesst zwar auch,
+// behaelt aber seine eigene Wirkung — dort gibt es keinen Angriff abzufangen.
+window.addEventListener('mousedown', e => {
+  if(e.button !== 0 || !istDanebenZiel(e.target)) return;
+  if(!panelsWegklicken()) return;
+  if(e.target === canvas){ e.stopPropagation(); e.preventDefault(); }
+}, true);
+
+window.addEventListener('touchstart', e => {
+  if(!istDanebenZiel(e.target) || !panelOffenIrgendwo()) return;
+  // initAudio()/enterTouchMode() haengen am document- bzw. canvas-Lauscher,
+  // die gleich abgeschnitten werden. Der erste Tipp ins Bild darf den
+  // Ton-Freigabeklick nicht verlieren, nur weil ein Panel offen stand.
+  initAudio(); enterTouchMode();
+  panelsWegklicken();
+  // e.cancelable pruefen: laeuft gerade ein Scroll, liefert der Browser ein
+  // nicht stornierbares touchstart, und preventDefault() darauf ist kein
+  // Fehler mit Folgen, aber eine Zeile in der Konsole. Eine Konsole, in der
+  // dauerhaft etwas steht, ist keine Konsole mehr (s. README).
+  // stopPropagation() greift auch dort und haelt den Angriff zurueck.
+  if(e.target === canvas){ e.stopPropagation(); if(e.cancelable) e.preventDefault(); }
+}, {capture:true, passive:false});
 
 window.addEventListener('keydown', e => {
   initAudio(); const k = e.key.toLowerCase();
