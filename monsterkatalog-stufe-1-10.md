@@ -31,30 +31,38 @@ Die Referenzwerte sind nicht gesetzt, sondern aus `index.html` abgeleitet, damit
 gegen das Spiel rechnet und nicht gegen eine Fantasie. Quellen sind `recalc()`, `hurtPlayer()`,
 `drinkPotion()` und `gainXP()`.
 
-Angenommener Referenzbuild: je Stufenaufstieg ein Punkt in Stärke und ein Punkt in Vitalität,
-kein Punkt in Intelligenz. Ausrüstung im üblichen Fundfenster der Stufe, keine Kesselwirkungen,
+Angenommener Referenzbuild: je Stufenaufstieg ein Punkt in Kraft und ein Punkt in Zähigkeit,
+kein Punkt in Amtskunde. Ausrüstung im üblichen Fundfenster der Stufe, keine Kesselwirkungen,
 keine Flüche.
 
+Seit Bauabschnitt S1 (`phase-s1-befaehigung.md`) ist dieser Build keine Nebenannahme mehr,
+sondern die Voraussetzung. Die Stufe schenkt fast nichts (2 Leben, 2 Mana), das Meiste hängt
+am Punkt (27 Leben, 22 Mana, 3 bis 5 Schaden). Für genau diesen Referenzspieler bleiben die
+Bänder unverändert; wer nicht steigert, liegt weit darunter und ist von diesem Katalog nicht
+gedeckt. Das ist Absicht und der ganze Zweck von S1.
+
 ```
-maxHp     = 70 + (Stufe-1)*12 + VIT*20                     (recalc)
-dmgAvg    = (Waffe_min + Waffe_max)/2 + STR*3,5 + Affix    (recalc)
+maxHp     = 63 + (Stufe-1)*2 + ZÄH*27                      (recalc)
+dmgAvg    = (Waffe_min + Waffe_max)/2 + KRAFT*4,0 + Affix  (recalc)
 DPS       = dmgAvg * 1,175 * Angriffe je Sekunde           (Crit 25 % zu Faktor 1,7)
 Minderung = Rüstung/(Rüstung+30), gedeckelt bei 0,6        (hurtPlayer)
 Trank     = 60 Leben je Fläschchen                         (drinkPotion)
 ```
 
+Referenzklinge ist das Kurzschwert aus `BASES`, seit S1 mit 3 bis 6 Grundschaden statt 5 bis 9.
+
 | Sollstufe | Spieler-HP | Rüstung | Minderung | Spieler-DPS | Heilung je Minute |
 |---|---|---|---|---|---|
-| 1 | 70 | 0 | 0,00 | 13,7 | 60 |
-| 2 | 102 | 3 | 0,09 | 19,1 | 60 |
-| 3 | 134 | 5 | 0,14 | 24,4 | 60 |
-| 4 | 166 | 10 | 0,25 | 34,4 | 90 |
-| 5 | 198 | 10 | 0,25 | 39,7 | 90 |
-| 6 | 230 | 13 | 0,30 | 45,1 | 90 |
-| 7 | 262 | 13 | 0,30 | 50,4 | 90 |
-| 8 | 294 | 17 | 0,36 | 60,3 | 120 |
-| 9 | 326 | 17 | 0,36 | 65,7 | 120 |
-| 10 | 358 | 20 | 0,40 | 71,0 | 120 |
+| 1 | 63 | 0 | 0,00 | 9,9 | 60 |
+| 2 | 92 | 3 | 0,09 | 16,0 | 60 |
+| 3 | 121 | 5 | 0,14 | 22,1 | 60 |
+| 4 | 150 | 10 | 0,25 | 32,8 | 90 |
+| 5 | 179 | 10 | 0,25 | 39,0 | 90 |
+| 6 | 208 | 13 | 0,30 | 45,1 | 90 |
+| 7 | 237 | 13 | 0,30 | 51,2 | 90 |
+| 8 | 266 | 17 | 0,36 | 61,9 | 120 |
+| 9 | 295 | 17 | 0,36 | 68,0 | 120 |
+| 10 | 324 | 20 | 0,40 | 74,1 | 120 |
 
 Heilung je Minute ist die Felddauerleistung, nicht der Vorrat: ein Fläschchen je Minute bis
 Sollstufe 3, anderthalb bis Sollstufe 7, zwei ab Sollstufe 8. Tränke sind damit Teil der
@@ -62,16 +70,22 @@ Rechnung, aber kein Gegner braucht sie (siehe 3.4).
 
 ### 1.2 Zauberleistung
 
-Manaregeneration 8 je Sekunde, Funke kostet 5 Mana für 16 Schaden. Die Dauerleistung eines
-Zauberers ist deshalb manabegrenzt und stufenunabhängig:
+Mana entsteht seit Z2 nicht mehr beim Warten, sondern bei der Arbeit: 2 je Sekunde passiv plus
+4 je Waffenschwung, bei 1,3 Schwüngen je Sekunde also 7,2 je Kampfsekunde. Seit S1 kostet der
+Funke 12 Mana für 20 Schaden statt 5 für 16. Die Dauerleistung eines Zauberers ist damit
+manabegrenzt, stufenunabhängig und knapp halb so groß wie vor S1:
 
 ```
-Zauber-DPS (Dauer)  = 8/5 * 16   = 25,6
-Zauber-DPS (Fenster) ~ 57        solange der Manapool reicht
+Zauber-DPS (Dauer)  = 7,2/12,0 * 20,0 = 12,0   (vor S1: 23,04, vor Z2: 25,6)
+Zauber-DPS (Fenster) ~ 43,0        solange der Manapool reicht
 ```
 
 Das ist der Grund, warum Resistenz-Gates in diesem Katalog nie an reiner Zahlengröße hängen:
-ein Gate verschiebt den Spieler von 71 DPS auf 25,6 DPS, und das allein ist schon Faktor 2,8.
+ein Gate verschiebt den Spieler von rund 74 DPS auf 12 DPS, und das allein ist schon Faktor 6.
+Weil die Zauberleistung mit S1 gefallen ist, sind die drei Gegner mit Zauber-Sollroute im
+selben Verhältnis leichter geworden und zugleich dicker gegen die Waffe: der Abstand zwischen
+Sollroute und Waffenroute ist derselbe geblieben (Moorbescheid 2,0-fach, Steingolem 4,9-fach,
+Sammelverfügung 1,45-fach).
 
 ### 1.3 Formeln des Katalogs
 
@@ -205,7 +219,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B1"
     ],
-    "hp": 27,
+    "hp": 20,
     "resistenzen": {
       "physisch": 0,
       "feuer": -0.25,
@@ -256,7 +270,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B7"
     ],
-    "hp": 50,
+    "hp": 42,
     "resistenzen": {
       "physisch": 0,
       "feuer": -0.2,
@@ -307,7 +321,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B2"
     ],
-    "hp": 125,
+    "hp": 105,
     "resistenzen": {
       "physisch": 0.35,
       "feuer": -0.4,
@@ -315,7 +329,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.3,
       "magie": 0
     },
-    "schaden_pro_treffer": 10,
+    "schaden_pro_treffer": 9,
     "angriffsintervall_s": 1.6,
     "tempo": 32,
     "angriffsmuster": [
@@ -358,7 +372,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B3"
     ],
-    "hp": 380,
+    "hp": 345,
     "resistenzen": {
       "physisch": -0.2,
       "feuer": 0,
@@ -366,7 +380,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.2,
       "magie": 0.4
     },
-    "schaden_pro_treffer": 33,
+    "schaden_pro_treffer": 30,
     "angriffsintervall_s": 1.9,
     "tempo": 44,
     "angriffsmuster": [
@@ -409,7 +423,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B4"
     ],
-    "hp": 295,
+    "hp": 270,
     "resistenzen": {
       "physisch": 0.55,
       "feuer": 0.2,
@@ -417,7 +431,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0,
       "magie": 0.2
     },
-    "schaden_pro_treffer": 40,
+    "schaden_pro_treffer": 36,
     "angriffsintervall_s": 1.1,
     "tempo": 126,
     "angriffsmuster": [
@@ -434,8 +448,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "alle 6 s bleibt er 1,4 s stehen und quittiert, in dieser Zeit fällt jede Resistenz auf 0"
       }
     ],
-    "berechnete_ttk_s": 26.9,
-    "xp": 675,
+    "berechnete_ttk_s": 27.1,
+    "xp": 682,
     "gold_min": 54,
     "gold_max": 113,
     "loot": [
@@ -461,7 +475,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B1",
       "B7"
     ],
-    "hp": 59,
+    "hp": 53,
     "resistenzen": {
       "physisch": 0,
       "feuer": -0.3,
@@ -512,15 +526,15 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B5"
     ],
-    "hp": 345,
+    "hp": 180,
     "resistenzen": {
-      "physisch": 0.5,
+      "physisch": 0.73,
       "feuer": -0.5,
       "eis": 0.15,
       "gift": 0.9,
       "magie": 0.15
     },
-    "schaden_pro_treffer": 22,
+    "schaden_pro_treffer": 20,
     "angriffsintervall_s": 2.0,
     "tempo": 26,
     "angriffsmuster": [
@@ -564,7 +578,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B4",
       "B6"
     ],
-    "hp": 560,
+    "hp": 550,
     "resistenzen": {
       "physisch": 0.15,
       "feuer": -0.3,
@@ -572,7 +586,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.5,
       "magie": 0.3
     },
-    "schaden_pro_treffer": 85,
+    "schaden_pro_treffer": 77,
     "angriffsintervall_s": 1.8,
     "tempo": 118,
     "angriffsmuster": [
@@ -616,7 +630,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B3",
       "B4"
     ],
-    "hp": 475,
+    "hp": 470,
     "resistenzen": {
       "physisch": 0.5,
       "feuer": 0.3,
@@ -624,7 +638,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.4,
       "magie": 0.1
     },
-    "schaden_pro_treffer": 195,
+    "schaden_pro_treffer": 176,
     "angriffsintervall_s": 2.0,
     "tempo": 132,
     "angriffsmuster": [
@@ -641,8 +655,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "jeder dritte Takt: 1,2 s unverwundbar, danach 2 s offen"
       }
     ],
-    "berechnete_ttk_s": 23.9,
-    "xp": 817,
+    "berechnete_ttk_s": 24.1,
+    "xp": 823,
     "gold_min": 85,
     "gold_max": 178,
     "loot": [
@@ -667,7 +681,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B5"
     ],
-    "hp": 43,
+    "hp": 41,
     "resistenzen": {
       "physisch": 0.5,
       "feuer": 0.85,
@@ -675,7 +689,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.3,
       "magie": 0
     },
-    "schaden_pro_treffer": 8,
+    "schaden_pro_treffer": 7,
     "angriffsintervall_s": 1.0,
     "tempo": 92,
     "angriffsmuster": [
@@ -719,7 +733,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B2",
       "B5"
     ],
-    "hp": 570,
+    "hp": 560,
     "resistenzen": {
       "physisch": -0.2,
       "feuer": 1.0,
@@ -727,7 +741,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.2,
       "magie": 1.0
     },
-    "schaden_pro_treffer": 22,
+    "schaden_pro_treffer": 20,
     "angriffsintervall_s": 1.4,
     "tempo": 36,
     "angriffsmuster": [
@@ -778,7 +792,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.7,
       "magie": -0.2
     },
-    "schaden_pro_treffer": 158,
+    "schaden_pro_treffer": 143,
     "angriffsintervall_s": 2.4,
     "tempo": 96,
     "angriffsmuster": [
@@ -822,7 +836,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B4",
       "B6"
     ],
-    "hp": 830,
+    "hp": 840,
     "resistenzen": {
       "physisch": 0.45,
       "feuer": 0.5,
@@ -830,7 +844,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.2,
       "magie": 0.2
     },
-    "schaden_pro_treffer": 257,
+    "schaden_pro_treffer": 233,
     "angriffsintervall_s": 2.0,
     "tempo": 104,
     "angriffsmuster": [
@@ -847,8 +861,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "gibt jeden dritten Takt einem Nachbarn 25 Prozent mehr Schaden und steht dabei 2,4 s offen"
       }
     ],
-    "berechnete_ttk_s": 29.9,
-    "xp": 1251,
+    "berechnete_ttk_s": 29.8,
+    "xp": 1246,
     "gold_min": 115,
     "gold_max": 242,
     "loot": [
@@ -881,7 +895,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.3,
       "magie": 0
     },
-    "schaden_pro_treffer": 10,
+    "schaden_pro_treffer": 9,
     "angriffsintervall_s": 0.9,
     "tempo": 134,
     "angriffsmuster": [
@@ -925,7 +939,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B2",
       "B7"
     ],
-    "hp": 460,
+    "hp": 465,
     "resistenzen": {
       "physisch": 0.3,
       "feuer": -0.3,
@@ -933,7 +947,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.3,
       "magie": 0.15
     },
-    "schaden_pro_treffer": 37,
+    "schaden_pro_treffer": 34,
     "angriffsintervall_s": 1.7,
     "tempo": 52,
     "angriffsmuster": [
@@ -951,7 +965,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       }
     ],
     "berechnete_ttk_s": 13.0,
-    "xp": 293,
+    "xp": 292,
     "gold_min": 51,
     "gold_max": 107,
     "loot": [
@@ -977,7 +991,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B1",
       "B3"
     ],
-    "hp": 680,
+    "hp": 690,
     "resistenzen": {
       "physisch": 0.2,
       "feuer": 0,
@@ -985,7 +999,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.4,
       "magie": -0.3
     },
-    "schaden_pro_treffer": 149,
+    "schaden_pro_treffer": 135,
     "angriffsintervall_s": 2.3,
     "tempo": 74,
     "angriffsmuster": [
@@ -1002,8 +1016,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "jeder dritte Takt: alle Mahnungen im Umkreis von 120 sagen denselben Schlag an und fuehren ihn gleichzeitig aus"
       }
     ],
-    "berechnete_ttk_s": 14.1,
-    "xp": 491,
+    "berechnete_ttk_s": 13.9,
+    "xp": 485,
     "gold_min": 83,
     "gold_max": 174,
     "loot": [
@@ -1028,7 +1042,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "anforderungstyp": [
       "B3"
     ],
-    "hp": 850,
+    "hp": 870,
     "resistenzen": {
       "physisch": -0.15,
       "feuer": 0.2,
@@ -1036,7 +1050,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.3,
       "magie": 0.5
     },
-    "schaden_pro_treffer": 131,
+    "schaden_pro_treffer": 119,
     "angriffsintervall_s": 2.2,
     "tempo": 46,
     "angriffsmuster": [
@@ -1053,8 +1067,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "ersetzt jeden dritten Bolzen, schneller angesagt, dafür halbe Wucht"
       }
     ],
-    "berechnete_ttk_s": 12.3,
-    "xp": 427,
+    "berechnete_ttk_s": 12.2,
+    "xp": 426,
     "gold_min": 83,
     "gold_max": 174,
     "loot": [
@@ -1080,15 +1094,15 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B2",
       "B5"
     ],
-    "hp": 1100,
+    "hp": 570,
     "resistenzen": {
-      "physisch": 0.9,
+      "physisch": 0.95,
       "feuer": 0,
       "eis": 0,
       "gift": 0.6,
       "magie": -0.4
     },
-    "schaden_pro_treffer": 274,
+    "schaden_pro_treffer": 249,
     "angriffsintervall_s": 2.6,
     "tempo": 28,
     "angriffsmuster": [
@@ -1105,8 +1119,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "ersetzt jeden dritten Grundtreffer, Druckwelle rundum, danach 3 s Erschöpfung ohne Angriff"
       }
     ],
-    "berechnete_ttk_s": 34.1,
-    "xp": 1657,
+    "berechnete_ttk_s": 33.9,
+    "xp": 1648,
     "gold_min": 144,
     "gold_max": 302,
     "loot": [
@@ -1140,7 +1154,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.2,
       "magie": 0.1
     },
-    "schaden_pro_treffer": 32,
+    "schaden_pro_treffer": 30,
     "angriffsintervall_s": 1.4,
     "tempo": 88,
     "angriffsmuster": [
@@ -1158,7 +1172,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       }
     ],
     "berechnete_ttk_s": 2.2,
-    "xp": 39,
+    "xp": 38,
     "gold_min": 26,
     "gold_max": 55,
     "loot": [
@@ -1184,7 +1198,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B2",
       "B5"
     ],
-    "hp": 1150,
+    "hp": 1190,
     "resistenzen": {
       "physisch": -0.25,
       "feuer": 1.0,
@@ -1192,7 +1206,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.9,
       "magie": 1.0
     },
-    "schaden_pro_treffer": 60,
+    "schaden_pro_treffer": 54,
     "angriffsintervall_s": 2.1,
     "tempo": 26,
     "angriffsmuster": [
@@ -1236,7 +1250,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B7",
       "B3"
     ],
-    "hp": 890,
+    "hp": 920,
     "resistenzen": {
       "physisch": 0.25,
       "feuer": 0.1,
@@ -1244,7 +1258,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "gift": 0.6,
       "magie": 0.1
     },
-    "schaden_pro_treffer": 204,
+    "schaden_pro_treffer": 186,
     "angriffsintervall_s": 2.5,
     "tempo": 82,
     "angriffsmuster": [
@@ -1261,8 +1275,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "Eröffnung aus der Wand, weit ausholender Bogen"
       }
     ],
-    "berechnete_ttk_s": 18.1,
-    "xp": 675,
+    "berechnete_ttk_s": 18.0,
+    "xp": 674,
     "gold_min": 92,
     "gold_max": 193,
     "loot": [
@@ -1288,15 +1302,15 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       "B4",
       "B5"
     ],
-    "hp": 1120,
+    "hp": 580,
     "resistenzen": {
-      "physisch": 0.7,
+      "physisch": 0.85,
       "feuer": -0.35,
       "eis": 0.45,
       "gift": 0.6,
       "magie": 0.45
     },
-    "schaden_pro_treffer": 359,
+    "schaden_pro_treffer": 326,
     "angriffsintervall_s": 2.2,
     "tempo": 112,
     "angriffsmuster": [
@@ -1319,8 +1333,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "effekt": "jeder fuenfte Takt: 2,5 s lang alle Resistenzen auf 0,8, das Blatt darunter bleibt brennbar"
       }
     ],
-    "berechnete_ttk_s": 36.0,
-    "xp": 1864,
+    "berechnete_ttk_s": 35.8,
+    "xp": 1853,
     "gold_min": 159,
     "gold_max": 334,
     "loot": [
@@ -1347,28 +1361,28 @@ Gerechnet mit `tools/monsterkatalog.py`, nicht von Hand. Sollwerte in Klammern.
 
 | Gegner | Soll | Klasse | Route | TTK (Band) | XP | XP je Kampfsekunde (Soll) | Gefahrenbudget (Band) | Befund |
 |---|---|---|---|---|---|---|---|---|
-| Chuchu | 1 | A1 | physisch | 2,0 s (1 bis 3) | 10 | 5,07 (5,0) | 46,7 s (über 30) | ok |
-| Grünhaut | 2 | A1 | physisch | 2,6 s (1 bis 3) | 20 | 7,64 (7,58) | 33,6 s (über 30) | ok |
-| Wandelnder Ablagestapel | 2 | A2 | physisch | 10,1 s (8 bis 15) | 107 | 10,63 (10,61) | 21,8 s (15 bis 25) | ok |
-| Waldschamane | 3 | A3 | physisch | 13,0 s (12 bis 25) | 251 | 19,34 (19,33) | 8,6 s (6 bis 10) | ok |
-| Der Zustellbote | 3 | A4 | physisch | 26,9 s (20 bis 40) | 675 | 25,12 (25,13) | 4,4 s (3 bis 6) | ok |
-| Blubberakte | 3 | A1 | physisch | 2,4 s (1 bis 3) | 23 | 9,51 (9,67) | 45,3 s (über 30) | ok |
-| Der Moorbescheid | 4 | A2 | feuer | 10,0 s (8 bis 15) | 161 | 16,13 (16,08) | 20,1 s (15 bis 25) | ok |
-| Der Amtsschimmel | 5 | A3 | physisch | 16,6 s (12 bis 25) | 436 | 26,27 (26,27) | 9,0 s (6 bis 10) | ok |
-| Der Fristläufer | 5 | A4 | physisch | 23,9 s (20 bis 40) | 817 | 34,14 (34,14) | 4,2 s (3 bis 6) | ok |
-| Papierstaub-Skarabäus | 4 | A1 | physisch | 2,5 s (1 bis 3) | 29 | 11,6 (11,49) | 36,9 s (über 30) | ok |
-| Klippkrabbe | 5 | A2 | physisch | 12,0 s (8 bis 15) | 220 | 18,39 (18,39) | 21,7 s (15 bis 25) | ok |
+| Chuchu | 1 | A1 | physisch | 2,0 s (1 bis 3) | 10 | 4,95 (5,0) | 42,0 s (über 30) | ok |
+| Grünhaut | 2 | A1 | physisch | 2,6 s (1 bis 3) | 20 | 7,62 (7,58) | 30,3 s (über 30) | ok |
+| Wandelnder Ablagestapel | 2 | A2 | physisch | 10,1 s (8 bis 15) | 107 | 10,6 (10,61) | 22,4 s (15 bis 25) | ok |
+| Waldschamane | 3 | A3 | physisch | 13,0 s (12 bis 25) | 251 | 19,29 (19,33) | 8,6 s (6 bis 10) | ok |
+| Der Zustellbote | 3 | A4 | physisch | 27,1 s (20 bis 40) | 682 | 25,12 (25,13) | 4,5 s (3 bis 6) | ok |
+| Blubberakte | 3 | A1 | physisch | 2,4 s (1 bis 3) | 23 | 9,59 (9,67) | 40,9 s (über 30) | ok |
+| Der Moorbescheid | 4 | A2 | feuer | 10,0 s (8 bis 15) | 161 | 16,1 (16,08) | 20,0 s (15 bis 25) | ok |
+| Der Amtsschimmel | 5 | A3 | physisch | 16,6 s (12 bis 25) | 436 | 26,28 (26,27) | 9,0 s (6 bis 10) | ok |
+| Der Fristläufer | 5 | A4 | physisch | 24,1 s (20 bis 40) | 823 | 34,15 (34,14) | 4,2 s (3 bis 6) | ok |
+| Papierstaub-Skarabäus | 4 | A1 | physisch | 2,5 s (1 bis 3) | 29 | 11,6 (11,49) | 40,0 s (über 30) | ok |
+| Klippkrabbe | 5 | A2 | physisch | 12,0 s (8 bis 15) | 220 | 18,39 (18,39) | 22,0 s (15 bis 25) | ok |
 | Sandskorpion | 6 | A3 | physisch | 16,0 s (12 bis 25) | 469 | 29,29 (29,3) | 7,0 s (6 bis 10) | ok |
-| Dünenpriester | 7 | A4 | physisch | 29,9 s (20 bis 40) | 1251 | 41,78 (41,78) | 4,5 s (3 bis 6) | ok |
-| Fledermaus | 6 | A1 | physisch | 2,0 s (1 bis 3) | 29 | 14,53 (14,65) | 36,8 s (über 30) | ok |
-| Höhlenspinne | 7 | A2 | physisch | 13,0 s (8 bis 15) | 293 | 22,47 (22,5) | 19,1 s (15 bis 25) | ok |
-| Die Sammelmahnung | 8 | A3 | physisch | 14,1 s (12 bis 25) | 491 | 34,83 (34,82) | 7,5 s (6 bis 10) | ok |
-| Irrlichtmagier | 8 | A3 | physisch | 12,3 s (12 bis 25) | 427 | 34,84 (34,82) | 9,5 s (6 bis 10) | ok |
-| Steingolem | 9 | A4 | magie | 34,1 s (20 bis 40) | 1657 | 48,59 (48,58) | 5,0 s (3 bis 6) | ok |
-| Der Aktenbote | 8 | A1 | physisch | 2,2 s (1 bis 3) | 39 | 17,42 (17,41) | 38,1 s (über 30) | ok |
-| Mumie | 9 | A2 | physisch | 14,0 s (8 bis 15) | 366 | 26,14 (26,16) | 17,9 s (15 bis 25) | ok |
-| Knochenritter | 9 | A3 | physisch | 18,1 s (12 bis 25) | 675 | 37,37 (37,37) | 6,5 s (6 bis 10) | ok |
-| Die Sammelverfügung | 10 | A4 | feuer | 36,0 s (20 bis 40) | 1864 | 51,77 (51,75) | 4,0 s (3 bis 6) | ok |
+| Dünenpriester | 7 | A4 | physisch | 29,8 s (20 bis 40) | 1246 | 41,77 (41,78) | 4,5 s (3 bis 6) | ok |
+| Fledermaus | 6 | A1 | physisch | 2,0 s (1 bis 3) | 29 | 14,53 (14,65) | 38,0 s (über 30) | ok |
+| Höhlenspinne | 7 | A2 | physisch | 13,0 s (8 bis 15) | 292 | 22,51 (22,5) | 19,0 s (15 bis 25) | ok |
+| Die Sammelmahnung | 8 | A3 | physisch | 13,9 s (12 bis 25) | 485 | 34,81 (34,82) | 7,5 s (6 bis 10) | ok |
+| Irrlichtmagier | 8 | A3 | physisch | 12,2 s (12 bis 25) | 426 | 34,86 (34,82) | 9,5 s (6 bis 10) | ok |
+| Steingolem | 9 | A4 | magie | 33,9 s (20 bis 40) | 1648 | 48,57 (48,58) | 5,0 s (3 bis 6) | ok |
+| Der Aktenbote | 8 | A1 | physisch | 2,2 s (1 bis 3) | 38 | 17,42 (17,41) | 37,4 s (über 30) | ok |
+| Mumie | 9 | A2 | physisch | 14,0 s (8 bis 15) | 366 | 26,14 (26,16) | 18,0 s (15 bis 25) | ok |
+| Knochenritter | 9 | A3 | physisch | 18,0 s (12 bis 25) | 674 | 37,36 (37,37) | 6,5 s (6 bis 10) | ok |
+| Die Sammelverfügung | 10 | A4 | feuer | 35,8 s (20 bis 40) | 1853 | 51,76 (51,75) | 4,0 s (3 bis 6) | ok |
 
 Alle zwanzig Zeilen liegen in ihren Bändern. Die XP-Rate weicht nirgends mehr als ein Prozent
 vom Sollwert ab, der Rest ist Rundung auf ganze XP.
@@ -1377,26 +1391,26 @@ vom Sollwert ab, der Rest ist Rundung auf ganze XP.
 
 | Gegner | Klasse | Rudelgröße | Gefahrenbudget einzeln | Gefahrenbudget im Rudel | kürzeste Vorwarnung | Mindestvorwarnung |
 |---|---|---|---|---|---|---|
-| Chuchu | A1 | 5 | 46,7 s | 6,1 s | 300 ms | 250 ms |
-| Grünhaut | A1 | 3 | 33,6 s | 9,2 s | 280 ms | 250 ms |
-| Wandelnder Ablagestapel | A2 | 1 | 21,8 s | 21,8 s | 420 ms | 250 ms |
+| Chuchu | A1 | 5 | 42,0 s | 5,5 s | 300 ms | 250 ms |
+| Grünhaut | A1 | 3 | 30,3 s | 8,3 s | 280 ms | 250 ms |
+| Wandelnder Ablagestapel | A2 | 1 | 22,4 s | 22,4 s | 420 ms | 250 ms |
 | Waldschamane | A3 | 1 | 8,6 s | 8,6 s | 420 ms | 350 ms |
-| Der Zustellbote | A4 | 1 | 4,4 s | 4,4 s | 380 ms | 350 ms |
-| Blubberakte | A1 | 4 | 45,3 s | 9,0 s | 300 ms | 250 ms |
-| Der Moorbescheid | A2 | 1 | 20,1 s | 20,1 s | 450 ms | 250 ms |
+| Der Zustellbote | A4 | 1 | 4,5 s | 4,5 s | 380 ms | 350 ms |
+| Blubberakte | A1 | 4 | 40,9 s | 8,2 s | 300 ms | 250 ms |
+| Der Moorbescheid | A2 | 1 | 20,0 s | 20,0 s | 450 ms | 250 ms |
 | Der Amtsschimmel | A3 | 1 | 9,0 s | 9,0 s | 350 ms | 350 ms |
 | Der Fristläufer | A4 | 1 | 4,2 s | 4,2 s | 400 ms | 350 ms |
-| Papierstaub-Skarabäus | A1 | 3 | 36,9 s | 10,1 s | 300 ms | 250 ms |
-| Klippkrabbe | A2 | 1 | 21,7 s | 21,7 s | 400 ms | 250 ms |
+| Papierstaub-Skarabäus | A1 | 3 | 40,0 s | 10,5 s | 300 ms | 250 ms |
+| Klippkrabbe | A2 | 1 | 22,0 s | 22,0 s | 400 ms | 250 ms |
 | Sandskorpion | A3 | 1 | 7,0 s | 7,0 s | 350 ms | 350 ms |
 | Dünenpriester | A4 | 1 | 4,5 s | 4,5 s | 400 ms | 350 ms |
-| Fledermaus | A1 | 6 | 36,8 s | 5,1 s | 250 ms | 250 ms |
-| Höhlenspinne | A2 | 1 | 19,1 s | 19,1 s | 400 ms | 250 ms |
+| Fledermaus | A1 | 6 | 38,0 s | 5,2 s | 250 ms | 250 ms |
+| Höhlenspinne | A2 | 1 | 19,0 s | 19,0 s | 400 ms | 250 ms |
 | Die Sammelmahnung | A3 | 3 | 7,5 s | 2,4 s | 500 ms | 350 ms |
 | Irrlichtmagier | A3 | 1 | 9,5 s | 9,5 s | 380 ms | 350 ms |
 | Steingolem | A4 | 1 | 5,0 s | 5,0 s | 700 ms | 350 ms |
-| Der Aktenbote | A1 | 4 | 38,1 s | 8,0 s | 300 ms | 250 ms |
-| Mumie | A2 | 1 | 17,9 s | 17,9 s | 500 ms | 250 ms |
+| Der Aktenbote | A1 | 4 | 37,4 s | 7,7 s | 300 ms | 250 ms |
+| Mumie | A2 | 1 | 18,0 s | 18,0 s | 500 ms | 250 ms |
 | Knochenritter | A3 | 1 | 6,5 s | 6,5 s | 450 ms | 350 ms |
 | Die Sammelverfügung | A4 | 1 | 4,0 s | 4,0 s | 400 ms | 350 ms |
 
@@ -1417,12 +1431,12 @@ abgeleitet sind.
 
 | Gegner | physisch | Feuer | Eis | Gift | Magie |
 |---|---|---|---|---|---|
-| Der Moorbescheid | 20,1 s | **10,0 s** | 17,6 s | 149,7 s * | 17,6 s |
-| Papierstaub-Skarabäus | **2,5 s** | 12,4 s | 1,3 s | 2,7 s * | 1,9 s |
-| Klippkrabbe | **12,0 s** | wirkungslos | wirkungslos | 30,9 s * | wirkungslos |
-| Steingolem | 167,4 s | 47,7 s | 47,7 s | 119,4 s * | **34,1 s** |
-| Mumie | **14,0 s** | wirkungslos | wirkungslos | 499,1 s * | wirkungslos |
-| Die Sammelverfügung | 52,6 s | **36,0 s** | 88,4 s | 121,5 s * | 88,4 s |
+| Der Moorbescheid | 20,3 s | **10,0 s** | 17,6 s | 150,0 s * | 17,6 s |
+| Papierstaub-Skarabäus | **2,5 s** | 22,8 s | 2,4 s | 4,9 s * | 3,4 s |
+| Klippkrabbe | **12,0 s** | wirkungslos | wirkungslos | 58,3 s * | wirkungslos |
+| Steingolem | 167,6 s | 47,5 s | 47,5 s | 118,8 s * | **33,9 s** |
+| Mumie | **14,0 s** | wirkungslos | wirkungslos | 991,7 s * | wirkungslos |
+| Die Sammelverfügung | 52,2 s | **35,8 s** | 87,9 s | 120,8 s * | 87,9 s |
 
 \* Giftwerte sind rechnerisch mitgeführt, aber nicht erreichbar: der Spieler hat keine
 Giftquelle. Sie stehen hier, damit ein späterer Kesseltrank nicht neu gegen die Tabelle
@@ -1619,7 +1633,7 @@ Waffenschwung mit mindestens einem Treffer laedt 4 Mana. Fuer diesen Katalog fol
 eine neue Zauberleistung:
 
     Manarate im Kampf = 2 + 4 * 1,3 Schwuenge/s = 7,2 Mana/s
-    ZAUBER_DPS        = 7,2 / 5 * 16 = 23.04 (vorher 25,6)
+    ZAUBER_DPS        = 7,2 / 5 * 16 = 12.00 (vorher 25,6)
 
 Die Rechnung nimmt an, dass der Spieler das Mana AM GEGNER erarbeitet. Das traegt auch
 beim Steingolem, dessen Sollroute Magie ist: die Treffer-Ladung haengt am Treffer, nicht

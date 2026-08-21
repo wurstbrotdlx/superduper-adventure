@@ -61,14 +61,38 @@ const proben = await page.evaluate(() => {
   const zprobe = (name, hin, zurueck) => { hin(); const ok = zauberAssert(); zurueck(); raus.push([name, ok]); };
   zprobe('gainXP vergibt Punkte unter der Befugnisstufe',
         () => { window._eGainXP = gainXP;
-                gainXP = function(x){ player.xp += x; let need = 35*Math.pow(player.level,1.35);
-                  while(player.xp >= need){ player.xp -= need; player.level++; player.spellPoints += 1; need = 35*Math.pow(player.level,1.35); } }; },
+                gainXP = function(x){ player.xp += x; let need = xpFuerStufe(player.level);
+                  while(player.xp >= need){ player.xp -= need; player.level++; player.spellPoints += 1; need = xpFuerStufe(player.level); } }; },
         () => { gainXP = window._eGainXP; });
   zprobe('spellUnlockable ignoriert die Befugnisstufe',
         () => { window._eUnl = spellUnlockable;
                 spellUnlockable = function(sp){ return !player.spellsKnown[sp.id] && player.spellPoints > 0 && sp.req.every(spellKnown); }; },
         () => { spellUnlockable = window._eUnl; });
   raus.push(['unveraenderte Zauberbefugnis (muss gruen sein)', zauberAssert()]);
+
+  // --- S1: Proben gegen befaehigungAssert() --------------------------------
+  // Vier Proben fuer die vier Zusagen von S1. Jede setzt genau den Zustand
+  // wieder her, den der Bauabschnitt beseitigt hat — und der Guard muss ihn
+  // wiedererkennen, sonst waere er nur Dekoration.
+  const bprobe = (name, hin, zurueck) => { hin(); const ok = befaehigungAssert(); zurueck(); raus.push([name, ok]); };
+  bprobe('die Stufe schenkt wieder mehr als der Punkt',
+        () => { window._eRecalc = recalc;
+                recalc = function(){ window._eRecalc(); derived.maxHp = 70 + (player.level-1)*12 + player.skills.vit*20; }; },
+        () => { recalc = window._eRecalc; });
+  bprobe('der Aufstieg heilt wieder voll',
+        () => { window._eGain2 = gainXP;
+                gainXP = function(x){ const vor = player.level; window._eGain2(x);
+                  if(player.level > vor) player.hp = derived.maxHp; }; },
+        () => { gainXP = window._eGain2; });
+  bprobe('equipItemFromBag prueft den Kraftbedarf nicht mehr',
+        () => { window._eEquip = equipItemFromBag;
+                equipItemFromBag = function(idx){ const it = player.bag[idx]; if(!it) return;
+                  player.equip[it.base.t] = it; player.bag[idx] = null; recalc(); }; },
+        () => { equipItemFromBag = window._eEquip; });
+  bprobe('der Grundpool traegt wieder beliebig viele Sprueche',
+        () => { window._eFunke = SPELLS[0].mana; SPELLS[0].mana = 2; },
+        () => { SPELLS[0].mana = window._eFunke; });
+  raus.push(['unveraenderte Befaehigung (muss gruen sein)', befaehigungAssert()]);
   console.error = echt;
   return raus;
 });

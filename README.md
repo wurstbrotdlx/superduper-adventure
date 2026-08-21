@@ -20,7 +20,7 @@ Dann `http://localhost:8378/adventure/` aufrufen.
 
 ## Steuerung
 
-`W A S D` Bewegung · `Leertaste` oder Klick Angriff · `Q` oder `1` Trank · `E` Zauber · `R` Ultimate · `T` Zauberbaum · `I` Inventar · `K` Kessel · `M` Musik · `F` Kontextaktion · `Esc` schließt Panels der Reihe nach.
+`W A S D` Bewegung · `Leertaste` oder Klick Angriff · `Q` oder `1` Trank · `E` Zauber · `R` Ultimate · `T` Zauberbaum · `I` Inventar und Befähigung · `K` Kessel · `M` Musik · `F` Kontextaktion · `Esc` schließt Panels der Reihe nach.
 
 Touch: virtueller Joystick links, Kampf-Cluster rechts.
 
@@ -34,7 +34,7 @@ python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</sc
 
 Das fängt Syntaxfehler, **nicht** die Temporal Dead Zone. Der häufigste echte Fehler in diesem Projekt ist ein `ReferenceError` beim Laden, weil eine Funktion, die schon auf Skriptebene läuft, eine erst später deklarierte Konstante liest. Den findet nur der Browser mit offener Konsole.
 
-Das Spiel prüft sich beim Laden selbst. Zwölf selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`, `zauberAssert`, `dienstAssert`, `wiederAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung, seit M1 die Kampfwerte gegen den Referenzspieler, seit M2 zusätzlich die Modelle gegen die Angriffsart und die Grenzen des Sonderprüfers, seit Z2 die Zauberbefugnis samt Manakopplung, seit W8 den Sperrvermerk auf die Akte im Einstellungsvordruck und seit W10 die beidseitige Klemme des gespeicherten Dienststandes. Dazu kommt `npcAnkerAssert()`, der als einziger nicht auf Skriptebene läuft, sondern erst hinter `loadAssets()`, weil er die gebackenen Blätter liest. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
+Das Spiel prüft sich beim Laden selbst. Dreizehn selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`, `zauberAssert`, `befaehigungAssert`, `dienstAssert`, `wiederAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung, seit M1 die Kampfwerte gegen den Referenzspieler, seit M2 zusätzlich die Modelle gegen die Angriffsart und die Grenzen des Sonderprüfers, seit Z2 die Zauberbefugnis samt Manakopplung, seit S1 die Spreizung zwischen gesteigertem und ungesteigertem Spieler samt Kraftbedarf und Manapool, seit W8 den Sperrvermerk auf die Akte im Einstellungsvordruck und seit W10 die beidseitige Klemme des gespeicherten Dienststandes. Dazu kommt `npcAnkerAssert()`, der als einziger nicht auf Skriptebene läuft, sondern erst hinter `loadAssets()`, weil er die gebackenen Blätter liest. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
 
 ## Dokumente
 
@@ -50,6 +50,7 @@ Das Spiel prüft sich beim Laden selbst. Zwölf selbstaufrufende Guards (`blaett
 | `phase-z1-zauberbalance.md` | Bauabschnitt Z1: warum Zauberspam jeden Nahkampf schlug, vier Eingriffe, Vorher-Nachher-Messung |
 | `phase-m2-nahfeld-und-namen.md` | Bauabschnitt M2: Schwierigkeit nach Entfernung vom Dorf, der Sonderprüfer, Namen über den Köpfen, zwei versiegelte Gegner |
 | `phase-z2-zauberbefugnis.md` | Bauabschnitt Z2: Zauber ab Stufe 4, Mana wird im Nahkampf erarbeitet, Spammen verhungert an der Leiste |
+| `phase-s1-befaehigung.md` | Bauabschnitt S1: warum Steigern folgenlos war, die Umschichtung von der Stufe in den Punkt, höhere Zauberpreise, der Kraftbedarf, Vorher-Nachher-Messung mit zwei Bauweisen |
 | `phase-w8-anfang.md` | Bauabschnitt W8: Einstellungsvordruck, Dienstanweisung, Laufbahnziel, und warum der Anfang kein Prolog ist |
 | `phase-w10-wiedereinsetzung.md` | Bauabschnitt W10: der Antrag auf Wiedereinsetzung, die einzige Art, zweimal derselbe Mensch zu sein |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 22 Gegner, 5 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
@@ -70,7 +71,7 @@ Drei Regeln, die beim Mitarbeiten nicht optional sind: Jede Phasenüberschrift t
 | `tools/monster-messlauf.mjs` | misst Kampfzeit und Gefahrenbudget im laufenden Spiel statt sie nachzurechnen. Braucht Playwright und einen lokalen Server. |
 | `tools/zauber-messlauf.mjs` | misst, was Abstandhalten kostet: Nahkampf gegen Zauberspam, je Gegnergruppe in Zeit und genommenem Schaden |
 | `tools/nahfeld-messlauf.mjs` | zählt an der wirklich gesetzten Bevölkerung ab, was in welcher Entfernung vom Dorf steht |
-| `tools/spaziergang-messlauf.mjs` | schickt eine frische Stufe 1 in die echte Welt und misst den Verlauf: erster Kill, Kills, Stufe, Ausgang |
+| `tools/spaziergang-messlauf.mjs` | schickt eine frische Stufe 1 in die echte Welt und misst den Verlauf: erster Kill, Kills, Stufe, Ausgang. Seit S1 zweimal je Aufruf, einmal ohne und einmal mit Steigerung — der Abstand zwischen beiden Zeilen ist der Messwert |
 | `tools/monster-fehlversuch.mjs` | setzt absichtlich Fehler in den Katalog und prüft, ob `monsterAssert()` sie meldet. Ein Guard, der immer schweigt, beweist nichts. |
 
 ```bash

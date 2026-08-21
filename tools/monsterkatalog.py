@@ -48,27 +48,38 @@ def fixdeep(o):
 
 # ---------------------------------------------------------------- Rechenbasis
 # Referenzspieler, abgeleitet aus index.html (recalc, hurtPlayer, drinkPotion, gainXP).
-# Build: je Stufe 1 Punkt STR, 1 Punkt VIT. Kein INT.
-#   maxHp   = 70 + (L-1)*12 + vit*20
-#   dmgAvg  = (base0+base1)/2 + str*3.5 + Affix
+# Build: je Stufe 1 Punkt Kraft, 1 Punkt Zaehigkeit. Keine Amtskunde.
+#
+# S1 (phase-s1-befaehigung.md) hat die Formeln umgeschichtet, nicht verschaerft:
+# was frueher die Stufe geschenkt hat, kommt jetzt aus den Punkten. Fuer GENAU
+# diesen Referenzspieler bleibt das Ergebnis nahezu gleich (Leben rund 90 %,
+# Schaden je nach Stufe 72 % bis 104 % des alten Wertes), fuer jeden, der nicht
+# steigert, bricht es ein. Die Baender aus M1 halten deshalb weiter; was sich
+# verschiebt, sind die niedrigen Stufen, wo der Anfang jetzt spuerbar zaeher ist.
+#   maxHp   = 63 + (L-1)*2 + vit*27          (vorher 70 + (L-1)*12 + vit*20)
+#   dmgAvg  = (base0+base1)/2 + str*4.0 + Affix   (vorher str*3,5)
 #   DPS     = dmgAvg * (1 + 0.25*0.7) * aps          (Crit 25 %, Faktor 1,7)
 #   Minderung = armor/(armor+30), gedeckelt bei 0,6
+# Die Referenzklinge ist das Kurzschwert aus BASES, und das traegt seit S1
+# [3,6] statt [5,9].
+HP_BASIS, HP_JE_STUFE, ZAEH_HP = 63, 2, 27
+KRAFT_DMG_AVG = 4.0
 REF = {}
 GEAR = {  # Sollstufe: (waffe_base0, waffe_base1, aps, affix_dmg, armor, heilung_pro_min)
-    1:  (5, 9, 1.3, 2,  0,  60),
-    2:  (5, 9, 1.3, 2,  3,  60),
-    3:  (5, 9, 1.3, 2,  5,  60),
-    4:  (5, 9, 1.3, 5, 10,  90),
-    5:  (5, 9, 1.3, 5, 10,  90),
-    6:  (5, 9, 1.3, 5, 13,  90),
-    7:  (5, 9, 1.3, 5, 13,  90),
-    8:  (5, 9, 1.3, 8, 17, 120),
-    9:  (5, 9, 1.3, 8, 17, 120),
-    10: (5, 9, 1.3, 8, 20, 120),
+    1:  (3, 6, 1.3, 2,  0,  60),
+    2:  (3, 6, 1.3, 2,  3,  60),
+    3:  (3, 6, 1.3, 2,  5,  60),
+    4:  (3, 6, 1.3, 5, 10,  90),
+    5:  (3, 6, 1.3, 5, 10,  90),
+    6:  (3, 6, 1.3, 5, 13,  90),
+    7:  (3, 6, 1.3, 5, 13,  90),
+    8:  (3, 6, 1.3, 8, 17, 120),
+    9:  (3, 6, 1.3, 8, 17, 120),
+    10: (3, 6, 1.3, 8, 20, 120),
 }
 for L, (b0, b1, aps, affix, armor, hpm) in GEAR.items():
-    hp = 70 + (L - 1) * 12 + (L - 1) * 20
-    dmg_avg = (b0 + b1) / 2 + (L - 1) * 3.5 + affix
+    hp = HP_BASIS + (L - 1) * HP_JE_STUFE + (L - 1) * ZAEH_HP
+    dmg_avg = (b0 + b1) / 2 + (L - 1) * KRAFT_DMG_AVG + affix
     dps = dmg_avg * 1.175 * aps
     minderung = min(0.6, armor / (armor + 30))
     REF[L] = dict(hp=hp, dps=round(dps, 1), armor=armor, minderung=round(minderung, 3), hpm=hpm)
@@ -78,9 +89,14 @@ for L, (b0, b1, aps, affix, armor, hpm) in GEAR.items():
 # MANA_JE_TREFFER (4) je Waffenschwung bei 1,3 Schwuengen je Sekunde, zusammen
 # 7,2 Mana/s IM Kampf. Funke: 16 Schaden je 5 Mana. Identisch abgeleitet in
 # index.html (KAT_ZAUBER_DPS), die Kopplung prueft dort zauberAssert().
+# S1: Der Funke kostet 12 Mana statt 5 und traegt 20 Schaden statt 16. Die
+# erarbeitete Manarate ist unveraendert (7,2 je Kampfsekunde), die Dauerleistung
+# faellt damit von 23,04 auf 12,0 — knapp die Haelfte. Der Grundpool ist zugleich
+# von 40 auf 26 gefallen: auf der Befugnisstufe traegt er genau zwei Funken.
 MANA_REGEN, MANA_JE_TREFFER, REF_APS = 2, 4, 1.3
-ZAUBER_DPS = (MANA_REGEN + MANA_JE_TREFFER * REF_APS) / 5.0 * 16.0   # 23.04
-ZAUBER_BURST = 57.0        # solange der Pool reicht
+FUNKE_MANA, FUNKE_DMG = 12.0, 20.0
+ZAUBER_DPS = (MANA_REGEN + MANA_JE_TREFFER * REF_APS) / FUNKE_MANA * FUNKE_DMG   # 12.0
+ZAUBER_BURST = 43.0        # solange der Pool reicht
 
 XP_RATE = {'A1': 1.0, 'A2': 1.4, 'A3': 2.0, 'A4': 2.6}
 def basisrate(L):          # XP je effektiver Kampfsekunde fuer A1 auf Sollstufe L
@@ -218,7 +234,7 @@ mon(id='blubberakte', name='Blubberakte', alt=False, biom='Sumpf', L=3, klasse='
 
 mon(id='moorbescheid', name='Der Moorbescheid', alt=False, biom='Sumpf', L=4, klasse='A2', typen=['B5'],
     vorgang='Der durchweichte Bescheid', slot='armor',
-    res=dict(physisch=0.5, feuer=-0.5, eis=0.15, gift=0.9, magie=0.15), route='feuer',
+    res=dict(physisch=0.73, feuer=-0.5, eis=0.15, gift=0.9, magie=0.15), route='feuer',
     ttk_ziel=10.0, gef_ziel=20, intervall=2.0, tempo=26, rudel=1,
     muster=[
             dict(name='Durchweichen', warn=450, reich='nah (30)', effekt='schwerer, langsamer Grundtreffer', art='nah'),
@@ -353,7 +369,7 @@ mon(id='mage', name='Irrlichtmagier', alt=True, biom='Hoehle', L=8, klasse='A3',
 
 mon(id='golem', name='Steingolem', alt=True, biom='Hoehle', L=9, klasse='A4', typen=['B2', 'B5'],
     vorgang='Die Bestandskraft', slot='shield',
-    res=dict(physisch=0.9, feuer=0, eis=0, gift=0.6, magie=-0.4), route='magie',
+    res=dict(physisch=0.95, feuer=0, eis=0, gift=0.6, magie=-0.4), route='magie',
     ttk_ziel=34.0, gef_ziel=5.0, intervall=2.6, tempo=28, rudel=1,
     muster=[
             dict(name='Faustschlag', warn=700, reich='nah (36)', effekt='sehr schwerer Grundtreffer, der Arm hebt weit sichtbar an', art='nah'),
@@ -403,7 +419,7 @@ mon(id='stalfos', name='Knochenritter', alt=True, biom='Ruine', L=9, klasse='A3'
 
 mon(id='sammelverfuegung', name='Die Sammelverfuegung', alt=False, biom='Ruine', L=10, klasse='A4', typen=['B4', 'B5'],
     vorgang='Der Sammelbescheid', slot='weapon',
-    res=dict(physisch=0.7, feuer=-0.35, eis=0.45, gift=0.6, magie=0.45), route='feuer',
+    res=dict(physisch=0.85, feuer=-0.35, eis=0.45, gift=0.6, magie=0.45), route='feuer',
     ttk_ziel=36.0, gef_ziel=4.0, intervall=2.2, tempo=112, rudel=1,
     muster=[
             dict(name='Zurueckverweisen', warn=400, reich='nah (30)', effekt='Grundtreffer, stoesst dich weit zurueck und sie zieht sich nach', art='nah', stoesst=40),
@@ -539,17 +555,25 @@ w('Die Referenzwerte sind nicht gesetzt, sondern aus `index.html` abgeleitet, da
 w('gegen das Spiel rechnet und nicht gegen eine Fantasie. Quellen sind `recalc()`, `hurtPlayer()`,')
 w('`drinkPotion()` und `gainXP()`.')
 w('')
-w('Angenommener Referenzbuild: je Stufenaufstieg ein Punkt in Stärke und ein Punkt in Vitalität,')
-w('kein Punkt in Intelligenz. Ausrüstung im üblichen Fundfenster der Stufe, keine Kesselwirkungen,')
+w('Angenommener Referenzbuild: je Stufenaufstieg ein Punkt in Kraft und ein Punkt in Zähigkeit,')
+w('kein Punkt in Amtskunde. Ausrüstung im üblichen Fundfenster der Stufe, keine Kesselwirkungen,')
 w('keine Flüche.')
 w('')
+w('Seit Bauabschnitt S1 (`phase-s1-befaehigung.md`) ist dieser Build keine Nebenannahme mehr,')
+w('sondern die Voraussetzung. Die Stufe schenkt fast nichts (2 Leben, 2 Mana), das Meiste hängt')
+w('am Punkt (27 Leben, 22 Mana, 3 bis 5 Schaden). Für genau diesen Referenzspieler bleiben die')
+w('Bänder unverändert; wer nicht steigert, liegt weit darunter und ist von diesem Katalog nicht')
+w('gedeckt. Das ist Absicht und der ganze Zweck von S1.')
+w('')
 w('```')
-w('maxHp     = 70 + (Stufe-1)*12 + VIT*20                     (recalc)')
-w('dmgAvg    = (Waffe_min + Waffe_max)/2 + STR*3,5 + Affix    (recalc)')
+w('maxHp     = 63 + (Stufe-1)*2 + ZÄH*27                      (recalc)')
+w('dmgAvg    = (Waffe_min + Waffe_max)/2 + KRAFT*4,0 + Affix  (recalc)')
 w('DPS       = dmgAvg * 1,175 * Angriffe je Sekunde           (Crit 25 % zu Faktor 1,7)')
 w('Minderung = Rüstung/(Rüstung+30), gedeckelt bei 0,6        (hurtPlayer)')
 w('Trank     = 60 Leben je Fläschchen                         (drinkPotion)')
 w('```')
+w('')
+w('Referenzklinge ist das Kurzschwert aus `BASES`, seit S1 mit 3 bis 6 Grundschaden statt 5 bis 9.')
 w('')
 w('| Sollstufe | Spieler-HP | Rüstung | Minderung | Spieler-DPS | Heilung je Minute |')
 w('|---|---|---|---|---|---|')
@@ -564,16 +588,22 @@ w('Rechnung, aber kein Gegner braucht sie (siehe 3.4).')
 w('')
 w('### 1.2 Zauberleistung')
 w('')
-w('Manaregeneration 8 je Sekunde, Funke kostet 5 Mana für 16 Schaden. Die Dauerleistung eines')
-w('Zauberers ist deshalb manabegrenzt und stufenunabhängig:')
+w('Mana entsteht seit Z2 nicht mehr beim Warten, sondern bei der Arbeit: 2 je Sekunde passiv plus')
+w('4 je Waffenschwung, bei 1,3 Schwüngen je Sekunde also 7,2 je Kampfsekunde. Seit S1 kostet der')
+w('Funke 12 Mana für 20 Schaden statt 5 für 16. Die Dauerleistung eines Zauberers ist damit')
+w('manabegrenzt, stufenunabhängig und knapp halb so groß wie vor S1:')
 w('')
 w('```')
-w('Zauber-DPS (Dauer)  = 8/5 * 16   = 25,6')
-w('Zauber-DPS (Fenster) ~ 57        solange der Manapool reicht')
+w(f'Zauber-DPS (Dauer)  = 7,2/{kom(FUNKE_MANA)} * {kom(FUNKE_DMG)} = {kom(round(ZAUBER_DPS, 2))}   (vor S1: 23,04, vor Z2: 25,6)')
+w(f'Zauber-DPS (Fenster) ~ {kom(ZAUBER_BURST)}        solange der Manapool reicht')
 w('```')
 w('')
 w('Das ist der Grund, warum Resistenz-Gates in diesem Katalog nie an reiner Zahlengröße hängen:')
-w('ein Gate verschiebt den Spieler von 71 DPS auf 25,6 DPS, und das allein ist schon Faktor 2,8.')
+w('ein Gate verschiebt den Spieler von rund 74 DPS auf 12 DPS, und das allein ist schon Faktor 6.')
+w('Weil die Zauberleistung mit S1 gefallen ist, sind die drei Gegner mit Zauber-Sollroute im')
+w('selben Verhältnis leichter geworden und zugleich dicker gegen die Waffe: der Abstand zwischen')
+w('Sollroute und Waffenroute ist derselbe geblieben (Moorbescheid 2,0-fach, Steingolem 4,9-fach,')
+w('Sammelverfügung 1,45-fach).')
 w('')
 w('### 1.3 Formeln des Katalogs')
 w('')
