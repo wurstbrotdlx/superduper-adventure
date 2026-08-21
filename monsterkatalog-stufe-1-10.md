@@ -179,7 +179,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
 | Der Amtsschimmel | Die Fristverlängerung | Er entscheidet nichts, er verlängert. Alles, was er anschaut, bekommt eine neue Frist und dadurch neue Gesundheit. | neu |
 | Der Fristläufer | Die Fristsetzung | Er setzt Fristen, die niemand beantragt hat, und ist weg, bevor jemand widersprechen kann. Sehr amtlich. | neu |
 | Papierstaub-Skarabäus | Die Aktenvernichtung | Er lebt von dem, was nach dem Brand uebrig blieb, und ist gegen Feuer deshalb gleichgueltig. Im Brandabschnitt ist das eine Karriere. | neu |
-| Klippkrabbe | Die Aktenklammer | Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Verkohlt ist sie sowieso schon. | bekannt |
+| Klippkrabbe | Die Aktenklammer | Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Was geklammert ist, ist geklammert, da hilft keine Beschwoerung. | bekannt |
 | Sandskorpion | Die Nachforderung | Kommt schnell, kommt hinterher, sticht genau einmal. Der erste Bescheid war zu niedrig, sagt er, und stellt das sofort richtig. | bekannt |
 | Dünenpriester | Die Verfügung | Er ordnet aus sicherer Entfernung an, dass andere es tun. Sein Stab hat mehr Dienstjahre als das Amt. | bekannt |
 | Fledermaus | Der Umlauf | Kreist, landet nie, kommt bei jedem einmal vorbei. Was in der Mappe ist, weiß seit Jahren niemand mehr. | bekannt |
@@ -188,7 +188,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
 | Irrlichtmagier | Die Fußnote | Leuchtet, verweist, fuehrt nirgendwohin. Wer ihm folgt, steht am Ende vor einer weiteren Fußnote. | bekannt |
 | Steingolem | Die Bestandskraft | Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon. | bekannt |
 | Der Aktenbote | Der Zuschlag | Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. Daran hält sich hier jeder. | neu |
-| Mumie | Die versiegelte Akte | Banderole drum, Siegel drauf, nie geöffnet. Langsam, aber sehr geduldig, und sie hält das für Datenschutz. | bekannt |
+| Mumie | Die versiegelte Akte | Banderole drum, Siegel drauf, nie geöffnet. Ein Siegel ist genau dazu da, dass niemand von aussen hineinwirkt, auch nicht mit Feuer. | bekannt |
 | Knochenritter | Die Dienstvorschrift | Reine Form, bewaffnet, korrekt, unbeirrbar. Er hält sich auch beim Töten an die Reihenfolge, und die Pause ist dein Rechtsmittel. | bekannt |
 | Die Sammelverfügung | Der Sammelbescheid | Alles, was je gegen dich lief, zusammengefasst und in einem Mantel aus Papier vorgetragen. Papier. | neu |
 
@@ -716,15 +716,16 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "sollstufe": 5,
     "ertragsklasse": "A2",
     "anforderungstyp": [
-      "B2"
+      "B2",
+      "B5"
     ],
-    "hp": 285,
+    "hp": 570,
     "resistenzen": {
-      "physisch": 0.4,
-      "feuer": 0.35,
-      "eis": -0.35,
+      "physisch": -0.2,
+      "feuer": 1.0,
+      "eis": 1.0,
       "gift": 0.2,
-      "magie": 0
+      "magie": 1.0
     },
     "schaden_pro_treffer": 22,
     "angriffsintervall_s": 1.4,
@@ -757,8 +758,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "chance": 0.2
       }
     ],
-    "konter_in_einem_satz": "Nicht im Griff stehen bleiben wollen, sondern vorher seitlich weg, dann greift die Klammer ins Leere.",
-    "flavor_de": "Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Verkohlt ist sie sowieso schon."
+    "konter_in_einem_satz": "Die Waffe nehmen, nicht den Stab: Zauber perlen an der Klammer ab, der Panzer dagegen ist muerbe.",
+    "flavor_de": "Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Was geklammert ist, ist geklammert, da hilft keine Beschwoerung."
   },
   {
     "id": "scorpion",
@@ -1180,15 +1181,16 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
     "sollstufe": 9,
     "ertragsklasse": "A2",
     "anforderungstyp": [
-      "B2"
+      "B2",
+      "B5"
     ],
-    "hp": 550,
+    "hp": 1150,
     "resistenzen": {
-      "physisch": 0.4,
-      "feuer": -0.45,
-      "eis": 0.2,
+      "physisch": -0.25,
+      "feuer": 1.0,
+      "eis": 1.0,
       "gift": 0.9,
-      "magie": 0.1
+      "magie": 1.0
     },
     "schaden_pro_treffer": 60,
     "angriffsintervall_s": 2.1,
@@ -1208,7 +1210,7 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
       }
     ],
     "berechnete_ttk_s": 14.0,
-    "xp": 365,
+    "xp": 366,
     "gold_min": 64,
     "gold_max": 134,
     "loot": [
@@ -1221,8 +1223,8 @@ Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind 
         "chance": 0.18
       }
     ],
-    "konter_in_einem_satz": "Feuer an die Binden, und während der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.",
-    "flavor_de": "Banderole drum, Siegel drauf, nie geöffnet. Langsam, aber sehr geduldig, und sie hält das für Datenschutz."
+    "konter_in_einem_satz": "Die Klinge an die Binden, kein Zauber kommt durch das Siegel, und während der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.",
+    "flavor_de": "Banderole drum, Siegel drauf, nie geöffnet. Ein Siegel ist genau dazu da, dass niemand von aussen hineinwirkt, auch nicht mit Feuer."
   },
   {
     "id": "stalfos",
@@ -1364,7 +1366,7 @@ Gerechnet mit `tools/monsterkatalog.py`, nicht von Hand. Sollwerte in Klammern.
 | Irrlichtmagier | 8 | A3 | physisch | 12,3 s (12 bis 25) | 427 | 34,84 (34,82) | 9,5 s (6 bis 10) | ok |
 | Steingolem | 9 | A4 | magie | 34,0 s (20 bis 40) | 1654 | 48,59 (48,58) | 5,0 s (3 bis 6) | ok |
 | Der Aktenbote | 8 | A1 | physisch | 2,2 s (1 bis 3) | 39 | 17,42 (17,41) | 38,1 s (über 30) | ok |
-| Mumie | 9 | A2 | physisch | 14,0 s (8 bis 15) | 365 | 26,16 (26,16) | 17,9 s (15 bis 25) | ok |
+| Mumie | 9 | A2 | physisch | 14,0 s (8 bis 15) | 366 | 26,14 (26,16) | 17,9 s (15 bis 25) | ok |
 | Knochenritter | 9 | A3 | physisch | 18,1 s (12 bis 25) | 675 | 37,37 (37,37) | 6,5 s (6 bis 10) | ok |
 | Die Sammelverfügung | 10 | A4 | feuer | 35,9 s (20 bis 40) | 1857 | 51,76 (51,75) | 4,0 s (3 bis 6) | ok |
 
@@ -1417,7 +1419,9 @@ abgeleitet sind.
 |---|---|---|---|---|---|
 | Der Moorbescheid | 22,4 s | **10,0 s** | 17,7 s | 150,4 s * | 17,7 s |
 | Papierstaub-Skarabäus | **2,5 s** | 11,2 s | 1,2 s | 2,4 s * | 1,7 s |
+| Klippkrabbe | **12,0 s** | wirkungslos | wirkungslos | 27,8 s * | wirkungslos |
 | Steingolem | 185,7 s | 47,7 s | 47,7 s | 119,1 s * | **34,0 s** |
+| Mumie | **14,0 s** | wirkungslos | wirkungslos | 449,2 s * | wirkungslos |
 | Die Sammelverfügung | 58,2 s | **35,9 s** | 88,1 s | 121,1 s * | 88,1 s |
 
 \* Giftwerte sind rechnerisch mitgeführt, aber nicht erreichbar: der Spieler hat keine
@@ -1574,4 +1578,36 @@ Drei Punkte, die dieses Dokument benennt und nicht löst:
 3. **Der Frostkamm bleibt ungerechnet.** Er stand nicht im Auftrag. Solange das so ist, ist
    er die Vergleichsprobe im selben Spiel; wenn er dazukommen soll, gehören seine drei Typen
    in `tools/monsterkatalog.py` und bekommen dort ein `kat`-Feld wie alle anderen.
+
+### 3.9 Nachtrag M2: zwei versiegelte Gegner
+
+Aus dem Spielbericht: sobald Magie zur Verfügung steht, lässt sich aus der Distanz
+spammen. Der erste Teil der Antwort steht in `phase-z1-zauberbalance.md` (Zaubern kostet
+wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der 22 Gegner sind gegen
+alle drei Zauberzweige immun.** Sie sind der Ort, an dem die Waffe die einzige Antwort ist.
+
+| Gegner | Sollstufe | Klasse | Weichstelle | Sollzeit |
+|---|---|---|---|---|
+| Klippkrabbe | 5 | A2 | physisch -0,20 | 12,0 s |
+| Mumie | 9 | A2 | physisch -0,25 | 14,0 s |
+
+Beide sind mit Absicht **A2 und langsam** (Tempo 36 und 26 gegen 135 beim Spieler). Wer
+sie im Nahkampf annimmt, kann jederzeit wieder weggehen. Die Sperre kostet also Zeit und
+Aufmerksamkeit, nie das Leben. Beide sind gegen die Waffe ausdrücklich VERWUNDBAR, nicht
+bloß unresistent: der Umweg über den Nahkampf ist schneller als jeder Zauber es je war.
+Und beide stehen weit vom Dorf entfernt, in Wüste und Ruine, also dort, wo ein Spieler
+seine Zauber längst kennt. Sichtbar sind sie an einem gestrichelten weißen Siegelring am
+Boden, der dauerhaft leuchtet und nicht erst nach dem ersten verlorenen Zauber.
+
+Drei Bedingungen prüfen dieses Skript und `monsterAssert()` unabhängig voneinander nach:
+die Sollroute ist physisch, die Waffe ist Weichstelle, und die Klasse ist nicht A4. Dazu
+kommt die Sackgassenprüfung, die für ALLE Gegner gilt: kein Gegner darf gegen alle vier
+spielbaren Arten zugleich immun sein.
+
+Nicht in diesem Katalog stehen die beiden anderen Neuerungen aus M2, weil sie keine
+Katalogeinträge sind: die Staffel der Bevölkerung nach Entfernung vom Dorf und der
+Sonderprüfer, eine seltene Aufwertung EINER Instanz eines A1-Gegners. Beides sind
+Eigenschaften der Karte und der Instanz, nicht der Vorgangsart. Sie stehen in
+`phase-m2-nahfeld-und-namen.md` und werden von `monsterAssert()` gegen dieselben Bänder
+gerechnet wie alles andere hier.
 

@@ -261,16 +261,16 @@ mon(id='skarabaeus', name='Papierstaub-Skarabaeus', alt=False, biom='Wueste', L=
     flavor='Er lebt von dem, was nach dem Brand uebrig blieb, und ist gegen Feuer deshalb gleichgueltig. Im Brandabschnitt ist das eine Karriere.',
     loot=[('Panzerspan', 0.35), ('Sandiger Vordruck', 0.25)])
 
-mon(id='crab', name='Klippkrabbe', alt=True, biom='Wueste', L=5, klasse='A2', typen=['B2'],
+mon(id='crab', name='Klippkrabbe', alt=True, biom='Wueste', L=5, klasse='A2', typen=['B2', 'B5'], zauberfest=True,
     vorgang='Die Aktenklammer', slot='weapon',
-    res=dict(physisch=0.4, feuer=0.35, eis=-0.35, gift=0.2, magie=0), route='physisch',
+    res=dict(physisch=-0.2, feuer=1.0, eis=1.0, gift=0.2, magie=1.0), route='physisch',
     ttk_ziel=12.0, gef_ziel=22, intervall=1.4, tempo=36, rudel=1,
     muster=[
             dict(name='Klammern', warn=400, reich='nah (28)', effekt='Grundtreffer, haelt dich 0,5 s fest statt dich wegzustossen', art='nah', halt=0.5),
             dict(name='Zangengriff', warn=550, reich='nah (32)', effekt='ersetzt jeden dritten Grundtreffer, doppelte Haltezeit, dafuer weniger Wucht', art='nah', jede=3, wucht=0.7, reichw=32, halt=1.0),
         ],
-    konter='Nicht im Griff stehen bleiben wollen, sondern vorher seitlich weg, dann greift die Klammer ins Leere.',
-    flavor='Zwei Zangen, haelt alles zusammen, geht nicht wieder ab. Verkohlt ist sie sowieso schon.',
+    konter='Die Waffe nehmen, nicht den Stab: Zauber perlen an der Klammer ab, der Panzer dagegen ist muerbe.',
+    flavor='Zwei Zangen, haelt alles zusammen, geht nicht wieder ab. Was geklammert ist, ist geklammert, da hilft keine Beschwoerung.',
     loot=[('Krabbenschere', 0.4), ('Verkohlte Klammer', 0.2)])
 
 mon(id='scorpion', name='Sandskorpion', alt=True, biom='Wueste', L=6, klasse='A3', typen=['B3'], folgeschlag=True,
@@ -371,16 +371,16 @@ mon(id='aktenbote', name='Der Aktenbote', alt=False, biom='Ruine', L=8, klasse='
     flavor='Er traegt nichts Eigenes bei ausser der Mitteilung, dass ab jetzt alle haerter zuschlagen duerfen. Daran haelt sich hier jeder.',
     loot=[('Botenmappe', 0.35), ('Zuschlagsverfuegung', 0.25)])
 
-mon(id='mummy', name='Mumie', alt=True, biom='Ruine', L=9, klasse='A2', typen=['B2'],
+mon(id='mummy', name='Mumie', alt=True, biom='Ruine', L=9, klasse='A2', typen=['B2', 'B5'], zauberfest=True,
     vorgang='Die versiegelte Akte', slot='armor',
-    res=dict(physisch=0.4, feuer=-0.45, eis=0.2, gift=0.9, magie=0.1), route='physisch',
+    res=dict(physisch=-0.25, feuer=1.0, eis=1.0, gift=0.9, magie=1.0), route='physisch',
     ttk_ziel=14.0, gef_ziel=18, intervall=2.1, tempo=26, rudel=1,
     muster=[
             dict(name='Verschnueren', warn=500, reich='nah (30)', effekt='Grundtreffer, halbiert 2 s lang dein Tempo', art='nah', slow=2.0),
             dict(name='Siegelstaub', warn=600, reich='Kegel (80)', effekt='ersetzt jeden dritten Grundtreffer, sperrt 5 s lang die Trankwirkung', art='kegel', jede=3, reichw=80, sperre=5),
         ],
-    konter='Feuer an die Binden, und waehrend der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.',
-    flavor='Banderole drum, Siegel drauf, nie geoeffnet. Langsam, aber sehr geduldig, und sie haelt das fuer Datenschutz.',
+    konter='Die Klinge an die Binden, kein Zauber kommt durch das Siegel, und waehrend der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.',
+    flavor='Banderole drum, Siegel drauf, nie geoeffnet. Ein Siegel ist genau dazu da, dass niemand von aussen hineinwirkt, auch nicht mit Feuer.',
     loot=[('Mumienbinde', 0.45), ('Versiegelte Akte', 0.18)],
     heilsperre=True)
 
@@ -463,6 +463,24 @@ for m in R:
     vmin = min(p['warn'] for p in m['muster'])
     if vmin < VORWARN_MIN[kl]: verstoss.append('Vorwarnung')
     if vmin < 250: verstoss.append('Vorwarnung<250')
+    # M2: zauberfeste Gegner. Ein Gegner, gegen den Zauber nichts ausrichten,
+    # ist erlaubt und erwuenscht (er ist der Konter gegen das Zauberspammen aus
+    # der Distanz), aber nur unter drei Bedingungen, die hier nachgerechnet
+    # werden statt in einem Kommentar zu stehen:
+    #   1. Die Sollroute ist physisch. Sonst waere seine eigene Route gesperrt.
+    #   2. Er ist gegen die Waffe VERWUNDBAR. Ein zauberfester Schadensschwamm
+    #      mit Panzerung waere kein Konter, sondern eine Wand.
+    #   3. Er ist kein A4. Meisterschaft plus Routensperre gleichzeitig ist zwei
+    #      Huerden auf einmal, und der Katalog verlangt Besiegbarkeit ohne
+    #      Verbrauchsgegenstaende.
+    if m.get('zauberfest'):
+        if m['route'] != 'physisch':          verstoss.append('Zauberfest-Route')
+        if m['res']['physisch'] > -0.05:      verstoss.append('Zauberfest ohne Weichstelle')
+        if kl == 'A4':                        verstoss.append('Zauberfest A4')
+    # Und in keinem Fall darf ein Gegner gegen alle vier spielbaren Arten immun
+    # sein: das waere ein Gegner ohne Konter, ausdruecklich verboten.
+    if all(m['res'].get(a, 0) >= 0.999 for a in ('physisch', 'feuer', 'eis', 'magie')):
+        verstoss.append('gegen alles immun')
     pruef.append(dict(id=m['id'], name=fix(m['name']), biom=fix(m['biom']), L=L, kl=kl, typen='+'.join(m['typen']),
                       route=m['route'], hp=hp, ttk=round(ttk, 1), xp=xp, xps=round(xps, 2),
                       soll=round(soll_rate, 2), gef=gef, gefr=gef_rudel, rudel=m['rudel'],
@@ -869,6 +887,43 @@ w('   Grafik will, tauscht `rig` und `tint` im MONDEF-Eintrag, nicht die Zahlen.
 w('3. **Der Frostkamm bleibt ungerechnet.** Er stand nicht im Auftrag. Solange das so ist, ist')
 w('   er die Vergleichsprobe im selben Spiel; wenn er dazukommen soll, gehören seine drei Typen')
 w('   in `tools/monsterkatalog.py` und bekommen dort ein `kat`-Feld wie alle anderen.')
+w('')
+w('### 3.9 Nachtrag M2: zwei versiegelte Gegner')
+w('')
+w('Aus dem Spielbericht: sobald Magie zur Verfügung steht, lässt sich aus der Distanz')
+w('spammen. Der erste Teil der Antwort steht in `phase-z1-zauberbalance.md` (Zaubern kostet')
+w('wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der 22 Gegner sind gegen')
+w('alle drei Zauberzweige immun.** Sie sind der Ort, an dem die Waffe die einzige Antwort ist.')
+w('')
+w('| Gegner | Sollstufe | Klasse | Weichstelle | Sollzeit |')
+w('|---|---|---|---|---|')
+for m in R:
+    if m.get('zauberfest'):
+        e = next(x for x in rein if x['id'] == m['id'])
+        w('| %s | %d | %s | physisch %s | %s s |' % (
+            fix(m['name']), m['L'], m['klasse'],
+            ('%+.2f' % m['res']['physisch']).replace('.', ','),
+            ('%.1f' % e['berechnete_ttk_s']).replace('.', ',')))
+w('')
+w('Beide sind mit Absicht **A2 und langsam** (Tempo 36 und 26 gegen 135 beim Spieler). Wer')
+w('sie im Nahkampf annimmt, kann jederzeit wieder weggehen. Die Sperre kostet also Zeit und')
+w('Aufmerksamkeit, nie das Leben. Beide sind gegen die Waffe ausdrücklich VERWUNDBAR, nicht')
+w('bloß unresistent: der Umweg über den Nahkampf ist schneller als jeder Zauber es je war.')
+w('Und beide stehen weit vom Dorf entfernt, in Wüste und Ruine, also dort, wo ein Spieler')
+w('seine Zauber längst kennt. Sichtbar sind sie an einem gestrichelten weißen Siegelring am')
+w('Boden, der dauerhaft leuchtet und nicht erst nach dem ersten verlorenen Zauber.')
+w('')
+w('Drei Bedingungen prüfen dieses Skript und `monsterAssert()` unabhängig voneinander nach:')
+w('die Sollroute ist physisch, die Waffe ist Weichstelle, und die Klasse ist nicht A4. Dazu')
+w('kommt die Sackgassenprüfung, die für ALLE Gegner gilt: kein Gegner darf gegen alle vier')
+w('spielbaren Arten zugleich immun sein.')
+w('')
+w('Nicht in diesem Katalog stehen die beiden anderen Neuerungen aus M2, weil sie keine')
+w('Katalogeinträge sind: die Staffel der Bevölkerung nach Entfernung vom Dorf und der')
+w('Sonderprüfer, eine seltene Aufwertung EINER Instanz eines A1-Gegners. Beides sind')
+w('Eigenschaften der Karte und der Instanz, nicht der Vorgangsart. Sie stehen in')
+w('`phase-m2-nahfeld-und-namen.md` und werden von `monsterAssert()` gegen dieselben Bänder')
+w('gerechnet wie alles andere hier.')
 w('')
 
 md = '\n'.join(L) + '\n'

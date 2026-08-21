@@ -519,15 +519,16 @@
     "sollstufe": 5,
     "ertragsklasse": "A2",
     "anforderungstyp": [
-      "B2"
+      "B2",
+      "B5"
     ],
-    "hp": 285,
+    "hp": 570,
     "resistenzen": {
-      "physisch": 0.4,
-      "feuer": 0.35,
-      "eis": -0.35,
+      "physisch": -0.2,
+      "feuer": 1.0,
+      "eis": 1.0,
       "gift": 0.2,
-      "magie": 0
+      "magie": 1.0
     },
     "schaden_pro_treffer": 22,
     "angriffsintervall_s": 1.4,
@@ -560,8 +561,8 @@
         "chance": 0.2
       }
     ],
-    "konter_in_einem_satz": "Nicht im Griff stehen bleiben wollen, sondern vorher seitlich weg, dann greift die Klammer ins Leere.",
-    "flavor_de": "Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Verkohlt ist sie sowieso schon."
+    "konter_in_einem_satz": "Die Waffe nehmen, nicht den Stab: Zauber perlen an der Klammer ab, der Panzer dagegen ist muerbe.",
+    "flavor_de": "Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Was geklammert ist, ist geklammert, da hilft keine Beschwoerung."
   },
   {
     "id": "scorpion",
@@ -983,15 +984,16 @@
     "sollstufe": 9,
     "ertragsklasse": "A2",
     "anforderungstyp": [
-      "B2"
+      "B2",
+      "B5"
     ],
-    "hp": 550,
+    "hp": 1150,
     "resistenzen": {
-      "physisch": 0.4,
-      "feuer": -0.45,
-      "eis": 0.2,
+      "physisch": -0.25,
+      "feuer": 1.0,
+      "eis": 1.0,
       "gift": 0.9,
-      "magie": 0.1
+      "magie": 1.0
     },
     "schaden_pro_treffer": 60,
     "angriffsintervall_s": 2.1,
@@ -1011,7 +1013,7 @@
       }
     ],
     "berechnete_ttk_s": 14.0,
-    "xp": 365,
+    "xp": 366,
     "gold_min": 64,
     "gold_max": 134,
     "loot": [
@@ -1024,8 +1026,8 @@
         "chance": 0.18
       }
     ],
-    "konter_in_einem_satz": "Feuer an die Binden, und während der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.",
-    "flavor_de": "Banderole drum, Siegel drauf, nie geöffnet. Langsam, aber sehr geduldig, und sie hält das für Datenschutz."
+    "konter_in_einem_satz": "Die Klinge an die Binden, kein Zauber kommt durch das Siegel, und während der Siegelstaub-Sperre gar nicht erst auf den Trank hoffen.",
+    "flavor_de": "Banderole drum, Siegel drauf, nie geöffnet. Ein Siegel ist genau dazu da, dass niemand von aussen hineinwirkt, auch nicht mit Feuer."
   },
   {
     "id": "stalfos",
