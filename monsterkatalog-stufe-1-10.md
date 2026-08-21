@@ -1,11 +1,11 @@
-## Monsterkatalog, Sollstufe 1 bis 10: 25 Gegner in 6 Biomen — ERLEDIGT (eingebaut mit M1, erweitert mit M3)
+## Monsterkatalog, Sollstufe 1 bis 10: 28 Gegner in 7 Biomen — ERLEDIGT (eingebaut mit M1, erweitert mit M3)
 
 Inhaltslieferung zu Kapitel 3 (Geographie) und Kapitel 6 (Bestiarium) der
-`superduper-weltbibel.md`, eingebaut in `index.html`. 25 Gegner, 6 Biome, vier
+`superduper-weltbibel.md`, eingebaut in `index.html`. 28 Gegner, 7 Biome, vier
 Ertragsklassen, feste Werte. Der Katalog sagt, welche Zahl ein Gegner trägt und warum, und
 er rechnet den Grund mit. Autorität für Welt, Namen und Ton bleibt die Weltbibel.
 
-**Der Katalog liegt auf dem Bestiarium, er ersetzt es nicht.** 12 der 25 Einträge sind
+**Der Katalog liegt auf dem Bestiarium, er ersetzt es nicht.** 12 der 28 Einträge sind
 Monster, die es im Spiel schon gab: sie behalten Namen, Vorgangsart und Rig und haben nur
 gerechnete Werte bekommen. Zehn sind neu. Kein Monster ist verschwunden, und die beiden
 Bänder, die der Auftrag nicht nannte (Eisablage und Ablage V), sind unangetastet geblieben.
@@ -20,7 +20,7 @@ kurze Sätze. Die Markierung in der Überschrift folgt der Repo-Regel aus der RE
 kein Fließtext.
 
 Zwei Vorgaben waren im Auftrag offen und sind hier gesetzt, weil ohne sie nichts zu rechnen
-ist: **N = 25 Gegner** und **X = Sollstufe 10**. 6 Biome zu drei bis fünf Gegnern, jedes
+ist: **N = 28 Gegner** und **X = Sollstufe 10**. 7 Biome zu drei bis fünf Gegnern, jedes
 mit allen vier Ertragsklassen.
 
 ## 1. Rechenbasis
@@ -140,6 +140,7 @@ will, hat keine Wahl, wohin er geht:
 | Sumpf | Die Nassablage | Band südlich davon, 192 bis 239 | Im Sumpf liegen Rüstungszutaten mit feuchten Adjektiven, also alles für Selbstheilung und Abweisung. | 3 bis 5 |
 | Wüste | Der Brandabschnitt | Band ganz im Süden, 240 bis 319 | Der Brandabschnitt liefert Waffenzutaten mit glühenden Adjektiven, also Nachdruck und Wucht, und legt jedem Fund einen teuren Fluch bei. | 4 bis 7 |
 | Höhle | Die Untere Registratur | hinter jeder Kammertür, kein Band | Unter Tage fällt, was Panzerung und Aktenlage trägt, und nur dort. | 6 bis 9 |
+| Lager | Das Lager der Beschwerden | umzäuntes Lager im Grasband, ein einzelner Ort | Wer vor dem Tor steht, bekommt Schild, Waffe und Rüstung, und keiner von ihnen greift zuerst an. | 5 bis 7 |
 | Stollen | Die Sperrablage | hinter der teuersten Kammertür, kein Band | Eine Ebene unter der Registratur liegt, was niemand mehr anfassen sollte, und zahlt es in Rüstung und Waffe. | 9 bis 10 |
 | Ruine | Der Altbestand | Band ganz im Norden, 0 bis 63 | Der Altbestand ist die Quelle für Manafluss, Zauberkraft und Aktenkunde, und zahlt sie mit den härtesten Gegnern des Katalogs. | 8 bis 10 |
 
@@ -158,9 +159,9 @@ sieht man im selben Spiel, wie sich Kämpfe ohne Katalogwerte anfühlen.
 | Ertragsklasse | Gegner | Anforderungstypen |
 |---|---|---|
 | A1 Fleiß | 7 | B1, B5, B6, B7 |
-| A2 Geduld | 6 | B2, B5, B7 |
-| A3 Risiko | 7 | B1, B2, B3, B4, B6, B7 |
-| A4 Meisterschaft | 5 | B2, B3, B4, B5, B6 |
+| A2 Geduld | 7 | B2, B5, B7 |
+| A3 Risiko | 8 | B1, B2, B3, B4, B6, B7 |
+| A4 Meisterschaft | 6 | B2, B3, B4, B5, B6 |
 
 | Anforderungstyp | kommt vor in |
 |---|---|
@@ -180,7 +181,7 @@ Frage, die man beantworten muss.
 
 Kapitel 6 der Weltbibel hat dazu eine Regel: erst die Vorgangsart erfinden, dann das Monster,
 nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein Monster.
-12 der 25 tragen eine Vorgangsart, die schon im Bestiarium steht, 13 sind neu.
+12 der 28 tragen eine Vorgangsart, die schon im Bestiarium steht, 16 sind neu.
 
 | Gegner | Vorgangsart | Warum es sich so verhält | Im Bestiarium |
 |---|---|---|---|
@@ -202,6 +203,9 @@ nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein
 | Die Sammelmahnung | Die Mahnstufe | Dieselbe Sache, dreimal, gleichlautend. Einzeln sind sie Papier, zu dritt sind sie ein Vollstreckungstitel. | neu |
 | Irrlichtmagier | Die Fußnote | Leuchtet, verweist, fuehrt nirgendwohin. Wer ihm folgt, steht am Ende vor einer weiteren Fußnote. | bekannt |
 | Steingolem | Die Bestandskraft | Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon. | bekannt |
+| Der Vorbehalt | Der Vorbehalt | Haelt dich auf Abstand, laesst nichts an sich heran. Er hat nicht vor, dich zu verletzen, er hat vor, dich nicht durchzulassen. | neu |
+| Die Zwischennachricht | Die Zwischennachricht | Kommt von weit her, sagt nichts Neues, trifft trotzdem. Seit vierhundert Jahren derselbe Wortlaut. | neu |
+| Das Empfangsbekenntnis | Das Empfangsbekenntnis | Liegt seit vierhundert Jahren bereit, unterschrieben von niemandem. Es kann nichts tun, außer warten, dass ihm etwas uebergeben wird. | neu |
 | Der Dienstweg | Der Dienstweg | Nimmt den laengstmoeglichen Weg, kommt an, ist nicht zu beschleunigen. Wer ihn abkuerzen will, faengt von vorne an. | neu |
 | Der Teilbescheid | Der Teilbescheid | Was nach der Teilabhilfe uebrig bleibt. Einzeln kaum der Rede wert, und genau deshalb kommen sie zu viert. | neu |
 | Die Teilabhilfe | Die Teilabhilfe | Man hilft ihr teilweise ab, und was uebrig bleibt, läuft als eigener Vorgang weiter. Zweimal. | neu |
@@ -1141,6 +1145,162 @@ nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein
     "flavor_de": "Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon."
   },
   {
+    "id": "vorbehalt",
+    "name": "Der Vorbehalt",
+    "biom": "Lager",
+    "sollstufe": 5,
+    "ertragsklasse": "A2",
+    "anforderungstyp": [
+      "B2",
+      "B7"
+    ],
+    "hp": 290,
+    "resistenzen": {
+      "physisch": 0.35,
+      "feuer": -0.2,
+      "eis": 0.1,
+      "gift": 0.1,
+      "magie": 0.15
+    },
+    "schaden_pro_treffer": 21,
+    "angriffsintervall_s": 1.6,
+    "tempo": 52,
+    "angriffsmuster": [
+      {
+        "name": "Auf Abstand halten",
+        "vorwarnzeit_ms": 420,
+        "reichweite": "nah (38)",
+        "effekt": "Grundtreffer mit dem Speer, groessere Reichweite als der Griff vermuten laesst"
+      },
+      {
+        "name": "Vorbehalten",
+        "vorwarnzeit_ms": 560,
+        "reichweite": "nah (44)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, er stemmt den Speer vor und laesst nichts naeher heran"
+      }
+    ],
+    "berechnete_ttk_s": 11.4,
+    "xp": 210,
+    "gold_min": 37,
+    "gold_max": 78,
+    "loot": [
+      {
+        "item": "Speerspitze",
+        "chance": 0.4
+      },
+      {
+        "item": "Vorbehaltsvermerk",
+        "chance": 0.2
+      }
+    ],
+    "konter_in_einem_satz": "Der Speer ist lang, der Ork dahinter nicht. Einmal vorbei, und er hat nichts mehr.",
+    "flavor_de": "Haelt dich auf Abstand, laesst nichts an sich heran. Er hat nicht vor, dich zu verletzen, er hat vor, dich nicht durchzulassen."
+  },
+  {
+    "id": "zwischennachricht",
+    "name": "Die Zwischennachricht",
+    "biom": "Lager",
+    "sollstufe": 6,
+    "ertragsklasse": "A3",
+    "anforderungstyp": [
+      "B3",
+      "B4"
+    ],
+    "hp": 700,
+    "resistenzen": {
+      "physisch": -0.15,
+      "feuer": -0.1,
+      "eis": 0.1,
+      "gift": 0.2,
+      "magie": 0.3
+    },
+    "schaden_pro_treffer": 91,
+    "angriffsintervall_s": 2.0,
+    "tempo": 64,
+    "angriffsmuster": [
+      {
+        "name": "Zwischennachricht",
+        "vorwarnzeit_ms": 460,
+        "reichweite": "fern (150)",
+        "effekt": "Pfeil vom Wachturm, der Bogen spannt sichtbar vor"
+      },
+      {
+        "name": "Sachstand unveraendert",
+        "vorwarnzeit_ms": 380,
+        "reichweite": "fern (150)",
+        "effekt": "ersetzt jeden dritten Pfeil, schneller angesagt, dafür halbe Wucht"
+      }
+    ],
+    "berechnete_ttk_s": 13.5,
+    "xp": 395,
+    "gold_min": 64,
+    "gold_max": 134,
+    "loot": [
+      {
+        "item": "Pfeilschaft",
+        "chance": 0.4
+      },
+      {
+        "item": "Zwischennachricht",
+        "chance": 0.25
+      }
+    ],
+    "konter_in_einem_satz": "Sie steht oben und weicht nicht aus. Wer unter ihr steht, wird nicht getroffen.",
+    "flavor_de": "Kommt von weit her, sagt nichts Neues, trifft trotzdem. Seit vierhundert Jahren derselbe Wortlaut."
+  },
+  {
+    "id": "empfangsbekenntnis",
+    "name": "Das Empfangsbekenntnis",
+    "biom": "Lager",
+    "sollstufe": 7,
+    "ertragsklasse": "A4",
+    "anforderungstyp": [
+      "B2",
+      "B5"
+    ],
+    "hp": 375,
+    "resistenzen": {
+      "physisch": 0.7,
+      "feuer": 0.1,
+      "eis": 0.1,
+      "gift": 0.4,
+      "magie": -0.3
+    },
+    "schaden_pro_treffer": 175,
+    "angriffsintervall_s": 2.5,
+    "tempo": 34,
+    "angriffsmuster": [
+      {
+        "name": "Zurueckweisen",
+        "vorwarnzeit_ms": 700,
+        "reichweite": "nah (40)",
+        "effekt": "sehr schwerer Grundtreffer, er holt weit und sichtbar aus"
+      },
+      {
+        "name": "Nicht empfangsberechtigt",
+        "vorwarnzeit_ms": 900,
+        "reichweite": "Ring (120)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, Druckwelle rundum, danach 2,5 s Erschöpfung"
+      }
+    ],
+    "berechnete_ttk_s": 24.0,
+    "xp": 1004,
+    "gold_min": 115,
+    "gold_max": 242,
+    "loot": [
+      {
+        "item": "Ungezeichnetes Bekenntnis",
+        "chance": 0.5
+      },
+      {
+        "item": "Lagerpetschaft",
+        "chance": 0.15
+      }
+    ],
+    "konter_in_einem_satz": "Er faengt nie an. Wer ihn stehen laesst, hat den kuerzeren Weg. Wer nicht, braucht Mana: Stahl prallt am Panzer ab.",
+    "flavor_de": "Liegt seit vierhundert Jahren bereit, unterschrieben von niemandem. Es kann nichts tun, außer warten, dass ihm etwas uebergeben wird."
+  },
+  {
     "id": "dienstweg",
     "name": "Der Dienstweg",
     "biom": "Stollen",
@@ -1538,6 +1698,9 @@ Gerechnet mit `tools/monsterkatalog.py`, nicht von Hand. Sollwerte in Klammern.
 | Die Sammelmahnung | 8 | A3 | physisch | 13,9 s (12 bis 25) | 485 | 34,81 (34,82) | 7,5 s (6 bis 10) | ok |
 | Irrlichtmagier | 8 | A3 | physisch | 12,2 s (12 bis 25) | 426 | 34,86 (34,82) | 9,5 s (6 bis 10) | ok |
 | Steingolem | 9 | A4 | magie | 33,9 s (20 bis 40) | 1648 | 48,57 (48,58) | 5,0 s (3 bis 6) | ok |
+| Der Vorbehalt | 5 | A2 | physisch | 11,4 s (8 bis 15) | 210 | 18,36 (18,39) | 18,5 s (15 bis 25) | ok |
+| Die Zwischennachricht | 6 | A3 | physisch | 13,5 s (12 bis 25) | 395 | 29,27 (29,3) | 8,0 s (6 bis 10) | ok |
+| Das Empfangsbekenntnis | 7 | A4 | magie | 24,0 s (20 bis 40) | 1004 | 41,77 (41,78) | 5,0 s (3 bis 6) | ok |
 | Der Dienstweg | 9 | A2 | magie | 11,1 s (8 bis 15) | 291 | 26,19 (26,16) | 22,2 s (15 bis 25) | ok |
 | Der Teilbescheid | 9 | A1 | physisch | 2,4 s (1 bis 3) | 44 | 18,57 (18,69) | 40,3 s (über 30) | ok |
 | Die Teilabhilfe | 10 | A3 | physisch | 16,0 s (12 bis 25) | 636 | 39,83 (39,81) | 8,5 s (6 bis 10) | ok |
@@ -1571,6 +1734,9 @@ vom Sollwert ab, der Rest ist Rundung auf ganze XP.
 | Die Sammelmahnung | A3 | 3 | 7,5 s | 2,4 s | 500 ms | 350 ms |
 | Irrlichtmagier | A3 | 1 | 9,5 s | 9,5 s | 380 ms | 350 ms |
 | Steingolem | A4 | 1 | 5,0 s | 5,0 s | 700 ms | 350 ms |
+| Der Vorbehalt | A2 | 2 | 18,5 s | 8,6 s | 420 ms | 250 ms |
+| Die Zwischennachricht | A3 | 1 | 8,0 s | 8,0 s | 380 ms | 350 ms |
+| Das Empfangsbekenntnis | A4 | 1 | 5,0 s | 5,0 s | 700 ms | 350 ms |
 | Der Dienstweg | A2 | 2 | 22,2 s | 10,3 s | 520 ms | 250 ms |
 | Der Teilbescheid | A1 | 4 | 40,3 s | 8,4 s | 320 ms | 250 ms |
 | Die Teilabhilfe | A3 | 1 | 8,5 s | 8,5 s | 560 ms | 350 ms |
@@ -1581,7 +1747,7 @@ vom Sollwert ab, der Rest ist Rundung auf ganze XP.
 
 Die Mindestvorwarnung von 350 ms gilt laut Auftrag für A3 und A4 und ist überall eingehalten.
 Für A1 und A2 ist 250 ms als Hausregel gesetzt, damit kein Angriff ohne Ankündigung existiert.
-Alle 9 Gegner mit Rudelgröße über 1 fallen als Gruppe unter ihr Klassenband, am
+Alle 10 Gegner mit Rudelgröße über 1 fallen als Gruppe unter ihr Klassenband, am
 deutlichsten die Sammelmahnung mit 2,4 s. Das ist gewollt und der Grund, warum diese
 Gegner überhaupt Schwarm heißen: das Klassenband beschreibt den einzelnen Vorgang, der Rudelwert
 beschreibt den Fehler, mehrere davon gleichzeitig aufzumachen. Der Konter steht in derselben
@@ -1600,6 +1766,7 @@ abgeleitet sind.
 | Papierstaub-Skarabäus | **2,5 s** | 22,8 s | 2,4 s | 4,9 s * | 3,4 s |
 | Klippkrabbe | **12,0 s** | wirkungslos | wirkungslos | 58,3 s * | wirkungslos |
 | Steingolem | 167,6 s | 47,5 s | 47,5 s | 118,8 s * | **33,9 s** |
+| Das Empfangsbekenntnis | 24,4 s | 34,7 s | 34,7 s | 52,1 s * | **24,0 s** |
 | Der Dienstweg | 6,6 s | 15,0 s | 18,8 s | 23,1 s * | **11,1 s** |
 | Mumie | **14,0 s** | wirkungslos | wirkungslos | 991,7 s * | wirkungslos |
 | Die Sammelverfügung | 52,2 s | **35,8 s** | 87,9 s | 120,8 s * | 87,9 s |
@@ -1763,7 +1930,7 @@ Drei Punkte, die dieses Dokument benennt und nicht löst:
 
 Aus dem Spielbericht: sobald Magie zur Verfügung steht, lässt sich aus der Distanz
 spammen. Der erste Teil der Antwort steht in `phase-z1-zauberbalance.md` (Zaubern kostet
-wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der 25 Gegner sind gegen
+wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der 28 Gegner sind gegen
 alle drei Zauberzweige immun.** Sie sind der Ort, an dem die Waffe die einzige Antwort ist.
 
 | Gegner | Sollstufe | Klasse | Weichstelle | Sollzeit |

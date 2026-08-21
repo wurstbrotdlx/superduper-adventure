@@ -379,6 +379,48 @@ mon(id='golem', name='Steingolem', alt=True, biom='Hoehle', L=9, klasse='A4', ty
     flavor='Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon.',
     loot=[('Golem-Splitter', 0.5), ('Unanfechtbarer Beschluss', 0.12)])
 
+# --- LAGER / Das Lager der Beschwerden --------------------------------------
+# Das siebte Biom, und das einzige, das ein einzelner Ort ist statt eines Bandes
+# oder einer Tuer: ein umzaeuntes Lager im Grasband. Die Gegenseite hat ihre
+# Vertragsausfertigung nie bekommen (Weltbibel Kapitel 2) und wartet seither.
+# Deshalb greift hier niemand von sich aus an. Die Sollstufen liegen ueber dem
+# Wald, in dem das Lager steht: es ist ein Ort, an dem man zu frueh vorbeikommt.
+mon(id='vorbehalt', name='Der Vorbehalt', alt=False, biom='Lager', L=5, klasse='A2', typen=['B2', 'B7'],
+    vorgang='Der Vorbehalt', slot='shield',
+    res=dict(physisch=0.35, feuer=-0.2, eis=0.1, gift=0.1, magie=0.15), route='physisch',
+    ttk_ziel=11.5, gef_ziel=19, intervall=1.6, tempo=52, rudel=2,
+    muster=[
+            dict(name='Auf Abstand halten', warn=420, reich='nah (38)', effekt='Grundtreffer mit dem Speer, groessere Reichweite als der Griff vermuten laesst', art='nah', reichw=38),
+            dict(name='Vorbehalten', warn=560, reich='nah (44)', effekt='ersetzt jeden dritten Grundtreffer, er stemmt den Speer vor und laesst nichts naeher heran', art='nah', jede=3, reichw=44, wucht=1.4),
+        ],
+    konter='Der Speer ist lang, der Ork dahinter nicht. Einmal vorbei, und er hat nichts mehr.',
+    flavor='Haelt dich auf Abstand, laesst nichts an sich heran. Er hat nicht vor, dich zu verletzen, er hat vor, dich nicht durchzulassen.',
+    loot=[('Speerspitze', 0.4), ('Vorbehaltsvermerk', 0.2)])
+
+mon(id='zwischennachricht', name='Die Zwischennachricht', alt=False, biom='Lager', L=6, klasse='A3', typen=['B3', 'B4'],
+    vorgang='Die Zwischennachricht', slot='weapon',
+    res=dict(physisch=-0.15, feuer=-0.1, eis=0.1, gift=0.2, magie=0.3), route='physisch',
+    ttk_ziel=13.5, gef_ziel=8.0, intervall=2.0, tempo=64, rudel=1,
+    muster=[
+            dict(name='Zwischennachricht', warn=460, reich='fern (150)', effekt='Pfeil vom Wachturm, der Bogen spannt sichtbar vor', art='fern'),
+            dict(name='Sachstand unveraendert', warn=380, reich='fern (150)', effekt='ersetzt jeden dritten Pfeil, schneller angesagt, dafuer halbe Wucht', art='fern', jede=3, wucht=0.6),
+        ],
+    konter='Sie steht oben und weicht nicht aus. Wer unter ihr steht, wird nicht getroffen.',
+    flavor='Kommt von weit her, sagt nichts Neues, trifft trotzdem. Seit vierhundert Jahren derselbe Wortlaut.',
+    loot=[('Pfeilschaft', 0.4), ('Zwischennachricht', 0.25)])
+
+mon(id='empfangsbekenntnis', name='Das Empfangsbekenntnis', alt=False, biom='Lager', L=7, klasse='A4', typen=['B2', 'B5'],
+    vorgang='Das Empfangsbekenntnis', slot='armor',
+    res=dict(physisch=0.7, feuer=0.1, eis=0.1, gift=0.4, magie=-0.3), route='magie',
+    ttk_ziel=24.0, gef_ziel=5.0, intervall=2.5, tempo=34, rudel=1,
+    muster=[
+            dict(name='Zurueckweisen', warn=700, reich='nah (40)', effekt='sehr schwerer Grundtreffer, er holt weit und sichtbar aus', art='nah', reichw=40),
+            dict(name='Nicht empfangsberechtigt', warn=900, reich='Ring (120)', effekt='ersetzt jeden dritten Grundtreffer, Druckwelle rundum, danach 2,5 s Erschoepfung', art='ring', jede=3, reichw=120, ruhe=2.5),
+        ],
+    konter='Er faengt nie an. Wer ihn stehen laesst, hat den kuerzeren Weg. Wer nicht, braucht Mana: Stahl prallt am Panzer ab.',
+    flavor='Liegt seit vierhundert Jahren bereit, unterschrieben von niemandem. Es kann nichts tun, ausser warten, dass ihm etwas uebergeben wird.',
+    loot=[('Ungezeichnetes Bekenntnis', 0.5), ('Lagerpetschaft', 0.15)])
+
 # --- STOLLEN / Die Sperrablage ----------------------------------------------
 # M3: das sechste Biom. Wie die Untere Registratur liegt es hinter Kammertueren und
 # nicht auf der Karte, aber eine Ebene tiefer: es oeffnet sich nur beim hoechsten
@@ -705,6 +747,7 @@ w('| Wald | Ablage A | Band um das Dorf, Zeile 128 bis 191 | Der Wald gibt Stief
 w('| Sumpf | Die Nassablage | Band südlich davon, 192 bis 239 | Im Sumpf liegen Rüstungszutaten mit feuchten Adjektiven, also alles für Selbstheilung und Abweisung. | 3 bis 5 |')
 w('| Wüste | Der Brandabschnitt | Band ganz im Süden, 240 bis 319 | Der Brandabschnitt liefert Waffenzutaten mit glühenden Adjektiven, also Nachdruck und Wucht, und legt jedem Fund einen teuren Fluch bei. | 4 bis 7 |')
 w('| Höhle | Die Untere Registratur | hinter jeder Kammertür, kein Band | Unter Tage fällt, was Panzerung und Aktenlage trägt, und nur dort. | 6 bis 9 |')
+w('| Lager | Das Lager der Beschwerden | umzäuntes Lager im Grasband, ein einzelner Ort | Wer vor dem Tor steht, bekommt Schild, Waffe und Rüstung, und keiner von ihnen greift zuerst an. | 5 bis 7 |')
 w('| Stollen | Die Sperrablage | hinter der teuersten Kammertür, kein Band | Eine Ebene unter der Registratur liegt, was niemand mehr anfassen sollte, und zahlt es in Rüstung und Waffe. | 9 bis 10 |')
 w('| Ruine | Der Altbestand | Band ganz im Norden, 0 bis 63 | Der Altbestand ist die Quelle für Manafluss, Zauberkraft und Aktenkunde, und zahlt sie mit den härtesten Gegnern des Katalogs. | 8 bis 10 |')
 w('')

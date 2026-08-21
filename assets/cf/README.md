@@ -4,7 +4,7 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach M3 vom 21.08.2026 (109 Dateien): `dungeon/`, `player/`, `enemies/`, `tiles/` und
+Stand nach W-Lager vom 21.08.2026 (118 Dateien): `dungeon/`, `player/`, `enemies/`, `tiles/` und
 `deco/` (jetzt zusätzlich Dorf-Gebäude, NPC-Staffage, Wetter) sind gefüllt, `ui/`
 ist mit G5 dazugekommen. Damit lädt das Spiel ausschließlich noch aus `assets/cf/`
 — `assets/Characters/`, `assets/Elements/`, `assets/Tileset/`, `assets/UI/`
@@ -98,6 +98,30 @@ die Angriffszeile gebildet und bis zu 13px/88% daneben, s. Umsetzungsnotizen G3)
 separaten Datei mit anderem Frameraster — ein Kessel ist keine Zauber-Animation),
 `Orc_Chief/Grunt/Peon.png` (Raster-Konfidenz zu niedrig, ungeprüft), alle übrigen
 Skeleton_Swordman-Verwendungen (kein sauberes 32px-Raster, Ersatz s. oben).
+
+### Von W-Lager gebraucht (`enemies/`, `deco/Camp/`)
+
+Das Lager der Beschwerden. Alle Raster mit `tools/sheet-audit.mjs --rig` gegen die PNGs
+gemessen, die Deko-Raster zusätzlich an den leeren Spalten und Zeilen der Blätter —
+die Heuristik taugt bei Requisitenblättern so wenig wie bei Flächen-Tiles.
+
+| Zielordner | Dateien | Verwendung |
+|---|---|---|
+| `enemies/Goblins/` | `Goblin_Spearman.png`, `Goblin_Archer.png` | Der Vorbehalt und Die Zwischennachricht. **48×48 im 6×13-Raster**, nicht 32×32 wie das Manifest führte — 624 ist durch 32 nicht teilbar. Damit zeilengleich mit dem verbauten `Goblin_Maceman` |
+| `enemies/Orcs/` | `Orc_Chief.png` | Das Empfangsbekenntnis. Das Blatt **mischt drei Raster**: 32×32 für Idle und Lauf, 64×64 für die Angriffszeilen, wieder 32×32 für Sturz und Trefferblitz. Daran ist die G0-Heuristik gescheitert, siehe die G3-Notiz |
+| `deco/Camp/` | `palisade_run.png`, `Palisade_Gate_Anim.png`, `Military_Tents.png`, `Lookout_Towers.png`, `Banners_Anim.png`, `Campfire_Pot_Anim.png` | Palisade, Tor, Zelte, Wachtürme, Banner, Kessel. **16-Pixel-Kunst**, im Spiel mit Skalierung 2 gezeichnet — die Dorf-Gebäude aus G5 liegen dagegen schon in 32 Pixeln je Kachel vor |
+
+`palisade_run.png` ist eine handgeschnittene Einzelzelle (Quelle 32,48 16×32), weil
+`addSheet`s `'grid'`-Modus keinen Spaltenversatz kennt. Gleiche Ausnahme wie
+`crate`/`pot`/`cobweb` aus G1 und die vier UI-Zellen aus G5.
+
+**Bewusst nicht kopiert:** `Catapult.png` und `Cannon.png` (Belagerungsgerät behauptet,
+dass etwas passiert — der Witz ist, dass seit vierhundert Jahren nichts passiert),
+`Target_Dummys`/`Archery_Target`/`Weapon_Stands` (ein Lager, das seit vierhundert Jahren
+wartet, übt nicht), `Palisade.png` als Ganzes (nur die eine Zelle ist geschnitten),
+`Mantlet`/`Spiked_Barriers`/`Wood_Spikes`/`Split_Log_Benches`/`Flags_Anim` (Requisiten
+ohne Aufgabe), `Orc_Grunt`/`Orc_Archer`/`Orc_Peon` (Raster jetzt geklärt, aber ohne
+Vorgangsart gibt es kein Monster).
 
 ### Von M3 gebraucht (`enemies/`, `dungeon/Dungeon_3/`)
 
