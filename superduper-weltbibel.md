@@ -132,7 +132,7 @@ Die Stelle im Außendienst ist **täglich befristet**. Eine Verlängerung wäre 
 
 Daraus folgt sauber:
 
-* **Tod heißt Dienstschluss.** Es stirbt niemand. Die Schicht endet, der Außendienst geht nach Hause, morgen kommt jemand anderes. Der Dienstbericht ist die Abrechnung dieses einen Tages.
+* **Tod heißt Dienstschluss.** Es stirbt niemand. Die Schicht endet, der Außendienst geht nach Hause, morgen kommt jemand anderes. Der Dienstbericht ist die Abrechnung dieses einen Tages. *(Seit W10 mit genau einer Ausnahme: wer den Antrag auf Wiedereinsetzung in den vorigen Stand stellt und die Gebühr zahlt, kommt morgen selbst wieder, mit halber Stufe und demselben Gesicht. Das ist keine Verlängerung, sondern eine Berichtigung, siehe Kapitel 14, W10.)*
 * **Level, Zauber und Ausrüstung sind weg.** Persönliche Qualifikation ist nicht übertragbar. Steht so im Vorgang.
 * **Die Kladde bleibt. Immer.** Die Kladde gehört nicht dem Außendienst, sie liegt im Amt und ist an den Tisch gekettet. Wissen ist Amtsvermögen. Das ist die Fiktion für die härteste Regel im ganzen Projekt, und sie ist wasserdicht.
 * **Gold zur Hälfte.** Der Rest ist Verwaltungskostenanteil. Das ist eine Frechheit. Niemand beschwert sich, weil die Beschwerde ein Formular wäre und Formulare bekanntlich lebendig werden. *(Seit 20.08.2026 steht das im Code: `goldAufteilung()` teilt die Schichtbeute in Gürtel, Amtskasse und Verwaltungskostenanteil, letzterer verlässt das Spiel. Die Hälfte am Gürtel ist der Bruttoanteil, wie dieser Satz es sagt. Bis dahin gab es keinen Verlust, Gürtel und Kasse waren zwei Hälften desselben Topfes. Zahlen und Herleitung in `KAMMER-MESSUNG-2026-08-20.md`, Abschnitt 9.)*
@@ -616,6 +616,33 @@ Kapitel 10, die sieben noch offenen Nebenstränge. Nummer 4 (Lisbeths sechster P
 
 **Abnahme:** Kein Langvorgang blockiert den Spielfluss, keiner ist Bedingung für den Hauptvorgang, keiner belegt eine Kachel, eine Tür oder eine Kontextaktion. Wer nie mit jemandem spricht, spielt das Spiel unverändert weiter.
 
+### W8: Der Anfang, Einstellung und Dienstanweisung — ERLEDIGT (siehe `phase-w8-anfang.md`)
+
+Kapitel 0, 2, 4, 5 und 18.3. Der Bauabschnitt, den dieses Kapitel bisher nicht hatte: Bis hierher fing das Spiel mit vier Zeilen Startbildschirm an. Der Spieler wusste, welche Taste schlägt, und nicht, was er ist, was das Haus von ihm will und woran er merkt, dass er vorankommt.
+
+* **Der Anfang ist ein Vordruck, kein Prolog.** Das Haus stellt jeden Tag jemand Neues ein, also gibt es dafür ein Formular. `Vordruck A 1`, drei Blätter, blätterbar und unterschreibbar: Einstellungsverfügung, Dienstanweisung, Laufbahn und Ziel. Damit bleibt das Cutscene-Verbot unten unangetastet, ohne dass der Anfang stumm bleibt.
+* **Anlage 1 liegt nicht vor.** Der Vordruck benennt den Zweck der Stelle und verweist für den Gegenstand der Bearbeitung auf die Anlage, und die Anlage fehlt. Der Spieler weiß danach, dass es einen Auftrag gibt und dass niemand hier sagen kann, was drinsteht. Kapitel 2 bleibt vollständig für das Ende reserviert, Zwirns „Solange der Vorgang läuft" im ersten Jahresgespräch bleibt die erste Nennung des Wortes. `dienstAssert()` prüft das mit einer Sperrliste über jede Zeile.
+* **Kein neues System.** Dasselbe `#ovPanel` wie Dienstbericht, Amt und Jahresgespräch. Der Merker liegt in `kn.seen`, dem Speicher, der ohnehin schon weiß, was der Spieler gesehen hat. Kein neues `amt`-Feld, kein neuer Speicherschlüssel.
+* **Nachlesbar statt einmalig.** Die Dienstanweisung ist aus dem Titelbild und aus dem Amt jederzeit wieder aufzuschlagen. Dazu im Amt eine Zeile mehr: die nächste Hebung mit Schicht und Amtsbezeichnung, abgeleitet aus `rangStufe()`, damit die Laufbahn nicht nur rückblickend sichtbar ist.
+
+**Abnahme:** Kein Wort der Akte wandert nach vorn, kein Questmarker, keine Cutscene, keine Sperre. Wer das Blatt wegklickt, spielt das Spiel unverändert weiter.
+
+### W9: Tooltipps und Mechanikhilfe — OFFEN
+
+W8 beantwortet „was ist das hier und warum", nicht „was macht dieser Knopf, während ich davorstehe". Das ist der nächste Schritt und ein anderer Kanal: `#tooltip` existiert bereits im Markup und trägt bisher nur Gegenstände. Ausbau auf Gürtel, Kesselreiter, Skillzeilen, Zauberknoten, Ausrüstungsplätze und Kammerschilder. Abzustimmen mit Knöterichs Wissenslücken-Schüben (`kn.wissensluecke`), nicht daneben zu bauen. Zu prüfen: ob eine wiederholbare Mechanikübersicht besser als vierter Reiter im Kessel liegt als in einem eigenen Panel.
+
+### W10: Die Wiedereinsetzung — ERLEDIGT (siehe `phase-w10-wiedereinsetzung.md`)
+
+Kapitel 5 und 18.2. Der eine Kauf, den dieses Spiel anbietet, und die einzige Art, wie derselbe Mensch zweimal antreten kann.
+
+* **Eine Gebühr, keine Bestechung.** Bezahlt wird an die Amtskasse, nicht an eine Person. Niemand im Haus nimmt Geld, niemand drückt ein Auge zu. Humor-Grundgesetz 2, 4 und 8 lassen nichts anderes zu, und die Zielgruppe ab 10 erst recht nicht.
+* **Die Begründung stand schon in Kapitel 5.** Eine Verlängerung wäre eine Neubesetzung, eine Neubesetzung erfordert eine Ausschreibung, eine Ausschreibung erfordert die Amtsleitung, und die gibt es nicht. Ein Antrag auf Wiedereinsetzung in den vorigen Stand ist aber keine Neubesetzung, sondern eine Berichtigung: anderer Paragraf, keine Ausschreibung, keine Leitung nötig. Der N.-N.-Gag arbeitet hier zum ersten Mal für den Spieler statt gegen ihn.
+* **Der Stand wird eng ausgelegt.** Zurück kommen die halbe Stufe und das Gesicht. Nicht zurück kommen Ausrüstung (Amtsvermögen), Zauber und Skillpunkte (Beurteilung, keine Sache). Man bekommt genau den Teil wieder, der das Haus nichts kostet. Mechanisch heißt das: Zähigkeit zurück, Können nicht.
+* **Zwei Regeln bleiben unangetastet.** „Persönliche Qualifikation ist nicht übertragbar" gilt wörtlich weiter, denn es wird nichts übertragen, wenn niemand wechselt. Und 18.2 bleibt in Kraft: der Rang kostet weiterhin kein Gold, der Antrag fasst `amt.schichten` nicht an.
+* **Ein Verfahrensgrundsatz statt eines Schwellenwerts.** „Ein Antrag ohne Beschwer ist unzulässig": liegt der vorige Stand nicht über der Anfangsstufe, ändert die Bewilligung nichts, also nimmt das Haus ihn nicht an. Das skaliert von selbst mit dem Ausbau „Höhere Anfangsstufe" mit.
+
+**Abnahme:** Kein Rang wird verkauft, keine zweite Währung, kein neues Panel. Wer den Antrag nie stellt, spielt das Spiel unverändert weiter.
+
 ### Was wir ausdrücklich nicht bauen
 
 * Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.
@@ -704,7 +731,7 @@ Damit ist der Rang die einzig saubere Meta-Progression für dieses Spiel:
 
 * Er wird **nie** zurückgesetzt, auch nicht beim Dienstschluss. Genau wie die Kladde.
 * Er wird **nie** herabgestuft. Eine einmal gehobene Stelle sinkt nicht. Das ist kein Balancing, das ist Beamtenrecht.
-* Er kostet kein Gold, er lässt sich nicht kaufen und er lässt sich nicht überspringen.
+* Er kostet kein Gold, er lässt sich nicht kaufen und er lässt sich nicht überspringen. *(Gilt auch nach W10 unverändert. Die Wiedereinsetzung kauft den Dienststand der Person, nie die Stelle; `wiederAssert()` beweist beim Start, dass ein bewilligter Antrag `rangStufe()` nicht bewegt.)*
 
 Und er ist im selben Atemzug traurig, ohne dass es ausgesprochen wird: die Stelle steigt, die Leute, die durch sie hindurchgehen, sieht man nie wieder.
 

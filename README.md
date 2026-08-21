@@ -34,7 +34,7 @@ python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</sc
 
 Das fängt Syntaxfehler, **nicht** die Temporal Dead Zone. Der häufigste echte Fehler in diesem Projekt ist ein `ReferenceError` beim Laden, weil eine Funktion, die schon auf Skriptebene läuft, eine erst später deklarierte Konstante liest. Den findet nur der Browser mit offener Konsole.
 
-Das Spiel prüft sich beim Laden selbst. Neun selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung und seit M1 die Kampfwerte gegen den Referenzspieler. Dazu kommt `npcAnkerAssert()`, der als einziger nicht auf Skriptebene läuft, sondern erst hinter `loadAssets()`, weil er die gebackenen Blätter liest. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
+Das Spiel prüft sich beim Laden selbst. Elf selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`, `dienstAssert`, `wiederAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung, seit M1 die Kampfwerte gegen den Referenzspieler, seit W8 den Sperrvermerk auf die Akte im Einstellungsvordruck und seit W10 die beidseitige Klemme des gespeicherten Dienststandes. Dazu kommt `npcAnkerAssert()`, der als einziger nicht auf Skriptebene läuft, sondern erst hinter `loadAssets()`, weil er die gebackenen Blätter liest. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
 
 ## Dokumente
 
@@ -47,6 +47,8 @@ Das Spiel prüft sich beim Laden selbst. Neun selbstaufrufende Guards (`blaetter
 | `phase-*.md` | Eine Bauanleitung je Bauabschnitt, mit Abnahme und Prüfprotokoll |
 | `figuren-dorf.md`, `blaetter-serie-a-b.md` | Inhaltslieferungen (Figurentexte, Aktenfunde) |
 | `phase-m1-monsterkatalog.md` | Bauabschnitt M1: der Katalog im Code, Entscheidungen und Prüfprotokoll |
+| `phase-w8-anfang.md` | Bauabschnitt W8: Einstellungsvordruck, Dienstanweisung, Laufbahnziel, und warum der Anfang kein Prolog ist |
+| `phase-w10-wiedereinsetzung.md` | Bauabschnitt W10: der Antrag auf Wiedereinsetzung, die einzige Art, zweimal derselbe Mensch zu sein |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 22 Gegner, 5 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
 | `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
 | `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md`, `GEGENPROBE-2026-08-04.md`, `GEGENPROBE-W-2026-08-05.md`, `GW-RESTFUNDE-2026-08-06.md`, `KAMMER-MESSUNG-2026-08-20.md` | Datierte Prüf- und Messberichte. Ihre Zeilennummern sind Stände, keine Wegweiser, und ihr Inhalt wird nicht rückwirkend umgeschrieben. Was sie überholt, steht im jeweils neueren Bericht oder im Phasendokument. |
