@@ -4,7 +4,7 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach G5 (letzte Phase): `dungeon/`, `player/`, `enemies/`, `tiles/` und
+Stand nach dem G6-Nachtrag vom 21.08.2026 (104 Dateien): `dungeon/`, `player/`, `enemies/`, `tiles/` und
 `deco/` (jetzt zusätzlich Dorf-Gebäude, NPC-Staffage, Wetter) sind gefüllt, `ui/`
 ist mit G5 dazugekommen. Damit lädt das Spiel ausschließlich noch aus `assets/cf/`
 — `assets/Characters/`, `assets/Elements/`, `assets/Tileset/`, `assets/UI/`
@@ -137,19 +137,19 @@ letzten zwei geladenen Sunnyside-Sheets).
 |---|---|---|
 | `deco/Buildings/` | `Inn_Blue.png`, `House_1_Wood_Base_Red.png`, `House_2_Wood_Base_Blue.png`, `House_3_Stone_Base_Blue.png`, `Market_Stalls.png`, `Barn_Base_Red.png` (aus `Cute_Fantasy/Buildings/Buildings/…`) | Dorf-Gebäude als `big:true`-Decos, Amt = Inn (größtes, eindeutigstes Gebäude im Pack) |
 | `deco/NPCs/` | `Farmer_Bob.png`, `Bartender_Katy.png`, `Miner_Mike.png` (aus `Cute_Fantasy/NPCs (Premade)/`) | Dorf-Staffage, 64×64-Raster wie Angel_1/2, idle=Zeile1/walk=Zeile4 per Crop bestätigt |
-
-**Fünf weitere NPC-Blätter sind optional** (G6, siehe `phase-g6-dorfsicht.md`). `CF_NPCS` in
-`index.html` trägt acht Einträge, kopiert wurden nur die drei oben. Die fünf anderen —
-`Lumberjack_Jack.png`, `Chef_Chloe.png`, `Fisherman_Fin.png`, `Farmer_Buba.png`,
-`Bartender_Bruno.png`, alle aus `Cute_Fantasy/NPCs (Premade)/` — fehlten damit im Spiel, und
-Zapf, Lisbeth, Trepp, Milb und Fass standen unsichtbar im Dorf. Seit G6 fällt jede Figur ohne
-Blatt auf ein Held-Komposit zurück (Frisur/Kleidung je Figur in `DORF_FIGUREN.gestalt`), das
-Spiel ist also vollständig ohne sie. Wer die fünf Dateien lizenziert hat und hierher kopiert,
-bekommt beim nächsten Laden automatisch die Originalsprites: `npcBlaetter()` fragt `SHEETS`,
-nicht eine Liste im Code. Der Start meldet in einer Zeile, welche Figuren gerade als Komposit
-laufen.
+| `deco/NPCs/` | `Lumberjack_Jack.png`, `Chef_Chloe.png`, `Fisherman_Fin.png`, `Farmer_Buba.png`, `Bartender_Bruno.png` (dieselbe Quelle) | Die fünf restlichen `CF_NPCS`-Blätter, nachgelegt am 21.08.2026 (G6-Nachtrag). Damit trägt jede der acht wandernden Dorffiguren ihr eigenes Rig |
 | `deco/Weather/` | `Clouds.png`, `Wind_Anim.png` (aus `Cute_Fantasy/Weather effects/`) | Grasland-Wolkenschatten, Aschewüste-Windböen. Schnee (Frostkamm) braucht kein Sprite, reine Canvas-Punkte |
 | `ui/` | `frame_brown.png`, `round_brown.png`, `glint_strip.png`, `alert.png` | UI-Skin-Rahmen/Rundknöpfe, glint-/alert-Ersatz — alle vier sind Einzelzell-Ausschnitte, siehe Ausnahme unten |
+
+**Zu den acht NPC-Blättern.** `CF_NPCS` in `index.html` trägt acht Einträge. Von G5 bis zum
+20.08.2026 lagen nur die drei ersten hier, und Zapf, Lisbeth, Trepp, Milb und Fass standen
+unsichtbar im Dorf; seit G6 fällt jede Figur ohne Blatt auf ein Held-Komposit zurück
+(Frisur/Kleidung je Figur in `DORF_FIGUREN.gestalt`), das Spiel ist also auch ohne sie
+vollständig. Seit dem 21.08.2026 liegen alle acht hier — `npcBlaetter()` fragt `SHEETS` und
+nicht eine Liste im Code, es war deshalb keine Codeänderung nötig. Der Start meldet in einer
+Zeile, welche Figuren gerade als Komposit laufen; steht sie nicht da, laufen alle mit
+eigenem Rig. Zum Raster von `Fisherman_Fin` (9 Spalten à 64, nicht 18 à 32 wie das Manifest
+bis dahin führte) siehe `phase-g6-nachtrag-dorfblaetter.md`.
 
 **Bewusst nicht verwendet:** `Church`/`Blacksmith_House` als Amt-Alternativen (Inn
 wirkte im Vergleich am ehesten nach „Amt", reine Optik-Entscheidung), `Tent_*`

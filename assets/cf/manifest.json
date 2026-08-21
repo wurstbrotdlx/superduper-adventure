@@ -21727,7 +21727,16 @@
       "w": 18,
       "h": 20
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/NPCs (Premade)/Bartender_Katy.png",
@@ -21826,7 +21835,16 @@
       "w": 18,
       "h": 30
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/NPCs (Premade)/Farmer_Bob.png",
@@ -21937,58 +21955,65 @@
       "w": 35,
       "h": 38
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/NPCs (Premade)/Fisherman_Fin.png",
     "w": 576,
     "h": 832,
-    "fw": 32,
+    "fw": 64,
     "fh": 64,
-    "cols": 18,
+    "cols": 9,
     "rows": 13,
-    "gridSource": "inferred",
-    "score": 3.663,
-    "confidence": 0.03,
-    "alternatives": [
-      {
-        "fw": 32,
-        "fh": 32,
-        "score": 3.552
-      },
-      {
-        "fw": 64,
-        "fh": 64,
-        "score": 3.529
-      }
-    ],
+    "gridSource": "override",
+    "score": 3.529,
+    "confidence": 1,
+    "alternatives": [],
     "rowFrames": [
-      12,
-      12,
-      12,
-      12,
-      12,
-      12,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      9,
       8,
-      18,
-      16,
-      18,
-      16,
-      18,
-      16
+      9,
+      8,
+      9,
+      8
     ],
-    "totalFrames": 182,
+    "totalFrames": 91,
     "anchorSuggested": {
-      "ax": 16,
+      "ax": 32,
       "ay": 64
     },
     "unionBBox": {
-      "x": 0,
+      "x": 24,
       "y": 0,
-      "w": 32,
+      "w": 40,
       "h": 64
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/NPCs (Premade)/Lumberjack_Jack.png",
@@ -22036,7 +22061,16 @@
       "w": 38,
       "h": 38
     },
-    "anims": null
+    "anims": {
+      "idle": [
+        1,
+        6
+      ],
+      "walk": [
+        4,
+        6
+      ]
+    }
   },
   {
     "path": "Cute_Fantasy/NPCs (Premade)/Miner_Mike.png",

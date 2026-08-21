@@ -1,10 +1,10 @@
 # Cute Fantasy Sheet-Audit
 
-Erzeugt von `tools/sheet-audit.mjs`. 886 Sheets ausgewertet, 0 Fehler, Laufzeit 18.1s.
+Erzeugt von `tools/sheet-audit.mjs`. 886 Sheets ausgewertet, 0 Fehler, Laufzeit 29.6s.
 
 ## Nach Pack
 
-- **Cute_Fantasy**: 717 Sheets (496 inferiert, 216 per Regel, 5 per Override)
+- **Cute_Fantasy**: 717 Sheets (495 inferiert, 216 per Regel, 6 per Override)
 - **Cute_Fantasy_Characters**: 14 Sheets (14 inferiert, 0 per Regel, 0 per Override)
 - **Cute_Fantasy_Christmass**: 9 Sheets (9 inferiert, 0 per Regel, 0 per Override)
 - **Cute_Fantasy_Dungeons**: 51 Sheets (11 inferiert, 34 per Regel, 6 per Override)
@@ -16,7 +16,7 @@ Erzeugt von `tools/sheet-audit.mjs`. 886 Sheets ausgewertet, 0 Fehler, Laufzeit 
 
 ## Niedrige Confidence (< 0.15, gridSource=inferred)
 
-442 von 886 Sheets insgesamt unter der Schwelle (29 davon G1-G3-Prioritätsrigs, siehe Cast-Tabelle unten). Confidence misst nur den Abstand zur zweitbesten Alternative — bei Sheets mit vielen Teilerharmonien (z.B. 32/16/64) bleibt er auch bei korrektem Raster niedrig, siehe G0-Umsetzungsnotizen. Volle Liste in `assets/cf/manifest.json` (Feld `confidence`).
+441 von 886 Sheets insgesamt unter der Schwelle (29 davon G1-G3-Prioritätsrigs, siehe Cast-Tabelle unten). Confidence misst nur den Abstand zur zweitbesten Alternative — bei Sheets mit vielen Teilerharmonien (z.B. 32/16/64) bleibt er auch bei korrektem Raster niedrig, siehe G0-Umsetzungsnotizen. Volle Liste in `assets/cf/manifest.json` (Feld `confidence`).
 
 ### Davon Prioritätsrigs (per Hand gegen das PNG geprüft, siehe Cast-Tabelle für Ergebnis)
 
@@ -52,9 +52,9 @@ Erzeugt von `tools/sheet-audit.mjs`. 886 Sheets ausgewertet, 0 Fehler, Laufzeit 
 | Cute_Fantasy/Enemies/Slime/Slime_Medium/Slime_Medium_Blue.png | 256x128 | 32x32 (8x4) | 0.128 | 16x32 (5.45), 32x16 (5.393) |
 | Cute_Fantasy/Enemies/Slime/Slime_Small/Slime_Small_Blue.png | 128x64 | 16x16 (8x4) | 0.148 | 8x16 (5.325), 16x8 (5.143) |
 
-### Rest (413, nicht G1-G3-Priorität, ungeprüft)
+### Rest (412, nicht G1-G3-Priorität, ungeprüft)
 
-- **Cute_Fantasy**: 373 Sheets
+- **Cute_Fantasy**: 372 Sheets
 - **Cute_Fantasy_Christmass**: 6 Sheets
 - **Cute_Fantasy_Dungeons**: 3 Sheets
 - **Cute_Fantasy_Halloween**: 9 Sheets
