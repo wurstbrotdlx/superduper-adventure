@@ -356,6 +356,86 @@
     max-height:max(260px, calc(100dvh - 200px));
   }
 
+  /* =====================================================================
+     U2 — dieselben Menues, jetzt mit den Zellen des Packs statt mit CSS, das
+     Pixelkunst nachahmt. Vier Zellen, geschnitten von tools/ui-zellen.mjs,
+     eingehaengt ueber Variablen, die bakeUiSkin() setzt. Jede Regel nennt
+     ihren Ersatzwert selbst: ohne Grafiklizenz bleibt genau der U1-Anstrich
+     stehen, den diese Zeilen sonst ueberschreiben.
+
+     border-image-WIDTH statt border-width, ueberall: die Kastenmasse bleiben
+     die kalibrierten (G5-Notiz bei bakeUiSkin), nur das Bild wird groesser
+     aufgetragen als der 2px-Rand, den es ersetzt.
+     ===================================================================== */
+
+  /* Felder. slot_brown ist 18x18 mit 1px Rahmen, 1px Innenschatten und einem
+     orangen Eckpunkt; Schnitt 3 nimmt genau diesen Ring samt Ecke mit. Ohne
+     'fill', also faellt die braune Fuellung des Packs weg und der dunkle Grund
+     des Panels bleibt stehen — dieselbe Entscheidung wie in G5 beim Panelrahmen
+     und aus demselben Grund: heller Text braucht einen dunklen Grund. */
+  .bagSlot, .eqSlot, .zutTile, .potSlot, .symBtn{
+    border-image-source:var(--cfui-slot, none);
+    border-image-slice:4;
+    border-image-width:4px;
+    /* repeat, nicht stretch: die Kante ist 12 Quellpixel lang und muss ueber
+       40 bis 90 laufen. Gedehnt wird daraus ein Farbverlauf, wiederholt bleibt
+       es die Kante, die gezeichnet wurde. */
+    border-image-repeat:repeat;
+    /* Regressionsregel 14 (R6/F34): hochskalierte Pixelkunst wird nicht
+       geglaettet. Ohne diese Zeile verschmieren der 1px-Rahmen und die orangen
+       Eckpunkte zu einem lachsfarbenen Band — im ersten U2-Durchgang genau so
+       passiert, s. Phasendokument. */
+    image-rendering:pixelated;
+  }
+  /* Die gestrichelte Fassung des Packs hat keine gestrichelte Entsprechung im
+     Schnitt — der leere Topfplatz behaelt deshalb seinen CSS-Strichrand und
+     nimmt die Grafik erst, wenn etwas drinliegt. */
+  .potSlot:not(.full){border-image-source:none;}
+
+  /* Auswahl. Ersetzt zwei Rahmen, die aus keiner Grafik stammten: den blauen
+     um das ausgeruestete Teil und den goldenen Schein um den aktiven Zauber.
+     26x28 gestrichelt, Schnitt 6 haelt die Eckwinkel zusammen. */
+  .eqSlot:hover, .bagSlot:hover, .zutTile:hover, .spellNode.known.active{
+    border-image-source:var(--cfui-sel, none);
+    border-image-slice:6;
+    border-image-width:5px;
+    border-image-repeat:repeat;
+    image-rendering:pixelated;
+  }
+  /* .kTab bleibt aussen vor: der gestrichelte Rahmen ist fuer ein Feld von 46px
+     gezeichnet. Auf einem Reiter von 140x40 wird daraus ein weisser Kasten, der
+     lauter ist als der Reiter selbst — im ersten U2-Durchgang probiert und
+     verworfen. Die Reiter behalten die Goldkante aus U1. */
+
+  /* Breite Knoepfe. Mit 'fill', hier ist die Fuellung des Packs erwuenscht:
+     diese drei Knoepfe waren schon vorher hell mit dunkler Schrift
+     (linear-gradient(#f4d97a,#c9a227) auf #1a1206), die Pille trifft genau das.
+     Schnitt 5/7/6/7: oben die Lichtkante, unten der Schatten, seitlich die
+     Rundung — die flache Mitte dazwischen darf sich dehnen. */
+  #brewBtn, #overlay button, #amtFenster button{
+    border-image-source:var(--cfui-pill, none);
+    border-image-slice:5 7 6 7 fill;
+    border-image-width:7px;
+    border-image-repeat:stretch;   /* Mitte ist einfarbig, Dehnen faellt nicht auf */
+    image-rendering:pixelated;
+  }
+  /* Ein gesperrter Knopf muss gesperrt aussehen. Die Pille ist immer hell,
+     also faellt sie hier weg und der graue Grund von #brewBtn:disabled
+     kommt wieder durch. */
+  #brewBtn:disabled{border-image-source:none;}
+
+  /* Schliessknopf. Der Kreis mit dem eingepraegten X ersetzt round_brown plus
+     ✖-Zeichen. body.cfuiX setzt bakeUiSkin(), nur wenn die Zelle geladen ist —
+     ohne sie bleibt das Zeichen sichtbar (s. dort). */
+  #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeSchlossBtn,
+  #closeAusweisBtn, #closeFullmapBtn, .panelZu{
+    background-image:var(--cfui-x, var(--cfui-round, linear-gradient(#c9a227,#8a6d3b)));
+    image-rendering:pixelated;
+  }
+  body.cfuiX #closeInvBtn, body.cfuiX #closeSpellBtn, body.cfuiX #closeKesselBtn,
+  body.cfuiX #closeSchlossBtn, body.cfuiX #closeAusweisBtn,
+  body.cfuiX #closeFullmapBtn, body.cfuiX .panelZu{font-size:0;}
+
   /* Der Schleier. Ausdruecklich KEIN modaler Vorhang: pointer-events:none, und
      z-index 9 haelt ihn unter HUD (10), Dienstzettel (12) und Panels (20+).
      Er verdunkelt nur die Welt. Ein klickfangendes Element ueber dem ganzen
@@ -1164,6 +1244,17 @@ addSheet('cfwind', 'cf/deco/Weather/Wind_Anim.png', 14, 'strip');
 // Datei, das würde der Build nicht miteinbacken (s. Umsetzungsnotizen G5).
 addSheet('cfui_frame', 'cf/ui/frame_brown.png', 1, 'raw');   // UI_Frames.png, Zelle (0,0), 48x48
 addSheet('cfui_round', 'cf/ui/round_brown.png', 1, 'raw');   // UI_Buttons.png, x96-111 y0-15, 16x16
+// U2: vier weitere Zellen aus demselben Pack. Geschnitten von tools/ui-zellen.mjs,
+// das die Koordinaten als Tabelle fuehrt und mit --pruef nachrechnet — anders als
+// die vier oben, die von Hand geschnitten und nur in einer README notiert sind.
+// optional:true, weil sie fehlen duerfen: bakeUiSkin() setzt dann die zugehoerige
+// CSS-Variable nicht, und die Regeln fallen auf ihren Ersatzwert zurueck (der
+// U1-Anstrich aus reinem CSS). Ohne das Flag stuende hier eine Warnung je Zelle
+// bei jedem, der das Repo ohne Grafiklizenz klont.
+addSheet('cfui_slot',  'cf/ui/slot_dark.png',  1, 'raw', {optional:true});  // UI_Buttons.png  (129,17) 14x14
+addSheet('cfui_x',     'cf/ui/btn_close.png',  1, 'raw', {optional:true});  // UI_Buttons.png  (721,33) 14x14
+addSheet('cfui_pill',  'cf/ui/btn_pill.png',   1, 'raw', {optional:true});  // UI_Buttons.png  (1,17)   30x14
+addSheet('cfui_sel',   'cf/ui/sel_white.png',  1, 'raw', {optional:true});  // UI_Selectors.png (11,10) 26x28
 
 // ===========================================================================
 //  Kammer-Interieur — Cute Fantasy Dungeons (Kenmi, itch.io), Phase G1.
@@ -13464,8 +13555,37 @@ function dorfSichtAssert(){
 // ausschließlich background-image/border-image-* gesetzt, keine pointer-events/
 // touch-action/IDs/DOM-Struktur angefasst.
 function bakeUiSkin(){
-  const frameUrl = SHEETS['cfui_frame'].img.src;
-  const roundUrl = SHEETS['cfui_round'].img.src;
+  // U2: Ein fehlendes Blatt war hier bisher ein TypeError mitten in der Ladekette
+  // — und damit ein schwarzer Bildschirm statt eines Spiels ohne Skin. Seit U2
+  // haengen vier weitere Zellen daran, also wird gefragt statt zugegriffen.
+  const url = key => (SHEETS[key] ? SHEETS[key].img.src : null);
+  const frameUrl = url('cfui_frame');
+  const roundUrl = url('cfui_round');
+  if(!frameUrl || !roundUrl){
+    console.warn('UI-Skin: frame_brown/round_brown fehlen, das Menue bleibt bei den CSS-Ersatzwerten.');
+    return;
+  }
+
+  // Die vier U2-Zellen als CSS-Variablen. Gesetzt wird nur, was wirklich geladen
+  // ist; jede Regel im <style> nennt ihren Ersatzwert selbst (var(--x, ...)).
+  // Der Weg ueber SHEETS[].img.src statt ueber ein CSS-url() ist derselbe wie in
+  // G5 und aus demselben Grund: im Einzeldatei-Build steht dort die data:-URI,
+  // die build-single.mjs eingebacken hat, im Quellbaum der relative Pfad.
+  const zellen = [
+    ['--cfui-slot', 'cfui_slot'],   // Feldrahmen: Beutel, Ausruestung, Zutaten, Symbolschloss
+    ['--cfui-x',    'cfui_x'],      // Schliessknopf mit eingepraegtem X
+    ['--cfui-pill', 'cfui_pill'],   // breite Knoepfe
+    ['--cfui-sel',  'cfui_sel'],    // gestrichelter Auswahlrahmen
+  ];
+  for(const [vari, key] of zellen){
+    const u = url(key);
+    if(u) document.documentElement.style.setProperty(vari, `url("${u}")`);
+  }
+  // Das X steckt seit U2 in der Grafik. Solange sie da ist, muss das ✖-Zeichen
+  // im HTML verschwinden, sonst stehen zwei Kreuze uebereinander. Als Klasse und
+  // nicht als feste CSS-Regel, damit ohne die Datei das Zeichen bleibt — ein
+  // leerer runder Knopf waere schlechter als ein Knopf ohne Grafik.
+  document.body.classList.toggle('cfuiX', !!url('cfui_x'));
   // Touch-Rundknöpfe bekommen das Rundsprite über die body.touch-Regeln im <style>:
   // beim Backen (einmalig, nach dem Laden) ist body.touch noch gar nicht gesetzt
   // (enterTouchMode() kommt erst beim ersten Touch), deshalb nur die Variable (F18).

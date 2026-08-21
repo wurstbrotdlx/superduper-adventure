@@ -4,7 +4,7 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach W-Lager vom 21.08.2026 (118 Dateien): `dungeon/`, `player/`, `enemies/`, `tiles/` und
+Stand nach U2 vom 21.08.2026 (122 Dateien): `dungeon/`, `player/`, `enemies/`, `tiles/` und
 `deco/` (jetzt zusätzlich Dorf-Gebäude, NPC-Staffage, Wetter) sind gefüllt, `ui/`
 ist mit G5 dazugekommen. Damit lädt das Spiel ausschließlich noch aus `assets/cf/`
 — `assets/Characters/`, `assets/Elements/`, `assets/Tileset/`, `assets/UI/`
@@ -222,6 +222,35 @@ Zelle im großen Blatt:
   (voller/halber/leerer blauer Stern als 3-Frame-Zwinker-Ersatz für die alte
   6-Frame-Sunnyside-Animation — im Pack keine mehrframige Funkel-Animation).
 - `ui/alert.png` — `UI_Icons.png`, Zeile 2 Spalte 12, Quelle 192,32 16×16.
+
+### Von U2 gebraucht (`ui/`)
+
+Vier weitere Einzelzellen, damit die Menues Pack-Grafik tragen statt CSS, das Pixelkunst
+nachahmt. Anders als die vier aus G5 sind sie **nicht von Hand geschnitten**: die
+Koordinaten stehen als Tabelle in `tools/ui-zellen.mjs`, das Werkzeug schneidet sie aus
+`Graphics/` und rechnet mit `--pruef` nach, ob die Dateien hier noch dem Schnitt
+entsprechen. Zusammen 1098 Byte.
+
+| Datei | Quelle | Rect | Verwendung |
+|---|---|---|---|
+| `ui/slot_dark.png` | `UI_Buttons.png` | (129,17) 14x14 | Beutel-, Ausruestungs-, Zutaten- und Symbolfelder |
+| `ui/btn_close.png` | `UI_Buttons.png` | (737,33) 14x14 | Schliessknopf aller sieben Panels |
+| `ui/btn_pill.png` | `UI_Buttons.png` | (1,17) 30x14 | Kochknopf, Overlay-Knoepfe, Amtsstuben-Knopf |
+| `ui/sel_white.png` | `UI_Selectors.png` | (11,10) 26x28 | Auswahlrahmen: Feld unter dem Zeiger, aktiver Zauber |
+
+**Bewusst nicht verwendet:** `UI_Premade.png` (113,33) — das Feld aus der fertigen
+Beuteltafel des Packs, der naheliegende Kandidat fuer `slot_dark`. Es ist fuer eine HELLE
+Tafel gezeichnet: seine vier abgerundeten Ecken zeigen deren Grund (228,166,114), und auf
+dem dunklen Panel des Ministeriums leuchten daraus vier lachsfarbene Eckpunkte. Dieselbe
+Falle steckt in allen `UI_Frames`-Zellen. Ausserdem liegen gesichtet, aber unverbaut:
+`UI_Ribbons` (Spruchbaender, Mitte hoeher als die Enden, geht nicht als border-image),
+`Book_UI` (Buchgruende und Lesebaendchen, beides hell), `UI_Bars` (gehoert ins HUD),
+`UI_Icons`/`UI_Button_Icons` (der Guertel traegt Emoji), `UI_ALL` (Sammelblatt, 181 KB).
+Begruendung je Posten in `phase-u2-menuegrafik.md`.
+
+**Diese vier duerfen fehlen.** Sie sind mit `optional:true` registriert; `bakeUiSkin()`
+setzt die zugehoerigen CSS-Variablen dann nicht, und die Menues fallen auf den
+CSS-Anstrich aus U1 zurueck. Geprueft, siehe Pruefprotokoll dort.
 
 ## Kopierkonvention
 
