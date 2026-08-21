@@ -34,7 +34,7 @@ python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</sc
 
 Das fängt Syntaxfehler, **nicht** die Temporal Dead Zone. Der häufigste echte Fehler in diesem Projekt ist ein `ReferenceError` beim Laden, weil eine Funktion, die schon auf Skriptebene läuft, eine erst später deklarierte Konstante liest. Den findet nur der Browser mit offener Konsole.
 
-Das Spiel prüft sich beim Laden selbst. Sieben selbstaufrufende Guards (`knAssertCaps`, `blaetterAssert`, `rangAssert`, `anredeAssert`, `vorgangAssert`, `auftragAssertBrett`, `langAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit und Erreichbarkeit. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium.
+Das Spiel prüft sich beim Laden selbst. Acht selbstaufrufende Guards (`knAssertCaps`, `blaetterAssert`, `rangAssert`, `anredeAssert`, `vorgangAssert`, `auftragAssertBrett`, `langAssert`, `dienstAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit und Erreichbarkeit. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium.
 
 ## Dokumente
 
@@ -44,7 +44,7 @@ Das Spiel prüft sich beim Laden selbst. Sieben selbstaufrufende Guards (`knAsse
 | `superduper-gameplay-prompt.md` | Gameplay-Phasen 1 bis 6, Zählertabellen |
 | `superduper-grafik-prompt.md` | Grafik-Phasen G0 bis G5 |
 | `superduper-reparatur-prompt.md` | Reparaturrunden R1 bis R9 |
-| `phase-*.md` | Eine Bauanleitung je Bauabschnitt, mit Abnahme und Prüfprotokoll |
+| `phase-*.md` | Eine Bauanleitung je Bauabschnitt, mit Abnahme und Prüfprotokoll. Der jüngste ist `phase-w8-anfang.md`: Einstellungsvordruck, Dienstanweisung, Laufbahnziel |
 | `figuren-dorf.md`, `blaetter-serie-a-b.md` | Inhaltslieferungen (Figurentexte, Aktenfunde) |
 | `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md` | Datierte Prüfberichte. Ihre Zeilennummern sind Stände, keine Wegweiser. |
 | `CREDITS.md` | Grafik-Lizenzen |

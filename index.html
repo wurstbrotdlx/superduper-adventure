@@ -7516,14 +7516,27 @@ function updateHUD(){
   if(touchMode) el('attackBtn').classList.toggle('locked', !!lockedTarget);
 }
 
+// W8: Das Startbild sagt jetzt, in welcher Welt man landet, bevor es fragt, ob
+// man hinein will. Der Aufhänger ist der erste Satz der Weltbibel (Kapitel 0),
+// er verrät nichts über die Akte und erklärt trotzdem alles über die Welt.
+// Wer schon im Dienst war, sieht statt des Aufhängers seinen Stand und kommt
+// hier auch wieder an die Dienstanweisung (Blatt 2), ohne eine Schicht zu
+// starten.
 function showStartScreen(){
   state = 'menu';
   camSnap();   // hinter dem Startbild soll das Dorf stehen, nicht die Kartenecke
+  const erst = !kn.seen.einstellung;
+  const stand = (CONFIG.schichtModus && amt.schichten > 0)
+    ? `<p style="font-size:12px;color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse 💰 ${amt.bankGold}</p>` : '';
   document.getElementById('ovPanel').innerHTML = `
     <h1>DAS MONSTRAL MINISTERIUM</h1>
     <h3>Erledigen. Beglaubigen. Feierabend.</h3>
-    <p>Drei Biome bis ans Meer, versiegelte Kammern, ein Kessel. Draufhauen mit Klick oder Leertaste, auf dem Handy rechte Bildschirmhälfte. Karte auf L. Den Rest erklärt das Amt.</p>
-    <button onclick="startGame()">Dienst antreten</button>
+    <p style="font-size:16px;color:#f4e6b8;margin:0 0 10px;">Was nicht bearbeitet wird, wird lebendig.</p>
+    <p>Vierhundert Jahre lang ist hier etwas liegen geblieben. Inzwischen läuft es draußen herum, und das Amt schickt jeden Tag jemanden hinterher. Heute sind Sie das.</p>
+    ${stand}
+    <p style="font-size:12px;color:#9a8a5f;">W A S D gehen, Klick oder Leertaste schlagen. Auf dem Handy links gehen, rechts schlagen.</p>
+    <button onclick="startGame()">${erst ? 'Dienst antreten' : 'Dienst fortsetzen'}</button>
+    ${erst ? '' : `<div><button onclick="showDienstblatt(2,'menu')" style="font-size:13px;padding:9px 20px;margin-top:10px;">Dienstanweisung</button></div>`}
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
@@ -7586,7 +7599,13 @@ function winGame(){
 
 function startGame(){
   initAudio();
-  if(CONFIG.schichtModus){ pendingCarryGold = 0; pendingCarryPouch = []; startShift(); }
+  if(CONFIG.schichtModus){
+    pendingCarryGold = 0; pendingCarryPouch = [];
+    // W8: Beim allerersten Dienstantritt wird erst eingestellt, dann gearbeitet.
+    // Danach nie wieder (kn.seen.einstellung), nachlesbar bleibt es überall.
+    if(!kn.seen.einstellung){ MUS.goto('office'); MUS.muffle(false); showDienstblatt(1, 'einstellung'); return; }
+    startShift();
+  }
   else { document.getElementById('overlay').style.display = 'none'; MUS.muffle(false); state = 'play'; knPlayStartT = gameT; }
 }
 
@@ -9702,6 +9721,274 @@ function waehleAuftrag(i){
 
 // Dorf-Hub "Amt für Monsterangelegenheiten" zwischen den Schichten. Wie die anderen
 // Overlay-Screens (Start/Tod/Sieg) ein reines innerHTML-Panel, keine neue Renderpath-Berührung.
+// ===========================================================================
+//  W8: DER ANFANG — Einstellung und Dienstanweisung. Weltbibel Kapitel 0, 2, 4,
+//  5 und 18.3. Bis hierher fing das Spiel mit vier Zeilen Startbildschirm an:
+//  der Spieler wusste, welche Taste schlaegt, und sonst nichts. Er wusste nicht,
+//  was er ist, was das Haus von ihm will und woran er merkt, dass er
+//  vorankommt. Das ist der Bauabschnitt, der diese drei Fragen beantwortet.
+//
+//  Er beantwortet sie mit einem Vordruck, nicht mit einem Prolog. Das Haus
+//  stellt jeden Tag jemanden neu ein (Kapitel 5), also gibt es ein Formular
+//  dafuer, also liest der Spieler beim ersten Dienstantritt genau das, was ein
+//  frisch Eingestellter lesen wuerde. Kein neues System: es ist dasselbe
+//  #ovPanel, das schon Dienstbericht, Amt und Jahresgespraech traegt, und
+//  dieselbe kn-Persistenz, die schon die Dienstzettel merkt (kn.seen).
+//
+//  Drei Grenzen, die dieser Bauabschnitt einhaelt:
+//
+//  1. Keine Cutscene (Kapitel 14, "Was wir ausdruecklich nicht bauen"). Ein
+//     Formular ist keine Zwischensequenz. Es laeuft nicht ab, es wird gelesen,
+//     geblaettert und unterschrieben, und man kann es jederzeit wieder
+//     aufschlagen (Knopf im Startbild und im Amt).
+//
+//  2. Kein Vorgriff auf die Akte. Der Spieler erfaehrt zu Beginn nichts von dem,
+//     was Kapitel 2 fuer das Ende aufhebt. Deshalb nennt der Vordruck den
+//     Gegenstand der Bearbeitung ueberhaupt nicht, sondern verweist auf Anlage 1,
+//     und Anlage 1 liegt nicht vor. Zwirns "Solange der Vorgang laeuft" im ersten
+//     Jahresgespraech bleibt die erste Nennung des Wortes (Kapitel 9, Akt I).
+//     dienstAssert() haelt das hart nach: eine Sperrliste prueft jede Zeile
+//     dieses Bauabschnitts gegen die Begriffe der spaeteren Akte.
+//
+//  3. Kein Questmarker (Kapitel 14). Das Blatt sagt, was der Dienst ist, nicht
+//     wohin man laufen soll. Kein Ort, keine Richtung, keine Reihenfolge.
+//
+//  Die Motivation entsteht damit aus derselben Quelle wie der Rest der Welt:
+//  aus dem Verfahren. Blatt 3 sagt, dass die Stelle mit der abschliessenden
+//  Bearbeitung endet, und dass sie seit vierhundert Jahren besteht. Wer das
+//  liest, weiss, worauf das Spiel hinauslaeuft, ohne zu wissen, worum es geht.
+// ===========================================================================
+
+const DIENSTBLATT_ANZ = 3;
+
+// Die drei Blaetter. felder/punkte/saetze sind Funktionen, nicht Literale:
+// Blatt 1 und 3 zitieren den Rang aus RAENGE statt ihn abzuschreiben (die
+// F1-Falle, zwei Stellen behaupten dasselbe), und dienstAssert() kann sie
+// dadurch beim Start genauso aufrufen wie das Panel beim Rendern.
+//
+// Alle Texte hier sind freier Panel-Text und tragen deshalb KEINEN
+// Zeichendeckel, gleiche Begruendung wie bei rangZeremonieBlock(). Die
+// Formregeln aus Kapitel 13 gelten trotzdem: kein Gedankenstrich, kein Emoji
+// im Figurentext, kurze Saetze.
+const DIENSTBLATT = [
+  {
+    nr: 1,
+    kopf: 'EINSTELLUNGSVERFÜGUNG',
+    unter: 'Vordruck A 1, Blatt 1 von 3',
+    lead: 'Das Haus stellt Sie ein. Für heute.',
+    felder: () => [
+      ['Dienststelle', 'Ministerium für Monsterangelegenheiten, Vordermühl an der Ablage'],
+      ['Dienstposten', 'Außendienst, Sachgebiet 7'],
+      ['Amtsbezeichnung', rangNameVon(0)],
+      ['Dienstverhältnis', RANG_VERH[0]],
+      ['Beschäftigungsdauer', 'ein Tag. Eine Verlängerung wäre eine Neubesetzung.'],
+      ['Zweck der Stelle', 'die abschließende Bearbeitung herbeiführen'],
+      ['Gegenstand der Bearbeitung', 'siehe Anlage 1'],
+      ['Anlage 1', 'liegt nicht vor'],
+    ],
+    saetze: () => [
+      'Die Stelle ist vorläufig eingerichtet. Vorläufig heißt: bis zur abschließenden Bearbeitung.',
+      'Die Stelle besteht seit vierhundert Jahren.',
+      'In dieser Zeit ist einiges liegen geblieben, und was liegen bleibt, steht irgendwann auf und geht nach draußen.',
+      'Draußen ist Ihr Bereich.',
+    ],
+    kn: ['Die meisten unterschreiben sofort. Lesen Sie ruhig.'],
+  },
+  {
+    nr: 2,
+    kopf: 'DIENSTANWEISUNG',
+    unter: 'Vordruck A 1, Blatt 2 von 3',
+    lead: 'Was zu tun ist, in der Reihenfolge, in der es Ihnen begegnet.',
+    punkte: () => [
+      ['Erledigung', 'Was draußen umherläuft, ist unbearbeitet. Wer zuschlägt, schließt ab. Es fällt Aktenkonfetti.'],
+      ['Sachbestand', 'Was dabei liegen bleibt, wird aufgenommen. Es sieht aus wie Abfall. Es ist Bestand.'],
+      ['Beglaubigung', 'Der Feldkessel ist amtlich zugelassen. Drei Sachbestände hinein, ein Ausrüstungsteil heraus.'],
+      ['Nebenbestimmungen', 'Jedes beglaubigte Stück trägt eine Bewilligung und eine Auflage. Es gilt beides.'],
+      ['Verschlossene Vorgänge', 'Kammern sind versiegelt. Am Schild stehen Aufwand und Ertrag. Das Schild ist ehrlich.'],
+      ['Aushang', 'Das Schwarze Brett hängt je Schicht einen Auftrag aus. Annahme freiwillig, Abbruch jederzeit.'],
+      ['Dienstschluss', 'Die Schicht endet durch die Uhr oder unsanft. Beides heißt Feierabend. Es geht niemand verloren.'],
+      ['Amtsvermögen', 'Beute zur Hälfte, Bestand bis zum Kontingent, Wissen vollständig. Die Kladde bleibt im Haus.'],
+      ['Qualifikation', 'Stufe, Zauber und Ausrüstung enden mit der Schicht. Persönliches ist nicht übertragbar.'],
+    ],
+    // Bedienung ist Bedienungstext, keine Figurenrede: hier sind Tasten erlaubt
+    // und noetig. Die Regel "hoechstens eine Taste pro Hinweis" gilt fuer
+    // Knoeterichs Dienstzettel (knAssertCaps), nicht fuers Panel.
+    bedienung: () => [
+      ['Tastatur', 'W A S D gehen, Klick oder Leertaste schlagen, Q Trank, E Zauber, R Ultimate, T Zauberbaum, I Rucksack, K Kessel, L Karte, F Hand anlegen, Esc schließt.'],
+      ['Berührung', 'Links der Daumenring zum Gehen, rechts der Kampfknopf. Ziehen zielt.'],
+    ],
+    kn: ['Neun Punkte. Sie brauchen zuerst die ersten drei.'],
+  },
+  {
+    nr: 3,
+    kopf: 'LAUFBAHN UND ZIEL',
+    unter: 'Vordruck A 1, Blatt 3 von 3',
+    lead: 'Woran Sie merken, dass Sie vorankommen.',
+    felder: () => [
+      ['Hebung des Dienstpostens', 'alle fünf Schichten'],
+      ['Nächste Hebung', `nach Schicht 5. Neue Amtsbezeichnung: ${rangNameVon(1)}.`],
+      ['Jede zehnte Schicht', 'Jahresgespräch. Mit Urkunde, mit Marsch, mit einer dauerhaften Kleinigkeit.'],
+      ['Umfang der Hebung', 'sie betrifft den Dienstposten, nicht die Person, die ihn heute bekleidet'],
+      ['Was dem Haus bleibt', 'die Amtskasse, die Ausbauten und die Kladde. Über Nacht, über jede Schicht hinweg.'],
+      ['Ende der Stelle', 'mit der abschließenden Bearbeitung'],
+      ['Unterschrift der Amtsleitung', 'N. N.'],
+      ['Unterschrift des Außendienstes', '_______________________'],
+    ],
+    saetze: () => [
+      'Das Haus besteht, solange die Bearbeitung nicht abgeschlossen ist.',
+      'Es kann sich also nur beenden, indem es seine Aufgabe erfüllt.',
+      'Daran arbeiten hier fünf Beschäftigte und ein Kater.',
+      'Ab heute sechs.',
+    ],
+    kn: ['Unten unterschreiben. Oben ist für die Leitung. Oben bleibt frei.',
+         'In Vordermühl ist das eine Ehre. Ich meine das ernst.'],
+  },
+];
+
+function dienstblattZeilen(b){
+  const out = [];
+  for(const [k, v] of (b.felder ? b.felder() : [])) out.push([k, 'Feld'], [v, 'Wert']);
+  for(const [k, v] of (b.punkte ? b.punkte() : [])) out.push([k, 'Punkt'], [v, 'Punkttext']);
+  for(const [k, v] of (b.bedienung ? b.bedienung() : [])) out.push([k, 'Bedienung'], [v, 'Bedienungstext']);
+  for(const s of (b.saetze ? b.saetze() : [])) out.push([s, 'Satz']);
+  return out;
+}
+
+// Ein Blatt als HTML. Bauform wie rangZeremonieBlock()/vorgangPanelHtml():
+// reine Funktion, kein Seiteneffekt, jedes Neurendern liefert dasselbe.
+function dienstblattHtml(b){
+  const feld = (b.felder ? b.felder() : []).map(([k, v]) =>
+    `<div style="display:flex;gap:10px;padding:4px 0;border-bottom:1px solid #3a2f1a;">
+       <span style="flex:0 0 40%;color:#9a8a5f;">${k}</span>
+       <span style="flex:1 1 auto;">${v}</span></div>`).join('');
+  const punkt = (b.punkte ? b.punkte() : []).map(([k, v], i) =>
+    `<div style="padding:5px 0;border-bottom:1px solid #3a2f1a;">
+       <b style="color:#f4d97a;">${i+1}. ${k}.</b> <span style="color:#d8c898;">${v}</span></div>`).join('');
+  const bed = (b.bedienung ? b.bedienung() : []).map(([k, v]) =>
+    `<div style="padding:3px 0;"><b style="color:#f4d97a;">${k}.</b> <span style="color:#d8c898;">${v}</span></div>`).join('');
+  const bedBox = bed ? `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:11px;">${bed}</div>` : '';
+  const satz = (b.saetze ? b.saetze() : []).map(s =>
+    `<p style="font-size:12px;color:#c9b98a;margin:6px 0 0;">${s}</p>`).join('');
+  const kn = (b.kn || []).map(z =>
+    `<p style="font-size:12px;font-style:italic;color:#c9b98a;margin:8px 0 0;">Knöterich: „${z}“</p>`).join('');
+  // Nur der Vordruckteil rollt. Die Schlusssätze und Knöterich stehen darunter
+  // und bleiben immer sichtbar: auf Blatt 3 hängt genau dort der Grund, warum
+  // man das hier überhaupt tut, und der darf nicht unter der Kante liegen.
+  return `
+    <h1>${b.kopf}</h1>
+    <p style="font-size:12px;color:#9a8a5f;">${b.unter} · ${b.lead}</p>
+    <div id="dienstBox" style="max-height:34vh;overflow-y:auto;text-align:left;font-size:13px;">
+      ${feld}${punkt}${bedBox}
+    </div>
+    <p id="dienstMehr" style="font-size:11px;color:#7a6a45;margin:4px 0 0;"></p>
+    <div style="text-align:left;">${satz}${kn}</div>`;
+}
+
+// Blaettern. `ziel` sagt, wofuer das Blatt gerade offen ist:
+//   'einstellung' = erster Dienstantritt, das letzte Blatt wird unterschrieben
+//   'menu'        = im Startbild nachgelesen, zurueck ins Startbild
+//   'dorf'        = im Amt nachgelesen, zurueck ins Amt
+// Der Zustand steckt nur im onclick des jeweils gerenderten Knopfes, nicht in
+// einer Variablen: dieselbe Regel wie bei vorgangPanel(schritt).
+function showDienstblatt(nr, ziel){
+  const i = clamp(nr | 0, 1, DIENSTBLATT_ANZ);
+  const b = DIENSTBLATT[i - 1];
+  const klein = 'font-size:13px;padding:9px 20px;margin:10px 6px 0;';
+  const zurueck = i > 1
+    ? `<button onclick="showDienstblatt(${i-1},'${ziel}')" style="${klein}">ZURÜCK</button>` : '';
+  const weiter = i < DIENSTBLATT_ANZ
+    ? `<button onclick="showDienstblatt(${i+1},'${ziel}')" style="${klein}">WEITER</button>`
+    : (ziel === 'einstellung'
+        ? `<button onclick="dienstAntritt()" style="${klein}">UNTERSCHREIBEN</button>`
+        : `<button onclick="dienstblattEnde('${ziel}')" style="${klein}">SCHLIESSEN</button>`);
+  // Beim Nachlesen kommt man aus jedem Blatt heraus, ohne durchblaettern zu
+  // muessen. Beim ersten Dienstantritt nicht: das Blatt wird zu Ende gelesen
+  // oder wenigstens zu Ende geblaettert, sonst unterschreibt man nichts.
+  const raus = (ziel !== 'einstellung' && i < DIENSTBLATT_ANZ)
+    ? `<div><button onclick="dienstblattEnde('${ziel}')" style="font-size:11px;padding:6px 14px;margin-top:8px;">SCHLIESSEN</button></div>` : '';
+  document.getElementById('ovPanel').innerHTML = dienstblattHtml(b) + `<div>${zurueck}${weiter}</div>${raus}`;
+  document.getElementById('overlay').style.display = 'flex';
+  // Ein abgeschnittener Vordruck sieht aus wie ein Fehler, nicht wie eine
+  // Fortsetzung. Nach dem Rendern einmal messen und es dazuschreiben, wenn
+  // wirklich etwas unter der Kante liegt (Blatt 2 auf jedem Gerät, Blatt 1
+  // und 3 nur auf niedrigen Fenstern).
+  const box = document.getElementById('dienstBox'), mehr = document.getElementById('dienstMehr');
+  if(box && mehr && box.scrollHeight > box.clientHeight + 2) mehr.textContent = 'Das Blatt geht unten weiter.';
+}
+
+// Unterschrift. Der Merker liegt in kn.seen, dem Speicher, der ohnehin schon
+// weiss, welche Dienstzettel der Spieler gesehen hat, und der Tod, Schichtende
+// und startShift() ueberlebt (siehe KN_KEY). Kein neues amt-Feld, keine neue
+// Ladezeile in loadAmt().
+function dienstAntritt(){
+  kn.seen.einstellung = true; saveKn();
+  startShift();
+}
+
+function dienstblattEnde(ziel){
+  if(ziel === 'dorf') showDorf(); else showStartScreen();
+}
+
+// --- Guard, Bauform wie rangAssert()/anredeAssert(). Prueft beim Laden drei
+// Dinge, die man beim spaeteren Weiterschreiben genau so verliert:
+//   (1) Formregeln aus Kapitel 13 auf jeder einzelnen Zeile.
+//   (2) Den Sperrvermerk auf die spaeteren Akte. Das ist der eigentliche Grund
+//       fuer diesen Guard: der Vordruck ist die verfuehrerischste Stelle im
+//       ganzen Spiel, um "kurz zu erklaeren, worum es eigentlich geht", und
+//       genau das darf er nicht (Kapitel 2, Kapitel 9 Akt I).
+//   (3) Dass der Text nicht behauptet, was der Code nicht tut: Blatt 2 sagt
+//       "zur Haelfte", Blatt 3 sagt "alle fuenf Schichten". Beides sind Zahlen,
+//       die woanders im Code stehen und sich unabhaengig aendern lassen.
+// Wirft nie, meldet nur. Eine stille Konsole ist das Abnahmekriterium.
+function dienstAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('W8 Einstellung:', m, ...r); };
+  // Begriffe, die im Vordruck nichts zu suchen haben: sie gehoeren den Akten II
+  // bis V und werden dort einzeln verdient. Bewusst gross geschrieben geprueft,
+  // die Kleinschreibung ("kriegen", "zufrieden") soll nicht anschlagen.
+  const SPERRE = ['Nachtrag', 'Ausfertigung', 'Zustell', 'Krieg', 'Frieden', 'Vertrag',
+                  'Trepp', 'Sturz', 'Schattenfürst', 'Anschrift', 'Vorgang 1', 'Amtsleiterin'];
+  const text = (txt, feld, figur) => {
+    if(!txt) return fehler('Text leer', feld);
+    if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', feld, txt);
+    if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', feld, txt);
+    if(figur && PRUEF_EMOJI.test(txt)) fehler('Emoji im Figurentext', feld, txt);
+    for(const g of PRUEF_GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', feld, g, txt);
+    for(const s of SPERRE) if(txt.indexOf(s) >= 0) fehler('Vorgriff auf die Akte', feld, s, txt);
+  };
+
+  // (1) Blattform und Zaehlung
+  if(DIENSTBLATT.length !== DIENSTBLATT_ANZ) fehler('DIENSTBLATT hat', DIENSTBLATT.length, 'Blätter statt', DIENSTBLATT_ANZ);
+  DIENSTBLATT.forEach((b, i) => {
+    const wo = `Blatt ${i+1}`;
+    if(b.nr !== i + 1) fehler('Blattnummer weicht von der Position ab', wo, b.nr);
+    text(b.kopf, wo + ' Kopf'); text(b.unter, wo + ' Unterzeile'); text(b.lead, wo + ' Vorspann');
+    if(b.unter.indexOf(`Blatt ${b.nr} von ${DIENSTBLATT_ANZ}`) < 0)
+      fehler('Blattzählung in der Unterzeile stimmt nicht', wo, b.unter);
+    for(const [t, art] of dienstblattZeilen(b)) text(t, `${wo} ${art}`);
+    if(!b.kn || !b.kn.length) fehler('Blatt ohne Knöterich-Zeile', wo);
+    for(const z of (b.kn || [])) text(z, wo + ' Knöterich', true);
+  });
+
+  // (2) Text gegen Code. Beide Zahlen stehen im Vordruck als Wort und im Code
+  // als Zahl, und nur der Guard verbindet die beiden Orte.
+  if(CONFIG.goldUebertragAnteil !== 0.5)
+    fehler('Blatt 2 sagt "zur Hälfte", CONFIG.goldUebertragAnteil ist', CONFIG.goldUebertragAnteil);
+  const s0 = rangStufe();   // rangStufe() liest amt.schichten, deshalb ueber die Differenz geprueft
+  if(RAENGE.length < 2 || rangNameVon(1) === rangNameVon(0))
+    fehler('Blatt 3 verspricht eine Hebung nach Schicht 5, RAENGE liefert dieselbe Bezeichnung');
+  if(typeof s0 !== 'number' || s0 < 0) fehler('rangStufe() liefert keine brauchbare Stufe', s0);
+
+  // (3) Erreichbarkeit. Die drei Einsprungpunkte haengen in onclick-Zeichenketten
+  // (#ovPanel), also am globalen Namensraum. Ein Umbenennen faellt sonst erst
+  // auf, wenn jemand den Knopf drueckt.
+  for(const n of ['showDienstblatt', 'dienstAntritt', 'dienstblattEnde'])
+    if(typeof window[n] !== 'function') fehler('Einsprungpunkt fehlt im globalen Namensraum', n);
+
+  if(ok) console.log('W8 Einstellung: 3 Blätter, Formregeln und Sperrvermerk in Ordnung.');
+}
+dienstAssert();
+
 function showDorf(){
   auftragBrettSichern();   // W4: würfelt nur, wenn noch kein Brett für diese Schicht hängt
   MUS.goto('office'); MUS.muffle(false);   // ggf. noch vom Dienstbericht gedämpft — der Marsch soll klar klingen
@@ -9749,8 +10036,10 @@ function showDorf(){
     <h1>AMT FÜR MONSTERANGELEGENHEITEN</h1>
     <p style="font-size:12px;color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
     <p style="font-size:12px;color:#c9b98a;">${rangName()} · ${rangGruppeName()} · ${rangVerhaeltnis()}</p>
+    <p style="font-size:11px;color:#9a8a5f;">Nächste Hebung nach Schicht ${(rangStufe()+1)*5}: ${rangNameVon(rangStufe()+1)}</p>
     <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
     <button onclick="startShift()">NÄCHSTE SCHICHT ANTRETEN</button>
+    <div><button onclick="showDienstblatt(2,'dorf')" style="font-size:12px;padding:7px 16px;margin-top:10px;">Dienstanweisung</button></div>
   `;
   document.getElementById('overlay').style.display = 'flex';
   state = 'feierabend';

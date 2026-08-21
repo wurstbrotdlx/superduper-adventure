@@ -594,6 +594,21 @@ Kapitel 10, die sieben noch offenen Nebenstränge. Nummer 4 (Lisbeths sechster P
 
 **Abnahme:** Kein Langvorgang blockiert den Spielfluss, keiner ist Bedingung für den Hauptvorgang, keiner belegt eine Kachel, eine Tür oder eine Kontextaktion. Wer nie mit jemandem spricht, spielt das Spiel unverändert weiter.
 
+### W8: Der Anfang, Einstellung und Dienstanweisung — ERLEDIGT (siehe `phase-w8-anfang.md`)
+
+Kapitel 0, 2, 4, 5 und 18.3. Der Bauabschnitt, den dieses Kapitel bisher nicht hatte: Bis hierher fing das Spiel mit vier Zeilen Startbildschirm an. Der Spieler wusste, welche Taste schlägt, und nicht, was er ist, was das Haus von ihm will und woran er merkt, dass er vorankommt.
+
+* **Der Anfang ist ein Vordruck, kein Prolog.** Das Haus stellt jeden Tag jemand Neues ein, also gibt es dafür ein Formular. `Vordruck A 1`, drei Blätter, blätterbar und unterschreibbar: Einstellungsverfügung, Dienstanweisung, Laufbahn und Ziel. Damit bleibt das Cutscene-Verbot unten unangetastet, ohne dass der Anfang stumm bleibt.
+* **Anlage 1 liegt nicht vor.** Der Vordruck benennt den Zweck der Stelle und verweist für den Gegenstand der Bearbeitung auf die Anlage, und die Anlage fehlt. Der Spieler weiß danach, dass es einen Auftrag gibt und dass niemand hier sagen kann, was drinsteht. Kapitel 2 bleibt vollständig für das Ende reserviert, Zwirns „Solange der Vorgang läuft" im ersten Jahresgespräch bleibt die erste Nennung des Wortes. `dienstAssert()` prüft das mit einer Sperrliste über jede Zeile.
+* **Kein neues System.** Dasselbe `#ovPanel` wie Dienstbericht, Amt und Jahresgespräch. Der Merker liegt in `kn.seen`, dem Speicher, der ohnehin schon weiß, was der Spieler gesehen hat. Kein neues `amt`-Feld, kein neuer Speicherschlüssel.
+* **Nachlesbar statt einmalig.** Die Dienstanweisung ist aus dem Titelbild und aus dem Amt jederzeit wieder aufzuschlagen. Dazu im Amt eine Zeile mehr: die nächste Hebung mit Schicht und Amtsbezeichnung, abgeleitet aus `rangStufe()`, damit die Laufbahn nicht nur rückblickend sichtbar ist.
+
+**Abnahme:** Kein Wort der Akte wandert nach vorn, kein Questmarker, keine Cutscene, keine Sperre. Wer das Blatt wegklickt, spielt das Spiel unverändert weiter.
+
+### W9: Tooltipps und Mechanikhilfe — OFFEN
+
+W8 beantwortet „was ist das hier und warum", nicht „was macht dieser Knopf, während ich davorstehe". Das ist der nächste Schritt und ein anderer Kanal: `#tooltip` existiert bereits im Markup und trägt bisher nur Gegenstände. Ausbau auf Gürtel, Kesselreiter, Skillzeilen, Zauberknoten, Ausrüstungsplätze und Kammerschilder. Abzustimmen mit Knöterichs Wissenslücken-Schüben (`kn.wissensluecke`), nicht daneben zu bauen. Zu prüfen: ob eine wiederholbare Mechanikübersicht besser als vierter Reiter im Kessel liegt als in einem eigenen Panel.
+
 ### Was wir ausdrücklich nicht bauen
 
 * Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.
