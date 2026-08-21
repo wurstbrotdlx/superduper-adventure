@@ -145,9 +145,9 @@ def route_dps(route, L):
     return REF[L]['dps'] if route == 'physisch' else ZAUBER_DPS
 
 # ---------------------------------------------------------------- Roster
-# Der Katalog liegt AUF dem bestehenden Bestiarium, er ersetzt es nicht. Zwoelf der
-# zweiundzwanzig Eintraege sind Monster, die es im Spiel schon gibt: sie behalten
-# Namen, Vorgangsart und Rig und bekommen nur die gerechneten Werte. Zehn sind neu.
+# Der Katalog liegt AUF dem bestehenden Bestiarium, er ersetzt es nicht. Ein Teil der
+# Eintraege sind Monster, die es im Spiel schon gibt: sie behalten Namen, Vorgangsart
+# und Rig und bekommen nur die gerechneten Werte (alt=True). Der Rest ist neu.
 # Die id ist zugleich der MONDEF-Schluessel in index.html, damit Katalog und Code
 # nicht mit zwei Namensraeumen auseinanderlaufen koennen.
 #
@@ -379,6 +379,53 @@ mon(id='golem', name='Steingolem', alt=True, biom='Hoehle', L=9, klasse='A4', ty
     flavor='Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon.',
     loot=[('Golem-Splitter', 0.5), ('Unanfechtbarer Beschluss', 0.12)])
 
+# --- STOLLEN / Die Sperrablage ----------------------------------------------
+# M3: das sechste Biom. Wie die Untere Registratur liegt es hinter Kammertueren und
+# nicht auf der Karte, aber eine Ebene tiefer: es oeffnet sich nur beim hoechsten
+# Gebuehrenbescheid (Kammersatz 2, Tuerschwierigkeit 5). Alle drei Typen stehen mit
+# reserved=True ausserhalb jedes Bandrosters.
+#
+# Die Sperrablage teilt sich den Adjektivpool der Unteren Registratur (zutatBiome()
+# gibt in jeder Kammer 'hoehle' zurueck). Das ist Absicht und keine Luecke: es ist
+# derselbe Untergrund ein Stockwerk tiefer, und eine siebte Gewichtsspalte ueber
+# zwanzig Adjektive waeren zwanzig Zahlen ohne Grundlage. Ihr eigener Ertrag steckt
+# in der Grundseltenheit und im Slot-Mix, nicht in einem neuen Adjektivpool.
+mon(id='dienstweg', name='Der Dienstweg', alt=False, biom='Stollen', L=9, klasse='A2', typen=['B5', 'B2'],
+    vorgang='Der Dienstweg', slot='armor',
+    res=dict(physisch=0.6, feuer=0, eis=0.2, gift=0.35, magie=-0.35), route='magie',
+    ttk_ziel=11.0, gef_ziel=22, intervall=2.4, tempo=18, rudel=2,
+    muster=[
+            dict(name='Anhoeren', warn=520, reich='nah (24)', effekt='Grundtreffer, kommt langsam und kuendigt sich lange an', art='nah'),
+            dict(name='Ueber den Dienstweg', warn=650, reich='nah (24)', effekt='ersetzt jeden dritten Grundtreffer, er zieht sich erst ganz ins Haus zurueck und faehrt dann schwerer wieder aus', art='nah', jede=3, wucht=1.6, ruhe=0.8),
+        ],
+    konter='Das Haus haelt Stahl aus, der Zauber nicht. Wer kein Mana hat, geht einfach weiter.',
+    flavor='Nimmt den laengstmoeglichen Weg, kommt an, ist nicht zu beschleunigen. Wer ihn abkuerzen will, faengt von vorne an.',
+    loot=[('Schneckenhaus', 0.4), ('Laufzettel', 0.25)])
+
+mon(id='teilbescheid', name='Der Teilbescheid', alt=False, biom='Stollen', L=9, klasse='A1', typen=['B1'],
+    vorgang='Der Teilbescheid', slot='armor',
+    res=dict(physisch=0.1, feuer=-0.3, eis=0, gift=0.25, magie=0), route='physisch',
+    ttk_ziel=2.4, gef_ziel=40, intervall=1.3, tempo=44, rudel=4,
+    muster=[
+            dict(name='Im Uebrigen', warn=320, reich='nah (24)', effekt='Grundtreffer, kurz und ohne Begruendung', art='nah'),
+            dict(name='Anlage beigefuegt', warn=380, reich='nah (28)', effekt='ersetzt jeden vierten Grundtreffer, breiter Klecks statt Stoss', art='kegel', jede=4, reichw=38),
+        ],
+    konter='Breit schlagen, sie stehen ohnehin zu nah beieinander.',
+    flavor='Was nach der Teilabhilfe uebrig bleibt. Einzeln kaum der Rede wert, und genau deshalb kommen sie zu viert.',
+    loot=[('Teilbescheid-Gallert', 0.35), ('Kupfermuenzen', 0.5)])
+
+mon(id='teilabhilfe', name='Die Teilabhilfe', alt=False, biom='Stollen', L=10, klasse='A3', typen=['B2', 'B7'],
+    vorgang='Die Teilabhilfe', slot='weapon',
+    res=dict(physisch=0.4, feuer=-0.3, eis=0.15, gift=0.35, magie=0.1), route='physisch',
+    ttk_ziel=16.0, gef_ziel=8.5, intervall=1.8, tempo=30, rudel=1,
+    muster=[
+            dict(name='Abhilfe', warn=560, reich='nah (34)', effekt='schwerer Grundtreffer, sie wirft ihr ganzes Volumen nach vorn', art='nah'),
+            dict(name='Im Uebrigen zurueckgewiesen', warn=700, reich='Kegel (70)', effekt='ersetzt jeden dritten Grundtreffer, breite Welle, danach 0,8 s wehrlos', art='kegel', jede=3, reichw=70, ruhe=0.8),
+        ],
+    konter='Wer ihr abhilft, hat zwei Teilbescheide am Hals. Erst Platz schaffen, dann teilen.',
+    flavor='Man hilft ihr teilweise ab, und was uebrig bleibt, laeuft als eigener Vorgang weiter. Zweimal.',
+    loot=[('Teilabhilfe-Kern', 0.45), ('Abhilfebescheid', 0.2)])
+
 # --- RUINE / Der Altbestand ------------------------------------------------
 mon(id='aktenbote', name='Der Aktenbote', alt=False, biom='Ruine', L=8, klasse='A1', typen=['B1', 'B6'],
     vorgang='Der Zuschlag', slot='weapon',
@@ -522,14 +569,14 @@ def g(v): return 'unbegrenzt' if v is None else kom(f'{v:.1f}')
 L = []
 w = L.append
 
-w('## Monsterkatalog, Sollstufe 1 bis 10: 22 Gegner in fünf Biomen — ERLEDIGT (eingebaut mit M1)')
+w(f'## Monsterkatalog, Sollstufe 1 bis 10: {len(R)} Gegner in {len({m["biom"] for m in R})} Biomen — ERLEDIGT (eingebaut mit M1, erweitert mit M3)')
 w('')
 w('Inhaltslieferung zu Kapitel 3 (Geographie) und Kapitel 6 (Bestiarium) der')
-w('`superduper-weltbibel.md`, eingebaut in `index.html`. 22 Gegner, fünf Biome, vier')
+w(f'`superduper-weltbibel.md`, eingebaut in `index.html`. {len(R)} Gegner, {len({m["biom"] for m in R})} Biome, vier')
 w('Ertragsklassen, feste Werte. Der Katalog sagt, welche Zahl ein Gegner trägt und warum, und')
 w('er rechnet den Grund mit. Autorität für Welt, Namen und Ton bleibt die Weltbibel.')
 w('')
-w('**Der Katalog liegt auf dem Bestiarium, er ersetzt es nicht.** Zwölf der 22 Einträge sind')
+w(f'**Der Katalog liegt auf dem Bestiarium, er ersetzt es nicht.** {sum(1 for m in R if m.get("alt"))} der {len(R)} Einträge sind')
 w('Monster, die es im Spiel schon gab: sie behalten Namen, Vorgangsart und Rig und haben nur')
 w('gerechnete Werte bekommen. Zehn sind neu. Kein Monster ist verschwunden, und die beiden')
 w('Bänder, die der Auftrag nicht nannte (Eisablage und Ablage V), sind unangetastet geblieben.')
@@ -544,7 +591,7 @@ w('kurze Sätze. Die Markierung in der Überschrift folgt der Repo-Regel aus der
 w('kein Fließtext.')
 w('')
 w('Zwei Vorgaben waren im Auftrag offen und sind hier gesetzt, weil ohne sie nichts zu rechnen')
-w('ist: **N = 22 Gegner** und **X = Sollstufe 10**. Fünf Biome zu drei bis fünf Gegnern, jedes')
+w(f'ist: **N = {len(R)} Gegner** und **X = Sollstufe 10**. {len({m["biom"] for m in R})} Biome zu drei bis fünf Gegnern, jedes')
 w('mit allen vier Ertragsklassen.')
 w('')
 w('## 1. Rechenbasis')
@@ -658,6 +705,7 @@ w('| Wald | Ablage A | Band um das Dorf, Zeile 128 bis 191 | Der Wald gibt Stief
 w('| Sumpf | Die Nassablage | Band südlich davon, 192 bis 239 | Im Sumpf liegen Rüstungszutaten mit feuchten Adjektiven, also alles für Selbstheilung und Abweisung. | 3 bis 5 |')
 w('| Wüste | Der Brandabschnitt | Band ganz im Süden, 240 bis 319 | Der Brandabschnitt liefert Waffenzutaten mit glühenden Adjektiven, also Nachdruck und Wucht, und legt jedem Fund einen teuren Fluch bei. | 4 bis 7 |')
 w('| Höhle | Die Untere Registratur | hinter jeder Kammertür, kein Band | Unter Tage fällt, was Panzerung und Aktenlage trägt, und nur dort. | 6 bis 9 |')
+w('| Stollen | Die Sperrablage | hinter der teuersten Kammertür, kein Band | Eine Ebene unter der Registratur liegt, was niemand mehr anfassen sollte, und zahlt es in Rüstung und Waffe. | 9 bis 10 |')
 w('| Ruine | Der Altbestand | Band ganz im Norden, 0 bis 63 | Der Altbestand ist die Quelle für Manafluss, Zauberkraft und Aktenkunde, und zahlt sie mit den härtesten Gegnern des Katalogs. | 8 bis 10 |')
 w('')
 w('Die Signatur steckt nicht im Substantiv, sondern im Adjektiv: das Substantiv einer Zutat')
@@ -700,7 +748,7 @@ w('')
 w('Kapitel 6 der Weltbibel hat dazu eine Regel: erst die Vorgangsart erfinden, dann das Monster,')
 w('nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein Monster.')
 _alt = [m for m in R if m.get('alt')]
-w('Zwölf der 22 tragen eine Vorgangsart, die schon im Bestiarium steht, zehn sind neu.')
+w(f'{sum(1 for m in R if m.get("alt"))} der {len(R)} tragen eine Vorgangsart, die schon im Bestiarium steht, {sum(1 for m in R if not m.get("alt"))} sind neu.')
 w('')
 w('| Gegner | Vorgangsart | Warum es sich so verhält | Im Bestiarium |')
 w('|---|---|---|---|')
@@ -927,7 +975,7 @@ w('### 3.9 Nachtrag M2: zwei versiegelte Gegner')
 w('')
 w('Aus dem Spielbericht: sobald Magie zur Verfügung steht, lässt sich aus der Distanz')
 w('spammen. Der erste Teil der Antwort steht in `phase-z1-zauberbalance.md` (Zaubern kostet')
-w('wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der 22 Gegner sind gegen')
+w(f'wieder Bewegung und Rhythmus). Der zweite Teil steht hier: **zwei der {len(R)} Gegner sind gegen')
 w('alle drei Zauberzweige immun.** Sie sind der Ort, an dem die Waffe die einzige Antwort ist.')
 w('')
 w('| Gegner | Sollstufe | Klasse | Weichstelle | Sollzeit |')

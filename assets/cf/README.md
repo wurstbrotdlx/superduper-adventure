@@ -4,7 +4,7 @@ Dieser Ordner ist das Ziel für Dateien aus der Rohbibliothek `Graphics/` (nicht
 Repo, siehe `.gitignore` und `CREDITS.md`). Kopiert wird ausschließlich, was das
 Spiel tatsächlich lädt (gleiches Prinzip wie bei `assets/` mit Sunnyside).
 
-Stand nach dem G6-Nachtrag vom 21.08.2026 (104 Dateien): `dungeon/`, `player/`, `enemies/`, `tiles/` und
+Stand nach M3 vom 21.08.2026 (109 Dateien): `dungeon/`, `player/`, `enemies/`, `tiles/` und
 `deco/` (jetzt zusätzlich Dorf-Gebäude, NPC-Staffage, Wetter) sind gefüllt, `ui/`
 ist mit G5 dazugekommen. Damit lädt das Spiel ausschließlich noch aus `assets/cf/`
 — `assets/Characters/`, `assets/Elements/`, `assets/Tileset/`, `assets/UI/`
@@ -98,6 +98,31 @@ die Angriffszeile gebildet und bis zu 13px/88% daneben, s. Umsetzungsnotizen G3)
 separaten Datei mit anderem Frameraster — ein Kessel ist keine Zauber-Animation),
 `Orc_Chief/Grunt/Peon.png` (Raster-Konfidenz zu niedrig, ungeprüft), alle übrigen
 Skeleton_Swordman-Verwendungen (kein sauberes 32px-Raster, Ersatz s. oben).
+
+### Von M3 gebraucht (`enemies/`, `dungeon/Dungeon_3/`)
+
+Bauabschnitt M3, das sechste Katalogbiom (Stollen / Die Sperrablage). Raster und
+Anker mit `tools/sheet-audit.mjs --rig` gegen die PNGs gemessen, Boden-UVs wie in G4
+per Deckungs- und Mittelfarbscan je Zelle — `sheet-audit.mjs` taugt bei Flächen-Tiles
+nichts, das bleibt die G4-Lektion.
+
+| Zielordner | Dateien | Verwendung |
+|---|---|---|
+| `enemies/Slime/` | `Slime_Big_Blue.png`, `Slime_Medium_Blue.png` (aus `Cute_Fantasy/Enemies/Slime/`) | Die Teilabhilfe und Der Teilbescheid. Beide teilen das 8×4-Raster des schon verbauten `Slime_Small`, nur fw/fh und Fußlinie wachsen mit |
+| `enemies/Snails/` | `Snail_1.png` (aus `Cute_Fantasy_ShroomLands/Snails/`) | Der Dienstweg. Bricht das Down/Side/Up-Schema: Zeile 0 ist die Seitenansicht (21px), die Zeilen 1/2 sind Front und Rück (10px) |
+| `dungeon/Dungeon_3/` | `Cave_Walls.png`, `Cave_Floor_1.png` (aus `Cute_Fantasy/Tiles/Cave/`) | Boden und sichtbarer Wandring des dritten Kammersatzes |
+
+**Warum Dungeon_3 ein Hybrid ist:** `Cute_Fantasy_Dungeons/Dungeon_3/` ist im Pack ein
+**leerer Ordner** — Kenmi liefert kein drittes Set aus. Der Cave-Satz hat Boden, Wände,
+Stützen, Leiter, Wasser und Schienen, aber weder Tor noch Säule, Druckplatte oder
+Treppe. Der Stollen nimmt deshalb Boden und Wandring aus Cave und behält die Möbel von
+Dungeon_2. Der dunkle Ring in `Cave_Walls` bei (64,0) hat exakt dasselbe 3×3-Layout wie
+die beiden Dungeon-Blätter, die UV-Tabelle konnte unverändert übernommen werden.
+
+**Bewusst nicht verwendet:** `Cave_Water`/`Cave_Water_Animation`, `Rails.png`,
+`Cave_Support_1/2`, `Cave_Floor_Ladder` (Requisiten ohne Mechanik, die sie trägt —
+Schienen ohne Lore und eine Leiter ohne zweite Ebene wären Behauptungen),
+`Cave_Floor_2` (ein zweiter Bodenton bringt bei fünf gestreuten UVs nichts).
 
 ### Von G4 gebraucht (`tiles/`, `deco/`)
 

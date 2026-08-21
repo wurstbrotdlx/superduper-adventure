@@ -926,6 +926,161 @@
     "flavor_de": "Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Ein Schwert ist keines, Magie schon."
   },
   {
+    "id": "dienstweg",
+    "name": "Der Dienstweg",
+    "biom": "Stollen",
+    "sollstufe": 9,
+    "ertragsklasse": "A2",
+    "anforderungstyp": [
+      "B5",
+      "B2"
+    ],
+    "hp": 180,
+    "resistenzen": {
+      "physisch": 0.6,
+      "feuer": 0,
+      "eis": 0.2,
+      "gift": 0.35,
+      "magie": -0.35
+    },
+    "schaden_pro_treffer": 48,
+    "angriffsintervall_s": 2.4,
+    "tempo": 18,
+    "angriffsmuster": [
+      {
+        "name": "Anhoeren",
+        "vorwarnzeit_ms": 520,
+        "reichweite": "nah (24)",
+        "effekt": "Grundtreffer, kommt langsam und kuendigt sich lange an"
+      },
+      {
+        "name": "Ueber den Dienstweg",
+        "vorwarnzeit_ms": 650,
+        "reichweite": "nah (24)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, er zieht sich erst ganz ins Haus zurück und faehrt dann schwerer wieder aus"
+      }
+    ],
+    "berechnete_ttk_s": 11.1,
+    "xp": 291,
+    "gold_min": 64,
+    "gold_max": 134,
+    "loot": [
+      {
+        "item": "Schneckenhaus",
+        "chance": 0.4
+      },
+      {
+        "item": "Laufzettel",
+        "chance": 0.25
+      }
+    ],
+    "konter_in_einem_satz": "Das Haus hält Stahl aus, der Zauber nicht. Wer kein Mana hat, geht einfach weiter.",
+    "flavor_de": "Nimmt den laengstmoeglichen Weg, kommt an, ist nicht zu beschleunigen. Wer ihn abkuerzen will, faengt von vorne an."
+  },
+  {
+    "id": "teilbescheid",
+    "name": "Der Teilbescheid",
+    "biom": "Stollen",
+    "sollstufe": 9,
+    "ertragsklasse": "A1",
+    "anforderungstyp": [
+      "B1"
+    ],
+    "hp": 145,
+    "resistenzen": {
+      "physisch": 0.1,
+      "feuer": -0.3,
+      "eis": 0,
+      "gift": 0.25,
+      "magie": 0
+    },
+    "schaden_pro_treffer": 19,
+    "angriffsintervall_s": 1.3,
+    "tempo": 44,
+    "angriffsmuster": [
+      {
+        "name": "Im Uebrigen",
+        "vorwarnzeit_ms": 320,
+        "reichweite": "nah (24)",
+        "effekt": "Grundtreffer, kurz und ohne Begruendung"
+      },
+      {
+        "name": "Anlage beigefuegt",
+        "vorwarnzeit_ms": 380,
+        "reichweite": "nah (28)",
+        "effekt": "ersetzt jeden vierten Grundtreffer, breiter Klecks statt Stoss"
+      }
+    ],
+    "berechnete_ttk_s": 2.4,
+    "xp": 44,
+    "gold_min": 29,
+    "gold_max": 61,
+    "loot": [
+      {
+        "item": "Teilbescheid-Gallert",
+        "chance": 0.35
+      },
+      {
+        "item": "Kupfermünzen",
+        "chance": 0.5
+      }
+    ],
+    "konter_in_einem_satz": "Breit schlagen, sie stehen ohnehin zu nah beieinander.",
+    "flavor_de": "Was nach der Teilabhilfe uebrig bleibt. Einzeln kaum der Rede wert, und genau deshalb kommen sie zu viert."
+  },
+  {
+    "id": "teilabhilfe",
+    "name": "Die Teilabhilfe",
+    "biom": "Stollen",
+    "sollstufe": 10,
+    "ertragsklasse": "A3",
+    "anforderungstyp": [
+      "B2",
+      "B7"
+    ],
+    "hp": 710,
+    "resistenzen": {
+      "physisch": 0.4,
+      "feuer": -0.3,
+      "eis": 0.15,
+      "gift": 0.35,
+      "magie": 0.1
+    },
+    "schaden_pro_treffer": 120,
+    "angriffsintervall_s": 1.8,
+    "tempo": 30,
+    "angriffsmuster": [
+      {
+        "name": "Abhilfe",
+        "vorwarnzeit_ms": 560,
+        "reichweite": "nah (34)",
+        "effekt": "schwerer Grundtreffer, sie wirft ihr ganzes Volumen nach vorn"
+      },
+      {
+        "name": "Im Uebrigen zurueckgewiesen",
+        "vorwarnzeit_ms": 700,
+        "reichweite": "Kegel (70)",
+        "effekt": "ersetzt jeden dritten Grundtreffer, breite Welle, danach 0,8 s wehrlos"
+      }
+    ],
+    "berechnete_ttk_s": 16.0,
+    "xp": 636,
+    "gold_min": 102,
+    "gold_max": 214,
+    "loot": [
+      {
+        "item": "Teilabhilfe-Kern",
+        "chance": 0.45
+      },
+      {
+        "item": "Abhilfebescheid",
+        "chance": 0.2
+      }
+    ],
+    "konter_in_einem_satz": "Wer ihr abhilft, hat zwei Teilbescheide am Hals. Erst Platz schaffen, dann teilen.",
+    "flavor_de": "Man hilft ihr teilweise ab, und was uebrig bleibt, läuft als eigener Vorgang weiter. Zweimal."
+  },
+  {
     "id": "aktenbote",
     "name": "Der Aktenbote",
     "biom": "Ruine",

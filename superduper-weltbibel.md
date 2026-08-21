@@ -161,9 +161,9 @@ Und weil auch das eine Personalakte ist, endet sie mit der Schicht. Persönliche
 
 ---
 
-## 6. Bestiarium: die 31 Vorgangsarten
+## 6. Bestiarium: die 34 Vorgangsarten
 
-Alle Monstertypen mit ihrer Aktenbedeutung: einundzwanzig aus dem Bestand, zehn dazu aus Bauabschnitt M1. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
+Alle Monstertypen mit ihrer Aktenbedeutung: einundzwanzig aus dem Bestand, zehn dazu aus Bauabschnitt M1, drei aus M3. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
 
 Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan.
 
@@ -214,6 +214,24 @@ Gebaut nach derselben Regel, erst die Vorgangsart, dann das Monster. Werte und B
 | Die Sammelmahnung | Die Mahnstufe | Dieselbe Sache, dreimal, gleichlautend. Einzeln Papier, zu dritt ein Titel. |
 | Der Aktenbote | Der Zuschlag | Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. |
 | Die Sammelverfügung | Der Sammelbescheid | Alles, was je gegen dich lief, zusammengefasst und in einem Mantel aus Papier vorgetragen. |
+
+### Neu mit M3: die Sperrablage
+
+Das sechste Biom, eine Ebene unter der Unteren Registratur, und nur hinter der teuersten
+Kammertür. Alle drei gehören zum Goblin-Rig: es ist Inhalt, der seine Form verloren hat,
+und zwar dreimal auf dieselbe Art. Einbau und Begründung in `phase-m3-stollen.md`.
+
+| Monster | Vorgangsart | Warum es sich so verhält |
+|---|---|---|
+| Die Teilabhilfe | Die Teilabhilfe | Man hilft ihr teilweise ab, und was übrig bleibt, läuft als eigener Vorgang weiter. Zweimal. |
+| Der Teilbescheid | Der Teilbescheid | Was nach der Teilabhilfe übrig bleibt. Einzeln kaum der Rede wert, und genau deshalb kommen sie zu viert. |
+| Der Dienstweg | Der Dienstweg | Nimmt den längstmöglichen Weg, kommt an, ist nicht zu beschleunigen. Wer ihn abkürzen will, fängt von vorne an. |
+
+Die Teilabhilfe ist der Beleg dafür, dass die Regel funktioniert. Sie wurde nicht als
+teilbarer Schleim erfunden und nachträglich amtlich getauft, sondern umgekehrt: eine
+Teilabhilfe ist im Verwaltungsverfahren genau das, was einem Widerspruch teilweise
+stattgibt und den Rest weiterlaufen lässt. Dass das Monster dazu in zwei kleinere
+zerfällt, musste nicht erfunden werden. Es war schon dieselbe Sache.
 
 ### Neu mit M2: der Sonderprüfer und die beiden Siegel
 
