@@ -69,6 +69,13 @@ const ergebnis = await page.evaluate(() => {
   // deshalb werden die beiden Trichter stillgelegt.
   gainXP = function(){};
   auftragEreignis = function(){};
+  // Die Schichtuhr steht still. startGame() setzt shiftT nicht, sie ist also
+  // sofort abgelaufen, und update() kehrt danach in jeder Frame frueh zurueck,
+  // sobald kein Gegner mehr im 220-Pixel-Kreis steht. Fuer Nahkampflaeufe faellt
+  // das nicht auf (der Spieler steht ja im Kreis), ab dem zweiten Lauf und bei
+  // jedem Abstandsgefecht friert dagegen alles ein: Abklingzeiten, Mana,
+  // Geschosse. Genau daher kamen die vereinzelten Ausreisser dieses Messlaufs.
+  CONFIG.schichtModus = false;
   let schaden = 0;
   hurtPlayer = function(raw){
     const red = Math.min(0.6, derived.armor / (derived.armor + 30));
@@ -82,6 +89,7 @@ const ergebnis = await page.evaluate(() => {
     player.x = px; player.y = py;
     player.attackCd = 0; player.langsamT = 0; player.haltT = 0; player.trankSperreT = 0;
     state = 'play'; schaden = 0;
+    camSnap();                                   // nahAmBild liest cam, s. unten
     const voll = derived.maxHp;
     const m = makeMon(typ, px + (angreifen ? 34 : Math.min(22, d.atkRange - 4)), py);
     m.aggro = true; m.eroeffnet = true; m.leashT = 0;
@@ -100,7 +108,7 @@ const ergebnis = await page.evaluate(() => {
         if(schaden >= voll) return {t, voll, armor: derived.armor, level: player.level, schaden};
         player.x = px; player.y = py;              // stehen bleiben, nicht ausweichen
       }
-      update(DT); t += DT;
+      update(DT); camSnap(); t += DT;
       state = 'play';
     }
     return {t: -1};
