@@ -59,6 +59,7 @@ Eine Warnung, die immer da steht, ist keine: fünf `Sprite fehlt`-Zeilen standen
 | `phase-p1-dienstgestalt.md` | Bauabschnitt P1: die Person des Tages bekommt eine Haarfarbe, die es im Dorf nicht gibt, und der Einstellungsvordruck nimmt zum ersten Mal eine Angabe des Spielers entgegen |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 22 Gegner, 5 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
 | `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
+| `GRAFIK-BESTAND-2026-08-21.md` | Was in den lizenzierten Packs liegt, was das Spiel davon lädt (97 von 886 Dateien), und was der Rest wert wäre. Vorlage für einen Grafik-Durchgang, mit Aufwandsschätzung je Kandidat |
 | `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md`, `GEGENPROBE-2026-08-04.md`, `GEGENPROBE-W-2026-08-05.md`, `GW-RESTFUNDE-2026-08-06.md`, `KAMMER-MESSUNG-2026-08-20.md` | Datierte Prüf- und Messberichte. Ihre Zeilennummern sind Stände, keine Wegweiser, und ihr Inhalt wird nicht rückwirkend umgeschrieben. Was sie überholt, steht im jeweils neueren Bericht oder im Phasendokument. |
 | `CREDITS.md` | Grafik-Lizenzen |
 | `LICENSE` | Code MIT, Grafik nicht gedeckt, Spielinhalte vorbehalten |
