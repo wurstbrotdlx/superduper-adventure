@@ -19,6 +19,10 @@ Inhaltslieferung zu Bauabschnitt **W3** ("Das Dorf spricht") aus `superduper-wel
 
 ---
 
+**Nachtrag W-Nörgel** (siehe `phase-w-noergel.md`): Nörgel bekommt vier Zusatzzeilen, die
+erst erscheinen, nachdem der Spieler selbst am Lager der Beschwerden war. Sie stehen unten
+in seinem Abschnitt. Die sechs Grundzeilen und die fünf Aktzeilen bleiben unverändert.
+
 ## Zwirn — Bürgermeister Alfons Zwirn
 
 Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (16, 38), vor dem Amt. **G6:** Anker von (14, 34) verschoben, dort stand er vollständig hinter der Amtsfassade; nicht auf (14, 38), weil er sonst die Kontextaktion der Amtstür überstimmt. Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 2, Schuhe Stufe 2.
@@ -183,6 +187,25 @@ II. „Jetzt braucht auch Zwirn die Amtsleitung.“ (41)
 III. „Die Stelle ist leer, ich bin es nicht.“ (38)
 IV. „Gelesen und gezeichnet. Ich bin im Dienst.“ (42)   *(W5, `45912f6`. Vorher: „Niemand fragt mich. Jetzt fragen alle.“)*
 V. „Auch jetzt ist es nicht meine Zuständigkeit.“ (44)
+
+### Zusatzzeilen, erst nach dem Lager (Nachtrag W-Nörgel)
+
+Freigeschaltet von `kn.flags.hatLagerGesehen`, siehe `phase-w-noergel.md`. Sie hängen sich
+hinten an den Kreislauf, wie die Probezeit-Hinweise aus W7 auch, und stehen dort vor diesen.
+Ohne Lagerbesuch spricht Nörgel Zeile für Zeile wie vorher.
+
+1. „Hinter der Palisade stehen meine Leute.“ (39) / „Grünhaut. Wie ich.“ (18)
+2. „Die belagern nichts. Die warten.“ (32) / „Seit vierhundert Jahren.“ (24)
+3. „Die schreiben. Nur liest es hier keiner.“ (40) / „Ich könnte. Fragt ja niemand.“ (29)
+4. „Gehen Sie wieder hin. Ohne zu schlagen.“ (39) / „Dann sehen Sie es selbst.“ (25)
+
+**Prüfnotiz:** kein Fund. Zeile 3 ist die einzige heikle: sie trägt die Pointe aus Kapitel 8
+(„Man muss ihn nur fragen. In vierhundert Jahren hat niemand einen Goblin gefragt.“) bis an
+den Rand und nicht darüber. Nörgel sagt nicht, was dort steht, sagt nicht, dass er den Brief
+im Sack meint, und niemand kann ihn im Spiel danach fragen. Die Zustellung bleibt bei Trepp
+und in Akt V. Ein erster Entwurf lautete „Am Tor hängt Schrift. Ich kann die lesen.“ und ist
+gestrichen: am Torblatt hängen zwei Banner ohne Schrift, der Satz hätte etwas behauptet,
+was im Bild nicht steht.
 
 **Prüfnotiz:** kein Fund. Dass Nörgel die Dienstbericht-Bemerkungen schreibt (Kapitel 8, „Die Auflösung“), wird hier nicht ausgesprochen — das bleibt der Spielbeobachtung überlassen, kein Text erklärt es.
 

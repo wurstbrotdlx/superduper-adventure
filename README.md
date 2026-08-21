@@ -103,6 +103,7 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je ei
 | `phase-w10-wiedereinsetzung.md` | Bauabschnitt W10: der Antrag auf Wiedereinsetzung, die einzige Art, zweimal derselbe Mensch zu sein |
 | `phase-g6-dorfsicht.md` | Bauabschnitt G6: sechs von elf Dorffiguren waren nicht zu sehen. Fünf fehlende Sprite-Blätter, ein Bürgermeister hinter der Amtsfassade, und der Guard, der beides künftig meldet |
 | `phase-w-lager.md` | Bauabschnitt W-Lager: das Lager der Beschwerden. Warum ein Militärlager doch in diese Welt passt, die Figur am Tor ohne Titel, der erste Gegner, der nie zuerst angreift, und ein Sprite-Blatt mit drei Rastern übereinander |
+| `phase-w-noergel.md` | Bauabschnitt W-Nörgel: Nörgel und das Lager. Vier Zusatzzeilen, die erst kommen, wenn der Spieler selbst dort war, der Merker dafür, und warum es kein achter Langvorgang geworden ist |
 | `phase-m3-stollen.md` | Bauabschnitt M3: das sechste Katalogbiom. Warum kein einziger kammerexklusiver Gegner in die Untere Registratur passte, ein dritter Kammersatz aus einem leeren Ordner, und eine Vorgangsart, die beim Erledigen in zwei kleinere zerfällt |
 | `phase-g6-nachtrag-dorfblaetter.md` | Die fünf offenen Dorf-Blätter aus G6, nachgelegt. Kein Code, aber die Entscheidung, wie `Fisherman_Fin` gerastert ist: 9 Spalten à 64, nicht 18 à 32 wie das Manifest führte |
 | `phase-p1-dienstgestalt.md` | Bauabschnitt P1: die Person des Tages bekommt eine Haarfarbe, die es im Dorf nicht gibt, und der Einstellungsvordruck nimmt zum ersten Mal eine Angabe des Spielers entgegen |
