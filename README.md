@@ -38,6 +38,52 @@ Das Spiel prüft sich beim Laden selbst. Vierzehn selbstaufrufende Guards (`blae
 
 Eine Warnung, die immer da steht, ist keine: fünf `Sprite fehlt`-Zeilen standen seit W3 in jeder Konsole, und dahinter steckten fünf unsichtbare Dorffiguren (G6). Wer hier eine Meldung sieht, die „schon immer" da war, hat einen Fund, keine Tapete.
 
+### Eine frische Sitzung einrichten
+
+**Im frischen Klon fehlt die Grafik, und das Spiel startet dann gar nicht.** `assets/cf/{player,deco,enemies,tiles,dungeon,ui}` steht in der `.gitignore` (Lizenzgrund siehe `assets/cf/README.md`). Woran es dann hängt, ist nachgemessen und nicht das, was naheliegt: `loadAssets()` läuft sauber durch (jedes fehlende Bild wird zu `null` aufgelöst) und setzt `assetsReady = true`. Es scheitert erst zwei Zeilen später an `bakeUiSkin()`, das `SHEETS['cfui_frame'].img.src` liest:
+
+```
+PAGEERROR: TypeError: Cannot read properties of undefined (reading 'img')
+```
+
+Damit reißt der ganze `.then()`-Block ab, `showStartScreen()` und `requestAnimationFrame(loop)` laufen nie, `frameNo` bleibt 0 und der Ladebildschirm steht bei „314 / 322". Alle vierzehn Guards auf Skriptebene haben vorher brav „in Ordnung" gemeldet, das Bild sieht also nach einem Rätsel aus und ist keins. *(Der Kopf von `tools/monster-messlauf.mjs` schreibt dasselbe Symptom einer Wartestellung auf `assetsReady` zu. Das stimmt nicht, die Flagge steht auf `true`.)*
+
+Praktische Folge für jede Prüfschleife: **auf `frameNo > 0` warten, nicht auf `assetsReady`.** Die Flagge ist auch dann gesetzt, wenn kein einziges Bild geladen wurde.
+
+Zuerst also die Grafik danebenlegen:
+
+```bash
+git clone --depth 1 git@github.com:wurstbrotdlx/superduper-adventure-assets.git /tmp/cf-assets
+cp -r /tmp/cf-assets/{deco,dungeon,enemies,player,tiles,ui} assets/cf/
+```
+
+Dasselbe tut der CI-Build, nur per Deploy Key (siehe `.github/workflows/pages.yml`). In einer Claude-Code-Websitzung geht das Repo über `add_repo` dazu; wer PNGs **hineinschreiben** will, braucht dabei Schreibrechte, lesend reicht nur zum Prüfen.
+
+**Verifiziert wird im Browser, nicht im Kopf.** Die dritte Mitarbeitsregel unten meint das wörtlich. Server starten, Seite laden, Konsole lesen:
+
+```bash
+python3 serve.py &
+node - <<'EOF'
+const { chromium } = (await import('playwright')).default;
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM });
+const p = await b.newPage();
+p.on('console', m => console.log(m.type() + ': ' + m.text()));
+p.on('pageerror', e => console.log('PAGEERROR ' + e));
+await p.goto('http://127.0.0.1:8378/index.html', { waitUntil: 'load' });
+await p.waitForFunction(() => typeof frameNo !== 'undefined' && frameNo > 0, null, { timeout: 60000 });
+await p.waitForTimeout(2500);
+await b.close();
+EOF
+```
+
+`CHROMIUM` zeigt auf den Playwright-Chromium der Umgebung (in der Websitzung unter `/opt/pw-browsers/chromium-*/chrome-linux/chrome`, `playwright install` ist dort weder nötig noch erlaubt). Die repo-eigenen Messläufe unter `tools/` lesen zusätzlich `PLAYWRIGHT_PFAD`, wenn das Paket nicht im Projekt liegt:
+
+```bash
+PLAYWRIGHT_PFAD=/pfad/zu/node_modules/playwright/index.js CHROMIUM=$CHROMIUM node tools/spaziergang-messlauf.mjs
+```
+
+Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je eine Zeile „in Ordnung", sonst steht dort nichts. Vor dem Ausliefern zusätzlich `node tools/build-single.mjs` und die entstandene `dist/index.html` per `file://` laden — der Build nimmt einen anderen Ladeweg (`ASSET_BLOBS` statt HTTP) und kann deshalb Fehler zeigen, die im Quellbaum keine sind, und umgekehrt.
+
 ## Dokumente
 
 | Datei | Was |
