@@ -153,7 +153,7 @@ Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan
 | Chuchu | Der Formfehler | Ausgelaufene Tinte. Formlos im Wortsinn. Langsam, klebrig, überall. |
 | Grünhaut | Die Beschwerde | Laut, kurz, zahlreich, und im Grunde hat sie recht. |
 | Waldschamane | Der Widerspruch | Greift aus der Entfernung an, weil ein Widerspruch schriftlich erhoben wird. |
-| Klippkrabbe | Die Aktenklammer | Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Verkohlt. |
+| Klippkrabbe | Die Aktenklammer | Zwei Zangen, hält alles zusammen, geht nicht wieder ab. Was geklammert ist, ist geklammert, da hilft keine Beschwörung. |
 | Sandskorpion | Die Nachforderung | Kommt schnell, kommt hinterher, sticht genau einmal. |
 | Dünenpriester | Die Verfügung | Ordnet aus sicherer Entfernung etwas an. |
 | Eismagier | Die Rückfrage | Friert ein, was sie trifft. Eine Rückfrage hemmt die Frist. |
@@ -170,7 +170,7 @@ Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan
 |---|---|---|
 | Frostgeist | Der ruhende Antrag | Durchsichtig, weil ihm die Substanz abhandenkam. Wartet seit Jahrzehnten. |
 | Frostgolem | Die Sammelakte auf Eis | Groß, schwer, geschichtet, kalt. |
-| Mumie | Die versiegelte Akte | Banderole drum, Siegel drauf, nie geöffnet. Langsam, aber sehr geduldig. |
+| Mumie | Die versiegelte Akte | Banderole drum, Siegel drauf, nie geöffnet. Ein Siegel ist genau dazu da, dass niemand von außen hineinwirkt. |
 | Steingolem | Die Bestandskraft | Eine Entscheidung, gegen die kein Rechtsmittel mehr geht. Deshalb unbeweglich. |
 | Knochenritter | Die Dienstvorschrift | Reine Form, bewaffnet, korrekt, unbeirrbar. |
 | Schattenspukt | Das Erinnerungsschreiben | Fliegt, ist halb durchsichtig, kommt immer wieder. Beide Wortbedeutungen gemeint. |
@@ -193,6 +193,14 @@ Gebaut nach derselben Regel, erst die Vorgangsart, dann das Monster. Werte und B
 | Die Sammelmahnung | Die Mahnstufe | Dieselbe Sache, dreimal, gleichlautend. Einzeln Papier, zu dritt ein Titel. |
 | Der Aktenbote | Der Zuschlag | Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. |
 | Die Sammelverfügung | Der Sammelbescheid | Alles, was je gegen dich lief, zusammengefasst und in einem Mantel aus Papier vorgetragen. |
+
+### Neu mit M2: der Sonderprüfer und die beiden Siegel
+
+Zwei Nachträge, die keine neue Vorgangsart sind, sondern eine Eigenschaft an bestehenden.
+
+**Der Sonderprüfer.** Ab und an ist ein Vorgang nicht nur ein Vorgang, sondern ein Vorgang, den jemand persönlich betreut. Dann trägt er einen Namen und einen Dienstgrad, steht anderthalbmal so groß im Feld und leuchtet. Ministerialrätin Klammer ist immer noch eine Aktenklammer, aber sie ist die Aktenklammer, die jemand namentlich abgezeichnet hat, und das merkt man. Sie taucht nur bei den einfachen Vorgangsarten auf, weil nur die häufig genug sind, dass sich ein eigener Sachbearbeiter überhaupt lohnt. Wer sie erledigt, bekommt den Ertrag eines schweren Vorgangs, und das ist keine Großzügigkeit, sondern die Gebührenordnung.
+
+**Die beiden Siegel.** Gegen Klippkrabbe und Mumie hilft kein Zauber. Das ist keine Ausnahme von der Weltlogik, sondern ihr Kern: eine Klammer und ein Siegel sind genau die beiden Dinge im Amt, die dafür da sind, dass von außen niemand hineinwirkt. Wer eine versiegelte Akte öffnen will, tut das mit der Hand und trägt die Verantwortung dafür. Ein Zauber verweigert an dieser Stelle die Mitwirkung, und zwar zu Recht.
 
 **Regel für neue Monster:** erst die Vorgangsart erfinden, dann das Monster. Nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein Monster.
 

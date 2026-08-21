@@ -3699,7 +3699,7 @@ const MONDEF = {
     hinterhalt:true,
     muster:[{name:'Schmatzen', warn:300, art:'nah', slow:1.2},
              {name:'Auftauchen', warn:400, art:'nah', wucht:1.6, eroeffnung:true, reich:28}]},
-  moorbescheid: {name:'Der Moorbescheid', art:'Der durchweichte Bescheid', rig:'skeleton_bowman', tint:'#5a6b4a', tintA:0.62, sc:1.6, psc:1.2, deathFps:5, r:12,
+  moorbescheid: {name:'Der Moorbescheid', art:'Der durchweichte Bescheid', rig:'cowling_1', tint:'#5a6b4a', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:12,
     kat:{klasse:'A2', stufe:4, biom:'Sumpf', route:'feuer', typen:'B5'},
     hp:385, dmg:[18,26], xp:161, speed:26, aggro:140, atkCd:2.0, atkRange:30, gold:[31,65],
     res:{physisch:0.5, feuer:-0.5, eis:0.15, gift:0.9, magie:0.15},
@@ -3738,9 +3738,9 @@ const MONDEF = {
     muster:[{name:'Anrempeln', warn:300, art:'nah'},
              {name:'Staubwolke', warn:400, art:'kegel', jede:4, reich:40, sicht:1.0}]},
   crab: {name:'Klippkrabbe', art:'Die Aktenklammer', rig:'cowling_2', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, psc:1.2, deathFps:5, r:12,
-    kat:{klasse:'A2', stufe:5, biom:'Wüste', route:'physisch', typen:'B2'},
-    hp:285, dmg:[18,26], xp:220, speed:36, aggro:140, atkCd:1.4, atkRange:28, gold:[37,78],
-    res:{physisch:0.4, feuer:0.35, eis:-0.35, gift:0.2, magie:0},
+    kat:{klasse:'A2', stufe:5, biom:'Wüste', route:'physisch', typen:'B2+B5'},
+    hp:570, dmg:[18,26], xp:220, speed:36, aggro:140, atkCd:1.4, atkRange:28, gold:[37,78],
+    res:{physisch:-0.2, feuer:1, eis:1, gift:0.2, magie:1},
     muster:[{name:'Klammern', warn:400, art:'nah', halt:0.5},
              {name:'Zangengriff', warn:550, art:'nah', jede:3, wucht:0.7, reich:32, halt:1.0}]},
   scorpion: {name:'Sandskorpion', art:'Die Nachforderung', rig:'goblin_thief', tint:'#e8c46a', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10,
@@ -3773,7 +3773,7 @@ const MONDEF = {
     hinterhalt:true, reserved:true,
     muster:[{name:'Nachfassen', warn:400, art:'nah', zieht:26},
              {name:'Fallenlassen', warn:550, art:'nah', wucht:2.0, eroeffnung:true, reich:34}]},
-  sammelmahnung: {name:'Die Sammelmahnung', art:'Die Mahnstufe', rig:'knights_archer', tint:'#c9b98a', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, r:11,
+  sammelmahnung: {name:'Die Sammelmahnung', art:'Die Mahnstufe', rig:'knights_spearman', tint:'#c9b98a', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A3', stufe:8, biom:'Höhle', route:'physisch', typen:'B1+B3'},
     hp:680, dmg:[122,176], xp:491, speed:74, aggro:180, atkCd:2.3, atkRange:30, gold:[83,174],
     res:{physisch:0.2, feuer:0, eis:0.1, gift:0.4, magie:-0.3},
@@ -3787,7 +3787,7 @@ const MONDEF = {
     ranged:true, bolt:{dmg:[107,155], speed:210, color:'#bcd8ff', r:7}, reserved:true,
     muster:[{name:'Fußnote', warn:500, art:'fern'},
              {name:'Verweis', warn:380, art:'fern', jede:3, wucht:0.6}]},
-  golem: {name:'Steingolem', art:'Die Bestandskraft', rig:'knights_spearman', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, r:16,
+  golem: {name:'Steingolem', art:'Die Bestandskraft', rig:'knights_templar', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, r:16,
     kat:{klasse:'A4', stufe:9, biom:'Höhle', route:'magie', typen:'B2+B5'},
     hp:1220, dmg:[225,323], xp:1654, speed:28, aggro:150, atkCd:2.6, atkRange:36, gold:[144,302],
     res:{physisch:0.9, feuer:0, eis:0, gift:0.6, magie:-0.4},
@@ -3803,10 +3803,10 @@ const MONDEF = {
     zielRange:120,
     muster:[{name:'Aktenkante', warn:300, art:'nah'},
              {name:'Zuschlag', warn:400, art:'stuetz', jede:3, reich:120, dauer:5}]},
-  mummy: {name:'Mumie', art:'Die versiegelte Akte', rig:'skeleton_bowman', tint:'#d8c9a0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11,
-    kat:{klasse:'A2', stufe:9, biom:'Ruine', route:'physisch', typen:'B2'},
-    hp:550, dmg:[49,71], xp:365, speed:26, aggro:150, atkCd:2.1, atkRange:30, gold:[64,134],
-    res:{physisch:0.4, feuer:-0.45, eis:0.2, gift:0.9, magie:0.1},
+  mummy: {name:'Mumie', art:'Die versiegelte Akte', rig:'cowling_2', tint:'#d8c9a0', tintA:0.55, sc:1.45, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A2', stufe:9, biom:'Ruine', route:'physisch', typen:'B2+B5'},
+    hp:1150, dmg:[49,71], xp:366, speed:26, aggro:150, atkCd:2.1, atkRange:30, gold:[64,134],
+    res:{physisch:-0.25, feuer:1, eis:1, gift:0.9, magie:1},
     muster:[{name:'Verschnüren', warn:500, art:'nah', slow:2.0},
              {name:'Siegelstaub', warn:600, art:'kegel', jede:3, reich:80, sperre:5}]},
   stalfos: {name:'Knochenritter', art:'Die Dienstvorschrift', rig:'knights_swordman', sc:1.6, psc:1.2, deathFps:5, r:11,
@@ -3837,7 +3837,7 @@ const MONDEF = {
   boss:        {name:'Schattenfürst', art:'Fürst Nachtrag', rig:'knights_templar', tint:'#6b1fa8', tintA:0.6, sc:4.5, psc:1.2, deathFps:5, glow:'#c77dff', r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
 
   // --- Reserve: fertig definiert, in keinem Roster -------------------------
-  bossgeneric: {name:'Alter Schrecken', art:'Der Sammelvorgang', rig:'knights_archer', tint:'#c9a227', tintA:0.55, sc:4.0, psc:1.2, deathFps:5, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
+  bossgeneric: {name:'Alter Schrecken', art:'Der Sammelvorgang', rig:'knights_swordman', tint:'#c9a227', tintA:0.55, sc:4.0, psc:1.2, deathFps:5, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
 };
 
 // Animationssatz je Rig. G3: die Sunnyside-Rigs (goblin/skel) sind entfernt, alle
@@ -3907,6 +3907,9 @@ function makeMon(type,x,y){
     // lauert  Hinterhalt: wartet unsichtbar, bis der Spieler nah genug ist
     // folgeAn nächster Angriff ist der Folgeschlag (zweite Nachforderung)
     // schlagN Zähler für starre Schlagfolgen (Dienstweg: drei, dann Pause)
+    // elite  M2: null oder der Name des Sonderprüfers. Wird nur in setzeMon()
+    //        gesetzt, nie im Frame-Pfad; alle Aufwertungen lesen dieses eine Feld.
+    elite: null,
     teleT: 0, teleMus: 0, teleAng: 0, offenT: 0, zuT: 0, mantelT: 0, buffT: 0,
     ruheT: 0, rueckT: 0, folgeAn: false, eroeffnet: !d.hinterhalt, schlagN: 0,
     zyklusT: d.fenster && d.fenster.alle ? rr(1, d.fenster.alle) : 0 };
@@ -3992,9 +3995,14 @@ function auftragOrtBand(){
 const ZIEL_MOBS = 600;
 // Monsterfreier Gürtel um das DORFRECHTECK, in Kacheln. Vorher war es ein
 // Pixelkreis von 8 Kacheln um den Punkt SPAWN — falsche Form und zu klein: sicher
-// sein muss das Dorf als Fläche, nicht ein Punkt darin. 40 Kacheln sind rund
-// zehn Sekunden Fußweg in jeder Richtung, bevor der erste Kampf kommt.
-const DORF_BANN = 40;
+// sein muss das Dorf als Fläche, nicht ein Punkt darin.
+// M2: von 40 auf 12 Kacheln. 40 waren rund zehn Sekunden Fußweg BIS ZUM ERSTEN
+// GEGNER, und weil dahinter der volle Roster gleichverteilt lag, konnte der erste
+// Gegner nach diesem Marsch ein Zustellbote sein. Zwölf Kacheln sind drei
+// Sekunden: das Dorf bleibt als Fläche sicher, der erste Kampf beginnt aber im
+// Blickfeld des Dorfes und ist nach der Zonenstaffel unten garantiert ein
+// leichter. Wer sich sicher fühlen will, geht zwölf Kacheln zurück.
+const DORF_BANN = 12;
 // Deckel für den 'menge'-Aushang. Er ist das Minimum aus ZWEI Grenzen, und das
 // ist der eigentliche Befund von W-Groß: bis hierher war die bindende Grenze die
 // Zahl der Spawns (der alte Handwert 11 stand neben dem Satz "ein Biom trägt
@@ -4020,8 +4028,48 @@ const MENGE_DECKEL = Math.max(4, Math.min(MENGE_WELT, MENGE_UHR));
 // Umkreis ums Dorf (Kacheln), in dem die Weltgarantie ihre reservierten Monster
 // setzt. Weit genug für Abwechslung, nah genug für eine Schicht Fußweg.
 const AUFTRAG_NAH = 90;
-const nahDorf = (tx,ty)=> tx > VILLAGE.x0-DORF_BANN && tx < VILLAGE.x1+DORF_BANN
-                       && ty > VILLAGE.y0-DORF_BANN && ty < VILLAGE.y1+DORF_BANN;
+// Abstand einer Kachel zum DORFRECHTECK, in Kacheln, als Schachbrettabstand
+// (Maximum der beiden Achsen). Damit ist eine "Entfernung vom Dorf" dieselbe
+// Rechteckform, die auch der Bannkreis hat — ein Kreis um den Dorfmittelpunkt
+// wäre an den langen Seiten des Dorfes enger als an den kurzen.
+const dorfAbstand = (tx,ty)=> Math.max(VILLAGE.x0-tx, tx-VILLAGE.x1, 0,
+                                       VILLAGE.y0-ty, ty-VILLAGE.y1, 0);
+const nahDorf = (tx,ty)=> dorfAbstand(tx,ty) < DORF_BANN;
+
+// === M2: Schwierigkeit wächst mit der Entfernung ===========================
+// Befund aus dem Spielbericht: die Bevölkerung lag GLEICHVERTEILT über die
+// Karte. Direkt hinter dem Bannkreis stand mit derselben Wahrscheinlichkeit ein
+// Formfehler (A1, zwei Sekunden Kampf) wie ein Zustellbote (A4, halbe Minute
+// und Meisterschaft) — der erste Kampf einer Schicht war ein Würfelwurf. Der
+// Katalog staffelt die Gegner nach Ertragsklassen, die KARTE tat es nicht.
+//
+// Jetzt ist der Abstand zum Dorf die Schwierigkeitsachse:
+//   Zone 0  Nahfeld   (Bann bis NAHFELD_R):  nur Fleiß (A1), dreifache Dichte
+//   Zone 1  Übergang  (bis UEBERG_R):        Fleiß und Geduld, kein A3, kein A4
+//   Zone 2  Ferne     (darüber):             der volle Roster wie bisher
+// Die Klassen kommen aus MONDEF[t].kat.klasse, nicht aus einer zweiten Liste:
+// wer einen Gegner umklassifiziert, verschiebt ihn damit automatisch mit.
+const NAHFELD_R = 44;         // Kacheln ab Dorfkante: rund zwölf Sekunden Fußweg
+const UEBERG_R  = 96;
+const NAHFELD_SOLL = 260;     // zusätzlich zu ZIEL_MOBS, ausschließlich im Nahfeld
+const zoneVon = (tx,ty)=>{ const a = dorfAbstand(tx,ty); return a < NAHFELD_R ? 0 : a < UEBERG_R ? 1 : 2; };
+
+// Roster je Zone und Band, einmal beim Laden gefiltert. Im Setzpfad ist das
+// danach derselbe Feldzugriff wie vorher, kein Filter pro Monster.
+// Das Schneeband steht nicht im Katalog (keine kat-Felder, s. MONDEF): dort ist
+// der billigste Eintrag des Bandes der Fleiß-Ersatz, damit auch die Nordseite
+// des Dorfes ein Nahfeld bekommt statt einer Lücke.
+const katKlasse = t => (MONDEF[t].kat && MONDEF[t].kat.klasse) || null;
+const ZONEN_MOBS = [{}, {}, {}];
+for(const b in BIOME_MOBS){
+  const voll = BIOME_MOBS[b];
+  const a1 = voll.filter(t => katKlasse(t) === 'A1');
+  const a12 = voll.filter(t => katKlasse(t) === 'A1' || katKlasse(t) === 'A2');
+  const billigster = voll.slice().sort((x,y) => MONDEF[x].xp - MONDEF[y].xp)[0];
+  ZONEN_MOBS[0][b] = a1.length  ? a1  : [billigster];
+  ZONEN_MOBS[1][b] = a12.length ? a12 : voll;
+  ZONEN_MOBS[2][b] = voll;
+}
 
 // W-Groß: bildschirmnahe Monster. Ein Rand von 320px über den Bildschirm hinaus,
 // damit nichts sichtbar "aufwacht" — Monster sollen bereits laufen, wenn sie ins
@@ -4034,6 +4082,52 @@ const nahAmBild = m => m.x > cam.x - NAH_RAND && m.x < cam.x + canvas.width + NA
 // Heimatpunkt. Beides nötig — die erste Grenze löst den Verfolger, die zweite
 // verhindert, dass eine lange Jagd das halbe Biom leerräumt.
 const LEASH_PX = 620, LEASH_HOME = 1400;
+
+// === M2: Der Sonderprüfer ===================================================
+// Wunsch aus dem Spielbericht: "ab und an ein gut erkennbarer harter Gegner".
+// Ein Sonderprüfer ist KEIN eigener Katalogeintrag und keine Zahlenaufblähung
+// ins Blaue, sondern eine Aufwertung genau einer Ertragsklasse nach einer
+// festen, geprüften Regel:
+//   * nur aus Fleiß (A1). Ein aufgewerteter A4 wäre an seiner Sollstufe nicht
+//     mehr ohne Verbrauchsgegenstände zu schaffen, und genau das verbietet der
+//     Katalog. Aus A1 aufgewertet spielt er sich wie ein Risiko-Gegner: er lebt
+//     lange, er trifft hart, aber sein Gefahrenbudget bleibt über dem A3-Boden.
+//   * die Vorwarnung wird LÄNGER, nicht kürzer. Ein Gegner, der härter trifft,
+//     muss besser lesbar sein, sonst ist er nicht schwer, sondern unfair.
+//   * er zahlt den A3-Ertragssatz. ELITE.xp ist deshalb nicht frei gewählt,
+//     sondern hp mal dem Verhältnis der Klassenfaktoren (2.0 / 1.0 = 2), also
+//     4.0 * 2 = 8.0. monsterAssert() rechnet das nach, damit es nicht driftet.
+//   * er ist auf den ersten Blick zu erkennen: anderthalbfache Größe, ein
+//     magentafarbener Schein, den sonst kein Gegner trägt, und ein eigener Name
+//     über dem Kopf.
+// warnMin: harter Boden fuer die Vorwarnung, in Millisekunden. Der Faktor allein
+// reicht nicht — die Fledermaus warnt 250 ms vor, mal 1,35 sind 338 ms, und der
+// Katalog verlangt ab A3 mindestens 350. Der Sonderpruefer trifft wie ein
+// Risiko-Gegner, also warnt er auch wie einer. (Genau diesen Fall hat
+// monsterAssert() beim ersten Lauf gemeldet, er stand nicht vorher im Plan.)
+const ELITE = {hp:4.0, dmg:2.4, warn:1.35, warnMin:350, tempo:0.9, xp:8.0, gold:6, sc:1.6, r:1.35, glow:'#ff5ad6'};
+// Rund jeder fünfzigste Fleiß-Gegner. Bei 260 Nahfeld-Monstern sind das etwa
+// fünf im Ring ums Dorf: oft genug, dass man sie kennenlernt, selten genug,
+// dass sie ein Ereignis bleiben.
+const ELITE_CHANCE = 0.02;
+const ELITE_TITEL = ['Oberamtsrat','Amtsrätin','Regierungsdirektor','Hauptsachbearbeiterin',
+                     'Oberinspektor','Ministerialrätin','Aktenvorsteher','Registraturleiterin',
+                     'Oberrevisor','Prüfstellenleiterin'];
+const ELITE_NAME  = ['Grimmig','Aktenberg','Siegel','Stempelmann','Vordrucker','Nachtrag',
+                     'Krähwinkel','Bürzel','Klammer','Randnotiz','Umlauf','Vermerk',
+                     'Schnarrwinkel','Doppelbogen'];
+// rng() statt Math.random(): der Weltzufall ist gesetzt, also steht auf demselben
+// Startwert derselbe Sonderprüfer an derselben Stelle. Das macht einen Bericht
+// wie "der Große bei den drei Bäumen" überhaupt erst nachvollziehbar.
+const eliteName = ()=> ELITE_TITEL[Math.floor(rng()*ELITE_TITEL.length)] + ' ' +
+                       ELITE_NAME[Math.floor(rng()*ELITE_NAME.length)];
+function eliteMachen(m){
+  m.elite = eliteName();
+  m.maxHp = Math.round(m.maxHp * ELITE.hp);
+  m.hp = m.maxHp;
+  m.r = Math.round(m.r * ELITE.r);
+  return m;
+}
 
 function placeMonsters(){
   monsters.length = 0; boss = null; lockedTarget = null;
@@ -4059,14 +4153,42 @@ function placeMonsters(){
       if(nahDorf(tx,ty)) continue;               // G5/W-Groß: Dorf samt Umland bleibt monsterfrei
       if(tx===KN_T.x && ty===KN_T.y) continue;   // Knöterichs Kachel bleibt frei von Monstern
       const biome = biomeAtT(ty);
-      const roster = BIOME_MOBS[biome];
-      makeMon(auftragTypBevorzugen(roster[Math.floor(rng()*roster.length)], biome),   // W4
-              tx*TS+16, ty*TS+16);
+      // M2: der Roster hängt jetzt an der Zone, nicht mehr allein am Band.
+      const roster = ZONEN_MOBS[zoneVon(tx,ty)][biome];
+      setzeMon(auftragTypBevorzugen(roster[Math.floor(rng()*roster.length)], biome), tx, ty);  // W4
       gesetzt++;
       if(band) auftragOrtSoll--;                 // W4: erst zählen, wenn wirklich gesetzt
     }
     if(gesetzt < ZIEL_MOBS) console.warn('Weltform: nur', gesetzt, 'von', ZIEL_MOBS, 'Monstern gesetzt');
+
+    // --- M2: das Nahfeld ------------------------------------------------
+    // Die Schleife oben streut über die ganze Karte; der Ring ums Dorf ist
+    // darin nur ein Prozent der Fläche und bekäme rund sechs Monster. Das
+    // Nahfeld wird deshalb GESONDERT gefüllt, mit erzwungenen Koordinaten im
+    // Ring. Ergebnis ist die dreifache Dichte der übrigen Karte, ausschließlich
+    // aus Fleiß-Gegnern: wer aus dem Dorf tritt, hat sofort etwas zu tun und
+    // gewinnt es auch.
+    let nah = 0, nversuche = 0;
+    while(nah < NAHFELD_SOLL && nversuche++ < NAHFELD_SOLL*40){
+      const tx = ri(Math.max(4, VILLAGE.x0-NAHFELD_R), Math.min(MW-5, VILLAGE.x1+NAHFELD_R));
+      const ty = ri(Math.max(4, VILLAGE.y0-NAHFELD_R), Math.min(MH-5, VILLAGE.y1+NAHFELD_R));
+      if(dorfAbstand(tx,ty) >= NAHFELD_R) continue;    // Rechteckecken liegen außerhalb des Rings
+      if(!reachbar(tx,ty) || nahDorf(tx,ty)) continue;
+      if(tx===KN_T.x && ty===KN_T.y) continue;
+      const roster = ZONEN_MOBS[0][biomeAtT(ty)];
+      setzeMon(roster[Math.floor(rng()*roster.length)], tx, ty);
+      nah++;
+    }
+    if(nah < NAHFELD_SOLL) console.warn('Weltform: Nahfeld nur', nah, 'von', NAHFELD_SOLL);
   }
+}
+
+// Eine Setzstelle für beide Schleifen. Hier und nur hier entscheidet sich, ob aus
+// einem gewöhnlichen Vorgang ein Sonderprüfer wird (s. ELITE weiter unten).
+function setzeMon(typ, tx, ty){
+  const m = makeMon(typ, tx*TS+16, ty*TS+16);
+  if(katKlasse(typ) === 'A1' && rng() < ELITE_CHANCE) eliteMachen(m);
+  return m;
 }
 placeMonsters();
 
@@ -4207,7 +4329,10 @@ function hurtMon(m, d, crit, hitAngle, quelle){
       m.flash = 0.1; m.aggro = true;
       if(gameT - lastAbprallSfx > 0.3){
         lastAbprallSfx = gameT;
-        floaters.push({x: m.x, y: m.y - m.r - 10, txt: 'wirkungslos', col:'#9a8a5f', t: 0.9});
+        // M2: der Hinweis sagt, WAS zu tun ist, nicht nur dass es nicht ging.
+        floaters.push({x: m.x, y: m.y - m.r - 10,
+                       txt: m.def.zauberfest ? 'versiegelt · nimm die Waffe' : 'wirkungslos',
+                       col:'#9a8a5f', t: 1.2});
       }
       return;
     }
@@ -4284,7 +4409,7 @@ function killMon(m){
   if(gameT - lastDieSfx > 0.07){ lastDieSfx = gameT; sfx.die(); }   // Massensterben nicht 30x gleichzeitig
   spawnImpactParticles(m.x, m.y, 40, null);
   splatConfetti(m.x, m.y, currentLevel===2);
-  gainXP(m.def.xp);
+  gainXP(m.elite ? Math.round(m.def.xp * ELITE.xp) : m.def.xp);
   // Fluch 'Zerplatzer': sterbende Gegner in der Nähe treffen zurück. 0.6s-Bremse ist
   // zwingend, sonst löst ein Ultimate im Schattenland hurtPlayer() bis zu 130x im
   // selben Frame aus (Sofort-Tod, Sound-Knacken, Floater-Überlauf).
@@ -4298,8 +4423,11 @@ function killMon(m){
     if(Math.random()<0.55) drops.push({kind:'gold', amt:rri(m.def.gold[0], m.def.gold[1])*2, x:m.x, y:m.y});
     if(Math.random()<0.14) drops.push({kind:'potion', x:m.x, y:m.y});
   } else {
-    if(Math.random()<0.4) drops.push({kind:'gold', amt:rri(m.def.gold[0], m.def.gold[1]), x:m.x, y:m.y});
-    if(Math.random()<0.05) drops.push({kind:'potion', x:m.x, y:m.y});
+    // M2: der Sonderprüfer zahlt immer aus, sonst wäre der lange Kampf ein
+    // Wurf auf nichts. Der Trank ist dabei der eigentliche Lohn: er ersetzt
+    // genau das, was der Kampf gekostet hat.
+    if(m.elite || Math.random()<0.4) drops.push({kind:'gold', amt:rri(m.def.gold[0], m.def.gold[1])*(m.elite?ELITE.gold:1), x:m.x, y:m.y});
+    if(Math.random() < (m.elite ? 0.85 : 0.05)) drops.push({kind:'potion', x:m.x, y:m.y});
   }
   const mr = monRar(m.def);
   // Horde im Schattenland fällt reihenweise, deshalb dort deutlich seltener.
@@ -4684,7 +4812,10 @@ function angriffStarten(m, idx, stumm){
   const mu = m.def.muster;
   const i = idx === undefined ? musterWaehlen(m, dist(m.x, m.y, player.x, player.y)) : idx;
   const mus = mu && mu[i];
-  const warn = (mus ? mus.warn : (m.def.warn || 400)) / 1000;
+  // M2: der Sonderprüfer holt sichtbar LÄNGER aus. Härter treffen und schneller
+  // ausholen wäre zweimal dieselbe Schraube; hier zahlt die Härte mit Lesbarkeit.
+  const roh = (mus ? mus.warn : (m.def.warn || 400));
+  const warn = (m.elite ? Math.max(roh * ELITE.warn, ELITE.warnMin) : roh) / 1000;
   m.teleMus = i;
   m.teleT = warn;
   m.teleAng = Math.atan2(player.y - m.y, player.x - m.x);   // Kegel merkt sich die Richtung
@@ -4731,7 +4862,7 @@ function stuetzeNachbarn(m, mus){
 function angriffAusloesen(m){
   const d = m.def, mu = d.muster, mus = (mu && mu[m.teleMus]) || null;
   const art = mus ? mus.art : (d.ranged ? 'fern' : 'nah');
-  const wucht = (mus && mus.wucht || 1) * (m.buffT > 0 ? 1.25 : 1);
+  const wucht = (mus && mus.wucht || 1) * (m.buffT > 0 ? 1.25 : 1) * (m.elite ? ELITE.dmg : 1);
   m.teleT = 0;
   if(art === 'stuetz'){ stuetzeNachbarn(m, mus); return; }
   if(art === 'zu'){                                          // Verwehen: angesagte Auszeit
@@ -7425,7 +7556,7 @@ function update(dt){
       m.teleT -= dt;
       if(m.teleT <= 0) angriffAusloesen(m);
     }
-    const spd = m.def.speed * (m.slowT > 0 ? 0.4 : 1);
+    const spd = m.def.speed * (m.slowT > 0 ? 0.4 : 1) * (m.elite ? ELITE.tempo : 1);
 
     const pd = dist(m.x, m.y, player.x, player.y);
     // Aggro wurde bis W-Groß NIE wieder gelöscht: ein einmal aufgeschrecktes
@@ -7435,8 +7566,17 @@ function update(dt){
     // Verfolger strandet an der erstbesten Küstenkante, und die Aggro-Menge
     // wächst über eine Schicht monoton, bis alle gleichzeitig am Spieler hängen.
     // Nur Oberwelt: die Schattenhorde SOLL ewig jagen, die Kammer ist ein Raum.
+    // M2: Hausrecht. Der monsterfreie Gürtel ist von 40 auf 12 Kacheln
+    // geschrumpft (s. DORF_BANN), damit der erste Kampf nicht mehr zehn Minuten
+    // Fußweg entfernt liegt. Damit reicht die Verfolgungsleine von 620 Pixeln
+    // aber bis mitten ins Dorf hinein, und genau davor warnt der Kommentar
+    // unten seit W-Groß. Also gilt die Dorffläche jetzt ausdrücklich: wer sie
+    // betritt, verliert die Aggro auf der Stelle und geht auf seinen Platz
+    // zurück, und niemand schreckt aus dem Dorf heraus auf. Das Dorf ist der
+    // einzige Ort im Spiel, an dem man ohne Aufmerksamkeit stehen darf.
+    const imDorf = inVillageT((m.x / TS) | 0, (m.y / TS) | 0);
     if(m.aggro && currentLevel === 1 && !kammer){
-      if(pd > LEASH_PX || sqDist(m.x, m.y, m.homeX, m.homeY) > LEASH_HOME*LEASH_HOME){
+      if(imDorf || pd > LEASH_PX || sqDist(m.x, m.y, m.homeX, m.homeY) > LEASH_HOME*LEASH_HOME){
         m.aggro = false; m.leashT = 3; m.stuckT = 0;   // Sperre gegen sofortiges Wiederaufschrecken
         m.teleT = 0;                                  // eine Ansage ohne Ziel wird nicht nachgeholt
       } else if(pd > m.def.atkRange && Math.abs(m.x-mx0) + Math.abs(m.y-my0) < 0.3){
@@ -7445,7 +7585,7 @@ function update(dt){
         if(m.stuckT > 2.5){ m.aggro = false; m.leashT = 4; m.stuckT = 0; }
       } else m.stuckT = 0;
     }
-    if(!m.aggro && m.leashT <= 0 && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
+    if(!m.aggro && m.leashT <= 0 && !imDorf && pd < m.def.aggro * (CFX.laut ? 2 : 1)) m.aggro = true;   // Fluch 'Geschwätzigkeit'
 
     // Kammerwache mit Rückenregel: dreht sich nur begrenzt schnell zum Spieler,
     // sonst wäre "von hinten" nie erreichbar.
@@ -7458,7 +7598,14 @@ function update(dt){
       m.faceAng += clamp(d, -max, max);
     }
 
-    if(!m.aggro){
+    if(!m.aggro && imDorf){
+      // M2: Hausrecht, zweiter Teil. Aggro löschen allein würde den Verfolger
+      // mitten auf dem Marktplatz stehen lassen; er geht deshalb sichtbar auf
+      // seinen Heimatpunkt zurück, statt dort weiterzuwandern.
+      const a = Math.atan2(m.homeY - m.y, m.homeX - m.x);
+      moveEnt(m, Math.cos(a)*spd*dt, Math.sin(a)*spd*dt);
+      m.facingLeft = m.homeX < m.x;
+    } else if(!m.aggro){
       // Herumwandern, wenn kein Ziel in Sicht
       m.wanderT -= dt;
       if(m.wanderT <= 0){
@@ -8134,9 +8281,26 @@ function drawCorpse(c){
   ctx.restore();
 }
 
+const SIEGEL_STRICH = [4, 4];
+// R6/F73: Fontstrings sind Konstanten, keine pro Frame gebauten Strings.
+const NAME_FONT = 'bold 10px Courier New', NAME_FONT_ELITE = '900 12px Courier New',
+      NAME_FONT_ART = 'bold 9px Courier New';
+// Sichtweite der Namensschilder, quadriert (kein hypot im Zeichenpfad).
+const NAME_SICHT_Q = 210*210;
+
 function drawMon(m){
-  const d = m.def, sc = d.sc || 1.5, psc = d.psc || 1;   // psc: G3-Pixelskala des CF-Rigs, s. MONDEF-Kommentar
+  const d = m.def, sc = (d.sc || 1.5) * (m.elite ? ELITE.sc : 1), psc = d.psc || 1;   // psc: G3-Pixelskala des CF-Rigs, s. MONDEF-Kommentar
   drawShadowEllipse(m.x, m.y + m.r*0.7, m.r*0.9);
+  // M2: der Sonderprüfer trägt einen eigenen Bodenring in einer Farbe, die
+  // sonst nirgends vorkommt. Zusammen mit der anderthalbfachen Größe ist er
+  // damit auf Bildschirmbreite als "der da nicht" zu erkennen, bevor er
+  // überhaupt aggriert.
+  if(m.elite){
+    ctx.save();
+    ctx.globalAlpha = 0.45 + Math.sin(gameT*4)*0.18; ctx.strokeStyle = ELITE.glow; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(m.x, m.y + m.r*0.7, m.r+11, (m.r+11)*0.45, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
   // Kammer-Sonderregel wird gezeigt, nicht erklärt: farbiger Ring = nur dieser
   // Zweig wirkt, Schild vor dem Gesicht = von vorn prallt alles ab.
   if(m.regel){
@@ -8189,6 +8353,16 @@ function drawMon(m){
     ctx.beginPath(); ctx.ellipse(m.x, m.y + m.r*0.7, m.r+9, (m.r+9)*0.45, 0, 0, Math.PI*2); ctx.stroke();
     ctx.restore();
   }
+  // M2: zauberfeste Gegner tragen ein Siegel als ruhigen weissen Ring. Es
+  // steht dauerhaft da, nicht erst nach dem ersten wirkungslosen Zauber: der
+  // Spieler soll die Entscheidung VOR dem Mana treffen koennen.
+  if(d.zauberfest){
+    ctx.save();
+    ctx.globalAlpha = 0.30 + Math.sin(gameT*2)*0.08; ctx.strokeStyle = '#e9e0d0'; ctx.lineWidth = 2;
+    ctx.setLineDash(SIEGEL_STRICH);        // vom restore() unten mit zurueckgesetzt
+    ctx.beginPath(); ctx.ellipse(m.x, m.y + m.r*0.7, m.r+6, (m.r+6)*0.45, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
   // Aktenmantel und Buff: violettes bzw. oranges Flimmern am Boden.
   if(m.mantelT > 0 || m.buffT > 0){
     ctx.save();
@@ -8211,7 +8385,8 @@ function drawMon(m){
   if(m.zuT > 0) sichtA *= 0.35;
   else if(!m.aggro && d.hinterhalt) sichtA *= 0.5;
   if(sichtA !== 1) ctx.globalAlpha = sichtA;
-  if(d.glow){ ctx.shadowColor = d.glow; ctx.shadowBlur = 20; }
+  if(m.elite){ ctx.shadowColor = ELITE.glow; ctx.shadowBlur = 26; }
+  else if(d.glow){ ctx.shadowColor = d.glow; ctx.shadowBlur = 20; }
   // Trefferblitz als gecachte weiße Tint-Kopie statt ctx.filter — der Filterpfad
   // kostet pro Draw ein eigenes Compositing und trifft bei Cleave dutzende Mobs.
   if(m.flash > 0) drawSpriteAt(key, animFrame(key, m.animT, fps, loop), '#ffffff', 0.72);
@@ -8229,6 +8404,34 @@ function drawMon(m){
   if(m.hp < m.maxHp && !m.def.boss && !CFX.blind){   // Fluch 'Aktenblindheit'
     ctx.fillStyle = '#1a0505'; ctx.fillRect(m.x - 12, m.y - m.r - 12, 24, 4);
     ctx.fillStyle = currentLevel===2 ? '#a855f7' : '#ff3333'; ctx.fillRect(m.x - 12, m.y - m.r - 12, (m.hp/m.maxHp)*24, 4);
+  }
+
+  // === M2: Namensschilder ==================================================
+  // Bis hierher trug im ganzen Spiel nur der Boss einen sichtbaren Namen, und
+  // der stand im HUD. Alle 21 anderen Vorgangsarten hatten zwar seit jeher ein
+  // name-Feld in MONDEF, es wurde nur nie gezeichnet. Jetzt steht der Name über
+  // dem Kopf — beim Sonderprüfer sein eigener, darunter die Vorgangsart, denn
+  // erst beides zusammen sagt, was da steht und was es von einem will.
+  // Angezeigt nur in Ruf- oder Kampfnähe: 600 Monster auf der Karte, aber nie
+  // mehr als eine Handvoll Schilder gleichzeitig im Bild.
+  if(!d.boss && !CFX.blind && (m.elite || m.aggro || m.teleT > 0 ||
+     sqDist(player.x, player.y, m.x, m.y) < NAME_SICHT_Q)){
+    const y = m.y - m.r - (m.hp < m.maxHp ? 18 : 12);
+    ctx.save();
+    ctx.textAlign = 'center';
+    if(m.elite){
+      ctx.font = NAME_FONT_ELITE;
+      ctx.fillStyle = '#000';        ctx.fillText(m.elite, m.x+1, y-9);
+      ctx.fillStyle = ELITE.glow;    ctx.fillText(m.elite, m.x, y-10);
+      ctx.font = NAME_FONT_ART;
+      ctx.fillStyle = '#000';        ctx.fillText(d.art, m.x+1, y+1);
+      ctx.fillStyle = '#c9b98a';     ctx.fillText(d.art, m.x, y);
+    } else {
+      ctx.font = NAME_FONT;
+      ctx.fillStyle = '#000';        ctx.fillText(d.name, m.x+1, y+1);
+      ctx.fillStyle = '#c9b98a';     ctx.fillText(d.name, m.x, y);
+    }
+    ctx.restore();
   }
 }
 
@@ -10589,6 +10792,18 @@ function katWuchtSchnitt(d){
   return summe / 60;
 }
 
+// M2: die vier Arten, die der Spieler ueberhaupt austeilen kann (Gift steht in
+// den Tabellen, hat aber keine Spielerquelle, s. SCHADENSART).
+const KAT_ARTEN = ['physisch'].concat(SCHADENSART);
+// Modelle, die sichtbar einen Bogen oder einen Stab fuehren, und Modelle, die
+// sichtbar eine Nahkampfwaffe fuehren. flying_skull, die Schleime, bat und die
+// Shroomlinge stehen bewusst in keiner der beiden Listen: sie fuehren gar keine
+// Waffe und passen deshalb zu beidem.
+const RIG_FERN = ['skeleton_bowman', 'knights_archer', 'skeleton_mage',
+                  'cowling_mage_1', 'cowling_mage_2', 'angel_1', 'angel_2'];
+const RIG_NAH  = ['goblin_maceman', 'goblin_thief', 'knights_swordman',
+                  'knights_spearman', 'knights_templar'];
+
 function monsterAssert(){
   let ok = true;
   const fehler = (m, ...r) => { ok = false; console.error('Monsterkatalog:', m, ...r); };
@@ -10653,7 +10868,64 @@ function monsterAssert(){
       if(d.weich === 'gift') fehler('Weichstelle liegt auf Gift, der Spieler hat keine Giftquelle', typ);
       if(k.typen && k.typen.indexOf('B5') >= 0 && d.res[d.weich] > -0.05)
         fehler('Resistenz-Gate ohne Verwundbarkeit', typ, d.weich, d.res[d.weich]);
+
+      // --- M2: kein Gegner ohne Konter --------------------------------------
+      // Die harte Fassung des Verbots "Gegner ohne Konter": wer gegen alle vier
+      // spielbaren Arten immun ist, ist unbesiegbar. Das ist keine Balance-, das
+      // ist eine Sackgassenpruefung.
+      if(KAT_ARTEN.every(a => (d.res[a] || 0) >= 0.999))
+        fehler('gegen alle vier Arten immun, kein Konter moeglich', typ);
+      // Zauberfest ist erlaubt, aber nur unter denselben drei Bedingungen, die
+      // schon der Generator prueft (tools/monsterkatalog.py). Doppelt gerechnet
+      // mit Absicht: der Generator schuetzt den Katalog, dieser Guard das Spiel.
+      if(d.zauberfest){
+        if(k.route !== 'physisch')  fehler('zauberfest, aber Sollroute ist ein Zauber', typ, k.route);
+        if(d.res.physisch > -0.05)  fehler('zauberfest ohne Weichstelle gegen die Waffe', typ, d.res.physisch);
+        if(k.klasse === 'A4')       fehler('zauberfest und A4 zugleich, zwei Huerden auf einmal', typ);
+        if(KAM_WAECHTER.indexOf(typ) >= 0)
+          fehler('zauberfest und Kammerwache, die Zweigregel waere unloesbar', typ);
+      }
+
+      // --- M2: Rig gegen Angriffsart ----------------------------------------
+      // Ein Bogen- oder Stabmodell auf einem Gegner, der ausschliesslich im
+      // Nahkampf zuschlaegt, zeigt eine Handlung, die es nicht gibt. Umgekehrt
+      // darf ein Gegner, der grundsaetzlich aus der Entfernung kaempft, kein
+      // reines Nahkampfmodell tragen.
+      const wirft = d.ranged || (d.muster || []).some(x => x.art === 'fern' || x.art === 'stuetz' || x.art === 'mantel');
+      if(RIG_FERN.indexOf(d.rig) >= 0 && !wirft)
+        fehler('Fernkampfmodell auf einem reinen Nahkaempfer', typ, d.rig);
+      if(d.ranged && RIG_NAH.indexOf(d.rig) >= 0)
+        fehler('Nahkampfmodell auf einem Fernkaempfer', typ, d.rig);
+
+      // --- M2: der Sonderpruefer bleibt im Rahmen ----------------------------
+      // Aus A1 aufgewertet, gerechnet auf derselben Sollstufe. Er darf laenger
+      // dauern als ein A1 und haerter treffen, aber er muss unter dem Dach von
+      // A3 bleiben, sonst waere er an seiner Sollstufe nicht mehr ohne
+      // Verbrauchsgegenstaende zu schaffen.
+      if(k.klasse === 'A1'){
+        const ettk = ttk * ELITE.hp;
+        if(ettk > KAT_TTK.A3[1] * 1.06)
+          fehler('Sonderpruefer dauert laenger als ein A3', typ, ettk.toFixed(1) + ' s', 'hoechstens ' + KAT_TTK.A3[1]);
+        const enetto = dmgAvg * katWuchtSchnitt(d) * ELITE.dmg * (1 - minderung) / d.atkCd - heilung;
+        const ebudget = enetto > 0 ? derived.maxHp / enetto : Infinity;
+        if(ebudget < KAT_GEF.A3[0] * 0.94)
+          fehler('Sonderpruefer setzt staerker unter Druck als ein A3', typ, ebudget.toFixed(1) + ' s', 'mindestens ' + KAT_GEF.A3[0]);
+        for(const mus of (d.muster || []))
+          if(!(Math.max(mus.warn * ELITE.warn, ELITE.warnMin) >= KAT_WARN.A3))
+            fehler('Vorwarnung des Sonderpruefers zu kurz', typ, mus.name,
+                   Math.round(Math.max(mus.warn * ELITE.warn, ELITE.warnMin)) + ' ms');
+      }
     }
+    // Der Ertragssatz des Sonderpruefers ist nicht frei gewaehlt, sondern das
+    // Produkt aus Lebenspunktfaktor und dem Verhaeltnis der Klassenfaktoren.
+    // Nur so zahlt er genau den A3-Satz je Kampfsekunde. Steht hier als Rechnung
+    // statt als Kommentar, damit ein spaeter geaenderter Faktor auffliegt.
+    if(Math.abs(ELITE.xp - ELITE.hp * (KAT_XP.A3 / KAT_XP.A1)) > 1e-9)
+      fehler('ELITE.xp passt nicht zum A3-Ertragssatz', ELITE.xp, 'soll ' + ELITE.hp * (KAT_XP.A3 / KAT_XP.A1));
+    // Jedes Band braucht im Nahfeld etwas, das dort stehen darf. Eine leere
+    // Zone-0-Liste waere ein unsichtbares Loch im Ring ums Dorf.
+    for(const b in ZONEN_MOBS[0])
+      if(!ZONEN_MOBS[0][b].length) fehler('Nahfeld-Roster leer', b);
   } finally {
     player.level = echt.level; player.skills = echt.skills; player.equip = echt.equip;
     recalc();
@@ -10665,6 +10937,12 @@ function monsterAssert(){
 }
 // Weichstelle einmal backen, danach ist sie ein Feld wie jedes andere.
 for(const t in MONDEF) if(MONDEF[t].res) MONDEF[t].weich = backeWeichstelle(MONDEF[t]);
+// M2: zauberfest wird ABGELEITET, nie von Hand gesetzt. Ein Gegner ist genau
+// dann zauberfest, wenn alle drei Zauberzweige an ihm wirkungslos sind. Damit
+// kann die Anzeige nicht von den Zahlen abweichen: wer eine Resistenz senkt,
+// nimmt ihm damit automatisch das Siegel.
+for(const t in MONDEF) if(MONDEF[t].res)
+  MONDEF[t].zauberfest = SCHADENSART.every(a => (MONDEF[t].res[a] || 0) >= 0.999);
 monsterAssert();
 
 // ===========================================================================
