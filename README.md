@@ -34,7 +34,7 @@ python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</sc
 
 Das fängt Syntaxfehler, **nicht** die Temporal Dead Zone. Der häufigste echte Fehler in diesem Projekt ist ein `ReferenceError` beim Laden, weil eine Funktion, die schon auf Skriptebene läuft, eine erst später deklarierte Konstante liest. Den findet nur der Browser mit offener Konsole.
 
-Das Spiel prüft sich beim Laden selbst. Acht selbstaufrufende Guards (`knAssertCaps`, `blaetterAssert`, `rangAssert`, `anredeAssert`, `vorgangAssert`, `auftragAssertBrett`, `langAssert`, `dienstAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit und Erreichbarkeit. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium.
+Das Spiel prüft sich beim Laden selbst. Zehn selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`, `dienstAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung, seit M1 die Kampfwerte gegen den Referenzspieler und seit W8 den Sperrvermerk auf die Akte im Einstellungsvordruck. Dazu kommt `npcAnkerAssert()`, der als einziger nicht auf Skriptebene läuft, sondern erst hinter `loadAssets()`, weil er die gebackenen Blätter liest. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
 
 ## Dokumente
 
@@ -44,13 +44,32 @@ Das Spiel prüft sich beim Laden selbst. Acht selbstaufrufende Guards (`knAssert
 | `superduper-gameplay-prompt.md` | Gameplay-Phasen 1 bis 6, Zählertabellen |
 | `superduper-grafik-prompt.md` | Grafik-Phasen G0 bis G5 |
 | `superduper-reparatur-prompt.md` | Reparaturrunden R1 bis R9 |
-| `phase-*.md` | Eine Bauanleitung je Bauabschnitt, mit Abnahme und Prüfprotokoll. Der jüngste ist `phase-w8-anfang.md`: Einstellungsvordruck, Dienstanweisung, Laufbahnziel |
+| `phase-*.md` | Eine Bauanleitung je Bauabschnitt, mit Abnahme und Prüfprotokoll |
 | `figuren-dorf.md`, `blaetter-serie-a-b.md` | Inhaltslieferungen (Figurentexte, Aktenfunde) |
-| `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md` | Datierte Prüfberichte. Ihre Zeilennummern sind Stände, keine Wegweiser. |
+| `phase-m1-monsterkatalog.md` | Bauabschnitt M1: der Katalog im Code, Entscheidungen und Prüfprotokoll |
+| `phase-w8-anfang.md` | Bauabschnitt W8: Einstellungsvordruck, Dienstanweisung, Laufbahnziel, und warum der Anfang kein Prolog ist |
+| `monsterkatalog-stufe-1-10.md` | Die Lieferung: 22 Gegner, 5 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
+| `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
+| `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md`, `GEGENPROBE-2026-08-04.md`, `GEGENPROBE-W-2026-08-05.md`, `GW-RESTFUNDE-2026-08-06.md`, `KAMMER-MESSUNG-2026-08-20.md` | Datierte Prüf- und Messberichte. Ihre Zeilennummern sind Stände, keine Wegweiser, und ihr Inhalt wird nicht rückwirkend umgeschrieben. Was sie überholt, steht im jeweils neueren Bericht oder im Phasendokument. |
 | `CREDITS.md` | Grafik-Lizenzen |
 | `LICENSE` | Code MIT, Grafik nicht gedeckt, Spielinhalte vorbehalten |
 
 Drei Regeln, die beim Mitarbeiten nicht optional sind: Jede Phasenüberschrift trägt `— ERLEDIGT` oder `— OFFEN`, nachgezogen im selben Commit. Jede Bauphase bekommt ein Phasendokument. Und es wird live verifiziert statt behauptet — kein „sollte funktionieren".
+
+## Werkzeuge
+
+| Datei | Was |
+|---|---|
+| `tools/build-single.mjs` | Pages-Build: backt Grafik als Data-URIs in eine einzelne `dist/index.html` |
+| `tools/sheet-audit.mjs` | misst Raster und Anker der Sprite-Blätter, schreibt `assets/cf/manifest.json` |
+| `tools/monsterkatalog.py` | rechnet den Monsterkatalog und schreibt `monsterkatalog-stufe-1-10.md` und `monsterkatalog.json`. Prüft dabei alle harten Invarianten und meldet jede Verletzung. |
+| `tools/monster-messlauf.mjs` | misst Kampfzeit und Gefahrenbudget im laufenden Spiel statt sie nachzurechnen. Braucht Playwright und einen lokalen Server. |
+
+```bash
+python3 tools/monsterkatalog.py
+python3 serve.py &                       # der Messlauf braucht das Spiel im Browser
+node tools/monster-messlauf.mjs
+```
 
 ## Grafik
 

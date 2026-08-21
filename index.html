@@ -527,14 +527,41 @@ const TS = 32, MW = 320, MH = 320;   // W-Groß: Kante x4 (80 -> 320), Fläche x
 // abweichende Randtabellen (W-Groß, Umsetzungsnotizen). Proportionen exakt wie
 // beim alten MH=80 (Schneegrenze 25, Sandgrenze 55), nur an MH gekoppelt statt
 // fest verdrahtet — eine Kartenvergrößerung muss hier nichts anfassen.
-const SNOW_Y1 = Math.round(MH * 0.325) - 1;    // 25 bei MH=80
-const SAND_Y0 = Math.round(MH * 0.6875);       // 55 bei MH=80
+// Monsterkatalog M1: aus drei Bändern werden fünf. Der Katalog verlangt Wald,
+// Sumpf, Wüste, Höhle und Ruine; Höhle ist kein Band, sondern die Kammer (s.
+// KAM_WAECHTER weiter unten), die anderen vier liegen als Streifen auf der Karte.
+// Die Reihenfolge ist kein Zufall, sondern die Schwierigkeitskurve: das Dorf
+// liegt in der Kartenmitte im Wald, und mit jedem Schritt nach Süden (Sumpf,
+// Wüste) oder nach Norden (Eisablage, Altbestand) steigt die Sollstufe. Wer
+// nicht weiß, wo er ist, sieht es am Boden.
+//
+//   Zeile 0                                    Der Altbestand   (Sollstufe 8-10)
+//         64                                   Die Eisablage    (unverändert)
+//        128   <- Dorf bei Zeile 153 bis 167   Ablage A, Wald   (Sollstufe 1-3)
+//        192                                   Die Nassablage   (Sollstufe 3-5)
+//        240 bis 319                           Der Brandabschnitt (Sollstufe 4-7)
+const RUIN_Y1  = Math.round(MH * 0.20) - 1;    // 63  bei MH=320
+const SNOW_Y1  = Math.round(MH * 0.40) - 1;    // 127
+const GRAS_Y1  = Math.round(MH * 0.60) - 1;    // 191, Dorfband
+const SUMPF_Y1 = Math.round(MH * 0.75) - 1;    // 239
+const SAND_Y0  = SUMPF_Y1 + 1;                 // 240
 const BIOME_BANDS = [
-  {key:'snow',  y0:0,         y1:SNOW_Y1},
-  {key:'grass', y0:SNOW_Y1+1, y1:SAND_Y0-1},
-  {key:'sand',  y0:SAND_Y0,   y1:MH-1},
+  {key:'ruine', y0:0,          y1:RUIN_Y1},
+  {key:'snow',  y0:RUIN_Y1+1,  y1:SNOW_Y1},
+  {key:'grass', y0:SNOW_Y1+1,  y1:GRAS_Y1},
+  {key:'sumpf', y0:GRAS_Y1+1,  y1:SUMPF_Y1},
+  {key:'sand',  y0:SAND_Y0,    y1:MH-1},
 ];
-const biomeAtT  = ty => ty <= SNOW_Y1 ? 'snow' : (ty >= SAND_Y0 ? 'sand' : 'grass');
+// Zeile -> Band als Tabelle statt als Ternärkette: biomeAtT läuft im Kartenbau
+// über 102400 Zellen und zusätzlich im Frame-Pfad (Zonenanzeige, Wetter,
+// Zutaten-Biom). Fünf Bänder wären als Kette fünf Vergleiche, hier ist es
+// ein Feldzugriff. Die Tabelle wird aus BIOME_BANDS gebaut, nie von Hand, die
+// einzige Kartenwahrheit bleibt BIOME_BANDS (s. auftragAssertBrett, Punkt 0b).
+const BAND_KEYS = BIOME_BANDS.map(b => b.key);
+const BAND_VON_ZEILE = new Uint8Array(MH);
+for(let i = 0; i < BIOME_BANDS.length; i++)
+  for(let y = BIOME_BANDS[i].y0; y <= BIOME_BANDS[i].y1; y++) BAND_VON_ZEILE[y] = i;
+const biomeAtT  = ty => BAND_KEYS[BAND_VON_ZEILE[(ty < 0 ? 0 : (ty >= MH ? MH-1 : ty)) | 0]];
 const biomeAtPx = y  => biomeAtT(Math.floor(y / TS));
 // Zeilenbereich eines Biombands, eingerückt nur an der ÄUSSEREN Weltkante (y=0
 // bzw. y=MH-1) — genau das Muster, das auftragOrtBand() bisher von Hand trug
@@ -552,7 +579,7 @@ const bandRange = (key, edgeInset) => {
 // Handwerten [4,24]/[28,52]/[56,76] zurückgerechnet), NICHT das Edge-Muster
 // von bandRange() — Türen halten überall Abstand zur Biomgrenze, nicht nur
 // zum Kartenrand, damit ein Tür-Vordergrund nie im Nachbarbiom steht.
-const TUER_BAND_INSET = {snow:[4,1], grass:[2,2], sand:[1,3]};   // [oben, unten]
+const TUER_BAND_INSET = {ruine:[4,1], snow:[2,2], grass:[2,2], sumpf:[2,2], sand:[1,3]};   // [oben, unten]
 const tuerBandRange = key => {
   const b = BIOME_BANDS.find(z => z.key === key), [top, bot] = TUER_BAND_INSET[key];
   return [b.y0 + top, b.y1 - bot];
@@ -2089,6 +2116,13 @@ const CF_TILE = {
 // Biome ohne eigene Tiles entstehen als eingefärbte Kopien (einmal gebacken).
 const TILE_TINT = {
   snow:       ['#eaf6ff', 0.82],
+  // Monsterkatalog M1: Sumpf und Altbestand haben wie der Frostkamm kein eigenes
+  // Tileset im Pack und entstehen deshalb als eingefärbte Kopien. Sumpf ist
+  // abgestandenes Grün auf Gras, der Altbestand grauer Stein auf dem Pfadtile,
+  // das Moorwasser eine dunklere Fassung der Eisteiche.
+  sumpf:      ['#4a6b3a', 0.62],
+  moor:       ['#3d5a3a', 0.66],
+  ruine:      ['#8f8a86', 0.62],
   ice:        ['#f2fbff', 0.74],
   shadowDirt: ['#2e0f42', 0.74],
   shadowDeep: ['#1a0630', 0.72],   // W-Groß: die Tilgung im Schattenland
@@ -2202,13 +2236,17 @@ function computeTile(x, y){
   } else if(t === G_PATH || t === G_WALL){         // G_WALL = Dorf-Footprints, backen wie Pfad (F38)
     return pickCfTile(CF_TILE.path, x, y);
   } else if(t === G_ICE){
-    return pickCfTile(CF_TILE.water, x, y, 'ice');
+    // Dieselbe Kachel trägt zwei Bedeutungen: gefrorener Teich im Frostkamm,
+    // Tümpel in der Nassablage. Das Band entscheidet, nicht der Kacheltyp.
+    return pickCfTile(CF_TILE.water, x, y, biomeAtT(y) === 'sumpf' ? 'moor' : 'ice');
   } else if(t === G_LAVA){                        // reine Optik, begehbar wie Eisteiche
     return pickCfTile(CF_TILE.lava, x, y);
   }
   const b = biomeAtT(y);
-  if(b === 'snow') return pickCfTile(CF_TILE.grass, x, y, 'snow');   // Schneeband: eingefärbtes Gras (kein Schnee-Tileset im Pack)
-  if(b === 'sand') return pickCfTile(CF_TILE.volcano, x, y);
+  if(b === 'snow')  return pickCfTile(CF_TILE.grass, x, y, 'snow');   // Schneeband: eingefärbtes Gras (kein Schnee-Tileset im Pack)
+  if(b === 'sand')  return pickCfTile(CF_TILE.volcano, x, y);
+  if(b === 'sumpf') return pickCfTile(CF_TILE.grass, x, y, 'sumpf');
+  if(b === 'ruine') return pickCfTile(CF_TILE.path, x, y, 'ruine');
   return pickCfTile(CF_TILE.grass, x, y);
 }
 
@@ -2287,8 +2325,12 @@ function refreshFloor(){
 // beim Kartenbau (genMap() läuft synchron beim Skriptstart) — eine spätere
 // const-Deklaration von miniFullCtx wäre ein TDZ-Fehler, exakt wie beim
 // Kammer-Zustand oben (:1659).
+// Monsterkatalog M1: Felsen nehmen die Farbe ihres Bandes an. Sandstein in der
+// Wüste, Reif im Frostkamm, moosig im Sumpf, verrußt im Altbestand.
+const FELS_TINT = {sand:'#d9b070', snow:'#dfeeff', sumpf:'#7a8f5a', ruine:'#b0a89e', grass:null};
 const MINI_COL = {
   schnee: [214,232,246], eis: [176,214,238], gras: [62,124,72], sand: [206,178,116],
+  sumpf: [58,84,52], moor: [42,62,48], ruine: [126,120,114],
   vulkan: [176,92,46], lava: [168,64,32], pfad: [150,132,104], wand: [90,80,70],
   pilz: [90,50,110], schattenpfad: [58,30,74],
   meer: [26,44,86], schattenmeer: [16,6,34], strand: [222,204,150],
@@ -2303,11 +2345,13 @@ function miniColorFor(x, y){
   if(t === G_OCEAN) return MINI_COL.meer;
   if(t === G_BEACH) return MINI_COL.strand;
   if(t === G_PATH || t === G_WALL) return MINI_COL.pfad;
-  if(t === G_ICE) return MINI_COL.eis;
-  if(t === G_LAVA) return MINI_COL.lava;
   const b = biomeAtT(y);
-  if(b === 'snow') return MINI_COL.schnee;
-  if(b === 'sand') return MINI_COL.vulkan;
+  if(t === G_ICE) return b === 'sumpf' ? MINI_COL.moor : MINI_COL.eis;
+  if(t === G_LAVA) return MINI_COL.lava;
+  if(b === 'snow')  return MINI_COL.schnee;
+  if(b === 'sand')  return MINI_COL.vulkan;
+  if(b === 'sumpf') return MINI_COL.sumpf;
+  if(b === 'ruine') return MINI_COL.ruine;
   return MINI_COL.gras;
 }
 const miniFull = document.createElement('canvas');
@@ -2383,6 +2427,11 @@ function genMap(){
       const b1 = biomeAtT(y);
       if(b1 === 'snow'){ if(r < 0.08) setT(x,y,G_ICE_TREE); }
       else if(b1 === 'sand'){ if(r < 0.06) setT(x,y,G_CACTUS); else if(r < 0.10) setT(x,y,G_ROCK); }
+      // Nassablage: viel Schilf, wenige Bäume. Das hohe Gras ist hier kein
+      // Beiwerk, sondern Deckung, die Blubberakte lauert darin.
+      else if(b1 === 'sumpf'){ if(r < 0.04) setT(x,y,G_TREE); else if(r < 0.34) setT(x,y,G_TALL); else if(r < 0.37) setT(x,y,G_ROCK); }
+      // Altbestand: Trümmer statt Bewuchs. Fast nur Fels, ein paar tote Bäume.
+      else if(b1 === 'ruine'){ if(r < 0.02) setT(x,y,G_TREE); else if(r < 0.06) setT(x,y,G_TALL); else if(r < 0.20) setT(x,y,G_ROCK); }
       else { if(r < 0.08) setT(x,y,G_TREE); else if(r < 0.22) setT(x,y,G_TALL); else if(r < 0.25) setT(x,y,G_ROCK); }
     }
   }
@@ -2420,6 +2469,21 @@ function genMap(){
         if(T(x,y) !== G_SAND && T(x,y) !== G_CACTUS) continue;   // Felsen bleiben stehen
         if(Math.hypot(x-cx, y-cy) > rad - rng()*0.7) continue;
         setT(x,y,G_LAVA);
+      }
+    }
+  }
+  // Tümpel in der Nassablage: dasselbe Fleck-Muster wie Eisteiche und Lava, nur
+  // im Sumpfband und mit G_ICE als Kacheltyp, computeTile färbt ihn dort als
+  // Moorwasser statt als Eis (s. dort). Begehbar, wie die anderen beiden auch.
+  const TUEMPEL_N = 240, [TUE_CY0, TUE_CY1] = bandRange('sumpf', 1);
+  for(let n=0;n<TUEMPEL_N;n++){
+    const cx = ri(5, MW-6), cy = ri(TUE_CY0, TUE_CY1), rad = R(1.2, 2.6);   // R statt rr, siehe Eisteiche
+    for(let y=Math.floor(cy-rad); y<=Math.ceil(cy+rad); y++){
+      for(let x=Math.floor(cx-rad); x<=Math.ceil(cx+rad); x++){
+        if(!inB(x,y) || biomeAtT(y) !== 'sumpf') continue;
+        if(T(x,y) !== G_GRASS && T(x,y) !== G_TALL) continue;   // Bäume und Fels bleiben stehen
+        if(Math.hypot(x-cx, y-cy) > rad - rng()*0.7) continue;
+        setT(x,y,G_ICE);
       }
     }
   }
@@ -2616,8 +2680,8 @@ function genMap(){
       continue;
     }
     if(rng() > 0.022) continue;
-    const sand = biomeAtT(y) === 'sand';
-    if(sand) continue;                                     // Wüste bleibt karg (nur Vulkanpflanzen als "Bäume")
+    const bd = biomeAtT(y);
+    if(bd === 'sand' || bd === 'ruine') continue;          // Wüste und Altbestand bleiben karg
     decos.push({x:x*TS+TS/2, y:y*TS+TS-4, sheet:rng()<0.5?'cfmush1':'cfmush2',
                 phase:rng()*10, scale:1.4});
   }
@@ -2785,6 +2849,21 @@ const ZUTAT_NOUNS = {
   shadowghost: {n:'Spuknebel',         g:'m', slot:'boots',  rar:1, icon:'💨'},
   shadowmage:  {n:'Ruferzunge',        g:'f', slot:'weapon', rar:2, icon:'👅'},
   boss:        {n:'Fürstenkrone',      g:'f', slot:'armor',  rar:4, icon:'👑'},
+  // Monsterkatalog M1: die zehn neuen Typen. Der Slot folgt der Loot-Signatur
+  // seines Bioms (Wald Stiefel und Schilde, Nassablage Rüstungen, Brandabschnitt
+  // Waffen, Untere Registratur Schilde, Altbestand arkane Waffen), die
+  // Grundseltenheit folgt der Ertragsklasse: Fleiß 0 bis 1, Geduld 2, Risiko 2,
+  // Meisterschaft 3 bis 4.
+  ablagestapel:    {n:'Loseblattbündel',  g:'n', slot:'shield', rar:1, icon:'📄'},
+  zustellbote:     {n:'Botensohle',       g:'f', slot:'boots',  rar:3, icon:'👞'},
+  blubberakte:     {n:'Sumpfgallert',     g:'n', slot:'armor',  rar:0, icon:'💧'},
+  moorbescheid:    {n:'Moorbinde',        g:'f', slot:'armor',  rar:2, icon:'🌿'},
+  amtsschimmel:    {n:'Schimmelquaste',   g:'f', slot:'armor',  rar:2, icon:'🍄'},
+  fristlaeufer:    {n:'Fristfunke',       g:'m', slot:'weapon', rar:3, icon:'⏳'},
+  skarabaeus:      {n:'Panzerspan',       g:'m', slot:'weapon', rar:1, icon:'🪲'},
+  sammelmahnung:   {n:'Mahnsiegel',       g:'n', slot:'shield', rar:2, icon:'📜'},
+  aktenbote:       {n:'Botenmappe',       g:'f', slot:'weapon', rar:1, icon:'📬'},
+  sammelverfuegung:{n:'Urschrift-Siegel', g:'n', slot:'weapon', rar:4, icon:'🗝️'},
   // Kammerwächter (Phase 2 verdrahtet die Roster)
   mummy:       {n:'Mumienbinde',       g:'f', slot:'armor',  rar:2, icon:'🧻'},
   golem:       {n:'Golem-Splitter',    g:'m', slot:'shield', rar:3, icon:'🪨'},
@@ -2856,35 +2935,35 @@ const WIRKUNG = {
 // fl = Fluch bei Stufe 1, fl2 = Fluch ab Stufe 2 (verstärkt/Unikat), optional.
 // Verstärken macht den Fluch schlimmer statt nur den Vorteil stärker.
 const ZUTAT_ADJ = [
-  {a:'klebrig',            wirk:'zaeh',         fl:'kurzarm',                          rar:0, minMon:0, w:{grass:6,   snow:1,   sand:2,   shadow:2}},
-  {a:'durchgefroren',      wirk:'zaeh',         fl:'langsame_zunge',                   rar:1, minMon:0, w:{grass:0.5, snow:6,   sand:0.2, shadow:1}},
-  {a:'empört',             wirk:'wucht',        fl:'fehlschlag', fl2:'zerplatzer',     rar:0, minMon:0, w:{grass:3,   snow:2,   sand:2,   shadow:3}},
-  {a:'leicht verkohlt',    wirk:'zorn',         fl:'steuer',                           rar:0, minMon:0, w:{grass:1,   snow:0.3, sand:4,   shadow:2}},
-  {a:'glühend',            wirk:'zorn',         fl:'zutatenschwund', fl2:'blutmagie',  rar:1, minMon:1, w:{grass:1,   snow:0.5, sand:5,   shadow:2}},
-  {a:'störrisch',          wirk:'panzer',       fl:'standfest',                        rar:0, minMon:0, w:{grass:3,   snow:3,   sand:2,   shadow:1}},
-  {a:'übermütig',          wirk:'flink',        fl:'zappel',                           rar:0, minMon:0, w:{grass:4,   snow:1,   sand:2,   shadow:3}},
-  {a:'zugig',              wirk:'rueckstoss',   fl:'schleuder',                        rar:0, minMon:0, w:{grass:2,   snow:4,   sand:2,   shadow:1}},
-  {a:'unangenehm feucht',  wirk:'quelle',       fl:'duenn',                            rar:1, minMon:0, w:{grass:3,   snow:2,   sand:0.4, shadow:1}},
-  {a:'murmelnd',           wirk:'gemurmel',     fl:'manatot',                          rar:1, minMon:1, w:{grass:2,   snow:2,   sand:1,   shadow:3}},
-  {a:'frisch gestempelt',  wirk:'trankgueltig', fl:'hektik', fl2:'nuechtern',          rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:1}},
-  {a:'ausschweifend',      wirk:'weitschweifig',fl:'geschwaetzig', fl2:'einzelziel',   rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2}},
-  {a:'pedantisch',         wirk:'genau',        fl:'stumpf', fl2:'amtsschweigen',      rar:2, minMon:2, w:{grass:2,   snow:2,   sand:2,   shadow:2}},
-  {a:'amtlich beglaubigt', wirk:'amtsschimmel', fl:'goldschwund', fl2:'goldzauber',    rar:2, minMon:2, w:{grass:2,   snow:1,   sand:1,   shadow:1}},
-  {a:'verwaltungserfahren',wirk:'aktenkunde',   fl:'stille_zahlen',                    rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:2}},
-  {a:'feierlich',          wirk:'beutelaune',   fl:'blindbalken', fl2:'gruss',         rar:2, minMon:3, w:{grass:1,   snow:1,   sand:1,   shadow:2}},
+  {a:'klebrig',            wirk:'zaeh',         fl:'kurzarm',                          rar:0, minMon:0, w:{grass:6,   snow:1,   sand:2,   shadow:2, sumpf:5, hoehle:2, ruine:1}},
+  {a:'durchgefroren',      wirk:'zaeh',         fl:'langsame_zunge',                   rar:1, minMon:0, w:{grass:0.5, snow:6,   sand:0.2, shadow:1, sumpf:0.5, hoehle:2, ruine:1}},
+  {a:'empört',             wirk:'wucht',        fl:'fehlschlag', fl2:'zerplatzer',     rar:0, minMon:0, w:{grass:3,   snow:2,   sand:2,   shadow:3, sumpf:2, hoehle:2, ruine:2}},
+  {a:'leicht verkohlt',    wirk:'zorn',         fl:'steuer',                           rar:0, minMon:0, w:{grass:1,   snow:0.3, sand:4,   shadow:2, sumpf:0.5, hoehle:1, ruine:2}},
+  {a:'glühend',            wirk:'zorn',         fl:'zutatenschwund', fl2:'blutmagie',  rar:1, minMon:1, w:{grass:1,   snow:0.5, sand:5,   shadow:2, sumpf:0.3, hoehle:1, ruine:1.5}},
+  {a:'störrisch',          wirk:'panzer',       fl:'standfest',                        rar:0, minMon:0, w:{grass:3,   snow:3,   sand:2,   shadow:1, sumpf:2, hoehle:6, ruine:2}},
+  {a:'übermütig',          wirk:'flink',        fl:'zappel',                           rar:0, minMon:0, w:{grass:4,   snow:1,   sand:2,   shadow:3, sumpf:1, hoehle:1, ruine:1}},
+  {a:'zugig',              wirk:'rueckstoss',   fl:'schleuder',                        rar:0, minMon:0, w:{grass:2,   snow:4,   sand:2,   shadow:1, sumpf:1, hoehle:2, ruine:2}},
+  {a:'unangenehm feucht',  wirk:'quelle',       fl:'duenn',                            rar:1, minMon:0, w:{grass:3,   snow:2,   sand:0.4, shadow:1, sumpf:6, hoehle:2, ruine:0.5}},
+  {a:'murmelnd',           wirk:'gemurmel',     fl:'manatot',                          rar:1, minMon:1, w:{grass:2,   snow:2,   sand:1,   shadow:3, sumpf:1, hoehle:2, ruine:6}},
+  {a:'frisch gestempelt',  wirk:'trankgueltig', fl:'hektik', fl2:'nuechtern',          rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:1, sumpf:2, hoehle:1, ruine:1}},
+  {a:'ausschweifend',      wirk:'weitschweifig',fl:'geschwaetzig', fl2:'einzelziel',   rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2, sumpf:1, hoehle:2, ruine:2}},
+  {a:'pedantisch',         wirk:'genau',        fl:'stumpf', fl2:'amtsschweigen',      rar:2, minMon:2, w:{grass:2,   snow:2,   sand:2,   shadow:2, sumpf:1, hoehle:4, ruine:2}},
+  {a:'amtlich beglaubigt', wirk:'amtsschimmel', fl:'goldschwund', fl2:'goldzauber',    rar:2, minMon:2, w:{grass:2,   snow:1,   sand:1,   shadow:1, sumpf:1, hoehle:2, ruine:2}},
+  {a:'verwaltungserfahren',wirk:'aktenkunde',   fl:'stille_zahlen',                    rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:2, sumpf:1, hoehle:1.5, ruine:5}},
+  {a:'feierlich',          wirk:'beutelaune',   fl:'blindbalken', fl2:'gruss',         rar:2, minMon:3, w:{grass:1,   snow:1,   sand:1,   shadow:2, sumpf:1, hoehle:1, ruine:2}},
   // Phase 3: zehn neue Adjektive, je eins pro neuer Wirkung. Fluch ist bewusst die
   // Kehrseite desselben Adjektivs (z.B. macht "gut unterrichtet" die Karte lesbar,
   // aber blendet die Lebensbalken aus).
-  {a:'zehrend',            wirk:'zehrend',         fl:'zerplatzer',       rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:3}},
-  {a:'raunend',            wirk:'beschwoerend',    fl:'blutmagie',        rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:3}},
-  {a:'genügsam',           wirk:'haushaltend',     fl:'steuer',           rar:1, minMon:1, w:{grass:3,   snow:2,   sand:2,   shadow:1}},
-  {a:'aufgeregt',          wirk:'hastig',          fl:'zappel',           rar:0, minMon:0, w:{grass:3,   snow:2,   sand:3,   shadow:2}},
-  {a:'gut gepolstert',     wirk:'wohlgenaehrt',    fl:'standfest',        rar:1, minMon:0, w:{grass:2,   snow:3,   sand:1,   shadow:1}},
-  {a:'magnetisch',         wirk:'anziehend',       fl:'geschwaetzig',     rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2}},
-  {a:'grimmig',            wirk:'einschuechternd', fl:'schnelle_bolzen',  rar:0, minMon:0, w:{grass:2,   snow:2,   sand:2,   shadow:3}},
-  {a:'abgestempelt',       wirk:'abweisend',       fl:'nuechtern',        rar:1, minMon:1, w:{grass:1,   snow:2,   sand:2,   shadow:1}},
-  {a:'randvoll',           wirk:'nachfuellend',    fl:'duenn',            rar:1, minMon:1, w:{grass:2,   snow:1,   sand:1,   shadow:1}},
-  {a:'gut unterrichtet',   wirk:'gut_unterrichtet',fl:'blindbalken',      rar:2, minMon:2, w:{grass:1,   snow:1,   sand:1,   shadow:2}},
+  {a:'zehrend',            wirk:'zehrend',         fl:'zerplatzer',       rar:1, minMon:1, w:{grass:2,   snow:2,   sand:2,   shadow:3, sumpf:3, hoehle:1, ruine:2}},
+  {a:'raunend',            wirk:'beschwoerend',    fl:'blutmagie',        rar:2, minMon:2, w:{grass:1.5, snow:1.5, sand:1.5, shadow:3, sumpf:1, hoehle:1.5, ruine:5}},
+  {a:'genügsam',           wirk:'haushaltend',     fl:'steuer',           rar:1, minMon:1, w:{grass:3,   snow:2,   sand:2,   shadow:1, sumpf:2, hoehle:2, ruine:4}},
+  {a:'aufgeregt',          wirk:'hastig',          fl:'zappel',           rar:0, minMon:0, w:{grass:3,   snow:2,   sand:3,   shadow:2, sumpf:2, hoehle:2, ruine:1}},
+  {a:'gut gepolstert',     wirk:'wohlgenaehrt',    fl:'standfest',        rar:1, minMon:0, w:{grass:2,   snow:3,   sand:1,   shadow:1, sumpf:5, hoehle:3, ruine:1}},
+  {a:'magnetisch',         wirk:'anziehend',       fl:'geschwaetzig',     rar:1, minMon:1, w:{grass:2,   snow:1,   sand:2,   shadow:2, sumpf:1, hoehle:3, ruine:2}},
+  {a:'grimmig',            wirk:'einschuechternd', fl:'schnelle_bolzen',  rar:0, minMon:0, w:{grass:2,   snow:2,   sand:2,   shadow:3, sumpf:2, hoehle:2, ruine:3}},
+  {a:'abgestempelt',       wirk:'abweisend',       fl:'nuechtern',        rar:1, minMon:1, w:{grass:1,   snow:2,   sand:2,   shadow:1, sumpf:5, hoehle:2, ruine:1}},
+  {a:'randvoll',           wirk:'nachfuellend',    fl:'duenn',            rar:1, minMon:1, w:{grass:2,   snow:1,   sand:1,   shadow:1, sumpf:3, hoehle:1, ruine:1}},
+  {a:'gut unterrichtet',   wirk:'gut_unterrichtet',fl:'blindbalken',      rar:2, minMon:2, w:{grass:1,   snow:1,   sand:1,   shadow:2, sumpf:1, hoehle:5, ruine:2}},
 ];
 const ADJ_BY_KEY = {};
 for(const d of ZUTAT_ADJ) ADJ_BY_KEY[d.a] = d;
@@ -3386,6 +3465,10 @@ const player = {
   // kampfT = Sperrfenster für Nüchternheitsgebot, platzCd = Zerplatzer-Bremse,
   // schlagN = Zähler für Fehlschlag.
   stillT:0, hektikT:0, kampfT:0, platzCd:0, schlagN:0,
+  // Monsterkatalog M1: was Gegner am Spieler anrichten können, ohne Leben zu
+  // nehmen. langsamT bremst, haltT hält fest (Klammergriff), trankSperreT
+  // sperrt das Fläschchen (Faulgas, Siegelstaub), sichtT trübt kurz die Sicht.
+  langsamT:0, haltT:0, trankSperreT:0, sichtT:0,
 };
 player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
 
@@ -3566,28 +3649,178 @@ function enterTouchMode(){ touchMode = true; document.body.classList.add('touch'
 // in killMon/drawCorpse, damit kurze CF-Death-Zeilen (4 statt 9 Frames) nicht
 // doppelt so schnell durchlaufen und dann einfrieren; fehlt deathFps, gilt 11.
 const MONDEF = {
-  // --- Grasland (Wald) ---
-  // G3: psc:1.2 ist der Grundwert (PLAYER_SC/1.5), passt CF-Chibi-Proportionen an
-  // den Helden an, siehe MONDEF-Kommentar oben. deathFps aus der 4-Frame-Death-
-  // Zeile der jeweiligen CF-Rigs (4f / 0,8s = 5).
-  slime:     {name:'Chuchu',      art:'Der Formfehler', rig:'slime_small_green', sc:1.15, psc:1.2, deathFps:5, r:11, hp:14, dmg:[2,4],  xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,10]},
-  goblin:    {name:'Grünhaut',    art:'Die Beschwerde', rig:'goblin_maceman', sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[4,7],  xp:16, speed:78, aggro:160, atkCd:0.9, atkRange:26, gold:[6,14]},
-  greenmage: {name:'Waldschamane',art:'Der Widerspruch', rig:'cowling_mage_2', tint:'#2f8f4a', tintA:0.5, sc:1.5, psc:1.2, deathFps:5, r:11, hp:18, dmg:[6,10], xp:26, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[10,20],
-              ranged:true, bolt:{dmg:[6,10], speed:190, color:'#6aff8f', r:7}},
+  // --- Wald / Ablage A ---
+  slime: {name:'Chuchu', art:'Der Formfehler', rig:'slime_small_green', sc:1.15, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A1', stufe:1, biom:'Wald', route:'physisch', typen:'B1'},
+    hp:27, dmg:[2,4], xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,8],
+    res:{physisch:0, feuer:-0.25, eis:0, gift:0.2, magie:0},
+    muster:[{name:'Anlehnen', warn:300, art:'nah'},
+             {name:'Formfehler abgeben', warn:350, art:'kegel', jede:4, reich:44}]},
+  goblin: {name:'Grünhaut', art:'Die Beschwerde', rig:'goblin_maceman', sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A1', stufe:2, biom:'Wald', route:'physisch', typen:'B7'},
+    hp:50, dmg:[3,5], xp:20, speed:78, aggro:95, atkCd:0.9, atkRange:26, gold:[7,15],
+    res:{physisch:0, feuer:-0.2, eis:0.1, gift:0, magie:0.1},
+    hinterhalt:true,
+    muster:[{name:'Lautstark vortragen', warn:280, art:'nah'},
+             {name:'Aus dem hohen Gras', warn:420, art:'nah', wucht:2.0, eroeffnung:true, reich:34}]},
+  ablagestapel: {name:'Wandelnder Ablagestapel', art:'Der Posteingang', rig:'knights_spearman', tint:'#c9b98a', tintA:0.66, sc:1.9, psc:1.2, deathFps:5, r:14,
+    kat:{klasse:'A2', stufe:2, biom:'Wald', route:'physisch', typen:'B2'},
+    hp:125, dmg:[8,12], xp:107, speed:32, aggro:140, atkCd:1.6, atkRange:30, gold:[16,34],
+    res:{physisch:0.35, feuer:-0.4, eis:0.1, gift:0.3, magie:0},
+    muster:[{name:'Umkippen', warn:420, art:'nah', ruhe:0.6},
+             {name:'Loseblattlawine', warn:600, art:'kegel', jede:3, reich:90, ruhe:0.6}]},
+  greenmage: {name:'Waldschamane', art:'Der Widerspruch', rig:'cowling_mage_2', tint:'#2f8f4a', tintA:0.5, sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A3', stufe:3, biom:'Wald', route:'physisch', typen:'B3'},
+    hp:380, dmg:[27,39], xp:251, speed:44, aggro:170, atkCd:1.9, atkRange:130, gold:[34,71],
+    res:{physisch:-0.2, feuer:0, eis:0, gift:0.2, magie:0.4},
+    ranged:true, bolt:{dmg:[27,39], speed:190, color:'#6aff8f', r:7},
+    muster:[{name:'Widerspruchsbolzen', warn:420, art:'fern'},
+             {name:'Anlage zum Schreiben', warn:520, art:'fern', jede:3, wucht:1.35}]},
+  zustellbote: {name:'Der Zustellbote', art:'Der Zustellversuch', rig:'goblin_thief', tint:'#8fa8c9', tintA:0.6, sc:1.45, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A4', stufe:3, biom:'Wald', route:'physisch', typen:'B4'},
+    hp:295, dmg:[33,47], xp:675, speed:126, aggro:170, atkCd:1.1, atkRange:26, gold:[54,113],
+    res:{physisch:0.55, feuer:0.2, eis:-0.3, gift:0, magie:0.2},
+    kiter:{zurueck:0.28, tempo:1.15}, fenster:{alle:6, dauer:1.4, art:'offen'},
+    muster:[{name:'Zustellversuch', warn:380, art:'nah'}]},
 
-  // --- Schnee ---
+  // --- Sumpf / Die Nassablage ---
+  blubberakte: {name:'Blubberakte', art:'Der Rücklauf', rig:'slime_small_blue', tint:'#4e7a3a', tintA:0.6, sc:1.25, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A1', stufe:3, biom:'Sumpf', route:'physisch', typen:'B1+B7'},
+    hp:59, dmg:[5,7], xp:23, speed:46, aggro:90, atkCd:1.3, atkRange:24, gold:[11,23],
+    res:{physisch:0, feuer:-0.3, eis:0.1, gift:0.8, magie:0},
+    hinterhalt:true,
+    muster:[{name:'Schmatzen', warn:300, art:'nah', slow:1.2},
+             {name:'Auftauchen', warn:400, art:'nah', wucht:1.6, eroeffnung:true, reich:28}]},
+  moorbescheid: {name:'Der Moorbescheid', art:'Der durchweichte Bescheid', rig:'skeleton_bowman', tint:'#5a6b4a', tintA:0.62, sc:1.6, psc:1.2, deathFps:5, r:12,
+    kat:{klasse:'A2', stufe:4, biom:'Sumpf', route:'feuer', typen:'B5'},
+    hp:385, dmg:[18,26], xp:161, speed:26, aggro:140, atkCd:2.0, atkRange:30, gold:[31,65],
+    res:{physisch:0.5, feuer:-0.5, eis:0.15, gift:0.9, magie:0.15},
+    muster:[{name:'Durchweichen', warn:450, art:'nah'},
+             {name:'Faulgasstoß', warn:550, art:'kegel', jede:3, reich:70, sperre:4}]},
+  amtsschimmel: {name:'Der Amtsschimmel', art:'Die Fristverlängerung', rig:'angel_2', tint:'#d8e0c0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A3', stufe:5, biom:'Sumpf', route:'physisch', typen:'B4+B6'},
+    hp:560, dmg:[70,100], xp:436, speed:118, aggro:180, atkCd:1.8, atkRange:28, gold:[54,113],
+    res:{physisch:0.15, feuer:-0.3, eis:0.1, gift:0.5, magie:0.3},
+    kiter:{zurueck:0.35, tempo:1.0}, zielRange:150,
+    muster:[{name:'Ausweichschritt', warn:350, art:'nah'},
+             {name:'Wiedervorlage', warn:500, art:'stuetz', jede:3, reich:150, wert:0.12, stand:1.2}]},
+  fristlaeufer: {name:'Der Fristläufer', art:'Die Fristsetzung', rig:'flying_skull', tint:'#9ad6a0', tintA:0.6, alpha:0.72, fly:true, sc:1.5, psc:1.2, deathFps:7, r:11,
+    kat:{klasse:'A4', stufe:5, biom:'Sumpf', route:'physisch', typen:'B3+B4'},
+    hp:475, dmg:[160,230], xp:817, speed:132, aggro:190, atkCd:2.0, atkRange:170, gold:[85,178],
+    res:{physisch:0.5, feuer:0.3, eis:-0.35, gift:0.4, magie:0.1},
+    ranged:true, bolt:{dmg:[160,230], speed:210, color:'#9ad6a0', r:8},
+    muster:[{name:'Fristablauf', warn:650, art:'fern'},
+             {name:'Verwehen', warn:400, art:'zu', jede:3, dauer:1.2}]},
+
+  // --- Frostkamm / Die Eisablage: vom Katalog M1 nicht angefasst -----------
+  // Das Schneeband steht nicht im Monsterkatalog (der Auftrag nannte fünf
+  // andere Biome). Es behält deshalb Werte und Verhalten von vorher und ist
+  // zugleich die Vergleichsprobe: hier sieht man, wie sich das Spiel ohne die
+  // Katalogwerte anfühlt.
   ghost:      {name:'Frostgeist', art:'Der ruhende Antrag', rig:'flying_skull', tint:'#8fd8ff', tintA:0.6, alpha:0.62, fly:true, sc:1.45, psc:1.2, deathFps:7, r:10, hp:20, dmg:[3,6],  xp:18, speed:52, aggro:150, atkCd:1.0, atkRange:24, gold:[6,14]},
   frostgolem: {name:'Frostgolem', art:'Die Sammelakte auf Eis', rig:'knights_swordman', tint:'#4ab5e8', tintA:0.62, sc:2.1, psc:1.2, deathFps:5, r:14, hp:60, dmg:[8,14], xp:34, speed:30, aggro:150, atkCd:1.4, atkRange:30, gold:[14,26]},
   frostmage:  {name:'Eismagier',  art:'Die Rückfrage', rig:'skeleton_mage', tint:'#5ac8ff', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:11, hp:20, dmg:[5,9],  xp:28, speed:42, aggro:180, atkCd:1.8, atkRange:140, gold:[10,22],
               ranged:true, bolt:{dmg:[5,9], speed:220, color:'#7ad6ff', r:7}},
 
-  // --- Wüste ---
-  crab:      {name:'Klippkrabbe', art:'Die Aktenklammer', rig:'cowling_2', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, psc:1.2, deathFps:5, r:12, hp:34, dmg:[5,10], xp:24, speed:36, aggro:140, atkCd:1.1, atkRange:28, gold:[10,20]},
-  scorpion:  {name:'Sandskorpion',art:'Die Nachforderung', rig:'goblin_thief', tint:'#e8c46a', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10, hp:20, dmg:[4,8],  xp:20, speed:88, aggro:170, atkCd:0.8, atkRange:24, gold:[8,16]},
-  sandmage:  {name:'Dünenpriester',art:'Die Verfügung', rig:'cowling_mage_1', tint:'#ff9f2a', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11, hp:22, dmg:[6,11], xp:30, speed:44, aggro:170, atkCd:1.7, atkRange:130, gold:[12,24],
-              ranged:true, bolt:{dmg:[6,11], speed:200, color:'#ffb04a', r:7}},
+  // --- Wüste / Der Brandabschnitt ---
+  skarabaeus: {name:'Papierstaub-Skarabäus', art:'Die Aktenvernichtung', rig:'blue_shroomling', tint:'#c9a227', tintA:0.7, sc:1.0, psc:1.2, deathFps:5, r:9,
+    kat:{klasse:'A1', stufe:4, biom:'Wüste', route:'physisch', typen:'B5'},
+    hp:43, dmg:[7,9], xp:29, speed:92, aggro:150, atkCd:1.0, atkRange:22, gold:[14,29],
+    res:{physisch:0.5, feuer:0.85, eis:-0.4, gift:0.3, magie:0},
+    muster:[{name:'Anrempeln', warn:300, art:'nah'},
+             {name:'Staubwolke', warn:400, art:'kegel', jede:4, reich:40, sicht:1.0}]},
+  crab: {name:'Klippkrabbe', art:'Die Aktenklammer', rig:'cowling_2', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, psc:1.2, deathFps:5, r:12,
+    kat:{klasse:'A2', stufe:5, biom:'Wüste', route:'physisch', typen:'B2'},
+    hp:285, dmg:[18,26], xp:220, speed:36, aggro:140, atkCd:1.4, atkRange:28, gold:[37,78],
+    res:{physisch:0.4, feuer:0.35, eis:-0.35, gift:0.2, magie:0},
+    muster:[{name:'Klammern', warn:400, art:'nah', halt:0.5},
+             {name:'Zangengriff', warn:550, art:'nah', jede:3, wucht:0.7, reich:32, halt:1.0}]},
+  scorpion: {name:'Sandskorpion', art:'Die Nachforderung', rig:'goblin_thief', tint:'#e8c46a', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10,
+    kat:{klasse:'A3', stufe:6, biom:'Wüste', route:'physisch', typen:'B3'},
+    hp:650, dmg:[130,186], xp:469, speed:96, aggro:170, atkCd:2.4, atkRange:28, gold:[64,134],
+    res:{physisch:0.1, feuer:0.3, eis:0.1, gift:0.7, magie:-0.2},
+    folgeschlag:true,
+    muster:[{name:'Nachforderung', warn:450, art:'nah'},
+             {name:'Zweite Nachforderung', warn:350, art:'nah', wucht:0.5, folge:true}]},
+  sandmage: {name:'Dünenpriester', art:'Die Verfügung', rig:'cowling_mage_1', tint:'#ff9f2a', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A4', stufe:7, biom:'Wüste', route:'physisch', typen:'B4+B6'},
+    hp:830, dmg:[211,303], xp:1251, speed:104, aggro:180, atkCd:2.0, atkRange:130, gold:[115,242],
+    res:{physisch:0.45, feuer:0.5, eis:-0.3, gift:0.2, magie:0.2},
+    ranged:true, bolt:{dmg:[211,303], speed:200, color:'#ffb04a', r:7}, kiter:{zurueck:0.3, tempo:1.0},
+    muster:[{name:'Sandwurf', warn:400, art:'fern'},
+             {name:'Verfügung', warn:900, art:'stuetz', jede:3, reich:160, dauer:6, stand:2.4}]},
 
-  // --- Schattenland (Horde) ---
+  // --- Höhle / Die Untere Registratur, Kammerwachen ---
+  bat: {name:'Fledermaus', art:'Der Umlauf', rig:'bat', tint:'#6b5a4a', tintA:0.65, sc:1.0, psc:1.2, deathFps:7, fly:true, r:9,
+    kat:{klasse:'A1', stufe:6, biom:'Höhle', route:'physisch', typen:'B1'},
+    hp:90, dmg:[8,12], xp:29, speed:134, aggro:200, atkCd:0.9, atkRange:20, gold:[20,42],
+    res:{physisch:0, feuer:-0.2, eis:-0.1, gift:0.3, magie:0},
+    reserved:true,
+    muster:[{name:'Vorbeiflug', warn:250, art:'nah'},
+             {name:'Umlaufmappe', warn:300, art:'nah', jede:4, sicht:1.5}]},
+  spider: {name:'Höhlenspinne', art:'Der Querverweis', rig:'blue_shroomling', tint:'#2a0f3a', tintA:0.7, sc:1.35, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A2', stufe:7, biom:'Höhle', route:'physisch', typen:'B2+B7'},
+    hp:460, dmg:[30,44], xp:293, speed:52, aggro:95, atkCd:1.7, atkRange:30, gold:[51,107],
+    res:{physisch:0.3, feuer:-0.3, eis:0.2, gift:0.3, magie:0.15},
+    hinterhalt:true, reserved:true,
+    muster:[{name:'Nachfassen', warn:400, art:'nah', zieht:26},
+             {name:'Fallenlassen', warn:550, art:'nah', wucht:2.0, eroeffnung:true, reich:34}]},
+  sammelmahnung: {name:'Die Sammelmahnung', art:'Die Mahnstufe', rig:'knights_archer', tint:'#c9b98a', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A3', stufe:8, biom:'Höhle', route:'physisch', typen:'B1+B3'},
+    hp:680, dmg:[122,176], xp:491, speed:74, aggro:180, atkCd:2.3, atkRange:30, gold:[83,174],
+    res:{physisch:0.2, feuer:0, eis:0.1, gift:0.4, magie:-0.3},
+    reserved:true,
+    muster:[{name:'Mahnstufe', warn:500, art:'nah'},
+             {name:'Gleichlaut', warn:600, art:'nah', jede:3, gleich:120}]},
+  mage: {name:'Irrlichtmagier', art:'Die Fußnote', rig:'angel_1', tint:'#8fa8c9', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A3', stufe:8, biom:'Höhle', route:'physisch', typen:'B3'},
+    hp:850, dmg:[107,155], xp:427, speed:46, aggro:180, atkCd:2.2, atkRange:140, gold:[83,174],
+    res:{physisch:-0.15, feuer:0.2, eis:0.2, gift:0.3, magie:0.5},
+    ranged:true, bolt:{dmg:[107,155], speed:210, color:'#bcd8ff', r:7}, reserved:true,
+    muster:[{name:'Fußnote', warn:500, art:'fern'},
+             {name:'Verweis', warn:380, art:'fern', jede:3, wucht:0.6}]},
+  golem: {name:'Steingolem', art:'Die Bestandskraft', rig:'knights_spearman', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, r:16,
+    kat:{klasse:'A4', stufe:9, biom:'Höhle', route:'magie', typen:'B2+B5'},
+    hp:1220, dmg:[225,323], xp:1654, speed:28, aggro:150, atkCd:2.6, atkRange:36, gold:[144,302],
+    res:{physisch:0.9, feuer:0, eis:0, gift:0.6, magie:-0.4},
+    reserved:true,
+    muster:[{name:'Faustschlag', warn:700, art:'nah'},
+             {name:'Unanfechtbar', warn:900, art:'ring', jede:3, reich:130, ruhe:3.0}]},
+
+  // --- Ruine / Der Altbestand ---
+  aktenbote: {name:'Der Aktenbote', art:'Der Zuschlag', rig:'cowling_1', tint:'#e0d0a0', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10,
+    kat:{klasse:'A1', stufe:8, biom:'Ruine', route:'physisch', typen:'B1+B6'},
+    hp:135, dmg:[26,38], xp:39, speed:88, aggro:170, atkCd:1.4, atkRange:24, gold:[26,55],
+    res:{physisch:0, feuer:-0.2, eis:0, gift:0.2, magie:0.1},
+    zielRange:120,
+    muster:[{name:'Aktenkante', warn:300, art:'nah'},
+             {name:'Zuschlag', warn:400, art:'stuetz', jede:3, reich:120, dauer:5}]},
+  mummy: {name:'Mumie', art:'Die versiegelte Akte', rig:'skeleton_bowman', tint:'#d8c9a0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A2', stufe:9, biom:'Ruine', route:'physisch', typen:'B2'},
+    hp:550, dmg:[49,71], xp:365, speed:26, aggro:150, atkCd:2.1, atkRange:30, gold:[64,134],
+    res:{physisch:0.4, feuer:-0.45, eis:0.2, gift:0.9, magie:0.1},
+    muster:[{name:'Verschnüren', warn:500, art:'nah', slow:2.0},
+             {name:'Siegelstaub', warn:600, art:'kegel', jede:3, reich:80, sperre:5}]},
+  stalfos: {name:'Knochenritter', art:'Die Dienstvorschrift', rig:'knights_swordman', sc:1.6, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A3', stufe:9, biom:'Ruine', route:'physisch', typen:'B7+B3'},
+    hp:890, dmg:[167,241], xp:675, speed:82, aggro:105, atkCd:2.5, atkRange:34, gold:[92,193],
+    res:{physisch:0.25, feuer:0.1, eis:-0.25, gift:0.6, magie:0.1},
+    hinterhalt:true, folge:{n:3, pause:1.6},
+    muster:[{name:'Dienstweg', warn:450, art:'nah'},
+             {name:'Aus der Nische', warn:600, art:'nah', wucht:1.8, eroeffnung:true, reich:40}]},
+  sammelverfuegung: {name:'Die Sammelverfügung', art:'Der Sammelbescheid', rig:'knights_templar', tint:'#c9a227', tintA:0.55, sc:2.6, psc:1.2, deathFps:5, glow:'#f4d97a', r:18,
+    kat:{klasse:'A4', stufe:10, biom:'Ruine', route:'feuer', typen:'B4+B5'},
+    hp:1240, dmg:[294,424], xp:1857, speed:112, aggro:200, atkCd:2.2, atkRange:30, gold:[159,334],
+    res:{physisch:0.7, feuer:-0.35, eis:0.45, gift:0.6, magie:0.45},
+    bolt:{dmg:[294,424], speed:230, color:'#f4d97a', r:9}, kiter:{zurueck:0.35, tempo:1.0}, zielRange:180,
+    muster:[{name:'Zurückverweisen', warn:400, art:'nah', stoesst:40},
+             {name:'Anhörung', warn:800, art:'fern', jede:3, wucht:1.2},
+             {name:'Aktenmantel', warn:500, art:'mantel', jede:5, dauer:2.5}]},
+
+  // --- Schattenland / Ablage V: vom Katalog M1 nicht angefasst -------------
+  // Die Horde ist kein Biom im Sinne des Katalogs, sondern eine Massenszene mit
+  // eigener Regel (130 gleichzeitig, 500 Kills). Katalogwerte würden sie
+  // unspielbar machen.
   shadow:      {name:'Schattenling',  art:'Der gelöschte Eintrag', rig:'slime_small_blue', tint:'#3a0d5c', tintA:0.72, sc:1.2, psc:1.2, deathFps:5, r:10, hp:12, dmg:[1,3], xp:5,  speed:95, aggro:600, atkCd:1.5, atkRange:22, gold:[1,3]},
   demon:       {name:'Schattenhund',  art:'Die Mahnung', rig:'cowling_1', tint:'#8a0f2a', tintA:0.68, sc:1.5, psc:1.2, deathFps:5, r:12, hp:24, dmg:[3,6], xp:10, speed:110,aggro:600, atkCd:1.2, atkRange:26, gold:[2,6]},
   shadowghost: {name:'Schattenspukt', art:'Das Erinnerungsschreiben', rig:'flying_skull', tint:'#a855f7', tintA:0.62, alpha:0.6, fly:true, sc:1.45, psc:1.2, deathFps:7, r:11, hp:18, dmg:[2,5], xp:8,  speed:120,aggro:600, atkCd:1.3, atkRange:24, gold:[2,6]},
@@ -3595,17 +3828,7 @@ const MONDEF = {
               ranged:true, bolt:{dmg:[5,9], speed:230, color:'#c77dff', r:7}},
   boss:        {name:'Schattenfürst', art:'Fürst Nachtrag', rig:'knights_templar', tint:'#6b1fa8', tintA:0.6, sc:4.5, psc:1.2, deathFps:5, glow:'#c77dff', r:22, hp:1500,dmg:[18,30],xp:500,speed:75, aggro:600, atkCd:1.0, atkRange:50, gold:[300,500], boss:true},
 
-  // --- Reserve für spätere Level: fertig definiert, aktuell in keinem Roster ---
-  // stalfos/bossgeneric: Skeleton_Swordman.png hat kein sauberes 32px-Raster (Gate
-  // in Schritt 0 nicht bestanden, s. tools/sheet-audit.overrides.json _rigTable) —
-  // Ersatz Knights_Swordman bzw. Knights_Archer, wie im G3-Plan als Fallback vorgesehen.
-  mummy:       {name:'Mumie',        art:'Die versiegelte Akte', rig:'skeleton_bowman', tint:'#d8c9a0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:40, dmg:[6,11], xp:30, speed:26, aggro:150, atkCd:1.5, atkRange:28, gold:[12,24]},
-  golem:       {name:'Steingolem',   art:'Die Bestandskraft', rig:'knights_spearman', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, reserved:true, r:16, hp:90, dmg:[10,18],xp:45, speed:26, aggro:150, atkCd:1.6, atkRange:34, gold:[20,40]},
-  spider:      {name:'Höhlenspinne', art:'Der Querverweis', rig:'blue_shroomling', tint:'#2a0f3a', tintA:0.7, sc:1.1, psc:1.2, deathFps:5, reserved:true, r:9,  hp:16, dmg:[3,7],  xp:18, speed:120,aggro:180, atkCd:0.7, atkRange:22, gold:[6,14]},
-  bat:         {name:'Fledermaus',   art:'Der Umlauf', rig:'bat', tint:'#6b5a4a', tintA:0.65, sc:1.0, psc:1.2, deathFps:7, fly:true, reserved:true, r:9, hp:12, dmg:[2,5], xp:12, speed:135,aggro:200, atkCd:0.9, atkRange:20, gold:[3,9]},
-  stalfos:     {name:'Knochenritter',art:'Die Dienstvorschrift', rig:'knights_swordman', sc:1.6, psc:1.2, deathFps:5, reserved:true, r:11, hp:35, dmg:[7,12], xp:32, speed:70, aggro:170, atkCd:1.0, atkRange:28, gold:[14,28]},
-  mage:        {name:'Irrlichtmagier',art:'Die Fußnote', rig:'angel_1', tint:'#8fa8c9', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, reserved:true, r:11, hp:24, dmg:[7,12], xp:34, speed:46, aggro:180, atkCd:1.6, atkRange:140, gold:[14,28],
-              ranged:true, bolt:{dmg:[7,12], speed:210, color:'#bcd8ff', r:7}},
+  // --- Reserve: fertig definiert, in keinem Roster -------------------------
   bossgeneric: {name:'Alter Schrecken', art:'Der Sammelvorgang', rig:'knights_archer', tint:'#c9a227', tintA:0.55, sc:4.0, psc:1.2, deathFps:5, glow:'#f4d97a', reserved:true, boss:true, r:20, hp:1200, dmg:[16,26], xp:400, speed:70, aggro:600, atkCd:1.1, atkRange:48, gold:[250,450]},
 };
 
@@ -3622,6 +3845,40 @@ for(const rig in CF_RIGS){
 }
 const monAnim = (d, name)=> RIG_ANIM[d.rig][name];
 
+// === Monsterkatalog M1: Schadensarten, Resistenzen, Vorwarnzeit ==============
+// Der Katalog (monsterkatalog-stufe-1-10.md) rechnet mit EHP statt HP:
+//     EHP = HP / (1 - Resistenz)
+// Eine negative Resistenz ist eine Verwundbarkeit. Fünf Arten, aber nur vier
+// davon kann der Spieler überhaupt austeilen: physisch aus der Waffe, Feuer,
+// Eis und Magie aus den drei Zauberzweigen. Gift steht in den Tabellen und
+// wirkt bislang nur gegen den Spieler (Trankwirkung sperren), deshalb hängt
+// auch keine einzige Weichstelle eines Resistenz-Gates an Gift, sonst wäre das
+// Gate unlösbar. Das Ultimate kennt keine Resistenz, so wie es schon die
+// Kammerregeln nicht kennt.
+const SCHADENSART = ['feuer', 'eis', 'magie'];              // Index = Zauberzweig, s. SPELL_BRANCHES
+const RES_NULL = {physisch:0, feuer:0, eis:0, gift:0, magie:0};
+function schadensArt(quelle){
+  if(typeof quelle === 'number') return SCHADENSART[quelle] || 'magie';
+  return quelle === 'ult' ? null : 'physisch';
+}
+// Weichstelle = die Art mit der niedrigsten Resistenz. Wird einmal beim Laden je
+// MONDEF-Eintrag gebacken, nicht pro Treffer gesucht: hurtMon liegt im Cleave-Pfad.
+function backeWeichstelle(d){
+  const r = d.res || RES_NULL;
+  let weich = 'physisch', min = Infinity;
+  for(const art in r) if(art !== 'gift' && r[art] < min){ min = r[art]; weich = art; }
+  return weich;
+}
+// Resistenz eines Monsters gegen eine Art, inklusive der beiden Zeitfenster, die
+// der Katalog kennt: das Abgabefenster des Zustellboten (Resistenz fällt auf 0)
+// und der Aktenmantel der Sammelverfuegung (alles außer der Weichstelle auf 0,8).
+function monRes(m, art){
+  if(m.offenT > 0) return 0;                               // B4-Fenster: alles trifft voll
+  const r = (m.def.res || RES_NULL)[art] || 0;
+  if(m.mantelT > 0 && art !== m.def.weich) return Math.max(r, 0.8);
+  return r;
+}
+
 function makeMon(type,x,y){
   const d = MONDEF[type];
   const m = { type, def: d, x, y, r: d.r, hp: d.hp, maxHp: d.hp, aggro: false, atkT: rr(0,0.5), flash: 0, dead: false, kx: 0, ky: 0,
@@ -3629,7 +3886,22 @@ function makeMon(type,x,y){
     animT: rr(0,1), anim:'idle', actT:0, alertT:0, moving:false,
     // W-Groß: Heimatpunkt und Leinen-Zähler für die Aufgabe-Regel weiter unten.
     homeX: x, homeY: y, leashT: 0, stuckT: 0,
-    regel: null, faceAng: 0, gruss: false };   // regel: Kammer-Sonderregel (Phase 2); gruss: Fluch 'Grußpflicht' (Phase 3)
+    regel: null, faceAng: 0, gruss: false,   // regel: Kammer-Sonderregel (Phase 2); gruss: Fluch 'Grußpflicht' (Phase 3)
+    // --- Monsterkatalog M1 -------------------------------------------------
+    // teleT   laufende Vorwarnung in Sekunden, > 0 heißt "holt sichtbar aus"
+    // teleMus Index des angekündigten Musters in def.muster
+    // offenT  Fenster, in dem alle Resistenzen auf 0 fallen (Meisterschaft)
+    // zuT     Unverwundbarkeit (Verwehen), währenddessen prallt alles ab
+    // mantelT Aktenmantel: alles außer der Weichstelle auf 0,8
+    // buffT   Schadensbuff durch einen Unterstützer
+    // ruheT   Erschöpfung nach einem schweren Muster, kein Angriff
+    // haltT   Klammergriff: der Spieler steckt fest
+    // lauert  Hinterhalt: wartet unsichtbar, bis der Spieler nah genug ist
+    // folgeAn nächster Angriff ist der Folgeschlag (zweite Nachforderung)
+    // schlagN Zähler für starre Schlagfolgen (Dienstweg: drei, dann Pause)
+    teleT: 0, teleMus: 0, teleAng: 0, offenT: 0, zuT: 0, mantelT: 0, buffT: 0,
+    ruheT: 0, rueckT: 0, folgeAn: false, eroeffnet: !d.hinterhalt, schlagN: 0,
+    zyklusT: d.fenster && d.fenster.alle ? rr(1, d.fenster.alle) : 0 };
   monsters.push(m);
   if(d.boss) boss=m;
   return m;
@@ -3638,11 +3910,21 @@ function makeMon(type,x,y){
 // Leichen spielen die Sterbe-Animation zu Ende und verschwinden dann.
 const corpses = [];
 
-// Biom-Rosters: je min. 3 Typen (Nahkampf schwach/stark + 1 Fernkämpfer/Magier)
+// Biom-Rosters. Monsterkatalog M1: jedes Katalogbiom trägt drei bis fünf Typen
+// aus mindestens drei Ertragsklassen. Die Häufigkeit steckt in der Wiederholung
+// (so war es hier schon immer: 'ghost','ghost' heißt doppelt so häufig), nur
+// wird sie jetzt als Gewicht geschrieben statt von Hand ausgeschrieben:
+//     Fleiß 5, Geduld 3, Risiko 2, Meisterschaft 1
+// Damit ist jeder zwölfte bis sechzehnte Gegner eines Bandes ein A4, und ein
+// Spaziergang durch den Wald trifft im Schnitt einen Zustellboten alle 16
+// Begegnungen. Ohne diese Staffel stünden 120 Mini-Bosse auf der Karte.
+const mobRoster = w => { const a = []; for(const t in w) for(let i = 0; i < w[t]; i++) a.push(t); return a; };
 const BIOME_MOBS = {
-  snow:  ['ghost','ghost','frostgolem','frostmage'],
-  grass: ['slime','slime','goblin','greenmage'],
-  sand:  ['crab','scorpion','scorpion','sandmage'],
+  ruine: mobRoster({aktenbote:5, mummy:3, stalfos:2, sammelverfuegung:1}),
+  snow:  ['ghost','ghost','frostgolem','frostmage'],          // vom Katalog nicht angefasst
+  grass: mobRoster({slime:5, goblin:5, ablagestapel:3, greenmage:2, zustellbote:1}),
+  sumpf: mobRoster({blubberakte:5, moorbescheid:3, amtsschimmel:2, fristlaeufer:1}),
+  sand:  mobRoster({skarabaeus:5, crab:3, scorpion:2, sandmage:1}),
 };
 
 // W4: die einzigen Monstertypen, auf die ein Dienstauftrag lauten darf. Wird aus
@@ -3655,10 +3937,16 @@ for(const b in BIOME_MOBS) for(const t of BIOME_MOBS[b]){
 }
 // Amtliche Biomnamen aus W1 (phase-w1-terminologie.md), Nominativ für Titel, Dativ für Sätze.
 const BIOM_AMT = {
+  ruine: {nom:'Der Altbestand',     dat:'im Altbestand'},
   snow:  {nom:'Die Eisablage',      dat:'in der Eisablage'},
   grass: {nom:'Ablage A',           dat:'in Ablage A'},
+  sumpf: {nom:'Die Nassablage',     dat:'in der Nassablage'},
   sand:  {nom:'Der Brandabschnitt', dat:'im Brandabschnitt'},
 };
+// Die Untere Registratur ist kein Band, sondern die Kammer. Sie taucht deshalb
+// weder in BIOME_BANDS noch in BIOME_MOBS auf, hat aber eine eigene
+// Loot-Signatur (s. zutatBiome) und einen eigenen amtlichen Namen.
+const HOEHLE_AMT = {nom:'Die Untere Registratur', dat:'in der Unteren Registratur'};
 
 // W4: Weltgarantie. Die Oberwelt wächst nicht nach (placeMonsters läuft genau einmal
 // je Schicht) — ein Aushang auf einen seltenen Typ wie 'crab' träfe ohne diesen Eingriff
@@ -3889,6 +4177,34 @@ function hurtMon(m, d, crit, hitAngle, quelle){
     }
     return;
   }
+  // Monsterkatalog M1: Unverwundbarkeitsfenster. Das Verwehen des Fristlaeufers
+  // ist kein Ausweichen, sondern eine angesagte Auszeit, sie prallt sichtbar ab
+  // und läuft danach in ein offenes Fenster (s. monsterZyklus).
+  if(m.zuT > 0 && quelle !== 'ult'){
+    m.flash = 0.1; m.aggro = true;
+    if(gameT - lastAbprallSfx > 0.3){
+      lastAbprallSfx = gameT;
+      floaters.push({x: m.x, y: m.y - m.r - 10, txt: 'verweht', col:'#9a8a5f', t: 0.9});
+    }
+    return;
+  }
+  // Monsterkatalog M1: Schadensart gegen Resistenz. Gerechnet wird auf dem
+  // Rohschaden, VOR dem Crit, sonst hänge die Wirkung einer Resistenz an der
+  // Crit-Wahrscheinlichkeit statt am Gegner.
+  const art = schadensArt(quelle === undefined ? 'nah' : quelle);
+  let hart = 0;
+  if(art){
+    hart = monRes(m, art);
+    if(hart >= 0.999){
+      m.flash = 0.1; m.aggro = true;
+      if(gameT - lastAbprallSfx > 0.3){
+        lastAbprallSfx = gameT;
+        floaters.push({x: m.x, y: m.y - m.r - 10, txt: 'wirkungslos', col:'#9a8a5f', t: 0.9});
+      }
+      return;
+    }
+    d = Math.max(1, Math.round(d * (1 - hart)));
+  }
   if(crit) d = Math.round(d * 1.7);
   m.hp -= d; m.flash = 0.15; m.aggro = true;
   if(FX.schreck) m.atkT = Math.max(m.atkT, FX.schreck*0.22);       // Wirkung 'Einschüchterung'
@@ -3900,13 +4216,21 @@ function hurtMon(m, d, crit, hitAngle, quelle){
   // Flächenzauber markieren jeden Treffer als Crit — ohne Bremse wären das dutzende
   // Oszillatoren im selben Frame (hörbares Knacken, unnötige Last).
   if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); knRandnotiz('crit'); }
-  if(!CFX.stille) floaters.push({x:m.x+rr(-8,8), y:m.y-m.r-10, txt:String(d), col:crit?'#ffe14d':'#ffffff', t:0.8, big:crit});   // Fluch 'Stille Zahlen'
+  // Die Zahl sagt selbst, ob die gewählte Schadensart taugt: stumpfes Grau bei
+  // Resistenz, Grün bei Verwundbarkeit. Kein Tooltip, keine Tabelle im Spiel.
+  const zahlCol = crit ? '#ffe14d' : (hart >= 0.35 ? '#9a8a5f' : (hart <= -0.1 ? '#6aff8f' : '#ffffff'));
+  if(!CFX.stille) floaters.push({x:m.x+rr(-8,8), y:m.y-m.r-10, txt:String(d), col:zahlCol, t:0.8, big:crit});   // Fluch 'Stille Zahlen'
   if(m.hp <= 0) killMon(m);
 }
 
 // Biom für die Adjektiv-Gewichtung: gleiche Bänder wie genMap/Zonenanzeige.
 function zutatBiome(y){
-  if(kammer) return kammer.biome;      // in der Kammer zählt das Biom der Tür, nicht das y-Band
+  // Monsterkatalog M1: in der Kammer zählt nicht mehr das Band der Tür, sondern
+  // die Untere Registratur selbst. Genau das macht sie zum eigenen Fundort: nur
+  // unter Tage fällt häufig, was Panzerung und Aktenlage trägt. Für die
+  // Aktenfund-Serien B, C und D bleibt kammer.biome maßgeblich (s.
+  // truheOeffnen), die hängen an der Tür, nicht am Zutatenwurf.
+  if(kammer) return 'hoehle';
   if(currentLevel === 2) return 'shadow';
   return biomeAtPx(y);
 }
@@ -4008,7 +4332,24 @@ function killMon(m){
   // MUS.swell() hing bis hierher ohne Aufrufer im Code. Der Bosssieg ist der einzige der drei
   // vorgesehenen Anlässe, der selten genug ist: killMon() läuft hinter dem Tot-Guard in hurtMon()
   // und feuert deshalb höchstens einmal je Boss, der !kammer-Zweig hält den Alten Schrecken raus.
-  if(m.def.boss && !kammer){ el('bossbar').style.display='none'; MUS.swell(); setTimeout(()=>{ if(state==='play') winGame(); }, 2000); }
+  // Die Vertagung (Entscheidung vom 20.08.2026). Solange die Ausfertigung im
+  // Bestand liegt und noch nicht zugestellt werden darf, endet der Kampf-Tod
+  // nicht das Spiel: der Fürst ist der Nachtrag zu Vorgang 1, und ein offener
+  // Vorgang lässt sich nicht erschlagen. Anlass war GW10 — seit die Zustellung
+  // an Akt V hängt, liegen zehn Schichten zwischen "Ausfertigung vollständig"
+  // und "Zustellen wird angeboten", und wer den Fürsten in diesem Fenster legt,
+  // bekam zwingend den kleineren Ausgang. Der Kampf selbst bleibt unverändert,
+  // der Boss stirbt, die Beute fällt; es entfällt allein der Siegbildschirm.
+  // Die Zeilen nennen den Zustand, nicht den Weg dorthin: ein Hinweis auf die
+  // Zustellung wäre ein Questmarker, siehe den Kommentar an winGame().
+  if(m.def.boss && !kammer){
+    el('bossbar').style.display='none'; MUS.swell();
+    if(vorgangVertagt()){
+      floaters.push({x:m.x, y:m.y-46, txt:VERTAGT_ZEILEN[0], col:'#ff0055', t:4.5, big:true});
+      floaters.push({x:m.x, y:m.y-24, txt:VERTAGT_ZEILEN[1], col:'#c9b98a', t:5.0});
+      floaters.push({x:m.x, y:m.y-8,  txt:VERTAGT_ZEILEN[2], col:'#c9b98a', t:5.5});
+    } else setTimeout(()=>{ if(state==='play') winGame(); }, 2000);
+  }
 }
 
 function gainXP(x){
@@ -4049,6 +4390,14 @@ function drinkPotion(){
   if(state !== 'play' || player.potions<=0 || player.dead || player.hp>=derived.maxHp) return;
   // Fluch 'Nüchternheitsgebot': im Kampf gesperrt, außer unter 30% maxHp (Gnadenklausel,
   // sonst wäre Nachheilen im Notfall unmöglich)
+  // Monsterkatalog M1: Faulgasstoß und Siegelstaub sperren das Fläschchen. Anders
+  // als der Fluch 'Nüchternheitsgebot' gibt es hier KEINE Gnadenklausel, genau
+  // deshalb rechnet der Katalog das Gefahrenbudget dieser beiden Gegner ohne
+  // Heilung, und genau deshalb bleiben sie trotzdem im A2-Band.
+  if(player.trankSperreT > 0){
+    floaters.push({x:player.x, y:player.y-30, txt:'Fläschchen verklebt', col:'#9a8a5f', t:1.2});
+    return;
+  }
   if(CFX.nuecht && player.kampfT > 0 && player.hp > derived.maxHp*0.3){
     floaters.push({x:player.x, y:player.y-30, txt:'Nicht im Dienst', col:'#9a8a5f', t:0.8});
     return;
@@ -4238,12 +4587,187 @@ function castSpell(sp, target){                          // target: optionaler W
   updateHUD();
 }
 
-function enemyCast(m){
+function enemyCast(m, wucht){
   const b = m.def.bolt;
   const dir = Math.atan2(player.y - m.y, player.x - m.x);
   sfx.shoot();
   const bs = b.speed * (CFX.bolz ? 1.6 : 1);   // Fluch 'Vorfahrt'
-  enemyBolts.push({x:m.x, y:m.y, vx:Math.cos(dir)*bs, vy:Math.sin(dir)*bs, dmg:rri(b.dmg[0],b.dmg[1]), t:2.4, color:b.color, r:b.r||7});
+  const dmg = Math.max(1, Math.round(rri(b.dmg[0], b.dmg[1]) * (wucht || 1)));
+  enemyBolts.push({x:m.x, y:m.y, vx:Math.cos(dir)*bs, vy:Math.sin(dir)*bs, dmg, t:2.4, color:b.color, r:b.r||7});
+}
+
+// === Monsterkatalog M1: Angriffe mit sichtbarer Vorwarnung ===================
+// Jeder Angriff läuft in zwei Schritten. angriffStarten() waehlt das Muster,
+// setzt die Vorwarnung und nagelt das Monster für deren Dauer fest.
+// angriffAusloesen() trägt erst danach den Schaden ein. Dazwischen liegt genau
+// das Fenster, in dem ein aufmerksamer Spieler weggeht. Der Katalog verlangt
+// mindestens 350 ms bei A3 und A4; nachgemessen wird das nicht hier, sondern
+// von monsterAssert() beim Laden, damit ein Tippfehler in MONDEF nicht erst im
+// Kampf auffällt.
+//
+// Regel des Katalogs, die diesen ganzen Abschnitt trägt: Sondermuster ERSETZEN
+// den Grundtreffer, sie kommen nicht obendrauf. Deshalb bleibt der eingehende
+// Dauerschaden immer schaden_pro_treffer / angriffsintervall, egal wie viele
+// Muster ein Gegner kennt, und deshalb stimmt das Gefahrenbudget im Katalog.
+
+// Wählt den Index des nächsten Musters: Eröffnung aus dem Hinterhalt zuerst,
+// dann ein angesagter Folgeschlag, dann das Sondermuster nach Takt, sonst der
+// Grundtreffer.
+// Reichweite, ab der ein Monster überhaupt ausholt. Ein Gegner mit mehreren
+// Mustern nimmt das weiteste davon: die Sammelverfuegung fängt ihre Anhörung
+// schon auf 180 an, ihren Nahschlag erst auf 30.
+const reichweiteVon = d => d.zielRange || d.atkRange;
+// Erreicht dieses Muster den Spieler auf dieser Entfernung? Fernmuster und
+// Muster ohne Schaden (stuetzen, verwehen, Mantel) immer.
+function musterReicht(m, mus, pd){
+  if(!mus) return true;
+  if(mus.art === 'fern' || mus.art === 'stuetz' || mus.art === 'zu' || mus.art === 'mantel') return true;
+  return pd <= (mus.reich || m.def.atkRange) * 1.15;
+}
+function musterWaehlen(m, pd){
+  const mu = m.def.muster;
+  if(!mu || !mu.length) return 0;
+  m.schlagN++;
+  let wahl = -1;
+  if(m.def.hinterhalt && !m.eroeffnet){
+    m.eroeffnet = true;
+    for(let i = 0; i < mu.length; i++) if(mu[i].eroeffnung){ wahl = i; break; }
+  }
+  if(wahl < 0 && m.folgeAn){
+    m.folgeAn = false;
+    for(let i = 0; i < mu.length; i++) if(mu[i].folge){ wahl = i; break; }
+  }
+  if(wahl < 0) for(let i = 1; i < mu.length; i++){
+    if(mu[i].folge || mu[i].eroeffnung) continue;
+    if(mu[i].jede && m.schlagN % mu[i].jede === 0){ wahl = i; break; }
+  }
+  if(wahl >= 0 && musterReicht(m, mu[wahl], pd)) return wahl;
+  if(musterReicht(m, mu[0], pd)) return 0;
+  for(let i = 1; i < mu.length; i++) if(musterReicht(m, mu[i], pd)) return i;
+  return 0;
+}
+
+function angriffStarten(m, idx, stumm){
+  const mu = m.def.muster;
+  const i = idx === undefined ? musterWaehlen(m, dist(m.x, m.y, player.x, player.y)) : idx;
+  const mus = mu && mu[i];
+  const warn = (mus ? mus.warn : (m.def.warn || 400)) / 1000;
+  m.teleMus = i;
+  m.teleT = warn;
+  m.teleAng = Math.atan2(player.y - m.y, player.x - m.x);   // Kegel merkt sich die Richtung
+  m.atkT = m.def.atkCd;                                      // Takt ab Ausholen, nicht ab Treffer
+  m.actT = warn + 0.25;
+  m.anim = 'attack'; m.animT = 0;
+  // Gleichlaut: dieselbe Ansage bei allen gleichartigen Nachbarn im Umkreis. Der
+  // Dreierschlag der Sammelmahnung ist damit kein Zufall, sondern eine Ansage,
+  // die man aufbrechen kann, indem man sie trennt.
+  if(!stumm && mus && mus.gleich){
+    for(const o of nahListe){
+      if(o === m || o.dead || o.type !== m.type) continue;
+      if(o.teleT > 0 || o.zuT > 0 || o.ruheT > 0) continue;
+      if(sqDist(o.x, o.y, m.x, m.y) > mus.gleich * mus.gleich) continue;
+      angriffStarten(o, i, true);
+    }
+  }
+}
+
+// Unterstützer: heilt oder buffed genau einen Nachbarn, sichtbar am Faden
+// zwischen beiden. Während der Standzeit ist der Unterstützer selbst offen,
+// das ist das Zeitfenster, das sein Konter meint.
+function stuetzeNachbarn(m, mus){
+  let ziel = null, best = Infinity;
+  for(const o of nahListe){
+    if(o === m || o.dead) continue;
+    if(mus.wert && o.hp >= o.maxHp) continue;               // Heilen nur, wo etwas fehlt
+    const dq = sqDist(o.x, o.y, m.x, m.y);
+    if(dq > mus.reich * mus.reich || dq >= best) continue;
+    ziel = o; best = dq;
+  }
+  if(mus.stand) m.offenT = Math.max(m.offenT, mus.stand);
+  if(!ziel) return;
+  if(mus.wert){
+    ziel.hp = Math.min(ziel.maxHp, ziel.hp + ziel.maxHp * mus.wert);
+    floaters.push({x: ziel.x, y: ziel.y - ziel.r - 12, txt: 'Wiedervorlage', col:'#6aff8f', t: 1.0});
+  } else {
+    ziel.buffT = Math.max(ziel.buffT, mus.dauer || 4);
+    floaters.push({x: ziel.x, y: ziel.y - ziel.r - 12, txt: 'Zuschlag', col:'#ff9f4a', t: 1.0});
+  }
+  magicEffects.push({type:'lightning', x1:m.x, y1:m.y - 8, x2:ziel.x, y2:ziel.y - 8, t:0.22});
+}
+
+function angriffAusloesen(m){
+  const d = m.def, mu = d.muster, mus = (mu && mu[m.teleMus]) || null;
+  const art = mus ? mus.art : (d.ranged ? 'fern' : 'nah');
+  const wucht = (mus && mus.wucht || 1) * (m.buffT > 0 ? 1.25 : 1);
+  m.teleT = 0;
+  if(art === 'stuetz'){ stuetzeNachbarn(m, mus); return; }
+  if(art === 'zu'){                                          // Verwehen: angesagte Auszeit
+    m.zuT = mus.dauer || 1.2;
+    return;
+  }
+  if(art === 'mantel'){ m.mantelT = mus.dauer || 2.5; return; }
+  if(art === 'fern'){
+    if(d.bolt) enemyCast(m, wucht);
+    if(mus && mus.ruhe) m.ruheT = mus.ruhe;
+    return;
+  }
+  const pd = dist(m.x, m.y, player.x, player.y);
+  const reich = (mus && mus.reich) || d.atkRange;
+  let trifft;
+  if(art === 'ring')       trifft = pd <= reich;             // rundum, Abstand ist der Konter
+  else if(art === 'kegel') trifft = pd <= reich && angDiff(Math.atan2(player.y - m.y, player.x - m.x), m.teleAng) < 0.8;
+  else                     trifft = pd <= reich * 1.15;      // Nahkampf, kleine Kulanz
+  if(trifft){
+    hurtPlayer(Math.round(rri(d.dmg[0], d.dmg[1]) * wucht));
+    if(mus){
+      if(mus.slow)   player.langsamT     = Math.max(player.langsamT, mus.slow);
+      if(mus.halt)   player.haltT        = Math.max(player.haltT, mus.halt);
+      if(mus.sperre) player.trankSperreT = Math.max(player.trankSperreT, mus.sperre);
+      if(mus.sicht)  player.sichtT       = Math.max(player.sichtT, mus.sicht);
+      if(mus.zieht){                                          // Nachfassen zieht den Spieler heran
+        const a = Math.atan2(m.y - player.y, m.x - player.x);
+        moveEnt(player, Math.cos(a) * mus.zieht, Math.sin(a) * mus.zieht);
+      }
+      if(mus.stoesst){                                        // Zurueckverweisen stoesst weg
+        const a = Math.atan2(player.y - m.y, player.x - m.x);
+        moveEnt(player, Math.cos(a) * mus.stoesst, Math.sin(a) * mus.stoesst);
+      }
+    }
+    // Zweite Nachforderung nur nach einem Treffer, und nie auf sich selbst:
+    // sonst folgte auf die zweite Nachforderung eine dritte, vierte, fünfte,
+    // und der Skorpion schlüge dauerhaft nur noch halb so hart zu.
+    if(d.folgeschlag && !(mus && mus.folge)) m.folgeAn = true;
+  } else {
+    m.folgeAn = false;
+  }
+  if(mus && mus.ruhe) m.ruheT = mus.ruhe;
+  // Starre Schlagfolge (Dienstweg): nach n Schlägen eine Pause, immer gleich.
+  if(d.folge && m.schlagN % d.folge.n === 0) m.ruheT = d.folge.pause;
+  if(d.kiter) m.rueckT = d.kiter.zurueck;                     // Kiter geht sofort wieder auf Abstand
+}
+
+// Zeitfenster eines Monsters, einmal je Frame. Getrennt von der Bewegung, damit
+// ein schlafendes Monster (weit weg, nicht aggriert) dieselben Uhren behält.
+function monsterFenster(m, dt){
+  if(m.offenT > 0) m.offenT -= dt;
+  if(m.mantelT > 0) m.mantelT -= dt;
+  if(m.buffT > 0) m.buffT -= dt;
+  if(m.ruheT > 0) m.ruheT -= dt;
+  if(m.rueckT > 0) m.rueckT -= dt;
+  if(m.zuT > 0){
+    m.zuT -= dt;
+    if(m.zuT <= 0) m.offenT = m.def.fenster && m.def.fenster.offen || 2;   // nach dem Verwehen steht es offen
+  }
+  // Fenster, das sich von selbst öffnet (Abgabefenster des Zustellboten).
+  const f = m.def.fenster;
+  if(f && f.alle){
+    m.zyklusT -= dt;
+    if(m.zyklusT <= 0){
+      m.zyklusT = f.alle;
+      if(f.art === 'zu') m.zuT = f.dauer;
+      else { m.offenT = f.dauer; floaters.push({x:m.x, y:m.y - m.r - 16, txt:'quittiert', col:'#f4d97a', t:0.9}); }
+    }
+  }
 }
 
 // ===========================================================================
@@ -4281,11 +4805,85 @@ const CONFIG = {
   // liegt jetzt mittig, jede Biom-Reise ist also Hin- UND Rückweg. Bei 135 px/s
   // Grundtempo kostet eine Kartenquerung rund 76 Sekunden statt 19.
   schichtDauer: 1500,       // Sekunden pro Schicht (~25 Minuten)
-  goldUebertragAnteil: 0.5, // Anteil des Golds, der am Gürtel die Schicht überlebt. Der Rest
-                            // ist kein Verlust, sondern der Zufluss der Amtskasse (endShift):
-                            // ein Regler, zwei Größen, die einander zu 100 Prozent ergänzen.
+  goldUebertragAnteil: 0.5, // Anteil des Golds, der am Gürtel die Schicht überlebt. Weltbibel
+                            // Kapitel 5, "Gold zur Hälfte", wörtlich: es ist der Bruttoanteil,
+                            // nicht der Anteil an einem Rest.
+  // Der Verwaltungskostenanteil (Entscheidung vom 20.08.2026). Weltbibel Kapitel 5
+  // nennt ihn beim Namen und das Namensregister führt als Spielbegriff dazu "das
+  // verlorene Gold" — in einer Spalte, die sonst durchgehend den Spielbegriff nennt.
+  // Bis hierher gab es keinen Verlust: Gürtel und Amtskasse waren zwei Hälften
+  // desselben Topfes, es überlebten 100 Prozent (siehe F19). Jetzt sind es drei
+  // Empfänger, und die beiden Gold-Flüche (Verwaltungsgebühr, Goldschwund) haben
+  // wieder etwas, das ihnen entgehen kann. Aufteilung bei den Vorgabewerten:
+  // 50 Prozent Gürtel, 30 Prozent Amtskasse, 20 Prozent weg.
+  verwaltungskosten: 0.2,
   zutatenMitnahmeBasis: 5,  // Grund-Kontingent mitnehmbarer Zutaten je Schicht, gezählt in Stücken (endShift teilt Stapel)
 };
+
+// Die Schichtabrechnung als eigene, reine Funktion — endShift() ist mit DOM,
+// Zutatenkontingent und Speicherpfad verwoben und von einem Guard nicht
+// erreichbar. Hier steht nur die Rechnung, und die ist prüfbar.
+//
+// Reihenfolge ist Absicht: der Gürtelanteil zuerst und auf den Bruttowert, weil
+// Weltbibel Kapitel 5 "Gold zur Hälfte" sagt und nicht "die Hälfte von dem, was
+// übrig ist". Der Verwaltungskostenanteil danach, ebenfalls brutto. Die Kasse
+// bekommt, was bleibt — sie ist der Rest und kann deshalb nie negativ werden,
+// auch nicht bei unsinnig gesetzten Reglern. Das Minimum in der zweiten Zeile
+// ist genau dieser Schutz.
+function goldAufteilung(gold){
+  const g = Math.max(0, Math.round(gold));
+  const guertel = Math.min(g, Math.round(g * CONFIG.goldUebertragAnteil));
+  const verwaltung = Math.min(g - guertel, Math.round(g * CONFIG.verwaltungskosten));
+  return { guertel, verwaltung, kasse: g - guertel - verwaltung };
+}
+
+// Guard, Bauform wie die übrigen. Prüft die Erhaltungsgröße, nicht die Formel:
+// dass die drei Empfänger zusammen exakt die Beute ergeben, keiner negativ wird
+// und der Gürtelanteil der Weltbibel-Zusage entspricht. Spiegelt CONFIG und
+// stellt es im finally wieder her.
+function goldAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('Schichtabrechnung:', m, ...r); };
+  const uebertragEcht = CONFIG.goldUebertragAnteil, kostenEcht = CONFIG.verwaltungskosten;
+  try {
+    // (1) Erhaltung und Vorzeichen über einen breiten Wertebereich, inklusive der
+    // ungeraden Beträge, an denen sich Rundungsfehler zeigen.
+    for(const [u, k] of [[0.5, 0.2], [0.5, 0], [1, 0.2], [0, 0], [0.9, 0.9]]){
+      CONFIG.goldUebertragAnteil = u; CONFIG.verwaltungskosten = k;
+      for(const g of [0, 1, 3, 7, 41, 99, 100, 101, 443, 1500, 3851]){
+        const a = goldAufteilung(g);
+        if(a.guertel + a.verwaltung + a.kasse !== g)
+          fehler('Summe der drei Empfänger weicht von der Beute ab', 'gold=', g, a, 'regler=', u, k);
+        if(a.guertel < 0 || a.verwaltung < 0 || a.kasse < 0)
+          fehler('negativer Empfänger', 'gold=', g, a, 'regler=', u, k);
+        if(!Number.isInteger(a.guertel) || !Number.isInteger(a.verwaltung) || !Number.isInteger(a.kasse))
+          fehler('nicht ganzzahlig', 'gold=', g, a);
+      }
+    }
+    // (2) Die Weltbibel-Zusage aus Kapitel 5, an den Vorgabewerten: der Gürtel
+    // trägt die Hälfte des BRUTTOwerts, nicht die Hälfte eines Restes.
+    CONFIG.goldUebertragAnteil = uebertragEcht; CONFIG.verwaltungskosten = kostenEcht;
+    for(const g of [100, 443, 1000]){
+      const a = goldAufteilung(g);
+      if(a.guertel !== Math.round(g * CONFIG.goldUebertragAnteil))
+        fehler('Gürtelanteil ist nicht der Bruttoanteil', 'gold=', g, a);
+      if(a.verwaltung !== Math.round(g * CONFIG.verwaltungskosten))
+        fehler('Verwaltungskostenanteil ist nicht der Bruttoanteil', 'gold=', g, a);
+    }
+    // (3) Der Anteil verlässt das Spiel wirklich: bei gesetztem Regler ist die
+    // Summe aus Gürtel und Kasse echt kleiner als die Beute. Ohne diesen Punkt
+    // liefe der Guard auch dann grün, wenn der Verlust nur umgebucht würde.
+    if(CONFIG.verwaltungskosten > 0){
+      const a = goldAufteilung(1000);
+      if(a.guertel + a.kasse >= 1000) fehler('kein echter Verlust trotz gesetztem Verwaltungskostenanteil', a);
+    }
+  } finally {
+    CONFIG.goldUebertragAnteil = uebertragEcht; CONFIG.verwaltungskosten = kostenEcht;
+  }
+  console.assert(ok, 'Schichtabrechnung: Assertion fehlgeschlagen, siehe Konsole.');
+  return ok;
+}
+goldAssert();
 
 // Amt-Speicherstand laden, bevor irgendetwas (Kammertüren, HUD) danach fragt.
 const AMT_KEY = 'sda_amt_v1';
@@ -4643,7 +5241,7 @@ function knRandnotiz(anlass){
 // auf genau einem von 81 durchgerechneten Raengen erscheint "Herr oder Frau",
 // weil anredeFormen() die kuerzere Klammerform davorsetzt und der 44er-Deckel
 // ueberall sonst zuschlaegt. Das ist eine offene Entscheidung (Reihenfolge der
-// Sprossen drehen aendert den Klang des Spiels), kein uebersehener Fehler.
+// Sprossen drehen ändert den Klang des Spiels), kein uebersehener Fehler.
 // Drei Anlaeufe, nicht zwei, seit W7 die Giesskannen-Sprosse davorgesetzt hat:
 // Anrede samt Schichtzähler, dann die Anrede allein. Die zweite passt immer,
 // die längste Sprosse ohne Zähler ist 43 Zeichen lang — die alte Grundzeile
@@ -4822,7 +5420,18 @@ const KAM_SYM = ['◆','●','▲','■','✦','✚'];
 const KAM_ZWEIG_COL = ['#ff9f4a', '#7ad6ff', '#c77dff'];
 // Sechs der sieben bisher unverdrahteten Monstertypen bekommen hier ihren Dienst.
 // Der siebte, bossgeneric, hängt woanders: Schatzkammer ab Schwierigkeit 5 und Zutaten-Pool ab Tier 4.
-const KAM_WAECHTER = ['mummy','golem','spider','bat','stalfos','mage'];
+// Monsterkatalog M1: die Untere Registratur ist das fünfte Katalogbiom, und sie
+// liegt nicht auf der Karte, sondern hinter jeder Kammertür. Ihre fünf Typen
+// stehen in keinem Bandroster (reserved:true) und sind nach dem Gebührenbescheid
+// an der Tür gestaffelt: Stufe 1 und 2 bekommen Umlauf und Querverweis, ab 3
+// kommen Mahnstufe und Fußnote dazu, die Bestandskraft erst bei 5. Ohne diese
+// Staffel stünde ein Steingolem mit 1220 Leben in einer Stufe-1-Kammer und das
+// Schild vor der Tür wäre gelogen, und ein ehrliches Schild ist in dieser Welt
+// eine kleine Sensation (Weltbibel, Kapitel 3).
+const KAM_WAECHTER = ['bat','spider','sammelmahnung','mage','golem'];
+const KAM_WAECHTER_STUFE = {bat:1, spider:1, sammelmahnung:3, mage:3, golem:5};
+const kamWaechter = diff => KAM_WAECHTER.filter(t => KAM_WAECHTER_STUFE[t] <= diff);
+const kamWaechterZufall = diff => { const p = kamWaechter(diff); return p[Math.floor(Math.random()*p.length)]; };
 
 const kammerTueren = [];           // Türen in der Oberwelt
 let schlossOpen = false;
@@ -4900,10 +5509,10 @@ function setzeKammerTueren(){
 }
 
 // GW16: Die Markierung steht als eigene Funktion da, damit vorgangAssert() genau
-// den Code prueft, der auch im Spiel laeuft — keine Abschrift davon. Sie schreibt
+// den Code prueft, der auch im Spiel läuft, keine Abschrift davon. Sie schreibt
 // ausschliesslich t.adr auf die uebergebene Liste, liest ADRESS_ZEILEN und
 // vorgangHat(), und ruft weder saveKladde() noch den gesiegelten Weltstrom.
-// Damit ist sie in einem Guard aufrufbar, der beim Laden laeuft.
+// Damit ist sie in einem Guard aufrufbar, der beim Laden läuft.
 function markiereAdressTueren(tueren){
   for(const id in ADRESS_ZEILEN){
     const z = ADRESS_ZEILEN[id];
@@ -5052,7 +5661,7 @@ function setzeWaechter(r, n, k){
   for(let i = 0; i < n; i++){
     const tx = rri(r.x0+2, r.x1-2), ty = rri(r.y0+2, r.y1-2);
     if(!walkT(tx, ty)) continue;
-    makeMon(KAM_WAECHTER[Math.floor(Math.random()*KAM_WAECHTER.length)], tileMid(tx), tileMid(ty));
+    makeMon(kamWaechterZufall(k.diff), tileMid(tx), tileMid(ty));
   }
 }
 
@@ -5099,10 +5708,13 @@ function verlasseKammer(){
 
 // --- Belohnung: hängt ausschließlich am Tier des Schildes --------------------
 function rollKammerZutat(tier, biome){
-  const pool = BIOME_MOBS[biome].concat(KAM_WAECHTER);
+  const pool = BIOME_MOBS[biome].concat(KAM_WAECHTER);   // Band plus Untere Registratur
   if(tier >= 4) pool.push('bossgeneric');
   for(let i = 0; i < 40; i++){
-    const z = {noun: pool[Math.floor(Math.random()*pool.length)], adj: pickAdj(biome, Math.min(3, tier))};
+    // Substantiv aus dem örtlichen Pool, Adjektiv aus der Unteren Registratur:
+    // die Kammer trägt ihre eigene Wirkungs-Signatur, egal in welchem Band ihre
+    // Tür steht (Monsterkatalog M1, s. zutatBiome).
+    const z = {noun: pool[Math.floor(Math.random()*pool.length)], adj: pickAdj('hoehle', Math.min(3, tier))};
     if(zutatRar(z) >= tier) return z;
   }
   // Notnagel, damit das Preisschild nie mehr verspricht als die Truhe hergibt:
@@ -5345,7 +5957,7 @@ function bauWelle(mod, r, k){
   for(let i = 0; i < n; i++){
     const tx = rri(r.x0+2, r.x1-2), ty = rri(r.y0+2, r.y1-2);
     if(!walkT(tx, ty)) continue;
-    const m = makeMon(KAM_WAECHTER[Math.floor(Math.random()*KAM_WAECHTER.length)], tileMid(tx), tileMid(ty));
+    const m = makeMon(kamWaechterZufall(k.diff), tileMid(tx), tileMid(ty));
     m.regel = regel; m.faceAng = Math.PI;
     mod.mobs.push(m);
   }
@@ -6527,8 +7139,10 @@ function update(dt){
     const amStrand = T(Math.floor(player.x/TS), Math.floor(player.y/TS)) === G_BEACH;
     setTxt('zone', (inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage (Stufe ' + player.level + ')'   // G5
                  : amStrand      ? '📍 Küste, Am Rand der Tilgung (Stufe ' + player.level + ')'
-                 : zb === 'snow' ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
-                 : zb === 'sand' ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
+                 : zb === 'snow'  ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
+                 : zb === 'sand'  ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
+                 : zb === 'sumpf' ? '📍 Moorbruch, Die Nassablage (Stufe ' + player.level + ')'
+                 : zb === 'ruine' ? '📍 Steinfeld, Der Altbestand (Stufe ' + player.level + ')'
                            : '📍 Grasland, Ablage A (Stufe ' + player.level + ')') + schichtHudSuffix());
   }
   if(schattenlandActive){
@@ -6588,10 +7202,16 @@ function update(dt){
     if(player.stillT > 1.5 && player.hp > derived.maxHp*0.25)
       player.hp = Math.max(derived.maxHp*0.25, player.hp - derived.maxHp*0.015*dt);
   } else player.stillT = 0;
+  if(player.langsamT > 0) player.langsamT -= dt;
+  if(player.haltT > 0) player.haltT -= dt;
+  if(player.trankSperreT > 0) player.trankSperreT -= dt;
+  if(player.sichtT > 0) player.sichtT -= dt;
+  if(player.haltT > 0) player.moving = false;          // Klammergriff: Beine stehen, Waffe nicht
   if(player.moving){
     const len = Math.sqrt(dirX*dirX + dirY*dirY);     // R6/F41
     const hektikMul = player.hektikT > 0 ? 1.8 : 1;   // Fluch 'Hektik': Trank macht kurz eilig
-    moveEnt(player, (dirX / len) * derived.speed * hektikMul * moveMag * dt, (dirY / len) * derived.speed * hektikMul * moveMag * dt);
+    const bremsMul = player.langsamT > 0 ? 0.5 : 1;   // Monsterkatalog M1: Verschnueren, Schmatzen
+    moveEnt(player, (dirX / len) * derived.speed * hektikMul * bremsMul * moveMag * dt, (dirY / len) * derived.speed * hektikMul * bremsMul * moveMag * dt);
     player.faceLeft = dirX < 0;
     player.mvx = dirX; player.mvy = dirY;      // Schieberichtung für Kammerblöcke
   }
@@ -6712,6 +7332,10 @@ function update(dt){
       if(m.slowT > 0) m.slowT -= dt;
       if(m.leashT > 0) m.leashT -= dt;
       m.wanderT -= dt;
+      // Monsterkatalog M1: ein eingefrorenes Fenster wäre ein Fehler, der erst
+      // beim Wiedersehen sichtbar wird, gleiche Begründung wie bei slowT oben.
+      if(m.teleT > 0) m.teleT = 0;              // Ausholen bricht ab, wenn niemand hinsieht
+      monsterFenster(m, dt);
       continue;
     }
 
@@ -6722,6 +7346,11 @@ function update(dt){
     if(m.flash > 0) m.flash -= dt; m.atkT -= dt;
     if(m.slowT > 0) m.slowT -= dt;
     if(m.leashT > 0) m.leashT -= dt;
+    monsterFenster(m, dt);
+    if(m.teleT > 0){                          // Monsterkatalog M1: Vorwarnung läuft
+      m.teleT -= dt;
+      if(m.teleT <= 0) angriffAusloesen(m);
+    }
     const spd = m.def.speed * (m.slowT > 0 ? 0.4 : 1);
 
     const pd = dist(m.x, m.y, player.x, player.y);
@@ -6735,6 +7364,7 @@ function update(dt){
     if(m.aggro && currentLevel === 1 && !kammer){
       if(pd > LEASH_PX || sqDist(m.x, m.y, m.homeX, m.homeY) > LEASH_HOME*LEASH_HOME){
         m.aggro = false; m.leashT = 3; m.stuckT = 0;   // Sperre gegen sofortiges Wiederaufschrecken
+        m.teleT = 0;                                  // eine Ansage ohne Ziel wird nicht nachgeholt
       } else if(pd > m.def.atkRange && Math.abs(m.x-mx0) + Math.abs(m.y-my0) < 0.3){
         // Steckenbleiber: jagt, kommt aber nicht vom Fleck (Küstenkante, Baumriegel).
         m.stuckT += dt;
@@ -6766,6 +7396,11 @@ function update(dt){
         moveEnt(m, m.wanderDx*spd*0.35*dt, m.wanderDy*spd*0.35*dt);
         if(Math.abs(m.wanderDx) > 0.1) m.facingLeft = m.wanderDx < 0;
       }
+    } else if(m.teleT > 0 || m.ruheT > 0 || m.zuT > 0 || m.offenT > 0){
+      // Monsterkatalog M1: wer ausholt, sich erschöpft, verweht oder quittiert,
+      // steht dabei. Ohne diesen Zweig wäre jede Vorwarnung unlesbar, das
+      // Monster liefe während des Ausholens einfach nach.
+      m.facingLeft = player.x < m.x;
     } else if(m.def.ranged){
       const minRange = m.def.atkRange * 0.5;
       if(pd < minRange){
@@ -6777,13 +7412,22 @@ function update(dt){
         moveEnt(m, Math.cos(a)*spd*dt, Math.sin(a)*spd*dt);
         m.facingLeft = player.x < m.x;
       } else if(m.atkT <= 0){
-        m.atkT = m.def.atkCd; m.actT = 0.55; enemyCast(m);
+        angriffStarten(m);
       }
       if(pd < 900) m.facingLeft = player.x < m.x;
+    } else if(m.rueckT > 0){
+      // Kiter: nach jedem Schlag sofort wieder auf Abstand. Er bleibt trotzdem im
+      // Takt seines Angriffsintervalls, der Rückzug ist kürzer als der Takt.
+      // Wer ihn ignoriert, wird also weiter regelmäßig getroffen, nur wer ihm
+      // hinterherläuft, verliert Zeit.
+      const a = Math.atan2(m.y - player.y, m.x - player.x);
+      moveEnt(m, Math.cos(a)*spd*(m.def.kiter.tempo||1)*dt, Math.sin(a)*spd*(m.def.kiter.tempo||1)*dt);
+      m.facingLeft = player.x < m.x;
     } else {
-      if(pd <= m.def.atkRange){
-        if(m.atkT <= 0){ m.atkT = m.def.atkCd; m.actT = 0.45; hurtPlayer(rri(m.def.dmg[0], m.def.dmg[1])); }
-      } else {
+      if(pd <= reichweiteVon(m.def)){
+        if(m.atkT <= 0) angriffStarten(m);
+      }
+      if(pd > m.def.atkRange){
         const a = Math.atan2(player.y - m.y, player.x - m.x);
         // Soft Avoidance für Horde-Verhalten. Läuft seit W-Groß über die Nahliste
         // statt über alle Monster: bei 600 Oberwelt-Mobs wären das 360k
@@ -7392,7 +8036,10 @@ function drawProp(t){
     // Bandgrenze knapp über dem ganzzahligen Kachelwert — deshalb hier bewusst gegen
     // SAND_Y0-1/SNOW_Y1+1 statt gegen biomeAtT(), sonst kippt die letzte Zeile jedes
     // Bands beim Runden auf die falsche Farbe (unverändertes Verhalten von vorher).
-    const tint = t.tint || (ty > SAND_Y0-1 ? '#d9b070' : (ty < SNOW_Y1+1 ? '#dfeeff' : null));
+    // Monsterkatalog M1: fünf Bänder statt drei, deshalb eine kleine Tabelle
+    // statt der zwei Schwellen. ty ist weiterhin der gebrochene Fußpunkt, der
+    // Zugriff rundet ihn selbst, dieselbe Absicht wie vorher, nur mit Namen.
+    const tint = t.tint || FELS_TINT[biomeAtT(ty)] || null;
     const rf = Math.floor(t.phase) % 8;
     drawSprite('cfrock', rf, t.x, t.y+2, 1.8, (t.phase|0) & 1, tint, t.tint ? 0.66 : 0.5);
     return;
@@ -7432,6 +8079,49 @@ function drawMon(m){
     }
     ctx.restore();
   }
+  // === Monsterkatalog M1: Zustände zeigen, nicht erklären ==================
+  // Vorwarnung: ein Ring über dem Kopf, der sich füllt. Bei Flächenmustern
+  // zusätzlich die Fläche selbst, damit Abstandhalten eine Entscheidung mit
+  // sichtbarer Grundlage ist statt Raterei.
+  if(m.teleT > 0){
+    const mus = d.muster && d.muster[m.teleMus];
+    const warn = ((mus ? mus.warn : (d.warn || 400)) / 1000) || 0.4;
+    const p = clamp(1 - m.teleT / warn, 0, 1);
+    const art = mus ? mus.art : 'nah';
+    const col = art === 'stuetz' ? '#6aff8f'
+              : art === 'fern'   ? '#7ad6ff'
+              : (art === 'zu' || art === 'mantel') ? '#c77dff' : '#ff9f4a';
+    ctx.save();
+    if(art === 'ring' || art === 'kegel'){
+      const reich = (mus && mus.reich) || d.atkRange;
+      ctx.globalAlpha = 0.14 + p * 0.20; ctx.fillStyle = col;
+      ctx.beginPath();
+      if(art === 'ring') ctx.ellipse(m.x, m.y + m.r*0.6, reich, reich*0.55, 0, 0, Math.PI*2);
+      else {
+        ctx.moveTo(m.x, m.y + m.r*0.6);
+        ctx.ellipse(m.x, m.y + m.r*0.6, reich, reich*0.55, 0, m.teleAng - 0.8, m.teleAng + 0.8);
+      }
+      ctx.fill();
+    }
+    ctx.globalAlpha = 0.9; ctx.strokeStyle = col; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(m.x, m.y - m.r - 18, 7, -Math.PI/2, -Math.PI/2 + p * Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+  // Offenes Fenster: der Moment, auf den ein A4-Kampf hinausläuft. Gelber Ring
+  // am Boden, so lange er offen steht.
+  if(m.offenT > 0){
+    ctx.save();
+    ctx.globalAlpha = 0.55 + Math.sin(gameT*9)*0.2; ctx.strokeStyle = '#f4d97a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(m.x, m.y + m.r*0.7, m.r+9, (m.r+9)*0.45, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
+  // Aktenmantel und Buff: violettes bzw. oranges Flimmern am Boden.
+  if(m.mantelT > 0 || m.buffT > 0){
+    ctx.save();
+    ctx.globalAlpha = 0.4; ctx.strokeStyle = m.mantelT > 0 ? '#c77dff' : '#ff9f4a'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(m.x, m.y + m.r*0.7, m.r+5, (m.r+5)*0.45, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
   const bob = d.fly ? Math.sin(gameT*3.5 + m.bobPhase) * 4 - 4 : 0;
   const key = monAnim(d, m.anim);
   const fps = m.anim==='idle' ? 7 : (m.anim==='attack' ? 16 : m.anim==='cast' ? 20 : m.anim==='run' ? 12 : 10);
@@ -7440,7 +8130,13 @@ function drawMon(m){
   ctx.save();
   ctx.translate(m.x, m.y + m.r*0.7 + bob);
   ctx.scale(sc * psc * (d.scx||1) * (m.facingLeft ? -1 : 1), sc * psc);
-  if(d.alpha) ctx.globalAlpha = d.alpha;
+  // Verwehte (unverwundbar) und lauernde Gegner sind absichtlich schlecht zu
+  // sehen. Beim Lauernden ist genau das der Hinterhalt, beim Verwehten die Ansage,
+  // dass Schlagen jetzt nichts bringt.
+  let sichtA = d.alpha || 1;
+  if(m.zuT > 0) sichtA *= 0.35;
+  else if(!m.aggro && d.hinterhalt) sichtA *= 0.5;
+  if(sichtA !== 1) ctx.globalAlpha = sichtA;
   if(d.glow){ ctx.shadowColor = d.glow; ctx.shadowBlur = 20; }
   // Trefferblitz als gecachte weiße Tint-Kopie statt ctx.filter — der Filterpfad
   // kostet pro Draw ein eigenes Compositing und trifft bei Cleave dutzende Mobs.
@@ -7738,7 +8434,7 @@ function endShift(reason){
   // ungeteilte Schichtstand ist (Bilanz-Aufträge lesen genau den).
   const auftragBericht = auftragSchichtende();
 
-  const carryGold = Math.round(player.gold * CONFIG.goldUebertragAnteil);
+  const { guertel: carryGold, kasse: abgabe, verwaltung } = goldAufteilung(player.gold);
   const kontingent = CONFIG.zutatenMitnahmeBasis + amt.ausbauten.kontingent*2;
   const sorted = player.pouch.slice().sort((a,b) => zutatRar(b) - zutatRar(a));
   let rest = kontingent, carryPouch = [], eingezogen = 0, zutatenGesamt = 0;
@@ -7749,11 +8445,10 @@ function endShift(reason){
     carryPouch.push({noun:z.noun, adj:z.adj, count:take});
     rest -= take; eingezogen += (z.count - take);
   }
-  // F19: Die Amtskasse bekommt den einbehaltenen Rest, nicht ein zweites Mal denselben
-  // Übertrag. Vorher wurde carryGold doppelt verbucht — am Gürtel und auf der Bank —,
-  // womit 100 Prozent der Beute überlebten, obwohl der Regler 0.5 heißt. Die Summe der
-  // beiden Buchungen ist jetzt genau player.gold.
-  const abgabe = player.gold - carryGold;
+  // F19 gab der Amtskasse den einbehaltenen Rest statt einer zweiten Kopie des
+  // Übertrags. Seit dem 20.08.2026 sind es drei Empfänger statt zweier: der
+  // Verwaltungskostenanteil verlässt das Spiel. Die Summe der drei ist weiterhin
+  // exakt player.gold, das rechnet goldAufteilung() vor und goldAssert() nach.
   pendingCarryGold = carryGold; pendingCarryPouch = carryPouch;
   amt.bankGold += abgabe; amt.schichten++;
 
@@ -7791,7 +8486,7 @@ function endShift(reason){
       Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
       Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
       Überstunden: ${ueberstunden}s<br>${auftragBericht ? '      ' + auftragBericht + '<br>' : ''}
-      Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse)
+      Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse, ${verwaltung} Verwaltungskostenanteil)
     </div>
     ${rangBerichtBlock()}
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
@@ -8037,7 +8732,7 @@ function rangAssert(){
   // gesenkte Gruppe, geaendertes Verhaeltnis blieben unbemerkt. Das hier ist
   // bewusst eine ZWEITE, unabhaengige Abschrift aus 18.3/18.4 — nicht eine
   // Kopie, die das Lesen der Quelle ersetzt, sondern der Gegenpart, gegen den
-  // die Quelle geprueft wird.
+  // die Quelle geprüft wird.
   if(RAENGE.length !== 19) fehler('RAENGE hat nicht 19 Einträge', RAENGE.length);
   const SOLL = [
     ['Monsterangelegenheitenanwärter',        0, 0, false],
@@ -8073,7 +8768,7 @@ function rangAssert(){
   // amt.schichten wird gespiegelt und exakt wiederhergestellt, kein saveAmt() —
   // wörtlich das Idiom aus auftragAssertBrett().
   const echt = amt.schichten;
-  // GW26i: try/finally. Der Guard laeuft auf Skriptebene, nach loadAmt() und vor
+  // GW26i: try/finally. Der Guard läuft auf Skriptebene, nach loadAmt() und vor
   // jedem Speichern. Wirft eine gerufene Funktion mitten im Sweep, blieb
   // amt.schichten auf dem Simulationswert stehen und riss den Skriptrest mit.
   try {
@@ -8090,10 +8785,10 @@ function rangAssert(){
     if(sollWechsel && name === vorher) fehler('Kein Wechsel an Fünferschritt', s);
     if(!sollWechsel && vorher !== null && name !== vorher) fehler('Wechsel außerhalb Fünferschritt', s);
     // GW15: echte Kopplungspruefung. Vorher stand hier s%10===0 && s%5!==0 —
-    // fuer ganze Zahlen die leere Menge, also nie ausloesbar. Geprueft wird
+    // für ganze Zahlen die leere Menge, also nie ausloesbar. Geprüft wird
     // jetzt der tatsaechliche Uebergang: an jedem Zehnerschritt (Jahresgespraech
     // in nachSchicht()) muss auch eine Hebung stattgefunden haben. Ein Umbau von
-    // nachSchicht() auf %12 oder von rangStufe() auf /4 faellt hier auf.
+    // nachSchicht() auf %12 oder von rangStufe() auf /4 fällt hier auf.
     if(s > 0){
       const hebung = rangStufe() > Math.floor((s - 1) / 5);
       if(hebung !== (s % 5 === 0)) fehler('Hebung nicht exakt am Fünferschritt', s);
@@ -8122,7 +8817,7 @@ function rangAssert(){
   // rangZeichnungsbefugt() mit INSIGNIE.zeichnung.wenn() — und ersteres IST
   // per Definition ein Aufruf von letzterem. Eine Sabotage BEIDER Schwellen
   // (30 auf 15, Schluessel auf immer) liess den Guard gruen. Jetzt stehen die
-  // Schwellen aus 18.7 als Zahl da, und der Sweep laeuft in Einerschritten,
+  // Schwellen aus 18.7 als Zahl da, und der Sweep läuft in Einerschritten,
   // damit die Kante selbst getroffen wird und nicht nur ihre Umgebung.
   for(let s = 0; s <= 200; s++){
     amt.schichten = s;
@@ -8157,7 +8852,7 @@ function rangAssert(){
   }
   // GW13: Sweep beginnt bei 0, nicht bei 10. Genau der ausgelassene Wert war der
   // einzige, an dem der Block kaputt war: idx wurde -1 und rendete woertlich
-  // Knoeterich: "undefined". text() prueft jetzt zusaetzlich darauf.
+  // Knoeterich: "undefined". text() prueft jetzt zusätzlich darauf.
   for(let s = 0; s <= 100; s += 10){
     amt.schichten = s;
     text(strip(rangZeremonieBlock()), 'Zeremonie-Block s='+s);
@@ -8459,7 +9154,39 @@ const VORGANG_PUZZLE = [
 // Akt, in dem die Ausfertigung eingesammelt wird. Deckt sich mit Weltbibel
 // Kapitel 9 ("Akt V, Schicht 41 bis 50"). aktStand() steht weit oberhalb (bei
 // den amt-Feldern), kein TDZ.
-const vorgangZustellbar = () => vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
+// Das Modus-Gate (Entscheidung vom 20.08.2026) steht bewusst vorn, im Muster
+// von vorgangAdressAkt(). Die W5-Abnahme sagt seit jeher „CONFIG.schichtModus =
+// false bricht nichts, vorgangZustellbar() bleibt falsch", die Funktion las
+// CONFIG aber nirgends. Materiell stimmte die Zusage trotzdem: ohne
+// vorgangAdressAkt() wird keine Adresskammer markiert und die vierte Zeile fällt
+// nicht, ein reiner Nicht-Schichtmodus-Stand kommt also nie an eine Ausfertigung.
+// Falsch war sie nur für einen aus dem Schichtmodus mitgebrachten Stand, wo
+// kladde.vorgang und amt.schichten persistiert danebenliegen. Dieselbe Klasse
+// hat GW5 für W4 und GW6 für W7 geschlossen; das hier war der letzte Rest.
+const vorgangZustellbar = () => CONFIG.schichtModus && vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
+
+// Die Vertagung. Wer die Ausfertigung im Bestand hat, aber noch nicht zustellen
+// darf, kann den Fürsten nicht mehr über killMon() zum Spielende bringen: ein
+// offener Vorgang lässt sich nicht erschlagen. Der Fürst ist ein Nachtrag, kein
+// Wesen. Ab Akt V ist die Vertagung falsch und der Kampf-Tod wieder ein
+// gültiges Ende — dort ist er eine Entscheidung des Spielers und keine Folge
+// einer Schwelle, die ihm niemand genannt hat.
+//
+// Eigene Funktion statt eines Ausdrucks in der Siegweiche, damit vorgangAssert()
+// genau den Term prüft, der im Spiel läuft, statt einer Abschrift davon (Bauform
+// wie markiereAdressTueren(), GW16). Kein neues Feld, kein neues Prädikat: sie
+// liest ausschließlich die beiden bestehenden.
+// Dasselbe Gate, und es ist hier keine Formalie: ohne den ersten Term wäre die
+// Vertagung im Nicht-Schichtmodus mit mitgebrachtem Vollbestand dauerhaft wahr
+// (vorgangZustellbar() ist dort jetzt immer falsch). Ein solcher Stand hätte
+// dann gar kein Ende mehr, weder Zustellung noch Kampf-Tod. Im Nicht-
+// Schichtmodus läuft der Vorgang nicht, also wird dort auch nichts vertagt.
+const vorgangVertagt = () => CONFIG.schichtModus && vorgangAusfertigung() && !vorgangZustellbar();
+
+// Die drei Zeilen der Vertagung als Tabelle, nicht als Literale in killMon():
+// so laufen sie durch die Formregeln in vorgangAssert() Block 9 wie jeder andere
+// Text dieser Phase. Reihenfolge ist die Anzeigereihenfolge von oben nach unten.
+const VERTAGT_ZEILEN = ['VERTAGT', 'Der Sachverhalt ist erledigt.', 'Der Vorgang nicht.'];
 
 // Eine Schreibstelle, drei Schritte. #ovPanel-Schreibstellen steigen dadurch
 // von sieben auf acht.
@@ -8529,7 +9256,7 @@ function vorgangAssert(){
   };
   const schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
         vorgangEcht = kladde.vorgang, bonusEcht = amt.bonusNachwachsen, craftsEcht = kladde.crafts;
-  try {   // GW26i: fuenf Spiegel, alle im finally
+  try {   // GW26i: fünf Spiegel, alle im finally
 
   // (1) Tabellenform: vier Zeilen, Zeilen 1-3 mit je einem der drei Biome,
   // Zeile 4 ohne Biom. Ankerprüfung auf den zusammengesetzten Wortlaut.
@@ -8542,7 +9269,20 @@ function vorgangAssert(){
       else biomeGesehen[z.biome] = (biomeGesehen[z.biome]||0) + 1;
     } else if(z.biome) fehler('Ablage-V-Adresszeile hat ein Biom', id);
   }
-  for(const b of BIOME_BANDS.map(z=>z.key)) if(biomeGesehen[b] !== 1) fehler('Biom nicht genau einmal vergeben', b, biomeGesehen[b]||0);
+  // Monsterkatalog M1: bis zu den fünf Bändern stand hier "jedes Biom genau
+  // einmal". Das war richtig, solange es genau drei Bänder und genau drei
+  // Kammerzeilen gab, aber es meinte nie "alle Bänder": der Hauptvorgang
+  // schickt den Spieler in DREI Ablagen, nicht in jede. Seit M1 gibt es fünf
+  // Bänder, deshalb steht die Absicht jetzt ausgeschrieben da, statt sich aus
+  // der Bandzahl zu ergeben. Geprüft wird dasselbe wie vorher und eine Spur
+  // mehr: drei verschiedene Biome, jedes existiert, keines doppelt.
+  const bandKeys = BIOME_BANDS.map(z => z.key);
+  for(const b in biomeGesehen){
+    if(bandKeys.indexOf(b) < 0) fehler('Adresszeile in einem Biom, das es nicht gibt', b);
+    if(biomeGesehen[b] !== 1)   fehler('Biom mehr als einmal vergeben', b, biomeGesehen[b]);
+  }
+  if(Object.keys(biomeGesehen).length !== 3)
+    fehler('Nicht drei verschiedene Kammer-Biome', Object.keys(biomeGesehen).join(',') || 'keins');
   if(VORGANG_ANSCHRIFT !== 'An Fürst Nachtrag, zu Händen, persönlich.') fehler('Anschrift-Wortlaut driftet', VORGANG_ANSCHRIFT);
 
   // (2) Vollständigkeit: SERIE_AKT deckt genau die in BLAETTER vorkommenden
@@ -8579,6 +9319,17 @@ function vorgangAssert(){
   CONFIG.schichtModus = false; amt.schichten = 0;
   for(const serie in SERIE_AKT) if(!serieFrei(serie)) fehler('schichtModus=false sperrt eine Serie', serie);
   if(vorgangAdressAkt()) fehler('schichtModus=false, aber vorgangAdressAkt() ist wahr');
+  // Die Zusage wörtlich, seit dem Modus-Gate vom 20.08.2026 auch belegbar: ein
+  // aus dem Schichtmodus mitgebrachter Vollbestand stellt hier nicht zu und
+  // vertagt auch nichts. Vorher las vorgangZustellbar() CONFIG nirgends, die
+  // Zeile hätte diesen Punkt gar nicht prüfen können.
+  kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+  for(const s of [40, 60]){
+    amt.schichten = s;
+    if(vorgangZustellbar()) fehler('schichtModus=false, aber vorgangZustellbar() ist wahr', s);
+    if(vorgangVertagt())    fehler('schichtModus=false, aber vorgangVertagt() ist wahr', s);
+  }
+  kladde.vorgang = vorgangEcht;
   CONFIG.schichtModus = modusEcht; amt.schichten = schichtenEcht;
 
   // (5) Bestandsprädikate, alle 16 Teilmengen. findeAdresszeile() darf hier nie
@@ -8619,7 +9370,17 @@ function vorgangAssert(){
   // Die frühere Kreuzproduktzählung konnte gar nicht anders als aufgehen: bei
   // zwei fixierten Faktoren ist genau eine von vier Kombinationen wahr, egal was
   // die Funktion tut.
-  let zustellbarCount = 0;
+  //
+  // Derselbe Sweep trägt seit dem 20.08.2026 die Vertagung. Ihr Sollwert ist
+  // bewusst in anderen Größen ausgeschrieben als ihre Definition: die Funktion
+  // liest rangZeichnungsbefugt() und aktStand(), der Sollwert hier nur den
+  // Schichtwert. Verschöbe jemand eine der beiden Schwellen, bliebe die
+  // Definition mit sich selbst einig und dieser Punkt fiele trotzdem.
+  // Der Modus wird für den Sweep erzwungen, Muster langAssert()/GW6: seit dem
+  // Modus-Gate vom 20.08.2026 hinge der ganze Sollwertblock sonst am echten
+  // CONFIG-Wert und liefe bei schichtModus=false ins Leere, statt zu fallen.
+  CONFIG.schichtModus = true;
+  let zustellbarCount = 0, vertagtCount = 0;
   for(const ausf of [false, true]){
     kladde.vorgang = ausf ? {1:true, 2:true, 3:true, 4:true} : {};
     for(const s of [0, 30, 39, 40]){
@@ -8627,10 +9388,14 @@ function vorgangAssert(){
       const soll = ausf && s >= 40;
       if(vorgangZustellbar() !== soll) fehler('vorgangZustellbar() weicht vom Sollwert ab', 'ausfertigung=', ausf, 'schichten=', s);
       if(vorgangZustellbar()) zustellbarCount++;
+      const sollVertagt = ausf && s < 40;
+      if(vorgangVertagt() !== sollVertagt) fehler('vorgangVertagt() weicht vom Sollwert ab', 'ausfertigung=', ausf, 'schichten=', s);
+      if(vorgangVertagt()) vertagtCount++;
     }
   }
   if(zustellbarCount !== 1) fehler('vorgangZustellbar() nicht genau einmal wahr im Sweep', zustellbarCount);
-  kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht;
+  if(vertagtCount !== 3) fehler('vorgangVertagt() nicht genau dreimal wahr im Sweep', vertagtCount);
+  kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht; CONFIG.schichtModus = modusEcht;
 
   // (8) Aktzeilen-Anker: die drei geänderten Zeilen stehen an den erwarteten
   // Indizes von lisbeth.akt/noergel.akt.
@@ -8646,6 +9411,8 @@ function vorgangAssert(){
   VORGANG_JAHRES.forEach((e,i) => { text(e.zwirn, 'Jahres-Zwirn '+i); if(e.hinweis) text(e.hinweis, 'Jahres-Hinweis '+i); });
   text(VORGANG_JAHRES_WEITER, 'Jahres-Weiter');
   VORGANG_PUZZLE.forEach((p,i) => { text(p.text, 'Puzzle '+i); if(p.sonst) text(p.sonst, 'Puzzle-Sonst '+i); });
+  VERTAGT_ZEILEN.forEach((l,i) => text(l, 'Vertagung '+i));
+  if(VERTAGT_ZEILEN.length !== 3) fehler('VERTAGT_ZEILEN hat nicht drei Zeilen', VERTAGT_ZEILEN.length);
 
   // (10) Gerenderte Blöcke, HTML-gestrippt — Muster rangAssert().
   const strip = html => html.replace(/<[^>]+>/g, ' ');
@@ -8672,7 +9439,7 @@ function vorgangAssert(){
   // war die gesamte W5-Verdrahtung von keinem Guard erfasst — die Abnahmezeilen
   // zu Markierung und selbstheilendem Schild stuetzten sich auf eine einmalige
   // Konsolensitzung, und W7 hat drawKammerTuer() seither wieder angefasst.
-  // Geprueft werden die Invarianten, die unabhaengig davon gelten, welche Tuer
+  // Geprüft werden die Invarianten, die unabhaengig davon gelten, welche Tür
   // der Zufall trifft.
   for(let maske = 0; maske < 16; maske++){
     kladde.vorgang = {};
@@ -8694,7 +9461,7 @@ function vorgangAssert(){
       if(z.biome !== t.biome) fehler('Adresszeile im falschen Biom markiert', t.adr, z.biome, t.biome);
       if(vorgangHat(t.adr)) fehler('bereits gefundene Adresszeile erneut markiert', t.adr, maske);
       // Das Sonderschild sondert genau dann, wenn die Zeile noch fehlt — die
-      // Selbstheilung aus dem Phasendokument. Auf einer markierten Tuer muss
+      // Selbstheilung aus dem Phasendokument. Auf einer markierten Tür muss
       // sie in dieser Maske also greifen.
       if(!(t.adr && !vorgangHat(t.adr))) fehler('Sonderschild greift auf markierter Tuer nicht', t.adr, maske);
     }
@@ -8905,7 +9672,7 @@ function auftragWuerfeln(){
     let frei = AUFTRAG_POOLS[st].filter(k => !genommen[k]
                    && (!AUFTRAG_TYPEN[k].wenn || AUFTRAG_TYPEN[k].wenn()));
     // GW26j: Rueckfall auf den ungefilterten Pool. Heute strukturell unmoeglich,
-    // weil bilanz exklusiv in Pool 2 liegt und nur reise ein wenn() traegt. Ein
+    // weil bilanz exklusiv in Pool 2 liegt und nur reise ein wenn() trägt. Ein
     // zusaetzliches Gate machte daraus rri(0,-1) -> frei[0] -> undefined ->
     // TypeError beim Laden, also einen Totalausfall statt einer Guard-Meldung.
     if(!frei.length) frei = AUFTRAG_POOLS[st].slice();
@@ -9315,7 +10082,7 @@ LANGVORGAENGE.gutachter = {
     // Höchstens eine Kammer je Schicht, sonst wäre die Buchführung in einer
     // einzigen Schicht erledigt und "über mehrere Schichten" eine Behauptung.
     // GW26f: langSchicht ist Laufzeitzustand und ueberlebt keinen Reload,
-    // waehrend kladde.lang persistiert — ein Neuladen mitten in der Schicht gibt
+    // während kladde.lang persistiert, ein Neuladen mitten in der Schicht gibt
     // also einen zweiten Kammer-Slot. Bewusst hingenommen, gedeckelt durch
     // kam < 3. Gleiche Toleranz wie beim Nachbarstrang dorffest, die dort schon
     // vermerkt war und hier fehlte.
@@ -9458,7 +10225,7 @@ function langAssert(){
   CONFIG.schichtModus = true;
   // GW26i: try/finally. Die Guards setzen sechs Spiegel und stellten sie erst
   // nach allen Schleifen zurueck. Wirft eine gerufene Funktion, blieben sie
-  // korrumpiert stehen — und weil der Guard auf Skriptebene laeuft, nach
+  // korrumpiert stehen, und weil der Guard auf Skriptebene läuft, nach
   // loadAmt() und vor jedem Speichern, riss das den Rest des Skripts mit.
   try {
 
@@ -9479,7 +10246,7 @@ function langAssert(){
   // auslösen und den echten Spielstand überschreiben. Er ruft d.schritt()
   // direkt und schreibt auf den Spiegel. ACHTUNG: rein sind diese schritt()
   // nicht alle — dorffest und gutachter schreiben langSchicht. Punkt (3) unten
-  // setzt das Flag deshalb zurueck und prueft ueber langEreignis().
+  // setzt das Flag deshalb zurueck und prueft über langEreignis().
   // Dieselbe Warnung trägt vorgangAssert() für findeAdresszeile().
   CONFIG.schichtModus = true;
   const rohEnde = {};   // der erreichte Endzustand je Strang, für (10)
@@ -9540,8 +10307,8 @@ function langAssert(){
       }
       // GW18: bestand() liest bei probezeit und gutachter den ROHWERT aus
       // kladde.lang, nicht die uebergebene Stufe. Mit leerem kladde.lang sah es
-      // also immer 0 — geprueft wurden im Spiel unmoegliche Kombinationen,
-      // waehrend die realen Zwischenstrings ("4 von 6 Bemerkungen gesammelt,
+      // also immer 0, geprüft wurden im Spiel unmoegliche Kombinationen,
+      // während die realen Zwischenstrings ("4 von 6 Bemerkungen gesammelt,
       // 3 vorgelegt") nie erzeugt wurden. Jetzt wird der Rohwert mitgesetzt.
       if(d.bestand){
         const vorher = kladde.lang[k];
@@ -9649,6 +10416,151 @@ const LANG_PROBEN = {
 langAssert();
 vorgangAssert();
 anredeAssert();
+
+// ===========================================================================
+//  MONSTERKATALOG M1: der achte Guard
+//
+//  Das Katalogdokument (monsterkatalog-stufe-1-10.md) rechnet seine Zahlen aus
+//  einem Referenzspieler aus, der aus recalc()/hurtPlayer()/drinkPotion()
+//  abgeleitet ist. Dieser Guard rechnet dieselbe Probe im laufenden Spiel nach.
+//  Der Unterschied ist der Punkt: das Dokument rechnet mit einer Abschrift der
+//  Formeln, dieser Guard mit den Formeln selbst. Wer recalc() ändert, sieht
+//  hier sofort, welche Gegner aus ihrem Band gefallen sind, nicht erst, wenn
+//  sich jemand über einen Kampf wundert.
+//
+//  Geprüft wird je Gegner mit kat-Feld:
+//    Kampfzeit  A1 1-3 s, A2 8-15 s, A3 12-25 s, A4 20-40 s
+//    XP je effektiver Kampfsekunde  A1 1,0 : A2 1,4 : A3 2,0 : A4 2,6
+//    Gefahrenbudget  A1 über 30 s, A2 15-25 s, A3 6-10 s, A4 3-6 s
+//    Vorwarnung  mindestens 350 ms bei A3 und A4, mindestens 250 ms sonst
+//    dazu: Weichstelle erreichbar, Zutat vorhanden, Muster vorhanden.
+//
+//  Der Referenzspieler wird nicht abgeschrieben, sondern gebaut: Spielerzustand
+//  sichern, Referenzausrüstung einsetzen, recalc() rufen, messen, im finally
+//  alles zurücksetzen. Dieselbe Spiegel-Technik wie in auftragAssertBrett()
+//  und vorgangAssert().
+// ===========================================================================
+const KAT_TTK  = {A1:[1,3],   A2:[8,15],  A3:[12,25], A4:[20,40]};
+const KAT_GEF  = {A1:[30,1e9],A2:[15,25], A3:[6,10],  A4:[3,6]};
+const KAT_XP   = {A1:1.0, A2:1.4, A3:2.0, A4:2.6};
+const KAT_WARN = {A1:250, A2:250, A3:350, A4:350};
+// Referenzausrüstung je Sollstufe: Waffenaffix, Rüstungswert, Heilung je Minute.
+// Ein Fund­fenster, kein Optimum, genau die Ausrüstung, die ein Spieler auf
+// dieser Stufe üblicherweise trägt.
+const KAT_REF = {
+  1:[2,0,60],  2:[2,3,60],   3:[2,5,60],   4:[5,10,90], 5:[5,10,90],
+  6:[5,13,90], 7:[5,13,90],  8:[8,17,120], 9:[8,17,120], 10:[8,20,120],
+};
+// Zauberleistung, manabegrenzt: 8 Mana je Sekunde, Funke 16 Schaden für 5 Mana.
+const KAT_ZAUBER_DPS = (8 / SPELLS[0].mana) * SPELLS[0].dmg;
+const katBasisrate = stufe => 5 * Math.pow(stufe, 0.6);
+// Mittlere Wucht eines Angriffs über einen langen Zyklus. Sondermuster ersetzen
+// den Grundtreffer, aber sie schlagen nicht gleich hart: ein Unterstützer heilt
+// statt zu treffen, ein Verwehen macht gar nichts, ein Folgeschlag trägt die
+// halbe Wucht. Wer das Gefahrenbudget mit der reinen Grundwucht rechnet,
+// verspricht einen Druck, den der Gegner nie ausübt. Deshalb spielt diese
+// Funktion genau die Auswahl nach, die musterWaehlen() im Kampf trifft.
+function katWuchtSchnitt(d){
+  const mu = d.muster || [];
+  if(!mu.length) return 1;
+  const wucht = p => (p.art === 'stuetz' || p.art === 'zu' || p.art === 'mantel') ? 0 : (p.wucht || 1);
+  let summe = 0, schlag = 0, folgeDran = false;
+  for(let i = 0; i < 60; i++){
+    schlag++;
+    let wahl = null;
+    if(folgeDran){
+      for(const p of mu) if(p.folge){ wahl = p; break; }
+      folgeDran = false;
+    }
+    if(!wahl) for(let j = 1; j < mu.length; j++){
+      if(mu[j].folge || mu[j].eroeffnung) continue;
+      if(mu[j].jede && schlag % mu[j].jede === 0){ wahl = mu[j]; break; }
+    }
+    if(!wahl) wahl = mu[0];
+    const w = wucht(wahl);
+    summe += w;
+    if(d.folgeschlag && w > 0 && !wahl.folge) folgeDran = true;
+  }
+  return summe / 60;
+}
+
+function monsterAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('Monsterkatalog:', m, ...r); };
+  // Spiegel: alles, was recalc() liest und was hier verändert wird.
+  const echt = {level: player.level, skills: player.skills, equip: player.equip, hp: player.hp};
+  try {
+    for(const typ in MONDEF){
+      const d = MONDEF[typ];
+      if(!d.kat) continue;                       // Frostkamm, Schattenland, Reserve: nicht im Katalog
+      const k = d.kat, stufe = k.stufe, ref = KAT_REF[stufe];
+      if(!ref){ fehler('Sollstufe ausserhalb 1 bis 10', typ, stufe); continue; }
+      if(!KAT_TTK[k.klasse]){ fehler('unbekannte Ertragsklasse', typ, k.klasse); continue; }
+      if(!ZUTAT_NOUNS[typ]) fehler('Katalogtyp ohne Zutat, Sammlung waere unerfuellbar', typ);
+      if(!d.muster || !d.muster.length) fehler('Katalogtyp ohne Angriffsmuster', typ);
+      if(!d.res) fehler('Katalogtyp ohne Resistenzen, EHP waere HP', typ);
+
+      // --- Referenzspieler dieser Sollstufe bauen -------------------------
+      player.level = stufe;
+      player.skills = {str: stufe-1, vit: stufe-1, agi: 0, int: 0};
+      player.equip = {
+        weapon: {base: BASES[1], rar: 1, affixes: [{k:'dmg', v: ref[0], def: AFFIXES[0]}], name:'Referenzklinge'},
+        armor:  ref[1] ? {base: {t:'armor', name:'Referenzpanzer', tier:1, armor: ref[1]}, rar:0, affixes: []} : null,
+        shield: null, boots: null,
+      };
+      recalc();
+      const dps = ((derived.dmgMin + derived.dmgMax) / 2) * (1 + derived.crit * 0.7) * derived.aps;
+      const minderung = Math.min(0.6, derived.armor / (derived.armor + 30));
+      const heilung = d.muster && d.muster.some(x => x.sperre) ? 0 : ref[2] / 60;
+
+      // --- Kampfzeit auf der Sollroute -------------------------------------
+      const res = d.res ? (d.res[k.route] || 0) : 0;
+      if(res >= 0.999){ fehler('Sollroute ist wirkungslos, der Gegner waere unbesiegbar', typ, k.route); continue; }
+      const ehp = d.hp / (1 - res);
+      const ttk = ehp / (k.route === 'physisch' ? dps : KAT_ZAUBER_DPS);
+      const tb = KAT_TTK[k.klasse];
+      if(ttk < tb[0] * 0.94 || ttk > tb[1] * 1.06)
+        fehler('Kampfzeit ausserhalb des Bandes', typ, k.klasse, ttk.toFixed(1) + ' s', 'soll ' + tb[0] + ' bis ' + tb[1]);
+
+      // --- Gefahrenbudget ---------------------------------------------------
+      const dmgAvg = (d.dmg[0] + d.dmg[1]) / 2;
+      const dpsEin = dmgAvg * katWuchtSchnitt(d) * (1 - minderung) / d.atkCd;
+      const netto = dpsEin - heilung;
+      const budget = netto > 0 ? derived.maxHp / netto : Infinity;
+      const gb = KAT_GEF[k.klasse];
+      if(budget < gb[0] * 0.94 || budget > gb[1] * 1.06)
+        fehler('Gefahrenbudget ausserhalb des Bandes', typ, k.klasse,
+               (budget === Infinity ? 'unbegrenzt' : budget.toFixed(1) + ' s'), 'soll ' + gb[0] + ' bis ' + (gb[1] > 1e8 ? 'unbegrenzt' : gb[1]));
+
+      // --- Ertragsleiter ----------------------------------------------------
+      const xpIst = d.xp / ttk, xpSoll = KAT_XP[k.klasse] * katBasisrate(stufe);
+      if(Math.abs(xpIst - xpSoll) / xpSoll > 0.10)
+        fehler('XP je Kampfsekunde weicht ab', typ, xpIst.toFixed(2), 'soll ' + xpSoll.toFixed(2));
+
+      // --- Vorwarnung -------------------------------------------------------
+      for(const mus of (d.muster || [])){
+        if(!(mus.warn >= KAT_WARN[k.klasse]))
+          fehler('Vorwarnung zu kurz', typ, mus.name, mus.warn + ' ms', 'mindestens ' + KAT_WARN[k.klasse]);
+      }
+      // --- Weichstelle ------------------------------------------------------
+      // Ein Resistenz-Gate ohne erreichbare Weichstelle wäre eine Sackgasse:
+      // Gift kann der Spieler nicht wirken, also darf keine Weichstelle dort liegen.
+      if(d.weich === 'gift') fehler('Weichstelle liegt auf Gift, der Spieler hat keine Giftquelle', typ);
+      if(k.typen && k.typen.indexOf('B5') >= 0 && d.res[d.weich] > -0.05)
+        fehler('Resistenz-Gate ohne Verwundbarkeit', typ, d.weich, d.res[d.weich]);
+    }
+  } finally {
+    player.level = echt.level; player.skills = echt.skills; player.equip = echt.equip;
+    recalc();
+    player.hp = echt.hp;
+  }
+  if(ok) console.log('Monsterkatalog: ' + Object.keys(MONDEF).filter(t => MONDEF[t].kat).length +
+                     ' Gegner geprueft, alle Baender eingehalten.');
+  return ok;
+}
+// Weichstelle einmal backen, danach ist sie ein Feld wie jedes andere.
+for(const t in MONDEF) if(MONDEF[t].res) MONDEF[t].weich = backeWeichstelle(MONDEF[t]);
+monsterAssert();
 
 // ===========================================================================
 //  W4: Trichter. Acht bestehende Fundstellen melden, WAS passiert ist; was das
@@ -9807,8 +10719,8 @@ const DIENSTBLATT = [
       ['Verschlossene Vorgänge', 'Kammern sind versiegelt. Am Schild stehen Aufwand und Ertrag. Das Schild ist ehrlich.'],
       ['Aushang', 'Das Schwarze Brett hängt je Schicht einen Auftrag aus. Annahme freiwillig, Abbruch jederzeit.'],
       ['Dienstschluss', 'Die Schicht endet durch die Uhr oder unsanft. Beides heißt Feierabend. Es geht niemand verloren.'],
-      ['Amtsvermögen', 'Beute zur Hälfte, Bestand bis zum Kontingent, Wissen vollständig. Die Kladde bleibt im Haus.'],
-      ['Qualifikation', 'Stufe, Zauber und Ausrüstung enden mit der Schicht. Persönliches ist nicht übertragbar.'],
+      ['Amtsvermögen', 'Beute zur Hälfte an den Gürtel, ein Fünftel Verwaltungskostenanteil, der Rest an die Amtskasse. Bestand bis zum Kontingent.'],
+      ['Qualifikation', 'Stufe, Zauber und Ausrüstung enden mit der Schicht. Die Kladde bleibt im Haus, Wissen ist Amtsvermögen.'],
     ],
     // Bedienung ist Bedienungstext, keine Figurenrede: hier sind Tasten erlaubt
     // und noetig. Die Regel "hoechstens eine Taste pro Hinweis" gilt fuer
@@ -9972,8 +10884,16 @@ function dienstAssert(){
 
   // (2) Text gegen Code. Beide Zahlen stehen im Vordruck als Wort und im Code
   // als Zahl, und nur der Guard verbindet die beiden Orte.
-  if(CONFIG.goldUebertragAnteil !== 0.5)
-    fehler('Blatt 2 sagt "zur Hälfte", CONFIG.goldUebertragAnteil ist', CONFIG.goldUebertragAnteil);
+  // Über goldAufteilung() gelesen, nicht über CONFIG: das ist der Weg, den die
+  // Schichtabrechnung wirklich geht, und seit dem Verwaltungskostenanteil sind
+  // es drei Empfänger statt zwei. Blatt 2 Punkt 8 nennt zwei davon als Zahl.
+  const auf = goldAufteilung(100);
+  if(auf.guertel !== 50)
+    fehler('Blatt 2 Punkt 8 sagt "zur Hälfte an den Gürtel", goldAufteilung(100) liefert', auf.guertel);
+  if(auf.verwaltung !== 20)
+    fehler('Blatt 2 Punkt 8 sagt "ein Fünftel Verwaltungskostenanteil", goldAufteilung(100) liefert', auf.verwaltung);
+  if(auf.kasse !== 100 - auf.guertel - auf.verwaltung)
+    fehler('Blatt 2 Punkt 8 sagt "der Rest an die Amtskasse", die Kasse bekommt aber', auf.kasse);
   const s0 = rangStufe();   // rangStufe() liest amt.schichten, deshalb ueber die Differenz geprueft
   if(RAENGE.length < 2 || rangNameVon(1) === rangNameVon(0))
     fehler('Blatt 3 verspricht eine Hebung nach Schicht 5, RAENGE liefert dieselbe Bezeichnung');

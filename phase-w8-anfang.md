@@ -4,7 +4,7 @@ Bauabschnitt zu `superduper-weltbibel.md`, Kapitel 0 (die Welt in fünf Sätzen)
 
 Der Anlass ist eine Lücke, die keiner der bisherigen Bauabschnitte hatte schließen können, weil jeder von ihnen mitten im laufenden Dienst ansetzt: Bis hierher fing das Spiel mit vier Zeilen Startbildschirm an. Der Spieler wusste, welche Taste schlägt. Er wusste nicht, was er ist, was das Haus von ihm will, und woran er merkt, dass er vorankommt. Knöterichs Dienstzettel (Phase 5) fangen das im Kleinen auf, aber sie erklären eine Taste nach der anderen und beantworten die Frage „wozu das alles" nie, weil sie sie gar nicht stellen können: ein Zettel hat zwei Zeilen.
 
-Alle unten genannten Bezeichner wurden gegen den Stand nach Commit `42991b6` geprüft, plus die Änderungen dieser Phase. Zeilennummern verschieben sich beim Arbeiten, die Bezeichner nicht: such nach dem Bezeichner, nimm die Zeile nur als Wegweiser.
+Alle unten genannten Bezeichner wurden gegen den Stand nach Commit `42991b6` geprüft, plus die Änderungen dieser Phase, und nach dem Zusammenführen mit `4011f37` (M1 Monsterkatalog, W5 Vertagung, Verwaltungskostenanteil) erneut. Was dieser Stand an dieser Phase geändert hat, steht im Abschnitt „Nachgezogen beim Zusammenführen mit main". Zeilennummern verschieben sich beim Arbeiten, die Bezeichner nicht: such nach dem Bezeichner, nimm die Zeile nur als Wegweiser.
 
 ### Grundsatz: der Anfang ist ein Vordruck, kein Prolog
 
@@ -48,7 +48,7 @@ Ein Literal, drei Einträge, jeder mit `kopf`, `unter`, `lead`, optional `felder
 | 2 | Dienstanweisung | Was ist zu tun, in neun Punkten, plus die Bedienung |
 | 3 | Laufbahn und Ziel | Woran merke ich, dass ich vorankomme, und worauf läuft das hinaus |
 
-Blatt 2 ist die Antwort auf „was zu tun ist": Erledigung, Sachbestand, Beglaubigung, Nebenbestimmungen, verschlossene Vorgänge, Aushang, Dienstschluss, Amtsvermögen, Qualifikation. Neun Punkte in Amtsdeutsch, jeder zwei bis drei kurze Sätze, jeder eine Mechanik. Punkt 7 und 9 sagen ohne Umschweife, was ein Roguelite-Neuling sonst erst durch einen Schreck lernt: die Schicht endet auch unsanft, es geht dabei niemand verloren, und Stufe, Zauber und Ausrüstung enden mit ihr. Punkt 8 sagt im selben Atemzug, was bleibt.
+Blatt 2 ist die Antwort auf „was zu tun ist": Erledigung, Sachbestand, Beglaubigung, Nebenbestimmungen, verschlossene Vorgänge, Aushang, Dienstschluss, Amtsvermögen, Qualifikation. Neun Punkte in Amtsdeutsch, jeder zwei bis drei kurze Sätze, jeder eine Mechanik. Punkt 7 und 9 sagen ohne Umschweife, was ein Roguelite-Neuling sonst erst durch einen Schreck lernt: die Schicht endet auch unsanft, es geht dabei niemand verloren, und Stufe, Zauber und Ausrüstung enden mit ihr. Punkt 9 sagt im selben Atemzug, was bleibt: die Kladde. Punkt 8 rechnet die Schichtbeute auf, alle drei Empfänger, ohne einen davon zu kommentieren.
 
 Die **Bedienung** steht als eigener Kasten unter den neun Punkten, mit allen Tasten und beiden Eingabearten. Das ist Bedienungstext, keine Figurenrede: die Regel „höchstens eine Taste pro Hinweis" gilt für Knöterichs Dienstzettel (`knAssertCaps()`), nicht fürs Panel, genau wie die Zeichendeckel dort und hier nicht gelten (gleiche Begründung wie bei `rangZeremonieBlock()`).
 
@@ -109,7 +109,7 @@ Achter selbstaufrufender Guard neben `knAssertCaps`, `blaetterAssert`, `rangAsse
 
 1. **Formregeln aus Kapitel 13 auf jeder einzelnen Zeile**, über `dienstblattZeilen(b)` plus Kopf, Unterzeile, Vorspann und Knöterich: leerer Text, das Wort `undefined` im Text, Gedankenstrich statt Interpunkt, Emoji im Figurentext, Kesselgrammatik über die bestehende `PRUEF_GEHEIM`-Liste. Zusätzlich die Blattzählung: die Unterzeile muss „Blatt n von 3" tragen und `nr` muss der Position im Literal entsprechen, und jedes Blatt braucht mindestens eine Knöterich-Zeile.
 2. **Den Sperrvermerk auf die Akte** (Abschnitt oben). Bewusst großgeschrieben geprüft, damit „kriegen" und „zufrieden" nicht anschlagen.
-3. **Text gegen Code.** Blatt 2 Punkt 8 sagt „zur Hälfte", also prüft der Guard `CONFIG.goldUebertragAnteil === 0.5`. Blatt 3 verspricht eine Hebung mit neuer Bezeichnung, also prüft er, dass `rangNameVon(1)` sich von `rangNameVon(0)` unterscheidet. Das sind Zahlen, die woanders im Code stehen und sich unabhängig ändern lassen; nur der Guard verbindet die beiden Orte.
+3. **Text gegen Code.** Blatt 2 Punkt 8 nennt zwei Anteile als Zahl, also liest der Guard `goldAufteilung(100)` und prüft `guertel === 50`, `verwaltung === 20` und dass die Kasse wirklich der Rest ist. Bewusst über `goldAufteilung()` statt über `CONFIG`: das ist der Weg, den die Schichtabrechnung wirklich geht. Blatt 3 verspricht eine Hebung mit neuer Bezeichnung, also prüft er, dass `rangNameVon(1)` sich von `rangNameVon(0)` unterscheidet. Das sind Zahlen, die woanders im Code stehen und sich unabhängig ändern lassen; nur der Guard verbindet die beiden Orte.
 
 Dazu eine Erreichbarkeitsprüfung: die drei Einsprungpunkte hängen in `onclick`-Zeichenketten im `#ovPanel`, also am globalen Namensraum. Ein Umbenennen fiele sonst erst auf, wenn jemand den Knopf drückt.
 
@@ -132,6 +132,17 @@ Dazu eine Erreichbarkeitsprüfung: die drei Einsprungpunkte hängen in `onclick`
 * Sperrvermerk und Formregeln: `dienstAssert()` prüft jede Zeile, meldet beim Start eine einzige Erfolgszeile, keine Fehler.
 * Keine `pageerror`, keine Konsolenfehler auf dem gesamten Weg vom Laden bis in die laufende Schicht.
 
+## Nachgezogen beim Zusammenführen mit main
+
+Zwischen dem Abzweig und dem Zusammenführen sind sechs Commits auf `main` gelandet, darunter M1 (Monsterkatalog), die W5-Vertagung und der Verwaltungskostenanteil. Zwei davon berühren diesen Bauabschnitt:
+
+* **Der Verwaltungskostenanteil (`4011f37`).** Bis dahin waren Gürtel und Amtskasse zwei Hälften desselben Topfes, es überlebten 100 Prozent. Jetzt teilt `goldAufteilung()` in drei Empfänger, und ein Fünftel verlässt das Spiel. Blatt 2 Punkt 8 sagte „Beute zur Hälfte" und war damit nicht falsch, aber unvollständig an genau der Stelle, an der ein Neuer die Regel zum ersten und einzigen Mal geschrieben sieht. Punkt 8 nennt jetzt alle drei Empfänger, Punkt 9 hat die Kladde-Zusage übernommen, die dabei aus Punkt 8 gewichen ist. Der Guard liest die Zahlen seither über `goldAufteilung(100)`.
+* **Die Guard-Zeile im README.** `main` hat sie am 20.08.2026 von sieben auf neun korrigiert und um `npcAnkerAssert()` ergänzt. Der Konflikt ist zugunsten der `main`-Fassung aufgelöst, `dienstAssert` ist als zehnter ergänzt.
+
+Nicht berührt: die W5-Vertagung betrifft den Vorgang, nicht die gewöhnliche Erledigung, Blatt 2 Punkt 1 bleibt richtig. M1 ändert Kampfwerte, über die dieser Bauabschnitt nichts behauptet.
+
+Der vollständige Prüflauf wurde nach dem Zusammenführen wiederholt, mit denselben Ergebnissen: dieselben Panelunterkanten, `goldAufteilung(100)` liefert `{guertel: 50, verwaltung: 20, kasse: 30}` passend zum Text, keine Konsolenfehler, und die neuen Guards `goldAssert` und `monsterAssert` melden unverändert nichts.
+
 ## Der nächste Bauabschnitt: W9, Tooltipps am Objekt
 
 Diese Phase beantwortet „was ist das hier und warum". Sie beantwortet **nicht** „was macht dieser Knopf, während ich davorstehe". Das ist der ausdrückliche Auftrag für W9 und bewusst getrennt gehalten, weil es ein anderer Kanal mit anderen Regeln ist:
@@ -145,7 +156,7 @@ Diese Phase beantwortet „was ist das hier und warum". Sie beantwortet **nicht*
 
 Node-Syntaxcheck nach jedem Bauschritt, danach live im Browser über `python3 serve.py 8378`, gesteuert per Playwright auf dem vorinstallierten Chromium, mit mitgeschriebener Konsole und Bildschirmfotos.
 
-Wichtige Einschränkung, damit niemand die Konsolenausgabe falsch liest: `assets/cf/` liegt lizenzbedingt nicht im Repo. Für den Live-Lauf wurden Platzhalter-PNGs in den ignorierten Unterordnern erzeugt, damit `loadAssets()` durchläuft und `bakeUiSkin()` nicht auf ein fehlendes `SHEETS['cfui_frame']` trifft. Sie haben die falschen Maße, deshalb meldet `assertRigRegistrations()` erwartungsgemäß Zeilenüberläufe und `npcAnkerAssert()` Ankerabweichungen. Diese Warnungen stammen aus den Platzhaltern, nicht aus dieser Phase; die Platzhalter wurden nach dem Prüflauf wieder entfernt. Geprüft wurde gegen `console.error` und `pageerror`, und beide blieben über alle Läufe leer.
+Wichtige Einschränkung, damit niemand die Konsolenausgabe falsch liest: `assets/cf/` liegt lizenzbedingt nicht im Repo. Für den Live-Lauf wurden Platzhalter-PNGs in den ignorierten Unterordnern erzeugt, damit `loadAssets()` durchläuft und `bakeUiSkin()` nicht auf ein fehlendes `SHEETS['cfui_frame']` trifft. Sie haben die falschen Maße, deshalb meldet `assertRigRegistrations()` erwartungsgemäß Zeilenüberläufe und `npcAnkerAssert()` Ankerabweichungen. Diese Warnungen stammen aus den Platzhaltern, nicht aus dieser Phase. Die Platzhalter liegen ausschließlich im Arbeitsverzeichnis, sind über `.gitignore` von jedem Commit ausgeschlossen und wurden nach dem letzten Prüflauf gelöscht. Geprüft wurde gegen `console.error` und `pageerror`, und beide blieben über alle Läufe leer. **Ein Lauf mit der echten Grafik steht aus** und ist Voraussetzung für die Abnahme dieser Phase mit der Hausregel „stille Konsole".
 
 * Vollständiger Weg auf 1280×800: Titelbild, Blatt 1, Blatt 2, Blatt 3, einmal zurück auf Blatt 2 und wieder vor, UNTERSCHREIBEN. Danach `overlay.style.display === 'none'`, `state === 'play'`, Zonenzeile „Vordermühl an der Ablage (Stufe 1) · 25:00", `localStorage`-Merker gesetzt.
 * Derselbe Weg auf 390×664. Panelunterkante gemessen: Blatt 1 bei 640, Blatt 2 bei 561, Blatt 3 bei 663 von 664 Pixeln Fensterhöhe, also überall vollständig im Bild. Auf 1280×800 entsprechend 699, 667, 729 von 800.

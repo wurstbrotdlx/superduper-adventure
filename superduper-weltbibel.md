@@ -81,9 +81,12 @@ Der Bereich ist keine Fantasy-Landkarte, sondern ein Archiv, das über die Ufer 
 | Grasland | Die Grüne Wiese, Ablage A | Wo Dinge auf der grünen Wiese geplant und danach vergessen wurden. Harmlos, sonnig, voller Kleinkram. |
 | Frostkamm | Die Ablage auf Eis | Vorgänge, die zur Klärung zurückgestellt wurden. Alles hier steht mitten in der Bewegung still und wartet. Die Monster stehen manchmal in Reihen. |
 | Aschewüste | Der Brandabschnitt | Hier hat es gebrannt. Amtlich: ordnungsgemäße Aktenvernichtung. Inoffiziell: es hat sehr genau das gebrannt, was jemand nicht mehr sehen wollte. |
+| Moorbruch | Die Nassablage | Was nass geworden ist, gilt als unlesbar und bleibt trotzdem in Kraft. Hier liegt alles, was man weder entziffern noch wegwerfen darf. Zwischen Ablage A und dem Brandabschnitt. |
+| Steinfeld | Der Altbestand | Vorgänge aus einer Zeit, in der das Amt noch anders hieß. Niemand ist mehr zuständig, und niemand traut sich, das aktenkundig zu machen. Ganz im Norden, hinter der Eisablage. |
 | Schattenland | Ablage V, der Vorbehalt | Der Papierkorb, den niemand geleert hat. Alles Gelöschte liegt hier und ist beleidigt. |
 | Das Zufallsportal | Ein Zustellungsfehler | Kein Tor. Eine Fehlleitung. Der Bereich verschickt sich gelegentlich selbst an die falsche Adresse. |
 | Kammern | Verschlossene Vorgänge | Aktenschränke. Innen ist alles noch so, wie es war. Draußen hängt ein Gebührenbescheid. |
+| Das Innere einer Kammer | Die Untere Registratur | Was hinter der Tür liegt, ist überall dasselbe Haus: dieselben Gänge, dieselben Wachen, dieselbe Beute. Die Kammern sind keine Räume nebeneinander, sondern Zugänge zu einem einzigen Bestand unter dem Bereich. Deshalb ist die Untere Registratur ein eigener Fundort, obwohl ihre Türen in jedem Biom stehen. |
 | Das Schild an der Kammertür | Gebührenbescheid | Nennt Aufwand (Stufe 1 bis 5) und zu erwartenden Ertrag (Tier). Ein ehrliches Schild ist in dieser Welt eine kleine Sensation. Deshalb glaubt es auch niemand. |
 | Die Rätselmodule | Mitwirkungspflicht | Bevor ein Vorgang geöffnet wird, muss der Antragsteller die fehlenden Angaben beibringen. Deshalb Druckplatten, Symbolschlösser und Reihenfolgen. |
 | Der Fluss | Die Ablage | Ein sehr langsamer Fluss. Wer lange genug hineinschaut, sieht Papier. |
@@ -132,14 +135,14 @@ Daraus folgt sauber:
 * **Tod heißt Dienstschluss.** Es stirbt niemand. Die Schicht endet, der Außendienst geht nach Hause, morgen kommt jemand anderes. Der Dienstbericht ist die Abrechnung dieses einen Tages.
 * **Level, Zauber und Ausrüstung sind weg.** Persönliche Qualifikation ist nicht übertragbar. Steht so im Vorgang.
 * **Die Kladde bleibt. Immer.** Die Kladde gehört nicht dem Außendienst, sie liegt im Amt und ist an den Tisch gekettet. Wissen ist Amtsvermögen. Das ist die Fiktion für die härteste Regel im ganzen Projekt, und sie ist wasserdicht.
-* **Gold zur Hälfte.** Der Rest ist Verwaltungskostenanteil. Das ist eine Frechheit. Niemand beschwert sich, weil die Beschwerde ein Formular wäre und Formulare bekanntlich lebendig werden.
+* **Gold zur Hälfte.** Der Rest ist Verwaltungskostenanteil. Das ist eine Frechheit. Niemand beschwert sich, weil die Beschwerde ein Formular wäre und Formulare bekanntlich lebendig werden. *(Seit 20.08.2026 steht das im Code: `goldAufteilung()` teilt die Schichtbeute in Gürtel, Amtskasse und Verwaltungskostenanteil, letzterer verlässt das Spiel. Die Hälfte am Gürtel ist der Bruttoanteil, wie dieser Satz es sagt. Bis dahin gab es keinen Verlust, Gürtel und Kasse waren zwei Hälften desselben Topfes. Zahlen und Herleitung in `KAMMER-MESSUNG-2026-08-20.md`, Abschnitt 9.)*
 * **Zutaten bis zum Kontingent.** Der Rest wird eingezogen und kommt in die Registratur. Da liegt er dann. Und wartet.
 
 ---
 
-## 6. Bestiarium: die 21 Vorgangsarten
+## 6. Bestiarium: die 31 Vorgangsarten
 
-Alle 21 bestehenden Monstertypen, mit ihrer Aktenbedeutung. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
+Alle Monstertypen mit ihrer Aktenbedeutung: einundzwanzig aus dem Bestand, zehn dazu aus Bauabschnitt M1. Die Spielnamen bleiben, wie sie sind. Die Aktenbedeutung erscheint nur dort, wo das Amt spricht: in der Registratur, in Aktenfunden, auf Kammerschildern und in Knöterichs Wortwahl.
 
 Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan.
 
@@ -173,6 +176,23 @@ Kinder lesen eine Monsterliste. Erwachsene lesen einen Geschäftsverteilungsplan
 | Schattenspukt | Das Erinnerungsschreiben | Fliegt, ist halb durchsichtig, kommt immer wieder. Beide Wortbedeutungen gemeint. |
 | Der Alte Schrecken | Der Sammelvorgang | Dutzende kleine Vorgänge, zur gemeinsamen Bearbeitung zusammengefasst. Deshalb so groß und so unförmig. Er war einmal lauter Kleinigkeiten. |
 | Schattenfürst | Fürst Nachtrag | Siehe Figuren. Er ist kein Monster. Er ist der Adressat. |
+
+### Neu mit M1: zehn weitere Vorgangsarten
+
+Gebaut nach derselben Regel, erst die Vorgangsart, dann das Monster. Werte und Begründung stehen in `monsterkatalog-stufe-1-10.md`, der Einbau in `phase-m1-monsterkatalog.md`.
+
+| Monster | Vorgangsart | Warum es sich so verhält |
+|---|---|---|
+| Wandelnder Ablagestapel | Der Posteingang | Zwölf Jahre nicht abgearbeitet und inzwischen hoch genug, um zurückzufallen. |
+| Der Zustellbote | Der Zustellversuch | Er war da. Du warst nicht da. Ihn zu fassen ist vorgesehen und praktisch nie möglich. |
+| Blubberakte | Der Rücklauf | Was einmal untergegangen ist, kommt wieder hoch, sobald jemand am Ufer steht. |
+| Der Moorbescheid | Der durchweichte Bescheid | Unlesbar geworden und trotzdem in Kraft. Lesbarkeit ist keine Wirksamkeitsvoraussetzung. |
+| Der Amtsschimmel | Die Fristverlängerung | Er entscheidet nichts. Er verlängert, und was er verlängert, lebt länger. |
+| Der Fristläufer | Die Fristsetzung | Setzt eine Frist, die niemand beantragt hat, und ist weg, bevor jemand widersprechen kann. |
+| Papierstaub-Skarabäus | Die Aktenvernichtung | Er lebt von dem, was nach dem Brand übrig blieb, und ist gegen Feuer deshalb gleichgültig. |
+| Die Sammelmahnung | Die Mahnstufe | Dieselbe Sache, dreimal, gleichlautend. Einzeln Papier, zu dritt ein Titel. |
+| Der Aktenbote | Der Zuschlag | Er trägt nichts Eigenes bei außer der Mitteilung, dass ab jetzt alle härter zuschlagen dürfen. |
+| Die Sammelverfügung | Der Sammelbescheid | Alles, was je gegen dich lief, zusammengefasst und in einem Mantel aus Papier vorgetragen. |
 
 **Regel für neue Monster:** erst die Vorgangsart erfinden, dann das Monster. Nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein Monster.
 
@@ -366,6 +386,8 @@ Ablage V. Der Fürst. Der Kampf läuft ganz normal, weil er den Spieler für die
 
 **Und dann:** Wer die Ausfertigung dabei hat, bekommt an ihm eine Kontextaktion. Nicht "Angreifen". **"Zustellen."** Ein Tastendruck. Der Kampf hört auf.
 
+**Und wer ihn stattdessen erschlägt?** Der hat einen erledigten Sachverhalt und keinen geschlossenen Vorgang. Wer die Ausfertigung dabei hat, aber noch nicht zustellen darf, bekommt nicht einmal das: der Fürst wird vertagt und steht beim nächsten Massenvorgang wieder da. Ein offener Vorgang lässt sich nicht erschlagen. Das ist keine Strafe und kein Hinweis, es ist Verwaltungsrecht. (Umsetzung siehe Kapitel 14, W5.)
+
 Er liest. Er liest lange. Dann sagt er den Satz, auf den das ganze Spiel hinausläuft:
 
 > "Vierhundert Jahre. Und Sie kommen einfach vorbei."
@@ -556,9 +578,9 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Aktstand bleibt **abgeleitet** aus `amt.schichten` über das bestehende `aktStand()`, kein `amt`-Feld, keine `loadAmt()`-Ladezeile — dieselbe Korrektur wie beim Rang in W6 (siehe Zeile 563). Der Halbsatz „hochgezählt im bestehenden Jahresgespräch" bleibt korrekt, `aktStand()` springt genau am Zehnerschritt.
 * Pro Akt: ein zusätzlicher Absatz im Jahresgespräch-Panel, ein geänderter Satz bei drei Figuren (Lisbeth, Nörgel — die übrigen Aktzeilen passten bereits aus W3), eine freigeschaltete Blattserie (C-F, in Biom-Reihenfolge über Akt 2-5).
 * Vier Adress-Kammern in Akt IV: drei Sonderkammern (eine je Biom) mit Sonderschild, garantiertem Blatt-Drop, plus eine vierte Zeile über den Schattenland-Fundkanal in Ablage V (siehe Zeile 353).
-* Akt V: eine neue Kontextaktion **Zustellen** am Boss, angeboten nur mit Ausfertigung im Bestand, Zeichnungsbefugnis (W6) und erreichtem Akt V (`aktStand() >= 5`, also ab Schicht 41). *(GW10, 06.08.2026: die dritte Bedingung kam nach. Ohne sie war Zustellen schon ab Schicht 31 möglich, das Dienstsiegel fällt aber erst bei Schicht 41 — Puzzleteil 1 des Finales blieb dadurch im ganzen Akt IV leer, also genau der Kern-Callback aus Kapitel 9.)* Sie beendet den Kampf und öffnet das Schlusspanel. Der Kampf selbst bleibt vollständig unverändert — das Finale ist ein Ausweg, keine Umschreibung. Der bestehende Kampf-Tod-Ausgang (`winGame()`) bleibt parallel bestehen.
+* Akt V: eine neue Kontextaktion **Zustellen** am Boss, angeboten nur mit Ausfertigung im Bestand, Zeichnungsbefugnis (W6) und erreichtem Akt V (`aktStand() >= 5`, also ab Schicht 41). *(GW10, 06.08.2026: die dritte Bedingung kam nach. Ohne sie war Zustellen schon ab Schicht 31 möglich, das Dienstsiegel fällt aber erst bei Schicht 41 — Puzzleteil 1 des Finales blieb dadurch im ganzen Akt IV leer, also genau der Kern-Callback aus Kapitel 9.)* Sie beendet den Kampf und öffnet das Schlusspanel. Der Kampf selbst bleibt vollständig unverändert — das Finale ist ein Ausweg, keine Umschreibung. Der bestehende Kampf-Tod-Ausgang (`winGame()`) bleibt parallel bestehen. *(Präzisiert am 20.08.2026: parallel heißt ab Akt V. Wer die Ausfertigung im Bestand trägt und noch nicht zustellen darf, kann den Fürsten nicht mehr zum Spielende erschlagen — der Vorgang wird vertagt, die Schicht läuft weiter. Ein offener Vorgang lässt sich nicht erschlagen, und das Fenster ohne Zustellmöglichkeit ist seit GW10 zehn Schichten lang. Siehe `phase-w5-vorgang.md`, „Die Vertagung".)*
 
-**Abnahme:** Wer nie zustellt, spielt das Spiel wie bisher weiter, unendlich. Wer zustellt, sieht das Ende. Beides ist ein gültiger Zustand. `CONFIG.schichtModus = false` bricht nichts, dort läuft die Geschichte über die Blätter allein.
+**Abnahme:** Wer nie zustellt, spielt das Spiel wie bisher weiter, unendlich. Wer zustellt, sieht das Ende. Beides ist ein gültiger Zustand. *(Nachtrag 20.08.2026: „wie bisher weiter" gilt jetzt auch für den, der den Fürsten im Fenster vor Akt V erlegt. Er sieht die Vertagung und spielt weiter, statt auf einem Endbildschirm zu stehen, während seine Ausfertigung ungezustellt in der Kladde liegt.)* `CONFIG.schichtModus = false` bricht nichts, dort läuft die Geschichte über die Blätter allein. *(Seit 20.08.2026 steht das als Gate in `vorgangZustellbar()` und `vorgangVertagt()` selbst, nicht nur mittelbar über `vorgangAdressAkt()`. Dieselbe Klasse wie GW5 für W4 und GW6 für W7.)*
 
 ### W6: Rang und Laufbahn — ERLEDIGT
 

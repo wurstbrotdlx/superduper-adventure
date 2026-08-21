@@ -173,7 +173,75 @@ function zustellen(){
 
 `update(dt)` beginnt mit `if(state !== 'play') return;` — ein einziger Zustandswechsel friert Horde-Spawner, Boss-KI und Schichtuhr gleichzeitig ein. `killMon()` und die bestehende Siegweiche (`if(m.def.boss && !kammer){ … winGame(); }`) bleiben unberührt: der Boss stirbt während der Zustellung nie, `winGame()` läuft nicht. Live geprüft: `update(0.5)` während `state==='zustellung'` verändert weder `monsters.length` noch `boss.hp`.
 
-**Gefundene, bewusst nicht angefasste Randbedingung:** ein Sieg per reinem Kampf-Tod des Bosses (`killMon()` → `winGame()`, Text „VORGANG ABGESCHLOSSEN") existierte bereits vor W5 und bleibt als eigenständiger, einfacherer Ausgang bestehen. Zustellen ist ein zusätzlicher, erzählerisch reicherer Weg zum Ende, keine Ersetzung — beide Pfade sind mit der Abnahme „wer nie zustellt, spielt weiter" vereinbar, solange der Spieler den Boss auch nicht im reinen Kampf besiegt.
+**Gefundene, bewusst nicht angefasste Randbedingung:** ein Sieg per reinem Kampf-Tod des Bosses (`killMon()` → `winGame()`, Text „VORGANG ABGESCHLOSSEN") existierte bereits vor W5 und bleibt als eigenständiger, einfacherer Ausgang bestehen. Zustellen ist ein zusätzlicher, erzählerisch reicherer Weg zum Ende, keine Ersetzung — beide Pfade sind mit der Abnahme „wer nie zustellt, spielt weiter" vereinbar, solange der Spieler den Boss auch nicht im reinen Kampf besiegt. *(Überholt am 20.08.2026, siehe „Die Vertagung" direkt unten: im Fenster vor Akt V ist der Kampf-Tod kein Ausgang mehr.)*
+
+### Die Vertagung (Entscheidung vom 20.08.2026)
+
+**Der Anlass.** GW10 hat die Zustellung an Akt V gebunden (`aktStand() >= 5`, ab Schicht 41). Seither liegen bis zu zehn Schichten zwischen dem Moment, in dem die Ausfertigung vollständig im Bestand liegt, und dem Moment, in dem am Fürsten „Zustellen" angeboten wird. Wer den Fürsten in diesem Fenster erlegt, bekam zwingend den kleineren Ausgang: „SACHVERHALT ERLEDIGT", ein Bildschirm, dessen einziger Ausgang `location.reload()` ist, während er die Ausfertigung in der Kladde trägt. Vor GW10 war dieses Fenster leer, der Fund hat es aufgemacht.
+
+**Was hier ausdrücklich nicht das Problem war.** Es ist keine Sackgasse. `winGame()` setzt nichts zurück, Amt und Kladde überleben den Reload, der Spieler kann später zustellen und das Finale trotzdem sehen. Verloren sind die laufende Schicht und der Moment, nicht der Vorgang. Der Fehler ist tonal: das Haus meldet einen erledigten Sachverhalt, während Vorgang 1 offen in der Kladde liegt.
+
+**Die Entscheidung.** Solange die Ausfertigung im Bestand liegt und noch nicht zugestellt werden darf, endet der Kampf-Tod das Spiel nicht mehr. Der Fürst ist der Nachtrag zu Vorgang 1, und ein offener Vorgang lässt sich nicht erschlagen. Ab Akt V ist der Kampf-Tod wieder ein gültiges Ende: dort ist er eine Entscheidung des Spielers und nicht die Folge einer Schwelle, die ihm niemand genannt hat.
+
+```js
+const vorgangVertagt = () => vorgangAusfertigung() && !vorgangZustellbar();
+```
+
+**Der Kampf bleibt unverändert**, und diesmal wörtlich: der Boss stirbt, die Beute fällt, `killMon()` läuft bis zur Siegweiche durch, `MUS.swell()` und das Ausblenden der Bossleiste bleiben an ihrem Platz. Es entfällt allein der `setTimeout`-Sprung nach `winGame()`, an seiner Stelle stehen drei Zeilen aus `VERTAGT_ZEILEN`:
+
+> VERTAGT · Der Sachverhalt ist erledigt. · Der Vorgang nicht.
+
+Sie nennen den Zustand, nicht den Weg dorthin. Ein Hinweis auf die Zustellung wäre ein Questmarker und ist aus demselben Grund verboten wie am Kommentar zu `winGame()` und an `VORGANG_PUZZLE`.
+
+**Warum drei Konstanten statt drei Literale in `killMon()`:** so laufen die Zeilen durch die Formregeln in `vorgangAssert()` Block 9 wie jeder andere Text dieser Phase (Gedankenstrich, Emoji, `undefined`, Sperrvermerk). Bauform wie `markiereAdressTueren()` aus GW16: der Guard prüft den Term, der im Spiel läuft, nicht seine Abschrift.
+
+**Kein neues Feld, kein neues Prädikat.** `vorgangVertagt()` liest ausschließlich `vorgangAusfertigung()` und `vorgangZustellbar()`. Der Fürst kehrt nicht in derselben Schicht zurück (`shadowKills >= 500 && !boss`, und `boss` bleibt als toter Verweis gesetzt); er steht beim nächsten Massenvorgang wieder da, nach den nächsten 500 Kills in Ablage V.
+
+**Gemessen am laufenden Spiel** (`killMon()` am echten Fürsten, `state`, Floater und `#ovPanel` nach 2,6 Sekunden gelesen, also nach dem 2000er-Fenster von `winGame()`):
+
+| Ausgangslage | direkt nach dem Kill | nach 2,6 s |
+|---|---|---|
+| Schicht 35, Ausfertigung vollständig | VERTAGT, Bossleiste aus | `state` bleibt `play`, kein Panel |
+| Schicht 12, Ausfertigung, ohne Zeichnungsbefugnis | VERTAGT | `state` bleibt `play`, kein Panel |
+| Schicht 45, Ausfertigung vollständig | keine Vertagung | `state` = `win`, „SACHVERHALT ERLEDIGT" |
+| Schicht 35, ohne Ausfertigung | keine Vertagung | `state` = `win`, „SACHVERHALT ERLEDIGT" |
+
+### Das Modus-Gate (Entscheidung vom 20.08.2026)
+
+**Die Zusage.** Die Abnahme unten sagt seit W5: „`CONFIG.schichtModus = false` bricht nichts, `vorgangZustellbar()` bleibt falsch." Die Funktion las `CONFIG` nirgends. Das stand seit dem 06.08.2026 als unbelegte Zusage in `GW-RESTFUNDE-2026-08-06.md`.
+
+**Was beim Nachlesen herauskam:** materiell stimmte sie. `setzeKammerTueren()` markiert die drei Adresskammern nur unter `if(vorgangAdressAkt())`, und die vierte Zeile in `killMon()` hängt an derselben Bedingung. `vorgangAdressAkt() = CONFIG.schichtModus && aktStand() >= 4`. Ein Spielstand, der nur im Nicht-Schichtmodus gelaufen ist, kommt also nie an eine Ausfertigung, und ohne Ausfertigung ist `vorgangZustellbar()` falsch.
+
+**Falsch war sie nur für den Mischfall:** ein im Schichtmodus gespielter Stand, dessen `kladde.vorgang` und `amt.schichten` persistiert danebenliegen, danach `CONFIG` umgelegt. Dort war Zustellen möglich.
+
+**Die Entscheidung:** das Gate nachziehen, im Muster von `vorgangAdressAkt()`. Damit ist es dieselbe Klasse, die GW5 für W4 und GW6 für W7 geschlossen hat, und W5 war der letzte Rest davon.
+
+```js
+const vorgangZustellbar = () => CONFIG.schichtModus && vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
+const vorgangVertagt    = () => CONFIG.schichtModus && vorgangAusfertigung() && !vorgangZustellbar();
+```
+
+**Das zweite Gate ist keine Formalie.** Ohne es wäre die Vertagung im Nicht-Schichtmodus mit mitgebrachtem Vollbestand dauerhaft wahr, weil `vorgangZustellbar()` dort jetzt immer falsch ist. Ein solcher Stand hätte gar kein Ende mehr, weder Zustellung noch Kampf-Tod. Im Nicht-Schichtmodus läuft der Vorgang nicht, also wird dort auch nichts vertagt.
+
+**Was dabei stehen bleibt:** trägt ein Nicht-Schichtmodus-Stand den Vollbestand mit, zeigt der Kessel-Reiter weiter „Die Ausfertigung ist vollständig. … Zugestellt wird im fünften Akt." Einen fünften Akt gibt es dort nicht, weil es keine Schichten gibt. Das ist hingenommen: die Zeile beschreibt den Bestand richtig, und ein modusabhängiger zweiter Wortlaut wäre ein Erklärsystem für einen Zustand, den nur eine Quellcodeänderung herstellen kann.
+
+**Gemessen, Vollbestand in beiden Modi:**
+
+| `schichtModus` | Schicht | `vorgangZustellbar()` | `vorgangVertagt()` | `vorgangAdressAkt()` |
+|---|---|---|---|---|
+| true | 12 | false | true | false |
+| true | 39 | false | true | true |
+| true | 40 | **true** | false | true |
+| true | 60 | **true** | false | true |
+| false | 12 / 39 / 40 / 60 | false | false | false |
+
+Dazu `killMon()` am Fürsten im Nicht-Schichtmodus, mit und ohne mitgebrachten Vollbestand: beide Male `winGame()` wie vor W5, keine Vertagung.
+
+**Der Guard beißt.** Block 4, der Abnahmesatz, prüft die Zusage jetzt wörtlich: mit `schichtModus=false`, vollem Bestand und Schicht 40 und 60 müssen beide Prädikate falsch sein. Zwei Sabotagen live gefahren, beide gemeldet — Gate an `vorgangZustellbar()` entfernt (Meldung bei 40 und 60), Gate an `vorgangVertagt()` entfernt (dieselben zwei Meldungen für die Vertagung). Block 7 erzwingt für seinen Sollwert-Sweep zusätzlich `schichtModus = true`, Muster `langAssert()`/GW6: sonst hinge der ganze Block am echten `CONFIG`-Wert und liefe bei `false` ins Leere, statt zu fallen.
+
+### Die Vertagung, Nachweise
+
+**Der Guard beißt.** Block 7 trägt den Sollwert der Vertagung mit, ausgeschrieben in einer anderen Größe als ihre Definition: die Funktion liest `rangZeichnungsbefugt()` und `aktStand()`, der Sollwert nur den Schichtwert. Zwei Sabotagen live gefahren, beide gemeldet — die Negation entfernt (`vorgangVertagt() weicht vom Sollwert ab, schichten=40`, plus die Zählzeile) und die Aktschwelle von 5 auf 4 verschoben (Meldung bei 30 und 39). Ohne Sabotage `vorgangAssert() === true`, alle sieben Guards true, `console.error` abgefangen und leer.
 
 ### Schlusspanel und Abspann: eine Schreibstelle, drei Schritte
 
@@ -193,13 +261,13 @@ Der vierte Takt der Amtshymne bleibt Text, aus demselben Grund wie in W6: `MUS` 
 
 *(Korrektur GW: bei `45912f6` stand er direkt hinter `rangAssert();`. W7 hat ihn nach unten verschoben, weil `vorgangPanelHtml()` seither `langFertig()` liest — von der alten Stelle aus ein TDZ-ReferenceError. Der Grund steht im Code an der Definition.)*
 
-Bauform wörtlich wie `rangAssert()`. Zehn Prüfblöcke: Tabellenform der vier Adresszeilen (Biom-Zuordnung, Ankerprüfung auf `VORGANG_ANSCHRIFT`), Vollständigkeit von `SERIE_AKT` gegen die tatsächlich in `BLAETTER` vorkommenden Serien, Gatter-Sweep über `amt.schichten` 0-60 (nie ein Rücksprung, Schwellen exakt bei 10/20/30/40), der Abnahmesatz mit gespiegeltem `schichtModus=false`, Bestandsprädikate über alle 16 Teilmengen von `kladde.vorgang` (ohne `findeAdresszeile()` aufzurufen — die schriebe `saveKladde()` und überschriebe den echten Stand), W6-Kopplung (`INSIGNIE.siegel`, `rangDienstsiegel()`, `rangZeichnungsbefugt()` exakt ab Schicht 30), der Sollwert-Sweep Ausfertigung × Schichtschwelle über 0/30/39/40 *(Korrektur GW10: bis 06.08.2026 ein Kreuzprodukt „genau eine von vier Kombinationen". Das konnte gar nicht anders als aufgehen — bei zwei fixierten Faktoren ist immer genau eine Kombination wahr, unabhängig davon, was die Funktion tut. Jetzt wird gegen einen ausgeschriebenen Sollwert geprüft, und 39/40 ist der Randwert der neuen Aktschwelle.)*, die drei Aktzeilen-Anker, Formregeln/Sperrvermerk über jede neue Tabelle, und zuletzt die tatsächlich gerenderten Blöcke HTML-gestrippt (`vorgangJahresBlock()` für zehn Schichtwerte, alle drei Schlusspanel-Schritte inklusive beider Fassungen der bedingten Puzzleteile, `vorgangBestandBlock()` leer und voll).
+Bauform wörtlich wie `rangAssert()`. Zehn Prüfblöcke: Tabellenform der vier Adresszeilen (Biom-Zuordnung, Ankerprüfung auf `VORGANG_ANSCHRIFT`), Vollständigkeit von `SERIE_AKT` gegen die tatsächlich in `BLAETTER` vorkommenden Serien, Gatter-Sweep über `amt.schichten` 0-60 (nie ein Rücksprung, Schwellen exakt bei 10/20/30/40), der Abnahmesatz mit gespiegeltem `schichtModus=false` *(seit 20.08.2026 zusätzlich mit vollem Bestand bei Schicht 40 und 60, siehe „Das Modus-Gate")*, Bestandsprädikate über alle 16 Teilmengen von `kladde.vorgang` (ohne `findeAdresszeile()` aufzurufen — die schriebe `saveKladde()` und überschriebe den echten Stand), W6-Kopplung (`INSIGNIE.siegel`, `rangDienstsiegel()`, `rangZeichnungsbefugt()` exakt ab Schicht 30), der Sollwert-Sweep Ausfertigung × Schichtschwelle über 0/30/39/40 *(Korrektur GW10: bis 06.08.2026 ein Kreuzprodukt „genau eine von vier Kombinationen". Das konnte gar nicht anders als aufgehen — bei zwei fixierten Faktoren ist immer genau eine Kombination wahr, unabhängig davon, was die Funktion tut. Jetzt wird gegen einen ausgeschriebenen Sollwert geprüft, und 39/40 ist der Randwert der neuen Aktschwelle. Seit dem 20.08.2026 trägt derselbe Sweep den Sollwert von `vorgangVertagt()` mit, samt Zählzeile „genau dreimal wahr".)*, die drei Aktzeilen-Anker, Formregeln/Sperrvermerk über jede neue Tabelle, und zuletzt die tatsächlich gerenderten Blöcke HTML-gestrippt (`vorgangJahresBlock()` für zehn Schichtwerte, alle drei Schlusspanel-Schritte inklusive beider Fassungen der bedingten Puzzleteile, `vorgangBestandBlock()` leer und voll).
 
 Alle Spiegel (`amt.schichten`, `CONFIG.schichtModus`, `kladde.vorgang`, `amt.bonusNachwachsen`, `kladde.crafts`) werden exakt zurückgesetzt, kein `saveAmt()`, kein `saveKladde()` während der Prüfung.
 
 ## Was in W5 ausdrücklich nicht angefasst wird
 
-* Die bestehende **Siegweiche** in `killMon()` (`m.def.boss && !kammer` → `winGame()`) — bleibt Zeile für Zeile unverändert (byte-identisch gegen `ad72e37` geprüft), *(Korrektur GW9: hier stand „`killMon()` und die Siegweiche". `killMon()` selbst wurde in W5 sehr wohl angefasst — zwei Zeilen geändert, vier plus Kommentar hinzugefügt; dieses Dokument beschreibt den Einbau neunzig Zeilen weiter oben selbst.)* der Kampf-Tod-Ausgang existiert weiter parallel zu Zustellen.
+* Die bestehende **Siegweiche** in `killMon()` (`m.def.boss && !kammer` → `winGame()`) — blieb in W5 Zeile für Zeile unverändert (byte-identisch gegen `ad72e37` geprüft), *(Korrektur GW9: hier stand „`killMon()` und die Siegweiche". `killMon()` selbst wurde in W5 sehr wohl angefasst — zwei Zeilen geändert, vier plus Kommentar hinzugefügt; dieses Dokument beschreibt den Einbau neunzig Zeilen weiter oben selbst.)* der Kampf-Tod-Ausgang existierte weiter parallel zu Zustellen. *(Überholt am 20.08.2026: die Vertagung hängt sich in genau diese Weiche, siehe oben. Unverändert bleiben `MUS.swell()`, das Ausblenden der Bossleiste und der Kampf selbst; entfallen ist der Sprung nach `winGame()`, solange `vorgangVertagt()` wahr ist.)*
 * Die Horde-Spawner-Logik selbst (`monsters.length < 130 && (!boss || boss.dead)`) — pausiert bereits, solange der Boss lebt, `zustellen()` nutzt nur den `state`-Wechsel.
 * `blaetterAssert()`, `BLAETTER`, `BLAETTER_KEYS`, die Zählzeile „N von 48" — die vier Adresszeilen laufen über einen eigenen Bestand.
 * Die Anrede der Figuren (18.5) — bleibt offen, wie in W6 vermerkt.
@@ -210,18 +278,18 @@ Alle Spiegel (`amt.schichten`, `CONFIG.schichtModus`, `kladde.vorgang`, `amt.bon
 
 * Aktstand bleibt abgeleitet über `aktStand()`, keine zweite Wahrheitsquelle. *(Korrektur GW: der Gatter-Sweep prüft `serieFrei()` und beweist das **nicht** — er liefe unverändert durch, wenn daneben ein `amt.akt` gepflegt würde. Die Aussage stimmt, der Beleg trug nicht.)*
 * Serien C-F schalten in Biom-Reihenfolge über Akt 2-5 frei, A/B bleiben ungegated — live am Sweep 0/9/10/19/20/29/30/39/40/50 bestätigt.
-* `CONFIG.schichtModus = false` bricht nichts: alle Serien bleiben offen, Adresskammern werden nicht markiert, `vorgangZustellbar()` bleibt falsch — live geprüft.
+* `CONFIG.schichtModus = false` bricht nichts: alle Serien bleiben offen, Adresskammern werden nicht markiert, `vorgangZustellbar()` bleibt falsch — live geprüft. *(Nachtrag 20.08.2026: bis dahin galt der letzte Halbsatz nur mittelbar, über `vorgangAdressAkt()`, und für einen aus dem Schichtmodus mitgebrachten Stand gar nicht. Seit dem Modus-Gate steht er direkt in der Funktion und wird von Block 4 geprüft, siehe „Das Modus-Gate" oben.)*
 * Vier Adresszeilen aus drei Sonderkammern (je ein Biom) plus Ablage-V-Drop, garantiert statt gewürfelt, Sonderschild selbstheilend nach dem Fund.
 * „Zustellen" erscheint ausschließlich mit vollständiger Ausfertigung, Zeichnungsbefugnis (Schicht ≥30), Akt V (`aktStand() >= 5`, also Schicht ≥40) und lebendem Boss in Ablage V — live an allen Randbedingungen einzeln widerlegt (fehlende Zeile, zu früh, Grußpflicht-Fluch, außerhalb Ablage V). *(Korrektur GW10: bis 06.08.2026 vier Randbedingungen und Schwelle 30. Die Aktbedingung kam hinzu, damit Puzzleteil 1 nicht im ganzen Akt IV leer bleibt.)*
 * Der Kampf bleibt unverändert: `zustellen()` friert nur `state`, `update(dt)` tut während der Zustellung nachweislich nichts.
 * Schlusspanel in drei Schritten, alle Puzzleteil-Texte passen sich an, kein Puzzleteil blockiert Zustellen.
-* Wer nie zustellt, spielt unendlich weiter (der bestehende Kampf-Tod-Ausgang bleibt parallel bestehen, siehe oben).
+* Wer nie zustellt, spielt unendlich weiter. *(Präzisiert am 20.08.2026: der Kampf-Tod-Ausgang bleibt parallel bestehen, aber erst ab Akt V und für jeden, der die Ausfertigung nie eingesammelt hat. Wer sie trägt und noch nicht zustellen darf, bekommt die Vertagung und spielt die Schicht weiter — live an allen vier Randfällen belegt, siehe die Tabelle oben.)*
 
 ## Bewusst offen für spätere Bauabschnitte
 
 * Die Anrede der Figuren (18.5).
 * Kapitel 10, Langvorgänge 1, 2, 3, 5-9.
-* Ob der reine Kampf-Tod-Ausgang (`winGame()` über `killMon()`) narrativ an Zustellen angeglichen werden soll — beide Ausgänge sind heute textlich unterschiedlich und laufen unverbunden nebeneinander.
+* ~~Ob der reine Kampf-Tod-Ausgang (`winGame()` über `killMon()`) narrativ an Zustellen angeglichen werden soll.~~ **Entschieden am 20.08.2026**, siehe „Die Vertagung" oben: nicht angeglichen, sondern eingegrenzt. Der Text von `winGame()` bleibt, wie er ist; er wird nur nicht mehr gezeigt, solange ein offener Vorgang in der Kladde liegt.
 * Die Urkundenvorlage/Puzzleteil-Texte variieren nicht je nach vorherigem Spielverlauf jenseits der beiden Fassungen (frei/sonst) — eine Setzung dieser Phase.
 
 ## Live geprüft
