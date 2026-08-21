@@ -20,9 +20,9 @@ Dann `http://localhost:8378/adventure/` aufrufen.
 
 ## Steuerung
 
-`W A S D` Bewegung · `Leertaste` oder Klick Angriff · `Q` oder `1` Trank · `E` Zauber · `R` Ultimate · `T` Zauberbaum · `I` Inventar und Befähigung · `K` Kessel · `M` Musik · `F` Kontextaktion · `Esc` schließt Panels der Reihe nach.
+`W A S D` Bewegung · `Leertaste` oder Klick Angriff · `Q` oder `1` Trank · `E` Zauber · `R` Ultimate · `T` Zauberbaum · `I` Inventar und Befähigung · `K` Kessel · `M` Musik · `F` Kontextaktion · `Esc` schließt Panels der Reihe nach. Ein Klick oder Tipp **neben** ein offenes Panel schließt es ebenfalls, ohne dabei anzugreifen (seit U1).
 
-Touch: virtueller Joystick links, Kampf-Cluster rechts.
+Touch: virtueller Joystick links, Kampf-Cluster rechts. Der Daumenfächer bleibt mit offenem Panel bedienbar.
 
 ## Entwickeln
 
@@ -104,6 +104,7 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je ei
 | `phase-g6-dorfsicht.md` | Bauabschnitt G6: sechs von elf Dorffiguren waren nicht zu sehen. Fünf fehlende Sprite-Blätter, ein Bürgermeister hinter der Amtsfassade, und der Guard, der beides künftig meldet |
 | `phase-m3-stollen.md` | Bauabschnitt M3: das sechste Katalogbiom. Warum kein einziger kammerexklusiver Gegner in die Untere Registratur passte, ein dritter Kammersatz aus einem leeren Ordner, und eine Vorgangsart, die beim Erledigen in zwei kleinere zerfällt |
 | `phase-g6-nachtrag-dorfblaetter.md` | Die fünf offenen Dorf-Blätter aus G6, nachgelegt. Kein Code, aber die Entscheidung, wie `Fisherman_Fin` gerastert ist: 9 Spalten à 64, nicht 18 à 32 wie das Manifest führte |
+| `phase-u1-menue.md` | Bauabschnitt U1: neben ein Menü zu klicken war ein Angriff, das Menü blieb offen. Der Lauscher in der Einfangphase, warum es kein modaler Vorhang wurde, und ein Menü-Anstrich ohne neue Grafikdatei |
 | `phase-p1-dienstgestalt.md` | Bauabschnitt P1: die Person des Tages bekommt eine Haarfarbe, die es im Dorf nicht gibt, und der Einstellungsvordruck nimmt zum ersten Mal eine Angabe des Spielers entgegen |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 25 Gegner, 6 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
 | `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
@@ -126,6 +127,7 @@ Drei Regeln, die beim Mitarbeiten nicht optional sind: Jede Phasenüberschrift t
 | `tools/nahfeld-messlauf.mjs` | zählt an der wirklich gesetzten Bevölkerung ab, was in welcher Entfernung vom Dorf steht |
 | `tools/spaziergang-messlauf.mjs` | schickt eine frische Stufe 1 in die echte Welt und misst den Verlauf: erster Kill, Kills, Stufe, Ausgang. Seit S1 zweimal je Aufruf, einmal ohne und einmal mit Steigerung — der Abstand zwischen beiden Zeilen ist der Messwert |
 | `tools/monster-fehlversuch.mjs` | setzt absichtlich Fehler in den Katalog und prüft, ob `monsterAssert()` sie meldet. Ein Guard, der immer schweigt, beweist nichts. |
+| `tools/menue-pruef.mjs` | prüft die sieben Panels im echten Browser: Klick daneben schließt, ohne anzugreifen; HUD und Daumenfächer behalten ihre Wirkung; `Esc` bleibt eine Ebene je Druck. Stellt fest statt zu messen, Exit-Code 1 bei der ersten Abweichung. |
 
 ```bash
 python3 tools/monsterkatalog.py
@@ -135,6 +137,7 @@ node tools/zauber-messlauf.mjs
 node tools/nahfeld-messlauf.mjs
 node tools/spaziergang-messlauf.mjs
 node tools/monster-fehlversuch.mjs
+node tools/menue-pruef.mjs
 ```
 
 ## Grafik
