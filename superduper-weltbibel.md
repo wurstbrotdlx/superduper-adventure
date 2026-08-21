@@ -235,6 +235,16 @@ Ortes ist damit eine Verfahrensregel: **dem Lager kann nicht zugestellt werden, 
 niemand darin empfangsberechtigt ist.** Der Einzige, der es wäre, heißt Nachtrag, ist
 Fürst, und ist unbenachrichtigt.
 
+**Nachtrag W-Nörgel:** Nörgel weiß davon. Er ist selbst eine Grünhaut, die Leute hinter der
+Palisade sind seinesgleichen, und seit dem Bauabschnitt W-Nörgel sagt er das auch — aber
+erst, **nachdem der Spieler selbst am Lager war** (Merker `kn.flags.hatLagerGesehen`, Einbau
+in `phase-w-noergel.md`). Vier Zusatzzeilen, die vier Dinge tun: sie benennen, wer dort
+steht, sie beantworten Lisbeths Frage („Und wenn er einfach nur wartet?") mit ja, sie stellen
+die Frage aus Kapitel 8 („Man muss ihn nur fragen") und schicken den Spieler zurück ans Tor.
+Sie **lösen nichts auf**: die Zustellung bleibt bei Trepp, der Adressat bleibt Fürst Nachtrag,
+das Finale bleibt Akt V, und niemand kann Nörgel im Spiel danach fragen. Das Lager selbst
+bleibt unverändert, es gibt weiterhin nichts zu übergeben.
+
 ### Neu mit M3: die Sperrablage
 
 Das sechste Biom, eine Ebene unter der Unteren Registratur, und nur hinter der teuersten

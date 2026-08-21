@@ -176,9 +176,10 @@ Alle drei standen schon im Spiel und wären in einer Zahlentabelle nicht aufgefa
   Dialog am Tor, keine Möglichkeit, die Sache aufzulösen. Das ist Absicht für diese
   Runde: die Zustellung ist der Hauptstrang und gehört Trepp und Fürst Nachtrag. Das
   Lager stellt die Frage und beantwortet sie nicht.
-- **Nörgel weiß nichts davon.** Er ist die Grünhaut auf Probe im Amt, seine Leute stehen
-  zwölf Kacheln östlich hinter einer Palisade, und im Spiel verbindet die beiden nichts.
-  Das ist die offensichtlichste Fortsetzung und braucht Figurentext, nicht Code.
+- ~~**Nörgel weiß nichts davon.**~~ **Erledigt in `phase-w-noergel.md`.** Er wusste
+  nichts davon: seine Leute standen zwölf Kacheln östlich hinter einer Palisade, und im
+  Spiel verband die beiden nichts. Seit W-Nörgel sagt er vier Zeilen dazu, sobald der
+  Spieler selbst am Lager war. Es wurde, wie hier vermutet, Figurentext und fast kein Code.
 - **Die drei übrigen Orks bleiben ungenutzt.** `Orc_Grunt`, `Orc_Archer` und `Orc_Peon`
   sind mit derselben Messung jetzt nutzbar — das Raster ist geklärt, es fehlt nur die
   Vorgangsart. Ohne die gibt es kein Monster, so schreibt es die Weltbibel vor.

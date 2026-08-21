@@ -2500,6 +2500,21 @@ const DORF_FIGUREN = [
      'Die Stelle ist leer, ich bin es nicht.',
      'Gelesen und gezeichnet. Ich bin im Dienst.',
      'Auch jetzt ist es nicht meine Zuständigkeit.',
+   ],
+   // W-Nörgel: seine Leute stehen zwölf Kacheln östlich hinter einer Palisade,
+   // und bis hierher verband die beiden im Spiel nichts. Diese vier Zeilen
+   // kommen erst, wenn der Spieler selbst am Lager war (kn.flags.hatLagerGesehen)
+   // — er antwortet auf etwas, das der Spieler mitbringt, statt von einem Ort zu
+   // erzählen, den niemand gesehen hat. Sie stellen die Frage aus Kapitel 2 und
+   // lösen sie NICHT: die Zustellung bleibt Trepps Sack, Fürst Nachtrag und
+   // Akt V. Am Lager selbst ändert sich nichts, es gibt nichts zu übergeben.
+   zusatz:[
+     {merker:'hatLagerGesehen', zeilen:[
+       {z1:'Hinter der Palisade stehen meine Leute.', z2:'Grünhaut. Wie ich.'},
+       {z1:'Die belagern nichts. Die warten.', z2:'Seit vierhundert Jahren.'},
+       {z1:'Die schreiben. Nur liest es hier keiner.', z2:'Ich könnte. Fragt ja niemand.'},
+       {z1:'Gehen Sie wieder hin. Ohne zu schlagen.', z2:'Dann sehen Sie es selbst.'},
+     ]},
    ]},
 
   {key:'milb', name:'Gutachter Dr. phil. Milb', tx:11, ty:39, opt:'wander', sheet:'buba',
@@ -6061,7 +6076,11 @@ const KN_HAAR = 'h5';                        // fest gewählt, nicht zufällig: 
 const kn = {
   seen:{}, pending:{}, varB:{}, escReady:{},
   counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0},
-  flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false, hatGesteigert:false},
+  // W-Nörgel: hatLagerGesehen steht in derselben Reihe wie hatKammerBetreten —
+  // einmal im Leben wahr, danach für immer. Er schaltet Nörgels Lagerzeilen frei
+  // (DORF_FIGUREN, Feld zusatz). Ein alter Spielstand ohne das Feld lädt ohne
+  // Zutun: loadKn() macht Object.assign auf die Vorgabe, der Merker bleibt false.
+  flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false, hatGesteigert:false, hatLagerGesehen:false},
   wissensluecke:{zauber:false, kochen:false, kammer:false, befaehigung:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
   beats:{beat1:false, beat2:false, beat3:false},
   regler:'gespraechig',            // 'gespraechig' | 'dienstlich' | 'schweigt' — Dienstzettel laufen in jeder Stellung
@@ -6202,6 +6221,14 @@ function knAssertCaps(){
     if(fig.antworten) for(const qa of fig.antworten) rows.push([qa.z1,48],[qa.z2,32]);
     if(fig.abweisung) for(const ab of fig.abweisung) rows.push([ab.z1,48],[ab.z2,32]);
     if(fig.anlass) for(const key in fig.anlass) for(const p of fig.anlass[key]) rows.push([p.z1,48],[p.z2,32]);
+    // W-Nörgel: zusatz sind Sprechblasen wie alle anderen, derselbe Deckel. Der
+    // Merkername wird mitgeprüft: ein Tippfehler darin fiele sonst nirgends auf,
+    // die Zeilen wären schlicht nie zu sehen, und genau so eine stumme Figur ist
+    // der Fall, den dieser Guard seit GW14 melden soll.
+    if(fig.zusatz) for(const z of fig.zusatz){
+      if(!(z.merker in kn.flags)) rows.push([null,0,'Figur ' + fig.key + ' nennt einen Merker, den es nicht gibt: ' + z.merker]);
+      for(const p of z.zeilen) rows.push([p.z1,48],[p.z2,32]);
+    }
   }
   // Das Rekord-Suffix aus knBegruessungLine() steht hier bewusst nicht: es prüft seine
   // Gesamtlänge dort selbst gegen 44 und fällt sonst auf die Grundzeile zurück. Der
@@ -6525,6 +6552,19 @@ function knTick(dt){
   document.body.classList.toggle('bossvis', bv);
 
   if((knFrameCtr++ % 15) === 0) knEvaluateZettel();
+
+  // W-Nörgel: der Merker fürs Lager. Die anderen vier kn.flags sitzen an ihrem
+  // Ereignis (Zauber gewirkt, Kessel gekocht, Kammertür betreten, Punkt
+  // vergeben); "der Spieler war am Lager" hat keins, weil Hingehen kein
+  // Ereignis ist, sondern ein Zustand. Deshalb hier, im Takt,
+  // der ohnehin jeden Frame läuft: einmal gesetzt, kostet die Zeile nur noch
+  // die eine Boolean-Prüfung ganz vorn. Gemessen wird mit imLager(), nicht mit
+  // einem zweiten Rechteck — eine Wahrheitsquelle, und der Kacheln-Rand von
+  // imLager() ist genau richtig: wer an der Palisade entlanggeht, war am Lager.
+  if(!kn.flags.hatLagerGesehen && state === 'play' && !kammer && currentLevel === 1
+     && imLager((player.x / TS) | 0, (player.y / TS) | 0)){
+    kn.flags.hatLagerGesehen = true; saveKn();
+  }
 
   // Beide Merker werden aus knIdleT abgeleitet, das nur eine echte Aktion nullt. Damit
   // bleiben alle sechs vorhandenen knIdleT-Nullstellen unangetastet. Steht nach der
@@ -7323,6 +7363,21 @@ function fuehreAktion(){
   }
 }
 
+// W-Nörgel: figureigene Zusatzzeilen. Dieselbe Wirkung wie langZusatz(), nur
+// hängt der Schalter an einem Merker im Spielstand statt an einem Langvorgang:
+// kein Strang, keine Stufen, kein Kladde-Eintrag, und vor allem kein achter
+// Eintrag in einer Tabelle, deren sieben Stränge in Kapitel 10 der Weltbibel
+// abschliessend aufgezählt sind. Der Merker steht als NAME in der Tabelle und
+// nicht als Funktion — DORF_FIGUREN ist reine Daten, und knAssertCaps() kann so
+// nachsehen, ob es den Merker überhaupt gibt. Sie hängen sich vor die
+// Langvorgang-Zeilen: wer beides freigeschaltet hat, sieht das Neuere zuerst.
+function figZusatz(fig){
+  if(!fig.zusatz) return [];
+  let out = [];
+  for(const z of fig.zusatz) if(kn.flags[z.merker]) out = out.concat(z.zeilen);
+  return out;
+}
+
 // W3: Dorf-Figuren ansprechen. Kein Dialogbaum, kein Menü — ein Tastendruck
 // schaltet die Figur eine Zeile weiter (Grundzeilen-Kreislauf, zuletzt die
 // Aktzeile, die sich mit aktStand() automatisch ändert), Bramsche und der
@@ -7334,10 +7389,11 @@ function npcCycle(n, fig){
   if(lv){ n.bubbleText1 = lv.z1; n.bubbleText2 = lv.z2; return; }
   // 18.5: Schritt 0 ist die Anredezeile. bubbleIdx startet bei -1, der erste
   // Tastendruck landet also darauf. Danach die unveränderten Grundzeilen plus
-  // die per Langvorgang freigeschalteten Zusatzzeilen, zuletzt die Aktzeile —
+  // die freigeschalteten Zusatzzeilen (W-Nörgel: erst die figureigenen aus
+  // einem Merker, dann die aus Langvorgängen), zuletzt die Aktzeile —
   // deshalb +2 statt +1 im Modulo. Das Modulo hält den Zeiger auch dann im
   // Bereich, wenn zus mitten im Zyklus wächst.
-  const zus   = langZusatz(fig.key);
+  const zus   = figZusatz(fig).concat(langZusatz(fig.key));
   const grund = zus.length ? fig.grund.concat(zus) : fig.grund;
   n.bubbleIdx = (n.bubbleIdx + 1) % (grund.length + 2);
   if(n.bubbleIdx === 0){
