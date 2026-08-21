@@ -138,6 +138,27 @@ Daraus folgt sauber:
 * **Gold zur Hälfte.** Der Rest ist Verwaltungskostenanteil. Das ist eine Frechheit. Niemand beschwert sich, weil die Beschwerde ein Formular wäre und Formulare bekanntlich lebendig werden. *(Seit 20.08.2026 steht das im Code: `goldAufteilung()` teilt die Schichtbeute in Gürtel, Amtskasse und Verwaltungskostenanteil, letzterer verlässt das Spiel. Die Hälfte am Gürtel ist der Bruttoanteil, wie dieser Satz es sagt. Bis dahin gab es keinen Verlust, Gürtel und Kasse waren zwei Hälften desselben Topfes. Zahlen und Herleitung in `KAMMER-MESSUNG-2026-08-20.md`, Abschnitt 9.)*
 * **Zutaten bis zum Kontingent.** Der Rest wird eingezogen und kommt in die Registratur. Da liegt er dann. Und wartet.
 
+### Die Befähigung (S1)
+
+Das Haus stellt niemanden ein, weil er stark ist. Es stellt ein, weil jemand da ist. Was der Außendienst kann, steht nicht in seinem Körper, sondern in seiner Personalakte, und diese Akte schreibt er im Laufe des Tages selbst.
+
+Vier Zeilen stehen darin, und alle vier sind Amtsdeutsch für etwas sehr Körperliches:
+
+| Zeile | Was sie ist | Was sie bringt |
+|---|---|---|
+| **Kraft** | die Fähigkeit, einer Sache mit Nachdruck zu begegnen | Schaden, und das Recht, schweres Gerät überhaupt zu führen |
+| **Zähigkeit** | die Fähigkeit, einen langen Vorgang zu überstehen | Leben |
+| **Behändigkeit** | die Fähigkeit, rechtzeitig woanders zu sein | Tempo |
+| **Amtskunde** | die Fähigkeit, eine Verfügung zu formulieren, ohne nachzuschlagen | Manavorrat |
+
+Drei Regeln machen daraus eine Entscheidung statt einer Beigabe:
+
+* **Die Stufe erlaubt, sie leistet nicht.** Ein Aufstieg bringt zwei Punkte und fast nichts sonst. Wer nicht steigert, ist am Abend, was er am Morgen war. Das ist die Fiktion des täglich befristeten Vertrages, konsequent zu Ende gedacht: das Haus zahlt keine Erfahrung aus, es genehmigt sie nur.
+* **Der Aufstieg heilt nicht.** Eine Beförderung im Amt hat noch niemanden gesund gemacht.
+* **Schweres Gerät verlangt Kraft, schwere Sprüche verlangen Vorrat.** Ein Siegelbrecher, den man nicht heben kann, bleibt in der Tasche liegen, und ein Spruch, der teurer ist als der eigene Manavorrat, lässt sich lernen, aber nie wirken. Das Amt hält beides für selbstverständlich und sagt es deshalb nur einmal, klein, an der richtigen Stelle.
+
+Und weil auch das eine Personalakte ist, endet sie mit der Schicht. Persönliche Qualifikation ist nicht übertragbar. Steht so im Vorgang.
+
 ---
 
 ## 6. Bestiarium: die 31 Vorgangsarten
@@ -652,6 +673,16 @@ Kapitel 5 und 18.2. Der eine Kauf, den dieses Spiel anbietet, und die einzige Ar
 * **Ein Verfahrensgrundsatz statt eines Schwellenwerts.** „Ein Antrag ohne Beschwer ist unzulässig": liegt der vorige Stand nicht über der Anfangsstufe, ändert die Bewilligung nichts, also nimmt das Haus ihn nicht an. Das skaliert von selbst mit dem Ausbau „Höhere Anfangsstufe" mit.
 
 **Abnahme:** Kein Rang wird verkauft, keine zweite Währung, kein neues Panel. Wer den Antrag nie stellt, spielt das Spiel unverändert weiter.
+
+### S1: Die Befähigung — ERLEDIGT (siehe `phase-s1-befaehigung.md`)
+
+* **Umschichten statt verschärfen.** Was die Stufe geschenkt hat, kommt aus dem Punkt. Der Referenzspieler des Monsterkatalogs (je Stufe ein Punkt Kraft, ein Punkt Zähigkeit) bleibt, wo er war, alle Bänder aus M1 halten unverändert. Wer nicht steigert, hat auf Sollstufe 10 noch ein Viertel der Lebensleiste statt der Hälfte.
+* **Der Aufstieg heilt nicht mehr** und kommt halb so oft. Er war die stärkste Heilquelle im Spiel, ohne dass das je jemand entschieden hätte.
+* **Zauber kosten das Zweieinhalbfache** und tragen ein Viertel mehr. Dauerzauber leistet knapp die Hälfte von vorher, der einzelne Spruch wiegt schwerer. Auf der Befugnisstufe trägt der volle Manavorrat genau zwei Funken.
+* **Der Kraftbedarf ist die erste Sperre im Spiel, die eine Befähigung aufschließt.** Die drei schweren Kesselklingen lassen sich ohne Kraft nicht anlegen, das Ultimate ohne Amtskunde nicht bezahlen.
+* **Die vier Befähigungen heißen jetzt so, wie das Haus spricht** (Kraft, Zähigkeit, Behändigkeit, Amtskunde), nennen ihren Ertrag je Punkt und stehen im Bild, statt still im Rucksack zu liegen. Die Dienstanweisung nennt sie auf Blatt 2 und Blatt 3.
+
+**Abnahme:** Kein Gegner wurde stärker gemacht, keine Bandbreite verschoben, keine zweite Währung. Der Spaziergangs-Messlauf fährt seither zwei Bauweisen und weist den Abstand aus.
 
 ### Was wir ausdrücklich nicht bauen
 

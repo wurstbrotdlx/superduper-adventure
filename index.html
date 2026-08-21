@@ -56,6 +56,13 @@
   .skillBtn{background:#c9a227;border:none;border-radius:3px;color:#000;font-weight:bold;padding:1px 6px;cursor:pointer;}
   .skillBtn:disabled{background:#4a3e20;color:#7a6e50;cursor:default;}
   #statBox{font-size:11px;line-height:1.4;border:1px solid #5a4a2d;border-radius:6px;padding:6px 8px;margin-bottom:8px;background:#141009;color:#d8c898;}
+  /* S1: Der Ertrag eines Punktes steht neben dem Punkt. Vorher stand da '(+HP)'. */
+  .skWert{color:#9a8a5f;font-weight:normal;}
+  #skHint{font-size:10px;color:#f4d97a;margin-top:6px;line-height:1.35;min-height:1px;}
+  #skillBox.offen{border-color:#f4d97a;box-shadow:0 0 0 1px rgba(244,217,122,0.25);}
+  /* S1: freie Punkte gehoeren in die Dauersicht, nicht nur ins Inventar. */
+  #freiTxt{color:#f4d97a;animation:freiPuls 1.6s ease-in-out infinite;}
+  @keyframes freiPuls{0%,100%{opacity:1;}50%{opacity:0.45;}}
   #bagGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
   .bagSlot{height:46px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
 
@@ -417,20 +424,22 @@
   <div id="statCol">
     <span id="lvlTxt">Stufe 1</span>
     <span id="goldTxt">💰 0</span>
+    <span id="freiTxt" style="display:none;"></span>
   </div>
 </div>
 <div id="touchCluster"><div class="tBtn" id="attackBtn">⚔️</div></div>
 
 <div id="inv">
-  <h2>INVENTAR & SKILLS <span style="cursor:pointer" id="closeInvBtn">✖</span></h2>
+  <h2>INVENTAR & BEFÄHIGUNG <span style="cursor:pointer" id="closeInvBtn">✖</span></h2>
   <div id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
   <div id="ausweisBtn" title="Dienstausweis">🪪 Dienstausweis</div>
   <div id="skillBox">
-    <h4>SKILL PUNKTE: <span id="spCount">0</span></h4>
-    <div class="skillRow"><span>💪 Stärke (+Dmg): <span id="skStr">0</span></span> <button class="skillBtn" id="btnStr">+</button></div>
-    <div class="skillRow"><span>❤️ Vitalität (+HP): <span id="skVit">0</span></span> <button class="skillBtn" id="btnVit">+</button></div>
-    <div class="skillRow"><span>⚡ Agilität (+Tempo): <span id="skAgi">0</span></span> <button class="skillBtn" id="btnAgi">+</button></div>
-    <div class="skillRow"><span>🧠 Intelligenz (+Mana): <span id="skInt">0</span></span> <button class="skillBtn" id="btnInt">+</button></div>
+    <h4>BEFÄHIGUNG <span>frei: <span id="spCount">0</span></span></h4>
+    <div class="skillRow"><span>💪 Kraft <span class="skWert" id="skWertStr"></span>: <span id="skStr">0</span></span> <button class="skillBtn" id="btnStr">+</button></div>
+    <div class="skillRow"><span>❤️ Zähigkeit <span class="skWert" id="skWertVit"></span>: <span id="skVit">0</span></span> <button class="skillBtn" id="btnVit">+</button></div>
+    <div class="skillRow"><span>⚡ Behändigkeit <span class="skWert" id="skWertAgi"></span>: <span id="skAgi">0</span></span> <button class="skillBtn" id="btnAgi">+</button></div>
+    <div class="skillRow"><span>🧠 Amtskunde <span class="skWert" id="skWertInt"></span>: <span id="skInt">0</span></span> <button class="skillBtn" id="btnInt">+</button></div>
+    <div id="skHint"></div>
   </div>
   <div id="statBox">
     <div>Schaden: <span id="stDmg">0-0</span> | Rüstung: <span id="stArm">0</span></div>
@@ -2788,10 +2797,16 @@ const RARITY = [
 ];
 // Altbestand: Ausrüstung, die es vor der Kessel-Umstellung gab. Fällt nicht mehr
 // als Beute an, bleibt aber tragbar (Startwaffe, alte Fundstücke).
+// S1: Die Grundklingen tragen weniger, damit die Kraft mehr traegt. Das
+// Kurzschwert ist die Referenzwaffe des Monsterkatalogs (monsterAssert baut
+// den Referenzspieler damit), seine Zahlen sind deshalb keine Geschmacksfrage:
+// [5,9] mit +3/+4 je Punkt Kraft ergab auf Stufe 1 dieselbe Wucht wie auf
+// Stufe 4 mit halber Steigerung. [3,6] mit +3/+5 dreht das um.
+// kraft = Kraftbedarf. Wer ihn nicht hat, legt die Waffe nicht an.
 const BASES = [
-  {t:'weapon', mode:'dagger',    name:'Dolch',          tier:1, dmg:[3,6],   aps:1.8,  icon:'🗡️', iconFrame:'dagger'},
-  {t:'weapon', mode:'sword',     name:'Kurzschwert',    tier:1, dmg:[5,9],   aps:1.3,  icon:'🗡️', iconFrame:'sword'},
-  {t:'weapon', mode:'doubleaxe', name:'Schattenspalter', tier:3, dmg:[22,40], aps:0.7,  icon:'🪓', iconFrame:'doubleaxe'},
+  {t:'weapon', mode:'dagger',    name:'Dolch',          tier:1, dmg:[2,4],   aps:1.8,  kraft:0,  icon:'🗡️', iconFrame:'dagger'},
+  {t:'weapon', mode:'sword',     name:'Kurzschwert',    tier:1, dmg:[3,6],   aps:1.3,  kraft:0,  icon:'🗡️', iconFrame:'sword'},
+  {t:'weapon', mode:'doubleaxe', name:'Schattenspalter', tier:3, dmg:[22,40], aps:0.7, kraft:10, icon:'🪓', iconFrame:'doubleaxe'},
   {t:'armor',  name:'Lederharnisch', tier:1, armor:3,  icon:'👕', iconFrame:'armor'},
   {t:'armor',  name:'Kettenpanzer',  tier:2, armor:8,  icon:'🧥', iconFrame:'armor'},
   {t:'armor',  name:'Dunkler Panzer', tier:3, armor:15, icon:'👕', iconFrame:'armor'},
@@ -3015,12 +3030,15 @@ const FLUCH = {
 // Ausrüstung, die am Kessel entsteht. Index = Qualitätsstufe 0..4.
 // Zahlen sind interne Rechengrößen und tauchen in keinem Tooltip auf.
 const CRAFT_BASE = {
+  // S1: Die drei schweren Klingen tragen einen Kraftbedarf. Wer den Siegelbrecher
+  // erbraut und ihn nicht heben kann, hat den staerksten Grund der Welt, beim
+  // naechsten Aufstieg auf Kraft zu gehen. Genau dafuer steht er da.
   weapon: [
-    {name:'Behelfsklinge',      mode:'dagger',    dmg:[4,7],   aps:1.7,  icon:'🗡️'},
-    {name:'Amtsklinge',         mode:'sword',     dmg:[8,13],  aps:1.35, icon:'🗡️'},
-    {name:'Dienstschwert',      mode:'sword',     dmg:[15,23], aps:1.3,  icon:'⚔️'},
-    {name:'Vorschriftsspalter', mode:'doubleaxe', dmg:[28,46], aps:0.8,  icon:'🪓'},
-    {name:'Siegelbrecher',      mode:'doubleaxe', dmg:[42,66], aps:0.9,  icon:'🪓'},
+    {name:'Behelfsklinge',      mode:'dagger',    dmg:[4,7],   aps:1.7,  kraft:0,  icon:'🗡️'},
+    {name:'Amtsklinge',         mode:'sword',     dmg:[8,13],  aps:1.35, kraft:0,  icon:'🗡️'},
+    {name:'Dienstschwert',      mode:'sword',     dmg:[15,23], aps:1.3,  kraft:4,  icon:'⚔️'},
+    {name:'Vorschriftsspalter', mode:'doubleaxe', dmg:[28,46], aps:0.8,  kraft:8,  icon:'🪓'},
+    {name:'Siegelbrecher',      mode:'doubleaxe', dmg:[42,66], aps:0.9,  kraft:12, icon:'🪓'},
   ],
   armor: [
     {name:'Dienstkittel',   armor:3,  icon:'👕'},
@@ -3527,6 +3545,37 @@ const CFX = {fehl:0, einzel:0, stumpf:0, kurzarm:0, gruss:0, zappel:0, stand:0, 
              blut:0, manatot:0, goldz:0, zunge:0, goldweg:0, zutweg:0, schweigen:0, steuer:0,
              duenn:0, hektik:0, nuecht:0, blind:0, stille:0, laut:0, bolz:0, platz:0};
 
+// ===========================================================================
+//  S1: DIE BEFAEHIGUNG — die Zahlen, aus denen der Koerper besteht
+//
+//  Bauabschnitt S1 (phase-s1-befaehigung.md) hat nichts erschwert, sondern
+//  umgeschichtet. Vorher kam der groesste Teil der Spielerstaerke aus der
+//  Stufe selbst und war damit geschenkt; die vier Befaehigungen waren eine
+//  Beigabe, die man uebersehen konnte, ohne dass es auffiel. Jetzt kommt sie
+//  aus den Punkten, und die Stufe ist im Wesentlichen die Erlaubnis, welche
+//  zu vergeben.
+//
+//  Die Eichung: der Referenzspieler des Monsterkatalogs steigert je Stufe
+//  einen Punkt Kraft und einen Punkt Zaehigkeit. Er soll nach der Umschichtung
+//  ungefaehr dastehen wie vorher, damit die Baender aus M1 halten (monsterAssert
+//  rechnet sie bei jedem Laden nach). Wer nicht steigert, faellt heraus.
+//  befaehigungAssert() weiter unten belegt beide Haelften mit Zahlen.
+//
+//  Diese Konstanten stehen VOR recalc(), weil recalc() noch auf Skriptebene
+//  laeuft (s. die Zeile unter der Funktion). Das ist die TDZ-Falle aus der
+//  README, und sie hat in diesem Projekt schon zugeschlagen.
+// ===========================================================================
+const HP_BASIS       = 63;   // Leben auf Stufe 1 ohne jeden Punkt (vorher 70)
+const HP_JE_STUFE    = 2;    // Leben je Aufstieg, geschenkt (vorher 12)
+const ZAEH_HP        = 27;   // Leben je Punkt Zaehigkeit (vorher 20)
+const MANA_BASIS     = 26;   // Mana auf Stufe 1 ohne jeden Punkt (vorher 40)
+const MANA_JE_STUFE  = 2;    // Mana je Aufstieg, geschenkt (vorher 8)
+const KUNDE_MANA     = 22;   // Mana je Punkt Amtskunde (vorher 15)
+const KRAFT_DMG      = [3, 5];  // Schaden je Punkt Kraft, min und max (vorher 3 und 4)
+const TEMPO_BASIS    = 126;  // Grundtempo (vorher 135 — schneller als jedes Monster im Spiel)
+const BEHAEND_TEMPO  = 8;    // Tempo je Punkt Behaendigkeit (vorher 5)
+const PUNKTE_JE_STUFE = 2;   // Befaehigungspunkte je Aufstieg, unveraendert
+
 function recalc(){
   const e=player.equip, w=e.weapon;
   player.attackMode = w ? w.base.mode : 'sword';
@@ -3560,16 +3609,37 @@ function recalc(){
       }
     }
   }
-  let dmgMin = (w? w.base.dmg[0] : 1) + player.skills.str*3 + dmgBonus + FX.dmg*4;
-  let dmgMax = (w? w.base.dmg[1] : 2) + player.skills.str*4 + dmgBonus + FX.dmg*6;
+  // S1: Die Stufe schenkt fast nichts mehr, der Punkt traegt alles. Herleitung
+  // und Messung in phase-s1-befaehigung.md, die Kurzfassung: der Referenzspieler
+  // des Katalogs steigert je Stufe einen Punkt Kraft und einen Punkt Zaehigkeit
+  // (s. monsterAssert), und GENAU der bleibt, wo er war. Wer nicht steigert,
+  // faellt jetzt heraus, statt wie bisher fast mitzukommen.
+  //   Leben  vorher 70 + 12 je Stufe + 20 je Punkt  ->  63 + 2 je Stufe + 27 je Punkt
+  //   Mana   vorher 40 +  8 je Stufe + 15 je Punkt  ->  26 + 2 je Stufe + 22 je Punkt
+  //   Schaden vorher +3/+4 je Punkt Kraft           ->  +3/+5, dafuer schwaechere Klingen
+  // Der Punkt ist in beiden Faellen das Zehn- bis Vierzehnfache der Stufe. Eine
+  // Stufe ohne Steigerung ist damit fast nur noch die Erlaubnis, zu steigern.
+  let dmgMin = (w? w.base.dmg[0] : 1) + player.skills.str*KRAFT_DMG[0] + dmgBonus + FX.dmg*4;
+  let dmgMax = (w? w.base.dmg[1] : 2) + player.skills.str*KRAFT_DMG[1] + dmgBonus + FX.dmg*6;
   let aps = (w? w.base.aps : 1.3) * (1 + player.skills.agi*0.05) * (1 + FX.tempo*0.10);   // Wirkung 'Schlagzahl'
-  let hpB = player.skills.vit*20 + hpBonus;
-  const maxHp = 70 + (player.level-1)*12 + hpB + FX.leben*18;   // Wirkung 'Leibesfülle'
+  let hpB = player.skills.vit*ZAEH_HP + hpBonus;
+  const maxHp = HP_BASIS + (player.level-1)*HP_JE_STUFE + hpB + FX.leben*18;   // Wirkung 'Leibesfülle'
   derived = {dmgMin, dmgMax, aps, armor:armorBonus + FX.armor*5, maxHp,
-             maxMana: 40 + (player.level-1)*8 + player.skills.int*15,
-             speed:135 + player.skills.agi*5 + spdBonus + FX.speed*10 + (amt.bonusSpeed||0),
+             maxMana: MANA_BASIS + (player.level-1)*MANA_JE_STUFE + player.skills.int*KUNDE_MANA,
+             speed:TEMPO_BASIS + player.skills.agi*BEHAEND_TEMPO + spdBonus + FX.speed*10 + (amt.bonusSpeed||0),
              range:70 + FX.arc*14, arc:1.6 + FX.arc*0.16,
              crit:Math.min(0.75, 0.25 + FX.crit*0.07)};
+  // S1: Kraftbedarf. Eine Klinge, fuer die die Kraft nicht reicht, laesst sich
+  // gar nicht erst anlegen (equipItemFromBag). Diese Klemme hier ist die zweite
+  // Haelfte derselben Sperre: ein Spielstand, ein Guard-Testpfad oder ein
+  // Fluch koennte eine zu schwere Waffe in der Hand halten, und dann soll sie
+  // sich anfuehlen wie das, was sie ist.
+  if(w && (w.base.kraft||0) > player.skills.str){
+    derived.dmgMin = Math.round(derived.dmgMin * 0.45);
+    derived.dmgMax = Math.round(derived.dmgMax * 0.45);
+    derived.aps    = derived.aps * 0.6;
+    derived.zuSchwer = true;
+  }
   if(CFX.stumpf) derived.crit = 0;                                          // Fluch 'Stumpfheit'
   if(CFX.kurzarm) derived.range = Math.max(44, derived.range * 0.62);       // Fluch 'Kurzarm'
   // Untergrenzen: keine Fluchkombination darf Nahkampf oder Bewegung auf 0 drücken.
@@ -3660,33 +3730,33 @@ const MONDEF = {
   // --- Wald / Ablage A ---
   slime: {name:'Chuchu', art:'Der Formfehler', rig:'slime_small_green', sc:1.15, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A1', stufe:1, biom:'Wald', route:'physisch', typen:'B1'},
-    hp:27, dmg:[2,4], xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,8],
+    hp:20, dmg:[2,4], xp:10, speed:38, aggro:130, atkCd:1.2, atkRange:26, gold:[4,8],
     res:{physisch:0, feuer:-0.25, eis:0, gift:0.2, magie:0},
     muster:[{name:'Anlehnen', warn:300, art:'nah'},
              {name:'Formfehler abgeben', warn:350, art:'kegel', jede:4, reich:44}]},
   goblin: {name:'Grünhaut', art:'Die Beschwerde', rig:'goblin_maceman', sc:1.5, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A1', stufe:2, biom:'Wald', route:'physisch', typen:'B7'},
-    hp:50, dmg:[3,5], xp:20, speed:78, aggro:95, atkCd:0.9, atkRange:26, gold:[7,15],
+    hp:42, dmg:[3,5], xp:20, speed:78, aggro:95, atkCd:0.9, atkRange:26, gold:[7,15],
     res:{physisch:0, feuer:-0.2, eis:0.1, gift:0, magie:0.1},
     hinterhalt:true,
     muster:[{name:'Lautstark vortragen', warn:280, art:'nah'},
              {name:'Aus dem hohen Gras', warn:420, art:'nah', wucht:2.0, eroeffnung:true, reich:34}]},
   ablagestapel: {name:'Wandelnder Ablagestapel', art:'Der Posteingang', rig:'knights_spearman', tint:'#c9b98a', tintA:0.66, sc:1.9, psc:1.2, deathFps:5, r:14,
     kat:{klasse:'A2', stufe:2, biom:'Wald', route:'physisch', typen:'B2'},
-    hp:125, dmg:[8,12], xp:107, speed:32, aggro:140, atkCd:1.6, atkRange:30, gold:[16,34],
+    hp:105, dmg:[7,11], xp:107, speed:32, aggro:140, atkCd:1.6, atkRange:30, gold:[16,34],
     res:{physisch:0.35, feuer:-0.4, eis:0.1, gift:0.3, magie:0},
     muster:[{name:'Umkippen', warn:420, art:'nah', ruhe:0.6},
              {name:'Loseblattlawine', warn:600, art:'kegel', jede:3, reich:90, ruhe:0.6}]},
   greenmage: {name:'Waldschamane', art:'Der Widerspruch', rig:'cowling_mage_2', tint:'#2f8f4a', tintA:0.5, sc:1.5, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A3', stufe:3, biom:'Wald', route:'physisch', typen:'B3'},
-    hp:380, dmg:[27,39], xp:251, speed:44, aggro:170, atkCd:1.9, atkRange:130, gold:[34,71],
+    hp:345, dmg:[25,35], xp:251, speed:44, aggro:170, atkCd:1.9, atkRange:130, gold:[34,71],
     res:{physisch:-0.2, feuer:0, eis:0, gift:0.2, magie:0.4},
-    ranged:true, bolt:{dmg:[27,39], speed:190, color:'#6aff8f', r:7},
+    ranged:true, bolt:{dmg:[25,35], speed:190, color:'#6aff8f', r:7},
     muster:[{name:'Widerspruchsbolzen', warn:420, art:'fern'},
              {name:'Anlage zum Schreiben', warn:520, art:'fern', jede:3, wucht:1.35}]},
   zustellbote: {name:'Der Zustellbote', art:'Der Zustellversuch', rig:'goblin_thief', tint:'#8fa8c9', tintA:0.6, sc:1.45, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A4', stufe:3, biom:'Wald', route:'physisch', typen:'B4'},
-    hp:295, dmg:[33,47], xp:675, speed:126, aggro:170, atkCd:1.1, atkRange:26, gold:[54,113],
+    hp:270, dmg:[30,42], xp:682, speed:126, aggro:170, atkCd:1.1, atkRange:26, gold:[54,113],
     res:{physisch:0.55, feuer:0.2, eis:-0.3, gift:0, magie:0.2},
     kiter:{zurueck:0.28, tempo:1.15}, fenster:{alle:6, dauer:1.4, art:'offen'},
     muster:[{name:'Zustellversuch', warn:380, art:'nah'}]},
@@ -3694,29 +3764,36 @@ const MONDEF = {
   // --- Sumpf / Die Nassablage ---
   blubberakte: {name:'Blubberakte', art:'Der Rücklauf', rig:'slime_small_blue', tint:'#4e7a3a', tintA:0.6, sc:1.25, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A1', stufe:3, biom:'Sumpf', route:'physisch', typen:'B1+B7'},
-    hp:59, dmg:[5,7], xp:23, speed:46, aggro:90, atkCd:1.3, atkRange:24, gold:[11,23],
+    hp:53, dmg:[5,7], xp:23, speed:46, aggro:90, atkCd:1.3, atkRange:24, gold:[11,23],
     res:{physisch:0, feuer:-0.3, eis:0.1, gift:0.8, magie:0},
     hinterhalt:true,
     muster:[{name:'Schmatzen', warn:300, art:'nah', slow:1.2},
              {name:'Auftauchen', warn:400, art:'nah', wucht:1.6, eroeffnung:true, reich:28}]},
   moorbescheid: {name:'Der Moorbescheid', art:'Der durchweichte Bescheid', rig:'cowling_1', tint:'#5a6b4a', tintA:0.62, sc:1.5, psc:1.2, deathFps:5, r:12,
     kat:{klasse:'A2', stufe:4, biom:'Sumpf', route:'feuer', typen:'B5'},
-    hp:345, dmg:[18,26], xp:161, speed:26, aggro:140, atkCd:2.0, atkRange:30, gold:[31,65],
-    res:{physisch:0.5, feuer:-0.5, eis:0.15, gift:0.9, magie:0.15},
+    // S1: Die drei Gegner mit Zauber-Sollroute rechnen ueber KAT_ZAUBER_DPS, und
+    // die ist mit den neuen Zauberpreisen von 23,04 auf 12,0 gefallen. Ihre
+    // Lebenspunkte fallen im selben Verhaeltnis, sonst waere ihre eigene Route
+    // aus dem Band. Damit die Weichstelle eine Weichstelle bleibt, steigt zugleich
+    // die Papierdicke gegen die Waffe: der Abstand zwischen Sollroute und
+    // Waffenroute ist danach derselbe wie vorher (2,0-fach). Herleitung in
+    // phase-s1-befaehigung.md, nachgerechnet vom Generator.
+    hp:180, dmg:[16,24], xp:161, speed:26, aggro:140, atkCd:2.0, atkRange:30, gold:[31,65],
+    res:{physisch:0.73, feuer:-0.5, eis:0.15, gift:0.9, magie:0.15},
     muster:[{name:'Durchweichen', warn:450, art:'nah'},
              {name:'Faulgasstoß', warn:550, art:'kegel', jede:3, reich:70, sperre:4}]},
   amtsschimmel: {name:'Der Amtsschimmel', art:'Die Fristverlängerung', rig:'angel_2', tint:'#d8e0c0', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A3', stufe:5, biom:'Sumpf', route:'physisch', typen:'B4+B6'},
-    hp:560, dmg:[70,100], xp:436, speed:118, aggro:180, atkCd:1.8, atkRange:28, gold:[54,113],
+    hp:550, dmg:[63,91], xp:436, speed:118, aggro:180, atkCd:1.8, atkRange:28, gold:[54,113],
     res:{physisch:0.15, feuer:-0.3, eis:0.1, gift:0.5, magie:0.3},
     kiter:{zurueck:0.35, tempo:1.0}, zielRange:150,
     muster:[{name:'Ausweichschritt', warn:350, art:'nah'},
              {name:'Wiedervorlage', warn:500, art:'stuetz', jede:3, reich:150, wert:0.12, stand:1.2}]},
   fristlaeufer: {name:'Der Fristläufer', art:'Die Fristsetzung', rig:'flying_skull', tint:'#9ad6a0', tintA:0.6, alpha:0.72, fly:true, sc:1.5, psc:1.2, deathFps:7, r:11,
     kat:{klasse:'A4', stufe:5, biom:'Sumpf', route:'physisch', typen:'B3+B4'},
-    hp:475, dmg:[160,230], xp:817, speed:132, aggro:190, atkCd:2.0, atkRange:170, gold:[85,178],
+    hp:470, dmg:[144,208], xp:823, speed:132, aggro:190, atkCd:2.0, atkRange:170, gold:[85,178],
     res:{physisch:0.5, feuer:0.3, eis:-0.35, gift:0.4, magie:0.1},
-    ranged:true, bolt:{dmg:[160,230], speed:210, color:'#9ad6a0', r:8},
+    ranged:true, bolt:{dmg:[144,208], speed:210, color:'#9ad6a0', r:8},
     muster:[{name:'Fristablauf', warn:650, art:'fern'},
              {name:'Verwehen', warn:400, art:'zu', jede:3, dauer:1.2}]},
 
@@ -3733,64 +3810,64 @@ const MONDEF = {
   // --- Wüste / Der Brandabschnitt ---
   skarabaeus: {name:'Papierstaub-Skarabäus', art:'Die Aktenvernichtung', rig:'blue_shroomling', tint:'#c9a227', tintA:0.7, sc:1.0, psc:1.2, deathFps:5, r:9,
     kat:{klasse:'A1', stufe:4, biom:'Wüste', route:'physisch', typen:'B5'},
-    hp:43, dmg:[7,9], xp:29, speed:92, aggro:150, atkCd:1.0, atkRange:22, gold:[14,29],
+    hp:41, dmg:[6,8], xp:29, speed:92, aggro:150, atkCd:1.0, atkRange:22, gold:[14,29],
     res:{physisch:0.5, feuer:0.85, eis:-0.4, gift:0.3, magie:0},
     muster:[{name:'Anrempeln', warn:300, art:'nah'},
              {name:'Staubwolke', warn:400, art:'kegel', jede:4, reich:40, sicht:1.0}]},
   crab: {name:'Klippkrabbe', art:'Die Aktenklammer', rig:'cowling_2', tint:'#ff5a2a', tintA:0.6, sc:1.4, scx:1.35, psc:1.2, deathFps:5, r:12,
     kat:{klasse:'A2', stufe:5, biom:'Wüste', route:'physisch', typen:'B2+B5'},
-    hp:570, dmg:[18,26], xp:220, speed:36, aggro:140, atkCd:1.4, atkRange:28, gold:[37,78],
+    hp:560, dmg:[16,24], xp:220, speed:36, aggro:140, atkCd:1.4, atkRange:28, gold:[37,78],
     res:{physisch:-0.2, feuer:1, eis:1, gift:0.2, magie:1},
     muster:[{name:'Klammern', warn:400, art:'nah', halt:0.5},
              {name:'Zangengriff', warn:550, art:'nah', jede:3, wucht:0.7, reich:32, halt:1.0}]},
   scorpion: {name:'Sandskorpion', art:'Die Nachforderung', rig:'goblin_thief', tint:'#e8c46a', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10,
     kat:{klasse:'A3', stufe:6, biom:'Wüste', route:'physisch', typen:'B3'},
-    hp:650, dmg:[130,186], xp:469, speed:96, aggro:170, atkCd:2.4, atkRange:28, gold:[64,134],
+    hp:650, dmg:[117,169], xp:469, speed:96, aggro:170, atkCd:2.4, atkRange:28, gold:[64,134],
     res:{physisch:0.1, feuer:0.3, eis:0.1, gift:0.7, magie:-0.2},
     folgeschlag:true,
     muster:[{name:'Nachforderung', warn:450, art:'nah'},
              {name:'Zweite Nachforderung', warn:350, art:'nah', wucht:0.5, folge:true}]},
   sandmage: {name:'Dünenpriester', art:'Die Verfügung', rig:'cowling_mage_1', tint:'#ff9f2a', tintA:0.55, sc:1.5, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A4', stufe:7, biom:'Wüste', route:'physisch', typen:'B4+B6'},
-    hp:830, dmg:[211,303], xp:1251, speed:104, aggro:180, atkCd:2.0, atkRange:130, gold:[115,242],
+    hp:840, dmg:[191,275], xp:1246, speed:104, aggro:180, atkCd:2.0, atkRange:130, gold:[115,242],
     res:{physisch:0.45, feuer:0.5, eis:-0.3, gift:0.2, magie:0.2},
-    ranged:true, bolt:{dmg:[211,303], speed:200, color:'#ffb04a', r:7}, kiter:{zurueck:0.3, tempo:1.0},
+    ranged:true, bolt:{dmg:[191,275], speed:200, color:'#ffb04a', r:7}, kiter:{zurueck:0.3, tempo:1.0},
     muster:[{name:'Sandwurf', warn:400, art:'fern'},
              {name:'Verfügung', warn:900, art:'stuetz', jede:3, reich:160, dauer:6, stand:2.4}]},
 
   // --- Höhle / Die Untere Registratur, Kammerwachen ---
   bat: {name:'Fledermaus', art:'Der Umlauf', rig:'bat', tint:'#6b5a4a', tintA:0.65, sc:1.0, psc:1.2, deathFps:7, fly:true, r:9,
     kat:{klasse:'A1', stufe:6, biom:'Höhle', route:'physisch', typen:'B1'},
-    hp:90, dmg:[8,12], xp:29, speed:134, aggro:200, atkCd:0.9, atkRange:20, gold:[20,42],
+    hp:90, dmg:[7,11], xp:29, speed:134, aggro:200, atkCd:0.9, atkRange:20, gold:[20,42],
     res:{physisch:0, feuer:-0.2, eis:-0.1, gift:0.3, magie:0},
     reserved:true,
     muster:[{name:'Vorbeiflug', warn:250, art:'nah'},
              {name:'Umlaufmappe', warn:300, art:'nah', jede:4, sicht:1.5}]},
   spider: {name:'Höhlenspinne', art:'Der Querverweis', rig:'blue_shroomling', tint:'#2a0f3a', tintA:0.7, sc:1.35, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A2', stufe:7, biom:'Höhle', route:'physisch', typen:'B2+B7'},
-    hp:460, dmg:[30,44], xp:293, speed:52, aggro:95, atkCd:1.7, atkRange:30, gold:[51,107],
+    hp:465, dmg:[28,40], xp:292, speed:52, aggro:95, atkCd:1.7, atkRange:30, gold:[51,107],
     res:{physisch:0.3, feuer:-0.3, eis:0.2, gift:0.3, magie:0.15},
     hinterhalt:true, reserved:true,
     muster:[{name:'Nachfassen', warn:400, art:'nah', zieht:26},
              {name:'Fallenlassen', warn:550, art:'nah', wucht:2.0, eroeffnung:true, reich:34}]},
   sammelmahnung: {name:'Die Sammelmahnung', art:'Die Mahnstufe', rig:'knights_spearman', tint:'#c9b98a', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A3', stufe:8, biom:'Höhle', route:'physisch', typen:'B1+B3'},
-    hp:680, dmg:[122,176], xp:491, speed:74, aggro:180, atkCd:2.3, atkRange:30, gold:[83,174],
+    hp:690, dmg:[111,159], xp:485, speed:74, aggro:180, atkCd:2.3, atkRange:30, gold:[83,174],
     res:{physisch:0.2, feuer:0, eis:0.1, gift:0.4, magie:-0.3},
     reserved:true,
     muster:[{name:'Mahnstufe', warn:500, art:'nah'},
              {name:'Gleichlaut', warn:600, art:'nah', jede:3, gleich:120}]},
   mage: {name:'Irrlichtmagier', art:'Die Fußnote', rig:'angel_1', tint:'#8fa8c9', tintA:0.6, sc:1.5, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A3', stufe:8, biom:'Höhle', route:'physisch', typen:'B3'},
-    hp:850, dmg:[107,155], xp:427, speed:46, aggro:180, atkCd:2.2, atkRange:140, gold:[83,174],
+    hp:870, dmg:[98,140], xp:426, speed:46, aggro:180, atkCd:2.2, atkRange:140, gold:[83,174],
     res:{physisch:-0.15, feuer:0.2, eis:0.2, gift:0.3, magie:0.5},
-    ranged:true, bolt:{dmg:[107,155], speed:210, color:'#bcd8ff', r:7}, reserved:true,
+    ranged:true, bolt:{dmg:[98,140], speed:210, color:'#bcd8ff', r:7}, reserved:true,
     muster:[{name:'Fußnote', warn:500, art:'fern'},
              {name:'Verweis', warn:380, art:'fern', jede:3, wucht:0.6}]},
   golem: {name:'Steingolem', art:'Die Bestandskraft', rig:'knights_templar', tint:'#8a8a8a', tintA:0.7, sc:2.4, psc:1.2, deathFps:5, r:16,
     kat:{klasse:'A4', stufe:9, biom:'Höhle', route:'magie', typen:'B2+B5'},
-    hp:1100, dmg:[225,323], xp:1657, speed:28, aggro:150, atkCd:2.6, atkRange:36, gold:[144,302],
-    res:{physisch:0.9, feuer:0, eis:0, gift:0.6, magie:-0.4},
+    hp:570, dmg:[204,294], xp:1648, speed:28, aggro:150, atkCd:2.6, atkRange:36, gold:[144,302],
+    res:{physisch:0.95, feuer:0, eis:0, gift:0.6, magie:-0.4},   // S1: s. Moorbescheid, Abstand bleibt 4,9-fach
     reserved:true,
     muster:[{name:'Faustschlag', warn:700, art:'nah'},
              {name:'Unanfechtbar', warn:900, art:'ring', jede:3, reich:130, ruhe:3.0}]},
@@ -3798,29 +3875,29 @@ const MONDEF = {
   // --- Ruine / Der Altbestand ---
   aktenbote: {name:'Der Aktenbote', art:'Der Zuschlag', rig:'cowling_1', tint:'#e0d0a0', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10,
     kat:{klasse:'A1', stufe:8, biom:'Ruine', route:'physisch', typen:'B1+B6'},
-    hp:135, dmg:[26,38], xp:39, speed:88, aggro:170, atkCd:1.4, atkRange:24, gold:[26,55],
+    hp:135, dmg:[25,35], xp:38, speed:88, aggro:170, atkCd:1.4, atkRange:24, gold:[26,55],
     res:{physisch:0, feuer:-0.2, eis:0, gift:0.2, magie:0.1},
     zielRange:120,
     muster:[{name:'Aktenkante', warn:300, art:'nah'},
              {name:'Zuschlag', warn:400, art:'stuetz', jede:3, reich:120, dauer:5}]},
   mummy: {name:'Mumie', art:'Die versiegelte Akte', rig:'cowling_2', tint:'#d8c9a0', tintA:0.55, sc:1.45, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A2', stufe:9, biom:'Ruine', route:'physisch', typen:'B2+B5'},
-    hp:1150, dmg:[49,71], xp:366, speed:26, aggro:150, atkCd:2.1, atkRange:30, gold:[64,134],
+    hp:1190, dmg:[44,64], xp:366, speed:26, aggro:150, atkCd:2.1, atkRange:30, gold:[64,134],
     res:{physisch:-0.25, feuer:1, eis:1, gift:0.9, magie:1},
     muster:[{name:'Verschnüren', warn:500, art:'nah', slow:2.0},
              {name:'Siegelstaub', warn:600, art:'kegel', jede:3, reich:80, sperre:5}]},
   stalfos: {name:'Knochenritter', art:'Die Dienstvorschrift', rig:'knights_swordman', sc:1.6, psc:1.2, deathFps:5, r:11,
     kat:{klasse:'A3', stufe:9, biom:'Ruine', route:'physisch', typen:'B7+B3'},
-    hp:890, dmg:[167,241], xp:675, speed:82, aggro:105, atkCd:2.5, atkRange:34, gold:[92,193],
+    hp:920, dmg:[153,219], xp:674, speed:82, aggro:105, atkCd:2.5, atkRange:34, gold:[92,193],
     res:{physisch:0.25, feuer:0.1, eis:-0.25, gift:0.6, magie:0.1},
     hinterhalt:true, folge:{n:3, pause:1.6},
     muster:[{name:'Dienstweg', warn:450, art:'nah'},
              {name:'Aus der Nische', warn:600, art:'nah', wucht:1.8, eroeffnung:true, reich:40}]},
   sammelverfuegung: {name:'Die Sammelverfügung', art:'Der Sammelbescheid', rig:'knights_templar', tint:'#c9a227', tintA:0.55, sc:2.6, psc:1.2, deathFps:5, glow:'#f4d97a', r:18,
     kat:{klasse:'A4', stufe:10, biom:'Ruine', route:'feuer', typen:'B4+B5'},
-    hp:1120, dmg:[294,424], xp:1864, speed:112, aggro:200, atkCd:2.2, atkRange:30, gold:[159,334],
-    res:{physisch:0.7, feuer:-0.35, eis:0.45, gift:0.6, magie:0.45},
-    bolt:{dmg:[294,424], speed:230, color:'#f4d97a', r:9}, kiter:{zurueck:0.35, tempo:1.0}, zielRange:180,
+    hp:580, dmg:[267,385], xp:1853, speed:112, aggro:200, atkCd:2.2, atkRange:30, gold:[159,334],
+    res:{physisch:0.85, feuer:-0.35, eis:0.45, gift:0.6, magie:0.45},   // S1: s. Moorbescheid, Abstand bleibt 1,45-fach
+    bolt:{dmg:[267,385], speed:230, color:'#f4d97a', r:9}, kiter:{zurueck:0.35, tempo:1.0}, zielRange:180,
     muster:[{name:'Zurückverweisen', warn:400, art:'nah', stoesst:40},
              {name:'Anhörung', warn:800, art:'fern', jede:3, wucht:1.2},
              {name:'Aktenmantel', warn:500, art:'mantel', jede:5, dauer:2.5}]},
@@ -4498,26 +4575,44 @@ function killMon(m){
   }
 }
 
+// S1: Die Stufenleiter. Vorher 35 * Stufe^1,35 — im Messlauf stand nach drei
+// Minuten Stufe 7 und nach fuenf Minuten Stufe 8, ohne dass ein einziger Punkt
+// vergeben worden waere. Eine Stufe, die alle zwanzig Sekunden kommt, ist kein
+// Ereignis, und was kein Ereignis ist, wird nicht bedient. Jetzt 48 * Stufe^1,6:
+// rund die halbe Geschwindigkeit, mit Abstand nach oben wachsend.
+const XP_FAKTOR = 48, XP_EXPONENT = 1.6;
+const xpFuerStufe = st => XP_FAKTOR * Math.pow(st, XP_EXPONENT);
+
 function gainXP(x){
   player.xp += Math.round(x * (1 + FX.xp*0.2));                      // Wirkung 'Aktenkunde'
-  let need = 35 * Math.pow(player.level, 1.35);
+  let need = xpFuerStufe(player.level);
   while(player.xp >= need){
-    player.xp -= need; player.level++; player.skillPoints += 2;
+    player.xp -= need; player.level++; player.skillPoints += PUNKTE_JE_STUFE;
     // Z2: Zauberpunkte gibt es erst mit der Befugnis. Die Punkte der Stufen 2
     // und 3 entfallen ersatzlos (kein Aufsparen): Zauber sind dadurch insgesamt
     // seltener, und das Ultimate rueckt von Stufe 11 auf Stufe 13.
     if(player.level >= ZAUBER_AB_STUFE) player.spellPoints += 1;
-    recalc(); player.hp = derived.maxHp;
+    // S1: KEIN Vollheilen mehr. Der Aufstieg war bisher nebenbei ein Gratistrank,
+    // und bei einer Stufe alle zwanzig Sekunden war das die eigentliche Heilquelle
+    // im Spiel — man konnte sich durch jede Gefahr hindurchleveln. Das Leben
+    // bleibt jetzt stehen, wo es steht; der hoehere Deckel macht es relativ
+    // sogar weniger. Geheilt wird aus dem Fläschchen, wie bei allen anderen auch.
+    recalc();
     floaters.push({x:player.x, y:player.y-30, txt:'STUFENAUFSTIEG', col:'#a855f7', t:1.5, big:true});
+    // S1: Der Aufstieg sagt jetzt, was er bringt, und wo es liegt. Der alte
+    // Aufstieg meldete nur sich selbst — die zwei Punkte lagen still im
+    // Inventar, und der Spielbericht sagt woertlich, dass kaum auffiel, dass
+    // es sie gibt.
+    floaters.push({x:player.x, y:player.y-52, txt:'+' + PUNKTE_JE_STUFE + ' Befähigungspunkte' + (touchMode ? ' · Rucksack' : ' · [I]'), col:'#f4d97a', t:2.6});
     if(player.level === ZAUBER_AB_STUFE)
       floaters.push({x:player.x, y:player.y-74, txt:'ZAUBERBEFUGNIS ERTEILT', col:'#c77dff', t:3.0, big:true});
     if(player.level >= ZAUBER_AB_STUFE)
-      floaters.push({x:player.x, y:player.y-52, txt:'+1 Zauberpunkt', col:'#c77dff', t:1.5});
+      floaters.push({x:player.x, y:player.y-96, txt:'+1 Zauberpunkt', col:'#c77dff', t:1.5});
     sfx.level(); addShake(10, 0.4);
     kn.counters.levelUps = (kn.counters.levelUps||0) + 1;
     if(kn.counters.levelUps >= 2) knRandnotiz('levelup');
     saveKn();
-    need = 35 * Math.pow(player.level, 1.35);
+    need = xpFuerStufe(player.level);
   }
 }
 
@@ -4588,22 +4683,35 @@ const SPELL_BRANCHES = ['🔥 Feuer', '❄️ Frost', '⚡ Arkan'];
 const ZAUBER_AB_STUFE  = 4;   // Zauberbefugnis: erster Punkt beim Aufstieg auf diese Stufe
 const MANA_REGEN       = 2;   // passiv je Sekunde, vor Z2: 8
 const MANA_JE_TREFFER  = 4;   // je Waffenschwung mit mindestens einem Treffer
+// S1: Die Zauberpreise. Z1 hat den Spam langsamer gemacht, Z2 hat ihm die
+// geschenkte Quelle genommen — und beide Male blieb der Preis derselbe. Der
+// Spielbericht danach sagt weiter, dass Magie zu maechtig ist, und er hat
+// recht: fuenf Mana fuer sechzehn Schaden war bei 7,2 erarbeiteten Mana je
+// Kampfsekunde eine zweite, kostenlose Waffe.
+//
+// Jetzt kostet jeder Spruch das Zweieinhalbfache und traegt ein Viertel mehr.
+// Unterm Strich leistet Dauerzauber knapp die Haelfte von vorher (der Katalog
+// rechnet das ueber KAT_ZAUBER_DPS mit, s. dort), aber der einzelne Spruch
+// wiegt schwerer. Zusammen mit dem kleineren Grundpool (MANA_BASIS 26 statt 40)
+// heisst das: auf Stufe 4 traegt der volle Pool genau zwei Funken. Wer mehr
+// zaubern will, geht in den Nahkampf oder steigert Amtskunde. Beides ist eine
+// Entscheidung, und genau die hat vorher gefehlt.
 const SPELLS = [
   // Feuer-Zweig
-  {id:'funke',       name:'Funke',        icon:'🔥', branch:0, tier:0, mana:5,  type:'bolt',       dmg:16, color:'#ffd54a', speed:440, r:6,  req:[], desc:'Schneller Feuerpfeil.'},
-  {id:'feuerball',   name:'Feuerball',    icon:'🔥', branch:0, tier:1, mana:15, type:'bolt',       dmg:44, color:'#ff9f4a', speed:340, r:9,  aoe:48, req:['funke'], desc:'Explodiert beim Einschlag.'},
-  {id:'meteor',      name:'Meteor',       icon:'☄️', branch:0, tier:2, mana:35, type:'aoe_target', dmg:95, color:'#ff6a2a', radius:95, req:['feuerball'], desc:'Einschlag auf Mausposition.'},
+  {id:'funke',       name:'Funke',        icon:'🔥', branch:0, tier:0, mana:12, type:'bolt',       dmg:20, color:'#ffd54a', speed:440, r:6,  req:[], desc:'Schneller Feuerpfeil.'},
+  {id:'feuerball',   name:'Feuerball',    icon:'🔥', branch:0, tier:1, mana:36, type:'bolt',       dmg:55, color:'#ff9f4a', speed:340, r:9,  aoe:48, req:['funke'], desc:'Explodiert beim Einschlag.'},
+  {id:'meteor',      name:'Meteor',       icon:'☄️', branch:0, tier:2, mana:84, type:'aoe_target', dmg:120, color:'#ff6a2a', radius:95, req:['feuerball'], desc:'Einschlag auf Mausposition.'},
   // Frost-Zweig
-  {id:'eissplitter', name:'Eissplitter',  icon:'❄️', branch:1, tier:0, mana:6,  type:'bolt',       dmg:14, color:'#7ad6ff', speed:480, r:6,  slow:1.5, req:[], desc:'Verlangsamt das Ziel.'},
-  {id:'frostnova',   name:'Frostnova',    icon:'❄️', branch:1, tier:1, mana:20, type:'nova',       dmg:34, color:'#7ad6ff', radius:150, slow:2.5, req:['eissplitter'], desc:'Eiswelle rund um dich.'},
-  {id:'blizzard',    name:'Blizzard',     icon:'🌨️', branch:1, tier:2, mana:40, type:'aoe_target', dmg:72, color:'#bfefff', radius:135, slow:3, req:['frostnova'], desc:'Eissturm auf Mausposition.'},
+  {id:'eissplitter', name:'Eissplitter',  icon:'❄️', branch:1, tier:0, mana:14, type:'bolt',       dmg:18, color:'#7ad6ff', speed:480, r:6,  slow:1.5, req:[], desc:'Verlangsamt das Ziel.'},
+  {id:'frostnova',   name:'Frostnova',    icon:'❄️', branch:1, tier:1, mana:48, type:'nova',       dmg:43, color:'#7ad6ff', radius:150, slow:2.5, req:['eissplitter'], desc:'Eiswelle rund um dich.'},
+  {id:'blizzard',    name:'Blizzard',     icon:'🌨️', branch:1, tier:2, mana:96, type:'aoe_target', dmg:90, color:'#bfefff', radius:135, slow:3, req:['frostnova'], desc:'Eissturm auf Mausposition.'},
   // Arkan-Zweig
-  {id:'blitzfunke',  name:'Blitzfunke',   icon:'⚡', branch:2, tier:0, mana:6,  type:'bolt',       dmg:18, color:'#c77dff', speed:560, r:6,  req:[], desc:'Sehr schneller Blitzpfeil.'},
-  {id:'kettenblitz', name:'Kettenblitz',  icon:'⚡', branch:2, tier:1, mana:22, type:'chain',      dmg:38, color:'#c77dff', chain:5, range:270, req:['blitzfunke'], desc:'Springt zu 5 Gegnern.'},
-  {id:'arkankugel',  name:'Arkankugel',   icon:'🔮', branch:2, tier:2, mana:30, type:'bolt',       dmg:78, color:'#e08fff', speed:260, r:12, aoe:44, req:['kettenblitz'], desc:'Langsame, wuchtige Kugel.'},
-  {id:'zeitriss',    name:'Zeitriss',     icon:'🕳️', branch:2, tier:3, mana:25, type:'slow_field', dmg:22, color:'#9a5cff', radius:210, slow:4, req:['arkankugel'], desc:'Verlangsamt alle in Reichweite.'},
+  {id:'blitzfunke',  name:'Blitzfunke',   icon:'⚡', branch:2, tier:0, mana:14, type:'bolt',       dmg:23, color:'#c77dff', speed:560, r:6,  req:[], desc:'Sehr schneller Blitzpfeil.'},
+  {id:'kettenblitz', name:'Kettenblitz',  icon:'⚡', branch:2, tier:1, mana:53, type:'chain',      dmg:48, color:'#c77dff', chain:5, range:270, req:['blitzfunke'], desc:'Springt zu 5 Gegnern.'},
+  {id:'arkankugel',  name:'Arkankugel',   icon:'🔮', branch:2, tier:2, mana:72, type:'bolt',       dmg:98, color:'#e08fff', speed:260, r:12, aoe:44, req:['kettenblitz'], desc:'Langsame, wuchtige Kugel.'},
+  {id:'zeitriss',    name:'Zeitriss',     icon:'🕳️', branch:2, tier:3, mana:60, type:'slow_field', dmg:28, color:'#9a5cff', radius:210, slow:4, req:['arkankugel'], desc:'Verlangsamt alle in Reichweite.'},
   // Ultimate #11
-  {id:'konfetti',    name:'Konfetti-Kataklysmus des jüngsten Gerichts', icon:'🎉', branch:1, tier:4, mana:100, type:'ultimate', dmg:450, color:'#ffffff',
+  {id:'konfetti',    name:'Konfetti-Kataklysmus des jüngsten Gerichts', icon:'🎉', branch:1, tier:4, mana:120, type:'ultimate', dmg:560, color:'#ffffff',
    req:['funke','feuerball','meteor','eissplitter','frostnova','blizzard','blitzfunke','kettenblitz','arkankugel','zeitriss'], ultimate:true,
    desc:'Zerlegt ALLES auf dem Bildschirm in buntes Konfetti.'},
 ];
@@ -4652,8 +4760,16 @@ function spellNodeHTML(sp){
     <div class="sIcon">${sp.icon}</div>
     <div class="sName">${sp.name}</div>
     <div class="sDesc">${sp.desc}</div>
-    <div class="sMana">${sp.mana} Mana${known?(activeSpellId===sp.id?' · aktiv':' · wählen'):''}</div>
+    <div class="sMana">${sp.mana} Mana${poolWarnung(sp)}${known?(activeSpellId===sp.id?' · aktiv':' · wählen'):''}</div>
   </div>`;
+}
+
+// S1: Ein Spruch, der teurer ist als der ganze Pool, laesst sich lernen und
+// danach nie wirken. Vorher konnte das nicht passieren (40 Grundmana gegen 5
+// bis 100 Kosten), jetzt schon — und der Baum sagt es, bevor der Punkt weg ist.
+// Die Antwort darauf steht im Inventar und heisst Amtskunde.
+function poolWarnung(sp){
+  return derived.maxMana < sp.mana ? ` · Pool ${derived.maxMana}, zu klein` : '';
 }
 
 function renderSpellTree(){
@@ -4696,7 +4812,7 @@ function renderSpellTree(){
     <div class="sIcon">${ult.icon}</div>
     <div class="sName">${ult.name}</div>
     <div class="sDesc">${ult.desc}</div>
-    <div class="sMana">${ult.mana} Mana${known?' · Taste R':(missing>0?` · ${missing} Sprüche fehlen noch`:' · bereit zum Freischalten!')}</div>
+    <div class="sMana">${ult.mana} Mana${poolWarnung(ult)}${known?' · Taste R':(missing>0?` · ${missing} Sprüche fehlen noch`:' · bereit zum Freischalten!')}</div>
   </div>`;
   document.getElementById('ultNodeEl').onclick = () => { if(spellUnlockable(ult)) unlockSpell(ult); };
 }
@@ -5177,8 +5293,8 @@ const KN_HAAR = 'h5';                        // fest gewählt, nicht zufällig: 
 const kn = {
   seen:{}, pending:{}, varB:{}, escReady:{},
   counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0},
-  flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false},
-  wissensluecke:{zauber:false, kochen:false, kammer:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
+  flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false, hatGesteigert:false},
+  wissensluecke:{zauber:false, kochen:false, kammer:false, befaehigung:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
   beats:{beat1:false, beat2:false, beat3:false},
   regler:'gespraechig',            // 'gespraechig' | 'dienstlich' | 'schweigt' — Dienstzettel laufen in jeder Stellung
   history:[],                      // {z1,z2} der letzten gezeigten Dienstzettel, neueste zuletzt, Cap 3 (für 'Nachfragen')
@@ -5294,6 +5410,7 @@ function knAssertCaps(){
   rows.push(['Geht doch. Schellen zählt als Sachbearbeitung.',48],['Aufheben, was liegt.',32]);
   rows.push(['Befugnis erteilt. Der Punkt liegt bereit.',48],['T. Aussuchen.',32],['Der Stern im Gürtel.',32]);
   rows.push(['Sie schlagen nur. Es gibt auch Zauber.',48],['E.',32],['Der Zauberknopf.',32]);
+  rows.push(['Sie sammeln Punkte und vergeben keine.',48],['Inventar. I.',32],['Rucksack. Oben die vier Zeilen.',32]);   // S1
   rows.push(['Zutaten allein werden nichts.',48],['Zum Kessel. K.',32],['Rucksack, dann Kessel.',32]);
   rows.push(['Da draußen stehen verschlossene Türen.',48],['Gebührenbescheid. F.',32],['Die Hand im Gürtel.',32]);
   for(const anlass in RANDNOTIZ) for(const l of RANDNOTIZ[anlass]) rows.push([l,44]);
@@ -5397,6 +5514,13 @@ function knStuckCandidate(){
   // auf etwas Unmoegliches waere keine Hilfe, sondern eine Falschauskunft.
   if(player.level >= ZAUBER_AB_STUFE && !kn.flags.hatGezaubert && !kn.wissensluecke.zauber) return {id:'stuck_zauber', prio:20, exempt:false, isStuck:'zauber',
     z1:'Sie schlagen nur. Es gibt auch Zauber.', z2: touchMode ? 'Der Zauberknopf.' : 'E.'};
+  // S1: der Stups auf die eigene Befaehigung. Er steht VOR Kochen und Kammer,
+  // weil er die Frage beantwortet, die im Spielbericht zuerst kam ("fällt kaum
+  // auf, dass es das gibt"), und weil er sich von selbst erledigt: wer einmal
+  // gesteigert hat, sieht ihn nie wieder.
+  if(player.skillPoints >= PUNKTE_JE_STUFE * 2 && !kn.flags.hatGesteigert && !kn.wissensluecke.befaehigung)
+    return {id:'stuck_befaehigung', prio:20, exempt:false, isStuck:'befaehigung',
+      z1:'Sie sammeln Punkte und vergeben keine.', z2: touchMode ? 'Rucksack. Oben die vier Zeilen.' : 'Inventar. I.'};
   if(!kn.flags.hatGekocht && !kn.wissensluecke.kochen) return {id:'stuck_kochen', prio:20, exempt:false, isStuck:'kochen',
     z1:'Zutaten allein werden nichts.', z2: touchMode ? 'Rucksack, dann Kessel.' : 'Zum Kessel. K.'};
   if(!kn.flags.hatKammerBetreten && !kn.wissensluecke.kammer) return {id:'stuck_kammer', prio:20, exempt:false, isStuck:'kammer',
@@ -6773,6 +6897,15 @@ function buildTooltip(item, isEquipped){
     html += `<div class="aff">Solide Dienstausrüstung ohne Vermerk.</div>`;
     item.affixes.forEach(a => html += `<div class="aff">${a.def.satz}</div>`);
   }
+  // S1: Der Kraftbedarf steht am Stueck, nicht im Menue. Wer ihn nicht hat,
+  // sieht rot, was ihm fehlt — und was er dagegen tun kann.
+  const kb = kraftBedarf(item);
+  if(kb > 0){
+    const reicht = kb <= player.skills.str;
+    html += reicht
+      ? `<div class="aff" style="color:#9a8a5f;">Kraftbedarf ${kb} · erfüllt</div>`
+      : `<div class="fluch">Kraftbedarf ${kb} · Sie haben ${player.skills.str}. Zu schwer zum Führen.</div>`;
+  }
   html += `<div class="hint">Links-Klick: ${isEquipped?'Ablegen':'Ausrüsten'}<br>Rechts-Klick: Wegwerfen</div>`;
   return html;
 }
@@ -6816,7 +6949,11 @@ function bindTooltip(el, item, isEquipped, dropAction, clickAction, htmlFn){
 function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen){ renderInventory(); knIdleT = 0; } MUS.muffle(); }
 
 function addSkill(type){
-  if(player.skillPoints > 0){ player.skillPoints--; player.skills[type]++; recalc(); updateHUD(); renderInventory(); }
+  if(player.skillPoints > 0){
+    player.skillPoints--; player.skills[type]++;
+    if(!kn.flags.hatGesteigert){ kn.flags.hatGesteigert = true; saveKn(); }   // S1: Wissenslücke geschlossen
+    recalc(); updateHUD(); renderInventory();
+  }
 }
 
 function dropItemToFloor(item){
@@ -6824,9 +6961,23 @@ function dropItemToFloor(item){
   document.getElementById('tooltip').style.display = 'none';
 }
 
+// S1: Kraftbedarf einer Waffe. 0 heisst: jeder kann sie fuehren.
+const kraftBedarf = item => (item && item.base && item.base.kraft) || 0;
+const kraftReicht = item => kraftBedarf(item) <= player.skills.str;
+
 function equipItemFromBag(idx){
   const item = player.bag[idx]; if(!item) return;
   const slotType = item.base.t;
+  // S1: Wer die Kraft nicht hat, legt die Klinge nicht an. Kein Malus, kein
+  // Kompromiss — sie bleibt in der Tasche und wartet. Das ist die einzige
+  // Stelle im Spiel, an der eine Befaehigung etwas AUFSCHLIESST statt es nur
+  // zu verbessern, und sie ist mit Absicht die haerteste: ein Siegelbrecher,
+  // den man nicht heben kann, erklaert die Kraftleiste besser als jeder Text.
+  if(!kraftReicht(item)){
+    floaters.push({x:player.x, y:player.y-30, txt:'Zu schwer · braucht Kraft ' + kraftBedarf(item), col:'#ff8f8f', t:1.8});
+    sfx.hurt();
+    return;
+  }
   const currentEquipped = player.equip[slotType];
   if(currentEquipped) currentEquipped.fluchRuht = false;   // Budget-Flag gilt nur im Equip-Slot, nicht in der Tasche
   player.equip[slotType] = item; player.bag[idx] = currentEquipped;
@@ -6847,13 +6998,44 @@ function unequipItem(slotType){
   }
 }
 
+// S1: Was ein Punkt bringt, steht neben dem Punkt — aus den Konstanten
+// gerechnet, nicht abgeschrieben, damit die Anzeige nicht von der Formel
+// wegdriften kann. Das war der erste Teil des Befunds: dass es die vier
+// Befaehigungen gibt, war zu sehen, was sie tun, nicht.
+const BEFAEHIGUNG_WERT = {
+  Str: () => `+${KRAFT_DMG[0]}–${KRAFT_DMG[1]} Schaden`,
+  Vit: () => `+${ZAEH_HP} Leben`,
+  Agi: () => `+${BEHAEND_TEMPO} Tempo`,
+  Int: () => `+${KUNDE_MANA} Mana`,
+};
+// Ein Satz, der sagt, warum der Punkt jetzt liegen bleibt oder nicht mehr
+// liegen bleiben sollte. Amtsdeutsch, kein Tutorial.
+function befaehigungHinweis(){
+  if(player.skillPoints <= 0) return '';
+  const w = player.equip.weapon, kb = kraftBedarf(w);
+  if(w && kb > player.skills.str)
+    return `Ihre Waffe verlangt Kraft ${kb}. Sie führen sie unter Bedarf.`;
+  const zuSchwer = player.bag.filter(it => it && it.base.t === 'weapon' && kraftBedarf(it) > player.skills.str);
+  if(zuSchwer.length)
+    return `In der Tasche liegt Gerät, für das die Kraft nicht reicht: ${zuSchwer[0].name} (Kraft ${kraftBedarf(zuSchwer[0])}).`;
+  return player.skillPoints >= PUNKTE_JE_STUFE * 2
+    ? `${player.skillPoints} Punkte unvergeben. Das Amt zahlt darauf keine Zinsen.`
+    : 'Ein Punkt wartet auf eine Entscheidung.';
+}
+
 function renderInventory(){
   document.getElementById('spCount').innerText = player.skillPoints;
   ['Str','Vit','Agi','Int'].forEach(s => {
     document.getElementById('sk'+s).innerText = player.skills[s.toLowerCase()];
     document.getElementById('btn'+s).disabled = player.skillPoints <= 0;
+    document.getElementById('skWert'+s).innerText = BEFAEHIGUNG_WERT[s]();
   });
-  document.getElementById('stDmg').innerText = `${derived.dmgMin}-${derived.dmgMax}`;
+  document.getElementById('skHint').innerText = befaehigungHinweis();
+  document.getElementById('skillBox').classList.toggle('offen', player.skillPoints > 0);
+  // S1: 'zu schwer gefuehrt' ist eine Aussage ueber die Waffe, keine Zahl —
+  // deshalb steht sie an der Zahl, die sie kaputtmacht.
+  document.getElementById('stDmg').innerText = `${derived.dmgMin}-${derived.dmgMax}`
+    + (derived.zuSchwer ? ' (zu schwer)' : '');
   document.getElementById('stArm').innerText = derived.armor;
   document.getElementById('stHp').innerText = derived.maxHp;
   document.getElementById('stMana').innerText = derived.maxMana;
@@ -8518,6 +8700,11 @@ function updateHUD(){
   setTxt('potCount', player.potions);
   setTxt('goldTxt', '💰 ' + player.gold);
   setTxt('lvlTxt', 'Stufe ' + player.level);
+  // S1: freie Punkte stehen dauerhaft unter Stufe und Gold, nicht nur als
+  // Sternchen am Rucksack. Am Bildschirmrand einer Touch-Sitzung ist statCol
+  // ausgeblendet (s. CSS), dort traegt das Sternchen die Meldung allein.
+  setStyle('freiTxt', 'display', player.skillPoints > 0 ? 'inline' : 'none');
+  if(player.skillPoints > 0) setTxt('freiTxt', '✚ ' + player.skillPoints + (touchMode ? ' Punkte' : ' Punkte [I]'));
   setStyle('skillBadge', 'display', player.skillPoints > 0 ? 'inline' : 'none');
   setStyle('spBadge', 'display', player.spellPoints > 0 && player.level >= ZAUBER_AB_STUFE ? 'inline' : 'none');
 
@@ -11054,7 +11241,7 @@ function zauberAssert(){
     sfx.level = function(){}; addShake = function(){}; saveKn = function(){};
     player.level = 1; player.xp = 0; player.spellPoints = 0; player.skillPoints = 0;
     for(let ziel = 2; ziel <= 10; ziel++){
-      gainXP(Math.ceil(35 * Math.pow(player.level, 1.35)) + 1);
+      gainXP(Math.ceil(xpFuerStufe(player.level)) + 1);   // S1: die Leiter, nicht ihre Abschrift
       if(player.level !== ziel){ fehler('Probe-Aufstieg klemmt', player.level, 'statt', ziel); break; }
       const soll = Math.max(0, ziel - (ZAUBER_AB_STUFE - 1));
       if(player.spellPoints !== soll)
@@ -11092,6 +11279,128 @@ function zauberAssert(){
   return ok;
 }
 zauberAssert();
+
+// === S1: Guard fuer die Befaehigung =========================================
+// Der Spielbericht vor diesem Bauabschnitt lautete: es gibt keinen Grund, die
+// Werte zu steigern, man kommt ohne Steigerung immens weit. Der Vorwurf war
+// messbar und er stimmte. Dieser Guard haelt fest, dass er nicht zurueckkommt.
+//
+// Geprueft werden die vier Zusagen von S1:
+//   1. Der Punkt schlaegt die Stufe um ein Vielfaches. Wer nicht steigert,
+//      bleibt weit unter dem Referenzspieler des Katalogs — in Leben wie in
+//      Schaden. Beides wird an recalc() gemessen, nicht nachgerechnet.
+//   2. Der Aufstieg heilt nicht mehr. Er war die staerkste Heilquelle im Spiel
+//      und hat jede Gefahr weggeleveled.
+//   3. Die Stufenleiter steigt streng und ist nirgends abgeschrieben.
+//   4. Der Kraftbedarf ist eine echte Sperre, keine Warnung, und der Manapool
+//      ist eng genug, dass Amtskunde eine Entscheidung ist.
+//
+// Bauform wie zauberAssert und wiederAssert: Spiegeln, pruefen, im finally
+// alles zurueckstellen.
+const S1_SPREIZUNG_HP  = 0.40;   // ungesteigert hoechstens so viel Leben wie der Referenzspieler
+const S1_SPREIZUNG_DMG = 0.45;   // dasselbe fuer den mittleren Waffenschaden
+const S1_PUNKT_JE_STUFE_MIN = 10;   // ein Punkt muss mindestens zehn Stufen wert sein
+const S1_BURST_MAX = 3;          // Sprueche aus dem vollen Grundpool bei Befugniserteilung
+
+function befaehigungAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('S1 Befaehigung:', m, ...r); };
+  const echt = {level: player.level, xp: player.xp, skills: player.skills, equip: player.equip,
+                hp: player.hp, mana: player.mana, sk: player.skillPoints, sp: player.spellPoints,
+                flZahl: floaters.length, lvUps: kn.counters.levelUps};
+  const eSfx = sfx.level, eShake = addShake, eSave = saveKn;
+  try {
+    sfx.level = function(){}; addShake = function(){}; saveKn = function(){};
+
+    // --- 1. Der Punkt schlaegt die Stufe -------------------------------------
+    // Zuerst als reine Zahlenprobe an den Konstanten: geschenktes Wachstum je
+    // Stufe gegen erarbeitetes je Punkt.
+    if(ZAEH_HP < HP_JE_STUFE * S1_PUNKT_JE_STUFE_MIN)
+      fehler('Zaehigkeit je Punkt zu nah an der geschenkten Stufe', ZAEH_HP, 'gegen', HP_JE_STUFE);
+    if(KUNDE_MANA < MANA_JE_STUFE * S1_PUNKT_JE_STUFE_MIN)
+      fehler('Amtskunde je Punkt zu nah an der geschenkten Stufe', KUNDE_MANA, 'gegen', MANA_JE_STUFE);
+
+    // Dann an recalc() selbst, auf der Sollstufe 10 mit der Referenzausruestung
+    // des Katalogs: einmal mit der Steigerung, die der Katalog unterstellt,
+    // einmal ohne jeden Punkt. Der Abstand ist die Zusage von S1.
+    const refWaffe = () => ({base: BASES[1], rar: 1, affixes: [{k:'dmg', v: KAT_REF[10][0], def: AFFIXES[0]}], name:'Referenzklinge'});
+    const messe = (stufe, skills) => {
+      player.level = stufe; player.skills = skills;
+      player.equip = {weapon: refWaffe(), armor: null, shield: null, boots: null};
+      recalc();
+      return {hp: derived.maxHp, dmg: (derived.dmgMin + derived.dmgMax) / 2, mana: derived.maxMana};
+    };
+    const mitPunkten = messe(10, {str:9, vit:9, agi:0, int:0});
+    const ohnePunkte = messe(10, {str:0, vit:0, agi:0, int:0});
+    if(ohnePunkte.hp > mitPunkten.hp * S1_SPREIZUNG_HP)
+      fehler('ungesteigert zu zaeh auf Stufe 10', ohnePunkte.hp, 'von', mitPunkten.hp,
+             '=', (ohnePunkte.hp / mitPunkten.hp * 100).toFixed(0) + ' %, hoechstens ' + (S1_SPREIZUNG_HP*100) + ' %');
+    if(ohnePunkte.dmg > mitPunkten.dmg * S1_SPREIZUNG_DMG)
+      fehler('ungesteigert zu stark auf Stufe 10', ohnePunkte.dmg.toFixed(1), 'von', mitPunkten.dmg.toFixed(1),
+             '=', (ohnePunkte.dmg / mitPunkten.dmg * 100).toFixed(0) + ' %, hoechstens ' + (S1_SPREIZUNG_DMG*100) + ' %');
+
+    // --- 2. Der Aufstieg heilt nicht ----------------------------------------
+    if(String(gainXP).indexOf('player.hp = derived.maxHp') >= 0)
+      fehler('gainXP() heilt beim Aufstieg wieder voll');
+    player.level = 3; player.xp = 0; player.skills = {str:0, vit:0, agi:0, int:0};
+    player.equip = {weapon: refWaffe(), armor: null, shield: null, boots: null};
+    recalc();
+    player.hp = 7;
+    gainXP(Math.ceil(xpFuerStufe(player.level)) + 1);
+    if(player.level !== 4) fehler('Probe-Aufstieg klemmt', player.level, 'statt 4');
+    if(player.hp !== 7) fehler('Aufstieg hat geheilt', player.hp, 'statt 7');
+
+    // --- 3. Die Stufenleiter steigt streng ----------------------------------
+    if(String(gainXP).indexOf('xpFuerStufe') < 0)
+      fehler('gainXP() rechnet die Stufenleiter selbst statt sie zu lesen');
+    for(let st = 1; st < 20; st++)
+      if(!(xpFuerStufe(st + 1) > xpFuerStufe(st))){ fehler('Stufenleiter faellt bei', st); break; }
+
+    // --- 4. Kraftbedarf und Manapool ----------------------------------------
+    if(String(equipItemFromBag).indexOf('kraftReicht') < 0)
+      fehler('equipItemFromBag() prueft den Kraftbedarf nicht');
+    const schwer = CRAFT_BASE.weapon.filter(b => (b.kraft||0) > 0).length;
+    if(schwer < 2) fehler('zu wenige Klingen mit Kraftbedarf, die Sperre waere Theorie', schwer);
+    // Eine zu schwere Waffe in der Hand muss sich in derived niederschlagen.
+    player.skills = {str:0, vit:0, agi:0, int:0};
+    const brecher = CRAFT_BASE.weapon[CRAFT_BASE.weapon.length - 1];
+    player.equip = {weapon: {base: Object.assign({t:'weapon', tier:4}, brecher), rar:4, affixes:[], name: brecher.name},
+                    armor:null, shield:null, boots:null};
+    recalc();
+    if(!derived.zuSchwer) fehler('zu schwere Waffe ohne Vermerk in derived');
+    // Der Grundpool bei Befugniserteilung traegt nur eine Handvoll Sprueche.
+    // Wer mehr will, steigert Amtskunde — das ist der ganze Zweck von INT.
+    player.level = ZAUBER_AB_STUFE; player.skills = {str:0, vit:0, agi:0, int:0};
+    player.equip = {weapon: refWaffe(), armor:null, shield:null, boots:null};
+    recalc();
+    const billigster = SPELLS.filter(sp => !sp.ultimate).reduce((a, b) => a.mana <= b.mana ? a : b);
+    const burst = Math.floor(derived.maxMana / billigster.mana);
+    if(burst > S1_BURST_MAX)
+      fehler('Grundpool traegt zu viele Sprueche', burst, 'x ' + billigster.name, 'hoechstens ' + S1_BURST_MAX);
+    if(burst < 1)
+      fehler('Grundpool traegt keinen einzigen Spruch, die Befugnis waere wertlos', derived.maxMana, billigster.mana);
+    // Das Ultimate muss ohne Amtskunde unbezahlbar und mit ihr erreichbar sein.
+    const ult = SPELLS.find(sp => sp.ultimate);
+    player.level = 14; recalc();
+    const ohneKunde = derived.maxMana;
+    player.skills = {str:0, vit:0, agi:0, int:6}; recalc();
+    if(ohneKunde >= ult.mana)
+      fehler('Ultimate ohne einen Punkt Amtskunde bezahlbar', ohneKunde, 'gegen', ult.mana);
+    if(derived.maxMana < ult.mana)
+      fehler('Ultimate auch mit sechs Punkten Amtskunde unbezahlbar', derived.maxMana, 'gegen', ult.mana);
+  } finally {
+    sfx.level = eSfx; addShake = eShake; saveKn = eSave;
+    player.level = echt.level; player.xp = echt.xp; player.skills = echt.skills;
+    player.equip = echt.equip; player.skillPoints = echt.sk; player.spellPoints = echt.sp;
+    floaters.length = echt.flZahl;
+    kn.counters.levelUps = echt.lvUps;
+    recalc();
+    player.hp = echt.hp; player.mana = echt.mana;
+  }
+  if(ok) console.log('S1 Befaehigung: Spreizung, Aufstieg, Stufenleiter, Kraftbedarf und Manapool in Ordnung.');
+  return ok;
+}
+befaehigungAssert();
 
 // ===========================================================================
 //  W4: Trichter. Acht bestehende Fundstellen melden, WAS passiert ist; was das
@@ -11252,7 +11561,8 @@ const DIENSTBLATT = [
       ['Dienstschluss', 'Die Schicht endet durch die Uhr oder unsanft. Beides heißt Feierabend. Es geht niemand verloren.'],
       ['Amtsvermögen', 'Beute zur Hälfte an den Gürtel, ein Fünftel Verwaltungskostenanteil, der Rest an die Amtskasse. Bestand bis zum Kontingent.'],
       ['Qualifikation', 'Stufe, Zauber und Ausrüstung enden mit der Schicht. Die Kladde bleibt im Haus, Wissen ist Amtsvermögen.'],
-      ['Zauberbefugnis', 'wird ab Stufe 4 erteilt. Mana entsteht bei der Arbeit, nicht beim Warten: jeder Treffer mit der Waffe lädt nach.'],
+      ['Befähigung', 'Jeder Aufstieg bringt zwei Punkte. Die Stufe allein macht Sie kaum stärker, die Punkte schon. Wer sie liegen lässt, ist am Abend, was er am Morgen war.'],
+      ['Zauberbefugnis', 'wird ab Stufe 4 erteilt. Mana entsteht bei der Arbeit, nicht beim Warten: jeder Treffer mit der Waffe lädt nach. Ein Spruch kostet spürbar.'],
     ],
     // Bedienung ist Bedienungstext, keine Figurenrede: hier sind Tasten erlaubt
     // und noetig. Die Regel "hoechstens eine Taste pro Hinweis" gilt fuer
@@ -11261,7 +11571,10 @@ const DIENSTBLATT = [
       ['Tastatur', 'W A S D gehen, Klick oder Leertaste schlagen, Q Trank, E Zauber, R Ultimate, T Zauberbaum, I Rucksack, K Kessel, L Karte, F Hand anlegen, Esc schließt.'],
       ['Berührung', 'Links der Daumenring zum Gehen, rechts der Kampfknopf. Ziehen zielt.'],
     ],
-    kn: ['Neun Punkte. Sie brauchen zuerst die ersten drei.'],
+    // S1: Die Zahl stand hier seit W8 als "Neun" und war seit Z2 falsch. Sie
+    // wird jetzt vom Guard gegen die Liste geprueft (dienstAssert), damit der
+    // naechste Punkt sie nicht wieder still ueberholt.
+    kn: ['Elf Punkte. Sie brauchen zuerst die ersten drei.'],
   },
   {
     nr: 3,
@@ -11269,7 +11582,8 @@ const DIENSTBLATT = [
     unter: 'Vordruck A 1, Blatt 3 von 3',
     lead: 'Woran Sie merken, dass Sie vorankommen.',
     felder: () => [
-      ['Ab Stufe 4', 'Zauberbefugnis. Vorher schlägt der Außendienst, danach darf er auch wirken.'],
+      ['Je Aufstieg', 'zwei Befähigungspunkte. Kraft, Zähigkeit, Behändigkeit, Amtskunde. Sie liegen im Rucksack und werden dort vergeben.'],
+      ['Ab Stufe 4', 'Zauberbefugnis. Vorher schlägt der Außendienst, danach darf er auch wirken. Der Manavorrat wächst mit der Amtskunde, nicht mit der Stufe.'],
       ['Hebung des Dienstpostens', 'alle fünf Schichten'],
       ['Nächste Hebung', `nach Schicht 5. Neue Amtsbezeichnung: ${rangNameVon(1)}.`],
       ['Jede zehnte Schicht', 'Jahresgespräch. Mit Urkunde, mit Marsch, mit einer dauerhaften Kleinigkeit.'],
@@ -11427,6 +11741,17 @@ function dienstAssert(){
     fehler('Blatt 2 Punkt 8 sagt "ein Fünftel Verwaltungskostenanteil", goldAufteilung(100) liefert', auf.verwaltung);
   if(auf.kasse !== 100 - auf.guertel - auf.verwaltung)
     fehler('Blatt 2 Punkt 8 sagt "der Rest an die Amtskasse", die Kasse bekommt aber', auf.kasse);
+  // S1: Knoeterichs Zaehlzeile auf Blatt 2 nennt die Zahl der Punkte. Sie stand
+  // seit W8 auf "Neun" und war seit Z2 still falsch. Jetzt haengt sie am Code.
+  const ZAHLWORT = ['null','Ein','Zwei','Drei','Vier','Fünf','Sechs','Sieben','Acht','Neun','Zehn','Elf','Zwölf','Dreizehn'];
+  const blatt2 = DIENSTBLATT.find(b => b.punkte);
+  if(blatt2){
+    const anz = blatt2.punkte().length, wort = ZAHLWORT[anz];
+    const zeile = (blatt2.kn || []).join(' ');
+    if(!wort) fehler('Punktezahl ausserhalb der Zahlwortliste', anz);
+    else if(zeile.indexOf(wort + ' Punkte') < 0)
+      fehler('Blatt 2 hat', anz, 'Punkte, Knöterich sagt etwas anderes:', zeile);
+  }
   const s0 = rangStufe();   // rangStufe() liest amt.schichten, deshalb ueber die Differenz geprueft
   if(RAENGE.length < 2 || rangNameVon(1) === rangNameVon(0))
     fehler('Blatt 3 verspricht eine Hebung nach Schicht 5, RAENGE liefert dieselbe Bezeichnung');
