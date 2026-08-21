@@ -3484,7 +3484,13 @@ let amt = {bankGold:0, schichten:0,
   // GW26b: auftraegeErfuellt ersatzlos gestrichen. Wurde geschrieben, gespeichert
   // und geladen, aber von W5, W6 und W7 nie gelesen. Ein Feld, das nur sich selbst
   // zählt, ist kein Erzählsignal, sondern ein Migrationsrisiko.
-  brett:null, auftrag:null};
+  brett:null, auftrag:null,
+  // W10: wiederZahl = Zahl der bereits bewilligten Anträge auf Wiedereinsetzung,
+  // treibt allein den Wiederholungszuschlag der Gebühr. wiedereinsetzung = der
+  // bewilligte, noch nicht eingelöste Antrag {stand, haar} oder null; startShift()
+  // löst ihn ein und leert ihn im selben Zug. Beides ist echter Zustand und
+  // nicht ableitbar, anders als Rang und Aktstand.
+  wiederZahl:0, wiedereinsetzung:null};
 // W3: Aktstand aus der bestehenden Schichtzahl abgeleitet, nichts Neues
 // gespeichert. Deckt sich mit Kapitel 9: Akt I = Schicht 1-10 (amt.schichten
 // 0-9), ... Akt V ab Schicht 41 (amt.schichten >= 40), gedeckelt bei 5.
@@ -4886,6 +4892,17 @@ function goldAssert(){
 goldAssert();
 
 // Amt-Speicherstand laden, bevor irgendetwas (Kammertüren, HUD) danach fragt.
+// W10: Deckel für die beiden gespeicherten Felder der Wiedereinsetzung. Stehen
+// hier oben und nicht beim übrigen W10-Block, weil loadAmt() direkt darunter auf
+// Skriptebene läuft und sie dort schon lesen muss (TDZ-Falle, siehe Übergabe).
+const WIEDER_STAND_DECKEL = 60, WIEDER_ZAHL_DECKEL = 999;
+
+// Die eine Klemmstelle für den gespeicherten Stand. Von loadAmt() beim Laden und
+// von startShift() beim Einlösen gelesen, damit ein zur Laufzeit gesetztes Feld
+// nicht am Loader vorbeikommt. Steht hier oben aus demselben TDZ-Grund wie die
+// Deckel selbst; wiederAssert() prüft sie weiter unten direkt.
+function wiederStandGeklemmt(roh){ return clamp(roh | 0, 1, WIEDER_STAND_DECKEL); }
+
 const AMT_KEY = 'sda_amt_v1';
 (function loadAmt(){
   try{
@@ -4905,6 +4922,18 @@ const AMT_KEY = 'sda_amt_v1';
     if(o.brett && Array.isArray(o.brett.liste) && o.brett.liste.length === 3
        && typeof o.brett.schicht === 'number') amt.brett = o.brett;
     if(o.auftrag && typeof o.auftrag.typ === 'string') amt.auftrag = o.auftrag;
+    // W10: beide Felder strukturell geprüft und BEIDSEITIG geklemmt, gleiche
+    // Lehre wie GW3 bei amt.schichten. Die untere Klemme allein reichte nicht:
+    // ein von Hand gesetztes {stand: 999} lief glatt durch loadAmt(), durch
+    // startShift() (dessen Math.max nach unten klemmt, nicht nach oben) und
+    // ergab live eine Schicht auf Stufe 999. Der Deckel ist bewusst weit über
+    // allem, was eine Schicht je erreicht (der Stand ist die halbe Stufe), er
+    // ist keine Balance-Zahl, sondern die Zusage, die dieser Kommentar macht.
+    // Das Haar wird beim Einlösen gegen HAIRS geprüft, deshalb hier nur der Typ.
+    if(typeof o.wiederZahl === 'number') amt.wiederZahl = Math.min(WIEDER_ZAHL_DECKEL, Math.max(0, o.wiederZahl | 0));
+    if(o.wiedereinsetzung && typeof o.wiedereinsetzung.stand === 'number')
+      amt.wiedereinsetzung = {stand: wiederStandGeklemmt(o.wiedereinsetzung.stand),
+                              haar: typeof o.wiedereinsetzung.haar === 'string' ? o.wiedereinsetzung.haar : null};
     // GW26b: die Ladezeile für auftraegeErfuellt ist hier ersatzlos entfallen.
     // loadAmt() ist eine Feld-Whitelist, ein alter Stand mit dem Feld wird also
     // schlicht nicht mehr gelesen; saveAmt() schreibt amt komplett neu und räumt
@@ -8374,10 +8403,21 @@ function startShift(){
   player.x = SPAWN.x; player.y = SPAWN.y; camSnap(); player.dead = false; player.hurtT = 0;
   player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
   player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
-  player.level = 1 + amt.ausbauten.startLevel; player.xp = 0;
+  // W10: ein bewilligter Antrag auf Wiedereinsetzung wird hier eingelöst und im
+  // selben Zug verbraucht. Er gibt den Dienststand und das Gesicht zurück, sonst
+  // nichts: skillPoints, spellPoints, spellsKnown, bag und equip unten bleiben
+  // unberührt. Die Klemme nach unten ist Absicht, ein Antrag darf nie schlechter
+  // stellen als der normale Schichtantritt.
+  const wieder = amt.wiedereinsetzung; amt.wiedereinsetzung = null;
+  if(wieder) saveAmt();
+  player.level = Math.max(wiederAnfangsstufe(), wieder ? wiederStandGeklemmt(wieder.stand) : 0); player.xp = 0;
   player.skills = {str:0, vit:0, agi:0, int:0};
   player.skillPoints = amt.ausbauten.startLevel * 2; player.spellPoints = amt.ausbauten.startLevel; player.spellsKnown = {};
-  player.hair = HAIRS[Math.floor(Math.random()*HAIRS.length)];
+  // Dasselbe Gesicht nur nach bewilligtem Antrag. Lisbeth fragt trotzdem weiter
+  // nach dem Namen (ANREDE_LISBETH zykelt über amt.schichten, nicht über die
+  // Person) — das ist ausdrücklich so gewollt und der bessere Gag.
+  player.hair = (wieder && HAIRS.indexOf(wieder.haar) >= 0) ? wieder.haar
+              : HAIRS[Math.floor(Math.random()*HAIRS.length)];
   player.bag = new Array(24).fill(null);
   player.potions = 2 + (amt.bonusPotions||0);
   player.gold = pendingCarryGold + (amt.bonusStartGold||0); pendingCarryGold = 0;
@@ -8473,6 +8513,17 @@ function endShift(reason){
   amt.auftrag = null;   // W4: Aushang gilt für eine Schicht, das nächste Brett hängt in showDorf()
   saveAmt();
 
+  // W10: Der Bericht rollt seit diesem Bauabschnitt. Er stand vorher ohne jede
+  // Überlaufbehandlung im Panel und war auf 390x664 im schlimmsten Fall (Schicht
+  // im Fünferschritt, also mit Hebungsblock) schon bei 654 von 664 Pixeln, also
+  // eine Zeile vom Rand entfernt. Der Wiedereinsetzungsblock hätte ihn dort auf
+  // 758 gedrückt und den WEITER-Knopf aus dem Bild geschoben.
+  //
+  // Was rollt, ist genau der Rückblick: Dienstbericht und Hebung. Alles, was eine
+  // Handlung verlangt oder den Ton setzt, steht außerhalb und ist immer sichtbar.
+  // Der Antrag gehört ausdrücklich dazu: er kostet Geld und ist eine Entscheidung,
+  // und eine Entscheidung hinter einem Rollbalken ist keine. Gleiche Aufteilung
+  // wie beim Vordruck in W8, dort aus demselben Grund.
   const titel = reason === 'tod' ? 'FEIERABEND' : reason === 'amt' ? 'FEIERABEND' : 'DIENSTSCHLUSS';
   const anlass = reason === 'tod' ? 'Der Dienst endete unsanft. Der nächste Trupp übernimmt.'
                : reason === 'amt' ? 'Freiwillig Feierabend genommen. Die Akte wartet bis morgen.'
@@ -8481,6 +8532,7 @@ function endShift(reason){
   document.getElementById('ovPanel').innerHTML = `
     <h1>${titel}</h1>
     <p style="font-size:12px;color:#9a8a5f;">${anlass}</p>
+    <div id="berichtRoll" style="max-height:30vh;overflow-y:auto;">
     <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:13px;margin:14px 0;border:1px solid #5a4a2d;">
       <b>🧑‍💼 Dienstbericht</b><br>
       Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
@@ -8489,10 +8541,18 @@ function endShift(reason){
       Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse, ${verwaltung} Verwaltungskostenanteil)
     </div>
     ${rangBerichtBlock()}
+    </div>
+    <p id="berichtMehr" style="font-size:11px;color:#7a6a45;margin:2px 0 0;"></p>
+    <div id="wiederBox">${wiederBlockHtml()}</div>
     <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
     <button onclick="nachSchicht()">WEITER</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
+  // Gleiche Messung wie bei showDienstblatt(): einmal nach dem Rendern, kein
+  // Timer, kein Listener. Ein abgeschnittener Bericht soll wie eine Fortsetzung
+  // aussehen und nicht wie ein Fehler.
+  const roll = document.getElementById('berichtRoll'), mehr = document.getElementById('berichtMehr');
+  if(roll && mehr && roll.scrollHeight > roll.clientHeight + 2) mehr.textContent = 'Der Bericht geht im Kasten weiter.';
 }
 
 function nachSchicht(){
@@ -10908,6 +10968,218 @@ function dienstAssert(){
   if(ok) console.log('W8 Einstellung: 3 Blätter, Formregeln und Sperrvermerk in Ordnung.');
 }
 dienstAssert();
+
+// ===========================================================================
+//  W10: DIE WIEDEREINSETZUNG — Weltbibel Kapitel 5 und 18.2. Der eine Kauf,
+//  den dieses Spiel anbietet, und die einzige Art, wie derselbe Mensch zweimal
+//  antreten kann.
+//
+//  Die Ausgangslage steht wörtlich in Kapitel 5: der Dienstposten ist täglich
+//  befristet, weil eine Verlängerung eine Neubesetzung wäre, eine Neubesetzung
+//  eine Ausschreibung erfordert und eine Ausschreibung die Amtsleitung. Es gibt
+//  keine Amtsleitung. Deshalb kommt jeden Tag jemand anderes.
+//
+//  Der Antrag auf Wiedereinsetzung in den vorigen Stand ist keine Verlängerung
+//  und keine Neubesetzung, sondern eine Berichtigung. Anderer Paragraf, keine
+//  Ausschreibung, keine Leitung nötig. Das Haus kann ihn also bewilligen, ohne
+//  eine einzige Regel zu brechen, und der N.-N.-Gag arbeitet zum ersten Mal für
+//  den Spieler statt gegen ihn.
+//
+//  Drei Grenzen, die dieser Bauabschnitt einhält:
+//
+//  1. Keine Bestechung, kein Zynismus (Humor-Grundgesetz 2, 4 und 8). Bezahlt
+//     wird eine Gebühr an die Amtskasse, nicht eine Person. Niemand im Haus
+//     nimmt Geld, niemand drückt ein Auge zu, niemand findet es bemerkenswert.
+//
+//  2. Der Rang bleibt unverkäuflich (18.2: "er kostet kein Gold, er lässt sich
+//     nicht kaufen"). Der Antrag fasst amt.schichten nicht an, also auch
+//     rangStufe() nicht. Gekauft wird der Dienststand der Person, nie die Stelle.
+//
+//  3. "Persönliche Qualifikation ist nicht übertragbar" (Kapitel 5) bleibt
+//     wortwörtlich gültig. Es wird nichts übertragen, weil niemand wechselt.
+//     Genau deshalb muss es derselbe Mensch sein und nicht ein Erbe.
+//
+//  Was der Stand umfasst, legt das Haus so eng aus, wie es darf: den Dienststand
+//  und das Gesicht. Ausrüstung ist Amtsvermögen und wird eingezogen wie immer,
+//  Zauber und Skillpunkte sind Beurteilung und keine Sache. Man bekommt also
+//  Zähigkeit zurück (Stufe wirkt in recalc() auf maxHp und maxMana), aber weder
+//  Ausstattung noch Können. Zehnjährige lesen "die haben mir nur das langweilige
+//  Zeug wiedergegeben", Erwachsene die enge Auslegung eines Rechtsbegriffs.
+// ===========================================================================
+
+// Anfangsstufe einer Schicht. EINE Wahrheitsquelle, von startShift() und vom
+// Antrag gelesen — vorher stand die Rechnung nur inline in startShift(), und
+// der Antrag hätte sie abgeschrieben (die F1-Falle).
+function wiederAnfangsstufe(){ return 1 + amt.ausbauten.startLevel; }
+
+// Der vorige Stand: die halbe erreichte Stufe, abgerundet. Bewusst hart die
+// Hälfte und nicht verhandelbar — eine Wiedereinsetzung setzt in einen Stand
+// zurück, sie belohnt nicht.
+function wiederStand(){ return Math.max(1, Math.floor(player.level / 2)); }
+
+// Gebührenverzeichnis. Grundgebühr, Zuschlag je Stufe über der Anfangsstufe,
+// Wiederholungszuschlag je bereits bewilligtem Antrag. Der dritte Posten ist
+// der Grund, warum der Antrag kein Dauerabo wird.
+const WIEDER_GRUND = 40, WIEDER_JE_STUFE = 30, WIEDER_WIEDERHOLUNG = 60;
+function wiederGebuehr(){
+  const ueber = Math.max(0, wiederStand() - wiederAnfangsstufe());
+  return WIEDER_GRUND + WIEDER_JE_STUFE * ueber + WIEDER_WIEDERHOLUNG * Math.max(0, amt.wiederZahl | 0);
+}
+
+// "Ein Antrag ohne Beschwer ist unzulässig." Realer Verfahrensgrundsatz und
+// zugleich das ganze Gatter: liegt der vorige Stand nicht über der Anfangsstufe,
+// ändert die Bewilligung nichts, also nimmt das Haus den Antrag nicht an. Das
+// skaliert von selbst mit dem Ausbau "Höhere Anfangsstufe" mit, ohne dass hier
+// eine zweite Schwelle gepflegt werden müsste.
+function wiederBeschwer(){ return wiederStand() > wiederAnfangsstufe(); }
+function wiederZulaessig(){ return CONFIG.schichtModus && wiederBeschwer(); }
+function wiederBezahlbar(){ return amt.bankGold >= wiederGebuehr(); }
+// Sichtbar, sobald der Spieler überhaupt eine Stufe gestiegen ist. Vorher wäre
+// die Zeile nur Rauschen im Bericht der ersten Minuten.
+function wiederSichtbar(){ return CONFIG.schichtModus && player.level > wiederAnfangsstufe(); }
+
+const WIEDER_ENG = 'Der Stand umfasst den Dienststand. Ausrüstung, Zauber und Beurteilung gehören nicht dazu.';
+const WIEDER_KEIN_NEU = 'Eine Verlängerung ist ausgeschlossen, sie wäre eine Neubesetzung. Die Wiedereinsetzung ist keine Neubesetzung, sondern eine Berichtigung.';
+const WIEDER_VERMERK = 'Vermerk: Eine Ausschreibung wird nicht erforderlich.';
+
+// Der Block im Dienstbericht. Reine Funktion, Bauform wie rangBerichtBlock():
+// kein Seiteneffekt, jedes Neurendern liefert dasselbe.
+function wiederBlockHtml(){
+  if(!wiederSichtbar()) return '';
+  const rahmen = (inhalt) => `
+    <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:12px;margin:14px 0;border:1px solid #5a4a2d;">
+      <b style="color:#f4d97a;">Antrag auf Wiedereinsetzung in den vorigen Stand</b><br>${inhalt}</div>`;
+
+  // Bereits bewilligt: der Antrag liegt vor, der Knopf ist weg.
+  if(amt.wiedereinsetzung){
+    return rahmen(`
+      <span style="color:#c9b98a;">Bewilligt. Sie treten morgen erneut an, in Stufe ${amt.wiedereinsetzung.stand}.</span><br>
+      <span style="color:#9a8a5f;">Gebühr gebucht. Amtskasse: 💰 ${amt.bankGold}.</span><br>
+      <span style="color:#7a6a45;">${WIEDER_VERMERK}</span>`);
+  }
+  if(!wiederZulaessig()){
+    return rahmen(`
+      <span style="color:#9a8a5f;">Ein Antrag ohne Beschwer ist unzulässig. Ihr voriger Stand läge bei Stufe ${wiederStand()}, die Anfangsstufe bei ${wiederAnfangsstufe()}.</span>`);
+  }
+  const g = wiederGebuehr(), kann = wiederBezahlbar();
+  return rahmen(`
+    <span style="color:#c9b98a;">${WIEDER_KEIN_NEU}</span><br>
+    <span>Wiedereinsetzung in Stufe ${wiederStand()}. Gebühr 💰 ${g}, aus der Amtskasse. Bestand: 💰 ${amt.bankGold}.</span><br>
+    <span style="color:#9a8a5f;">${WIEDER_ENG}</span><br>
+    <button ${kann ? '' : 'disabled'} onclick="wiederBeantragen()" style="font-size:12px;padding:6px 12px;margin:8px 0 0;">${kann ? 'ANTRAG STELLEN' : 'Amtskasse trägt das nicht'}</button>`);
+}
+
+// Die einzige Schreibstelle. Prüft alle drei Bedingungen noch einmal selbst,
+// statt sich auf den Zustand des Knopfes zu verlassen: der Knopf steht in einer
+// Zeichenkette und ein zweiter Klick darf nicht zweimal buchen.
+function wiederBeantragen(){
+  if(!wiederZulaessig() || !wiederBezahlbar() || amt.wiedereinsetzung) return;
+  const g = wiederGebuehr();
+  amt.bankGold -= g;
+  amt.wiedereinsetzung = {stand: wiederStand(), haar: player.hair};
+  amt.wiederZahl = Math.max(0, amt.wiederZahl | 0) + 1;
+  saveAmt();
+  const box = document.getElementById('wiederBox');
+  if(box) box.innerHTML = wiederBlockHtml();
+}
+
+// --- Guard, Bauform wie rangAssert()/dienstAssert(). Wirft nie, meldet nur.
+function wiederAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('W10 Wiedereinsetzung:', m, ...r); };
+  for(const [t, feld] of [[WIEDER_ENG,'enge Auslegung'], [WIEDER_KEIN_NEU,'Abgrenzung'], [WIEDER_VERMERK,'Vermerk']]){
+    if(!t) fehler('Text leer', feld);
+    else {
+      if(/[—–]/.test(t)) fehler('Gedankenstrich statt Interpunkt', feld, t);
+      if(PRUEF_EMOJI.test(t)) fehler('Emoji im Figurentext', feld, t);
+      for(const g of PRUEF_GEHEIM) if(t.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', feld, g);
+    }
+  }
+
+  // Gespiegelt geprüft, wie goldAssert() es vormacht: echte Werte weg, Sollwerte
+  // rein, im finally alles zurück. Kein saveAmt() in diesem Guard.
+  const eLevel = player.level, eHaar = player.hair, eZahl = amt.wiederZahl,
+        eWieder = amt.wiedereinsetzung, eStart = amt.ausbauten.startLevel, eGold = amt.bankGold;
+  try {
+    amt.wiedereinsetzung = null;
+
+    // (1) Beschwer: bei Gleichstand unzulässig, eine Stufe darüber zulässig.
+    // Anfangsstufe 1 => Stufe 2 gibt Stand 1 (gleich, unzulässig),
+    //                   Stufe 4 gibt Stand 2 (darüber, zulässig).
+    amt.ausbauten.startLevel = 0; amt.wiederZahl = 0;
+    player.level = 2;
+    if(wiederStand() !== 1) fehler('Stand bei Stufe 2 ist', wiederStand(), 'statt 1');
+    if(wiederBeschwer()) fehler('Antrag ohne Beschwer gilt als zulässig, Stufe 2');
+    player.level = 4;
+    if(wiederStand() !== 2) fehler('Stand bei Stufe 4 ist', wiederStand(), 'statt 2');
+    if(!wiederBeschwer()) fehler('Antrag mit Beschwer gilt als unzulässig, Stufe 4');
+
+    // (2) Die Hälfte ist die Hälfte, abgerundet, und nie über der erreichten Stufe.
+    for(const lvl of [1, 2, 3, 5, 7, 10, 11, 20, 41]){
+      player.level = lvl;
+      const s = wiederStand();
+      if(s !== Math.max(1, Math.floor(lvl / 2))) fehler('Stand weicht von der halben Stufe ab', lvl, s);
+      if(s > lvl) fehler('Stand liegt über der erreichten Stufe', lvl, s);
+      if(s < 1) fehler('Stand unter Stufe 1', lvl, s);
+    }
+
+    // (3) Gebühr steigt monoton mit dem Stand und mit der Zahl der Anträge.
+    player.level = 10; amt.wiederZahl = 0;
+    const g10 = wiederGebuehr();
+    player.level = 20;
+    if(!(wiederGebuehr() > g10)) fehler('Gebühr steigt nicht mit dem Stand', g10, wiederGebuehr());
+    player.level = 10; amt.wiederZahl = 1;
+    if(wiederGebuehr() !== g10 + WIEDER_WIEDERHOLUNG) fehler('Wiederholungszuschlag fehlt', g10, wiederGebuehr());
+    amt.wiederZahl = 0;
+    if(wiederGebuehr() < WIEDER_GRUND) fehler('Gebühr unter der Grundgebühr', wiederGebuehr());
+
+    // (4) Der Ausbau "Höhere Anfangsstufe" verschiebt die Schwelle mit, ohne dass
+    // hier eine zweite Zahl gepflegt wird. Bei Anfangsstufe 5 ist Stufe 10 noch
+    // ohne Beschwer (Stand 5), Stufe 12 nicht mehr (Stand 6).
+    amt.ausbauten.startLevel = 4;
+    if(wiederAnfangsstufe() !== 5) fehler('Anfangsstufe weicht von startShift() ab', wiederAnfangsstufe());
+    player.level = 10;
+    if(wiederBeschwer()) fehler('Beschwer bei Anfangsstufe 5 und Stufe 10 fälschlich bejaht');
+    player.level = 12;
+    if(!wiederBeschwer()) fehler('Beschwer bei Anfangsstufe 5 und Stufe 12 fälschlich verneint');
+
+    // (5) 18.2: der Rang ist nicht Teil des Geschäfts. Weder Stand noch Gebühr
+    // noch der bewilligte Antrag dürfen rangStufe() bewegen.
+    const rangVorher = rangStufe();
+    amt.wiedereinsetzung = {stand: 9, haar: eHaar};
+    if(rangStufe() !== rangVorher) fehler('Der bewilligte Antrag hat den Rang verschoben', rangVorher, rangStufe());
+    amt.wiedereinsetzung = null;
+
+    // (6) Sichtbarkeit hängt an einer echten Stufe, nicht am Zufall.
+    amt.ausbauten.startLevel = 0; player.level = 1;
+    if(wiederSichtbar()) fehler('Block ist auf der Anfangsstufe sichtbar');
+    player.level = 2;
+    if(!wiederSichtbar()) fehler('Block bleibt nach dem ersten Aufstieg unsichtbar');
+  } finally {
+    player.level = eLevel; player.hair = eHaar; amt.wiederZahl = eZahl;
+    amt.wiedereinsetzung = eWieder; amt.ausbauten.startLevel = eStart; amt.bankGold = eGold;
+  }
+
+  // (7) Die Klemme, beidseitig. Der Fund, der diesen Abschnitt erzwungen hat:
+  // ein von Hand gesetztes {stand: 999} lief durch Loader und Einlösung glatt
+  // durch und ergab eine Schicht auf Stufe 999.
+  for(const [roh, soll] of [[999, WIEDER_STAND_DECKEL], [WIEDER_STAND_DECKEL + 1, WIEDER_STAND_DECKEL],
+                            [0, 1], [-7, 1], [NaN, 1], [7, 7], [WIEDER_STAND_DECKEL, WIEDER_STAND_DECKEL]]){
+    const ist = wiederStandGeklemmt(roh);
+    if(ist !== soll) fehler('Stand nicht geklemmt', roh, 'ergibt', ist, 'statt', soll);
+  }
+  // Was der Antrag selbst vergibt, liegt immer innerhalb der Klemme — sonst
+  // würde der Deckel im normalen Spiel greifen und stillschweigend kürzen.
+  if(wiederStandGeklemmt(WIEDER_STAND_DECKEL) !== WIEDER_STAND_DECKEL)
+    fehler('Deckel klemmt sich selbst weg');
+
+  // (8) Erreichbarkeit: der Knopf steht in einer onclick-Zeichenkette im
+  // #ovPanel, hängt also am globalen Namensraum.
+  if(typeof window.wiederBeantragen !== 'function') fehler('Einsprungpunkt fehlt im globalen Namensraum');
+
+  if(ok) console.log('W10 Wiedereinsetzung: Beschwer, Gebührenstaffel und Rangfreiheit in Ordnung.');
+}
+wiederAssert();
 
 function showDorf(){
   auftragBrettSichern();   // W4: würfelt nur, wenn noch kein Brett für diese Schicht hängt
