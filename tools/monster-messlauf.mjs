@@ -53,7 +53,32 @@ const ergebnis = await page.evaluate(() => {
   }
 
   startGame();
-  const px = player.x, py = player.y;
+  // Z2: Arena VOR dem Dorf, nicht darin. Seit M2 gilt auf der Dorfflaeche das
+  // Hausrecht (Monster verlieren dort sofort die Aggro und gehen heim), und der
+  // Startpunkt des Spielers liegt mitten im Dorf. Eine Messung dort misst also
+  // Gegner, die gar nicht kaempfen duerfen. Die Arena wandert deshalb nach
+  // Osten, bis sie hinter dem Bannguertel auf begehbarem Boden steht.
+  // Und zwar auf einer LICHTUNG: ein einzelner begehbarer Punkt reicht nicht,
+  // Kiter und Fernkaempfer laufen sonst in die erstbeste Baumkante und die
+  // Messung misst das Gelaende statt den Gegner. Verlangt wird ein freies
+  // Rechteck von 16 x 7 Kacheln.
+  // 12 x 5 Kacheln, nicht groesser: eine 16 x 7-Lichtung existiert auf der
+  // erzeugten Karte schlicht nirgends (nachgemessen), die Suche liefe dann bis
+  // zur Ostkante ins Wasser und die Messung saehe nur noch -1/0.
+  const frei = (x0, y0) => {
+    for(let yy = y0 - 2; yy <= y0 + 2; yy++)
+      for(let xx = x0 - 2; xx <= x0 + 9; xx++)
+        if(!reachbar(xx, yy)) return false;
+    return true;
+  };
+  let ax = Math.floor(player.x / TS), ay = Math.floor(player.y / TS), gefunden = false;
+  suche: for(; ax < MW - 20; ax++)
+    for(let dy = 0; dy <= 40; dy++) for(const vz of [1, -1]){
+      const yy = Math.floor(player.y / TS) + dy * vz;
+      if(dorfAbstand(ax, yy) >= DORF_BANN + 8 && frei(ax, yy)){ ay = yy; gefunden = true; break suche; }
+    }
+  if(!gefunden) console.warn('Messlauf: keine Lichtung gefunden, Arena evtl. unsauber');
+  const px = ax * TS + 16, py = ay * TS + 16;
 
   // Der Tod wuerde die Schicht abbrechen und die Welt neu bauen, danach misst
   // der naechste Lauf Unsinn. Deshalb wird hurtPlayer eingeklinkt: der Schaden
@@ -109,6 +134,26 @@ const ergebnis = await page.evaluate(() => {
         player.x = px; player.y = py;              // stehen bleiben, nicht ausweichen
       }
       update(DT); camSnap(); t += DT;
+      // Kaefig: die Lichtung ist 12 x 5 Kacheln, und wer aus ihr hinausflieht
+      // (Kiter, Fernkaempfer), steckt ohne Wegfindung in der ersten Baumkante
+      // fest. Dann misst der Lauf das Gelaende, nicht den Gegner. Am Rand der
+      // Lichtung ist Schluss, wie in einer Arena.
+      for(const m of monsters) if(!m.dead){
+        if(m.x < px - 60)  m.x = px - 60;
+        if(m.x > px + 280) m.x = px + 280;
+        if(m.y < py - 70)  m.y = py - 70;
+        if(m.y > py + 70)  m.y = py + 70;
+      }
+      // Auch der Spieler bleibt in der Arena. Sonst zieht sich der Abstands-
+      // lauf westwaerts aus dem Kaefig zurueck, waehrend die Gegner an dessen
+      // Rand haengen, und die Spalte "genommener Schaden" zeigt eine Null, die
+      // nichts bedeutet. In der Arena gilt: wer dauerzaubert, steht praktisch
+      // (Z4-Bremse), und wer steht, wird eingeholt. Genau das soll die Messung
+      // zeigen duerfen.
+      if(player.x < px - 60)  player.x = px - 60;
+      if(player.x > px + 280) player.x = px + 280;
+      if(player.y < py - 70)  player.y = py - 70;
+      if(player.y > py + 70)  player.y = py + 70;
       state = 'play';
     }
     return {t: -1};

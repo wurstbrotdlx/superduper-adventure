@@ -202,6 +202,8 @@ Zwei Nachträge, die keine neue Vorgangsart sind, sondern eine Eigenschaft an be
 
 **Die beiden Siegel.** Gegen Klippkrabbe und Mumie hilft kein Zauber. Das ist keine Ausnahme von der Weltlogik, sondern ihr Kern: eine Klammer und ein Siegel sind genau die beiden Dinge im Amt, die dafür da sind, dass von außen niemand hineinwirkt. Wer eine versiegelte Akte öffnen will, tut das mit der Hand und trägt die Verantwortung dafür. Ein Zauber verweigert an dieser Stelle die Mitwirkung, und zwar zu Recht.
 
+**Die Zauberbefugnis (Z2).** Zaubern ist im Ministerium keine Begabung, sondern eine Befugnis, wie das Führen eines Dienstsiegels. Sie wird ab Stufe 4 erteilt, vorher schlägt der Außendienst, und das ist keine Schikane, sondern Ausbildungsreihenfolge: erst die Sache anfassen, dann über sie verfügen. Und Mana ist keine Gnade des Himmels, sondern Bearbeitungsstand: es entsteht bei der Arbeit am Vorgang, Schlag für Schlag, und versickert beim Herumstehen. Wer aus sicherer Entfernung wirken will, ohne je einen Vorgang berührt zu haben, dem fehlt schlicht die Grundlage. Das Amt nennt das Aktenlage.
+
 **Regel für neue Monster:** erst die Vorgangsart erfinden, dann das Monster. Nie umgekehrt. Wer eine Vorgangsart nicht in einem Satz erklären kann, hat kein Monster.
 
 ---

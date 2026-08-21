@@ -73,8 +73,13 @@ for L, (b0, b1, aps, affix, armor, hpm) in GEAR.items():
     minderung = min(0.6, armor / (armor + 30))
     REF[L] = dict(hp=hp, dps=round(dps, 1), armor=armor, minderung=round(minderung, 3), hpm=hpm)
 
-# Zauber: manabegrenzt. Regeneration 8 Mana/s, Funke 16 Schaden je 5 Mana.
-ZAUBER_DPS = 25.6          # Dauerleistung, unabhaengig von der Stufe (INT 0)
+# Zauber: manabegrenzt. Z2 (Zauberbefugnis): Mana wird im Kampf erarbeitet,
+# nicht mehr passiv geschenkt. Die Rate ist MANA_REGEN (2/s passiv) plus
+# MANA_JE_TREFFER (4) je Waffenschwung bei 1,3 Schwuengen je Sekunde, zusammen
+# 7,2 Mana/s IM Kampf. Funke: 16 Schaden je 5 Mana. Identisch abgeleitet in
+# index.html (KAT_ZAUBER_DPS), die Kopplung prueft dort zauberAssert().
+MANA_REGEN, MANA_JE_TREFFER, REF_APS = 2, 4, 1.3
+ZAUBER_DPS = (MANA_REGEN + MANA_JE_TREFFER * REF_APS) / 5.0 * 16.0   # 23.04
 ZAUBER_BURST = 57.0        # solange der Pool reicht
 
 XP_RATE = {'A1': 1.0, 'A2': 1.4, 'A3': 2.0, 'A4': 2.6}
@@ -924,6 +929,30 @@ w('Sonderprüfer, eine seltene Aufwertung EINER Instanz eines A1-Gegners. Beides
 w('Eigenschaften der Karte und der Instanz, nicht der Vorgangsart. Sie stehen in')
 w('`phase-m2-nahfeld-und-namen.md` und werden von `monsterAssert()` gegen dieselben Bänder')
 w('gerechnet wie alles andere hier.')
+w('')
+w('### 3.10 Nachtrag Z2: die Zauberbefugnis und die neue Manarechnung')
+w('')
+w('Mit Z2 (`phase-z2-zauberbefugnis.md`) gilt: der erste Zauberpunkt kommt beim Aufstieg')
+w('auf Stufe 4, die passive Manaregeneration faellt von 8 auf 2 je Sekunde, und jeder')
+w('Waffenschwung mit mindestens einem Treffer laedt 4 Mana. Fuer diesen Katalog folgt daraus')
+w('eine neue Zauberleistung:')
+w('')
+w('    Manarate im Kampf = 2 + 4 * 1,3 Schwuenge/s = 7,2 Mana/s')
+w('    ZAUBER_DPS        = 7,2 / 5 * 16 = %.2f (vorher 25,6)' % ZAUBER_DPS)
+w('')
+w('Die Rechnung nimmt an, dass der Spieler das Mana AM GEGNER erarbeitet. Das traegt auch')
+w('beim Steingolem, dessen Sollroute Magie ist: die Treffer-Ladung haengt am Treffer, nicht')
+w('am Schaden, seine 0,9 Physisch-Resistenz aendert an der Manarechnung nichts. Die drei')
+w('Gegner mit Zauber-Sollroute (Moorbescheid, Steingolem, Sammelverfuegung) haben dadurch')
+w('rund zehn Prozent weniger Lebenspunkte, ihre Sollzeiten sind unveraendert. Reines')
+w('Zauberspammen aus der Distanz liegt bei 6,4 Schaden je Sekunde und ist damit gegen')
+w('nichts oberhalb eines Formfehlers eine Route. Genau das war der Auftrag.')
+w('')
+w('Zwei Stufen des Katalogs (1 bis 3) liegen jetzt VOR der Befugnis. Fuer sie existiert')
+w('keine Zauberroute, und der Messlauf schreibt in diese Zellen "keine Befugnis" statt')
+w('einer Zahl. Kein Eintrag dieser Stufen hat eine Zauber-Sollroute, der Katalog bleibt')
+w('also in sich geschlossen; die Kopplung der Konstanten prueft `zauberAssert()` in')
+w('`index.html` bei jedem Laden.')
 w('')
 
 md = '\n'.join(L) + '\n'
