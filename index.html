@@ -3469,6 +3469,8 @@ const player = {
   // nehmen. langsamT bremst, haltT hält fest (Klammergriff), trankSperreT
   // sperrt das Fläschchen (Faulgas, Siegelstaub), sichtT trübt kurz die Sicht.
   langsamT:0, haltT:0, trankSperreT:0, sichtT:0,
+  // Z5: Sperrzeit der Manaregeneration nach einem Zauber (s. update).
+  zauberRuhT:0,
 };
 player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
 
@@ -4539,10 +4541,21 @@ function castSpell(sp, target){                          // target: optionaler W
   }
   if(CFX.goldz) player.gold = Math.max(0, player.gold - Math.min(player.gold, kosten));   // Fluch 'Verwaltungsgebühr'
   player.spellCd = CFX.zunge ? 0.75 : 0.28;                                                // Fluch 'Langsame Zunge'
+  player.zauberRuhT = 0.8;                                                                // Z5: Mana ruht kurz
   auftragEreignis('zauber');   // W4: nach allen Frühabbrüchen (Mana/Leben/Cooldown), der Zauber ist jetzt sicher
   player.castT = 0.42;                                   // Zauber-Animation des Helden
   if(!kn.flags.hatGezaubert){ kn.flags.hatGezaubert = true; saveKn(); }   // Wissenslücke 'nie gezaubert' geschlossen
-  const aim = target || aimPoint();
+  // Z3: Der Zielpunkt wird auf die angezeigte Reichweite geklemmt. Der Deckel
+  // von 320 galt bisher nur fuer die Touch-Zielhilfe, mit der Maus liess sich ein
+  // Meteor an jede Stelle des Bildschirms setzen. Fuer Bolzen aendert das Klemmen
+  // nichts als die Richtung, fuer Meteor und Blizzard ist es der Unterschied
+  // zwischen Zielen und Fernwirkung.
+  let aim = target || aimPoint();
+  if(sp.type === 'aoe_target'){
+    const reich = spellReach(sp), ax = aim.wx - player.x, ay = aim.wy - player.y;
+    const ad = Math.hypot(ax, ay);
+    if(ad > reich) aim = {wx: player.x + ax/ad*reich, wy: player.y + ay/ad*reich};
+  }
   const dir = Math.atan2(aim.wy - player.y, aim.wx - player.x);
   player.dir = dir;
   player.faceLeft = Math.cos(dir) < 0;
@@ -4550,21 +4563,33 @@ function castSpell(sp, target){                          // target: optionaler W
 
   const zweig = sp.ultimate ? 'ult' : sp.branch;         // Kammer-Sonderregeln lesen das mit
   const sd = Math.round(sp.dmg * (1 + FX.zauber*0.12));  // Wirkung 'Zauberkraft'
+  // Z1: Zauber würfeln ihren Crit wie jeder Waffentreffer. Bis hierher stand an
+  // allen Zauber-Aufrufen von hurtMon() ein festes true. Gemeint war der Effekt
+  // (Ton, Partikel, große Zahl), gewirkt hat aber auch der Schadensfaktor 1,7:
+  // ein Zauber traf dauerhaft 1,45 mal härter als dieselbe Zahl im Nahkampf, wo
+  // die 25 Prozent Crit-Chance im Schnitt nur 1,175 ergeben. Genau diese
+  // versteckte Anderthalb war der Grund, warum Zauberspam jeden Nahkampf schlug.
+  const kritt = () => Math.random() < derived.crit;
   if(sp.type === 'bolt'){
     sfx.magic();
+    // Z2: Flugzeit aus der angezeigten Reichweite, nicht aus einer festen 2,0.
+    // spellReach() ist die Linie, die die Zielvorschau malt (speed*0.9). Das
+    // Geschoss flog bisher speed*2,0, also mehr als doppelt so weit wie
+    // versprochen: 880 bis 1120 Pixel, während jeder Gegner erst ab 200 Pixel
+    // überhaupt reagiert. Ab jetzt ist die Vorschau die Wahrheit.
     projectiles.push({isSpell:true, zweig, x:player.x, y:player.y, vx:Math.cos(dir)*sp.speed, vy:Math.sin(dir)*sp.speed,
-      dmg:sd, t:2.0, color:sp.color, r:sp.r||7, aoe:sp.aoe||0, slow:sp.slow||0});
+      dmg:sd, t:spellReach(sp)/sp.speed, color:sp.color, r:sp.r||7, aoe:sp.aoe||0, slow:sp.slow||0, krit:kritt()});
   } else if(sp.type === 'nova'){
     sfx.magic(); addShake(8,0.25);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.4, maxT:0.4});
     kamFlamme(player.x, player.y, sp.radius, zweig);
-    for(const m of monsters){ if(!m.dead && dist(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist(player.x,player.y,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, kritt(), Math.atan2(m.y-player.y,m.x-player.x), zweig); } }
   } else if(sp.type === 'chain'){
     sfx.zap(); addShake(8,0.2);
     let targets = monsters.filter(m=>!m.dead && dist(player.x,player.y,m.x,m.y) < sp.range)
                           .sort((a,b)=>dist(player.x,player.y,a.x,a.y)-dist(player.x,player.y,b.x,b.y)).slice(0, sp.chain);
     let px=player.x, py=player.y;
-    for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sd, true, Math.atan2(t.y-py, t.x-px), zweig); px=t.x; py=t.y; }
+    for(const t of targets){ magicEffects.push({type:'lightning', x1:px, y1:py, x2:t.x, y2:t.y, t:0.2}); hurtMon(t, sd, kritt(), Math.atan2(t.y-py, t.x-px), zweig); px=t.x; py=t.y; }
   } else if(sp.type === 'aoe_target'){
     sfx.magic(); addShake(12,0.35);
     const tx=aim.wx, ty=aim.wy;
@@ -4574,7 +4599,7 @@ function castSpell(sp, target){                          // target: optionaler W
       for(let i=0;i<7;i++) magicEffects.push({type:'flame', x:tx+rr(-sp.radius*0.6, sp.radius*0.6),
         y:ty+rr(-sp.radius*0.45, sp.radius*0.45), sc:rr(2.2,4), t:rr(0.45,0.8), maxT:0.8});
     spawnImpactParticles(tx, ty, 30, null);
-    for(const m of monsters){ if(!m.dead && dist(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, true, Math.atan2(m.y-ty,m.x-tx), zweig); } }
+    for(const m of monsters){ if(!m.dead && dist(tx,ty,m.x,m.y) < sp.radius){ if(sp.slow) m.slowT = sp.slow; hurtMon(m, sd, kritt(), Math.atan2(m.y-ty,m.x-tx), zweig); } }
   } else if(sp.type === 'slow_field'){
     sfx.magic(); addShake(6,0.3);
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:sp.radius, color:sp.color, t:0.6, maxT:0.6});
@@ -4584,6 +4609,8 @@ function castSpell(sp, target){                          // target: optionaler W
     sfx.warp(); sfx.crit(); addShake(35, 1.2); addHitStop(0.12);
     floaters.push({x:player.x, y:player.y-60, txt:'KONFETTI-KATAKLYSMUS!', col:'#ffd54a', t:2.5, big:true});
     magicEffects.push({type:'ring', x:player.x, y:player.y, rad:900, color:'#ffffff', t:0.7, maxT:0.7});
+    // Das Ultimate behaelt seinen festen Crit: es kostet den ganzen Manapool,
+    // haengt an allen zehn Spruechen und soll sich anfuehlen wie ein Schlussstrich.
     for(const m of [...monsters]){ if(m.dead) continue; if(dist(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
     for(let i=0;i<160;i++){ const a=rr(0,Math.PI*2), d=rr(40,700); spawnImpactParticles(player.x+Math.cos(a)*d, player.y+Math.sin(a)*d, 3, null); }
     kn.counters.ultimates = (kn.counters.ultimates||0) + 1;
@@ -7101,7 +7128,15 @@ function update(dt){
       : 0);
   }
 
-  if(!CFX.manatot)                                                               // Fluch 'Manastopp'
+  // Z5: Mana kehrt erst zurueck, wenn der Vorgang ruht. Bis hierher lief die
+  // Regeneration auch waehrend des Zauberns weiter, und der Pool ist gross genug,
+  // dass sie in einem Kampf von unter zehn Sekunden gar nicht bremst: gemessen
+  // 22 Funken in 6,3 s gegen eine Mumie, ohne je leer zu laufen. Genau das ist
+  // der Spam. Mit der Ruhepause wird aus Dauerfeuer ein Rhythmus: Pool leeren,
+  // abbrechen, nachladen. Wer durchspammt, steht am Ende ohne Mana da, und dann
+  // steht auch das Monster vor ihm.
+  if(player.zauberRuhT > 0) player.zauberRuhT -= dt;
+  if(!CFX.manatot && player.zauberRuhT <= 0)                                     // Fluch 'Manastopp'
     player.mana = Math.min(derived.maxMana, player.mana + (8 + FX.mana*4 + (amt.bonusManaRegen||0)) * dt); // Wirkung 'Manafluss'
   if(FX.regen && player.hp > 0)                                                  // Wirkung 'Selbstheilung'
     player.hp = Math.min(derived.maxHp, player.hp + FX.regen*1.6*dt);
@@ -7240,7 +7275,17 @@ function update(dt){
     const len = Math.sqrt(dirX*dirX + dirY*dirY);     // R6/F41
     const hektikMul = player.hektikT > 0 ? 1.8 : 1;   // Fluch 'Hektik': Trank macht kurz eilig
     const bremsMul = player.langsamT > 0 ? 0.5 : 1;   // Monsterkatalog M1: Verschnueren, Schmatzen
-    moveEnt(player, (dirX / len) * derived.speed * hektikMul * bremsMul * moveMag * dt, (dirY / len) * derived.speed * hektikMul * bremsMul * moveMag * dt);
+    // Z4: Wer zaubert, steht fast. Der Spieler ist mit 135 schneller als jedes
+    // Monster im Spiel, deshalb war Abstandhalten bis hierher gratis: gemessen
+    // null Schaden in neun von neun Faellen, egal gegen wen. Reichweite und
+    // Schaden zu senken half dagegen nichts, weil das Problem nicht die Zahl
+    // war, sondern die Bewegungsfreiheit. Die Zauberanimation laeuft 0,42 s,
+    // die Abklingzeit 0,28 s: wer ununterbrochen spammt, gibt damit Boden auf,
+    // wer Boden halten will, muss Pausen lassen. Eine Amtshandlung unterschreibt
+    // man nicht im Laufen.
+    const zauberMul = player.castT > 0 ? 0.15 : 1;
+    const tempo = derived.speed * hektikMul * bremsMul * zauberMul * moveMag;
+    moveEnt(player, (dirX / len) * tempo * dt, (dirY / len) * tempo * dt);
     player.faceLeft = dirX < 0;
     player.mvx = dirX; player.mvy = dirY;      // Schieberichtung für Kammerblöcke
   }
@@ -7310,7 +7355,7 @@ function update(dt){
     // treffen, wurde vorher aber trotzdem jedes Frame mit Math.hypot geprüft.
     for(const m of nahListe){
       if(!m.dead && dist(p.x, p.y, m.x, m.y) < m.r + (p.r||15)){
-        hurtMon(m, p.dmg, true, Math.atan2(p.vy, p.vx), p.zweig);
+        hurtMon(m, p.dmg, !!p.krit, Math.atan2(p.vy, p.vx), p.zweig);
         if(p.slow) m.slowT = p.slow;
         spawnImpactParticles(p.x, p.y, 20, p.color || '#ff6600');
         if(p.aoe){
@@ -8285,7 +8330,7 @@ function respawnPlayer(){
   monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   particles.length = 0; corpses.length = 0; floaters.length = 0;
   player.x = SPAWN.x; player.y = SPAWN.y; camSnap(); player.dead = false; player.hurtT = 0;
-  player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
+  player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0; player.zauberRuhT = 0;
   player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
   player.hp = Math.max(1, Math.round(derived.maxHp * 0.5)); player.mana = derived.maxMana;
   if(kesselOpen) toggleKessel();                                                   // gibt auch die Zutaten aus dem Topf zurück
@@ -8401,7 +8446,7 @@ function startShift(){
   el('bossbar').style.display = 'none';
 
   player.x = SPAWN.x; player.y = SPAWN.y; camSnap(); player.dead = false; player.hurtT = 0;
-  player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0;
+  player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0; player.zauberRuhT = 0;
   player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
   // W10: ein bewilligter Antrag auf Wiedereinsetzung wird hier eingelöst und im
   // selben Zug verbraucht. Er gibt den Dienststand und das Gesicht zurück, sonst
