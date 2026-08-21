@@ -183,8 +183,7 @@ Namensvergleich findet sie nicht). Das bleibt der Stand.
 - HUD, Gürtel, Minikarte und Daumenfächer behalten mit offenem Panel ihre Wirkung.
 - `Esc` schließt weiterhin eine Ebene je Druck.
 - Der Schließknopf bleibt beim Scrollen im Bild.
-- Die Konsole ist beim Start still (die fünf `404` der fehlenden NPC-Blätter sind der
-  bekannte Fehlstand aus G6, kein Fund dieser Phase).
+- Die Konsole ist beim Start still.
 
 ## Prüfprotokoll
 
@@ -197,7 +196,10 @@ Der Lauf stellt fest statt zu messen: jede Zeile ist ein Soll-Ist-Vergleich, der
 ist 1, sobald eine nicht stimmt. Angriffe werden nicht geraten, sondern gezählt — der Lauf
 legt sich vor `tryAttack()`, den einzigen Weg zu einem Schlag.
 
-Lauf vom 21.08.2026, Chromium, Desktop 1280×800 und Touch 390×844:
+Lauf vom 21.08.2026, Chromium, Desktop 1280×800 und Touch 390×844. Zweimal gelaufen:
+einmal auf dem Branch-Punkt, und noch einmal, nachdem `main` mit M3 (sechstes Biom) und dem
+G6-Nachtrag (die fünf Dorf-Blätter) hereingezogen war. Beide Male dasselbe Ergebnis — M3
+fasst weder Panels noch Ereigniswege an, U1 weder Kampfwerte noch Katalog:
 
 ```
 ok    Inventar offen -> Schleier an                            ist=true soll=true
@@ -238,8 +240,14 @@ damit die Tabelle lesbar bleibt.)
 
 Dazu von Hand geprüft, weil ein Lauf keine Optik beurteilt: alle sieben Panels auf
 1280×800 und 390×844 im Bild, Kopfband, Rundknopf, Schleier und Rollbalken auf beiden.
-Der Einzeldatei-Build läuft unverändert durch (`node tools/build-single.mjs`, 99 Dateien,
-1747 KB).
+Der Einzeldatei-Build läuft unverändert durch (`node tools/build-single.mjs`).
+
+Die Startkonsole ist seit dem G6-Nachtrag in `main` **vollständig** still: die fünf
+`404`-Zeilen der fehlenden Dorf-Blätter, die beim ersten U1-Lauf noch standen, sind mit
+den nachgelegten Dateien verschwunden. `tools/menue-pruef.mjs` blendet `404` trotzdem
+weiterhin aus — wer das Repo ohne vollständige Grafiklizenz klont, soll an einem fehlenden
+Blatt keine Menü-Prüfung scheitern sehen. Ein fehlendes Blatt ist ein Fehlstand des
+Grafikpakets, kein Fund dieses Laufs.
 
 ## Vierzehn Guards, und warum hier keiner dazukommt
 

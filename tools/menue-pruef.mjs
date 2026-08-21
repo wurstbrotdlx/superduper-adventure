@@ -49,8 +49,10 @@ async function spiel(ctxOpt){
   page.on('pageerror', e => laut.push('pageerror: ' + String(e).slice(0, 200)));
   page.on('console', m => {
     if(m.type() !== 'error') return;
-    // Die fuenf fehlenden NPC-Blaetter sind ein bekannter, dokumentierter
-    // Fehlstand (G6, GRAFIK-BESTAND-2026-08-21.md), kein Fund dieses Laufs.
+    // Ein fehlendes Sprite-Blatt ist ein Fehlstand des Grafikpakets, kein Fund
+    // dieses Laufs: wer das Repo ohne vollstaendige Lizenz klont, soll daran
+    // keine Menue-Pruefung scheitern sehen. Das Spiel meldet solche Luecken
+    // ohnehin selbst und einmal (s. loadAssets/bakeAllNpcSheets).
     if(m.text().includes('404')) return;
     laut.push('console: ' + m.text().slice(0, 200));
   });

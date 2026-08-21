@@ -940,6 +940,22 @@ const CF_RIGS = {
     anims:{ idle:[0,4], walk:[1,8], run:[1,8], attack:[2,4], cast:[2,4], hurt:[3,4], death:[3,4] } },    // slime
   slime_small_blue:  { file:'Slime/Slime_Small_Blue.png', fw:16, fh:16, ax:8, ay:15,
     anims:{ idle:[0,4], walk:[1,8], run:[1,8], attack:[2,4], cast:[2,4], hurt:[3,4], death:[3,4] } },    // shadow
+  // M3 Stollen: die Schleimfamilie in drei Groessen. Big und Medium teilen sich das
+  // 8x4-Raster des verbauten Slime_Small (0 Idle, 1 Sprung=walk/run, 2 Ramme=attack,
+  // 3 Huelle-Flacker=hurt UND death). Mit --rig gegen alle drei PNGs gemessen: die
+  // Zeilenstruktur ist identisch, nur fw/fh und die Fusslinie wachsen mit. Einzige
+  // Abweichung: Big hat in der Angriffszeile 8 statt 4 Frames.
+  slime_big:         { file:'Slime/Slime_Big_Blue.png', fw:64, fh:64, ax:32, ay:42,
+    anims:{ idle:[0,4], walk:[1,8], run:[1,8], attack:[2,8], cast:[2,8], hurt:[3,4], death:[3,4] } },
+  slime_medium:      { file:'Slime/Slime_Medium_Blue.png', fw:32, fh:32, ax:16, ay:22,
+    anims:{ idle:[0,4], walk:[1,8], run:[1,8], attack:[2,4], cast:[2,4], hurt:[3,4], death:[3,4] } },
+  // Die Schnecke bricht das Down/Side/Up-Schema des Packs, und zwar nachweisbar:
+  // Zeile 0 misst 21px Breite (Seitenansicht mit Haus), die Zeilen 1 und 2 nur 10px
+  // (Front und Rueck). Zeile 3 ist dieselbe Seitenansicht in Bewegung. Nur diese
+  // beiden Zeilen sind verbaut; Angriff, Treffer und Tod aliasen darauf wie beim
+  // bat (F17) — ein eigenes Sterbebild hat das Blatt nicht.
+  snail:             { file:'Snails/Snail_1.png', fw:32, fh:32, ax:16, ay:28,
+    anims:{ idle:[0,2], walk:[3,2], run:[3,2], attack:[3,2], cast:[3,2], hurt:[0,2], death:[0,2] } },
   flying_skull:      { file:'Volcano/Flying_Skull.png', fw:32, fh:16, ax:16, ay:16,
     // Kein Down/Side/Up-Schema (8 Zeilen, Framezahl 6,6,3,3,2,2,6,6). Per Bildvergleich:
     // 0 Flug-Idle, 2 Flatter-Variante, 4 kompakte Tauch-Pose, 6+7 Schädel-Bruchstücke
@@ -1121,6 +1137,12 @@ for(const n of [1, 2]){
   addSheet(`dun${n}_pillar`, `cf/dungeon/Dungeon_${n}/Dungeon_${n}_Pillars.png`, 3, 'grid', {fw:16, fh:48, ax:8, ay:46});
   addSheet(`dun${n}_plate`, `cf/dungeon/Dungeon_${n}/Dungeon_${n}_Pressure_Plate.png`, 6, 'grid', {fw:16, fh:16, ax:8, ay:8});
 }
+// M3: der dritte Kammersatz, der Stollen. Cute Fantasy liefert kein Dungeon_3 —
+// der Ordner im Pack ist leer (G0-Korrektur oben gilt weiter). Deshalb ein Hybrid:
+// Boden und sichtbarer Wandring kommen aus Tiles/Cave, waehrend Tor, Saeule, Platte
+// und Treppe die von Dungeon_2 bleiben. Der Cave-Satz hat keine solchen Objekte.
+addSheet('dun3_walls', 'cf/dungeon/Dungeon_3/Cave_Walls.png', 1, 'raw');
+addSheet('dun3_floor', 'cf/dungeon/Dungeon_3/Cave_Floor_1.png', 1, 'raw');
 addSheet('dun1_stairsDown', 'cf/dungeon/Dungeon_1/Stairs_Down_SingleFrame.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun2_stairsDown', 'cf/dungeon/Dungeon_2/Dungeon_2_Stairs_Down.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun_chest', 'cf/dungeon/Objects/Chest_anim.png', 8, 'grid', {fw:32, fh:32, ax:16, ay:30});
@@ -2596,11 +2618,31 @@ const DUN_SET = [1, 2].map(n => ({
   eckSE: [64,0],  eckSW: [96,0],  eckNE: [64,32], eckNW: [96,32],
 }));
 
+// M3, Satz 2 (Stollen). Anders als die beiden Dungeon-Blaetter verteilt sich der
+// Cave-Satz auf zwei Dateien, deshalb traegt hier jeder UV-Eintrag optional seinen
+// Blattschluessel als drittes Feld; bakeDunTile() liest ihn. Der dunkle Ring in
+// Cave_Walls bei (64,0) hat exakt dasselbe 3x3-Layout wie die Dungeon-Blaetter —
+// am Pixel nachgemessen (Deckung und Mittelfarbe je Zelle), nicht angenommen.
+// Der Fuellblock kommt aus der Steinquaderzeile bei y=112.
+DUN_SET.push({
+  key: 'dun3_walls',
+  floor: [[0,0,'dun3_floor'], [16,0,'dun3_floor'], [0,16,'dun3_floor'], [16,16,'dun3_floor'], [0,32,'dun3_floor']],
+  // Abweichung von der Dungeon-Regel "Fuellblock deutlich dunkler als der Boden":
+  // der Cave-Satz hat keine flache dunkle Kachel. Die dunklen Ringecken waeren
+  // dunkel genug, kacheln aber sichtbar zu einem Bogenmuster (gegengeprueft, s.
+  // Phasendokument). Die Steinquaderzeile bei y=112 ist heller als der Boden und
+  // wird trotzdem eindeutig als Wand gelesen, weil sie Mauerwerk zeigt statt
+  // Flaeche. Im Stollen traegt also die Textur, was sonst die Helligkeit traegt.
+  wall:  [[0,112], [16,112], [32,112]],
+  edgeS: [80,0],  edgeN: [80,32], edgeE: [64,16], edgeW: [96,16],
+  eckSE: [64,0],  eckSW: [96,0],  eckNE: [64,32], eckNW: [96,32],
+});
+
 const DUN_CACHE = {};
 function bakeDunTile(set, uv){
-  const ck = 'd' + set + ',' + uv[0] + ',' + uv[1];
+  const ck = 'd' + set + ',' + uv[0] + ',' + uv[1] + ',' + (uv[2] || '');
   if(DUN_CACHE[ck]) return DUN_CACHE[ck];
-  const sheet = SHEETS[DUN_SET[set].key]; if(!sheet) return null;
+  const sheet = SHEETS[uv[2] || DUN_SET[set].key]; if(!sheet) return null;
   const c = makeCanvas(TS, TS), cc = c.getContext('2d');
   cc.imageSmoothingEnabled = false;
   cc.drawImage(sheet.img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
@@ -3304,6 +3346,11 @@ const ZUTAT_NOUNS = {
   stalfos:     {n:'Skelettknöchel',    g:'m', slot:'boots',  rar:2, icon:'🦴'},
   mage:        {n:'Irrlicht-Funke',    g:'m', slot:'weapon', rar:2, icon:'🔹'},
   bossgeneric: {n:'Schreckensklaue',   g:'f', slot:'shield', rar:4, icon:'🦅'},
+  // M3: die Sperrablage. Ihre Signatur ist Ruestung, und aus ihrem einen
+  // Risiko-Gegner faellt die Waffe. Grundseltenheit nach Ertragsklasse wie bei M1.
+  teilbescheid:{n:'Teilbescheid-Gallert', g:'n', slot:'armor',  rar:1, icon:'🫧'},
+  dienstweg:   {n:'Schneckenhaus',      g:'n', slot:'armor',  rar:2, icon:'🐌'},
+  teilabhilfe: {n:'Teilabhilfe-Kern',   g:'m', slot:'weapon', rar:3, icon:'🔷'},
 };
 
 // Wirkungen: name = wie die Kladde sie nennt, fx = Aggregat-Schlüssel für die
@@ -4304,6 +4351,35 @@ const MONDEF = {
     muster:[{name:'Faustschlag', warn:700, art:'nah'},
              {name:'Unanfechtbar', warn:900, art:'ring', jede:3, reich:130, ruhe:3.0}]},
 
+  // --- Stollen / Die Sperrablage, nur hinter dem teuersten Gebuehrenbescheid ---
+  // M3. Werte aus tools/monsterkatalog.py, nicht von Hand gesetzt: dort stehen
+  // Zielkampfzeit und Zielgefahrenbudget, hp/dmg/xp/gold fallen daraus. Wer hier
+  // eine Zahl aendert, aendert sie dort und erzeugt neu.
+  teilbescheid: {name:'Der Teilbescheid', art:'Der Teilbescheid', rig:'slime_medium', sc:1.3, psc:1.2, deathFps:5, r:10,
+    kat:{klasse:'A1', stufe:9, biom:'Stollen', route:'physisch', typen:'B1'},
+    hp:145, dmg:[16,22], xp:44, speed:44, aggro:140, atkCd:1.3, atkRange:24, gold:[29,61],
+    res:{physisch:0.1, feuer:-0.3, eis:0, gift:0.25, magie:0},
+    reserved:true,
+    muster:[{name:'Im Übrigen', warn:320, art:'nah'},
+             {name:'Anlage beigefügt', warn:380, art:'kegel', jede:4, reich:38}]},
+  dienstweg: {name:'Der Dienstweg', art:'Der Dienstweg', rig:'snail', tint:'#6a7f4a', tintA:0.35, sc:1.5, psc:1.2, deathFps:5, r:11,
+    kat:{klasse:'A2', stufe:9, biom:'Stollen', route:'magie', typen:'B5+B2'},
+    hp:180, dmg:[39,57], xp:291, speed:18, aggro:90, atkCd:2.4, atkRange:24, gold:[64,134],
+    res:{physisch:0.6, feuer:0, eis:0.2, gift:0.35, magie:-0.35},
+    reserved:true,
+    muster:[{name:'Anhörung', warn:520, art:'nah'},
+             {name:'Über den Dienstweg', warn:650, art:'nah', jede:3, wucht:1.6, ruhe:0.8}]},
+  teilabhilfe: {name:'Die Teilabhilfe', art:'Die Teilabhilfe', rig:'slime_big', sc:1.6, psc:1.2, deathFps:5, r:15,
+    kat:{klasse:'A3', stufe:10, biom:'Stollen', route:'physisch', typen:'B2+B7'},
+    hp:710, dmg:[98,142], xp:636, speed:30, aggro:160, atkCd:1.8, atkRange:34, gold:[102,214],
+    res:{physisch:0.4, feuer:-0.3, eis:0.15, gift:0.35, magie:0.1},
+    hinterhalt:true, reserved:true,
+    // Der ganze Witz der Vorgangsart steht in dieser einen Zeile: wer ihr abhilft,
+    // hat danach zwei kleinere Vorgaenge statt keinem. killMon() liest sie.
+    zerfaellt:{typ:'teilbescheid', n:2},
+    muster:[{name:'Abhilfe', warn:560, art:'nah'},
+             {name:'Im Übrigen zurückgewiesen', warn:700, art:'kegel', jede:3, reich:70, ruhe:0.8}]},
+
   // --- Ruine / Der Altbestand ---
   aktenbote: {name:'Der Aktenbote', art:'Der Zuschlag', rig:'cowling_1', tint:'#e0d0a0', tintA:0.6, sc:1.3, psc:1.2, deathFps:5, r:10,
     kat:{klasse:'A1', stufe:8, biom:'Ruine', route:'physisch', typen:'B1+B6'},
@@ -4924,6 +5000,24 @@ function killMon(m){
     if(vorgangAdressAkt() && vorgangDreiZeilen() && findeAdresszeile(4)){
       floaters.push({x:m.x, y:m.y-40, txt:'+ Adresszeile', col:'#f4d97a', t:3.2, big:true});
     }
+  }
+  // M3: Teilabhilfe. Der Zerfall haengt an der Tabelle, nicht am Typnamen, damit
+  // eine zweite zerfallende Vorgangsart keine zweite Codestelle braucht. Er
+  // terminiert von selbst: der Teilbescheid traegt kein zerfaellt. Die Kinder
+  // erben die Elite-Eigenschaft nicht — ein Sonderpruefer ist namentlich
+  // gezeichnet, und eine Unterschrift teilt sich nicht.
+  if(m.def.zerfaellt && !m.zerfallen){
+    const z = m.def.zerfaellt;
+    for(let i = 0; i < z.n; i++){
+      const w = (i / z.n) * Math.PI * 2 + rr(0, 1.2), d = 18 + rr(0, 8);
+      let kx = m.x + Math.cos(w) * d, ky = m.y + Math.sin(w) * d;
+      // Nicht in die Wand setzen: notfalls bleibt das Kind auf dem Elternpunkt,
+      // dort stand der Vorgaenger ja auch.
+      if(!walkT(Math.floor(kx / TS), Math.floor(ky / TS))){ kx = m.x; ky = m.y; }
+      const kind = makeMon(z.typ, kx, ky);
+      if(kind){ kind.zerfallen = true; kind.aggro = true; }
+    }
+    floaters.push({x:m.x, y:m.y-44, txt:'Teilabhilfe · im Übrigen zurückgewiesen', col:'#9fd8ff', t:2.6, big:true});
   }
   if(gameT - lastDieSfx > 0.07){ lastDieSfx = gameT; sfx.die(); }   // Massensterben nicht 30x gleichzeitig
   spawnImpactParticles(m.x, m.y, 40, null);
@@ -6237,8 +6331,17 @@ const KAM_ZWEIG_COL = ['#ff9f4a', '#7ad6ff', '#c77dff'];
 // Schild vor der Tür wäre gelogen, und ein ehrliches Schild ist in dieser Welt
 // eine kleine Sensation (Weltbibel, Kapitel 3).
 const KAM_WAECHTER = ['bat','spider','sammelmahnung','mage','golem'];
-const KAM_WAECHTER_STUFE = {bat:1, spider:1, sammelmahnung:3, mage:3, golem:5};
-const kamWaechter = diff => KAM_WAECHTER.filter(t => KAM_WAECHTER_STUFE[t] <= diff);
+const KAM_WAECHTER_STUFE = {bat:1, spider:1, sammelmahnung:3, mage:3, golem:4};
+// M3: die Sperrablage (Katalogbiom Stollen) ist ein eigenes Roster, kein Zuwachs
+// zur Unteren Registratur. Sonst stuenden bei Gebuehrenbescheid 5 acht Typen in
+// einem Biom und die M1-Kreuzungsregel "je Biom 3 bis 5 Gegner" waere gebrochen.
+// Deshalb teilen sich die beiden Roster die Staffel, statt sich zu ueberlagern:
+// Bescheid 1 bis 4 ist die Untere Registratur, Bescheid 5 ist die Sperrablage.
+// Der Steingolem rueckt dafuer von 5 auf 4 — er bliebe sonst unerreichbar, und
+// Bescheid 4 verspricht auf dem Schild ohnehin eine schwere Kammer.
+const KAM_STOLLEN = ['teilbescheid','dienstweg','teilabhilfe'];
+const kamWaechter = diff => diff >= 5 ? KAM_STOLLEN
+                                      : KAM_WAECHTER.filter(t => KAM_WAECHTER_STUFE[t] <= diff);
 const kamWaechterZufall = diff => { const p = kamWaechter(diff); return p[Math.floor(Math.random()*p.length)]; };
 
 const kammerTueren = [];           // Türen in der Oberwelt
@@ -6376,14 +6479,18 @@ function betreteKammer(tuer){
             level: currentLevel, px: player.x, py: player.y};
 
   const kinds = waehleModule(tuer.diff);
-  const set = tuer.diff <= 2 ? 0 : 1;
+  // M3: drei Saetze. 1-2 Dungeon_1, 3-4 Dungeon_2, 5 der Stollen. Der Stollen erbt
+  // seine Moebel von Dungeon_2, weil der Cave-Satz keine hat (s. addSheet oben) —
+  // deshalb ist der Moebelindex nicht set+1, sondern bei Satz 2 wieder die 2.
+  const set = tuer.diff <= 2 ? 0 : (tuer.diff <= 4 ? 1 : 2);
+  const moebel = set === 2 ? 2 : set + 1;
   const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome, set,
              mods: [], raeume: [], tore: [], props: [], idx: 0, geleert: false, truhe: null,
              // R6/F31: Sheet-Keys des Sets einmal beim Kammeraufbau, statt sie in
              // drawKammerObj()/drawProp() pro sichtbarem Objekt pro Frame neu zu bauen.
-             dkGate: `dun${set+1}_gate`, dkGateAnim: `dun${set+1}_gateAnim`,
-             dkPlate: `dun${set+1}_plate`, dkStairs: `dun${set+1}_stairsDown`,
-             dkPillar: `dun${set+1}_pillar`};
+             dkGate: `dun${moebel}_gate`, dkGateAnim: `dun${moebel}_gateAnim`,
+             dkPlate: `dun${moebel}_plate`, dkStairs: `dun${moebel}_stairsDown`,
+             dkPillar: `dun${moebel}_pillar`};
   kammer = k;
   currentLevel = 3;
   // Muss vor dem Modulbau passieren: der ruft makeMon, und die Oberwelt-Mobs
