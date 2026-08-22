@@ -621,6 +621,11 @@
      darunter der Satz, darunter die Antworten als Liste, waehlbar mit Maus,
      mit den Zifferntasten und mit Pfeil hoch/runter plus Eingabe.
 
+     U4 hat die Tafel in zwei Felder geteilt: oben das Gegenueber (Portraet,
+     Name, laufender Satz), unten der Spieler (Amtsbezeichnung, Antwortliste,
+     eigenes Portraet rechts). Dieselben Bestandteile, dieselbe Bedienung —
+     nur sieht man jetzt, wo die eine Seite aufhoert und die andere anfaengt.
+
      Die Tafel liegt UNTEN und nicht in der Mitte: der Gespraechspartner steht
      in der Welt, und die Welt soll dabei sichtbar bleiben. Auf Mobil wandert
      sie nach oben, aus demselben Grund wie alle anderen Panels — unten liegt
@@ -631,13 +636,34 @@
     width:min(720px,calc(100vw - 28px));box-sizing:border-box;
     z-index:21;display:none;
     background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;
-    color:#e8d9a8;padding:14px;box-shadow:0 10px 44px rgba(0,0,0,.92);
+    /* padding:0 und overflow:hidden seit U4 — die beiden Haelften bringen
+       ihren eigenen Innenabstand mit, und nur so laeuft die Trennkante von
+       Rand zu Rand statt in der Luft zu enden. */
+    color:#e8d9a8;padding:0;overflow:hidden;box-shadow:0 10px 44px rgba(0,0,0,.92);
     background-image:
       linear-gradient(rgba(78,56,32,.38), rgba(78,56,32,0) 120px),
       linear-gradient(rgba(24,17,28,.25), rgba(6,4,10,.45));
     animation:panelAuf .16s ease-out;
   }
-  #gespraechInnen{display:flex;gap:14px;align-items:stretch;}
+  /* U4 — Die Tafel ist zweigeteilt: oben das Gegenueber, unten der Spieler.
+     Vorher lief beides in einer Spalte rechts vom Portraet, die Antworten
+     standen unter dem Satz wie ein Nachsatz derselben Person. Wer die Tafel
+     zum ersten Mal sieht, muss ohne Erklaerung erkennen, welche Haelfte
+     gesprochen wird und welche er selbst bedient. Also zwei Felder mit einer
+     Kante dazwischen: oben der Satz, der einlaeuft, unten die Wahl, die
+     wartet. Die Kante ist die Doppellinie des Hauses (.amtRegel). */
+  #gespraechOben{display:flex;gap:14px;align-items:stretch;padding:14px 14px 12px;}
+  /* align-items:center und nicht flex-end: das Bildfeld haelt die untere
+     Haelfte auf 108px, und im Empfang steht dort oft nur eine einzige Antwort.
+     Bottom-buendig stuende sie dann unter einem Streifen Nichts; mittig steht
+     sie neben dem Bild. Bei vier Antworten ist die Liste ohnehin hoeher, dann
+     setzt align-self das Bild auf die Unterkante. */
+  #gespraechUnten{
+    display:flex;gap:12px;align-items:center;
+    padding:10px 14px 12px;
+    border-top:2px solid #8a6d3b;box-shadow:inset 0 1px 0 #6b5a3a;
+    background:rgba(8,5,12,.55);}
+  #gespraechIch{flex:1 1 auto;min-width:0;}
   /* Das Bildfeld. Kein eigenes Portraet im Grafikpack — gezeigt wird der
      Ruhezustand desselben Blattes, das die Figur auch in der Welt traegt,
      dreifach vergroessert und nicht geglaettet (Regressionsregel 14). */
@@ -650,6 +676,15 @@
      beschnitten statt verkleinert. */
   #gespraechBild canvas{image-rendering:pixelated;display:block;width:100%;height:auto;}
   #gespraechRechts{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+  /* U4: Das Gegenstueck unten rechts, vier- statt fuenffach. Kleiner als das
+     Portraet oben, weil oben steht, wer redet, und unten nur, wer zuhoert.
+     Es steht auf der Unterkante der Tafel (align-items:flex-end), wie die
+     Figur in der Welt auf dem Boden steht. */
+  #gespraechIchBild{
+    flex:0 0 auto;width:88px;height:108px;align-self:flex-end;
+    border:2px solid #6b5a3a;border-radius:6px;background:#17130d;
+    display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
+  #gespraechIchBild canvas{image-rendering:pixelated;display:block;width:100%;height:auto;}
   /* overflow-wrap: die laengsten Woerter dieses Spiels sind Amtsdeutsch
      ("Monsterangelegenheitenanwärter", 30 Zeichen). Auf einer schmalen Tafel
      passt so eines in keine Zeile, und ohne diese Zeile lief es ueber den
@@ -664,11 +699,20 @@
   #gespraechText{
     overflow-wrap:break-word;
     font-size:calc(16px * var(--fs));line-height:1.45;color:#f4e6c8;
-    min-height:calc(16px * var(--fs) * 2.9);margin-bottom:10px;}
+    min-height:calc(16px * var(--fs) * 2.9);margin-bottom:0;}
   #gespraechText .z2{color:#d8c898;}
   /* Der Blinker am Zeilenende, solange getippt wird — dieselbe Rolle wie das
      kleine Dreieck im Vorbild: hier laeuft noch Text. */
   #gespraechText .cur{color:#f4d97a;}
+  /* U4: Das Gegenstueck zu #gespraechName. Dort steht, wer spricht, hier, wer
+     antwortet — und zwar mit der Amtsbezeichnung und nicht mit einem Namen:
+     einen Namen hat der Spieler in diesem Haus nicht (Weltbibel 18.5, die
+     Anrede laeuft ueber den Titel). Kleiner und gesperrt gesetzt wie .amtFuss,
+     damit die Zeile ein Schild ist und keine fuenfte Antwort. */
+  #gespraechIchName{
+    overflow-wrap:break-word;
+    font-size:calc(10px * var(--fs));letter-spacing:.22em;text-transform:uppercase;
+    color:#9a8a5f;margin:0 0 6px;}
   #gespraechWahl{display:flex;flex-direction:column;gap:4px;}
   .gwOpt{
     display:flex;align-items:center;gap:8px;cursor:pointer;
@@ -811,7 +855,13 @@
       overflow-y:auto;
     }
     #gespraechBild{width:72px;height:88px;}
-    #gespraechInnen{gap:10px;}
+    #gespraechOben{gap:10px;padding:10px 10px 8px;}
+    #gespraechUnten{gap:10px;padding:8px 10px 10px;}
+    /* Das zweite Portraet faellt auf Mobil weg. Auf 360px Breite kostet es
+       ein Viertel der Zeile, und was es sagt — "hier antworten Sie" — sagt
+       die Zeile darueber auch. Das erste bleibt: es zeigt, wer da steht,
+       und das steht sonst nirgends. */
+    #gespraechIchBild{display:none;}
     /* Auf 390px Breite traegt der Faktor aus --fs sich selbst zu weit: der
        Name ging ueber drei Zeilen, die Antworten ueber zwei. Die Grundzahlen
        geben hier zwei Stufen ab, der Regler wirkt weiter darauf. */
@@ -1001,19 +1051,27 @@
 
 <!-- U3: Das Gespraechsfenster. Die Huelle steht im HTML, damit bakeUiSkin()
      ihr denselben Pixelrahmen gibt wie den uebrigen Panels; Name, Satz und
-     Antwortliste schreibt gespraechZeichnen(). -->
+     Antwortliste schreibt gespraechZeichnen().
+     U4: zwei Haelften statt einer Spalte — #gespraechOben gehoert dem
+     Gegenueber, #gespraechUnten dem Spieler. -->
 <!-- E2: die schwarze Buehne des Anfangs. Liegt unter Gespraechstafel und
      Overlay und ueber allem uebrigen, siehe #introBuehne im Kopf. -->
 <div id="introBuehne"></div>
 
 <div id="gespraech">
-  <div id="gespraechInnen">
+  <div id="gespraechOben">
     <div id="gespraechBild"><canvas id="gespraechPortrait" width="110" height="135"></canvas></div>
     <div id="gespraechRechts">
       <div id="gespraechName"><span id="gespraechNameTxt"></span><span id="gespraechZu" class="panelZu" style="cursor:pointer;" onclick="gespraechSchliessen()">✖</span></div>
       <div id="gespraechText"></div>
+    </div>
+  </div>
+  <div id="gespraechUnten">
+    <div id="gespraechIch">
+      <div id="gespraechIchName"></div>
       <div id="gespraechWahl"></div>
     </div>
+    <div id="gespraechIchBild"><canvas id="gespraechIchPortrait" width="88" height="108"></canvas></div>
   </div>
 </div>
 <div id="tooltip"></div>
@@ -8191,6 +8249,7 @@ function gespraechOeffnen(n){
   gespraechOffen = true;
   el('gespraech').style.display = 'block';
   gespraechPortrait(n);
+  gespraechIchPortrait();      // U4: die untere Haelfte
   // Begruesst wird mit der Anredezeile, und zwar OHNE npcSprechen(). Der Grund
   // ist keine Geschmacksfrage: npcSprechen() hat Nebenwirkungen, und beim
   // Oeffnen waeren sie am falschen Ort. Bramsches Frage-Zaehler wuerde noch
@@ -8259,6 +8318,33 @@ function gespraechPortrait(n){
                     0, 0, PORTRAET_B*PORTRAET_SC, PORTRAET_H*PORTRAET_SC);
 }
 
+// U4: Das Bild rechts unten. Derselbe Ausschnitt, dasselbe Raster, eine Stufe
+// kleiner (vierfach statt fuenffach) — die untere Haelfte gehoert der Wahl und
+// nicht dem Spiegel.
+//
+// Gelesen wird SHEETS['hero_baked'], also genau das Blatt, das der Spieler in
+// der Welt traegt: die Frisur der Schicht, die Haarfarbe der Schicht und die
+// angelegte Ruestung stehen damit von selbst auf dem Bild, ohne dass hier eine
+// Zeile davon weiss (derselbe Weg wie renderAusweisFoto(), P1-Notiz dort).
+// Der Ausschnitt ist NICHT der des Lichtbilds: das Passbild zeigt Kopf und
+// Schultern, hier steht die ganze Figur, sonst waere das Gegenueber oben eine
+// Person und der Spieler unten ein Passfoto.
+//
+// Das Blatt liegt in EINER Reihe (bakeHeroSheet baut alle Anims nebeneinander,
+// rowStart:0), der Ruheframe steht deshalb bei BAKED_HERO_ANIM.idle.offset und
+// nicht in Zeile 0 wie bei den Pack-Blaettern. Frame 0 und nicht der laufende
+// Takt: ein Portraet zappelt nicht.
+const ICH_PORTRAET_SC = 4;
+function gespraechIchPortrait(){
+  const c = el('gespraechIchPortrait'), cc = c.getContext('2d');
+  cc.clearRect(0, 0, c.width, c.height);
+  const s = SHEETS['hero_baked'];
+  if(!s || !s.img || !BAKED_HERO_ANIM) return;   // vor loadAssets(): leeres Feld, kein Fehler
+  cc.imageSmoothingEnabled = false;
+  cc.drawImage(s.img, BAKED_HERO_ANIM.idle.offset * s.fw + PORTRAET_X, PORTRAET_Y, PORTRAET_B, PORTRAET_H,
+                      0, 0, PORTRAET_B*ICH_PORTRAET_SC, PORTRAET_H*ICH_PORTRAET_SC);
+}
+
 // Nur der Textteil, damit der Tipp-Takt nicht die ganze Tafel neu baut.
 function gespraechTextZeichnen(){
   // Auf ganze Zeichen gerundet vergleichen: gespraech.tipp waechst mit dt und
@@ -8281,6 +8367,12 @@ function gespraechTextZeichnen(){
 function gespraechZeichnen(){
   if(!gespraechOffen) return;
   el('gespraechNameTxt').textContent = gespraech.fig.name;
+  // U4: Wer antwortet, steht ueber der Antwortliste. Bei jedem Zeichnen neu
+  // gelesen und nicht beim Oeffnen einmal: rangName() kann sich waehrend eines
+  // offenen Fensters aendern (eine Hebung faellt beim Schichtende, aber der
+  // Empfang laeuft ueber dieselbe Tafel, und dort wechselt der Titel mit der
+  // Unterschrift). Eine Zuweisung je Antwort ist billiger als ein Sonderfall.
+  el('gespraechIchName').textContent = rangName();
   gespraech.opts = gespraechOptionen();
   if(gespraech.wahl >= gespraech.opts.length) gespraech.wahl = 0;
   el('gespraechWahl').innerHTML = gespraech.opts.map((o, i) =>
@@ -8369,6 +8461,10 @@ function gespraechTick(dt){
 //   3. Jede Figur bekommt genau vier Antworten, keine leer, keine zu breit
 //      fuer ihre Zeile.
 //   4. Der Portraetausschnitt liegt im 64er-Raster.
+//   5. Die Tafel hat zwei Haelften, und jedes Stueck steht in der richtigen
+//      (U4). Ein verrutschtes </div> beim naechsten Eingriff schoebe die
+//      Antwortliste zurueck in die obere Haelfte, und das Fenster saehe wieder
+//      aus wie vor U4, ohne dass ein einziger Fehler in der Konsole stuende.
 //
 // Die Schriftstufen prueft schriftAssert() und nicht dieser Guard: sie stehen
 // erst weiter unten im Skript und waeren von hier aus ein ReferenceError durch
@@ -8398,7 +8494,19 @@ function gespraechAssert(){
   if(KN_NAME_KURZ.length > SCHILD_DECKEL) fehler('Knöterichs Schild zu lang', KN_NAME_KURZ.length);
   if(PORTRAET_X + PORTRAET_B > 64 || PORTRAET_Y + PORTRAET_H > 64)
     fehler('Porträtausschnitt liegt außerhalb des 64er-Rasters');
-  if(ok) console.log(`U3 Gespräch: ${DORF_FIGUREN.length} Namensschilder und je vier Antworten in Ordnung.`);
+  // U4: die Zweiteilung. Geprüft wird nicht, wie es aussieht, sondern wo die
+  // vier Stücke hängen — das ist das, was ein Eingriff versehentlich umhängt.
+  const drin = (kind, eltern) => {
+    const k = el(kind), e = el(eltern);
+    if(!k) { fehler('Tafelteil fehlt', kind); return; }
+    if(!e) { fehler('Tafelhälfte fehlt', eltern); return; }
+    if(!e.contains(k)) fehler('Tafelteil steht in der falschen Hälfte', kind, 'gehört in', eltern);
+  };
+  drin('gespraechBild', 'gespraechOben');
+  drin('gespraechText', 'gespraechOben');
+  drin('gespraechIchName', 'gespraechUnten');
+  drin('gespraechWahl', 'gespraechUnten');
+  if(ok) console.log(`U3 Gespräch: ${DORF_FIGUREN.length} Namensschilder, je vier Antworten und zwei Tafelhälften in Ordnung.`);
 }
 gespraechAssert();
 
@@ -14461,6 +14569,7 @@ function szeneOeffnen(key, knoten){
   el('gespraech').style.display = 'block';
   el('gespraechZu').style.display = 'none';   // die Szene hat nur einen Ausgang
   gespraechPortrait(n);
+  gespraechIchPortrait();                     // U4: die untere Haelfte
   szeneKnoten(knoten);
   panelSicht();
 }
