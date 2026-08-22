@@ -31,6 +31,36 @@ sind neue. `dorfSichtAssert()` bestätigt für alle elf freie Sicht, am Anker wi
 erst erscheinen, nachdem der Spieler selbst am Lager der Beschwerden war. Sie stehen unten
 in seinem Abschnitt. Die sechs Grundzeilen und die fünf Aktzeilen bleiben unverändert.
 
+---
+
+**Nachtrag W11** (siehe `phase-w11-reich-im-dorf.md`): Aus elf Figuren werden vierzehn, und
+zehn der elf bekommen Zuwachs. Beides folgt der Weltgeschichte (`weltgeschichte.md`), und
+beides ist ausdrücklich Zuwachs und kein Umbau: **keine bestehende Zeile dieser Datei ist
+geändert worden.**
+
+Was dazukommt, steht an drei Stellen:
+
+* **Serie 2, ganz unten:** drei neue Figuren, vollständig ausformuliert wie die elf oben.
+  Nieselbeck, Kordula Umlauf und Vorblatt. Ihre Zeilen stehen wörtlich in Kapitel 6 der
+  Weltgeschichte und sind von dort übernommen, nicht neu erfunden.
+* **Je ein Abschnitt „Zusatzzeilen (W11)" bei zehn der elf bestehenden Figuren.** Zwei
+  Zeilenpaare je Figur, die den Fund aus der Zuwachs-Tabelle in Kapitel 6 der Weltgeschichte
+  tragen. Sie hängen sich hinten an den Grundzeilen-Kreislauf, genau wie Nörgels Lagerzeilen.
+* **Sieben zusätzliche Fragen in Bramsches Antworttabelle**, alle zum Reich.
+
+**Der Schalter heißt `abAkt`.** Nörgels Lagerzeilen hängen an einem Merker im Spielstand
+(„war der Spieler schon dort"). Die neuen Zeilen hängen stattdessen am Aktstand: `abAkt:3`
+heißt, dass sie ab Akt III im Kreislauf stehen und vorher nicht. Dasselbe Feld entscheidet
+bei den drei neuen Figuren darüber, ob sie überhaupt schon im Dorf stehen. Außerhalb des
+Schichtmodus gibt es keine Akte; dort ist alles offen, so wie es `serieFrei()` mit den
+Blattserien hält.
+
+**Warum überhaupt gestaffelt.** Weil die Weltgeschichte es so vorgibt und weil es sonst nicht
+funktioniert: Kordula Umlauf ist die Figur, über die der Spieler zum ersten Mal erfährt, dass
+Oben ein Ort ist. Stünde sie ab Schicht 1 im Dorf, wäre die Pointe des zweiten Aktes an Tag
+eins verschenkt. Vorblatt taucht auf, sobald der Spieler anfängt, gefährlich zu werden, und
+nicht vorher. Nur Nieselbeck steht von Anfang an da, und das ist bei ihm der Witz.
+
 ## Zwirn — Bürgermeister Alfons Zwirn
 
 Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (17, 37), vor dem Amt. **G6:** Anker von (14, 34) verschoben, dort stand er vollständig hinter der Amtsfassade; nicht auf (14, 38), weil er sonst die Kontextaktion der Amtstür überstimmt. Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 2, Schuhe Stufe 2. **G7:** Anker von (16, 38) auf (17, 37), der Anger beginnt jetzt bei y=34, das Amt ist fünfzehn Kacheln breit.
@@ -51,6 +81,13 @@ II. „Wer zuständig ist? Klären wir noch.“ (35)
 III. „Der Schreibtisch ist leer. Ich weiß warum.“ (42)
 IV. „Ich habe gestanden. Das Fest steht noch aus.“ (44)
 V. „Wir werden das Fest feiern. Irgendwann.“ (39)
+
+### Zusatzzeilen (W11), ab Akt II
+
+Die Bewilligung des Dorffestes ist im Jahr 1004 erteilt worden. Sie steckt seither in der Röhre unter dem Steinfeld (Weltgeschichte, Kapitel 3 und Serie I, Blatt 5). Zwirn hat seit acht Jahren recht und weiß es nicht. Er sagt deshalb nicht, dass die Genehmigung existiert, sondern nur, dass er damals gefragt hat.
+
+* „Ich habe damals eine Anfrage geschickt.“ (39) / „Nach Oben. Vor acht Jahren.“ (27)
+* „Vielleicht ist die Antwort unterwegs.“ (37) / „Post braucht eben ihre Zeit.“ (28)
 
 **Prüfnotiz:** kein Fund in der Kesselgrammatik-Stufe. Der Text bleibt durchgehend beim Dorffest-Genehmigungsverfahren und Zwirns persönlicher Verlegenheit.
 
@@ -89,12 +126,28 @@ V. „Ablage V ist offen. Ich lege nichts mehr ab.“ (44)
 | Wer ist zuständig für das Dorffest? | „Zuständig wäre die Amtsleitung.“ (31) / „Diese Stelle ist unbesetzt.“ (27) |
 | Was liegt in Ablage auf Eis? | „Ablage auf Eis führt nach Frostkamm.“ (36) / „Dort liegt seit Jahren Ruhe.“ (28) |
 | Was ist Ablage A? | „Ablage A ist das Grasland.“ (26) / „Die harmloseste aller Ablagen.“ (30) |
+| Was ist Hochablage? *(W11)* | „Hochablage ist eine Stadt im Norden.“ (36) / „Vier Tagesreisen. Ohne Straße.“ (30) |
+| Wie wird der Rang gerechnet? *(W11)* | „Wie lange der älteste Vorgang offen ist.“ (40) / „Andere Maßstäbe gibt es nicht.“ (30) |
+| Was ist ein Aktenhaus? *(W11)* | „Ein Aktenhaus ist eine Familie.“ (31) / „Benannt nach der Zuständigkeit.“ (31) |
+| Warum regnet es hier nie? *(W11)* | „Der Niederschlag ist zurückgestellt.“ (36) / „Seit dem Jahr 897.“ (18) |
+| Was brummt im Steinfeld? *(W11)* | „Unter dem Steinfeld liegt eine Röhre.“ (37) / „Die Rohrpost. Sie steht still.“ (30) |
+| Wer ist der Kaiser? *(W11)* | „Ordinat der Vierte ist im Termin.“ (33) / „Seit dem Jahr 588.“ (18) |
+| Was heißt zu Händen? *(W11)* | „Zu Händen schreibt man an Hohe.“ (31) / „Gewöhnliche bekommen nur Post.“ (30) |
+
+**Zur Rang-Antwort (W11).** Die Weltgeschichte formuliert die Regel als „nach dem Alter seines ältesten offenen Vorgangs". Wortgetreu übernommen hat `knAssertCaps()` sie beim ersten Laden gemeldet: **Alter** steht auf der Sperrliste des Kapitels 7 (Seltenheit gleich Alter des Aktenzeichens). Die Auskunft ist dieselbe geblieben, sie kommt jetzt ohne das Wort aus. Das ist kein Schönheitsfehler, sondern genau der Fall, für den es diesen Guard gibt: eine Zeile, die inhaltlich harmlos ist und trotzdem eine gesperrte Vokabel mitbringt.
 
 ### Abweisung (wenn die Frage der Schicht schon verbraucht ist)
 
 * „Eine Frage pro Schicht.“ (23) / „Die Ihre ist verbraucht.“ (24)
 * „In welcher Sache?“ (17) / „Das hatten wir schon.“ (21)
 * „Antrag für heute erledigt.“ (26) / „Morgen wieder.“ (14)
+
+### Zusatzzeilen (W11), ab Akt III
+
+Der Herr aus Hochablage von 985 (Weltgeschichte, Kapitel 2). Sie hält sich für schuldig am Brandabschnitt. In Wahrheit hat ihr Griff daneben die Archivausfertigung gerettet, und sie erfährt das nie. Die Zeilen sagen deshalb nur die Hälfte, die sie selbst kennt.
+
+* „Damals kam ein Herr aus Hochablage.“ (35) / „Er war ausgesprochen höflich.“ (29)
+* „Seitdem gebe ich nichts ohne Antrag.“ (36) / „Höflichkeit ist kein Antrag.“ (28)
 
 **Prüfnotiz:** kein Fund in der Kesselgrammatik-Stufe. Besonders geprüft: „Anlage Drei“ (generischer Aktenanhang, keine Verbindung zu „drei Zutaten“), „Ausfertigung“ bei Ablage V (einzelnes Zutrittsdokument, nicht die dreifache Beglaubigung). Alle Antworten nennen ausschließlich Fundorte/Zusammenhänge, nie Mechanik.
 
@@ -121,6 +174,13 @@ III. „Leerer Stuhl. Quietscht trotzdem.“ (33)
 IV. „Sack ist eingerissen. Ich nähe das.“ (35)
 V. „Nichts kaputt. Komisches Gefühl.“ (32)
 
+### Zusatzzeilen (W11), ab Akt IV
+
+Der Stopfen unter dem Steinfeld (Weltgeschichte, Kapitel 2, Jahr 741, und Langvorgang 10). Zapf beendet damit den Krieg, und zwar mit Werkzeug. Kein Satz wird ihm dafür länger als sechs Wörter, das ist seine Sprachmarke aus Kapitel 8.
+
+* „Im Steinfeld brummt der Boden.“ (30) / „Ich hole das Werkzeug.“ (22)
+* „Ein Rohr. Verstopft. Sehr alt.“ (30) / „Kriegen wir auf.“ (16)
+
 **Prüfnotiz:** kein Fund. Zapfs Weltbibel-Pflichtsatz über den Kessel („Der Kessel ist kein Kessel. Der Kessel ist ein Kopierer.“) ist bewusst **nicht** in den Grundzeilen-Kreislauf übernommen — er steht bereits wörtlich in Kapitel 8 als seine Signaturzeile, gehört aber dorthin, wo er einmalig trifft, nicht in einen Kreislauf, der sich abnutzt. Bleibt als offene Option für einen späteren, gezielten Einbau (z. B. eine Aktzeile), hier nicht spekulativ vorgebaut.
 
 ---
@@ -146,6 +206,13 @@ III. „Ein leerer Stuhl. Genau mein Problem.“ (37)
 IV. „Fragen Sie Nörgel. Er kann das lesen.“ (37)   *(W5, `45912f6`: umformuliert, siehe `phase-w5-vorgang.md`. Vorher: „Ich habe nur gefragt, wer lesen kann.“)*
 V. „Ich komme mit. Ich habe ja gefragt.“ (35)   *(W5, `45912f6`. Vorher: „Vielleicht braucht er nur eine Antwort.“)*
 
+### Zusatzzeilen (W11), ab Akt III
+
+Sie hat als Einzige gemerkt, dass Fürst Nachtrag einen Titel trägt und die übrigen Vorgangsarten nicht (Weltgeschichte, Kapitel 6). Es steht auf Seite zwei ihres sechsten Praktikumsberichts. Niemand hat ihn je gelesen, und sie rechnet auch nicht damit.
+
+* „Der Fürst hat einen Titel. Die anderen nicht.“ (45) / „Steht in meinem Bericht.“ (24)
+* „Seite zwei. Hat nie jemand gelesen.“ (35) / „Ist vielleicht auch nichts.“ (27)
+
 **Prüfnotiz:** kein Fund.
 
 ---
@@ -170,6 +237,13 @@ II. „Alle reden vom Amt, ich trage den Brief.“ (40)
 III. „Ein leerer Stuhl, ein Brief, der bleibt.“ (40)
 IV. „Sieben Generationen, und es ist ein Name.“ (41)
 V. „Sieben Generationen, jetzt oder nie.“ (36)
+
+### Zusatzzeilen (W11), ab Akt III
+
+Seine Amtsbezeichnung lautet Schattenlandzustellungsbevollmächtigter. Ein Bevollmächtigter ist im Reich ein Adelsamt (Weltgeschichte, Kapitel 6). Trepp ist von Amts wegen adelig und trägt Post aus, weil ihm das nie jemand gesagt hat. Er sagt es hier auch nicht, er liest nur seinen Ausweis vor.
+
+* „Wenn ich kurz stören darf.“ (26) / „Meine Bezeichnung ist sehr lang.“ (32)
+* „Schattenlandzustellungsbevollmächtigter.“ (40) / „Steht so im Ausweis. Ehrlich.“ (29)
 
 **Prüfnotiz:** kein Fund. Trepps feste Sprachmarke („Wenn ich kurz stören darf.“) wiederholt sich bewusst als z1 in allen sechs Grundzeilen — das ist seine Sprachmarke, keine Textarmut.
 
@@ -215,6 +289,13 @@ und in Akt V. Ein erster Entwurf lautete „Am Tor hängt Schrift. Ich kann die 
 gestrichen: am Torblatt hängen zwei Banner ohne Schrift, der Satz hätte etwas behauptet,
 was im Bild nicht steht.
 
+### Zusatzzeilen (W11), ab Akt IV
+
+Vorblatt bietet Nörgel die Entfristung an, damit er die Anschrift auf dem Umschlag nicht liest (Weltgeschichte, Kapitel 6 und Szene 7). Vierzig Jahre Probezeit gegen ein Unterlassen. Nörgel sagt nicht, wie er sich entscheidet. Diese zwei Paare stehen neben den vier Lagerzeilen und stören sich nicht: der eine Block hängt am Merker, der andere am Akt.
+
+* „Der Herr aus Oben hat mich angesprochen.“ (40) / „Er bietet mir die Entfristung.“ (30)
+* „Ich soll dafür etwas nicht tun.“ (31) / „Vierzig Jahre. Und jetzt das.“ (29)
+
 **Prüfnotiz:** kein Fund. Dass Nörgel die Dienstbericht-Bemerkungen schreibt (Kapitel 8, „Die Auflösung“), wird hier nicht ausgesprochen — das bleibt der Spielbeobachtung überlassen, kein Text erklärt es.
 
 ---
@@ -239,6 +320,13 @@ II. „Ohne Freigabe stufe ich das niedrig ein.“ (40)
 III. „Ein leerer Stuhl lässt sich nicht bewerten.“ (43)
 IV. „Diese Schrift verweigert sich der Note.“ (39)
 V. „Diesmal setze ich keine Note mehr an.“ (37)
+
+### Zusatzzeilen (W11), ab Akt II
+
+Milb liegt auch bei der Hoheitsstufe des eigenen Hauses eine Stufe daneben, nach oben (Weltgeschichte, Kapitel 6). Ein Jahr reicht für Ritter der Vorlage, nicht für Freiherr. Er merkt es nicht, wie immer, und niemand rechnet nach.
+
+* „Unser ältester Vorgang wird ein Jahr.“ (37) / „Das reicht für Freiherr. Knapp.“ (31)
+* „Ich stelle mich als Freiherr vor.“ (33) / „Geschätzt, nicht geraten.“ (25)
 
 **Prüfnotiz:** kein Fund. Die Zahlwörter „Drei“ und „Zwei“ wurden gezielt gegengeprüft (Nähe zu „drei Zutaten“/„zwei harte Flüche“) — es sind Milbs eigene Schulnoten für unspezifische Objekte (Kraft, Kammer als Amtsraum), keine Bezugnahme auf Zutatenzahl oder Fluch-Obergrenze.
 
@@ -265,6 +353,13 @@ III. „Wer unterschreibt jetzt meine Freigaben?“ (40)
 IV. „Ein Sack, kein Antrag dazu. Unglaublich.“ (40)
 V. „Zustellen steht nicht in meinem Bestand.“ (40)
 
+### Zusatzzeilen (W11), ab Akt II
+
+Pommer führt eine Liste der Dinge, die er ausgegeben hat, ohne dass sie beantragt waren (Weltgeschichte, Kapitel 6). Die Liste ist leer. Er ist sehr stolz auf die Liste.
+
+* „Ich führe eine Liste. Seit Jahren.“ (34) / „Sie ist leer. Das ist die Liste.“ (32)
+* „Nichts ohne Antrag ausgegeben. Nie.“ (35) / „Steht alles nicht darin.“ (24)
+
 **Prüfnotiz:** Erste Reparaturstufe fand zwei Sperrvermerk-nahe Formulierungen im Entwurf und ersetzte sie. Original-Grundzeile 1 spielte mit Groß-/Kleinschreibung „Schild“/„schild“ — strukturell nah an „Substantiv bestimmt den Slot“, zumal Schild selbst ein Ausrüstungsgegenstand ist. Ersetzt durch die Eimer/Kanne-Fassung oben. Original-Grundzeile 2 ließ Pommer ein Adjektiv („scharf“) wie ein Material ausgeben — strukturell identisch mit „Adjektiv bestimmt die Wirkung“. Ersetzt durch die Montag/heute-Fassung oben. Die dritte, unabhängige Stufe fand in der reparierten Fassung keinen weiteren Fund.
 
 ---
@@ -289,6 +384,13 @@ II. „Die Gespräche werden länger, die Krüge auch.“ (44)
 III. „Der Stammtisch hat eine Lücke.“ (30)
 IV. „Heute sitzen alle enger zusammen.“ (33)
 V. „Es fühlt sich an wie ein letzter Abend.“ (39)
+
+### Zusatzzeilen (W11), ab Akt IV
+
+Der Wirt weiß, was der Hausname verspricht (Weltgeschichte, Kapitel 6). Er hat ihn vom Großvater, und der hatte ihn von jemandem, der es wusste. Erklärt wird er auch hier nicht, gesagt wird nur, woher er kommt. Die Du-Form bleibt, sie ist seine Sprachmarke.
+
+* „Der Name kommt vom Großvater.“ (29) / „Der wusste, was er verspricht.“ (30)
+* „Irgendwann setzt einer den letzten.“ (35) / „Dann trink noch einen.“ (22)
 
 **Prüfnotiz:** kein Fund. Der Hausname „Zum Letzten Stempel“ bleibt reiner Ortsname und klingt in Grundzeile 2 nur an, wird nie erklärt — genau wie Kapitel 8 es verlangt.
 
@@ -331,6 +433,13 @@ V. „Der Neue zieht los. Kein Kommentar heut.“ (40)
 
 **untaetigkeit:** „Der Neue steht. Wie ich. Interessant.“ / „Pahl findet das gruselig.“ — „Willkommen im Klub. Bank ist frei.“ / „Pahl rückt trotzdem nicht.“ — „Steh nicht so rum. Das ist mein Job.“ / „Pahl übernimmt notfalls.“
 
+### Zusatzzeilen (W11), ab Akt III
+
+Vordermühl steht in keinem Bestand (Weltgeschichte, Kapitel 5, und Serie G, Blatt 6). Wer nie geführt wurde, kann auch nicht abgeschlossen werden. Das ist der Grund, aus dem die beiden noch da sind, und es ist die freundlichste Zeile dieses Spiels.
+
+* „Wir zwei standen nie in einem Bestand.“ (38) / „Pahl sagt, das sei ein Glück.“ (29)
+* „Wer nicht geführt wird, bleibt da.“ (34) / „Pahl nickt. Ausnahmsweise.“ (26)
+
 **Prüfnotiz:** kein Fund. Besonders geprüft: „Direkt ins Aktenzeichen“ (kein Bezug zu Alter/Seltenheit), „Jede Gabe hat einen Haken. Amtlich.“ (sagt nur DASS, nie WARUM/WIE, kein Bescheid-Bezug).
 
 ---
@@ -372,7 +481,168 @@ V. „Es wird still. Auffällig still hier.“ (36)
 
 **untaetigkeit:** „Der Neue steht. Ich sitze auch.“ / „Lott findet das gemütlich.“ — „Nichts passiert. Endlich Ruhe.“ / „Lott redet trotzdem weiter.“ — „Sie stehen nur. Ich auch.“ / „Lott hält das für Faulheit.“
 
+### Zusatzzeilen (W11), ab Akt III
+
+Hintermühl von der anderen Seite der Bank (Weltgeschichte, Kapitel 5). Das Dorf ist nicht niedergebrannt worden, es ist zugeklappt worden, und das ist das Stillste, was in dieser Welt passieren kann. Ob die beiden selbst Vorgänge sind, bleibt offen (Weltbibel, Kapitel 16).
+
+* „Man hat unser Dorf zugeklappt.“ (30) / „Lott spricht nicht darüber.“ (27)
+* „Kein Feuer. Ein Aktendeckel.“ (28) / „Lott war auch dabei.“ (20)
+
 **Prüfnotiz:** kein Fund. „Ob ich ein Vorgang bin? Unhöflich.“ bleibt reine Abwehr der Frage (Kapitel 16: „wird nie geklärt“), ohne jede Erklärung.
+
+---
+
+---
+
+## Dorf-Figuren, Serie 2: drei Figuren aus dem Reich — ERLEDIGT (eingebaut mit W11)
+
+Inhaltslieferung zu Bauabschnitt **W11** ("Das Reich im Dorf"), Quelle ist Kapitel 6 der
+`weltgeschichte.md`. Die Zeilen stehen dort ausgeschrieben und gegengezählt; sie sind von dort
+übernommen und nicht neu erfunden. Was hier dazukommt, ist das, was der Code braucht und die
+Weltgeschichte offenlässt: Heimatanker, Gestalt, Anredeform und der Akt, ab dem die Figur da ist.
+
+**Alle drei sind Held-Komposite** (`opt:'fest'`, stehen fest wie Bramsche, Lott und Pahl). Der
+Grund ist nicht Bequemlichkeit: die acht NPC-Blätter aus `CF_NPCS` sind an die elf Figuren der
+Serie 1 vergeben, und zwei Figuren mit demselben Gesicht nebeneinander war in G6 genau der
+Fehler, den wir nicht wollten. Frisur und Oberteil bilden auch mit den drei neuen über alle
+vierzehn Figuren ein eindeutiges Paar.
+
+**Zur vierten Figur aus Kapitel 6, Konrad zu Händen Aufschub:** Er steht bewusst nicht hier. Die
+Weltgeschichte sagt über ihn, er erscheine nur, wenn das Spiel Hochablage zeigt, also im Intro,
+in Serie H und im Abspann. Vordermühl zeigt Hochablage nie. Ihn ins Dorf zu stellen, hieße, ihn
+aus der Schlange zu holen, in der er seit siebenundsechzig Jahren steht, und das ist die Figur.
+
+### Nieselbeck — Wetterbeauftragter Ferdinand Nieselbeck
+
+Ab **Akt I**, also von Anfang an. Optik: Held-Komposit (Haar h5 grau, Oberteil/Hose Stufe 1
+Arbeitsgrün, Schuhe Stufe 0). Heimatanker: Kachel (21, 42), im Anger unter den Marktständen.
+Schild über dem Kopf: „Herr Nieselbeck" (15).
+
+*Er stand zuerst auf (12, 41). Das ist eine Kachel neben Knöterich, und die beiden Namensschilder
+lagen im Bild übereinander. Der Ausweichsatz in `npcSchildFlush()` fängt gleiche Zeilen ab, nicht
+zwei Figuren, die praktisch am selben Punkt stehen.*
+
+Er steht, statt zu wandern, und das ist kein Zufall: er wartet seit dreiundvierzig Jahren auf
+seinen ersten Arbeitstag.
+
+#### Grundzeilen (Kreislauf)
+
+1. „Gemeldet wird: keine Niederschläge.“ (35) / „Wie gestern. Wie immer.“ (23)
+2. „Ich habe einen Eimer. Für den Fall.“ (35) / „Der Eimer ist bereit.“ (21)
+3. „Der Hut ist neu. Also fast neu.“ (31) / „Er wartet mit mir.“ (18)
+4. „Wolken sind da. Sie dürfen nur nicht.“ (37) / „Es fehlt die Veranlassung.“ (26)
+5. „Meine Stelle war nie unbesetzt.“ (31) / „Das sagt sonst niemand.“ (23)
+6. „Sie waren im Frostkamm? Kalt dort.“ (34) / „Dort liegt etwas von mir.“ (25)
+
+#### Aktzeilen
+
+I. „Willkommen. Es bleibt schön. Wie immer.“ (39)
+II. „Man fragt nach der Leitung. Ich melde nur.“ (42)
+III. „Dreiundvierzig Jahre. Der Eimer hält.“ (37)
+IV. „Wenn Sie hinauf müssen: Es wird schön.“ (38)
+V. „Ich stehe bereit. Man weiß ja nie.“ (34)
+
+#### Anredeform (18.5)
+
+Der volle Titel des Gegenübers, dann die Meldung: „Gemeldet wird: Sie sind da.“ (27)
+Er meldet, statt zu reden. Das ist seine Sprachmarke aus Kapitel 6 und keine neue
+Charakterisierung.
+
+**Prüfnotiz:** kein Fund. Der Text bleibt durchgehend bei Wetter, Eimer und Zuständigkeit. Zeile 6
+ist die einzige heikle, weil sie auf die zurückgestellte Veranlassung im Frostkamm zeigt; sie
+nennt einen Fundort und keine Mechanik, genau wie Bramsches Antworten es dürfen.
+
+---
+
+### Umlauf — Reichsbotin Kordula Umlauf
+
+Ab **Akt II**. Optik: Held-Komposit (Haar h4 rot, Oberteil/Hose Stufe 2 Königsblau, Schuhe
+Stufe 4). Heimatanker: Kachel (26, 42), am Ostrand des Angers beim Gasthaus. Schild:
+„Reichsbotin Umlauf" (18).
+
+Sie ist die Figur, über die der Spieler zum ersten Mal erfährt, dass Oben ein Ort ist. Deshalb
+steht sie nicht ab Schicht 1 im Dorf: sonst wäre die Pointe des zweiten Aktes an Tag eins
+verschenkt. Ihre Aktzeile für Akt I ist folgerichtig leer, und `knAssertCaps()` verlangt das
+inzwischen ausdrücklich so.
+
+#### Grundzeilen (Kreislauf)
+
+1. „Vierzehn Türme, ein Aufzug, neun Stockwerke.“ (44) / „Der Rest ist Treppe.“ (20)
+2. „Ich bin im Umlauf. Seit einer Weile.“ (36) / „Man gewöhnt sich daran.“ (23)
+3. „Oben ist es sauber. Sehr sauber.“ (32) / „Und sehr leise.“ (15)
+4. „Elf Stellen noch. Auf der Rückseite.“ (36) / „Vorne war ich schon.“ (20)
+5. „Die Rohrpost geht nicht. Seit immer.“ (36) / „Ich laufe. Geht auch.“ (21)
+6. „Ich muss weiter. War nett bei Ihnen.“ (36) / „Wirklich. Sehr nett.“ (20)
+
+#### Aktzeilen
+
+I. (leer, sie steht in Akt I noch nicht im Dorf)
+II. „Sie fragen nach Oben? Oben ist eine Stadt.“ (42)
+III. „Ihre Stelle ist ausgeschrieben. Jedes Jahr.“ (43)
+IV. „Ich habe erzählt, dass es hier vorangeht.“ (41)
+V. „Diesmal komme ich mit. Nur bis zum Tor.“ (39)
+
+#### Anredeform (18.5)
+
+Der volle Titel, dann: „Notiert. Ich muss gleich weiter.“ (32)
+Aufnehmen und weitermüssen im selben Atemzug, das ist sie.
+
+**Prüfnotiz:** kein Fund. Ob sie ein Mensch oder ein Umlauf ist, wird hier so wenig geklärt wie
+bei Lott und Pahl (Weltgeschichte, Kapitel 13). Zeile 2 spielt darauf an und beantwortet nichts.
+
+---
+
+### Vorblatt — Reichsministerialdirektor zu Händen Vorblatt
+
+Ab **Akt III**. Optik: Held-Komposit (Haar h3 schwarz, Oberteil/Hose Stufe 4 Gold, Schuhe
+Stufe 3). Heimatanker: Kachel (11, 37), vor der Amtstür. Schild: „zu Händen Vorblatt" (18).
+
+Zwei Entscheidungen, beide begründet:
+
+* **Der Anker liegt vor der Tür, nicht in ihr.** Ein Reichsministerialdirektor trägt vierzig Jahre
+  offene Vorgänge am Leib und passt nicht durch die Tür des Provisoriums (Weltgeschichte,
+  Kapitel 6). Er steht zwei Kacheln südlich der Türschwelle, damit er die Kontextaktion der
+  Amtstür nicht überstimmt. Aus demselben Grund ist Zwirn in G6 gewandert.
+* **Der volle Name ist gekürzt.** Die Weltgeschichte führt ihn als „Reichsministerialdirektor
+  Hieronymus zu Händen Vorblatt". Im Personalverzeichnis des Gesprächsfensters steht
+  „Reichsministerialdirektor zu Händen Vorblatt" (44 Zeichen), damit er dieselbe Kopfzeile füllt
+  wie Fass und keine neue breiteste Zeile entsteht. Der Vorname fällt weg, der Adelspartikel
+  bleibt. Er ist der Witz, nicht der Vorname.
+
+Der Auftritt aus Szene 6 (die Entklammerung auf dem Dorfplatz) und die Versuchung aus Szene 7
+sind hier **nicht** gebaut. Sie sind Szenen und keine Dorffigur; was sie brauchen, steht in der
+Weltgeschichte, Kapitel 8, samt der Zeile „Mit Bordmitteln".
+
+#### Grundzeilen (Kreislauf)
+
+1. „Ihr Anliegen wird bearbeitet.“ (29) / „Das ist bereits sehr viel.“ (26)
+2. „Nein sage ich grundsätzlich nicht.“ (34) / „Nein wäre eine Entscheidung.“ (28)
+3. „Ich bin für Anhängiges zuständig.“ (33) / „Anhängig ist beinahe alles.“ (27)
+4. „Hochablage grüßt Vordermühl.“ (28) / „Hochablage grüßt sehr gern.“ (27)
+5. „Sie führen keinen Vorgang.“ (26) / „Das macht Sie sehr frei.“ (24)
+6. „Ich habe Ihnen etwas mitgebracht.“ (33) / „Alle bekommen etwas.“ (20)
+
+#### Aktzeilen
+
+I. (leer)
+II. (leer)
+III. „Man hört wenig aus Ihrem Haus. Sehr gut.“ (40)
+IV. „Ein Umschlag. Reizend. Geben Sie ihn mir.“ (41)
+V. „Ich war zuständig. Nun bin ich hier.“ (36)
+
+#### Anredeform (18.5)
+
+Der vollständige Titel des Gegenübers, dann: „Und. Sie sind heute im Dienst.“ (30)
+Kapitel 6 sagt: er benutzt konsequent den vollständigen Titel, auch bei Leuten, die keinen
+haben, und macht davor eine winzige Pause, und die Pause ist die Beleidigung. Der Punkt hinter
+dem „Und" ist diese Pause. Es ist die einzige Unhöflichkeit, die er sich leistet, und sie steht
+in keinem Wort.
+
+**Prüfnotiz:** kein Fund. Besonders geprüft, weil ein Gegenspieler die stärkste Versuchung ist,
+ihn den Witz aussprechen zu lassen (Weltgeschichte, Kapitel 13): **er sagt nie Nein und er droht
+nie.** Grundzeile 5 („Sie führen keinen Vorgang. / Das macht Sie sehr frei.") ist die Zeile, die
+am nächsten an eine Drohung kommt, und sie ist wörtlich ein Kompliment. Genau darin liegt sie
+richtig.
 
 ---
 
@@ -381,5 +651,13 @@ V. „Es wird still. Auffällig still hier.“ (36)
 Alle 11 Figuren × (6 Grundzeilenpaare + 5 Aktzeilen) plus Bramsches 8 Fragen/Antworten und 3 Abweisungen plus Lotts und Pahls je 21 Anlass-Zeilen**paare** (7 Anlässe × 3 Paare = 42 Zeilen je Figur) wurden gegengezählt: kein `z1` über 48, kein `z2` über 32, keine Aktzeile über 44 Zeichen.
 
 *(Korrektur GW23: der Satz stimmte in zwei Punkten nicht. Erstens sind es Zeilen**paare**, also 84 Zeilen statt 42. Zweitens stehen die Klammerwerte **nicht** hinter jeder Zeile: 209 von 293 tragen einen, alle 84 Lott/Pahl-Anlasszeilen nicht. Die Zählung kann für diese 84 in der beschriebenen Form nicht stattgefunden haben. Sachlich halten sie den Deckel — unabhängig nachgerechnet, Maxima 40 und 32.)*
+
+**Nachtrag W11.** Dazugekommen sind 3 Figuren × (6 Grundzeilenpaare + 5 Aktzeilen, davon 3 leer),
+10 Zusatzblöcke × 2 Zeilenpaare, 7 Fragen/Antworten bei Bramsche und 3 Anredeformen. Sie sind
+gegengezählt und stehen mit ihrer Zeichenzahl da; die drei leeren Aktzeilen sind gewollt und
+werden von `knAssertCaps()` genau dort und nur dort geduldet. Nachgemessen wird das nicht mehr
+von Hand: `knAssertCaps()` prüft jede dieser Zeilen bei jedem Start gegen Deckel, Gedankenstrich,
+Emoji und Sperrliste, und `tools/reich-pruef.mjs` prüft im Browser, dass sie zum richtigen Akt
+erscheinen. Ein Fund gab es: siehe die Notiz zur Rang-Antwort bei Bramsche.
 
 *(Korrektur GW22: die dreistufige Prüfung galt unter der Bedingung „solange kein Text umformuliert wird“. W5 hat drei Aktzeilen umformuliert (siehe oben). Sie sind gegen Sperrvermerk und Formregeln nachgeprüft: sauber. Seit GW14 prüft `knAssertCaps()` beides ohnehin maschinell mit, die Bedingung hängt also nicht mehr an einer einmaligen Sitzung.)*

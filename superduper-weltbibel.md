@@ -318,6 +318,12 @@ Das ergibt für die bestehenden 26 Adjektive sofort eine Herkunft:
 
 Bauprinzip pro Figur: **eine Besessenheit, ein Hindernis, eine Sprachmarke.** Wie bei Monkey Island. Niemand ist ein Witz, jeder ist jemand, der etwas versucht.
 
+**Stand nach W11.** Das Ensemble ist von zwölf auf sechzehn Figuren gewachsen. Vier kommen aus `weltgeschichte.md`, Kapitel 6, und stehen unten unter der Überschrift "Aus dem Reich". Drei davon sind gebaut (Nieselbeck, Umlauf, Vorblatt), die vierte (Konrad zu Händen Aufschub) steht nur in Hochablage und deshalb im Spiel bisher nirgends.
+
+**Außerdem hat jede bestehende Figur einen Zuwachs bekommen**, also genau eine neue Tatsache, die ab jetzt gilt. Keine ist umgeschrieben worden. Der Zuwachs steht bei der jeweiligen Figur als eigener Absatz *(Zuwachs W11)*, dreizehn Absätze plus einer für den Kater Anlage 3.
+
+Zehn davon trägt das Spiel als je ein Paar Zusatzzeilen, das ab einem bestimmten Akt in den Grundzeilen-Kreislauf rutscht (siehe `figuren-dorf.md` und `phase-w11-reich-im-dorf.md`). Die übrigen vier stehen nur hier: Knöterich sagt seinen nicht, weil er Tasten erklärt und keine Zusammenhänge; Sturz und Fürst Nachtrag sind keine ansprechbaren Dorffiguren; und Anlage 3 ist ein Kater.
+
 ### Amtsrat a. D. Knöterich
 
 Existiert bereits im Code. Hier bekommt er seinen Grund.
@@ -329,6 +335,8 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Der Gag mit doppeltem Boden:** Der Fluch **Amtsschweigen** ist nach seinem Zustand benannt. Er sperrt das Lernen der Kladde. Wer den Fluch trägt, ist für eine Weile Knöterich.
 * **Quest-Hebel:** Die Gießkanne. Siehe Langvorgang 1.
 
+*(Zuwachs W11.)* Er hat als Einziger im Haus die Rangfolge des Reiches nachgerechnet. Er weiß, dass er im ersten Haus des Reiches sitzt, weil dieses Haus den ältesten offenen Vorgang führt. Er darf es nicht sagen. Er gießt trotzdem jeden Morgen die Pflanze der Frau, die es hätte anordnen können. **Im Spiel steht dieser Zuwachs nicht**, und das ist eine Entscheidung: Knöterich erklärt Tasten, nie Zusammenhänge, und dieser Zusammenhang ist der größte im Spiel.
+
 ### Bürgermeister Alfons Zwirn
 
 * **Besessenheit:** Das Dorffest. Seit elf Jahren geplant. Vordermühl hat noch nie eins gehabt.
@@ -336,6 +344,8 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Wesen:** Herzlich, händeschüttelnd, hohl, und im entscheidenden Moment doch anständig. Er führt das Jahresgespräch, weil sonst niemand da ist, der befugt wäre. Er ist gar nicht dein Vorgesetzter. Das stört ihn nicht.
 * **Sprachmarke:** Redet in Ankündigungen. "Wir werden das angehen." "Da bin ich dran."
 * **Der Riss:** Er hat den Dienstreiseantrag der letzten Amtsleiterin unterschrieben. Er weiß, dass sie deshalb weg ist. Er sagt es in Akt III.
+
+*(Zuwachs W11.)* Die Bewilligung des Dorffestes ist im Jahr 1004 erteilt worden, unterschrieben und gestempelt. Sie steckt seither in der verstopften Rohrpost unter dem Steinfeld. Zwirn hat seit acht Jahren recht und weiß es nicht.
 
 ### Registratorin Ottilie Bramsche
 
@@ -345,12 +355,18 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Sprachmarke:** Fragt zurück, statt zu antworten. "In welcher Sache?"
 * **Begleitung:** Der Kater **Anlage 3**. Er schläft auf genau der Akte, die man braucht. Immer. Bramsche weckt ihn nicht.
 
+*(Zuwachs W11.)* Sie hat 985 die Archivausfertigung nicht herausgegeben, weil sie danebengegriffen hat. Der Griff daneben hat das Dokument gerettet. Sie hält sich für schuldig an einem Landstrich und ist in Wahrheit die Retterin des Beweisstücks. Sie erfährt es nie.
+
+*(Zuwachs W11, Anlage 3.)* **Anlage** ist im Reich ein Aktenhausname. Der Kater trägt damit den Namen eines Adelshauses und eine Nummer, und eine Nummer hinter einem Hausnamen ist in Hochablage die Schreibweise für ein nachgeordnetes Familienmitglied. Auf Reichspapier gelesen ist er der dritte Sohn eines Adelshauses.
+
 ### Hausmeister Reinhold Zapf
 
 * **Besessenheit:** Dass die Dinge laufen. Er repariert alles, ohne je zu erklären, wie.
 * **Hindernis:** Nichts. Zapf hat keine Probleme. Zapf hat Werkzeug.
 * **Spielfunktion:** Der Mann, der die Wahrheit im Nebensatz sagt. Über den Kessel sagt er genau einen Satz, und der ist ein halber Weltenbau: **"Der Kessel ist kein Kessel. Der Kessel ist ein Kopierer."**
 * **Sprachmarke:** Kürzeste Sätze im Spiel. Nie mehr als sechs Wörter. Handelt gegen Kaffee.
+
+*(Zuwachs W11.)* Er beendet den Krieg. Mit sechs Wörtern und Werkzeug: der Stopfen in der Rohrpost unter dem Steinfeld ist eine festgewordene Kapsel, und Zapf bekommt sie raus. Siehe Langvorgang 10.
 
 ### Praktikantin Lisbeth Fuhr
 
@@ -360,6 +376,8 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Sprachmarke:** Stellt Fragen, die niemand beantworten will. "Und wenn er einfach nur wartet?"
 * **Traum:** Ein **Amt für Monsterbelange**. Nicht gegen sie. Für sie.
 
+*(Zuwachs W11.)* Sie hat als Einzige gemerkt, dass Fürst Nachtrag einen Titel hat und die anderen Vorgangsarten nicht. Sie hat es aufgeschrieben. Es steht in ihrem sechsten Praktikumsbericht, auf Seite zwei, und niemand hat den je gelesen.
+
 ### Zusteller Emil Trepp der Siebte
 
 * **Besessenheit:** Die eine Zustellung. Familienerbe. Sieben Generationen.
@@ -367,6 +385,8 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Spielfunktion:** Trägt die Hauptquest. Er hat den Brief im Sack. Er hatte ihn immer.
 * **Sprachmarke:** Entschuldigt sich, bevor er etwas sagt. "Wenn ich kurz stören darf."
 * **Die Pointe:** Die Adresse ist nicht unleserlich. Sie ist in einer Schrift geschrieben, die nur jemand aus Ablage V lesen kann. Nörgel kann sie lesen. Man muss ihn nur fragen. In vierhundert Jahren hat niemand einen Goblin gefragt.
+
+*(Zuwachs W11.)* Seine Amtsbezeichnung lautet Schattenlandzustellungsbevollmächtigter. Ein Bevollmächtigter ist im Reich ein Adelsamt. Trepp ist von Amts wegen adelig und trägt Post aus, weil ihm das nie jemand gesagt hat.
 
 ### Nörgel, Sachbearbeiter auf Probe
 
@@ -377,12 +397,16 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Sprachmarke:** Beschwert sich über alles, einschließlich seiner selbst. "Das ist nicht meine Zuständigkeit. Ich mache es trotzdem."
 * **Die Auflösung:** Die trockenen Bemerkungen der "Sachbearbeitung" im Dienstbericht sind von ihm. Er kommentiert seit vierzig Jahren die Arbeit von Leuten, die seinesgleichen schreddern. Und er ist dabei fair.
 
+*(Zuwachs W11.)* Er kann die Schrift auf dem Umschlag lesen. Neu ab hier: Vorblatt bietet ihm die Entfristung an, damit er es nicht tut. Vierzig Jahre Probezeit gegen ein Unterlassen. Wie er sich entscheidet, sagt er nicht.
+
 ### Gutachter Dr. phil. Milb
 
 * **Besessenheit:** Die richtige Einstufung.
 * **Hindernis:** Er liegt systematisch um genau eine Stufe daneben. Immer in dieselbe Richtung. Er weiß es nicht.
 * **Spielfunktion:** Erklärt im Nachhinein, warum sich Kammern manchmal falsch anfühlen, und liefert eine mechanische Belohnung, wenn man es ihm beweist.
 * **Sprachmarke:** Bewertet ungefragt. "Das würde ich mit Drei ansetzen. Höchstens."
+
+*(Zuwachs W11.)* Er liegt auch bei der Hoheitsstufe des eigenen Hauses eine Stufe daneben, nach oben. Er ist Ritter der Vorlage und stellt sich als Freiherr vor.
 
 ### Materialausgabe: Herr Pommer
 
@@ -391,16 +415,22 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Spielfunktion:** Der klassische Adventure-Widerstand. Wer den richtigen Wortlaut findet, bekommt das richtige Ding.
 * **Sprachmarke:** Liest vor, was dasteht. Betont dabei die falschen Wörter.
 
+*(Zuwachs W11.)* Er führt eine Liste der Dinge, die er ausgegeben hat, ohne dass sie beantragt waren. Die Liste ist leer. Er ist sehr stolz auf die Liste.
+
 ### Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"
 
 * **Besessenheit:** Dass jemand mal bis zum Ende bleibt.
 * **Spielfunktion:** Der Ort, an dem sich das Ensemble trifft. Hier laufen abends alle Fäden zusammen. Der Name des Gasthauses ist ein Versprechen und keiner merkt es.
+
+*(Zuwachs W11.)* Der Wirt weiß sehr wohl, was der Name verspricht. Er hat ihn vom Großvater. Der Großvater hat ihn von jemandem, der es wusste.
 
 ### Herr Lott und Herr Pahl, auf der Bank am Dorfplatz
 
 * **Besessenheit:** Kommentieren.
 * **Spielfunktion:** Der Chor. Zwei Zeilen zu allem, was der Spieler gerade getan hat. Sie sind der Ort für die frechsten Gags, weil sie nichts zu verlieren haben.
 * **Das Unheimliche im Hintergrund:** Sie sitzen dort länger, als das Dorf alt ist. Sie stammen aus Hintermühl. Niemand hat je nachgeprüft, ob sie Vorgänge sind. Sie selbst finden die Frage unhöflich.
+
+*(Zuwachs W11.)* Hintermühl ist nicht untergegangen, es ist **abgeschlossen** worden: das Aktenhaus, in dessen Bestand es geführt war, hat 806 seine letzte Uferfrage erledigt, und was in einem geschlossenen Bestand steht, ist damit ebenfalls erledigt. Kein Feuer, kein Überfall, ein Aktendeckel. Dass die beiden noch da sind, hat einen Grund: Vordermühl steht in keinem Bestand. Es wurde nie aufgeschrieben, und was nie aktenkundig war, kann nicht abgeschlossen werden.
 
 ### Amtsleiterin Dr. Wilhelmine Sturz
 
@@ -410,6 +440,8 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Ihr Schreibtisch:** Steht unberührt im Amt. Auf dem Schreibtisch steht eine Pflanze. Sie lebt.
 * **Wer sie gießt:** Knöterich. Jeden Morgen. Vierzig Jahre. Er sagt nichts dazu.
 
+*(Zuwachs W11.)* Sie ist ohne den Brief losgegangen. Sie hielt den Sack für unzuständig und sich selbst für ausreichend. Das ist ihr Fehler, sie kennt ihn seit vierzig Jahren, und ihr letzter Bericht ist einzeilig, weil sie irgendwann aufgehört hat, sich zu erklären.
+
 ### Fürst Nachtrag, genannt der Schattenfürst
 
 * **Was er ist:** Der Nachtrag zum Vorgang 1. Der Teil, der angehängt und nie gelesen wurde. Bevollmächtigter der Gegenseite.
@@ -418,6 +450,59 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Warum er trotzdem kämpft:** Weil beim ersten Kontakt jeder Außendienst auf ihn einschlägt. Er hält jeden Besuch für die nächste Nichtantwort.
 * **Sprachmarke:** Höflich. Furchtbar höflich. Er duzt niemanden.
 * **Die Auflösung:** Er ist nicht zu besiegen, er ist zu **beantworten**. Siehe Akt V.
+
+*(Zuwachs W11.)* Auf dem Umschlag in Trepps Sack steht seit vierhundert Jahren "An Fürst Nachtrag, zu Händen, persönlich". **zu Händen** ist in dieser Welt kein Höflichkeitswort, sondern der Adelspartikel des Reiches. Der Feind ist im eigenen Schriftverkehr als Hochadel geführt, auf Reichspapier, in jeder Ausfertigung. Es hat nur nie jemand zu Ende gelesen.
+
+
+---
+
+### Aus dem Reich (neu mit W11)
+
+Vier Figuren aus `weltgeschichte.md`, Kapitel 6. Sie folgen demselben Bauprinzip wie alle anderen. Was hier steht, ist die Kurzfassung; die vollständigen Zeilen stehen in `figuren-dorf.md`, Serie 2.
+
+Der Hintergrund in einem Absatz, weil ohne ihn keine der vier verständlich ist: **Wer für einen offenen Vorgang zuständig ist, ist jemand. Wer keinen hat, ist niemand.** Daraus folgt der ganze Adel dieser Welt. Der Rang eines Hauses bemisst sich daran, wie lange sein ältester Vorgang schon offen ist, und er steigt von allein, solange man nichts tut. Deshalb ist das Ministerium für Monsterangelegenheiten dem Papier nach das erste Haus des Reiches, deshalb heißt der Adelspartikel **zu Händen**, und deshalb ist Erledigen in dieser Welt kein Sieg, sondern ein Abschied. Ausführlich in `weltgeschichte.md`, Kapitel 1 und 3.
+
+#### Reichsministerialdirektor zu Händen Vorblatt
+
+Der Gegenspieler, und er hebt nie die Stimme. Erscheint ab Akt III im Dorf, vor der Amtstür, durch die er nicht passt.
+
+* **Besessenheit:** Dass nichts geschieht. Nicht aus Bosheit, sondern aus Verantwortung: er hat als Einziger im Reich nachgerechnet, was die Zustellung auslöst, und beschützt einundvierzigtausend Menschen davor, an einem Nachmittag niemand zu sein.
+* **Hindernis:** Er darf nichts entscheiden, denn eine Entscheidung schließt etwas. Er kann nicht Nein sagen und nicht Ja. Er kann ausschließlich **bearbeiten lassen**.
+* **Sprachmarke:** Sagt nie Nein, sondern "das prüfen wir gern". Benutzt den vollständigen Titel seines Gegenübers, auch bei Leuten, die keinen haben, und macht davor eine winzige Pause. Die Pause ist die Beleidigung.
+* **Harte Regel:** Er droht nie. Wenn er einmal droht, ist die Figur weg. Seine ganze Macht besteht darin, dass er freundlich bleibt und trotzdem gewinnt.
+
+#### Reichsbotin Kordula Umlauf
+
+Erscheint ab Akt II. Sie bringt die Welt ins Dorf.
+
+* **Besessenheit:** Ankommen. Einmal. Irgendwo.
+* **Hindernis:** Ihr Laufzettel hat auf der Rückseite noch elf Stellen, und die Rückseite füllt sich schneller, als die Vorderseite abgearbeitet wird.
+* **Spielfunktion:** Über sie erfährt der Spieler zum ersten Mal, dass Oben ein Ort ist. Sie ist außerdem der Grund, warum Vorblatt überhaupt merkt, dass in Vordermühl etwas in Bewegung kommt: sie erzählt es weiter, ohne etwas Böses dabei zu denken, weil Erzählen ihr Beruf ist.
+* **Sprachmarke:** Redet schnell, in Aufzählungen, und hört mitten im Satz auf, weil sie weitermuss.
+* **Bleibt offen:** Ob sie ein Mensch ist oder ein Umlauf. Wie bei Lott und Pahl.
+
+#### Wetterbeauftragter Ferdinand Nieselbeck
+
+Steht von Anfang an im Dorf.
+
+* **Besessenheit:** Regen. Ein einziges Mal. Er hat alles vorbereitet: einen Eimer, einen Messstab, zwei Tabellen und einen Hut.
+* **Hindernis:** Die Veranlassung für Niederschlag im Bereich VII wurde im Jahr 897 zur Klärung zurückgestellt und liegt im Frostkamm. Er weiß genau, wo. Er darf sie nicht holen, weil er für Wetter zuständig ist und nicht für Ablagen. Der Außendienst ist für Ablagen zuständig. Siehe Langvorgang 11.
+* **Spielfunktion:** Der freundlichste Running Gag des Spiels. Er meldet jeden Morgen dasselbe. Beim ersten Mal ist es komisch. Ab Schicht dreißig ist es etwas anderes.
+* **Sprachmarke:** Meldet, statt zu reden. Sagt "gemeldet wird" und dann den Satz. Ist nie enttäuscht, immer bereit.
+
+#### Konrad zu Händen Aufschub, Vierter Wartender
+
+**Im Spiel bisher nicht gebaut**, und zwar mit Grund: Er erscheint nur, wenn das Spiel Hochablage zeigt, also im Intro, in Serie H und im Abspann. Vordermühl zeigt Hochablage nie.
+
+* **Was er ist:** Vierter in der Schlange vor dem Kabinett des Kaisers. Seit siebenundsechzig Jahren. Hoheitsstufe Graf, weil sein Anliegen alt ist.
+* **Besessenheit:** Vorrücken. **Hindernis:** Vor ihm stehen drei Familien.
+* **Spielfunktion:** Die freundlichste Illustration des zweiten Weltgesetzes. Ein Mann, der sein ganzes Leben in einem Flur verbracht hat und es für eine Karriere hält. Er ist auch nicht falsch dabei. Es ist eine Karriere.
+
+#### Kaiser Ordinat der Vierte
+
+Kein Auftritt. Nie. Es gibt eine Tür, ein Schild mit der Aufschrift **IM TERMIN** und einen zwei Meter hohen, sehr ordentlichen Stapel Post davor.
+
+**Und eine Regel, die für jeden Text dieser Welt gilt:** Über den Kaiser wird ausschließlich im Präsens gesprochen. Von jeder Figur, in jedem Blatt, auf jeder Urkunde. Er ist aktenkundig lebendig, weil sein Tod nie eingetragen wurde, und niemand zweifelt daran. Erwähnt eine einzige Figur ihn in der Vergangenheitsform, ist der Witz kaputt und die Pointe des fünften Aktes vorweggenommen. **Seit W11 ist das kein Vorsatz mehr, sondern eine Prüfung:** `knAssertCaps()` meldet beim Start jede Zeile, die den Kaiser ins Präteritum oder Perfekt setzt.
 
 ---
 
@@ -493,7 +578,7 @@ Danach das Finale in reinster Amtsform, und jedes bestehende System liefert ein 
 
 ---
 
-## 10. Langvorgänge: neun Nebenstränge über mehrere Schichten
+## 10. Langvorgänge: dreizehn Nebenstränge über mehrere Schichten
 
 Persistent wie die Kladde. Jeder endet in einer dauerhaften Kleinigkeit, passt also exakt in den bestehenden Jahresbonus- und Ausbau-Rahmen.
 
@@ -508,6 +593,12 @@ Persistent wie die Kladde. Jeder endet in einer dauerhaften Kleinigkeit, passt a
 | 7 | **Der falsche Gutachter** | Dr. Milb | Man weist ihm nach, dass er systematisch eine Stufe danebenliegt. Erfordert Buchführung über mehrere Schichten. | Kammerschilder zeigen danach den echten Wert. Ein Ausbau, der aus einer Geschichte entsteht. |
 | 8 | **Die Zustellung** | Trepp | Der Hauptstrang, Akt IV. | Die Ausfertigung. |
 | 9 | **Hintermühl** | Lott und Pahl | Wo ist das zweite Dorf hin? Antwort: es wurde abgeschlossen. Vollständig. Ordnungsgemäß. | Kein Bonus. Ein sehr stiller Moment. Für die erwachsene Hälfte des Publikums. |
+| 10 | **Der Stopfen** *(W11, entworfen, nicht gebaut)* | Zapf | Der brummenden Stelle im Steinfeld nachgehen, die Röhre freilegen, Zapf holen. | Serie I wird auffindbar, das Dorf bekommt drei Tage Postregen, und der Gegenspieler kommt zwei Schichten früher. Ein Ausbau, der einen Preis hat. |
+| 11 | **Der Eimer** *(W11, entworfen, nicht gebaut)* | Nieselbeck | Er darf die zurückgestellte Veranlassung im Frostkamm nicht holen, weil er für Wetter zuständig ist und nicht für Ablagen. Der Außendienst ist für Ablagen zuständig. | Kein Bonus im Spiel. Im Abspann regnet es zwei Bilder früher und Nieselbeck hat den Hut auf. Absichtlich kein Bonus. |
+| 12 | **Der richtige Wortlaut** *(W11, entworfen, nicht gebaut)* | Bramsche und Pommer | Die Archivausfertigung liegt in Zimmer 4. Bramsche gibt sie ohne korrekt gestellten Antrag nicht heraus. Pommer weiß, wie ein Antrag formuliert sein muss, weil er nur ausgibt, was dasteht. Man muss beiden dieselbe Sache in verschiedenen Worten erzählen. | Die Archivausfertigung. Sie beweist, dass der Krieg nicht zu Ende ist, und ist in Akt V das Blatt, das Sturz gegenzeichnet. |
+| 13 | **Einundvierzig Blätter** *(W11, entworfen, nicht gebaut)* | Vorblatt | Jeden Zwischenbescheid sammeln, den er je in dieses Haus geschickt hat. Vierzig liegen im Schreibtisch, der einundvierzigste klebt in Akt V auf dem Umschlag. | Wer alle hat, darf Vorblatt in Szene 7 eine fünfte Antwort geben. | 
+
+**Zum Stand der vier neuen.** Sie sind in `weltgeschichte.md`, Kapitel 10, vollständig entworfen und stehen hier, damit die Tabelle vollständig ist. Gebaut ist keiner von ihnen. Im Code stehen weiterhin sieben Stränge in `LANGVORGAENGE`; die Zahl neun in der Überschrift war schon vorher eine Planungszahl und keine Codezahl.
 
 **Regel für alle Langvorgänge:** Sie dürfen den Spielfluss nie blockieren. Kein Langvorgang darf für den Hauptvorgang notwendig sein, mit genau einer Ausnahme: Nummer 4, und die ist so gebaut, dass sie nebenbei mitläuft.
 
@@ -554,7 +645,7 @@ Warum das richtig ist:
 * Der Spieler liest, wann er will. Das Spiel hält nie an. Das ist die Zak-McKracken-Tugend.
 * Reihenfolge egal. Wer die Blätter durcheinander findet, baut sich die Geschichte selbst zusammen, und das ist reizvoller als die richtige Reihenfolge.
 
-**Sechs Serien, insgesamt rund 48 Blätter:**
+**Neun Serien, insgesamt rund 68 Blätter.** Die ersten sechs sind gebaut, die drei letzten sind in `weltgeschichte.md`, Kapitel 9, ausgeschrieben und noch nicht eingebaut. Zwei von ihnen liegen bewusst dort, wo sie inhaltlich hingehören: Serie G im Steinfeld, weil der Altbestand die Ablage aus der Zeit ist, als das Haus noch anders hieß, und Serie H im Lager, weil die Gegenseite diese sechs Schreiben verfasst hat und sie der Beweis sind, dass dort nie jemand angreifen wollte.
 
 | Serie | Umfang | Fundort | Inhalt |
 |---|---|---|---|
@@ -564,6 +655,9 @@ Warum das richtig ist:
 | **D. Die Eisablage** | 8 | Frostkamm | Vorgänge, die zur Klärung zurückgestellt wurden. Manche warten seit dreihundert Jahren auf eine Rückfrage von zwei Zeilen. |
 | **E. Berichte einer Dienstreise** | 10 | Ablage V | Sturz' Berichte nach Hause. Von sachlich über gereizt bis still. Der zehnte ist einzeilig. Wer alle zehn hat, weiß vor allen anderen Figuren Bescheid. |
 | **F. Post von drüben** | 4 | Ablage V, sehr selten | Briefe des Fürsten. Höflich. Immer höflicher. Das ist das Unheimlichste im ganzen Spiel. |
+| **G. Aus Hochablage** *(W11)* | 8 | Steinfeld, der Altbestand | Was Oben ist, wie der Rang gerechnet wird, und warum niemand herunterkommt. |
+| **H. Sechs Schreiben** *(W11)* | 6 | Lager der Beschwerden und Moorbruch | Die Rückfrage von 596 und ihre fünf Nachfassungen. Sechsmal derselbe Wortlaut, und die Eskalation besteht ausschließlich aus Unterstreichungen. |
+| **I. Aus der Röhre** *(W11)* | 6 | überall, aber erst nach dem Stopfen | Vierhundert Jahre unzustellbare Post, die den Spieler auf einmal erreicht. |
 
 **Zwei Musterblätter, als Tonvorgabe:**
 
@@ -576,7 +670,7 @@ Warum das richtig ist:
 > **Serie E, Blatt 10.** Ohne Aktenzeichen.
 > Der Tee ist gut. Antworten Sie bitte.
 
-**Sperrvermerk, gilt für alle 48 Blätter:** kein Blatt darf Kesselgrammatik enthalten. Nicht als Regel, nicht als Andeutung, nicht als Rätsel. Ein Blatt darf beschreiben, dass beglaubigt wurde. Nie, wie.
+**Sperrvermerk, gilt für alle 68 Blätter:** kein Blatt darf Kesselgrammatik enthalten. Nicht als Regel, nicht als Andeutung, nicht als Rätsel. Ein Blatt darf beschreiben, dass beglaubigt wurde. Nie, wie.
 
 ---
 
@@ -599,6 +693,16 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
 11. **Der Spieler ist der Gerade.** Trockenheit braucht ein Gegenüber, das nachfragt. Eine Figur sagt den Satz, der Spieler sagt "wie bitte", und erst dadurch wird aus einer Auskunft ein Gag. Bis U3 hatte das Spiel keinen Kanal dafür, seither hat es einen. Vorher war jede Figur trocken und keine war der Gerade, und damit lief die Trockenheit ins Leere. *(Nachgetragen mit E1, 22.08.2026.)*
 
 **Warum die beiden nachkamen.** Die Rückmeldung lautete: die Witze und Anspielungen tragen nicht, niemand versteht sie. Der Befund dahinter war nicht, dass die Witze fehlten oder zu fein waren, sondern dass sie ohne Takt dastanden. `Anlage 1 liegt nicht vor` ist die Pointe des ersten Akts und stand als Feld acht von zehn in einem Formular. Regel 7 bleibt deshalb ausdrücklich in Kraft: mehr Anspielungen wären die falsche Antwort. Was trägt, ist die Situation, und die Situation braucht Zeit und ein Gegenüber. Siehe `phase-e1-empfang.md`.
+
+**Sieben Regeln für alles, was im Reich spielt** *(nachgetragen mit W11, Quelle `weltgeschichte.md`, Kapitel 12).* Sie stehen zusätzlich zu den elf oben, nicht an ihrer Stelle.
+
+1. **Über den Kaiser wird im Präsens gesprochen.** Von jeder Figur, in jedem Blatt, auf jeder Urkunde. Wer ihn in der Vergangenheit erwähnt, hat die Welt kaputtgemacht. `knAssertCaps()` prüft das seit W11 bei jedem Start.
+2. **Niemand nennt einen Adeligen adelig.** Man nennt ihn zuständig. Adel ist in dieser Welt kein Wort, sondern ein Rechenweg.
+3. **Vorblatt sagt nie Nein und droht nie.** Wenn er einmal droht, ist die Figur weg.
+4. **Das Reich ist nicht böse, es ist erleichtert.** Jede Zeile aus Hochablage klingt wie jemand, der froh ist, dass es keinen Ärger gibt. Genau das ist der Schrecken.
+5. **Die Gegenseite antwortet immer.** Kein Schreiben aus Ablage V bleibt unbeantwortet. Wer eine Zeile für den Fürsten schreibt, schreibt eine höfliche.
+6. **Erledigen ist ein Abschied, kein Sieg.** Kein Text feiert eine Erledigung. Es wird nicht triumphiert. Es wird zugeklappt.
+7. **Am Ende wird es warm.** Ohne diese Regel ist alles hier nur ein sehr langer Behördenwitz, und der trägt keine fünfzig Schichten. Das ist dieselbe Regel wie Nummer 9 oben, und sie steht zweimal da, weil sie zweimal gebrochen werden kann.
 
 **Formregeln, aus dem bestehenden Projekt übernommen und hier verbindlich für alle Texte:**
 
@@ -763,6 +867,18 @@ Nachzug zu E1 aus fünf Rückmeldungen zum gespielten Anfang. Kein neuer Inhalt,
 
 **Abnahme:** Kein neuer Inhalt, kein neues `amt`-Feld, keine neue Grafikdatei (das Siegel ist SVG im Panel). Keine Seite des Vordrucks läuft über, gemessen über sechs Fensterlagen von 360x640 bis 1280x620.
 
+### W11: Das Reich im Dorf — ERLEDIGT (siehe `phase-w11-reich-im-dorf.md`)
+
+Die Weltgeschichte (`weltgeschichte.md`) hat der Welt ein zweites Weltgesetz, ein Reich, vier Figuren, drei Blattserien und vier Langvorgänge gegeben. Im Code stand davon nichts. W11 zieht die **Figurenebene** auf diesen Stand nach und nur sie.
+
+* **Drei neue Dorffiguren**, alle als Held-Komposit und ohne neue Grafikdatei: Nieselbeck ab Akt I, Kordula Umlauf ab Akt II, Vorblatt ab Akt III.
+* **Ein neues Feld `abAkt:N`** in `DORF_FIGUREN`, daneben `figDa()`. Wer noch nicht da ist, wird nicht gezeichnet, nicht angeboten und trägt kein Namensschild. Außerhalb des Schichtmodus gibt es keine Akte, dort steht jeder da, genau wie `serieFrei()` es mit den Blattserien hält. Kein neues System, kein neuer Speicherschlüssel.
+* **Zehn Zuwachs-Blöcke** bei den bestehenden Figuren, je zwei Zeilenpaare, geschaltet über denselben Mechanismus wie Nörgels Lagerzeilen aus W-Nörgel, nur am Akt statt am Merker. **Keine bestehende Zeile ist geändert worden.**
+* **Sieben zusätzliche Antworten bei Bramsche**, alle zum Reich, damit der Hinweisgeber des Spiels auch über das Reich Auskunft geben kann.
+* **Ein neuer Guard:** der Kaiser darf in keinem Text in der Vergangenheitsform vorkommen.
+
+**Was W11 ausdrücklich nicht baut**, damit die Grenze klar ist: keine der neun Szenen aus Kapitel 8 der Weltgeschichte, keine der drei neuen Blattserien, keinen der vier neuen Langvorgänge, und Konrad zu Händen Aufschub nicht, weil er nur in Hochablage steht. Das steht offen und ist unten in Kapitel 16 vermerkt.
+
 ### Was wir ausdrücklich nicht bauen
 
 * ~~Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.~~ **Überholt durch U3** (Nutzerentscheidung, `phase-u3-gespraech.md`): das Gesprächsfenster mit vier Antworten ist gebaut und trägt seit E1 auch den Anfang. Was bleibt: kein *verzweigender* Dialog mit Folgen für den Spielstand. Die Antworten wählen, was gesagt wird, nie was gilt. Einzige Ausnahme ist die Anrede im Empfang, und die war schon vor E1 eine Angabe des Spielers (P1).
@@ -810,6 +926,17 @@ Nachzug zu E1 aus fünf Rückmeldungen zum gespielten Anfang. Kein neuer Inhalt,
 | N. N. | die Amtsleitung | niemand |
 | Fürst Nachtrag | der Schattenfürst | der Adressat |
 | Der Sammelvorgang | der Alte Schrecken | lauter Kleinigkeiten |
+| Hochablage | "Oben", "die da oben" | eine Stadt aus vierzehn Türmen, vier Tagesreisen nordöstlich |
+| Aktenhaus | (das Wort fällt im Dorf nie) | eine Adelsfamilie, benannt nach ihrer Zuständigkeit |
+| zu Händen | (klingt wie eine Floskel) | der Adelspartikel des Reiches |
+| Hoheitsstufe | der Rang | wie lange der älteste offene Vorgang eines Hauses schon offen ist |
+| nicht aktenkundig | (man sagt es leise) | ohne Rang, und man sagt es leise |
+| abschließend bearbeitet | (der höfliche Ausdruck) | erledigt, und zwar bei Akten, Familien und einmal bei einem Dorf |
+| Die Rohrpost | (das schnellste Ding der Welt) | seit 741 verstopft, unter dem Steinfeld |
+| Der Amtsschimmel | (ein Zugtier) | eine Fristverlängerung, und was sie verlängert, lebt länger |
+| Zur Klärung zurückgestellt | (kommt von oben) | liegt, und zwar auf unbestimmte Zeit |
+| Die Zeit ohne Nachweis | (nicht überliefert) | alles vor Jahr 0, gilt als anstrengend |
+| IM TERMIN | (ein Schild an einer Tür) | der Kaiser, seit 588, aktenkundig lebendig |
 
 ---
 
@@ -820,6 +947,11 @@ Nachzug zu E1 aus fünf Rückmeldungen zum gespielten Anfang. Kein neuer Inhalt,
 * **Wer die Aktenzeichen an die Monster schreibt.** Niemand fragt es. Nur einmal, in einer Randnotiz von Knöterich, klingt an, dass er es sich auch schon überlegt hat.
 * **Ob Sturz zurück ins Amt geht.** Sie genehmigt das Dorffest und dann ist Abspann. Das reicht.
 * **Der genaue Wortlaut des Aktenzeichens von Vorgang 1.** Jede Figur zitiert es anders. Das ist der stillste Gag im Spiel und soll nie aufgelöst werden.
+* **Ob Kordula Umlauf ein Mensch ist oder ein Umlauf.** *(W11.)* Dieselbe Frage wie bei Lott und Pahl, dieselbe Antwort: keine.
+* **Was hinter der Tür mit dem Schild ist.** *(W11.)* Es gibt eine Tür, ein Schild und einen Stapel Post davor. Mehr wird nie gezeigt.
+* **Was Konrad zu Händen Aufschub vortragen wollte.** *(W11.)* Er weiß es selbst nicht mehr genau. Es war wichtig.
+
+**Und was offen ist, weil es noch nicht gebaut wurde** *(Stand W11, kein Vorsatz, sondern eine Liste)*: die neun Szenen aus `weltgeschichte.md`, Kapitel 8, einschließlich Intro und Abspann; die Blattserien G, H und I; die Langvorgänge 10 bis 13; Konrad zu Händen Aufschub und alles, was Hochablage zeigt; und Knöterichs Zuwachs, der bewusst nicht in seine Zeilen gegangen ist, weil er Tasten erklärt und keine Zusammenhänge.
 
 ---
 

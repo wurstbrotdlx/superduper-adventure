@@ -2724,8 +2724,9 @@ function dorfMassstabAssert(){
 dorfMassstabAssert();
 
 // ===========================================================================
-//  DORF_FIGUREN (Bauabschnitt W3): elf ansprechbare Ensemble-Mitglieder aus
-//  Kapitel 8 der Weltbibel. Text unverändert aus figuren-dorf.md übernommen,
+//  DORF_FIGUREN (Bauabschnitt W3, seit W11 vierzehn Eintraege): ansprechbare
+//  Ensemble-Mitglieder aus Kapitel 8 der Weltbibel. Elf davon stammen aus W3,
+//  die drei letzten aus dem Reich (W11, siehe unten am Ende der Tabelle). Text unverändert aus figuren-dorf.md übernommen,
 //  dreistufig gegen Sperrvermerk/Humor-Grundgesetz/Formregeln/Zeichendeckel
 //  geprüft. Knöterich (bereits im Code) und der Kater Anlage 3 (kein Sprite,
 //  siehe drawAnlage3()) sind nicht Teil dieser Tabelle. opt:'wander' nutzt ein
@@ -8131,7 +8132,7 @@ function gespraechWeiterText(fig){
 }
 
 // fig als Parameter und nicht aus gespraech gelesen, damit gespraechAssert()
-// die Liste fuer jede der elf Figuren bauen kann, ohne ein Fenster zu oeffnen.
+// die Liste fuer jede Figur der Tabelle bauen kann, ohne ein Fenster zu oeffnen.
 function gespraechOptionen(fig){
   if(empfangAktiv) return empfangOptionen();   // E1: die Szene schreibt ihre Liste selbst
   fig = fig || gespraech.fig;
@@ -9999,7 +10000,7 @@ function render(){
       case DRAW_NPC: { drawShadowEllipse(o.x, o.y+4, 9);   // G5: Dorf-Staffage, gleiches Muster wie DRAW_CRITTER
                       const nmoving = !!(o.vx||o.vy);
                       const nkey = nmoving ? o.sheetWalk : o.sheetIdle;
-                      const nsc = NPC_SC;   // W3: alle elf Dorffiguren im Held-Maßstab, Komposit wie Blatt
+                      const nsc = NPC_SC;   // W3: alle Dorffiguren im Held-Maßstab, Komposit wie Blatt
                       drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, nsc, o.flip, o.tint, o.tintA);
                       if(o.key === 'bramsche') drawAnlage3(o.x + 14, o.y + 6);
                       // U3: Namensschild, entfernungsabhaengig eingeblendet.
@@ -10146,7 +10147,7 @@ function drawAlter(){
   drawSpriteAt(hairKey, f, '#8a8a8a', 0.82);
   ctx.restore();
 
-  // U3: Knoeterich bekommt dasselbe Schild wie die elf Dorffiguren. Er
+  // U3: Knoeterich bekommt dasselbe Schild wie die uebrigen Dorffiguren. Er
   // nennt seinen Namen ohnehin im ersten Satz des Spiels (knUpdateBubble),
   // und er ist die Figur, zu der man am haeufigsten zurueckkommt.
   npcSchildMerken(x, y, KN_NAME_KURZ, false);
@@ -10372,7 +10373,7 @@ const NAME_SICHT_Q = 210*210;
 // sich mit der Entfernung ein und wieder aus. Bis NAH voll, zwischen NAH und
 // FERN linear heruntergezogen, dahinter gar nicht. Ein harter Umschlag laesst
 // Schilder aufpoppen, sobald man einen Schritt macht; das Dorf ist eng
-// bebaut, und elf davon gleichzeitig waeren ein Kataster, kein Dorf.
+// bebaut, und vierzehn davon gleichzeitig waeren ein Kataster, kein Dorf.
 //
 // Der Deckel: kurz statt name. 'Wirt Bruno Fass, Gasthaus "Zum Letzten
 // Stempel"' ist der Eintrag im Personalverzeichnis, kein Schild. Der volle
@@ -10404,7 +10405,8 @@ function npcNameAlpha(x, y){
 //      Schilder ueber allem.
 //
 // Kein Neubau pro Frame: das Feld wird geleert und wieder gefuellt, nicht
-// ersetzt (Regressionsregel 10), und laenger als elf Eintraege wird es nie.
+// ersetzt (Regressionsregel 10), und laenger als die Figurentabelle plus
+// Knoeterich wird es nie.
 const npcSchilder = [];
 function npcSchildMerken(x, y, text, imGespraech){
   if(!text) return;
