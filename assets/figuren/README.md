@@ -22,11 +22,11 @@ die man ansieht; das Original ist der Beleg.
 | `03-bramsche` | Registratorin Ottilie Bramsche | da |
 | `04-zapf` | Hausmeister Reinhold Zapf | da |
 | `05-lisbeth` | Praktikantin Lisbeth Fuhr | da |
-| `06-trepp` | Zusteller Emil Trepp der Siebte | offen |
-| `07-noergel` | Sachbearbeiter auf Probe Nörgel | offen |
-| `08-milb` | Gutachter Dr. phil. Milb | offen |
-| `09-pommer` | Materialausgabe Herr Pommer | offen |
-| `10-fass` | Wirt Bruno Fass | offen |
+| `06-trepp` | Zusteller Emil Trepp der Siebte | da, abgewandt und zu weit weg |
+| `07-noergel` | Sachbearbeiter auf Probe Nörgel | da, flacher als die Serie |
+| `08-milb` | Gutachter Dr. phil. Milb | da, Profil statt Frontalblick |
+| `09-pommer` | Materialausgabe Herr Pommer | da, Brille kaputt (siehe unten) |
+| `10-fass` | Wirt Bruno Fass | da, sehr enger Ausschnitt |
 | `11-lott-pahl` | Herr Lott und Herr Pahl (Doppelporträt) | offen |
 | `12-nieselbeck` | Wetterbeauftragter Ferdinand Nieselbeck | offen |
 | `13-umlauf` | Reichsbotin Kordula Umlauf | offen |
@@ -57,9 +57,26 @@ Nachgemessen, nicht geschätzt. Alle fünf Originale sind JPEG, 1024x1024.
   gedecktem Ocker. Er ist zugleich der mit Abstand farbreichste (84.778). Wenn ein
   Bild neu laufen sollte, dann dieses.
 
-Die `-px`-Fassung vereinheitlicht alle fünf auf dasselbe 128er-Raster und dieselben
+Die `-px`-Fassung vereinheitlicht alle auf dasselbe 128er-Raster und dieselben
 32 Farben. Zapfs Bart-Dithering wird dabei zu einer gröberen Sprenkelung, bleibt
 aber lesbar.
+
+## Befunde am zweiten Paket (22.08.2026)
+
+* **Pommer, Brille kaputt.** Die Halbmondbrille ist zu zwei grauen Platten
+  geronnen, die linke schwebt neben dem Gesicht in der Luft. Sachlicher Fehler,
+  nicht Geschmack. Sein Motiv sitzt zudem als einziges deutlich rechts der Mitte
+  (Schwerpunkt bei 60 Prozent Bildbreite).
+* **Milb und Trepp schauen weg.** Beide stehen im Halbprofil statt frontal, obwohl
+  `facing the viewer` im Prompt steht. Bei Milb kommt ein sehr enger Kopfausschnitt
+  dazu, bei Trepp das Gegenteil: sein Kopf ist kleiner als bei allen anderen, weil
+  mehr Rumpf im Bild ist.
+* **Nörgel fällt stilistisch heraus.** Flach, symmetrisch, ohne Schattenbänder, eher
+  8-Bit-Sprite als LucasArts-Porträt. Messbar an der Farbzahl: 17.921 gegen 30.000
+  bis 85.000 bei allen anderen. Er füllt außerdem als Einziger das Bild nicht aus
+  (78 Prozent Höhe, 16 Prozent Luft oben). Das Hemd ist sandfarben statt grau.
+* **Fass ist sehr eng geschnitten**, die Schultern laufen an beiden Rändern aus dem
+  Bild, und die Schattierung ist weicher als bei den übrigen.
 
 ## Das sind keine Spielgrafiken
 
