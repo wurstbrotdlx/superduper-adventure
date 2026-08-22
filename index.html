@@ -487,10 +487,10 @@
      Leisten standen in der ersten Fassung trotzdem da und haben die Szene
      zugestellt. Eine Regel statt eines Eingriffs in den Renderpfad, und sie
      faellt mit der Klasse von selbst wieder weg. */
-  body.empfangLaeuft #hud,
-  body.empfangLaeuft #minimap,
-  body.empfangLaeuft #touchCluster,
-  body.empfangLaeuft #zone{display:none;}
+  body.szeneLaeuft #hud,
+  body.szeneLaeuft #minimap,
+  body.szeneLaeuft #touchCluster,
+  body.szeneLaeuft #zone{display:none;}
 
   /* =====================================================================
      E2 — Die Buehne des Anfangs.
@@ -565,6 +565,13 @@
   .amtKlein, #overlay .amtKlein{
     font-size:calc(clamp(15px, 2.3vw, 21px) * var(--fs));
     line-height:1.5;color:#e2d0a2;margin:12px 0 0;}
+  /* SZ1: die vorgelesenen Zeilen des Intros. Zwischen amtGross (46px, eine
+     Behauptung) und amtKlein (21px, eine Fussnote): das Intro hat bis zu drei
+     Zeilen je Blatt, die gelesen werden wollen, und keine davon ist ein
+     Ausruf. */
+  .amtStimme, #overlay .amtStimme{
+    font-size:calc(clamp(16px, 2.6vw, 25px) * var(--fs));
+    line-height:1.45;color:#f0dfb4;margin:10px 0 0;}
   .amtSiegel{display:block;margin:0 auto 10px;opacity:.9;}
   .amtTitel, #overlay .amtTitel{
     font-size:calc(clamp(19px, 3.2vw, 27px) * var(--fs));margin:0 0 6px;}
@@ -594,12 +601,12 @@
   /* Der Anfang spricht lauter als das Dorf. Dieselbe Tafel, groessere Schrift:
      im Empfang ist sie das einzige im Bild, im Dorf steht sie ueber einer
      laufenden Welt und darf sie nicht zudecken. */
-  body.empfangLaeuft #gespraechText{
+  body.szeneLaeuft #gespraechText{
     font-size:calc(19px * var(--fs));
     min-height:calc(19px * var(--fs) * 2.9);}
-  body.empfangLaeuft #gespraechName{font-size:calc(17px * var(--fs));}
-  body.empfangLaeuft .gwOpt{font-size:calc(16px * var(--fs));}
-  body.empfangLaeuft #gespraech{width:min(780px,calc(100vw - 28px));}
+  body.szeneLaeuft #gespraechName{font-size:calc(17px * var(--fs));}
+  body.szeneLaeuft .gwOpt{font-size:calc(16px * var(--fs));}
+  body.szeneLaeuft #gespraech{width:min(780px,calc(100vw - 28px));}
 
   /* =====================================================================
      U3 — Das Gespraechsfenster.
@@ -8160,12 +8167,23 @@ function npcSprechen(n){
 const gespraech = {npc:null, fig:null, z1:'', z2:'', tipp:0, tippGezeigt:-1, wahl:0, opts:[]};
 let gespraechOffen = false;
 // E1: Laeuft der Empfang, gehoert die Tafel der Szene und nicht dem Dorf. Die
-// Flagge steht hier oben und nicht beim E1-Block weiter unten, weil
+// Steht hier oben und nicht beim Szenenblock weiter unten, weil
 // gespraechAssert() noch auf Skriptebene laeuft und gespraechOptionen()
 // aufruft: eine erst spaeter deklarierte Konstante waere dort ein
 // ReferenceError durch Temporal Dead Zone, also genau der Fehler, den
 // node --check nicht findet (README, "Entwickeln").
-let empfangAktiv = false;
+// SZ1: Aus der Flagge wird ein Schluessel. Vorher gab es genau eine Szene, den
+// Empfang, und ein Ja/Nein genuegte. Jetzt steht hier, WELCHE Szene laeuft, und
+// null heisst: keine.
+let szeneAktiv = null;
+// Der Empfang ist damit eine Szene unter mehreren, und diese Zeile ist die
+// Frage "laeuft gerade er?". Sie ist bewusst KEIN zweites Feld, sondern ein
+// abgeleiteter Lesevorgang auf szeneAktiv, wie es die W5/W6-Doktrin fuer jede
+// Belohnung verlangt: zwei Felder fuer denselben Zustand waeren zwei
+// Wahrheiten, und die zweite driftet. Als Eigenschaft und nicht als Funktion,
+// damit der bestehende Prueflauf tools/empfang-pruef.mjs sie unveraendert
+// liest und damit weiter beweist, dass der Anfang den Umbau ueberlebt hat.
+Object.defineProperty(globalThis, 'empfangAktiv', {get: () => szeneAktiv === 'empfang'});
 // Anschlaege je Sekunde. 55 liest sich als Schreibmaschine und nicht als
 // Diaschau: die laengste Zeile im Bestand hat 48 Zeichen (Zeichendeckel,
 // knAssertCaps), zwei davon sind also nach knapp zwei Sekunden fertig.
@@ -8192,7 +8210,7 @@ function gespraechWeiterText(fig){
 // fig als Parameter und nicht aus gespraech gelesen, damit gespraechAssert()
 // die Liste fuer jede Figur der Tabelle bauen kann, ohne ein Fenster zu oeffnen.
 function gespraechOptionen(fig){
-  if(empfangAktiv) return empfangOptionen();   // E1: die Szene schreibt ihre Liste selbst
+  if(szeneAktiv) return szeneOptionen();   // E1: die Szene schreibt ihre Liste selbst
   fig = fig || gespraech.fig;
   if(!fig) return [];
   return [
@@ -8250,11 +8268,13 @@ function gespraechOeffnen(n){
 
 function gespraechSchliessen(){
   // E1: Der Empfang hat genau einen Ausgang, und der ist die Unterschrift.
+  // SZ1: dieselbe Regel fuer jede Szene. Wer eine Szene wegklicken kann, steht
+  // danach in einer Welt, die auf ihr Ende gewartet hat.
   // Diese eine Zeile deckt alle vier Schliesswege ab, die es sonst gaebe:
   // Esc (PANELS), das Kreuz in der Namenszeile, der Klick daneben (U1) und
   // der Weltcheck in gespraechTick(). Ein Guard an der Engstelle statt vier
   // Sonderfaellen an den Aufrufern.
-  if(empfangAktiv) return;
+  if(szeneAktiv) return;
   if(!gespraechOffen) return;
   gespraechOffen = false; gespraech.npc = null; gespraech.fig = null;
   el('gespraech').style.display = 'none';
@@ -8415,11 +8435,11 @@ function gespraechTaste(e){
 function gespraechTick(dt){
   if(!gespraechOffen) return;
   const n = gespraech.npc;
-  // E1: Der Empfang steht auf keiner Kachel. Er laeuft in state 'menu', sein
-  // Gegenueber ist kein Eintrag in npcs, und eine Entfernung zu ihm gibt es
-  // nicht. Die Weltpruefung wird deshalb uebersprungen, das Tippwerk darunter
-  // gilt unveraendert fuer beide.
-  if(!empfangAktiv){
+  // E1: Eine Szene steht auf keiner Kachel. Ihr Gegenueber ist kein Eintrag in
+  // npcs, und eine Entfernung zu ihm gibt es nicht. Die Weltpruefung wird
+  // deshalb uebersprungen, das Tippwerk darunter gilt unveraendert fuer beide.
+  // SZ1: gilt jetzt fuer jede Szene und nicht nur fuer den Empfang.
+  if(!szeneAktiv){
     if(!n || state !== 'play' || currentLevel !== 1 || kammer ||
        npcs.indexOf(n) < 0 || sqDist(player.x, player.y, n.x, n.y) > GESPRAECH_WEG_Q){
       gespraechSchliessen(); return;
@@ -14058,7 +14078,7 @@ function dienstblattEnde(ziel){
 //     bei, wie man in diesem Spiel redet.
 //  2. Kein Vorgriff auf die Akte. Unverändert die Bedingung aus W8, und hier
 //     schärfer als dort: eine Szene verführt mehr zum Erklären als ein
-//     Formular. empfangAssert() prüft jede Zeile gegen dieselbe AKTE_SPERRE,
+//     Formular. szeneAssert() prüft jede Zeile gegen die Wortsperre ihrer Szene,
 //     die auch der Vordruck einhalten muss.
 //  3. Der Vordruck bleibt. Er wird nicht gelöscht, nicht gekürzt und nicht
 //     umgeschrieben. Er ist nur nicht mehr die Eingangstür, sondern das, was
@@ -14070,19 +14090,104 @@ function dienstblattEnde(ziel){
 //  Stelle im Spiel, die etwas erzwingt, und sie erzwingt genau einen Klick.
 // ===========================================================================
 
-// Die Anrisstafeln. Groß, pathetisch, und die Luft geht ihnen in der zweiten
-// Zeile aus. Genau das ist Regel 10: die Form verspricht eine Heldensage, der
-// Inhalt liefert eine Aktenlage, und niemand im Spiel bemerkt den Unterschied.
+// ===========================================================================
+//  SZ1: DAS SZENENSYSTEM
 //
-// Sie erzählen nichts, was der Vordruck nicht auch sagt. "Anlage 1 liegt nicht
-// vor" stand dort als Feld. Hier steht es als Pointe, und das ist der ganze
-// Unterschied zwischen W8 und E1.
-const EMPFANG_TAFELN = [
-  {z1:'VOR VIERHUNDERT JAHREN',          z2:'geschah etwas Ungeheuerliches.'},
-  {z1:'Was genau, steht in Anlage 1.',   z2:'Anlage 1 liegt nicht vor.'},
-  {z1:'Seitdem arbeitet das Haus daran.', z2:'Ohne Anlage 1.'},
-  {z1:'Bisher hat es nicht geklappt.',   z2:'Heute ist Ihr erster Arbeitstag.'},
-  {z1:'VORDERMÜHL AN DER ABLAGE',        z2:'Sieben Uhr achtundfünfzig.'},
+//  Was hier passiert, ist kein Neubau, sondern ein Herausloesen. E1 und E2
+//  haben bereits eine Szenenmaschine gebaut: einen Knotengraphen mit zwei
+//  Sprechzeilen und einer Antwortliste, die schwarze Buehne darunter, das
+//  Portraet daneben, das Tippwerk aus U3 und die Urkundentafeln im Overlay.
+//  Sie war nur an genau eine Szene genagelt, den Empfang.
+//
+//  Seit SZ1 steht sie in einer Tabelle. Der Empfang ist der erste Eintrag und
+//  hat sich dabei um kein Wort geaendert; tools/empfang-pruef.mjs ist der
+//  Beweis dafuer und laeuft unveraendert weiter.
+//
+//  Feldform je Szene:
+//    sprecher   () => Portraetquelle, gleiche Form wie ein npcs-Eintrag
+//    knoten     {key: {z1, z2, opts(), hub, wer}}
+//    fragen     optional, die Fragenliste mit frei/nach (der Treppeneffekt)
+//    sicht      optional, wieviele offene Fragen gleichzeitig auf der Tafel
+//               stehen. Ohne fragen bedeutungslos.
+//    sperre     Wortliste, die in dieser Szene nicht vorkommen darf.
+//
+//  sperre ist der einzige Punkt, an dem die Verallgemeinerung eine Entscheidung
+//  erzwungen hat, und sie ist keine Formalie. Bis SZ1 galt AKTE_SPERRE fuer den
+//  ganzen Anfang: keine Zeile darf Krieg, Frieden, Vertrag, Ausfertigung,
+//  Zustellung, Anschrift oder einen der spaeteren Namen enthalten. Fuer den
+//  Empfang bleibt das richtig. Fuer das Intro ist es unmoeglich, denn das Intro
+//  zeigt genau diese Dokumente. Statt die Sperre fuer eine Szene abzuschalten,
+//  ist sie geteilt: das Intro darf die Papiere zeigen, es darf nur niemanden
+//  beim Namen nennen. Siehe AKTE_SPERRE_NAMEN.
+// ===========================================================================
+
+// Die Namen, die vor dem ersten Arbeitstag niemandem gehoeren. Teilmenge von
+// AKTE_SPERRE, und die Teilung ist die Aussage: ein Dokument darf man sehen,
+// eine Person muss man kennenlernen.
+const AKTE_SPERRE_NAMEN = ['Nachtrag', 'Trepp', 'Sturz', 'Schattenfürst', 'Amtsleiterin', 'Vorgang 1'];
+
+// --- Szene 1: Das Intro ------------------------------------------------------
+//
+//  Neun Blaetter aus weltgeschichte.md, Kapitel 8, woertlich. Sie ersetzen die
+//  fuenf Anrisstafeln aus E1 und stehen an derselben Stelle im Ablauf: nach
+//  Knoeterichs Vorstellung, vor dem Empfang. Das ist kein Nebeneinander, es ist
+//  ein Austausch, und er hat einen Grund. Beide erzaehlen dieselben
+//  vierhundert Jahre. Die Tafeln taten es in fuenf Behauptungen, das Intro tut
+//  es in neun Dokumenten, und Dokumente sind das, was dieses Haus hat.
+//
+//  Die Reihenfolge aus E2 traegt es zusaetzlich: erst der Mann, dann seine
+//  Geschichte. Nach der Vorstellung sind diese neun Blaetter nicht die Stimme
+//  eines Erzaehlers, sondern SEIN Bericht, und der Empfang setzt danach mit
+//  "So weit der Bestand" genau dort auf.
+//
+//  Feldform: blatt ist die Regieangabe, was auf dem Tisch liegt. stimme sind
+//  die vorgelesenen Zeilen. regie ist die Nachbemerkung, was die Hand danach
+//  tut. Alles drei ist freier Panel-Text ohne Zeichendeckel, wie die Tafeln
+//  vorher auch.
+const INTRO_BLAETTER = [
+  {blatt:'Ein Plan mit zwölf Zeilen.',
+   stimme:['Im Jahr null teilte jemand die Welt in zwölf Bereiche und schrieb daneben, wer sich kümmert.',
+           'Sechs gelten als abgeschlossen. Fünf wurden nie eingerichtet.',
+           'Und dann gibt es uns.']},
+
+  {blatt:'Ein Türschild. Darauf steht IM TERMIN.',
+   stimme:['Der Kaiser liest seit dem Jahr fünfhundertachtundachtzig seine Post.',
+           'Man klopft nicht.']},
+
+  {blatt:'Ein sehr kurzes Schreiben, zwei Zeilen.',
+   stimme:['Wer räumt das Papier aus dem Fluss?',
+           'Um Nachricht wird gebeten.'],
+   regie:'Die Hand legt es auf einen Stapel. Der Stapel ist schon hoch.'},
+
+  {blatt:'Dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.',
+   stimme:['Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.',
+           'Auf keinem steht ein Ausgang.'],
+   regie:'Ganz unten auf dem letzten, in anderer Schrift: Es ist eine kurze Frage.'},
+
+  {blatt:'Ein Bericht, sehr sachlich, mit einer Tabelle.',
+   stimme:['Acht Jahre. Verluste an Bearbeitungskapazität: erheblich.',
+           'Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.']},
+
+  {blatt:'Ein Abkommen. Drei Unterschriftsfelder. Zwei sind ausgefüllt.',
+   stimme:['Der Friede wurde in dreifacher Ausfertigung aufgesetzt.',
+           'Eine für uns. Eine fürs Archiv. Eine für die andere Seite.',
+           'Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.']},
+
+  {blatt:'Ein Umschlag. Die Anschrift ist ein Gekritzel.',
+   stimme:['Der Bote konnte die Anschrift nicht lesen.',
+           'Er hat sie nicht weggeworfen. Er hat sie behalten, bis er sie lesen kann.'],
+   regie:'Die Hand legt den Umschlag nicht auf den Stapel. Sie legt ihn beiseite.'},
+
+  {blatt:'Ein handgeschriebenes Schild. Darauf steht: Provisorium.',
+   stimme:['Für die abschließende Bearbeitung ist eine Stelle einzurichten.',
+           'Die Stelle ist vorläufig.',
+           'Das war vor vierhundert Jahren.']},
+
+  {blatt:'Ein Formular. Oben steht: Einstellung für einen Tag. Das Namensfeld ist leer.',
+   stimme:['Was nicht bearbeitet wird, wird lebendig.',
+           'Es läuft inzwischen ziemlich viel herum.',
+           'Heute sind Sie dran.'],
+   regie:'Die Hand schiebt das Formular nach vorn und legt einen Stift daneben.'},
 ];
 
 // Nach wievielen Fragen sich der Blick im Raum umsieht. Drei ist gemessen und
@@ -14167,20 +14272,28 @@ const EMPFANG_FRAGEN = [
 
 ];
 
-const empfang = {knoten:'gruss', gefragt:null};
+// Der Laufzustand der gerade gespielten Szene. Welche das ist, steht in
+// szeneAktiv (ganz oben, bei der Gespraechstafel); hier steht, wie weit sie ist.
+const szene = {knoten:'', gefragt:null};
 
-const empfangFrage = k => EMPFANG_FRAGEN.find(f => f.key === k);
+// Die Tabelle. Sie wird unten mit dem Empfang befuellt und waechst mit jeder
+// weiteren Szene um einen Eintrag, nicht um einen Sonderfall.
+const SZENEN = {};
+
+const szeneDef = () => SZENEN[szeneAktiv] || null;
+const szeneFragen = () => { const d = szeneDef(); return (d && d.fragen) || []; };
+const szeneFrage = k => szeneFragen().find(f => f.key === k);
 // Offen heißt: noch nicht gestellt, Voraussetzung gestellt, Wartezeit vorbei.
-const empfangOffen = () => EMPFANG_FRAGEN.filter(f =>
-  !empfang.gefragt.has(f.key)
-  && (!f.frei || empfang.gefragt.has(f.frei))
-  && (!f.nach || empfang.gefragt.size >= f.nach));
+const szeneOffen = () => szeneFragen().filter(f =>
+  !szene.gefragt.has(f.key)
+  && (!f.frei || szene.gefragt.has(f.frei))
+  && (!f.nach || szene.gefragt.size >= f.nach));
 
 // Die festen Knoten. Alles, was keine Frage aus der Liste oben ist: der Gruß,
 // die Anrede und der Abschied.
 //
 // opts ist eine Funktion und kein Literal, aus demselben Grund wie bei
-// DIENSTBLATT.felder: empfangAssert() baut die Liste beim Start genauso wie
+// DIENSTBLATT.felder: szeneAssert() baut die Liste beim Start genauso wie
 // die Tafel beim Rendern, und beide sehen dasselbe.
 const EMPFANG_KNOTEN = {
   // E2: Die fünf Knoten der Vorstellung. Sie laufen vor dem Anriss und auf
@@ -14234,7 +14347,7 @@ const EMPFANG_KNOTEN = {
     z2:'Wie soll das Haus Sie anschreiben?',
     opts: () => GESTALT_WAHL.map(g => ({
       t: g.kurz.charAt(0).toUpperCase() + g.kurz.slice(1) + '.',
-      tun: () => { amt.gestalt = g.key; saveAmt(); empfangSzene('vermerkt'); },
+      tun: () => { amt.gestalt = g.key; saveAmt(); szeneKnoten('vermerkt'); },
     })),
   },
   vermerkt: {
@@ -14243,7 +14356,7 @@ const EMPFANG_KNOTEN = {
     opts: () => [
       {t:'Unterschreiben.',        zu:'schluss'},
       {t:'Erst den Vordruck.',     tun:() => empfangVordruck()},
-      {t:'Ich hätte noch Fragen.', zu:'gruss', wenn:() => empfangOffen().length > 0},
+      {t:'Ich hätte noch Fragen.', zu:'gruss', wenn:() => szeneOffen().length > 0},
     ],
   },
 
@@ -14257,36 +14370,98 @@ const EMPFANG_KNOTEN = {
   },
 };
 
+// Der Empfang als Eintrag der Tabelle. Er ist die erste Szene und hat sich
+// dabei um kein Wort geaendert: knoten und fragen sind dieselben Tabellen wie
+// vor SZ1, sperre ist dieselbe Liste. Neu ist nur, dass sie einem Schluessel
+// gehoeren statt dem Modul.
+SZENEN.empfang = {
+  sprecher: () => szeneSprecherKnoeterich(),
+  // Wo die Szene anfaengt. Steht in der Tabelle und nicht nur im Aufruf, damit
+  // ein Erreichbarkeitslauf von aussen weiss, wo er losgehen muss.
+  start:    'vorstellung1',
+  knoten:   EMPFANG_KNOTEN,
+  fragen:   EMPFANG_FRAGEN,
+  sicht:    EMPFANG_FRAGEN_SICHT,
+  sperre:   AKTE_SPERRE,
+  // Der Ausgang eines hub-Knotens. Beim Empfang fuehrt er zur Anrede und von
+  // dort zur Unterschrift; eine Szene ohne Fragenliste braucht ihn nicht.
+  hubAusgang: () => ({t:'Wo unterschreibe ich?', zu:'anrede'}),
+  // Wohin, wenn ein Knoten kein Ziel mehr hat. Beim Empfang ist das der
+  // Dienstantritt, und damit derselbe Ausgang, den W8 gebaut hat.
+  ende: () => empfangEnde(),
+};
+
 // Eine Zeile der Liste in die Form bringen, die gespraechWaehlen() erwartet.
-const empfangOpt = o => ({t:o.t, tun: o.tun || (() => empfangSzene(o.zu))});
+const szeneOpt = o => ({t:o.t, zu:o.zu, tun: o.tun || (() => szeneKnoten(o.zu))});
 
 // Die Antwortliste der Szene. Auf einem hub-Knoten sind es die offenen Fragen
 // plus der Ausgang, sonst die Liste des Knotens selbst. Eine beantwortete
 // Frage ist selbst ein hub: man steht wieder vor derselben Tafel, nur um eine
 // Zeile ärmer und um eine Nachfrage reicher.
-function empfangOptionen(){
-  const k = EMPFANG_KNOTEN[empfang.knoten];
-  if(k && k.opts) return k.opts().filter(o => !o.wenn || o.wenn()).map(empfangOpt);
-  const liste = empfangOffen().slice(0, EMPFANG_FRAGEN_SICHT).map(f => ({t:f.t, zu:f.key}));
-  liste.push({t:'Wo unterschreibe ich?', zu:'anrede'});
-  return liste.map(empfangOpt);
+function szeneOptionen(){
+  const d = szeneDef();
+  if(!d) return [];
+  const k = d.knoten[szene.knoten];
+  if(k && k.opts) return k.opts().filter(o => !o.wenn || o.wenn()).map(szeneOpt);
+  // Ein hub-Knoten zeigt die offenen Fragen plus den Ausgang der Szene. Ohne
+  // Fragenliste gibt es keine hubs, dann ist das hier unerreichbar und
+  // szeneAssert() meldet den Knoten ohne Ausgang.
+  const liste = szeneOffen().slice(0, d.sicht || 3).map(f => ({t:f.t, zu:f.key}));
+  if(d.hubAusgang) liste.push(d.hubAusgang());
+  return liste.map(szeneOpt);
 }
 
 // Einen Knoten setzen und sprechen lassen. Fragen merken sich, dass sie
 // gestellt wurden, und schalten damit ihre Nachfragen frei.
-function empfangSzene(key){
-  const frage = empfangFrage(key);
-  if(frage) empfang.gefragt.add(key);
-  empfang.knoten = key;
-  const k = EMPFANG_KNOTEN[key] || frage;
-  if(!k){ empfangEnde(); return; }            // unerreichbar, empfangAssert() prüft das
+//
+// SZ1, die einzige echte Erweiterung der Maschine: ein Knoten darf mit wer: die
+// sprechende Figur wechseln. Der Empfang braucht das nicht, er hat nur einen
+// Sprecher. Szene 7 braucht es, dort geht Vorblatt durch acht Leute hindurch,
+// und ohne Portraetwechsel waere eine Versammlung eine Wand aus Text.
+function szeneKnoten(key){
+  const d = szeneDef();
+  if(!d) return;
+  const frage = szeneFrage(key);
+  if(frage) szene.gefragt.add(key);
+  szene.knoten = key;
+  const k = d.knoten[key] || frage;
+  if(!k){ if(d.ende) d.ende(); return; }       // unerreichbar, szeneAssert() prüft das
+  if(k.wer) szeneSprecherSetzen(k.wer);
   gespraechSagen(k.z1, k.z2);
+}
+
+// Das Portraet und den Namen in der Kopfzeile auf eine andere Figur setzen.
+// Nimmt dieselbe Quelle wie szeneOeffnen(): entweder ein Schluessel aus
+// DORF_FIGUREN oder eine fertige Portraetquelle.
+function szeneSprecherSetzen(wer){
+  const n = typeof wer === 'function' ? wer() : szeneSprecherAusDorf(wer);
+  if(!n) return;
+  gespraech.npc = n; gespraech.fig = n.figur;
+  // Die Kopfzeile wird hier gesetzt und nicht dem naechsten gespraechZeichnen()
+  // ueberlassen. Der Wechsel des Sprechers IST Portraet plus Name; haengt der
+  // Name an einem anderen Aufruf, steht nach einem Wechsel ohne neuen Satz das
+  // falsche Schild ueber der richtigen Figur.
+  if(gespraechOffen) el('gespraechNameTxt').textContent = n.figur.name;
+  gespraechPortrait(n);
+}
+
+// Eine Dorffigur als Portraetquelle. Sie steht als Eintrag in npcs im Dorf; von
+// dort kommt das Blatt, das npcBlaetter() ihr zugewiesen hat, samt Toenung.
+// Faellt auf die Tabellenzeile zurueck, falls die Figur (noch) nicht gesetzt
+// ist, damit eine Szene nie stumm bleibt, nur weil sie zu frueh laeuft.
+function szeneSprecherAusDorf(key){
+  const n = npcs.find(x => x.key === key);
+  if(n) return n;
+  const f = DORF_FIGUREN.find(x => x.key === key);
+  if(!f) return null;
+  const b = npcBlaetter(f);
+  return {sheetIdle:b.idle, tint:f.tint||null, tintA:f.tintA, figur:f};
 }
 
 // Der Vordruck aus der Szene heraus. Er läuft danach seinen eigenen Weg zu
 // Ende (dienstAntritt() auf Blatt 3), die Szene ist damit beendet.
 function empfangVordruck(){
-  empfangSzeneAus();
+  szeneAus();
   showDienstblatt(1, 'einstellung', 0);
 }
 
@@ -14300,8 +14475,8 @@ function empfangEnde(){
 // Die Szene endet, die Buehne bleibt. Das ist der Weg auf den Vordruck: er
 // gehoert noch zum Anfang, also steht er auf demselben Schwarz und nicht
 // ueber dem Dorf. Das Dorf kommt erst mit der Unterschrift.
-function empfangSzeneAus(){
-  empfangAktiv = false;                       // erst die Flagge, dann schließen
+function szeneAus(){
+  szeneAktiv = null;                          // erst die Flagge, dann schließen
   gespraechSchliessen();
   el('gespraechZu').style.display = '';
 }
@@ -14309,9 +14484,9 @@ function empfangSzeneAus(){
 // Alles zurueck. Laeuft ueber dienstAntritt(), also ueber beide Enden des
 // Anfangs, und ist auf einem nie begonnenen Empfang ein harmloser Leerlauf.
 function empfangSchliessen(){
-  empfangSzeneAus();
+  szeneAus();
   buehneAus();
-  document.body.classList.remove('empfangLaeuft');
+  document.body.classList.remove('szeneLaeuft');
 }
 
 // Knöterichs Porträt. Er ist die einzige Figur des Ensembles ohne Eintrag in
@@ -14320,7 +14495,7 @@ function empfangSchliessen(){
 // ohne Pack-Blatt, als Held-Komposit, und mit derselben grauen Tönung, die ihn
 // auch in der Welt trägt. Ein zweiter Aufruf ist harmlos, gebacken wird einmal.
 const EMPFANG_BLATT = 'npc_baked_knoeterich';
-function empfangKnoeterich(){
+function szeneSprecherKnoeterich(){
   if(!SHEETS[EMPFANG_BLATT]) bakeNpcSheet(EMPFANG_BLATT, {hair:KN_HAAR}, 'idle');
   // Dieselbe Farbe wie drawAlter(), aber schwaecher aufgetragen. Das ist kein
   // zweiter Kanon, sondern dieselbe Aussage in einer anderen Groesse: in der
@@ -14384,23 +14559,25 @@ function buehneAus(){
 
 // Die Gespraechstafel oeffnen, ohne eine Weltfigur davorzustellen. Wird von
 // beiden Haelften des Anfangs benutzt, der Vorstellung und dem Empfang.
-function empfangTafelOeffnen(knoten){
-  empfangAktiv = true;
-  const n = empfangKnoeterich();
+function szeneOeffnen(key, knoten){
+  const d = SZENEN[key];
+  if(!d) return;
+  szeneAktiv = key;
+  const n = d.sprecher();
   gespraech.npc = n; gespraech.fig = n.figur; gespraech.wahl = 0;
   gespraechOffen = true;
   el('gespraech').style.display = 'block';
   el('gespraechZu').style.display = 'none';   // die Szene hat nur einen Ausgang
   gespraechPortrait(n);
   gespraechIchPortrait();                     // U4: die untere Haelfte
-  empfangSzene(knoten);
+  szeneKnoten(knoten);
   panelSicht();
 }
 
-// Die Tafel zumachen, ohne sie zu schliessen: empfangAktiv bleibt stehen, die
-// Szene laeuft weiter. gespraechSchliessen() prallt waehrend des Empfangs ab
+// Die Tafel zumachen, ohne sie zu schliessen: szeneAktiv bleibt stehen, die
+// Szene laeuft weiter. gespraechSchliessen() prallt waehrend einer Szene ab
 // (das ist seine Aufgabe), also steht der Weg hier ausgeschrieben.
-function empfangTafelZu(){
+function szeneTafelZu(){
   gespraechOffen = false;
   el('gespraech').style.display = 'none';
   MUS.muffle(); panelSicht();
@@ -14417,37 +14594,64 @@ function empfangTafelZu(){
 // Das ist Humor-Grundgesetz 10 als Layout. Der Aufwand, mit dem dieses Haus
 // eine Sache aufmacht, von der es selbst nicht weiß, worum es geht, IST die
 // Pointe. Deshalb darf hier nichts bescheiden aussehen.
-function empfangAnriss(){
-  empfangTafelZu();
-  empfangTafel(0);
+// SZ1: Der laufende Tafelstapel. Liste, Beschriftung des letzten Knopfes und
+// was danach geschieht, stehen als Zustand daneben und nicht als Literal in der
+// Zeichenfunktion. Damit blaettert dieselbe Optik das Intro (neun Blaetter) und
+// spaeter den Abspann (dreizehn Bilder), ohne dass eine zweite Zeichenstelle
+// entsteht. Der Aufsteller ist eine Modulvariable und kein Feld an szene: ein
+// Tafelstapel kann auch ausserhalb einer Szene laufen, das Intro tut es.
+let szeneTafelLauf = null;
+
+function szeneTafeln(liste, letzterKnopf, ende){
+  szeneTafelLauf = {liste, letzterKnopf, ende};
+  szeneTafel(0);
 }
 
-function empfangTafel(i){
-  const t = EMPFANG_TAFELN[i];
-  if(!t){ empfangGespraech(); return; }
-  const letzte = i === EMPFANG_TAFELN.length - 1;
+function szeneTafel(i){
+  const lauf = szeneTafelLauf;
+  if(!lauf) return;
+  const t = lauf.liste[i];
+  if(!t){ szeneTafelLauf = null; lauf.ende(); return; }
+  const letzte = i === lauf.liste.length - 1;
   MUS.swell();
+  // Zwei Lesarten desselben Stapels, und die Tabelle sagt welche. gross/klein
+  // ist die Anrisstafel aus E1: eine Behauptung, gross gesetzt. blatt/stimme
+  // ist das Dokument aus SZ1: eine Regieangabe, was auf dem Tisch liegt, und
+  // darunter, was vorgelesen wird. Beide tragen dieselbe Urkundenoptik, weil es
+  // dieselbe Behoerde ist, die sie aufmacht (Humor-Grundgesetz 10).
+  const inhalt = t.stimme
+    ? `<p class="amtLead" style="font-style:italic;">${gEsc(t.blatt)}</p>`
+      + t.stimme.map(z => `<p class="amtStimme">${gEsc(z)}</p>`).join('')
+      + (t.regie ? `<p class="amtLead" style="font-style:italic;margin-top:10px;">${gEsc(t.regie)}</p>` : '')
+    : `<p class="amtGross">${gEsc(t.z1)}</p><p class="amtKlein">${gEsc(t.z2)}</p>`;
   el('ovPanel').innerHTML = `
     ${siegelSvg(66)}
     <p class="amtKopf">${gEsc(AMT_KOPFZEILE)}</p>
     <hr class="amtRegel">
     <div style="min-height:30vh;display:flex;flex-direction:column;justify-content:center;">
-      <p class="amtGross">${gEsc(t.z1)}</p>
-      <p class="amtKlein">${gEsc(t.z2)}</p>
+      ${inhalt}
     </div>
     <hr class="amtRegel unten">
-    <p class="amtFuss">Blatt ${ROEMISCH[i+1]} von ${ROEMISCH[EMPFANG_TAFELN.length]}</p>
-    <button onclick="empfangTafel(${i+1})">${letzte ? 'ANKLOPFEN' : 'WEITER'}</button>
+    <p class="amtFuss">Blatt ${ROEMISCH[i+1]} von ${ROEMISCH[lauf.liste.length]}</p>
+    <button onclick="szeneTafel(${i+1})">${letzte ? lauf.letzterKnopf : 'WEITER'}</button>
     <div><button onclick="empfangUeberspringen()"
       style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:6px;opacity:.7;">ÜBERSPRINGEN</button></div>`;
   el('overlay').style.display = 'flex';
   MUS.muffle(true);
 }
 
+// Der Anfang benutzt den Stapel fuer das Intro. Neun Blaetter, danach der
+// Empfang. Das ist derselbe Uebergang wie vorher, nur mit anderem Inhalt.
+function empfangAnriss(){
+  szeneTafelZu();
+  szeneTafeln(INTRO_BLAETTER, 'ANKLOPFEN', empfangGespraech);
+}
+
 // Wer den Anfang kennt, will ihn beim zweiten Mal nicht wieder sehen. Der Weg
 // führt auf den Vordruck und damit auf die Unterschrift, nicht am Kanon vorbei.
 function empfangUeberspringen(){
-  empfangSzeneAus();
+  szeneTafelLauf = null;
+  szeneAus();
   showDienstblatt(1, 'einstellung', 0);
 }
 
@@ -14455,9 +14659,9 @@ function empfangUeberspringen(){
 function empfangGespraech(){
   el('overlay').style.display = 'none';
   buehneAus();
-  empfang.knoten = 'gruss'; empfang.gefragt = new Set();
+  szene.knoten = 'gruss'; szene.gefragt = new Set();
   MUS.goto('office'); MUS.muffle(false);
-  empfangTafelOeffnen('gruss');
+  szeneOeffnen('empfang', 'gruss');
 }
 
 // Der Eingang. Ersetzt in startGame() den Sprung auf Blatt 1.
@@ -14466,12 +14670,12 @@ function empfangGespraech(){
 // dann sein Schreibtisch. In der ersten Fassung kam die Geschichte zuerst und
 // der Mann danach, und dadurch erzaehlte niemand die Geschichte.
 function empfangStarten(){
-  empfang.gefragt = new Set();
-  document.body.classList.add('empfangLaeuft');
+  szene.gefragt = new Set();
+  document.body.classList.add('szeneLaeuft');
   buehneAn();
   el('overlay').style.display = 'none';
   MUS.goto('office'); MUS.muffle(false);
-  empfangTafelOeffnen('vorstellung1');
+  szeneOeffnen('empfang', SZENEN.empfang.start);
 }
 
 // --- Guard, Bauform wie dienstAssert()/gespraechAssert(). Wirft nie, meldet nur.
@@ -14488,82 +14692,140 @@ function empfangStarten(){
 //   (4) Die Antwortliste bleibt vierzeilig und im Zeichendeckel aus U3.
 //   (5) Der Empfang endet dort, wo W8 endet: beide Ausgänge über
 //       dienstAntritt(), sonst stünde kn.seen.einstellung an einem zweiten Ort.
-function empfangAssert(){
+// --- Guard, Bauform wie dienstAssert()/gespraechAssert(). Wirft nie, meldet nur.
+//
+// SZ1: Er prueft jetzt jede eingetragene Szene statt der einen, die es gab. Was
+// er prueft, ist unveraendert das, was beim naechsten Weiterschreiben leise
+// kaputtgeht:
+//   (1) Formregeln aus Kapitel 13 auf jeder Zeile, samt der Wortsperre DIESER
+//       Szene. Eine Szene verfuehrt staerker zum Erklaeren als ein Formular.
+//   (2) Jede Frage ist erreichbar. Eine Frage, deren Voraussetzung hinter ihr
+//       steht, erscheint nie, und eine Wartefrage, die auf mehr Fragen wartet,
+//       als es gibt, ebenfalls nicht.
+//   (3) Kein Knoten ohne Ausgang und kein Ziel, das es nicht gibt. Eine
+//       Sackgasse im Empfang ist ein Spiel, das nicht startet.
+//   (4) Die Antwortliste bleibt vierzeilig und im Zeichendeckel aus U3.
+//   (5) Der Empfang endet dort, wo W8 endet: beide Ausgaenge ueber
+//       dienstAntritt(), sonst stuende kn.seen.einstellung an einem zweiten Ort.
+//   (6) Neu mit SZ1: jeder Tafelstapel traegt eine der beiden Lesarten
+//       vollstaendig, und ein Knoten, der den Sprecher wechselt, nennt einen,
+//       den es gibt.
+function szeneAssert(){
   let ok = true;
-  const fehler = (m, ...r) => { ok = false; console.error('E1 Empfang:', m, ...r); };
-  const text = (txt, wo, leerOk) => {
-    if(!txt){ if(!leerOk) fehler('Text leer', wo); return; }
+  const fehler = (m, ...r) => { ok = false; console.error('SZ1 Szenen:', m, ...r); };
+  // sperre ist ein Parameter und keine Konstante mehr: siehe den Kopf dieses
+  // Blocks. Das Intro darf die Papiere zeigen, der Empfang nicht.
+  const text = (txt, wo, sperre) => {
+    if(!txt){ fehler('Text leer', wo); return; }
     if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', wo, txt);
-    if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', wo, txt);
+    if(/[\u2014\u2013]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', wo, txt);
     if(PRUEF_EMOJI.test(txt)) fehler('Emoji im Figurentext', wo, txt);
     for(const g of PRUEF_GEHEIM) if(txt.indexOf(g) >= 0) fehler('Kesselgrammatik im Text', wo, g, txt);
-    for(const s of AKTE_SPERRE) if(txt.indexOf(s) >= 0) fehler('Vorgriff auf die Akte', wo, s, txt);
+    for(const sp of (sperre || [])) if(txt.indexOf(sp) >= 0) fehler('Vorgriff auf die Akte', wo, sp, txt);
   };
 
-  // (1) Tafeln und Sprechzeilen
-  EMPFANG_TAFELN.forEach((t, i) => { text(t.z1, `Tafel ${i+1} Zeile 1`); text(t.z2, `Tafel ${i+1} Zeile 2`); });
-  const alleKnoten = {};
-  for(const k in EMPFANG_KNOTEN) alleKnoten[k] = EMPFANG_KNOTEN[k];
-  for(const f of EMPFANG_FRAGEN){
-    if(alleKnoten[f.key]) fehler('Frage und Knoten heißen gleich', f.key);
-    alleKnoten[f.key] = f;
-    text(f.t, `Frage ${f.key} Beschriftung`);
-    if(f.t.length > ANTWORT_DECKEL) fehler('Frage zu lang für die Zeile', f.key, f.t.length);
-  }
-  for(const key in alleKnoten){
-    const k = alleKnoten[key];
-    text(k.z1, `Knoten ${key} Zeile 1`);
-    text(k.z2, `Knoten ${key} Zeile 2`);
+  // (6) Die Tafelstapel. Jeder Eintrag traegt entweder gross/klein oder
+  // blatt/stimme, nie beides und nie keins von beiden.
+  const stapel = [{name:'Intro', liste:INTRO_BLAETTER, sperre:AKTE_SPERRE_NAMEN}];
+  for(const st of stapel){
+    if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);
+    if(st.liste.length >= ROEMISCH.length) fehler('Tafelstapel länger als die römische Zählung', st.name, st.liste.length);
+    st.liste.forEach((t, i) => {
+      const wo = `${st.name} Blatt ${i+1}`;
+      const alteForm = t.z1 !== undefined, neueForm = t.stimme !== undefined;
+      if(alteForm === neueForm) return fehler('Blatt trägt keine oder zwei Lesarten', wo);
+      if(alteForm){ text(t.z1, wo + ' Zeile 1', st.sperre); text(t.z2, wo + ' Zeile 2', st.sperre); }
+      else {
+        text(t.blatt, wo + ' Regieangabe', st.sperre);
+        if(!t.stimme.length) fehler('Blatt ohne gesprochene Zeile', wo);
+        t.stimme.forEach((z, j) => text(z, `${wo} Stimme ${j+1}`, st.sperre));
+        if(t.regie) text(t.regie, wo + ' Nachbemerkung', st.sperre);
+      }
+    });
   }
 
-  // (2) Erreichbarkeit
-  const pos = {};
-  EMPFANG_FRAGEN.forEach((f, i) => { pos[f.key] = i; });
-  for(const f of EMPFANG_FRAGEN){
-    if(f.frei){
-      if(pos[f.frei] === undefined) fehler('Voraussetzung gibt es nicht', f.key, f.frei);
-      else if(pos[f.frei] > pos[f.key]) fehler('Voraussetzung steht hinter ihrer Frage', f.key, f.frei);
-    }
-    if(f.nach && f.nach > EMPFANG_FRAGEN.length - 1)
-      fehler('Wartefrage wartet auf mehr Fragen, als es gibt', f.key, f.nach);
-  }
-  const einstieg = EMPFANG_FRAGEN.filter(f => !f.frei && !f.nach).length;
-  if(einstieg < EMPFANG_FRAGEN_SICHT)
-    fehler('zu wenige Fragen ohne Voraussetzung', einstieg, 'von', EMPFANG_FRAGEN_SICHT);
+  // Ab hier je Szene. Der Laufzustand wird gespiegelt und exakt
+  // wiederhergestellt: dieser Guard laeuft auf Skriptebene, lange bevor eine
+  // Szene beginnt, und darf keine anfangen.
+  const merkKey = szeneAktiv, merkKnoten = szene.knoten, merkGefragt = szene.gefragt;
+  try {
+  for(const key in SZENEN){
+    const d = SZENEN[key];
+    const wo = w => `${key}: ${w}`;
+    for(const f of ['sprecher','knoten']) if(typeof d[f] !== (f === 'knoten' ? 'object' : 'function'))
+      fehler('Pflichtfeld fehlt oder hat die falsche Form', key, f);
 
-  // (3)/(4) Antwortlisten aller Knoten, ohne die Szene zu öffnen.
-  const merk = {knoten:empfang.knoten, gefragt:empfang.gefragt};
-  for(const key in alleKnoten){
-    empfang.knoten = key; empfang.gefragt = new Set();
-    let opts;
-    try { opts = empfangOptionen(); }
-    catch(e){ fehler('Antwortliste wirft', key, e.message); continue; }
-    if(!opts.length) fehler('Knoten ohne Ausgang', key);
-    if(opts.length > 4) fehler('mehr als vier Antworten', key, opts.length);
-    for(const o of opts){
-      if(!o.t) fehler('leere Antwort', key);
-      else if(o.t.length > ANTWORT_DECKEL) fehler('Antwort zu lang', key, o.t, o.t.length);
-      if(typeof o.tun !== 'function') fehler('Antwort ohne Wirkung', key, o.t);
-      text(o.t, `Knoten ${key} Antwort`);
+    // (1) Zeilen
+    const alleKnoten = {};
+    for(const k in d.knoten) alleKnoten[k] = d.knoten[k];
+    for(const f of (d.fragen || [])){
+      if(alleKnoten[f.key]) fehler('Frage und Knoten heißen gleich', wo(f.key));
+      alleKnoten[f.key] = f;
+      text(f.t, wo(`Frage ${f.key} Beschriftung`), d.sperre);
+      if(f.t.length > ANTWORT_DECKEL) fehler('Frage zu lang für die Zeile', wo(f.key), f.t.length);
+    }
+    for(const k in alleKnoten){
+      text(alleKnoten[k].z1, wo(`Knoten ${k} Zeile 1`), d.sperre);
+      text(alleKnoten[k].z2, wo(`Knoten ${k} Zeile 2`), d.sperre);
+      // (6) Ein Sprecherwechsel muss auf jemanden zeigen, den es gibt.
+      const wer = alleKnoten[k].wer;
+      if(wer && typeof wer !== 'function' && !DORF_FIGUREN.some(f => f.key === wer))
+        fehler('Knoten wechselt auf eine Figur, die es nicht gibt', wo(k), wer);
+    }
+
+    // (2) Erreichbarkeit
+    const fragen = d.fragen || [];
+    const pos = {};
+    fragen.forEach((f, i) => { pos[f.key] = i; });
+    for(const f of fragen){
+      if(f.frei){
+        if(pos[f.frei] === undefined) fehler('Voraussetzung gibt es nicht', wo(f.key), f.frei);
+        else if(pos[f.frei] > pos[f.key]) fehler('Voraussetzung steht hinter ihrer Frage', wo(f.key), f.frei);
+      }
+      if(f.nach && f.nach > fragen.length - 1)
+        fehler('Wartefrage wartet auf mehr Fragen, als es gibt', wo(f.key), f.nach);
+    }
+    if(fragen.length){
+      const sicht = d.sicht || 3;
+      const einstieg = fragen.filter(f => !f.frei && !f.nach).length;
+      if(einstieg < sicht) fehler('zu wenige Fragen ohne Voraussetzung', key, einstieg, 'von', sicht);
+    }
+
+    // (3)/(4) Antwortlisten aller Knoten, ohne die Szene zu oeffnen.
+    szeneAktiv = key;
+    for(const k in alleKnoten){
+      szene.knoten = k; szene.gefragt = new Set();
+      let opts;
+      try { opts = szeneOptionen(); }
+      catch(e){ fehler('Antwortliste wirft', wo(k), e.message); continue; }
+      if(!opts.length) fehler('Knoten ohne Ausgang', wo(k));
+      if(opts.length > 4) fehler('mehr als vier Antworten', wo(k), opts.length);
+      for(const o of opts){
+        if(!o.t) fehler('leere Antwort', wo(k));
+        else if(o.t.length > ANTWORT_DECKEL) fehler('Antwort zu lang', wo(k), o.t, o.t.length);
+        if(typeof o.tun !== 'function') fehler('Antwort ohne Wirkung', wo(k), o.t);
+        text(o.t, wo(`Knoten ${k} Antwort`), d.sperre);
+      }
+    }
+    // Jedes zu-Ziel muss es geben. An der Quelle geprueft und nicht am gebauten
+    // Ergebnis, weil szeneOpt() das Ziel in eine Funktion einpackt.
+    for(const k in d.knoten){
+      if(!d.knoten[k].opts) continue;
+      for(const o of d.knoten[k].opts()) if(o.zu && !alleKnoten[o.zu])
+        fehler('Antwort zeigt auf einen Knoten, den es nicht gibt', wo(k), o.zu);
     }
   }
-  // Jedes zu-Ziel muss es geben. An der Quelle geprüft und nicht am gebauten
-  // Ergebnis, weil empfangOpt() das Ziel in eine Funktion einpackt.
-  for(const key in EMPFANG_KNOTEN){
-    const k = EMPFANG_KNOTEN[key];
-    if(!k.opts) continue;
-    for(const o of k.opts()) if(o.zu && !alleKnoten[o.zu])
-      fehler('Antwort zeigt auf einen Knoten, den es nicht gibt', key, o.zu);
-  }
-  empfang.knoten = merk.knoten; empfang.gefragt = merk.gefragt;
+  } finally { szeneAktiv = merkKey; szene.knoten = merkKnoten; szene.gefragt = merkGefragt; }
 
   // (5) Der Ausgang bleibt der Ausgang aus W8.
   if(typeof dienstAntritt !== 'function') fehler('dienstAntritt() fehlt, der Empfang hätte kein Ende');
 
-  if(ok) console.log(`E1 Empfang: ${EMPFANG_TAFELN.length} Tafeln, ${EMPFANG_FRAGEN.length} Fragen,`
-    + ` ${Object.keys(EMPFANG_KNOTEN).length} Knoten, Sperrvermerk und Antwortdeckel in Ordnung.`);
+  const knoten = Object.keys(SZENEN).reduce((n, k) => n + Object.keys(SZENEN[k].knoten).length, 0);
+  const fragen = Object.keys(SZENEN).reduce((n, k) => n + ((SZENEN[k].fragen || []).length), 0);
+  if(ok) console.log(`SZ1 Szenen: ${Object.keys(SZENEN).length} Szene(n), ${INTRO_BLAETTER.length} Introblätter,`
+    + ` ${fragen} Fragen, ${knoten} Knoten, Sperrvermerk und Antwortdeckel in Ordnung.`);
 }
-empfangAssert();
+szeneAssert();
 
 // --- Guard, Bauform wie rangAssert()/anredeAssert(). Prueft beim Laden drei
 // Dinge, die man beim spaeteren Weiterschreiben genau so verliert:

@@ -514,6 +514,12 @@ Aufgehängt am bestehenden **Jahresgespräch alle 10 Schichten** (Phase 4). Null
 
 Der Spieler lernt den Job. Die Welt wirkt wie ein normales Fantasy-Spiel mit merkwürdigem Vokabular. Einzige Saat: an erlegten Monstern flattert Konfetti mit Zahlen darauf. Niemand erwähnt es.
 
+**Vorbehalt, nachgetragen mit SZ1 (22.08.2026).** Das Intro erzählt mehr, als dieser Absatz erlaubt. Wer es gesehen hat, weiß ab Schicht 1, dass es einen Krieg gab, einen unvollständigen Frieden und einen Brief, den niemand zustellen konnte. Das ist eine Änderung am Kanon und keine Kleinigkeit, deshalb steht sie hier und nicht nur im Phasendokument.
+
+Drei Gründe, warum sie trotzdem richtig ist. **Erstens** nennt das Intro keine Namen und keine Zusammenhänge: der Spieler sieht Papiere, er weiß nicht, dass der Umschlag heute noch in Trepps Sack liegt, nicht wer der Empfänger ist, nicht dass dieses Haus deshalb existiert. Er hat Bilder, keine Erklärung, und die Auflösung liegt weiterhin in den Akten III bis V. **Zweitens** taten die fünf Anrisstafeln, die es ersetzt, genau dasselbe: "VOR VIERHUNDERT JAHREN geschah etwas Ungeheuerliches" ist dieselbe Vorwegnahme ohne den Gegenwert. **Drittens** ist es die Antwort auf die Rückmeldung, die zu E1 geführt hat: wer nicht weiß, worum es geht, versteht auch die Witze nicht, die davon handeln.
+
+Der Satz oben bleibt trotzdem stehen und gilt für alles Übrige des ersten Aktes. Was der Spieler im Intro sieht, wird in den zehn Schichten danach von niemandem erwähnt, erklärt oder aufgegriffen. Genau das ist der Punkt.
+
 **Jahresgespräch 1.** Zwirn gratuliert, gibt die Kleinigkeit, und sagt beiläufig: "Solange der Vorgang läuft, brauchen wir Sie ja." Erste Nennung des Wortes.
 
 ### Akt II, Schicht 11 bis 20: "Der Vorgang läuft"
@@ -879,10 +885,25 @@ Die Weltgeschichte (`weltgeschichte.md`) hat der Welt ein zweites Weltgesetz, ei
 
 **Was W11 ausdrücklich nicht baut**, damit die Grenze klar ist: keine der neun Szenen aus Kapitel 8 der Weltgeschichte, keine der drei neuen Blattserien, keinen der vier neuen Langvorgänge, und Konrad zu Händen Aufschub nicht, weil er nur in Hochablage steht. Das steht offen und ist unten in Kapitel 16 vermerkt.
 
+### SZ1: Das Szenensystem und das Intro — ERLEDIGT (siehe `phase-sz1-szenensystem.md`)
+
+Erster von vier Abschnitten, die die neun Szenen aus `weltgeschichte.md`, Kapitel 8, ins Spiel bringen. SZ1 baut die Maschine und die einfachste Szene darauf.
+
+* **Die Szenenmaschine aus E1 und E2 ist vom Empfang gelöst.** Sie steht in einer Tabelle `SZENEN`; der Empfang ist ihr erster Eintrag und hat sich um kein Wort geändert. Neu gebaut wurde fast nichts.
+* **Zwei echte Erweiterungen.** Ein Knoten darf mit `wer:` den Sprecher wechseln, samt Porträt und Kopfzeile (ohne das wäre Szene 7 eine Wand aus Text). Und `szeneTafeln()` blättert einen beliebigen Stapel in der Urkundenoptik, damit der Abspann später keine zweite Zeichenstelle braucht.
+* **Die Wortsperre ist geteilt.** `AKTE_SPERRE` gilt weiter für den Empfang. Das Intro zeigt genau die Dokumente, die sie verbietet, und bekommt deshalb `AKTE_SPERRE_NAMEN`: **es darf die Papiere zeigen, es darf niemanden beim Namen nennen.**
+* **Szene 1, das Intro:** neun Blätter, wörtlich aus Kapitel 8. Sie ersetzen die fünf Anrisstafeln aus E1 an derselben Stelle im Ablauf. Beide erzählen dieselben vierhundert Jahre; die Tafeln taten es in fünf Behauptungen, das Intro in neun Dokumenten. Der Anfang wird dadurch nicht länger.
+
+### SZ2 bis SZ4: Die übrigen acht Szenen — OFFEN
+
+SZ2 die Gesprächsszenen 2 bis 4, SZ3 der Stopfen und Vorblatts Ankunft samt Blattserie I, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz1-szenensystem.md`, Abschnitt 7.
+
 ### Was wir ausdrücklich nicht bauen
 
 * ~~Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.~~ **Überholt durch U3** (Nutzerentscheidung, `phase-u3-gespraech.md`): das Gesprächsfenster mit vier Antworten ist gebaut und trägt seit E1 auch den Anfang. Was bleibt: kein *verzweigender* Dialog mit Folgen für den Spielstand. Die Antworten wählen, was gesagt wird, nie was gilt. Einzige Ausnahme ist die Anrede im Empfang, und die war schon vor E1 eine Angabe des Spielers (P1).
-* Keine Cutscene, kein Kamerafahrt-Skript, kein Standbild-Interlude.
+* ~~Keine Cutscene, kein Kamerafahrt-Skript, kein Standbild-Interlude.~~ **Überholt durch SZ1** (`phase-sz1-szenensystem.md`), und zwar auf demselben Weg wie die Zeile darüber: die Maschine, die dieser Satz verbietet, war beim Schreiben noch nicht da und ist inzwischen gebaut und ausgeliefert. E1 und E2 haben sie gebaut, ohne sie so zu nennen. Knöterichs Vorstellung zu Beginn des Spiels **ist** eine gespielte Szene, und `empfangTafel()` **ist** ein Standbild-Interlude.
+
+    Was bleibt, ist der Kern, auf dem dieser Satz immer bestand: **nichts läuft von selbst ab.** Kein Timer, keine Kamerafahrt, keine Sekunde, die dem Spieler weggenommen wird. Jede Tafel steht, bis jemand drückt; wer nicht drückt, steht dort bis morgen. Jede Szene läuft in der Gesprächstafel aus U3, mit denselben Tasten wie jedes Dorfgespräch, und jede ist überspringbar oder endet an einer Antwort, die der Spieler wählt.
 * Keine Vertonung.
 * Keine Questmarker auf der Minimap. Wer suchen soll, bekommt keinen Pfeil. (Ausgenommen die erbraute Wirkung „Aktenlage" aus Phase 3: sie zeigt ungeöffnete Truhen und bereitstehende Kammertüren als Punkte, also Fundorte, keine Ziele, und wird mit dem Fluch „Aktenblindheit" bezahlt.)
 * Keine zweite Währung.
