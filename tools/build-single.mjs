@@ -28,11 +28,14 @@ const ASSET_DIR = join(ROOT, 'assets');
 // bewusst alles, statt die benutzte Teilmenge zu erraten (siehe G6-Notizen);
 // eine Ausnahme braucht deshalb einen Grund, der hier danebensteht.
 //
-//   assets/figuren/ — die Figurenporträts. Reine Doku für Kladde und
-//   Konzeptarbeit, `index.html` lädt daraus nichts. Sie wiegen 3,0 MB roh und
-//   damit 4,1 MB als data:-URI, mehr als das Spiel selbst. Ohne diesen
-//   Ausschluss wächst dist/index.html von rund 1,1 MB auf über 5 MB, für
-//   Bilder, die kein Frame je zeichnet.
+//   assets/figuren/ — die Ansichtsfassung der Figurenporträts (auf 1024
+//   hochskaliert) und die Midjourney-Originale. `index.html` lädt daraus
+//   nichts. Sie wiegen 3,0 MB roh und damit 4,1 MB als data:-URI, mehr als das
+//   Spiel selbst, für Bilder, die kein Frame je zeichnet.
+//
+//   Die dreizehn Porträts, die das Spiel seit U5 wirklich zeigt, liegen als
+//   echte 128er in assets/portraets/ (65 KB statt 3,0 MB) und stehen deshalb
+//   NICHT hier — sie werden eingebacken wie jede andere Spielgrafik.
 const SKIP_DIRS = ['assets/figuren'];
 
 // Genau diese Zeile wird ersetzt. Fehlt sie, bricht der Build ab, statt still

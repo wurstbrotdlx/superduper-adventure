@@ -190,6 +190,27 @@ const tafel = page => page.evaluate(() => ({
   pruef('unten steht die Amtsbezeichnung', zwei.titel, zwei.sollTitel);
   pruef('das zweite Portraet ist gezeichnet', zwei.ichGemalt, true);
 
+  // --- U5: das gemalte Portraet --------------------------------------------
+  // Woran man die beiden Wege auseinanderhaelt, ohne Farben zu vergleichen:
+  // das gemalte Bild fuellt die Leinwand bis in die Ecken, der Sprite-
+  // Ausschnitt steht mittig mit 20 Pixel Luft an drei Seiten. Die linke obere
+  // Ecke ist deshalb der Unterschied: dort deckt das eine und das andere nicht.
+  const gemalt = page => page.evaluate(() => {
+    const c = el('gespraechPortrait'), cc = c.getContext('2d');
+    const ecke = cc.getImageData(2, 2, 1, 1).data[3];
+    const d = cc.getImageData(0, 0, c.width, c.height).data;
+    let deck = 0;
+    for(let i = 3; i < d.length; i += 4) if(d[i] > 8) deck++;
+    const f = el('gespraechBild').getBoundingClientRect();
+    return { ecke, deck, quadratLeinwand: c.width === c.height, leinwand: c.width,
+             quadratFeld: Math.abs(f.width - f.height) < 1 };
+  });
+  const gz = await gemalt(page);
+  pruef('das Bildfeld ist quadratisch', gz.quadratFeld, true);
+  pruef('die Leinwand ist 128x128', [gz.quadratLeinwand, gz.leinwand], [true, 128]);
+  pruef('Zwirn zeigt sein gemaltes Portraet', gz.ecke > 8, true);
+  pruef('das gemalte Portraet fuellt das Feld', gz.deck > 128*128*0.9, true);
+
   // --- Tippen --------------------------------------------------------------
   const kurzNach = (await tafel(page)).text.length;
   await page.waitForTimeout(2600);
@@ -248,6 +269,20 @@ const tafel = page => page.evaluate(() => ({
   await page.evaluate(() => { player.x += 400; camSnap(); });
   await page.waitForTimeout(200);
   pruef('wer weggeht, beendet das Gespraech', (await tafel(page)).offen, false);
+
+  // --- U5: der Rueckfallweg ------------------------------------------------
+  // Lott und Pahl teilen sich ein Doppelportraet und haben deshalb keins. Sie
+  // sind der Beleg, dass der Weg aus U4 nicht abgebaut, sondern nur ueber-
+  // holt wurde: kein Bild, kein Fehler, sondern der Sprite-Ausschnitt wie
+  // bisher — mittig im Quadrat und mit freien Ecken.
+  await hin(page, 'lott');
+  await page.keyboard.press('f');
+  await page.waitForTimeout(300);
+  const gl = await gemalt(page);
+  pruef('Lott bekommt den Sprite-Ausschnitt', gl.ecke <= 8, true);
+  pruef('und der zeigt trotzdem etwas', gl.deck > 200, true);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(150);
 
   // --- Schriftregler -------------------------------------------------------
   const schrift = await page.evaluate(() => {
