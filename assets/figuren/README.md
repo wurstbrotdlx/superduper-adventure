@@ -32,11 +32,11 @@ die man ansieht; das Original ist der Beleg.
 | `13-umlauf` | Reichsbotin Kordula Umlauf | da, Stil weicht ab |
 | `14-vorblatt` | Reichsministerialdirektor zu Händen Vorblatt | da |
 | `15-sturz` | Amtsleiterin Dr. Wilhelmine Sturz | da |
-| `16-nachtrag` | Fürst Nachtrag, der Schattenfürst | offen |
-| `17-anlage3` | Anlage 3, Kater | offen |
-| `18-konrad` | Konrad zu Händen Aufschub | offen |
-| `19-aussendienst` | Der Außendienst (Spieler) | offen |
-| `20-kaisertuer` | Die Tür des Kaisers | offen |
+| `16-nachtrag` | Fürst Nachtrag, der Schattenfürst | da |
+| `17-anlage3` | Anlage 3, Kater | da |
+| `18-konrad` | Konrad zu Händen Aufschub | da, Gesicht entgleist (siehe unten) |
+| `19-aussendienst` | Der Außendienst (Spieler) | bewusst ausgelassen, braucht keins |
+| `20-kaisertuer` | Die Tür des Kaisers | da, Stapel zu klein |
 
 ## Befunde am ersten Paket (22.08.2026)
 
@@ -110,3 +110,36 @@ gehört. Der Grund dort ist die Kenmi-Premium-Lizenz, die die Weitergabe der
 Cute-Fantasy-Dateien untersagt, auch modifiziert. Für diese Porträts gilt das nicht:
 sie sind selbst erzeugt und gehören dem Projekt. Sie sind klein, sie gehören
 inhaltlich neben die Prompts, und sie landen in keinem Build.
+
+## Befunde am vierten Paket (22.08.2026)
+
+* **Konrads Gesicht ist entgleist.** Das linke Auge fehlt, an seiner Stelle sitzt
+  eine Falte, und der Kopf ist so weit verzogen, dass er die Grenze `never
+  grotesque` aus dem Prompt reißt. Die Figur soll die freundlichste Illustration des
+  zweiten Weltgesetzes sein, ein Mann, der sein Leben in einem Flur verbracht hat
+  und es für eine Karriere hält. Das hier ist ein Zerrbild. Muss neu.
+* **Die Kaisertür stimmt nicht in den Größenverhältnissen.** Der Stapel reicht knapp
+  über zwei Drittel der Türhöhe, der Prompt verlangt `taller than the door itself`.
+  Genau diese Übertreibung ist der Witz des Motivs. Dazu steht die Tür in einem Raum
+  mit Wand und Boden, obwohl `plain dark background` verlangt war. Beides zusammen
+  nimmt dem Bild die Wucht.
+* **Nachtrag ist eine Kapuzengestalt geworden**, nicht der Hochadelige in Hofkleidung
+  mit hohem Kragen. Stimmung, Traurigkeit und die zwei blassen Augen sitzen dagegen
+  genau. Geschmacksfrage, kein Fehler.
+* **Der Kater ist rot statt getigert** und etwas wärmer als die Palette, liegt aber
+  richtig und schläft überzeugend.
+
+## Der Hintergrund streut
+
+Gemessen an den Bildecken, dort wo die Figur sie nicht berührt: die meisten liegen
+zwischen `#232e2a` und `#2e3c3f`, also dunkles Schiefergrün mit Helligkeit 40 bis
+56. Zwei fallen heraus: Nachtrag mit `#010e0d` (Helligkeit 9, praktisch schwarz) und
+Vorblatt mit `#102424` (29). Die Kaisertür hat als einzige gar keinen flachen Grund,
+sondern eine Wand in `#44404a`.
+
+Bei Zapf, Fass und Lott/Pahl ist der Eckwert **kein** Hintergrund, sondern die Figur
+selbst, weil sie bis in die Ecken reicht. Für diese drei sagt die Messung nichts.
+
+`plain dark background` ist Midjourney offenbar zu unbestimmt. Für Nachläufe wäre
+`flat dark slate green background` genauer. Alternativ lässt sich der Grund
+nachträglich vereinheitlichen, das wäre eine Erweiterung von `tools/figuren-px.py`.
