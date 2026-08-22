@@ -135,7 +135,11 @@ async function frisch(opt){
     } finally { szeneAktiv = merkKey; szene.knoten = merkKnoten; szene.gefragt = merkGefragt; }
     return raus;
   });
-  pruef('jeder Knoten ist vom Start aus erreichbar', graph, {empfang:[]});
+  // Erwartet wird je Szene eine leere Liste. Die Schluessel kommen aus der
+  // Tabelle und nicht aus einem Literal: eine neue Szene soll diesen Lauf
+  // erweitern, ohne dass jemand hier eine Zeile nachtraegt.
+  const sollLeer = await page.evaluate(() => Object.fromEntries(Object.keys(SZENEN).map(k => [k, []])));
+  pruef('jeder Knoten ist vom Start aus erreichbar', graph, sollLeer);
 
   // Die Wortsperre haengt an der Szene und nicht mehr am Modul.
   const sperren = await page.evaluate(() => ({
@@ -200,7 +204,10 @@ async function frisch(opt){
               knoepfe: knoepfe.length,
               drin: knoepfe.every(b => b.getBoundingClientRect().bottom <= innerHeight + 1)};
     });
-    if(m.rollt || !m.drin || m.knoepfe !== 2) ueber.push(`Blatt ${i}: ${JSON.stringify(m)}`);
+    // Zwei Knoepfe auf jedem Blatt ausser dem letzten: dort gibt es nichts mehr
+    // zu ueberspringen, und ein Knopf, der nichts tut, ist schlechter als keiner.
+    const sollKnoepfe = i === anzahl ? 1 : 2;
+    if(m.rollt || !m.drin || m.knoepfe !== sollKnoepfe) ueber.push(`Blatt ${i}: ${JSON.stringify(m)}`);
     await page.evaluate(n => szeneTafel(n), i);
     await page.waitForTimeout(150);
   }
@@ -208,6 +215,167 @@ async function frisch(opt){
   pruef('nach dem letzten Blatt steht der Empfang',
         await page.evaluate(() => document.getElementById('overlay').style.display), 'none');
   pruef('und die Szene laeuft weiter', await page.evaluate(() => szeneAktiv), 'empfang');
+  await ctx.close();
+}
+
+
+// ------------------------------------------------------------- SZ2: die drei Szenen
+{
+  const { page, ctx } = await frisch({ viewport: { width: 1100, height: 800 } });
+
+  // Faelligkeit: welche Szene will wann uebernehmen. Gerechnet auf der Tabelle,
+  // ohne eine zu starten.
+  const faellig = await page.evaluate(() => {
+    const raus = {};
+    const alt = {modus: CONFIG.schichtModus, sch: amt.schichten, flags: {...kn.flags}, vg: {...kladde.vorgang}};
+    CONFIG.schichtModus = true;
+    try {
+      for(const f in kn.flags) if(f.startsWith('szene')) kn.flags[f] = false;
+      kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+      for(const sch of [0, 10, 20, 30, 40]){
+        amt.schichten = sch;
+        raus['Akt ' + aktStand()] = {umlauf: szeneFaellig('umlauf'), knoeterich: szeneFaellig('knoeterich')};
+      }
+      // Ohne vollstaendige Anschrift bleibt Knoeterichs Szene aus, auch in Akt IV.
+      amt.schichten = 30; kladde.vorgang = {1:true, 2:true, 3:true};
+      raus['Akt 4 ohne Anschrift'] = {umlauf: szeneFaellig('umlauf'), knoeterich: szeneFaellig('knoeterich')};
+      // Und mit gesetztem Merker nie wieder.
+      kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+      kn.flags.szeneUmlauf = true; kn.flags.szeneKnoeterich = true;
+      raus['gespielt'] = {umlauf: szeneFaellig('umlauf'), knoeterich: szeneFaellig('knoeterich')};
+    } finally {
+      CONFIG.schichtModus = alt.modus; amt.schichten = alt.sch;
+      Object.assign(kn.flags, alt.flags); kladde.vorgang = alt.vg;
+    }
+    return raus;
+  });
+  pruef('Umlauf ab Akt II, Knoeterich ab Akt IV mit Anschrift', faellig, {
+    'Akt 1': {umlauf: null,     knoeterich: null},
+    'Akt 2': {umlauf: 'umlauf', knoeterich: null},
+    'Akt 3': {umlauf: 'umlauf', knoeterich: null},
+    'Akt 4': {umlauf: 'umlauf', knoeterich: 'knoeterich'},
+    'Akt 5': {umlauf: 'umlauf', knoeterich: 'knoeterich'},
+    'Akt 4 ohne Anschrift': {umlauf: 'umlauf', knoeterich: null},
+    'gespielt':             {umlauf: null,     knoeterich: null},
+  });
+
+  // Die Zeile im Amtspanel steht nur in Akt III und nur, solange ungespielt.
+  const schub = await page.evaluate(() => {
+    const raus = {};
+    const alt = {modus: CONFIG.schichtModus, sch: amt.schichten, f: kn.flags.szeneSchublade};
+    CONFIG.schichtModus = true; kn.flags.szeneSchublade = false;
+    try {
+      for(const sch of [10, 20, 30]){ amt.schichten = sch; raus['Akt ' + aktStand()] = schubladeBlock().length > 0; }
+      amt.schichten = 20; kn.flags.szeneSchublade = true; raus['gespielt'] = schubladeBlock().length > 0;
+    } finally { CONFIG.schichtModus = alt.modus; amt.schichten = alt.sch; kn.flags.szeneSchublade = alt.f; }
+    return raus;
+  });
+  pruef('die Schubladenzeile steht ab Akt III und nur einmal', schub,
+        {'Akt 2': false, 'Akt 3': true, 'Akt 4': true, 'gespielt': false});
+
+  // Die vierzig Blaetter: Zahl, Jahreslauf, und der zweite Knopf springt ans Ende.
+  const blaetter = await page.evaluate(() => {
+    const l = schubladeBlaetter();
+    return {n: l.length,
+            erstes: l[0].stimme[2],
+            letztes: l[l.length-1].stimme[2],
+            zeichnet: l[l.length-1].regie.indexOf('Vorblatt') >= 0,
+            zahlLesbar: !!szeneBlattZahl(l.length, l.length),
+            // Ein Stapel zaehlt durchgehend in einem System, nie gemischt.
+            fussEinheitlich: /^\d+$/.test(szeneBlattZahl(1, l.length)) === /^\d+$/.test(szeneBlattZahl(l.length, l.length)),
+            introBleibtRoemisch: szeneBlattZahl(1, INTRO_BLAETTER.length) === 'I'};
+  });
+  pruef('vierzig Zwischenbescheide, 972 bis 1011', blaetter,
+        {n: 40, erstes: 'Hochablage, im Jahr 972.', letztes: 'Hochablage, im Jahr 1011.',
+         zeichnet: true, zahlLesbar: true, fussEinheitlich: true, introBleibtRoemisch: true});
+
+  await ctx.close();
+}
+
+// ------------------------------------------------------- SZ2: gespielt, im Dienst
+{
+  const { page, ctx } = await frisch({ viewport: { width: 1100, height: 800 } });
+  // In den Dienst: Anfang ueberspringen, Vordruck durchklicken.
+  await page.evaluate(() => startGame());
+  await page.waitForTimeout(300);
+  await page.evaluate(() => { if(szeneAktiv === 'empfang') empfangUeberspringen(); });
+  await page.waitForTimeout(200);
+  for(let i = 0; i < 60; i++){
+    const offen = await page.evaluate(() => document.getElementById('overlay').style.display === 'flex');
+    if(!offen) break;
+    const b = page.locator('#overlay button').last();
+    if(await b.count() === 0) break;
+    await b.click({ force: true });
+    await page.waitForTimeout(150);
+  }
+  await page.waitForTimeout(400);
+  pruef('der Dienst laeuft', await page.evaluate(() => state), 'play');
+
+  // Szene 2 spielen: Akt II erzwingen, Umlauf ansprechen.
+  const lauf = await page.evaluate(async () => {
+    amt.schichten = 15; kn.flags.szeneUmlauf = false;
+    const n = npcs.find(x => x.key === 'umlauf');
+    // Zwei Weltblasen aufziehen, bevor die Szene beginnt: eine von Knoeterich,
+    // eine von einer Dorffigur. Beide muessen waehrend der Szene schweigen.
+    knBubble.visible = true; knBubble.text1 = 'Probe'; knBubble.text2 = '';
+    const z = npcs.find(x => x.key === 'zwirn');
+    z.bubbleText1 = 'Probe'; z.bubbleHideAt = gameT + 99;
+    gespraechOeffnen(n);
+    const drin = {key: szeneAktiv, welt: state, knoten: szene.knoten,
+                  name: document.getElementById('gespraechNameTxt').textContent,
+                  // Dieselben Bedingungen wie im Zeichenpfad, an derselben Stelle gelesen.
+                  blasen: {kn: !!(knBubble.visible && !szeneAktiv),
+                           npc: !!(z.bubbleText1 && gameT < z.bubbleHideAt && gespraech.npc !== z && !szeneAktiv)}};
+    // Durchspielen: immer die erste Antwort, bis die Szene endet.
+    const namen = [];
+    for(let i = 0; i < 40 && szeneAktiv; i++){
+      gespraechFertigTippen();
+      namen.push(document.getElementById('gespraechNameTxt').textContent);
+      const o = szeneOptionen(); if(!o.length) break;
+      o[0].tun();
+    }
+    return {drin, namen: [...new Set(namen)], nachher: {key: szeneAktiv, welt: state,
+            merker: kn.flags.szeneUmlauf, anlass: letzterAnlass, tafel: gespraechOffen}};
+  });
+  pruef('Szene 2 uebernimmt beim Ansprechen', lauf.drin.key, 'umlauf');
+  // Waehrend der Szene redet niemand dazwischen. Geprueft wird die Bedingung im
+  // Zeichenpfad und nicht das Bild: eine stehende Blase ueber einem
+  // Namensschild ergibt zwei Texte an derselben Stelle, und keiner ist lesbar.
+  // Der Weltstopp friert gameT ein, eine Blase ginge also von selbst nie aus.
+  pruef('keine Weltblase waehrend der Szene', lauf.drin.blasen, {kn:false, npc:false});
+  pruef('und haelt dabei die Welt an', lauf.drin.welt, 'szene');
+  pruef('sie beginnt an ihrem Startknoten', lauf.drin.knoten, 'u1');
+  pruef('Fass kommt als zweiter Sprecher vor',
+        lauf.namen.includes('Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"'), true);
+  pruef('danach ist die Szene aus', lauf.nachher.key, null);
+  pruef('die Welt laeuft wieder', lauf.nachher.welt, 'play');
+  pruef('die Tafel ist zu', lauf.nachher.tafel, false);
+  pruef('der Merker steht', lauf.nachher.merker, true);
+  pruef('der Chor auf der Bank ist vorgemerkt', lauf.nachher.anlass, 'umlauf');
+
+  // Der Nachklang faellt genau einmal, bei Lott oder Pahl.
+  const chor = await page.evaluate(() => {
+    const n = npcs.find(x => x.key === 'lott');
+    n.bubbleIdx = -1;
+    npcSprechen(n);
+    const erst = n.bubbleText1;
+    npcSprechen(n);
+    return {erst, verbraucht: letzterAnlass, zweit: n.bubbleText1};
+  });
+  pruef('Lott sagt den Nachklang', ['Die kommt alle achtzig Jahre.', 'Eine Botin. Die hat es eilig.'].includes(chor.erst), true);
+  pruef('und danach ist der Anlass verbraucht', chor.verbraucht, null);
+  pruef('die zweite Zeile ist eine andere', chor.zweit !== chor.erst, true);
+
+  // Ein zweites Ansprechen startet die Szene nicht noch einmal.
+  const nochmal = await page.evaluate(() => {
+    gespraechSchliessen();
+    const n = npcs.find(x => x.key === 'umlauf');
+    gespraechOeffnen(n);
+    return {key: szeneAktiv, welt: state, tafel: gespraechOffen};
+  });
+  pruef('ein zweites Ansprechen ist ein normales Gespraech',
+        nochmal, {key: null, welt: 'play', tafel: true});
+
   await ctx.close();
 }
 

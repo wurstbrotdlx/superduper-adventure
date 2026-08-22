@@ -3175,6 +3175,16 @@ const DORF_FIGUREN = [
        {z1:'Willkommen im Klub. Bank ist frei.', z2:'Pahl rückt trotzdem nicht.'},
        {z1:'Steh nicht so rum. Das ist mein Job.', z2:'Pahl übernimmt notfalls.'},
      ],
+     // SZ2: der Nachklang der Szenen 2 und 4. Er faellt genau einmal, weil
+     // npcSprechen() letzterAnlass beim Lesen verbraucht.
+     umlauf:[
+       {z1:'Die kommt alle achtzig Jahre.', z2:'Pahl merkt sich so etwas.'},
+       {z1:'Eine Botin. Die hat es eilig.', z2:'Pahl hätte gern die Liste.'},
+     ],
+     hintermuehl:[
+       {z1:'Er hat es gesagt.', z2:'Nach vierzig Jahren.'},
+       {z1:'Da war ein Wort. Ein einziges.', z2:'Pahl hat es auch gehört.'},
+     ],
    }},
 
   {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', kurz:'Herr Pahl', tx:8, ty:54, opt:'fest',
@@ -3236,6 +3246,16 @@ const DORF_FIGUREN = [
        {z1:'Der Neue steht. Ich sitze auch.', z2:'Lott findet das gemütlich.'},
        {z1:'Nichts passiert. Endlich Ruhe.', z2:'Lott redet trotzdem weiter.'},
        {z1:'Sie stehen nur. Ich auch.', z2:'Lott hält das für Faulheit.'},
+     ],
+     // SZ2, die andere Seite der Bank. Vier Zeilen der Quelle, zwei hier,
+     // zwei bei Lott.
+     umlauf:[
+       {z1:'Sie sagt jedes Mal, es war nett.', z2:'Lott glaubt ihr das sogar.'},
+       {z1:'Vierzehn Türme. Und sie läuft.', z2:'Lott würde den Aufzug nehmen.'},
+     ],
+     hintermuehl:[
+       {z1:'Wir haben ja gewartet.', z2:'Wir warten gut.'},
+       {z1:'Vierzig Jahre für ein Wort.', z2:'Lott sagt gar nichts mehr.'},
      ],
    }},
 
@@ -6732,7 +6752,12 @@ const kn = {
   // einmal im Leben wahr, danach für immer. Er schaltet Nörgels Lagerzeilen frei
   // (DORF_FIGUREN, Feld zusatz). Ein alter Spielstand ohne das Feld lädt ohne
   // Zutun: loadKn() macht Object.assign auf die Vorgabe, der Merker bleibt false.
-  flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false, hatGesteigert:false, hatLagerGesehen:false},
+  // SZ2: drei Merker fuer die Szenen 2, 3 und 4. Sie liegen hier und nicht in
+  // amt, weil kn der Speicher ist, der Tod, Schichtende und startShift()
+  // uebersteht, und weil knAssertCaps() Merkernamen ohnehin gegen diese Tabelle
+  // prueft. Eine Szene, die zweimal laeuft, waere schlimmer als eine, die fehlt.
+  flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false, hatGesteigert:false, hatLagerGesehen:false,
+         szeneUmlauf:false, szeneSchublade:false, szeneKnoeterich:false},
   wissensluecke:{zauber:false, kochen:false, kammer:false, befaehigung:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
   beats:{beat1:false, beat2:false, beat3:false},
   regler:'gespraechig',            // 'gespraechig' | 'dienstlich' | 'schweigt' — Dienstzettel laufen in jeder Stellung
@@ -8041,7 +8066,10 @@ function fuehreAktion(){
     case AKT_AUSGANG: verlasseKammer(); break;
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
-    case AKT_NACHFRAGE: knNachfragen(); break;
+    // SZ2: Erst fragen, ob eine Szene diesen Griff will. Knoeterich ist keine
+    // Dorffigur, sein Haken sitzt deshalb hier und nicht in gespraechOeffnen().
+    case AKT_NACHFRAGE: { const sz = szeneAktiv ? null : szeneFaellig('knoeterich');
+                          if(sz) szeneOeffnen(sz, SZENEN[sz].start); else knNachfragen(); break; }
     case AKT_NPC:     gespraechOeffnen(aktObj); break;   // U3: F oeffnet die Tafel; ein zweiter Druck redet darin weiter
     case AKT_AMT:     amtFensterOeffnen(); break;
     case AKT_ZUSTELLEN: zustellen(); break;
@@ -8237,6 +8265,13 @@ function gespraechUebernehmen(){
 
 function gespraechOeffnen(n){
   if(!n || !n.figur) return;
+  // SZ2: Will eine Szene diese Figur uebernehmen, tut sie es hier, vor dem
+  // Normalweg. Ein Einstiegspunkt, keine Sonderbehandlung an der Figur, und die
+  // Frage kostet eine Schleife ueber eine Handvoll Tabelleneintraege.
+  if(!szeneAktiv){
+    const k = szeneFaellig(n.figur.key);
+    if(k){ szeneOeffnen(k, SZENEN[k].start); return; }
+  }
   // Zweiter Druck auf F bei derselben Figur heisst weiterreden — genau das,
   // was die Taste vor U3 getan hat. Wer die Tafel nicht braucht, merkt vom
   // Umbau nichts ausser dass der Satz jetzt stehen bleibt.
@@ -8538,6 +8573,7 @@ function renderAmtFenster(){
     <div style="text-align:left;">${rows}</div>
     ${auftragFensterBlock()}
     ${langGiesskanneBlock()}
+    ${schubladeBlock()}
     <button onclick="amtFeierabendNehmen()" style="width:100%;margin-top:12px;">FEIERABEND NEHMEN</button>
   `;
 }
@@ -10137,7 +10173,8 @@ function render(){
                       // U3: Die Blase bleibt, aber nicht neben dem Fenster. Steht
                       // der Satz schon im Gespraechsfenster, waere sie dieselbe
                       // Zeile ein zweites Mal.
-                      if(o.bubbleText1 && gameT < o.bubbleHideAt && gespraech.npc !== o)
+                      // SZ2: dieselbe Regel fuer die Dorffiguren, siehe drawAlter().
+                      if(o.bubbleText1 && gameT < o.bubbleHideAt && gespraech.npc !== o && !szeneAktiv)
                         drawBubble(o.x, o.y, o.bubbleText1, o.bubbleText2);
                       break; }
       case DRAW_CORPSE:  drawCorpse(o); break;
@@ -10279,7 +10316,13 @@ function drawAlter(){
   // nennt seinen Namen ohnehin im ersten Satz des Spiels (knUpdateBubble),
   // und er ist die Figur, zu der man am haeufigsten zurueckkommt.
   npcSchildMerken(x, y, KN_NAME_KURZ, false);
-  if(knBubble.visible) drawBubble(x, y, knBubble.text1, knBubble.text2);
+  // SZ2: Waehrend einer Szene redet niemand dazwischen. Der Weltstopp friert
+  // gameT ein, und eine Blase, die beim Beginn der Szene gerade stand, stuende
+  // damit die ganze Szene lang weiter: sie lag im Bild ueber Knoeterichs
+  // Namensschild, zwei Texte an derselben Stelle, keiner davon lesbar. Gefunden
+  // im Bild, nicht im Guard. Nach der Szene laeuft die Uhr weiter und die Blase
+  // geht von selbst aus, ihre Restzeit ist unberuehrt.
+  if(knBubble.visible && !szeneAktiv) drawBubble(x, y, knBubble.text1, knBubble.text2);
 }
 
 // W3: der Kater Anlage 3, kein Sprite, keine Kontextaktion — laut Kapitel 8
@@ -14391,6 +14434,172 @@ SZENEN.empfang = {
   ende: () => empfangEnde(),
 };
 
+
+// ===========================================================================
+//  SZ2: DIE DREI GESPRAECHSSZENEN (weltgeschichte.md, Kapitel 8, Szene 2 bis 4)
+//
+//  Die erste Belastungsprobe der Maschine aus SZ1. Dort gab es genau eine
+//  Szene, und die lief vor dem Spiel. Diese drei laufen mittendrin, halten die
+//  Welt an und wechseln den Sprecher.
+//
+//  Alle drei tragen sperre:[] und nicht AKTE_SPERRE. Der Anfang darf die
+//  spaeteren Akte nicht vorwegnehmen; diese Szenen SIND die spaeteren Akte.
+// ===========================================================================
+
+// --- Szene 2: "Oben ist eine Stadt" -----------------------------------------
+// Akt II, beim ersten Ansprechen von Kordula Umlauf. Kein Ort, sondern eine
+// Figur: ein Gasthaus gibt es in VILLAGE_BUILDINGS nicht, Fass steht auf
+// (24, 38) und Umlauf auf (26, 42), die beiden sind Nachbarn. Das Gasthaus
+// bleibt im Text, wo es hingehoert.
+//
+// Fass' Einwurf laeuft ueber wer: aus SZ1 und ist dessen erster Einsatz im
+// Spiel. Er sagt nicht "ich sage nichts mehr", er wischt weiter, und das ist
+// dieselbe Aussage in seiner Sprache.
+SZENEN.umlauf = {
+  figur:  'umlauf',
+  wenn:   () => aktStand() >= 2 && !kn.flags.szeneUmlauf,
+  haeltDieWelt: true,
+  sprecher: () => szeneSprecherAusDorf('umlauf'),
+  start:  'u1',
+  sperre: [],
+  ende:   () => szeneEnde('umlauf', 'szeneUmlauf'),
+  knoten: {
+    u1: {z1:'Sie sind der Neue.', z2:'Hier sitzt immer ein Neuer, sagt man mir.',
+         opts: () => [{t:'Und wer sind Sie?', zu:'u2'}]},
+    u2: {z1:'Ich bin im Umlauf. Vierzehn Türme, ein Aufzug.', z2:'Neun Stockwerke. Der Rest ist Treppe.',
+         opts: () => [{t:'Vierzehn Türme wovon?', zu:'u3'}]},
+    u3: {z1:'Von Hochablage. Oben. Da, wo alles herkommt.', z2:'Einundvierzigtausend. Die meisten zuständig.',
+         opts: () => [{t:'Oben ist eine Redensart.', zu:'u4'}]},
+    u4: {wer:'fass', z1:'Das sagt man hier so.', z2:'Oben. Als wäre da was.',
+         opts: () => [{t:'Ist da was?', zu:'u5'}]},
+    u5: {wer:'umlauf', z1:'Oben hat einen Bäcker. Ich kenne ihn.', z2:'Er heißt Bruno. Wie Sie.',
+         opts: () => [{t:'Herr Fass?', zu:'u6'}]},
+    u6: {wer:'fass', z1:'Ich wische hier nur.', z2:'Das ist ein alter Fleck.',
+         opts: () => [{t:'Sie sagen ja nichts.', zu:'u7'}]},
+    u7: {wer:'umlauf', z1:'Ihre Stelle wird jedes Jahr ausgeschrieben.', z2:'Die Amtsleitung, meine ich.',
+         opts: () => [{t:'Jedes Jahr?', zu:'u8'}]},
+    u8: {z1:'Jedes Jahr. Steht in der Liste.', z2:'Ich trage die Liste.',
+         opts: () => [{t:'Und niemand meldet sich?', zu:'u9'}]},
+    u9: {z1:'Es meldet sich nur nie jemand.', z2:'Komisch eigentlich.',
+         opts: () => [{t:'Sehr komisch.', zu:'u10'}]},
+    u10:{z1:'Ich muss weiter. Elf Stellen noch.', z2:'Auf der Rückseite.',
+         opts: () => [{t:'War nett.', tun: () => szeneEnde('umlauf', 'szeneUmlauf')}]},
+  },
+};
+
+// --- Szene 3: "Die zweite Schublade" ----------------------------------------
+// Akt III, im Amtspanel. Die Amtsstube hat kein begehbares Inneres, Sturz'
+// Schreibtisch steht nur im Text. Aber langGiesskanneBlock() stellt genau
+// diesen Schreibtisch samt Pflanze bereits ins Panel, mit einer anklickbaren
+// Zeile. Die zweite Schublade haengt daneben, an derselben Stelle, mit
+// demselben Bauteil.
+//
+// Der Kippunkt des Spiels: bis hierhin sieht das Haus aus wie etwas, das
+// vergessen wurde. Ab hier weiss der Spieler, dass es gepflegt wird.
+const SCHUBLADE_VON = 972, SCHUBLADE_BIS = 1011;
+
+// Vierzig Blaetter, und es ist eines. Genau so steht es in der Weltgeschichte,
+// und es ist auch das Richtige: vierzig Tafeln waeren vierzig Klicks, und der
+// Witz ist nicht die Zahl der Klicks, sondern dass es nicht aufhoert. Der
+// zweite Knopf springt deshalb ans Ende, sobald man verstanden hat.
+function schubladeBlaetter(){
+  const raus = [];
+  for(let j = SCHUBLADE_VON; j <= SCHUBLADE_BIS; j++){
+    const letzt = j === SCHUBLADE_BIS;
+    raus.push({
+      blatt: 'Ein Zwischenbescheid. Darunter liegen weitere.',
+      stimme: ['Ihr Anliegen wird bearbeitet.',
+               'Die Ausschreibung der Amtsleitung wird zur Klärung zurückgestellt.',
+               'Hochablage, im Jahr ' + j + '.'],
+      regie: letzt ? 'Gezeichnet: H. z. H. Vorblatt, Reichsministerialdirektor.'
+                   : 'Das nächste Blatt. Dasselbe.',
+    });
+  }
+  return raus;
+}
+
+SZENEN.schublade = {
+  wenn:   () => aktStand() >= 3 && !kn.flags.szeneSchublade,
+  haeltDieWelt: true,
+  sprecher: () => szeneSprecherKnoeterich(),
+  start:  's1',
+  sperre: [],
+  ende:   () => szeneEnde('schublade', 'szeneSchublade'),
+  knoten: {
+    s1: {z1:'Wer ist Vorblatt?', z2:'Der Name steht unter jedem Blatt.',
+         opts: () => [{t:'Knöterich fragen.', zu:'s2'}]},
+    s2: {z1:'Ich führe Buch. Ich lese nicht vor.', z2:'Fragen Sie mich etwas Leichteres.',
+         opts: () => [{t:'Vierzig Jahre, ein Bescheid.', zu:'s3'}]},
+    s3: {z1:'Einundvierzig.', z2:'Der erste kam vor ihrer Abreise.',
+         opts: () => [{t:'Vor ihrer Abreise?', zu:'s4'}]},
+    s4: {z1:'Das habe ich nicht gesagt.', z2:'Notiert habe ich es aber.',
+         opts: () => [{t:'Verstanden.', tun: () => szeneEnde('schublade', 'szeneSchublade')}]},
+  },
+};
+
+// Der Eingang. Erst der Tafelstapel, dann das Gespraech mit Knoeterich: die
+// vierzig Blaetter sind der Fund, seine vier Zeilen sind, was daraus folgt.
+function schubladeOeffnen(){
+  amtFensterSchliessen();
+  const liste = schubladeBlaetter();
+  szeneTafelLauf = null;
+  szeneTafeln(liste, {letzterKnopf:'ZUKLAPPEN',
+                      ende: () => szeneOeffnen('schublade', SZENEN.schublade.start),
+                      zweiter:{t:'ZUM LETZTEN BLATT', tun: () => szeneTafel(liste.length - 1)}});
+}
+
+// Die Zeile im Amtspanel, neben der Giesskanne. Kein neues Panel, kein neues
+// Weltobjekt: der leere Schreibtisch steht dort seit W7.
+function schubladeBlock(){
+  if(!CONFIG.schichtModus || aktStand() < 3 || kn.flags.szeneSchublade) return '';
+  return `<p style="font-size:calc(11px * var(--fs));color:#9a8a5f;margin:8px 0 0;">Die zweite Schublade des leeren Schreibtisches klemmt.</p>
+    <span onclick="schubladeOeffnen()" style="cursor:pointer;color:#f4d97a;font-size:calc(11px * var(--fs));">▸ Die Schublade aufziehen</span>`;
+}
+
+// --- Szene 4: "Knoeterichs einer Satz" --------------------------------------
+// Akt IV, sobald die Anschrift vollstaendig ist. Er haengt als einziger nicht
+// an gespraechOeffnen(), weil Knoeterich nicht in DORF_FIGUREN steht: er steht
+// im Haus (KN_POS, drawAlter) und wird ueber AKT_NACHFRAGE angesprochen. Die
+// Asymmetrie ist keine Schlamperei, sie ist die Figur.
+SZENEN.knoeterich = {
+  figur:  'knoeterich',
+  wenn:   () => CONFIG.schichtModus && aktStand() >= 4 && vorgangHat(4) && !kn.flags.szeneKnoeterich,
+  haeltDieWelt: true,
+  sprecher: () => szeneSprecherKnoeterich(),
+  start:  'k1',
+  sperre: [],
+  ende:   () => szeneEnde('knoeterich', 'szeneKnoeterich'),
+  knoten: {
+    k1: {z1:'Sie sind früh.', z2:'Ich gieße noch. Es dauert.',
+         opts: () => [{t:'Die Anschrift ist ganz.', zu:'k2'}]},
+    k2: {z1:'Ich weiß.', z2:'Ich führe Buch.',
+         opts: () => [{t:'Soll ich zustellen?', zu:'k3'}]},
+    k3: {z1:'Das darf ich nicht beantworten.', z2:'Amtsverschwiegenheit. Fragen Sie anders.',
+         opts: () => [{t:'Was tut ein Abschluss?', zu:'k4'}]},
+    k4: {z1:'Hintermühl.', z2:'Mehr sage ich nicht.',
+         opts: () => [{t:'Hintermühl?', tun: () => szeneEnde('knoeterich', 'szeneKnoeterich')}]},
+  },
+};
+
+// Gemeinsames Ende der drei Szenen: Merker setzen, den Chor auf der Bank
+// vormerken, Tafel zu.
+//
+// Der Nachklang laeuft NICHT ueber knRandnotiz(). Das verlangt einen
+// RANDNOTIZ-Pool, also eine eigene Notiz Knoeterichs, und laeuft durch seine
+// Tonstellungs-Gates. Beides ist hier falsch: Knoeterich kommentiert Szene 4
+// nicht, er ist gerade weggegangen. letzterAnlass wird deshalb direkt gesetzt,
+// npcSprechen() verbraucht es unveraendert, und nur Lott und Pahl haben
+// Anlasszeilen.
+// Szene 3 steht bewusst nicht darin: die Weltgeschichte gibt Lott und Pahl
+// dort keinen Einwurf, und einen zu erfinden waere Fuellmaterial an der
+// stillsten Stelle des Spiels.
+const SZENE_ANLASS = {umlauf:'umlauf', knoeterich:'hintermuehl'};
+function szeneEnde(key, merker){
+  if(merker && !kn.flags[merker]){ kn.flags[merker] = true; saveKn(); }
+  if(SZENE_ANLASS[key]) letzterAnlass = SZENE_ANLASS[key];
+  szeneAus();
+}
+
 // Eine Zeile der Liste in die Form bringen, die gespraechWaehlen() erwartet.
 const szeneOpt = o => ({t:o.t, zu:o.zu, tun: o.tun || (() => szeneKnoten(o.zu))});
 
@@ -14479,6 +14688,9 @@ function szeneAus(){
   szeneAktiv = null;                          // erst die Flagge, dann schließen
   gespraechSchliessen();
   el('gespraechZu').style.display = '';
+  // Die Welt laeuft weiter. aktSperre verhindert, dass der Tastendruck, der die
+  // Szene beendet hat, im selben Moment die naechste Kontextaktion ausloest.
+  if(szeneStateVorher){ state = szeneStateVorher; szeneStateVorher = null; aktSperre = 0.4; updateHUD(); }
 }
 
 // Alles zurueck. Laeuft ueber dienstAntritt(), also ueber beide Enden des
@@ -14559,9 +14771,35 @@ function buehneAus(){
 
 // Die Gespraechstafel oeffnen, ohne eine Weltfigur davorzustellen. Wird von
 // beiden Haelften des Anfangs benutzt, der Vorstellung und dem Empfang.
+// SZ2: Welche Szene will uebernehmen, wenn diese Figur angesprochen wird?
+//
+// Bauform aus langAnsprechen(): eine reine Nachschlagefunktion ueber die
+// Tabelle, kein Sonderfall an der Figur. Eine Szene meldet sich mit figur: an
+// und sagt in wenn(), wann sie faellig ist. Beides steht in der Tabelle, damit
+// szeneAssert() es lesen kann, ohne eine Szene zu starten.
+function szeneFaellig(figurKey){
+  for(const k in SZENEN){
+    const d = SZENEN[k];
+    if(d.figur !== figurKey) continue;
+    if(d.wenn && !d.wenn()) continue;
+    return k;
+  }
+  return null;
+}
+
+// Der Zustand vor der Szene, damit szeneAus() ihn zurueckgeben kann. Eine
+// Modulvariable und kein Feld an szene: sie gehoert der Welt, nicht der Szene.
+let szeneStateVorher = null;
+
 function szeneOeffnen(key, knoten){
   const d = SZENEN[key];
   if(!d) return;
+  // SZ2: Eine Szene mitten im Dienst haelt die Welt an. Exakt das Muster von
+  // state = 'zustellung': update(dt) steigt bei state !== 'play' aus, und
+  // gespraechTick(dt) laeuft davor weiter, das Tippwerk bleibt also lebendig.
+  // Kein neuer Renderpfad, kein Vorhang, keine zweite Schleife. Der Empfang
+  // braucht das nicht, er laeuft ohnehin vor dem ersten Schritt.
+  if(d.haeltDieWelt && state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
   szeneAktiv = key;
   const n = d.sprecher();
   gespraech.npc = n; gespraech.fig = n.figur; gespraech.wahl = 0;
@@ -14602,9 +14840,34 @@ function szeneTafelZu(){
 // Tafelstapel kann auch ausserhalb einer Szene laufen, das Intro tut es.
 let szeneTafelLauf = null;
 
-function szeneTafeln(liste, letzterKnopf, ende){
-  szeneTafelLauf = {liste, letzterKnopf, ende};
+// SZ2: Der zweite Knopf ist jetzt ein Parameter und kein Literal mehr. In SZ1
+// stand dort fest empfangUeberspringen() — ein Rest des Empfangs in einer
+// Funktion, die schon allgemein sein sollte. Das Intro benutzt ihn weiter zum
+// Ueberspringen, die vierzig Zwischenbescheide benutzen denselben Knopf, um ans
+// Ende zu springen. Ein Knopf, zwei Bedeutungen, keine zweite Zeichenstelle.
+function szeneTafeln(liste, opt){
+  szeneTafelLauf = {liste, letzterKnopf: opt.letzterKnopf, ende: opt.ende, zweiter: opt.zweiter || null};
   szeneTafel(0);
+}
+
+// Roemisch, solange die Zaehlung fuer den GANZEN Stapel reicht, sonst arabisch
+// fuer den ganzen Stapel. Die Schreibweise gehoert dem Stapel und nicht der
+// einzelnen Zahl: eine Zahl je Zeile entschieden ergab "Blatt I von 40", weil
+// ROEMISCH bis zehn geht und vierzig darueber liegt. Kein Fehler im Sinn eines
+// Absturzes, aber eine Fussnote, die aussieht wie einer. Gefunden im Bild, nicht
+// im Guard.
+//
+// Das Intro ist zu neunt und bleibt damit roemisch, die Anrisstafeln waren es zu
+// fuenft, und die vierzig Zwischenbescheide aus Szene 3 zaehlen arabisch. Das
+// ist auch inhaltlich richtig: eine Urkunde zaehlt roemisch, ein Stapel
+// Zwischenbescheide ist eine Menge.
+const szeneBlattZahl = (n, gesamt) => (gesamt < ROEMISCH.length ? ROEMISCH[n] : String(n));
+
+// Der zweite Knopf des laufenden Stapels. Eigene Funktion, weil sie im onclick
+// steht und szeneTafelLauf zur Klickzeit gelesen werden muss, nicht zur Bauzeit.
+function szeneTafelZweiter(){
+  const lauf = szeneTafelLauf;
+  if(lauf && lauf.zweiter) lauf.zweiter.tun();
 }
 
 function szeneTafel(i){
@@ -14613,6 +14876,12 @@ function szeneTafel(i){
   const t = lauf.liste[i];
   if(!t){ szeneTafelLauf = null; lauf.ende(); return; }
   const letzte = i === lauf.liste.length - 1;
+  // Der zweite Knopf steht nur, solange er etwas zu tun hat: auf dem letzten
+  // Blatt gibt es nichts mehr zu ueberspringen und nichts mehr abzukuerzen.
+  const zweiter = (lauf.zweiter && !letzte)
+    ? `<div><button onclick="szeneTafelZweiter()"
+         style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:6px;opacity:.7;">${gEsc(lauf.zweiter.t)}</button></div>`
+    : '';
   MUS.swell();
   // Zwei Lesarten desselben Stapels, und die Tabelle sagt welche. gross/klein
   // ist die Anrisstafel aus E1: eine Behauptung, gross gesetzt. blatt/stimme
@@ -14632,10 +14901,9 @@ function szeneTafel(i){
       ${inhalt}
     </div>
     <hr class="amtRegel unten">
-    <p class="amtFuss">Blatt ${ROEMISCH[i+1]} von ${ROEMISCH[lauf.liste.length]}</p>
+    <p class="amtFuss">Blatt ${szeneBlattZahl(i+1, lauf.liste.length)} von ${szeneBlattZahl(lauf.liste.length, lauf.liste.length)}</p>
     <button onclick="szeneTafel(${i+1})">${letzte ? lauf.letzterKnopf : 'WEITER'}</button>
-    <div><button onclick="empfangUeberspringen()"
-      style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:6px;opacity:.7;">ÜBERSPRINGEN</button></div>`;
+    ${zweiter}`;
   el('overlay').style.display = 'flex';
   MUS.muffle(true);
 }
@@ -14644,7 +14912,8 @@ function szeneTafel(i){
 // Empfang. Das ist derselbe Uebergang wie vorher, nur mit anderem Inhalt.
 function empfangAnriss(){
   szeneTafelZu();
-  szeneTafeln(INTRO_BLAETTER, 'ANKLOPFEN', empfangGespraech);
+  szeneTafeln(INTRO_BLAETTER, {letzterKnopf:'ANKLOPFEN', ende: empfangGespraech,
+                               zweiter:{t:'ÜBERSPRINGEN', tun: () => empfangUeberspringen()}});
 }
 
 // Wer den Anfang kennt, will ihn beim zweiten Mal nicht wieder sehen. Der Weg
@@ -14729,7 +14998,7 @@ function szeneAssert(){
   const stapel = [{name:'Intro', liste:INTRO_BLAETTER, sperre:AKTE_SPERRE_NAMEN}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);
-    if(st.liste.length >= ROEMISCH.length) fehler('Tafelstapel länger als die römische Zählung', st.name, st.liste.length);
+    if(!szeneBlattZahl(st.liste.length, st.liste.length)) fehler('Tafelstapel ohne darstellbare Blattzahl', st.name, st.liste.length);
     st.liste.forEach((t, i) => {
       const wo = `${st.name} Blatt ${i+1}`;
       const alteForm = t.z1 !== undefined, neueForm = t.stimme !== undefined;
@@ -14822,7 +15091,7 @@ function szeneAssert(){
 
   const knoten = Object.keys(SZENEN).reduce((n, k) => n + Object.keys(SZENEN[k].knoten).length, 0);
   const fragen = Object.keys(SZENEN).reduce((n, k) => n + ((SZENEN[k].fragen || []).length), 0);
-  if(ok) console.log(`SZ1 Szenen: ${Object.keys(SZENEN).length} Szene(n), ${INTRO_BLAETTER.length} Introblätter,`
+  if(ok) console.log(`Szenen: ${Object.keys(SZENEN).length} eingetragen, ${INTRO_BLAETTER.length} Introblätter,`
     + ` ${fragen} Fragen, ${knoten} Knoten, Sperrvermerk und Antwortdeckel in Ordnung.`);
 }
 szeneAssert();
