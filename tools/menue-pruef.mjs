@@ -65,7 +65,17 @@ async function spiel(ctxOpt){
   await page.waitForFunction(() => assetsReady === true, null, { timeout: 30000 });
   await page.evaluate(() => startGame());
   await page.waitForTimeout(300);
-  for(let i = 0; i < 12; i++){
+  // E2: startGame() oeffnet nicht mehr das Overlay, sondern den Empfang in der
+  // Gespraechstafel auf schwarzem Grund. Die Schleife darunter wartet auf ein
+  // sichtbares Overlay und waere sofort ausgestiegen, mitten im Anfang. Ein
+  // Sprung auf den Vordruck bringt den Lauf auf den Weg, den er kennt.
+  await page.evaluate(() => { if(typeof empfangAktiv !== 'undefined' && empfangAktiv) empfangUeberspringen(); });
+  await page.waitForTimeout(200);
+  // E2: Der Vordruck blaettert seit E2 nach gemessener Hoehe und hat je nach
+  // Fenster und Schriftstufe bis zu fuenfzehn Seiten statt drei. Zwoelf Runden
+  // reichten nicht mehr bis zur Unterschrift, der Lauf blieb im Vordruck
+  // stehen und alles danach fiel aus.
+  for(let i = 0; i < 60; i++){
     const offen = await page.evaluate(() => document.getElementById('overlay').style.display === 'flex');
     if(!offen) break;
     const btn = page.locator('#overlay button').last();

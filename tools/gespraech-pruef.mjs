@@ -53,7 +53,17 @@ async function spiel(ctxOpt){
   await page.waitForFunction(() => typeof frameNo !== 'undefined' && frameNo > 0, null, { timeout: 60000 });
   await page.evaluate(() => startGame());
   await page.waitForTimeout(300);
-  for(let i = 0; i < 12; i++){
+  // E2: startGame() oeffnet nicht mehr das Overlay, sondern den Empfang in der
+  // Gespraechstafel auf schwarzem Grund. Die Schleife darunter wartet auf ein
+  // sichtbares Overlay und waere sofort ausgestiegen, mitten im Anfang. Ein
+  // Sprung auf den Vordruck bringt den Lauf auf den Weg, den er kennt.
+  await page.evaluate(() => { if(typeof empfangAktiv !== 'undefined' && empfangAktiv) empfangUeberspringen(); });
+  await page.waitForTimeout(200);
+  // E2: Der Vordruck blaettert seit E2 nach gemessener Hoehe und hat je nach
+  // Fenster und Schriftstufe bis zu fuenfzehn Seiten statt drei. Zwoelf Runden
+  // reichten nicht mehr bis zur Unterschrift, der Lauf blieb im Vordruck
+  // stehen und alles danach fiel aus.
+  for(let i = 0; i < 60; i++){
     const weiter = await page.evaluate(() => {
       if(document.getElementById('overlay').style.display !== 'flex') return false;
       const b = [...document.querySelectorAll('#overlay button')].pop();
@@ -266,6 +276,19 @@ const tafel = page => page.evaluate(() => ({
 // das Spiel liess sich auf einem Telefon nicht starten. Geprueft mit einem
 // echten Wisch, nicht mit einem gesetzten scrollTop, und auf der hoechsten
 // Schriftstufe, weil dort am meisten ueberhaengt.
+//
+// E1 hat den Weg dorthin geaendert: startGame() zeigt seither erst den
+// Empfang, der Vordruck liegt dahinter, und der Lauf klickt sich ueber
+// ÜBERSPRINGEN auf Blatt 1.
+//
+// E2 hat die geprüfte Sache geaendert, und das ist der Grund, warum hier jetzt
+// etwas anderes steht als in U3. Der Vordruck rollt nicht mehr, er blaettert:
+// die Seiten werden nach gemessener Hoehe geschnitten, und keine von ihnen
+// darf ueber den unteren Rand hinauslaufen. Die alte Zusage ("er ist hoeher
+// als das Bild, aber ein Wisch holt den Knopf herunter") ist damit nicht
+// gebrochen, sondern ueberholt: sie war die beste Antwort, solange gerollt
+// wurde. Geprueft wird jetzt die staerkere Zusage, und zwar auf jeder Seite
+// jedes Blattes statt nur auf der ersten.
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 },
                                          deviceScaleFactor: 2, hasTouch: true, isMobile: true });
@@ -274,29 +297,34 @@ const tafel = page => page.evaluate(() => ({
   await page.waitForFunction(() => typeof frameNo !== 'undefined' && frameNo > 0, null, { timeout: 60000 });
   await page.evaluate(() => { document.body.classList.add('touch'); schriftSetzen(2); startGame(); });
   await page.waitForTimeout(400);
+  await page.evaluate(() => empfangUeberspringen());   // E1: vom Empfang auf den Vordruck
+  await page.waitForTimeout(400);
 
   const lage = () => page.evaluate(() => {
     const o = document.getElementById('overlay');
     const b = [...document.querySelectorAll('#overlay button')].pop();
     const r = b.getBoundingClientRect();
-    return { hoeher: o.scrollHeight > o.clientHeight + 4, top: Math.round(o.scrollTop),
-             knopfDrin: r.top >= 0 && r.bottom <= innerHeight };
+    return { rollt: o.scrollHeight > o.clientHeight + 4,
+             knopfDrin: r.top >= 0 && r.bottom <= innerHeight + 0.5 };
   });
-  const vor = await lage();
-  pruef('Vordruck ist hoeher als das Bild', vor.hoeher, true);
-  pruef('der Knopf steht anfangs unter dem Rand', vor.knopfDrin, false);
+  const erste = await lage();
+  pruef('Blatt 1 Seite 1 rollt nicht', erste.rollt, false);
+  pruef('ihr Knopf steht im Bild', erste.knopfDrin, true);
 
-  const cdp = await ctx.newCDPSession(page);
-  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 195, y: 720 }] });
-  for(const y of [640, 540, 430, 320, 220]){
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 195, y }] });
-    await page.waitForTimeout(40);
+  // Jede Seite jedes Blattes, nicht nur die erste. Der Fehlstand, den E2
+  // behoben hat, sass auf Blatt 2 und 3 und waere an Blatt 1 vorbeigelaufen.
+  const seiten = await page.evaluate(() => DIENSTBLATT.map(b => dienstblattSeiten(b, 'einstellung').length));
+  const ueber = [];
+  for(let bl = 1; bl <= seiten.length; bl++){
+    for(let se = 0; se < seiten[bl-1]; se++){
+      await page.evaluate(([bl, se]) => showDienstblatt(bl, 'einstellung', se), [bl, se]);
+      await page.waitForTimeout(60);
+      const l = await lage();
+      if(l.rollt || !l.knopfDrin) ueber.push(`Blatt ${bl} Seite ${se+1}`);
+    }
   }
-  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await page.waitForTimeout(400);
-  const nach = await lage();
-  pruef('ein Wisch rollt den Vordruck', nach.top > vor.top, true);
-  pruef('der WEITER-Knopf ist danach erreichbar', nach.knopfDrin, true);
+  pruef('keine Seite des Vordrucks laeuft ueber', ueber, []);
+  pruef('der Vordruck zerfaellt in mehrere Seiten', seiten.every(n => n >= 2), true);
   await ctx.close();
 }
 
