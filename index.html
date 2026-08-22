@@ -2724,8 +2724,9 @@ function dorfMassstabAssert(){
 dorfMassstabAssert();
 
 // ===========================================================================
-//  DORF_FIGUREN (Bauabschnitt W3): elf ansprechbare Ensemble-Mitglieder aus
-//  Kapitel 8 der Weltbibel. Text unverändert aus figuren-dorf.md übernommen,
+//  DORF_FIGUREN (Bauabschnitt W3, seit W11 vierzehn Eintraege): ansprechbare
+//  Ensemble-Mitglieder aus Kapitel 8 der Weltbibel. Elf davon stammen aus W3,
+//  die drei letzten aus dem Reich (W11, siehe unten am Ende der Tabelle). Text unverändert aus figuren-dorf.md übernommen,
 //  dreistufig gegen Sperrvermerk/Humor-Grundgesetz/Formregeln/Zeichendeckel
 //  geprüft. Knöterich (bereits im Code) und der Kater Anlage 3 (kein Sprite,
 //  siehe drawAnlage3()) sind nicht Teil dieser Tabelle. opt:'wander' nutzt ein
@@ -2757,6 +2758,19 @@ dorfMassstabAssert();
 //  sobald die Wanderleine sie unter eine Fassade zog. dorfSichtAssert() rechnet
 //  das jetzt beim Laden nach, für jede Figur und die ganze Wanderleine.
 //
+//  W11: drei Figuren kommen dazu, und zwei von ihnen sind nicht von Anfang an
+//  da. abAkt:N heißt, dass die Figur erst ab dem N-ten Akt im Dorf steht: davor
+//  wird sie nicht gezeichnet, nicht angeboten und trägt kein Namensschild. Das
+//  ist keine neue Mechanik, sondern dieselbe Regel, nach der serieFrei() die
+//  Blattserien freigibt, und sie hat denselben Ausnahmefall: außerhalb des
+//  Schichtmodus gibt es keine Akte, dort steht jeder von Anfang an da.
+//
+//  Folge für die Aktzeilen: eine Figur mit abAkt:3 hat für die Akte I und II
+//  keinen Satz, weil sie in diesen Akten niemand ansprechen kann. Ihre beiden
+//  ersten Aktzeilen sind deshalb der leere String, und knAssertCaps() prüft
+//  genau das nach: leer unterhalb von abAkt, gefüllt ab abAkt. Ein versehentlich
+//  leerer Satz weiter hinten in der Tabelle wäre sonst eine stumme Figur.
+//
 //  G7: alle elf Anker sind mitgewandert, weil die Fassaden doppelt so groß und
 //  die Gebäudezeilen weiter auseinandergerückt sind. Die Regel dahinter ist die
 //  aus G6, nur mit den neuen Zahlen: die Nordzeile hat ihren Fußanker auf y=34,
@@ -2784,7 +2798,14 @@ const DORF_FIGUREN = [
      'Der Schreibtisch ist leer. Ich weiß warum.',
      'Ich habe gestanden. Das Fest steht noch aus.',
      'Wir werden das Fest feiern. Irgendwann.',
-   ]},
+   ],
+   // W11: Die Bewilligung des Dorffestes ist im Jahr 1004 erteilt worden und
+   // steckt seither in der Röhre unter dem Steinfeld. Zwirn hat seit acht Jahren
+   // recht und erfährt es hier nicht. Er sagt nur, was er getan hat.
+   zusatz:[{abAkt:2, zeilen:[
+     {z1:'Ich habe damals eine Anfrage geschickt.', z2:'Nach Oben. Vor acht Jahren.'},
+     {z1:'Vielleicht ist die Antwort unterwegs.',   z2:'Post braucht eben ihre Zeit.'},
+   ]}]},
 
   {key:'bramsche', name:'Registratorin Ottilie Bramsche', kurz:'Registratorin Bramsche', tx:21, ty:36, opt:'fest',
    gestalt:{hair:'h3', chest:2, legs:2},
@@ -2812,12 +2833,34 @@ const DORF_FIGUREN = [
      {frage:'Wer ist zuständig für das Dorffest?', z1:'Zuständig wäre die Amtsleitung.', z2:'Diese Stelle ist unbesetzt.'},
      {frage:'Was liegt in Ablage auf Eis?', z1:'Ablage auf Eis führt nach Frostkamm.', z2:'Dort liegt seit Jahren Ruhe.'},
      {frage:'Was ist Ablage A?', z1:'Ablage A ist das Grasland.', z2:'Die harmloseste aller Ablagen.'},
+     // W11: sieben Antworten zum Reich. Bramsche ist der Hinweisgeber des Spiels,
+     // und ab hier ist das Reich das, wonach zu fragen sich lohnt. Wie alle ihre
+     // Antworten nennen sie Fundorte und Zusammenhänge, nie Mechanik, und keine
+     // verrät, wie im Kessel gerechnet wird.
+     {frage:'Was ist Hochablage?', z1:'Hochablage ist eine Stadt im Norden.', z2:'Vier Tagesreisen. Ohne Straße.'},
+     // Der Wortlaut aus der Weltgeschichte lautet "nach dem Alter des ältesten
+     // offenen Vorgangs". Das Wort Alter steht auf der Sperrliste (Seltenheit
+     // gleich Alter des Aktenzeichens), und knAssertCaps() hat es hier gemeldet.
+     // Die Auskunft ist dieselbe, sie kommt nur ohne das Wort aus.
+     {frage:'Wie wird der Rang gerechnet?', z1:'Wie lange der älteste Vorgang offen ist.', z2:'Andere Maßstäbe gibt es nicht.'},
+     {frage:'Was ist ein Aktenhaus?', z1:'Ein Aktenhaus ist eine Familie.', z2:'Benannt nach der Zuständigkeit.'},
+     {frage:'Warum regnet es hier nie?', z1:'Der Niederschlag ist zurückgestellt.', z2:'Seit dem Jahr 897.'},
+     {frage:'Was brummt im Steinfeld?', z1:'Unter dem Steinfeld liegt eine Röhre.', z2:'Die Rohrpost. Sie steht still.'},
+     {frage:'Wer ist der Kaiser?', z1:'Ordinat der Vierte ist im Termin.', z2:'Seit dem Jahr 588.'},
+     {frage:'Was heißt zu Händen?', z1:'Zu Händen schreibt man an Hohe.', z2:'Gewöhnliche bekommen nur Post.'},
    ],
    abweisung:[
      {z1:'Eine Frage pro Schicht.', z2:'Die Ihre ist verbraucht.'},
      {z1:'In welcher Sache?', z2:'Das hatten wir schon.'},
      {z1:'Antrag für heute erledigt.', z2:'Morgen wieder.'},
-   ]},
+   ],
+   // W11: der Herr aus Hochablage von 985. Sie hält sich für schuldig an einem
+   // Landstrich, und der Griff daneben hat in Wahrheit das Beweisstück gerettet.
+   // Sie erfährt das nie, deshalb sagt sie nur die Hälfte, die sie kennt.
+   zusatz:[{abAkt:3, zeilen:[
+     {z1:'Damals kam ein Herr aus Hochablage.',  z2:'Er war ausgesprochen höflich.'},
+     {z1:'Seitdem gebe ich nichts ohne Antrag.', z2:'Höflichkeit ist kein Antrag.'},
+   ]}]},
 
   {key:'zapf', name:'Hausmeister Reinhold Zapf', kurz:'Hausmeister Zapf', tx:17, ty:54, opt:'wander', sheet:'jack',
    gestalt:{hair:'h1', chest:1, legs:1, feet:0},
@@ -2835,7 +2878,13 @@ const DORF_FIGUREN = [
      'Leerer Stuhl. Quietscht trotzdem.',
      'Sack ist eingerissen. Ich nähe das.',
      'Nichts kaputt. Komisches Gefühl.',
-   ]},
+   ],
+   // W11: der Stopfen unter dem Steinfeld. Er beendet den Krieg mit Werkzeug,
+   // und kein Satz wird ihm dafür länger als sechs Wörter.
+   zusatz:[{abAkt:4, zeilen:[
+     {z1:'Im Steinfeld brummt der Boden.', z2:'Ich hole das Werkzeug.'},
+     {z1:'Ein Rohr. Verstopft. Sehr alt.', z2:'Kriegen wir auf.'},
+   ]}]},
 
   {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', kurz:'Praktikantin Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe',
    gestalt:{hair:'h6', chest:1, legs:0, feet:3},
@@ -2853,7 +2902,14 @@ const DORF_FIGUREN = [
      'Ein leerer Stuhl. Genau mein Problem.',
      'Fragen Sie Nörgel. Er kann das lesen.',
      'Ich komme mit. Ich habe ja gefragt.',
-   ]},
+   ],
+   // W11: Sie hat als Einzige gemerkt, dass Fürst Nachtrag einen Titel trägt und
+   // die übrigen Vorgangsarten nicht. Es steht auf Seite zwei ihres sechsten
+   // Praktikumsberichts, und den hat nie jemand gelesen.
+   zusatz:[{abAkt:3, zeilen:[
+     {z1:'Der Fürst hat einen Titel. Die anderen nicht.', z2:'Steht in meinem Bericht.'},
+     {z1:'Seite zwei. Hat nie jemand gelesen.',           z2:'Ist vielleicht auch nichts.'},
+   ]}]},
 
   {key:'trepp', name:'Zusteller Emil Trepp der Siebte', kurz:'Zusteller Trepp', tx:28, ty:40, opt:'wander', sheet:'fin',
    gestalt:{hair:'h2', chest:2, legs:0, feet:1},
@@ -2871,7 +2927,14 @@ const DORF_FIGUREN = [
      'Ein leerer Stuhl, ein Brief, der bleibt.',
      'Sieben Generationen, und es ist ein Name.',
      'Sieben Generationen, jetzt oder nie.',
-   ]},
+   ],
+   // W11: Seine Amtsbezeichnung ist ein Adelsamt. Ein Bevollmächtigter ist im
+   // Reich jemand, der zeichnet. Trepp trägt Post aus, weil ihm das nie jemand
+   // gesagt hat, und er sagt es hier auch nicht, er liest nur seinen Ausweis vor.
+   zusatz:[{abAkt:3, zeilen:[
+     {z1:'Wenn ich kurz stören darf.',               z2:'Meine Bezeichnung ist sehr lang.'},
+     {z1:'Schattenlandzustellungsbevollmächtigter.', z2:'Steht so im Ausweis. Ehrlich.'},
+   ]}]},
 
   {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
    gestalt:{hair:'h1', chest:0, legs:0, feet:3},
@@ -2904,6 +2967,13 @@ const DORF_FIGUREN = [
        {z1:'Die schreiben. Nur liest es hier keiner.', z2:'Ich könnte. Fragt ja niemand.'},
        {z1:'Gehen Sie wieder hin. Ohne zu schlagen.', z2:'Dann sehen Sie es selbst.'},
      ]},
+     // W11: Vorblatt bietet ihm die Entfristung an, damit er die Anschrift auf
+     // dem Umschlag nicht liest. Vierzig Jahre Probezeit gegen ein Unterlassen.
+     // Nörgel sagt nicht, wie er sich entscheidet.
+     {abAkt:4, zeilen:[
+       {z1:'Der Herr aus Oben hat mich angesprochen.', z2:'Er bietet mir die Entfristung.'},
+       {z1:'Ich soll dafür etwas nicht tun.',          z2:'Vierzig Jahre. Und jetzt das.'},
+     ]},
    ]},
 
   {key:'milb', name:'Gutachter Dr. phil. Milb', kurz:'Gutachter Milb', tx:8, ty:39, opt:'wander', sheet:'buba',
@@ -2922,7 +2992,14 @@ const DORF_FIGUREN = [
      'Ein leerer Stuhl lässt sich nicht bewerten.',
      'Diese Schrift verweigert sich der Note.',
      'Diesmal setze ich keine Note mehr an.',
-   ]},
+   ],
+   // W11: Er liegt auch bei der Hoheitsstufe des eigenen Hauses eine Stufe
+   // daneben, nach oben. Ein Jahr reicht für Ritter der Vorlage, nicht für
+   // Freiherr. Er merkt es nicht, wie immer.
+   zusatz:[{abAkt:2, zeilen:[
+     {z1:'Unser ältester Vorgang wird ein Jahr.', z2:'Das reicht für Freiherr. Knapp.'},
+     {z1:'Ich stelle mich als Freiherr vor.',     z2:'Geschätzt, nicht geraten.'},
+   ]}]},
 
   {key:'pommer', name:'Materialausgabe Herr Pommer', kurz:'Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy',
    gestalt:{hair:'h2', chest:1, legs:0, feet:4},
@@ -2940,7 +3017,13 @@ const DORF_FIGUREN = [
      'Wer unterschreibt jetzt meine Freigaben?',
      'Ein Sack, kein Antrag dazu. Unglaublich.',
      'Zustellen steht nicht in meinem Bestand.',
-   ]},
+   ],
+   // W11: Er führt eine Liste der Dinge, die er ohne Antrag ausgegeben hat. Die
+   // Liste ist leer. Er ist sehr stolz auf die Liste.
+   zusatz:[{abAkt:2, zeilen:[
+     {z1:'Ich führe eine Liste. Seit Jahren.',  z2:'Sie ist leer. Das ist die Liste.'},
+     {z1:'Nichts ohne Antrag ausgegeben. Nie.', z2:'Steht alles nicht darin.'},
+   ]}]},
 
   {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', kurz:'Wirt Fass', tx:24, ty:38, opt:'wander', sheet:'bruno',
    gestalt:{hair:'h3', chest:0, legs:2, feet:2},
@@ -2958,7 +3041,14 @@ const DORF_FIGUREN = [
      'Der Stammtisch hat eine Lücke.',
      'Heute sitzen alle enger zusammen.',
      'Es fühlt sich an wie ein letzter Abend.',
-   ]},
+   ],
+   // W11: Das Gasthaus heißt "Zum Letzten Stempel". Der Wirt weiß, was der Name
+   // verspricht. Er hat ihn vom Großvater, und der hatte ihn von jemandem, der es
+   // wusste. Er erklärt ihn nicht, er sagt nur, woher er kommt.
+   zusatz:[{abAkt:4, zeilen:[
+     {z1:'Der Name kommt vom Großvater.',       z2:'Der wusste, was er verspricht.'},
+     {z1:'Irgendwann setzt einer den letzten.', z2:'Dann trink noch einen.'},
+   ]}]},
 
   {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
    gestalt:{hair:'h1'},
@@ -2977,6 +3067,13 @@ const DORF_FIGUREN = [
      'Ich lese keine Adressen. Ich sitze.',
      'Der Neue zieht los. Kein Kommentar heut.',
    ],
+   // W11: Vordermühl steht in keinem Bestand. Wer nie geführt wurde, kann auch
+   // nicht abgeschlossen werden, und das ist der Grund, aus dem die beiden noch
+   // da sind. Ob sie Vorgänge sind, bleibt offen (Weltbibel Kapitel 16).
+   zusatz:[{abAkt:3, zeilen:[
+     {z1:'Wir zwei standen nie in einem Bestand.', z2:'Pahl sagt, das sei ein Glück.'},
+     {z1:'Wer nicht geführt wird, bleibt da.',     z2:'Pahl nickt. Ausnahmsweise.'},
+   ]}],
    anlass:{
      crit:[
        {z1:'Direkt ins Aktenzeichen.', z2:'Pahl schweigt. Wie erwartet.'},
@@ -3032,6 +3129,13 @@ const DORF_FIGUREN = [
      'Ein Brief, den keiner lesen will.',
      'Es wird still. Auffällig still hier.',
    ],
+   // W11: dieselbe Sache von der anderen Seite der Bank. Hintermühl ist nicht
+   // niedergebrannt worden, es ist zugeklappt worden, und das ist das Stillste,
+   // was in dieser Welt passieren kann.
+   zusatz:[{abAkt:3, zeilen:[
+     {z1:'Man hat unser Dorf zugeklappt.', z2:'Lott spricht nicht darüber.'},
+     {z1:'Kein Feuer. Ein Aktendeckel.',   z2:'Lott war auch dabei.'},
+   ]}],
    anlass:{
      crit:[
        {z1:'Ein Treffer. Sauber getroffen.', z2:'Lott hat sowas noch nie gesehen.'},
@@ -3069,6 +3173,79 @@ const DORF_FIGUREN = [
        {z1:'Sie stehen nur. Ich auch.', z2:'Lott hält das für Faulheit.'},
      ],
    }},
+
+  // --- W11: drei Figuren aus der Weltgeschichte -----------------------------
+  // Nieselbeck steht von Anfang an da, Umlauf ab Akt II, Vorblatt ab Akt III.
+  // Alle drei sind opt:'fest', also Held-Komposite: die acht Blaetter aus
+  // CF_NPCS sind an die elf Figuren von W3 vergeben, und zwei Figuren mit
+  // demselben Gesicht war schon in G6 der Fehler, den wir nicht wollten.
+  // Frisur und Oberteil bilden wie dort ein ueber alle Figuren eindeutiges Paar.
+
+  // Er wartet seit dreiundvierzig Jahren auf seinen ersten Arbeitstag. Er steht
+  // deshalb, statt zu wandern. Anker im Anger, oestlich unter den Marktstaenden.
+  // Nicht auf (12, 41), wo er zuerst stand: das ist eine Kachel neben Knoeterich,
+  // und die beiden Namensschilder lagen im Bild uebereinander. Der Ausweichsatz
+  // in npcSchildFlush() faengt gleiche Zeilen ab, nicht zwei Figuren, die
+  // praktisch am selben Punkt stehen.
+  {key:'nieselbeck', name:'Wetterbeauftragter Ferdinand Nieselbeck', kurz:'Herr Nieselbeck', tx:21, ty:42, opt:'fest',
+   gestalt:{hair:'h5', chest:1, legs:1, feet:0},
+   grund:[
+     {z1:'Gemeldet wird: keine Niederschläge.', z2:'Wie gestern. Wie immer.'},
+     {z1:'Ich habe einen Eimer. Für den Fall.', z2:'Der Eimer ist bereit.'},
+     {z1:'Der Hut ist neu. Also fast neu.', z2:'Er wartet mit mir.'},
+     {z1:'Wolken sind da. Sie dürfen nur nicht.', z2:'Es fehlt die Veranlassung.'},
+     {z1:'Meine Stelle war nie unbesetzt.', z2:'Das sagt sonst niemand.'},
+     {z1:'Sie waren im Frostkamm? Kalt dort.', z2:'Dort liegt etwas von mir.'},
+   ],
+   akt:[
+     'Willkommen. Es bleibt schön. Wie immer.',
+     'Man fragt nach der Leitung. Ich melde nur.',
+     'Dreiundvierzig Jahre. Der Eimer hält.',
+     'Wenn Sie hinauf müssen: Es wird schön.',
+     'Ich stehe bereit. Man weiß ja nie.',
+   ]},
+
+  // Sie bringt die Welt ins Dorf: ueber sie erfaehrt der Spieler zum ersten Mal,
+  // dass Oben ein Ort ist. Deshalb abAkt:2 und keine Aktzeile fuer Akt I.
+  {key:'umlauf', name:'Reichsbotin Kordula Umlauf', kurz:'Reichsbotin Umlauf', tx:26, ty:42, opt:'fest', abAkt:2,
+   gestalt:{hair:'h4', chest:2, legs:2, feet:4},
+   grund:[
+     {z1:'Vierzehn Türme, ein Aufzug, neun Stockwerke.', z2:'Der Rest ist Treppe.'},
+     {z1:'Ich bin im Umlauf. Seit einer Weile.', z2:'Man gewöhnt sich daran.'},
+     {z1:'Oben ist es sauber. Sehr sauber.', z2:'Und sehr leise.'},
+     {z1:'Elf Stellen noch. Auf der Rückseite.', z2:'Vorne war ich schon.'},
+     {z1:'Die Rohrpost geht nicht. Seit immer.', z2:'Ich laufe. Geht auch.'},
+     {z1:'Ich muss weiter. War nett bei Ihnen.', z2:'Wirklich. Sehr nett.'},
+   ],
+   akt:[
+     '',
+     'Sie fragen nach Oben? Oben ist eine Stadt.',
+     'Ihre Stelle ist ausgeschrieben. Jedes Jahr.',
+     'Ich habe erzählt, dass es hier vorangeht.',
+     'Diesmal komme ich mit. Nur bis zum Tor.',
+   ]},
+
+  // Der Gegenspieler. Er taucht auf, sobald der Spieler anfaengt, gefaehrlich zu
+  // werden, also ab Akt III. Anker vor der Amtstuer, weil er nicht hindurchpasst;
+  // zwei Kacheln suedlich davon, damit er die Kontextaktion der Tuer nicht
+  // ueberstimmt (derselbe Grund, aus dem Zwirn in G6 gewandert ist).
+  {key:'vorblatt', name:'Reichsministerialdirektor zu Händen Vorblatt', kurz:'zu Händen Vorblatt', tx:11, ty:37, opt:'fest', abAkt:3,
+   gestalt:{hair:'h3', chest:4, legs:4, feet:3},
+   grund:[
+     {z1:'Ihr Anliegen wird bearbeitet.', z2:'Das ist bereits sehr viel.'},
+     {z1:'Nein sage ich grundsätzlich nicht.', z2:'Nein wäre eine Entscheidung.'},
+     {z1:'Ich bin für Anhängiges zuständig.', z2:'Anhängig ist beinahe alles.'},
+     {z1:'Hochablage grüßt Vordermühl.', z2:'Hochablage grüßt sehr gern.'},
+     {z1:'Sie führen keinen Vorgang.', z2:'Das macht Sie sehr frei.'},
+     {z1:'Ich habe Ihnen etwas mitgebracht.', z2:'Alle bekommen etwas.'},
+   ],
+   akt:[
+     '',
+     '',
+     'Man hört wenig aus Ihrem Haus. Sehr gut.',
+     'Ein Umschlag. Reizend. Geben Sie ihn mir.',
+     'Ich war zuständig. Nun bin ich hier.',
+   ]},
 ];
 // Literale oben bewusst im alten 80er-Raster (vgl. figuren-dorf.md) — einmalig
 // um DORF_DX/DORF_DY verschoben, bevor genMap() die Anker liest (:2443 unten).
@@ -4600,6 +4777,10 @@ let amt = {bankGold:0, schichten:0,
 // unten), weil setzeKammerTueren() bei Zeile ~5116 auf Skriptebene läuft und
 // die Adresskammer-Markierung aktStand() lesen muss. TDZ-Falle, siehe Übergabe.
 const aktStand = () => Math.min(5, Math.floor(amt.schichten / 10) + 1);
+// W11: Steht diese Dorffigur schon im Dorf? Ohne abAkt immer. Die Klammer um
+// CONFIG.schichtModus ist dieselbe wie in serieFrei() weiter unten: im freien
+// Spiel gibt es keine Akte, und was an einen Akt geknüpft ist, ist dort offen.
+const figDa = fig => !fig || !fig.abAkt || !CONFIG.schichtModus || aktStand() >= fig.abAkt;
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
 let shiftT=0, shiftEndPending=false, overtimeT=0,
     shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[],
@@ -6595,6 +6776,13 @@ const KN_TRAENKE_GAGS = {3:'Ihr dritter Trank.', 7:'Ihr siebter Trank. Ich führ
 
 // --- Zeichendeckel-Assertion: läuft einmal beim Start über alle Tabellen,
 // Touch-Fassungen und Beats inklusive, mit dem längstmöglichen Wert je Zeile.
+// W11: Wortformen, die den Kaiser ins Perfekt oder Praeteritum setzen. Absichtlich
+// eine kurze, wortnahe Liste statt einer Grammatik: sie soll den Fall finden, der
+// beim Schreiben passiert ("der Kaiser war", "Ordinat starb"), und nicht jeden
+// Nebensatz verdaechtigen, in dem das Wort vorkommt.
+const KAISER_PRAETERITUM =
+  /(Kaiser|Ordinat|Majestät)[^.!?]{0,40}\b(war|waren|wurde|hatte|starb|verstarb|regierte|lebte|gewesen|gestorben)\b/i;
+
 function knAssertCaps(){
   const rows = [];
   for(const h of HINWEISE) rows.push([h.z1,48],[h.z2,32],[h.z2t,32]);
@@ -6616,6 +6804,18 @@ function knAssertCaps(){
     // iterierte nur, was da ist, statt zu prüfen, dass alles da ist.
     if(fig.grund.length !== 6) rows.push([null,0,'Figur ' + fig.key + ' hat ' + fig.grund.length + ' Grundzeilenpaare statt 6']);
     if(fig.akt.length !== 5)   rows.push([null,0,'Figur ' + fig.key + ' hat ' + fig.akt.length + ' Aktzeilen statt 5']);
+    // W11: Eine Figur mit abAkt:N ist in den Akten davor nicht im Dorf und hat
+    // dort folgerichtig keinen Satz. Der leere String ist also gewollt, aber nur
+    // genau dort: ab abAkt muss jede Aktzeile stehen. Ohne diese Prüfung wäre
+    // eine versehentlich leere Zeile weiter hinten eine stumme Figur, und genau
+    // dieser Fall ist der Grund, aus dem es die Strukturzusicherung gibt.
+    for(let i = 0; i < fig.akt.length; i++){
+      const stumm = i + 1 < (fig.abAkt || 1);
+      if(stumm && fig.akt[i] !== '')
+        rows.push([null,0,'Figur ' + fig.key + ' hat eine Aktzeile für Akt ' + (i+1) + ', steht dort aber noch nicht im Dorf']);
+      if(!stumm && !fig.akt[i])
+        rows.push([null,0,'Figur ' + fig.key + ' hat keine Aktzeile für Akt ' + (i+1)]);
+    }
     // G6: gestalt:{} gilt jetzt für jede Figur, bei opt:'fest' als Aussehen und
     // bei opt:'wander' als Ersatz für ein fehlendes CF_NPCS-Blatt. Beides muss
     // da sein, sonst steht die Figur unsichtbar im Dorf, und genau das war der
@@ -6632,7 +6832,12 @@ function knAssertCaps(){
     // die Zeilen wären schlicht nie zu sehen, und genau so eine stumme Figur ist
     // der Fall, den dieser Guard seit GW14 melden soll.
     if(fig.zusatz) for(const z of fig.zusatz){
-      if(!(z.merker in kn.flags)) rows.push([null,0,'Figur ' + fig.key + ' nennt einen Merker, den es nicht gibt: ' + z.merker]);
+      // W11: Ein Block hängt entweder an einem Merker oder an einem Akt, nie an
+      // beidem und nie an keinem. Ohne Schalter wären die Zeilen von Anfang an
+      // da, mit zweien wäre nicht zu sagen, welcher gilt.
+      if(!!z.merker === !!z.abAkt) rows.push([null,0,'Figur ' + fig.key + ' hat einen Zusatzblock ohne genau einen Schalter']);
+      if(z.merker && !(z.merker in kn.flags)) rows.push([null,0,'Figur ' + fig.key + ' nennt einen Merker, den es nicht gibt: ' + z.merker]);
+      if(z.abAkt && !(z.abAkt >= 1 && z.abAkt <= 5)) rows.push([null,0,'Figur ' + fig.key + ' nennt einen Akt, den es nicht gibt: ' + z.abAkt]);
       for(const p of z.zeilen) rows.push([p.z1,48],[p.z2,32]);
     }
   }
@@ -6661,6 +6866,13 @@ function knAssertCaps(){
     if(/[—–]/.test(txt)) fehler('Gedankenstrich:', txt);
     if(PRUEF_EMOJI.test(txt)) fehler('Emoji:', txt);
     for(const g of PRUEF_GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text:', g, txt);
+    // W11: Der Kaiser ist aktenkundig lebendig. Er ist im Termin, seit dem Jahr
+    // 588, und niemand in dieser Welt zweifelt daran. Sobald eine einzige Figur
+    // ihn in der Vergangenheitsform erwähnt, ist die Welt eine andere: dann ist
+    // er tot, dann weiß es jemand, dann ist die ganze Pointe des fünften Aktes
+    // vorweggenommen. Deshalb steht diese Regel als Prüfung im Code und nicht
+    // nur als Satz in einem Dokument.
+    if(KAISER_PRAETERITUM.test(txt)) fehler('Der Kaiser steht in der Vergangenheit:', txt);
   }
   console.assert(ok, 'Knöterich: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
@@ -7730,7 +7942,9 @@ function scanAktion(dt){
     if(currentLevel !== 1) return;
     // Phase 5: Knöterich bietet "Nachfragen" nur, wenn schon einmal ein Zettel gezeigt wurde.
     if(kn.history.length) aktBiete(KN_POS.x, KN_POS.y, AKT_NACHFRAGE, null, 'Nachfragen');
-    for(const n of npcs) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');   // W3: eigene Weltposition je Figur
+    // W3: eigene Weltposition je Figur. W11: wer erst ab einem spaeteren Akt im
+    // Dorf steht, ist vorher auch nicht ansprechbar.
+    for(const n of npcs) if(figDa(n.figur)) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
     if(CONFIG.schichtModus) aktBiete(AMT_TUER.x, AMT_TUER.y, AKT_AMT, null, 'Amtsstube');   // G5: Dorf-Gebäude
     return;
@@ -7777,10 +7991,19 @@ function fuehreAktion(){
 // nicht als Funktion — DORF_FIGUREN ist reine Daten, und knAssertCaps() kann so
 // nachsehen, ob es den Merker überhaupt gibt. Sie hängen sich vor die
 // Langvorgang-Zeilen: wer beides freigeschaltet hat, sieht das Neuere zuerst.
+// W11: zweiter Schalter derselben Art. merker haengt an einem Merker im
+// Spielstand (W-Noergel), abAkt am Aktstand. Jeder Block hat genau einen von
+// beiden, knAssertCaps() rechnet das nach. Damit bekommt jede bestehende Figur
+// ihren Zuwachs aus der Weltgeschichte, ohne dass eine ihrer Zeilen von 2026
+// umgeschrieben werden muss: die neuen haengen sich hinten an.
 function figZusatz(fig){
   if(!fig.zusatz) return [];
   let out = [];
-  for(const z of fig.zusatz) if(kn.flags[z.merker]) out = out.concat(z.zeilen);
+  for(const z of fig.zusatz){
+    const frei = z.merker ? kn.flags[z.merker]
+                          : (!CONFIG.schichtModus || aktStand() >= z.abAkt);
+    if(frei) out = out.concat(z.zeilen);
+  }
   return out;
 }
 
@@ -7909,7 +8132,7 @@ function gespraechWeiterText(fig){
 }
 
 // fig als Parameter und nicht aus gespraech gelesen, damit gespraechAssert()
-// die Liste fuer jede der elf Figuren bauen kann, ohne ein Fenster zu oeffnen.
+// die Liste fuer jede Figur der Tabelle bauen kann, ohne ein Fenster zu oeffnen.
 function gespraechOptionen(fig){
   if(empfangAktiv) return empfangOptionen();   // E1: die Szene schreibt ihre Liste selbst
   fig = fig || gespraech.fig;
@@ -9519,6 +9742,7 @@ function update(dt){
   // wird nirgends gebraucht — deshalb sqDist gegen das Quadrat (Regressionsregel 3).
   for(const n of npcs){
     if(n.fest) continue;   // W3: Held-Komposit-Figuren stehen fest wie Knöterich, keine Wanderung
+    if(!figDa(n.figur)) continue;   // W11: noch nicht im Dorf, also auch nicht unterwegs
     n.restT -= dt;
     if(n.restT <= 0){
       n.restT = rr(1.5, 4);
@@ -9738,7 +9962,7 @@ function render(){
   }
   if(currentLevel === 1){                               // Hoftiere, Dorf-Staffage, Kessel, Knöterich und Kammertüren, alle nur hier
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
-    for(const n of npcs) if(vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
+    for(const n of npcs) if(figDa(n.figur) && vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
     if(vis(KESSEL.x, KESSEL.y)) pushDraw(KESSEL.y, DRAW_KESSEL, null);
     if(vis(KN_POS.x, KN_POS.y)) pushDraw(KN_POS.y, DRAW_ALTER, null);
     for(const t of kammerTueren) if(vis(t.x, t.y)) pushDraw(t.y, DRAW_KAMTUER, t);
@@ -9776,7 +10000,7 @@ function render(){
       case DRAW_NPC: { drawShadowEllipse(o.x, o.y+4, 9);   // G5: Dorf-Staffage, gleiches Muster wie DRAW_CRITTER
                       const nmoving = !!(o.vx||o.vy);
                       const nkey = nmoving ? o.sheetWalk : o.sheetIdle;
-                      const nsc = NPC_SC;   // W3: alle elf Dorffiguren im Held-Maßstab, Komposit wie Blatt
+                      const nsc = NPC_SC;   // W3: alle Dorffiguren im Held-Maßstab, Komposit wie Blatt
                       drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, nsc, o.flip, o.tint, o.tintA);
                       if(o.key === 'bramsche') drawAnlage3(o.x + 14, o.y + 6);
                       // U3: Namensschild, entfernungsabhaengig eingeblendet.
@@ -9923,7 +10147,7 @@ function drawAlter(){
   drawSpriteAt(hairKey, f, '#8a8a8a', 0.82);
   ctx.restore();
 
-  // U3: Knoeterich bekommt dasselbe Schild wie die elf Dorffiguren. Er
+  // U3: Knoeterich bekommt dasselbe Schild wie die uebrigen Dorffiguren. Er
   // nennt seinen Namen ohnehin im ersten Satz des Spiels (knUpdateBubble),
   // und er ist die Figur, zu der man am haeufigsten zurueckkommt.
   npcSchildMerken(x, y, KN_NAME_KURZ, false);
@@ -10149,7 +10373,7 @@ const NAME_SICHT_Q = 210*210;
 // sich mit der Entfernung ein und wieder aus. Bis NAH voll, zwischen NAH und
 // FERN linear heruntergezogen, dahinter gar nicht. Ein harter Umschlag laesst
 // Schilder aufpoppen, sobald man einen Schritt macht; das Dorf ist eng
-// bebaut, und elf davon gleichzeitig waeren ein Kataster, kein Dorf.
+// bebaut, und vierzehn davon gleichzeitig waeren ein Kataster, kein Dorf.
 //
 // Der Deckel: kurz statt name. 'Wirt Bruno Fass, Gasthaus "Zum Letzten
 // Stempel"' ist der Eintrag im Personalverzeichnis, kein Schild. Der volle
@@ -10181,7 +10405,8 @@ function npcNameAlpha(x, y){
 //      Schilder ueber allem.
 //
 // Kein Neubau pro Frame: das Feld wird geleert und wieder gefuellt, nicht
-// ersetzt (Regressionsregel 10), und laenger als elf Eintraege wird es nie.
+// ersetzt (Regressionsregel 10), und laenger als die Figurentabelle plus
+// Knoeterich wird es nie.
 const npcSchilder = [];
 function npcSchildMerken(x, y, text, imGespraech){
   if(!text) return;
@@ -11330,6 +11555,20 @@ const ANREDE = {
   pahl:     () => ({z1:'Der Neue.', z2:'Der Name bleibt. Sie wechseln.'}),
   fass:     () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
                     z2:'Setz dich. Der Krug wartet.'}),
+  // W11, drei neue Formen nach derselben Regel: niemand wird ohne Titel
+  // angesprochen (18.6.1), und die zweite Zeile ist jeweils die schon kanonische
+  // Sprachmarke der Figur, nicht eine neue Charakterisierung.
+  // Er meldet, statt zu reden.
+  nieselbeck: () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                      z2:'Gemeldet wird: Sie sind da.'}),
+  // Sie nimmt auf und muss weiter, beides im selben Atemzug.
+  umlauf:   () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                    z2:'Notiert. Ich muss gleich weiter.'}),
+  // Er benutzt den vollständigen Titel seines Gegenübers, auch bei Leuten, die
+  // keinen haben, und macht davor eine winzige Pause. Die Pause ist der Punkt
+  // hinter dem Und, und sie ist die einzige Unhöflichkeit, die er sich leistet.
+  vorblatt: () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                    z2:'Und. Sie sind heute im Dienst.'}),
 };
 function anredeZeile(key){ const f = ANREDE[key]; return f ? f() : {z1: rangName() + '.', z2:''}; }
 
