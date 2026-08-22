@@ -19,6 +19,11 @@
 //   Esc             schliesst weiterhin eine Ebene je Druck, nicht alles
 //   Kopfband        der Schliessknopf bleibt beim Scrollen im Bild
 //
+// Das achte Panel, das Gespraechsfenster aus U3, prueft tools/gespraech-pruef.mjs.
+// Es haengt seit U3 im selben PANEL_REGISTER und folgt denselben Regeln; die
+// Zeilen dafuer stehen dort, weil dort auch Namensschild, Tippen und Schriftstufe
+// geprueft werden und ein Lauf je Bauabschnitt leichter zu lesen ist.
+//
 // Anders als monster-messlauf.mjs misst dieser Lauf nichts, er stellt fest:
 // jede Zeile ist ein Soll-Ist-Vergleich, der Exit-Code ist 1, sobald eine
 // Zeile nicht stimmt. Damit taugt er fuer CI, sollte das Repo je eines haben.
