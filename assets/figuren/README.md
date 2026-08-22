@@ -17,26 +17,38 @@ die man ansieht; das Original ist der Beleg.
 
 | Grundname | Figur | Stand |
 |---|---|---|
-| `01-knoeterich` | Amtsrat a. D. Knöterich | da |
-| `02-zwirn` | Bürgermeister Alfons Zwirn | da, Palette weicht ab (siehe unten) |
-| `03-bramsche` | Registratorin Ottilie Bramsche | da |
-| `04-zapf` | Hausmeister Reinhold Zapf | da |
-| `05-lisbeth` | Praktikantin Lisbeth Fuhr | da |
-| `06-trepp` | Zusteller Emil Trepp der Siebte | da, abgewandt und zu weit weg |
-| `07-noergel` | Sachbearbeiter auf Probe Nörgel | da, flacher als die Serie |
-| `08-milb` | Gutachter Dr. phil. Milb | da, Profil statt Frontalblick |
-| `09-pommer` | Materialausgabe Herr Pommer | da, Brille kaputt (siehe unten) |
-| `10-fass` | Wirt Bruno Fass | da, sehr enger Ausschnitt |
-| `11-lott-pahl` | Herr Lott und Herr Pahl (Doppelporträt) | da, aber drei Köpfe (siehe unten) |
-| `12-nieselbeck` | Wetterbeauftragter Ferdinand Nieselbeck | da |
-| `13-umlauf` | Reichsbotin Kordula Umlauf | da, Stil weicht ab |
-| `14-vorblatt` | Reichsministerialdirektor zu Händen Vorblatt | da |
-| `15-sturz` | Amtsleiterin Dr. Wilhelmine Sturz | da |
-| `16-nachtrag` | Fürst Nachtrag, der Schattenfürst | da |
-| `17-anlage3` | Anlage 3, Kater | da |
-| `18-konrad` | Konrad zu Händen Aufschub | da, Gesicht entgleist (siehe unten) |
+| `01-knoeterich` | Amtsrat a. D. Knöterich | abgenommen |
+| `02-zwirn` | Bürgermeister Alfons Zwirn | Nachlauf, Palette |
+| `03-bramsche` | Registratorin Ottilie Bramsche | abgenommen |
+| `04-zapf` | Hausmeister Reinhold Zapf | abgenommen |
+| `05-lisbeth` | Praktikantin Lisbeth Fuhr | abgenommen |
+| `06-trepp` | Zusteller Emil Trepp der Siebte | abgenommen |
+| `07-noergel` | Sachbearbeiter auf Probe Nörgel | abgenommen |
+| `08-milb` | Gutachter Dr. phil. Milb | abgenommen |
+| `09-pommer` | Materialausgabe Herr Pommer | abgenommen |
+| `10-fass` | Wirt Bruno Fass | abgenommen |
+| `11-lott-pahl` | Herr Lott und Herr Pahl (Doppelporträt) | abgenommen, trotz drittem Kopf |
+| `12-nieselbeck` | Wetterbeauftragter Ferdinand Nieselbeck | abgenommen |
+| `13-umlauf` | Reichsbotin Kordula Umlauf | abgenommen |
+| `14-vorblatt` | Reichsministerialdirektor zu Händen Vorblatt | abgenommen |
+| `15-sturz` | Amtsleiterin Dr. Wilhelmine Sturz | abgenommen |
+| `16-nachtrag` | Fürst Nachtrag, der Schattenfürst | abgenommen |
+| `17-anlage3` | Anlage 3, Kater | abgenommen |
+| `18-konrad` | Konrad zu Händen Aufschub | abgenommen |
 | `19-aussendienst` | Der Außendienst (Spieler) | bewusst ausgelassen, braucht keins |
-| `20-kaisertuer` | Die Tür des Kaisers | da, Stapel zu klein |
+| `20-kaisertuer` | Die Tür des Kaisers | Nachlauf, Stapel zu klein |
+
+## Abnahme (22.08.2026)
+
+Matthias hat die Sammlung durchgesehen und **siebzehn der neunzehn Motive
+abgenommen**. Neu laufen nur Zwirn (Palette) und die Kaisertür (Stapel zu klein).
+Ihre Prompts in `figuren-bildprompts.md` sind dafür nachgeschärft.
+
+Die Befunde unten bleiben stehen, weil sie stimmen, aber sie sind entschieden. Der
+dritte Kopf bei Lott und Pahl, Pommers geronnene Brille, Milbs Halbprofil, Konrads
+verzogenes Gesicht, Nörgels flacher Stil und Umlaufs gemalte Schattierung sind
+gesehen und für gut befunden worden. Wer später über diese Zeilen stolpert, soll
+nicht denken, sie wären übersehen worden.
 
 ## Befunde am ersten Paket (22.08.2026)
 

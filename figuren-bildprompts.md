@@ -94,6 +94,23 @@ gezogen: verblasstes Königsblau bei Bramsche und Umlauf, stumpfes Gold bei Vorb
 mattes Grün bei Nörgels Haut, gedecktes Rot bei Fass. Wer eine davon wieder auf
 Vollton stellt, holt sich die Streuung zurück.
 
+## Zwei Prompts sind nachgeschärft (22.08.2026)
+
+Nach dem ersten Durchlauf sind alle neunzehn Motive abgenommen worden bis auf zwei.
+Deren Prompts stehen oben bereits in der geschärften Fassung.
+
+**Zwirn** kam in gesättigtem Orange und Türkis zurück, mit 84.778 Farben das bunteste
+Bild der Sammlung. Neu sind `washed out and dull throughout` in der Palette, die
+Kleidung ausdrücklich als `faded dusty ochre` und `tarnished dull brass`, und im
+`--no` stehen jetzt `saturated colours, teal, turquoise, bright orange, shiny gold,
+neon`. Die Karikatur bleibt unangetastet, die saß.
+
+**Die Kaisertür** hatte ihren Größenwitz verloren: der Stapel reichte über zwei
+Drittel der Türhöhe statt über sie hinaus, und die Tür stand in einem Raum. Neu sind
+`taller than the door itself and reaches the top edge of the image, towering over the
+door frame` sowie `the door floating on a flat background`, dazu im `--no` die Zeile
+`room, wall, floor, ceiling, interior, perspective`.
+
 ## Drei Hinweise
 
 **Kein Seed in den Prompts.** Der feste Seed war Werkzeug für den Epochentest. Für
@@ -122,7 +139,7 @@ pixel art portrait of an elderly male clerk in his late seventies, an enormous d
 ## 2. Alfons Zwirn, Bürgermeister
 
 ```
-pixel art portrait of a portly village mayor, a gigantic beaming grin filling half his face, tiny squeezed eyes, heavy jowls, thinning sandy hair combed over a shiny head, tight festive waistcoat, a tarnished mayoral chain of office at the collar, hearty and hollow, head and shoulders portrait, tight crop from the top of the head to mid chest, centred, facing the viewer, LucasArts SCUMM adventure game portrait, Monkey Island and Day of the Tentacle style, Peter Chan caricature, exaggerated cartoon proportions, oversized features, expressive comic face, warm and sympathetic, never grotesque, chunky pixels, low resolution, 32 colour palette, muted desaturated colours, dusty ochre, faded olive, slate blue, warm grey, no bright saturated colours, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 point and click adventure portrait, plain dark background --ar 1:1 --style raw --s 25 --no gradients, smooth shading, fine detail, texture, realism, photorealism, blur, text, watermark, full body, hands
+pixel art portrait of a portly village mayor, a gigantic beaming grin filling half his face, tiny squeezed eyes, heavy jowls, thinning sandy hair combed over a shiny head, a threadbare waistcoat in faded dusty ochre, a tarnished dull brass chain of office at the collar, hearty and hollow, head and shoulders portrait, tight crop from the top of the head to mid chest, centred, facing the viewer, LucasArts SCUMM adventure game portrait, Monkey Island and Day of the Tentacle style, Peter Chan caricature, exaggerated cartoon proportions, oversized features, expressive comic face, warm and sympathetic, never grotesque, chunky pixels, low resolution, 32 colour palette, muted desaturated colours, dusty ochre, faded olive, slate blue, warm grey, washed out and dull throughout, no bright saturated colours, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 point and click adventure portrait, plain flat dark slate green background --ar 1:1 --style raw --s 25 --no gradients, smooth shading, fine detail, texture, realism, photorealism, blur, text, watermark, full body, hands, saturated colours, teal, turquoise, bright orange, shiny gold, neon
 ```
 
 ## 3. Ottilie Bramsche, Registratorin
@@ -230,7 +247,7 @@ pixel art portrait of an ordinary field officer of a small ministry in their twe
 ## 20. Die Tür des Kaisers
 
 ```
-pixel art of a tall closed double door of dark polished wood with heavy brass fittings and a small blank brass plaque, an absurdly enormous neatly piled stack of unopened blank letters in front of it, taller than the door itself, comically precise stacking, no people, straight-on view, the whole door inside the frame, LucasArts SCUMM adventure game background, Monkey Island and Day of the Tentacle style, exaggerated cartoon proportions, warm and sympathetic, chunky pixels, low resolution, 32 colour palette, muted desaturated colours, dusty ochre, faded olive, slate blue, warm grey, no bright saturated colours, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 point and click adventure portrait, plain dark background --ar 1:1 --style raw --s 25 --no gradients, smooth shading, fine detail, texture, realism, photorealism, blur, text, watermark, full body, people
+pixel art of a tall closed double door of dark polished wood with heavy brass fittings and a small blank brass plaque, in front of it a colossal stack of unopened blank letters that is taller than the door itself and reaches the top edge of the image, towering over the door frame, comically precise stacking, no people, straight-on view, the whole door inside the frame, LucasArts SCUMM adventure game background, Monkey Island and Day of the Tentacle style, exaggerated cartoon proportions, warm and sympathetic, chunky pixels, low resolution, 32 colour palette, muted desaturated colours, dusty ochre, faded olive, slate blue, warm grey, no bright saturated colours, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 point and click adventure portrait, plain flat dark slate green background, the door floating on a flat background --ar 1:1 --style raw --s 25 --no gradients, smooth shading, fine detail, texture, realism, photorealism, blur, text, watermark, full body, people, room, wall, floor, ceiling, interior, perspective
 ```
 
 ---
