@@ -15,6 +15,10 @@
 //   Gespraech       F oeffnet die Tafel, sie nennt den vollen Namen und bietet
 //                   vier Antworten; Ziffer, Pfeil und Klick waehlen; "Auf
 //                   Wiedersehen", Esc, ein Klick daneben und Weggehen schliessen
+//   Zweiteilung     die Tafel zerfaellt in zwei Haelften (U4), Satz und Portraet
+//                   oben, Amtsbezeichnung, Antworten und Spielerbild unten, mit
+//                   einer Kante ohne Spalt dazwischen; auf Mobil faellt das
+//                   zweite Bildfeld weg, die Teilung bleibt
 //   keine Doppelung ein Griff, der die Tafel wegwischt, ist kein Angriff, und
 //                   die '1' im Gespraech ist keine Trankgabe (U1-Regel)
 //   Tippen          der Satz laeuft ein und steht danach vollstaendig da
@@ -156,6 +160,36 @@ const tafel = page => page.evaluate(() => ({
   pruef('letzte Antwort ist der Abschied', t.antworten[3], '4. Auf Wiedersehen.');
   pruef('offene Tafel setzt den Schleier', t.schleier, true);
 
+  // --- U4: die Zweiteilung -------------------------------------------------
+  // Geprueft wird nicht, wie es aussieht, sondern was die Teilung ausmacht:
+  // dass es zwei Haelften gibt, dass jedes Stueck in seiner steht, dass die
+  // Kante dazwischen wirklich eine Kante ist (kein Spalt, keine Ueberlappung)
+  // und dass das zweite Bildfeld etwas zeigt statt schwarz zu bleiben.
+  const zwei = await page.evaluate(() => {
+    const o = el('gespraechOben').getBoundingClientRect();
+    const u = el('gespraechUnten').getBoundingClientRect();
+    const c = el('gespraechIchPortrait'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+    let deck = 0;
+    for(let i = 3; i < d.length; i += 4) if(d[i] > 8) deck++;
+    return {
+      satzOben:     el('gespraechOben').contains(el('gespraechText')),
+      wahlUnten:    el('gespraechUnten').contains(el('gespraechWahl')),
+      untenDrunter: u.top >= o.bottom - 1 && u.top <= o.bottom + 1,
+      beideHoch:    o.height > 0 && u.height > 0,
+      kante:        parseFloat(getComputedStyle(el('gespraechUnten')).borderTopWidth) >= 2,
+      titel:        el('gespraechIchName').textContent,
+      sollTitel:    rangName(),
+      ichGemalt:    deck > 200,
+    };
+  });
+  pruef('die Tafel hat zwei Haelften mit Hoehe', zwei.beideHoch, true);
+  pruef('der Satz steht in der oberen Haelfte', zwei.satzOben, true);
+  pruef('die Antworten stehen in der unteren', zwei.wahlUnten, true);
+  pruef('die untere Haelfte schliesst an die obere an', zwei.untenDrunter, true);
+  pruef('zwischen beiden steht eine Kante', zwei.kante, true);
+  pruef('unten steht die Amtsbezeichnung', zwei.titel, zwei.sollTitel);
+  pruef('das zweite Portraet ist gezeichnet', zwei.ichGemalt, true);
+
   // --- Tippen --------------------------------------------------------------
   const kurzNach = (await tafel(page)).text.length;
   await page.waitForTimeout(2600);
@@ -260,6 +294,17 @@ const tafel = page => page.evaluate(() => ({
   pruef('Tafel laesst den Daumenfaecher frei', lage.ueberFaecher, true);
   pruef('Tafel steht waagerecht im Bild', lage.imBild, true);
   pruef('kein Wort laeuft ueber den Rand', lage.kastenBreit, true);
+  // U4: auf 390px Breite kostet das zweite Portraet ein Viertel der Zeile und
+  // sagt nichts, was die Zeile darueber nicht auch sagt. Die obere Haelfte
+  // behaelt ihres.
+  const zweiM = await page.evaluate(() => ({
+    ich:  getComputedStyle(el('gespraechIchBild')).display,
+    npc:  getComputedStyle(el('gespraechBild')).display,
+    wahl: el('gespraechUnten').contains(el('gespraechWahl')),
+  }));
+  pruef('kein zweites Portraet auf Mobil', zweiM.ich, 'none');
+  pruef('das erste Portraet bleibt', zweiM.npc !== 'none', true);
+  pruef('die Antworten stehen auch dort unten', zweiM.wahl, true);
 
   await page.locator('.gwOpt').last().tap();
   pruef('Tipp auf den Abschied schliesst', await page.evaluate(() => gespraechOffen), false);
