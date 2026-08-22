@@ -1297,7 +1297,17 @@ Sieben Sätze, die für jeden neuen Text in dieser Welt gelten. Sie stehen zusä
 
 **Szene 1, das Intro, ist gebaut.** Neun Blätter, wörtlich aus Kapitel 8. Sie ersetzen die fünf Anrisstafeln aus E1 an derselben Stelle im Ablauf, statt vor sie zu treten: beide erzählen dieselben vierhundert Jahre, und der Anfang wird dadurch nicht länger. Eine Kleinigkeit ist dabei umformuliert worden, und sie steht hier, damit sie beim Weiterschreiben nicht zurückrutscht: aus *Kriegsbericht* wurde "Ein Bericht, sehr sachlich, mit einer Tabelle", aus *Vertrag* "Ein Abkommen". Beide Wörter stehen auf der Wortsperre des Anfangs, und die gilt für das Intro in ihrer Namensfassung weiter: **es darf die Papiere zeigen, es darf niemanden beim Namen nennen.** Die Sätze darunter sagen unverändert dasselbe.
 
-**Die übrigen acht Szenen sind entworfen und nicht gebaut.** SZ2 nimmt die Szenen 2 bis 4, SZ3 den Stopfen und Vorblatts Ankunft samt Serie I, SZ4 die Versuchung, die Zustellung und den Abspann.
+**Stand des Einbaus (Nachtrag, 22.08.2026, dritte Fassung).** **SZ2** hat die Szenen 2, 3 und 4 gebaut. Sie waren der erste Belastungstest der Maschine, weil sie im laufenden Dienst spielen und nicht davor; dabei hat sich gezeigt, was noch fehlte: ein Zustand, in dem die Welt stillsteht (`state = 'szene'`, gebaut wie die Zustellung), und ein Haken an der Figur (`szeneFaellig()`, ein Aufruf in `gespraechOeffnen()`). Beides ist Zuwachs, kein Umbau.
+
+Drei Dinge aus Kapitel 8 sind dabei anders geworden, als sie hier stehen, und das gehört hierher, damit es beim Weiterschreiben nicht zurückrutscht:
+
+* **Die vierzig Zwischenbescheide der zweiten Schublade sind ein Blatt mit einem Jahreszähler**, nicht vierzig Blätter. Der Text bleibt Wort für Wort derselbe, nur die Jahreszahl läuft von 972 bis 1011. Nach drei Blättern erscheint ein zweiter Knopf, der sofort zum letzten springt, denn der Witz ist, dass es nicht aufhört, und nicht, dass man vierzigmal drücken muss.
+* **Szene 2 hängt an Kordula Umlauf, nicht am Gasthaus.** Ein Gasthaus als betretbares Gebäude gibt es nicht; Fass und Umlauf stehen ohnehin nebeneinander im Dorf, und er wirft seine zwei Sätze über den Sprecherwechsel ein.
+* **Szene 3 hängt im Amtspanel**, neben der Gießkanne, weil die Amtsstube kein begehbares Inneres hat. Sturz' Schreibtisch steht dort bereits als Text, die zweite Schublade ist eine zweite anklickbare Zeile daneben.
+
+Den Nachklang tragen Lott und Pahl, mit zwei neuen Anlässen (`umlauf`, `hintermuehl`), gebaut wie ihre Kampfanlässe und genau einmal fallend. Einzelheiten in `phase-sz2-gespraechsszenen.md`.
+
+**Die übrigen fünf Szenen sind entworfen und nicht gebaut.** SZ3 nimmt den Stopfen und Vorblatts Ankunft samt Serie I, SZ4 die Versuchung, die Zustellung und den Abspann.
 
 **Stand des Einbaus (Nachtrag, 22.08.2026).** Bauabschnitt W11 hat die Figurenebene dieser Datei ins Spiel gezogen: drei der vier neuen Figuren stehen im Dorf (Nieselbeck ab Akt I, Kordula Umlauf ab Akt II, Vorblatt ab Akt III), und die Zuwachs-Tabelle aus Kapitel 6 ist bei zehn bestehenden Figuren als je zwei Zusatzzeilen eingebaut. Konrad zu Händen Aufschub steht nicht im Dorf, weil er nur in Hochablage vorkommt. **Nicht gebaut sind bisher:** die neun Szenen aus Kapitel 8, die Blattserien G, H und I aus Kapitel 9 und die vier Langvorgänge aus Kapitel 10. Die Entscheidung aus dem Kopf dieser Datei, ob die Szenen als Szenen oder mit Bordmitteln kommen, ist damit weiterhin nicht gefallen. Einzelheiten in `phase-w11-reich-im-dorf.md`.
 

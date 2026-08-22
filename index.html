@@ -3113,6 +3113,14 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:4, zeilen:[
      {z1:'Der Name kommt vom Großvater.',       z2:'Der wusste, was er verspricht.'},
      {z1:'Irgendwann setzt einer den letzten.', z2:'Dann trink noch einen.'},
+   ]},
+   // SZ2: seine zwei Zeilen nach Kordula Umlaufs Besuch. Sie haengen am Merker
+   // der Szene und nicht an einem Akt: sie handeln davon, dass sie da war, und
+   // das weiss nur, wer mit ihr geredet hat. Zweiter Block an derselben Figur,
+   // dasselbe Muster wie bei Noergel seit W-Noergel.
+   {merker:'szeneUmlauf', zeilen:[
+     {z1:'Die Botin war da. Hat viel geredet.',    z2:'Und schnell gegessen.'},
+     {z1:'Sie kennt einen Bäcker. Bruno heißt er.', z2:'Wie ich. Merkwürdig.'},
    ]}]},
 
   {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
@@ -14981,7 +14989,7 @@ function empfangStarten(){
 //       den es gibt.
 function szeneAssert(){
   let ok = true;
-  const fehler = (m, ...r) => { ok = false; console.error('SZ1 Szenen:', m, ...r); };
+  const fehler = (m, ...r) => { ok = false; console.error('Szenen:', m, ...r); };
   // sperre ist ein Parameter und keine Konstante mehr: siehe den Kopf dieses
   // Blocks. Das Intro darf die Papiere zeigen, der Empfang nicht.
   const text = (txt, wo, sperre) => {
@@ -15023,6 +15031,17 @@ function szeneAssert(){
     const wo = w => `${key}: ${w}`;
     for(const f of ['sprecher','knoten']) if(typeof d[f] !== (f === 'knoten' ? 'object' : 'function'))
       fehler('Pflichtfeld fehlt oder hat die falsche Form', key, f);
+
+    // (7) SZ2: der Haken an der Figur. Er muss auf jemanden zeigen, den es
+    // gibt, und er muss sagen, wann er zieht, sonst ist die Szene ab dem
+    // ersten Ansprechen dauerhaft faellig. Knoeterich ist die Ausnahme: er
+    // steht nicht in DORF_FIGUREN, seine Szene haengt an der Kontextaktion.
+    if(d.figur){
+      if(d.figur !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === d.figur))
+        fehler('Szene hängt an einer Figur, die es nicht gibt', key, d.figur);
+      if(typeof d.wenn !== 'function')
+        fehler('Szene hängt an einer Figur, sagt aber nicht, wann sie fällig ist', key);
+    }
 
     // (1) Zeilen
     const alleKnoten = {};
@@ -15088,6 +15107,33 @@ function szeneAssert(){
 
   // (5) Der Ausgang bleibt der Ausgang aus W8.
   if(typeof dienstAntritt !== 'function') fehler('dienstAntritt() fehlt, der Empfang hätte kein Ende');
+
+  // (8) SZ2: der Nachklang. Was eine Szene an letzterAnlass setzt, muss bei
+  // Lott und bei Pahl Zeilen haben, sonst laeuft die Szene in eine leere Bank
+  // und der Spieler merkt nichts davon. Beide Haelften werden geprueft, weil
+  // die Quelle die vier Zeilen auf die zwei Figuren verteilt.
+  for(const key in SZENE_ANLASS){
+    if(!SZENEN[key]) fehler('Nachklang für eine Szene, die es nicht gibt', key);
+    const anl = SZENE_ANLASS[key];
+    for(const fk of ['lott','pahl']){
+      const f = DORF_FIGUREN.find(x => x.key === fk);
+      if(!f || !f.anlass || !(f.anlass[anl] || []).length)
+        fehler('Nachklang ohne Zeilen', key, anl, fk);
+    }
+  }
+
+  // (9) SZ2: jeder Merker, den eine Szene setzt, muss im Spielstand angelegt
+  // sein. Sonst schreibt szeneEnde() ein Feld, das startShift() nicht kennt,
+  // und die Szene liefe nach dem naechsten Laden noch einmal.
+  for(const key in SZENEN){
+    const q = String(SZENEN[key].ende || '') + Object.keys(SZENEN[key].knoten)
+      .map(k => String(SZENEN[key].knoten[k].opts || '')).join('');
+    const m = q.match(/szeneEnde\('[a-zA-Z]+',\s*'([a-zA-Z]+)'\)/g) || [];
+    for(const treffer of m){
+      const merker = treffer.match(/'([a-zA-Z]+)'\)$/)[1];
+      if(!(merker in kn.flags)) fehler('Szene setzt einen Merker, den der Spielstand nicht kennt', key, merker);
+    }
+  }
 
   const knoten = Object.keys(SZENEN).reduce((n, k) => n + Object.keys(SZENEN[k].knoten).length, 0);
   const fragen = Object.keys(SZENEN).reduce((n, k) => n + ((SZENEN[k].fragen || []).length), 0);
