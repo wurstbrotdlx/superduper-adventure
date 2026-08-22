@@ -24,6 +24,17 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'index.html');
 const ASSET_DIR = join(ROOT, 'assets');
 
+// Ordner unter assets/, die NICHT eingebacken werden. Der Build inliniert sonst
+// bewusst alles, statt die benutzte Teilmenge zu erraten (siehe G6-Notizen);
+// eine Ausnahme braucht deshalb einen Grund, der hier danebensteht.
+//
+//   assets/figuren/ — die Figurenporträts. Reine Doku für Kladde und
+//   Konzeptarbeit, `index.html` lädt daraus nichts. Sie wiegen 3,0 MB roh und
+//   damit 4,1 MB als data:-URI, mehr als das Spiel selbst. Ohne diesen
+//   Ausschluss wächst dist/index.html von rund 1,1 MB auf über 5 MB, für
+//   Bilder, die kein Frame je zeichnet.
+const SKIP_DIRS = ['assets/figuren'];
+
 // Genau diese Zeile wird ersetzt. Fehlt sie, bricht der Build ab, statt still
 // eine Datei ohne Grafik zu schreiben.
 const MARKER = 'const ASSET_BLOBS = null; /*BUILD:ASSET_BLOBS*/';
@@ -42,13 +53,17 @@ function walk(dir, out = []) {
   return out;
 }
 
+const alsPfad = p => relative(ROOT, p).split(/[\\/]/).join('/');
+
 const files = walk(ASSET_DIR).filter(p => {
   const ext = p.slice(p.lastIndexOf('.')).toLowerCase();
-  return MIME[ext] !== undefined;
+  if (MIME[ext] === undefined) return false;
+  return !SKIP_DIRS.some(d => alsPfad(p).startsWith(d + '/'));
 });
 
 if (!files.length) {
   console.error('FEHLER: keine Bilddateien unter assets/ gefunden.');
+  console.error('Übersprungen werden: ' + SKIP_DIRS.join(', ') + ' — fehlt sonst assets/cf/?');
   process.exit(1);
 }
 
@@ -57,7 +72,7 @@ if (!files.length) {
 const blobs = {};
 let raw = 0;
 for (const p of files) {
-  const key = relative(ROOT, p).split(/[\\/]/).join('/');
+  const key = alsPfad(p);
   const buf = readFileSync(p);
   const ext = p.slice(p.lastIndexOf('.')).toLowerCase();
   blobs[key] = `data:${MIME[ext]};base64,${buf.toString('base64')}`;
@@ -82,6 +97,7 @@ writeFileSync(OUT, out);
 
 const kb = n => (n / 1024).toFixed(0) + ' KB';
 console.log(`eingebettet : ${files.length} Dateien, ${kb(raw)} roh -> ${kb(out.length - src.length)} als data:-URI`);
+console.log(`übersprungen: ${SKIP_DIRS.join(', ')}`);
 console.log(`Quelle      : ${kb(src.length)}`);
 console.log(`Ergebnis    : ${relative(process.cwd(), OUT)}  ${kb(out.length)}`);
 console.log('');

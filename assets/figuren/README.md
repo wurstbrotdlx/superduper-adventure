@@ -121,6 +121,14 @@ Zweck ist Doku, Kladde und Konzeptarbeit. Die Gesprächstafel schneidet ihr Port
 seit U4 aus dem laufenden Sprite (`PORTRAET_X/Y/B/H`) und erwartet das
 64x64-Held-Komposit; ein gemaltes Bild passt dort nicht hinein.
 
+**Sie gehen deshalb auch nicht in den Build.** `tools/build-single.mjs` inliniert
+sonst bewusst alles unter `assets/`, statt die benutzte Teilmenge zu erraten; dieser
+Ordner steht dort in `SKIP_DIRS`. Der Grund ist gemessen: 38 Dateien, 3.091 KB roh,
+als data:-URI 4.124 KB. Ohne den Ausschluss wächst `dist/index.html` von rund
+905 KB auf 5.029 KB, für Bilder, die kein Frame je zeichnet. Wer hier später ein
+Porträt tatsächlich ins Spiel holt, nimmt es aus `SKIP_DIRS` heraus oder kopiert die
+gebrauchte Datei nach `assets/cf/`.
+
 ## Warum diese Bilder im Repo liegen dürfen
 
 Die `.gitignore` hält fest, dass kein PNG-Byte als Git-Objekt ins öffentliche Repo
