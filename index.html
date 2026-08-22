@@ -482,6 +482,15 @@
     transition:opacity .18s ease;
     background:radial-gradient(ellipse at 50% 45%, rgba(5,3,10,.26) 0%, rgba(5,3,10,.66) 100%);}
   body.panelOffen #menuVeil{opacity:1;}
+  /* E1: Waehrend des Empfangs ist noch nichts im Dienst, was das HUD anzeigen
+     koennte: keine Schicht, keine Zone, keine Beute, kein Angriffsknopf. Die
+     Leisten standen in der ersten Fassung trotzdem da und haben die Szene
+     zugestellt. Eine Regel statt eines Eingriffs in den Renderpfad, und sie
+     faellt mit der Klasse von selbst wieder weg. */
+  body.empfangLaeuft #hud,
+  body.empfangLaeuft #minimap,
+  body.empfangLaeuft #touchCluster,
+  body.empfangLaeuft #zone{display:none;}
 
   /* =====================================================================
      U3 — Das Gespraechsfenster.
@@ -881,7 +890,7 @@
   <div id="gespraechInnen">
     <div id="gespraechBild"><canvas id="gespraechPortrait" width="110" height="135"></canvas></div>
     <div id="gespraechRechts">
-      <div id="gespraechName"><span id="gespraechNameTxt"></span><span class="panelZu" style="cursor:pointer;" onclick="gespraechSchliessen()">✖</span></div>
+      <div id="gespraechName"><span id="gespraechNameTxt"></span><span id="gespraechZu" class="panelZu" style="cursor:pointer;" onclick="gespraechSchliessen()">✖</span></div>
       <div id="gespraechText"></div>
       <div id="gespraechWahl"></div>
     </div>
@@ -4275,6 +4284,13 @@ const BLAETTER_KEYS = Object.keys(BLAETTER);
 // Sie waren deckungsgleich, aber jede Kopie ist eine Gelegenheit zu driften,
 // ohne dass es jemand bemerkt. Eine Quelle, ein Ort, vor dem ersten Guard.
 const PRUEF_EMOJI  = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
+// E1: Begriffe, die dem Anfang nicht gehoeren. Sie stand bis E1 als lokale
+// Liste in dienstAssert() und gilt seither fuer zwei Texte statt fuer einen
+// (Vordruck und Empfang), also steht sie hier oben bei den uebrigen
+// Prueflisten und nicht in einem der beiden Guards. Zwei Stellen, die
+// dasselbe behaupten, waeren die F1-Falle.
+const AKTE_SPERRE = ['Nachtrag', 'Ausfertigung', 'Zustell', 'Krieg', 'Frieden', 'Vertrag',
+                     'Trepp', 'Sturz', 'Schattenfürst', 'Anschrift', 'Vorgang 1', 'Amtsleiterin'];
 const PRUEF_GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'dreimal',
                       'Slot', 'ergibt', 'bewirkt', 'Wirkung entsteht', 'Fluch entsteht', 'Alter'];
 
@@ -7749,6 +7765,13 @@ function npcSprechen(n){
 // ===========================================================================
 const gespraech = {npc:null, fig:null, z1:'', z2:'', tipp:0, tippGezeigt:-1, wahl:0, opts:[]};
 let gespraechOffen = false;
+// E1: Laeuft der Empfang, gehoert die Tafel der Szene und nicht dem Dorf. Die
+// Flagge steht hier oben und nicht beim E1-Block weiter unten, weil
+// gespraechAssert() noch auf Skriptebene laeuft und gespraechOptionen()
+// aufruft: eine erst spaeter deklarierte Konstante waere dort ein
+// ReferenceError durch Temporal Dead Zone, also genau der Fehler, den
+// node --check nicht findet (README, "Entwickeln").
+let empfangAktiv = false;
 // Anschlaege je Sekunde. 55 liest sich als Schreibmaschine und nicht als
 // Diaschau: die laengste Zeile im Bestand hat 48 Zeichen (Zeichendeckel,
 // knAssertCaps), zwei davon sind also nach knapp zwei Sekunden fertig.
@@ -7775,6 +7798,7 @@ function gespraechWeiterText(fig){
 // fig als Parameter und nicht aus gespraech gelesen, damit gespraechAssert()
 // die Liste fuer jede der elf Figuren bauen kann, ohne ein Fenster zu oeffnen.
 function gespraechOptionen(fig){
+  if(empfangAktiv) return empfangOptionen();   // E1: die Szene schreibt ihre Liste selbst
   fig = fig || gespraech.fig;
   if(!fig) return [];
   return [
@@ -7830,6 +7854,12 @@ function gespraechOeffnen(n){
 }
 
 function gespraechSchliessen(){
+  // E1: Der Empfang hat genau einen Ausgang, und der ist die Unterschrift.
+  // Diese eine Zeile deckt alle vier Schliesswege ab, die es sonst gaebe:
+  // Esc (PANELS), das Kreuz in der Namenszeile, der Klick daneben (U1) und
+  // der Weltcheck in gespraechTick(). Ein Guard an der Engstelle statt vier
+  // Sonderfaellen an den Aufrufern.
+  if(empfangAktiv) return;
   if(!gespraechOffen) return;
   gespraechOffen = false; gespraech.npc = null; gespraech.fig = null;
   el('gespraech').style.display = 'none';
@@ -7957,9 +7987,15 @@ function gespraechTaste(e){
 function gespraechTick(dt){
   if(!gespraechOffen) return;
   const n = gespraech.npc;
-  if(!n || state !== 'play' || currentLevel !== 1 || kammer ||
-     npcs.indexOf(n) < 0 || sqDist(player.x, player.y, n.x, n.y) > GESPRAECH_WEG_Q){
-    gespraechSchliessen(); return;
+  // E1: Der Empfang steht auf keiner Kachel. Er laeuft in state 'menu', sein
+  // Gegenueber ist kein Eintrag in npcs, und eine Entfernung zu ihm gibt es
+  // nicht. Die Weltpruefung wird deshalb uebersprungen, das Tippwerk darunter
+  // gilt unveraendert fuer beide.
+  if(!empfangAktiv){
+    if(!n || state !== 'play' || currentLevel !== 1 || kammer ||
+       npcs.indexOf(n) < 0 || sqDist(player.x, player.y, n.x, n.y) > GESPRAECH_WEG_Q){
+      gespraechSchliessen(); return;
+    }
   }
   const ganz = gespraech.z1.length + gespraech.z2.length;
   if(gespraech.tipp < ganz){
@@ -10458,7 +10494,10 @@ function startGame(){
     pendingCarryGold = 0; pendingCarryPouch = [];
     // W8: Beim allerersten Dienstantritt wird erst eingestellt, dann gearbeitet.
     // Danach nie wieder (kn.seen.einstellung), nachlesbar bleibt es überall.
-    if(!kn.seen.einstellung){ MUS.goto('office'); MUS.muffle(false); showDienstblatt(1, 'einstellung'); return; }
+    // E1: Der erste Dienstantritt laeuft ueber den Empfang. Er endet auf
+    // demselben dienstAntritt(), das auch Blatt 3 ausloest, und ist damit
+    // derselbe Uebergang wie vorher, nur mit einer Szene davor.
+    if(!kn.seen.einstellung){ empfangStarten(); return; }
     startShift();
   }
   else { document.getElementById('overlay').style.display = 'none'; MUS.muffle(false); state = 'play'; knPlayStartT = gameT; }
@@ -13379,6 +13418,424 @@ function dienstblattEnde(ziel){
   if(ziel === 'dorf') showDorf(); else showStartScreen();
 }
 
+// ===========================================================================
+//  E1: DER EMPFANG — der Anfang als Szene statt als Stapel Vordrucke.
+//  Weltbibel Kapitel 8 (Knöterich), 13 (Humor-Grundgesetz, Regeln 10 und 11)
+//  und der Anfang aus W8, der hier nicht ersetzt, sondern bespielt wird.
+//
+//  Der Befund, der diesen Bauabschnitt ausgelöst hat: W8 hat den Anfang
+//  beantwortet, aber nicht erzählt. Wer "Dienst antreten" drückte, bekam als
+//  erstes Bild des Spiels ein Formular mit zehn Feldern, danach eines mit elf
+//  Punkten, danach eines mit zehn Feldern. Vierzig Zeilen Amtsdeutsch, bevor
+//  die Figur den ersten Schritt tut. Der Inhalt war richtig, die Form war eine
+//  Wand.
+//
+//  Dieselbe Beobachtung erklärt, warum die Witze bis hierher nicht trugen. Sie
+//  waren da, sie standen nur alle gleichzeitig da. Ein Gag braucht einen Takt
+//  davor und einen danach, und eine Liste gibt ihm keinen von beiden.
+//  "Anlage 1 liegt nicht vor" ist die Pointe des ganzen ersten Akts und stand
+//  als Feld acht von zehn zwischen zwei anderen Feldern.
+//
+//  E1 erfindet deshalb keinen einzigen neuen Witz. Es gibt ihnen eine Bühne.
+//
+//  Zwei Regeln kommen dafür ins Humor-Grundgesetz, beide additiv, keine der
+//  neun bestehenden wird angefasst:
+//
+//   10. Die Form ist episch, der Inhalt ist Papier. Fanfare für einen
+//       Aktenvorgang. Regel 1 bleibt unangetastet: niemand im Spiel merkt,
+//       dass die Fanfare komisch ist, am wenigsten die Fanfare.
+//   11. Der Spieler ist der Gerade. Trockenheit braucht ein Gegenüber, das
+//       nachfragt. Bis U3 hatte das Spiel keinen Kanal dafür, seit U3 hat es
+//       einen. Knöterich sagt den Satz, der Spieler sagt "wie bitte", und
+//       erst dadurch wird aus einer Auskunft ein Gag.
+//
+//  Drei Grenzen, die dieser Bauabschnitt einhält:
+//
+//  1. Kein neues System. Gespielt wird in derselben #gespraech-Tafel, die U3
+//     gebaut hat: dasselbe Porträtfeld, dasselbe Tippwerk, dieselbe
+//     Antwortliste, dieselben Tasten. Der Anfang sieht damit aus wie das, was
+//     danach den ganzen Rest des Spiels trägt, und bringt dem Spieler nebenbei
+//     bei, wie man in diesem Spiel redet.
+//  2. Kein Vorgriff auf die Akte. Unverändert die Bedingung aus W8, und hier
+//     schärfer als dort: eine Szene verführt mehr zum Erklären als ein
+//     Formular. empfangAssert() prüft jede Zeile gegen dieselbe AKTE_SPERRE,
+//     die auch der Vordruck einhalten muss.
+//  3. Der Vordruck bleibt. Er wird nicht gelöscht, nicht gekürzt und nicht
+//     umgeschrieben. Er ist nur nicht mehr die Eingangstür, sondern das, was
+//     dahinter im Regal steht: aus dem Empfang heraus lesbar, aus dem
+//     Startbild und aus dem Amt wie bisher. Wer Formulare mag, verliert
+//     nichts. Wer sie nicht mag, kommt jetzt trotzdem herein.
+//
+//  Der Ausgang ist die Unterschrift und sonst nichts. Das ist die einzige
+//  Stelle im Spiel, die etwas erzwingt, und sie erzwingt genau einen Klick.
+// ===========================================================================
+
+// Die Anrisstafeln. Groß, pathetisch, und die Luft geht ihnen in der zweiten
+// Zeile aus. Genau das ist Regel 10: die Form verspricht eine Heldensage, der
+// Inhalt liefert eine Aktenlage, und niemand im Spiel bemerkt den Unterschied.
+//
+// Sie erzählen nichts, was der Vordruck nicht auch sagt. "Anlage 1 liegt nicht
+// vor" stand dort als Feld. Hier steht es als Pointe, und das ist der ganze
+// Unterschied zwischen W8 und E1.
+const EMPFANG_TAFELN = [
+  {z1:'VOR VIERHUNDERT JAHREN',          z2:'geschah etwas Ungeheuerliches.'},
+  {z1:'Was genau, steht in Anlage 1.',   z2:'Anlage 1 liegt nicht vor.'},
+  {z1:'Seitdem arbeitet das Haus daran.', z2:'Ohne Anlage 1.'},
+  {z1:'Bisher hat es nicht geklappt.',   z2:'Heute ist Ihr erster Arbeitstag.'},
+  {z1:'VORDERMÜHL AN DER ABLAGE',        z2:'Sieben Uhr achtundfünfzig.'},
+];
+
+// Nach wievielen Fragen sich der Blick im Raum umsieht. Drei ist gemessen und
+// nicht geraten: bei zwei steht die Pflanze noch vor der ersten Pointe, bei
+// vier hat der schnelle Spieler die Tafel schon verlassen.
+const EMPFANG_PFLANZE_NACH = 3;
+
+// Wieviele offene Fragen gleichzeitig auf der Tafel stehen. Drei plus Ausgang
+// ist die Vierzeiligkeit aus U3.
+const EMPFANG_FRAGEN_SICHT = 3;
+
+// Die Fragen des Empfangs.
+//
+// frei: diese Frage erscheint erst, wenn jene gestellt wurde. Daraus entsteht
+// der Treppeneffekt, von dem die Szene lebt: jede Antwort öffnet die nächste
+// Frage, und die nächste Frage macht die vorige Antwort schlimmer. Der Spieler
+// gräbt sich sein Loch selbst, und das Haus hilft ihm dabei freundlich.
+//
+// nach: diese Frage erscheint erst, wenn überhaupt so viele gestellt wurden.
+// Genau eine Frage benutzt das, siehe dort.
+//
+// Die Reihenfolge in dieser Liste ist die Reihenfolge auf der Tafel. Angeboten
+// werden immer die ersten drei offenen, dazu als vierte der Ausgang: die
+// Antwortliste bleibt damit bei den vier Zeilen, die U3 gebaut hat, und die
+// Szene braucht trotzdem keine Blätterei.
+const EMPFANG_FRAGEN = [
+  {key:'setzen', frei:null, t:'Warum nicht hinsetzen?',
+   z1:'Ihre Stelle läuft heute Abend aus.',
+   z2:'Erfahrungsgemäß lohnt das Hinsetzen nicht.'},
+
+  {key:'einTag', frei:'setzen', t:'Ich bin nur einen Tag hier?',
+   z1:'Eine Verlängerung wäre eine Neubesetzung.',
+   z2:'Eine Neubesetzung braucht die Amtsleitung.'},
+
+  {key:'leitung', frei:'einTag', t:'Dann fragen wir die Leitung.',
+   z1:'Die Amtsleitung ist mit N. N. besetzt.',
+   z2:'N. N. heißt: nicht genannt.'},
+
+  {key:'nn', frei:'leitung', t:'Und wo ist N. N.?',
+   z1:'Das ist eine ausgezeichnete Frage.',
+   z2:'Ich führe Buch. Ich beantworte sie nicht.'},
+
+  // Der Riss in der Szene, und der Spieler findet ihn selbst. Die Kanne ist
+  // Langvorgang 1, hier fällt kein Wort darüber. Die Frage steht erst nach der
+  // dritten auf der Tafel: vorher wäre die Pflanze eine Requisite, nachher ist
+  // sie das, was einem auffällt, wenn man sich im Raum umgesehen hat. Zwei
+  // Zeilen lang hört die Szene auf, komisch zu sein (Grundgesetz 9).
+  {key:'pflanze', frei:null, nach:EMPFANG_PFLANZE_NACH, t:'Die Pflanze dort?',
+   z1:'Die steht auf dem leeren Schreibtisch.',
+   z2:'Ich gieße sie. Jeden Morgen.'},
+
+  {key:'pflanze2', frei:'pflanze', t:'Wer sitzt an dem Tisch?',
+   z1:'Niemand. Seit vierzig Jahren.',
+   z2:'Sie braucht trotzdem Wasser.'},
+
+  {key:'arbeit', frei:null, t:'Was ist meine Arbeit?',
+   z1:'Draußen läuft Unbearbeitetes herum.',
+   z2:'Sie bearbeiten es. Danach ist es bearbeitet.'},
+
+  {key:'unbearbeitet', frei:'arbeit', t:'Was ist Unbearbeitetes?',
+   z1:'Ein Vorgang ohne Erledigungsvermerk.',
+   z2:'Mit Zähnen.'},
+
+  {key:'laeuft', frei:'arbeit', t:'Es läuft von selbst herum?',
+   z1:'Was lange genug liegen bleibt, steht auf.',
+   z2:'Das ist keine Redensart. Das ist Aktenkunde.'},
+
+  {key:'anlage', frei:null, t:'Was steht in Anlage 1?',
+   z1:'Anlage 1 liegt nicht vor.',
+   z2:'Und ich bin zur Verschwiegenheit verpflichtet.'},
+
+  // Knöterich hat sich eben verraten: über etwas, das nicht vorliegt, kann man
+  // nicht schweigen müssen. Kapitel 8 hebt für den Rest des Spiels auf, was er
+  // weiß. Hier wird nur sichtbar, dass er etwas weiß.
+  {key:'geheim', frei:'anlage', t:'Über etwas, das fehlt?',
+   z1:'Ich habe nichts gesagt.',
+   z2:'Ich führe Buch. Ich rede nicht.'},
+
+  {key:'besorgen', frei:'geheim', t:'Besorgen wir Anlage 1.',
+   z1:'Anlage 1 anzufordern ist ein Vorgang.',
+   z2:'Der Antrag liegt seit vierhundert Jahren hier.'},
+
+  {key:'wer', frei:null, t:'Und Sie? Wer sind Sie?',
+   z1:'Amtsrat außer Dienst. Knöterich.',
+   z2:'Meine Entpflichtung wurde nie bearbeitet.'},
+
+  {key:'ruhestand', frei:'wer', t:'Sie sind also pensioniert.',
+   z1:'Ich bin außer Dienst und im Dienst.',
+   z2:'Beides zugleich. Man gewöhnt sich daran.'},
+];
+
+const empfang = {knoten:'gruss', gefragt:null};
+
+const empfangFrage = k => EMPFANG_FRAGEN.find(f => f.key === k);
+// Offen heißt: noch nicht gestellt, Voraussetzung gestellt, Wartezeit vorbei.
+const empfangOffen = () => EMPFANG_FRAGEN.filter(f =>
+  !empfang.gefragt.has(f.key)
+  && (!f.frei || empfang.gefragt.has(f.frei))
+  && (!f.nach || empfang.gefragt.size >= f.nach));
+
+// Die festen Knoten. Alles, was keine Frage aus der Liste oben ist: der Gruß,
+// die Anrede und der Abschied.
+//
+// opts ist eine Funktion und kein Literal, aus demselben Grund wie bei
+// DIENSTBLATT.felder: empfangAssert() baut die Liste beim Start genauso wie
+// die Tafel beim Rendern, und beide sehen dasselbe.
+const EMPFANG_KNOTEN = {
+  gruss: {
+    z1:'Guten Morgen. Sie sind die Neubesetzung.',
+    z2:'Ich führe Buch. Setzen Sie sich nicht hin.',
+    hub:true,
+  },
+
+  // P1 wandert aus dem Formularfeld in die Szene. Es ist dieselbe Angabe,
+  // dieselbe Wirkung und derselbe Zusatz, dass sie folgenlos bleibt. Sie wird
+  // nur nicht mehr angekreuzt, sondern gefragt, und jemand hört zu. Das Feld
+  // auf Blatt 1 bleibt bestehen und zeigt danach die Antwort.
+  anrede: {
+    z1:'Ein Feld füllen Sie selbst aus.',
+    z2:'Wie soll das Haus Sie anschreiben?',
+    opts: () => GESTALT_WAHL.map(g => ({
+      t: g.kurz.charAt(0).toUpperCase() + g.kurz.slice(1) + '.',
+      tun: () => { amt.gestalt = g.key; saveAmt(); empfangSzene('vermerkt'); },
+    })),
+  },
+  vermerkt: {
+    z1:'Vermerkt.',
+    z2:'Auf Dienst und Laufbahn wirkt das nicht.',
+    opts: () => [
+      {t:'Unterschreiben.',        zu:'schluss'},
+      {t:'Erst den Vordruck.',     tun:() => empfangVordruck()},
+      {t:'Ich hätte noch Fragen.', zu:'gruss', wenn:() => empfangOffen().length > 0},
+    ],
+  },
+
+  schluss: {
+    z1:'Unten unterschreiben. Oben bleibt frei.',
+    z2:'Oben ist für die Leitung. Viel Erfolg heute.',
+    opts: () => [
+      {t:'Dienst antreten.', tun:() => empfangEnde()},
+      {t:'Vordruck lesen.',  tun:() => empfangVordruck()},
+    ],
+  },
+};
+
+// Eine Zeile der Liste in die Form bringen, die gespraechWaehlen() erwartet.
+const empfangOpt = o => ({t:o.t, tun: o.tun || (() => empfangSzene(o.zu))});
+
+// Die Antwortliste der Szene. Auf einem hub-Knoten sind es die offenen Fragen
+// plus der Ausgang, sonst die Liste des Knotens selbst. Eine beantwortete
+// Frage ist selbst ein hub: man steht wieder vor derselben Tafel, nur um eine
+// Zeile ärmer und um eine Nachfrage reicher.
+function empfangOptionen(){
+  const k = EMPFANG_KNOTEN[empfang.knoten];
+  if(k && k.opts) return k.opts().filter(o => !o.wenn || o.wenn()).map(empfangOpt);
+  const liste = empfangOffen().slice(0, EMPFANG_FRAGEN_SICHT).map(f => ({t:f.t, zu:f.key}));
+  liste.push({t:'Wo unterschreibe ich?', zu:'anrede'});
+  return liste.map(empfangOpt);
+}
+
+// Einen Knoten setzen und sprechen lassen. Fragen merken sich, dass sie
+// gestellt wurden, und schalten damit ihre Nachfragen frei.
+function empfangSzene(key){
+  const frage = empfangFrage(key);
+  if(frage) empfang.gefragt.add(key);
+  empfang.knoten = key;
+  const k = EMPFANG_KNOTEN[key] || frage;
+  if(!k){ empfangEnde(); return; }            // unerreichbar, empfangAssert() prüft das
+  gespraechSagen(k.z1, k.z2);
+}
+
+// Der Vordruck aus der Szene heraus. Er läuft danach seinen eigenen Weg zu
+// Ende (dienstAntritt() auf Blatt 3), die Szene ist damit beendet.
+function empfangVordruck(){
+  empfangSchliessen();
+  showDienstblatt(1, 'einstellung');
+}
+
+// Unterschrift ohne Umweg über die drei Blätter. Derselbe Aufruf, den auch der
+// Knopf auf Blatt 3 auslöst, und damit derselbe Merker in kn.seen.
+function empfangEnde(){
+  empfangSchliessen();
+  dienstAntritt();
+}
+
+function empfangSchliessen(){
+  empfangAktiv = false;                       // erst die Flagge, dann schließen
+  gespraechSchliessen();
+  el('gespraechZu').style.display = '';
+  document.body.classList.remove('empfangLaeuft');
+}
+
+// Knöterichs Porträt. Er ist die einzige Figur des Ensembles ohne Eintrag in
+// DORF_FIGUREN: er steht nicht im Dorf, er steht im Haus (KN_POS, drawAlter).
+// Sein Bild entsteht deshalb hier auf demselben Weg wie das der fünf Figuren
+// ohne Pack-Blatt, als Held-Komposit, und mit derselben grauen Tönung, die ihn
+// auch in der Welt trägt. Ein zweiter Aufruf ist harmlos, gebacken wird einmal.
+const EMPFANG_BLATT = 'npc_baked_knoeterich';
+function empfangKnoeterich(){
+  if(!SHEETS[EMPFANG_BLATT]) bakeNpcSheet(EMPFANG_BLATT, {hair:KN_HAAR}, 'idle');
+  // Dieselbe Farbe wie drawAlter(), aber schwaecher aufgetragen. Das ist kein
+  // zweiter Kanon, sondern dieselbe Aussage in einer anderen Groesse: in der
+  // Welt ist die Figur 24 Pixel hoch und braucht 0.82, damit "alt und grau"
+  // ueberhaupt ankommt. Im fuenffach vergroesserten Portraet deckt derselbe
+  // Wert Gesicht und Falten zu, und Knoeterich sah aus wie ein unfertiges
+  // Blatt. Nachgemessen am Bild, nicht geschaetzt.
+  return {sheetIdle:EMPFANG_BLATT, tint:'#8a8a8a', tintA:0.45,
+          figur:{key:'knoeterich', name:KN_NAME_KURZ}};
+}
+
+// --- Die Anrisstafeln -------------------------------------------------------
+// Sie laufen im #overlay und nicht in der Tafel: erst das große Bild, dann das
+// kleine. Weitergeblättert wird per Klick, nichts läuft von selbst ab. Das ist
+// der Unterschied, auf dem Kapitel 14 besteht, und er ist keine Wortklauberei:
+// wer nicht drückt, steht hier bis morgen.
+function empfangTafel(i){
+  const t = EMPFANG_TAFELN[i];
+  if(!t){ empfangGespraech(); return; }
+  const letzte = i === EMPFANG_TAFELN.length - 1;
+  MUS.swell();
+  el('ovPanel').innerHTML = `
+    <div style="min-height:34vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;">
+      <p style="font-size:calc(30px * var(--fs));line-height:1.2;color:#f4d97a;letter-spacing:2px;
+                text-shadow:0 3px 0 #241a09;margin:0;">${gEsc(t.z1)}</p>
+      <p style="font-size:calc(17px * var(--fs));line-height:1.4;color:#d8c898;margin:0;">${gEsc(t.z2)}</p>
+    </div>
+    <button onclick="empfangTafel(${i+1})">${letzte ? 'ANKLOPFEN' : 'WEITER'}</button>
+    <div><button onclick="empfangUeberspringen()"
+      style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:6px;opacity:.7;">ÜBERSPRINGEN</button></div>`;
+  el('overlay').style.display = 'flex';
+  MUS.muffle(true);
+}
+
+// Wer den Anfang kennt, will ihn beim zweiten Mal nicht wieder sehen. Der Weg
+// führt auf den Vordruck und damit auf die Unterschrift, nicht am Kanon vorbei.
+function empfangUeberspringen(){
+  empfangSchliessen();
+  showDienstblatt(1, 'einstellung');
+}
+
+function empfangGespraech(){
+  el('overlay').style.display = 'none';
+  empfang.knoten = 'gruss'; empfang.gefragt = new Set();
+  empfangAktiv = true;
+  const n = empfangKnoeterich();
+  gespraech.npc = n; gespraech.fig = n.figur; gespraech.wahl = 0;
+  gespraechOffen = true;
+  el('gespraech').style.display = 'block';
+  el('gespraechZu').style.display = 'none';   // die Szene hat nur einen Ausgang
+  gespraechPortrait(n);
+  MUS.goto('office'); MUS.muffle(false);
+  empfangSzene('gruss');
+  panelSicht();
+}
+
+// Der Eingang. Ersetzt in startGame() den Sprung auf Blatt 1.
+function empfangStarten(){
+  empfang.gefragt = new Set();
+  document.body.classList.add('empfangLaeuft');
+  empfangTafel(0);
+}
+
+// --- Guard, Bauform wie dienstAssert()/gespraechAssert(). Wirft nie, meldet nur.
+//
+// Geprüft wird das, was beim nächsten Weiterschreiben leise kaputtgeht:
+//   (1) Formregeln aus Kapitel 13 auf jeder Zeile, samt AKTE_SPERRE. Eine
+//       Szene verführt stärker zum Erklären als ein Formular, also gilt hier
+//       dieselbe Sperre und derselbe Sprechtest.
+//   (2) Jede Frage ist erreichbar. Eine Frage, deren Voraussetzung hinter ihr
+//       steht, erscheint nie, und eine Wartefrage, die auf mehr Fragen wartet,
+//       als es gibt, ebenfalls nicht.
+//   (3) Kein Knoten ohne Ausgang und kein Ziel, das es nicht gibt. Eine
+//       Sackgasse im Empfang ist ein Spiel, das nicht startet.
+//   (4) Die Antwortliste bleibt vierzeilig und im Zeichendeckel aus U3.
+//   (5) Der Empfang endet dort, wo W8 endet: beide Ausgänge über
+//       dienstAntritt(), sonst stünde kn.seen.einstellung an einem zweiten Ort.
+function empfangAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('E1 Empfang:', m, ...r); };
+  const text = (txt, wo, leerOk) => {
+    if(!txt){ if(!leerOk) fehler('Text leer', wo); return; }
+    if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', wo, txt);
+    if(/[—–]/.test(txt)) fehler('Gedankenstrich statt Interpunkt', wo, txt);
+    if(PRUEF_EMOJI.test(txt)) fehler('Emoji im Figurentext', wo, txt);
+    for(const g of PRUEF_GEHEIM) if(txt.indexOf(g) >= 0) fehler('Kesselgrammatik im Text', wo, g, txt);
+    for(const s of AKTE_SPERRE) if(txt.indexOf(s) >= 0) fehler('Vorgriff auf die Akte', wo, s, txt);
+  };
+
+  // (1) Tafeln und Sprechzeilen
+  EMPFANG_TAFELN.forEach((t, i) => { text(t.z1, `Tafel ${i+1} Zeile 1`); text(t.z2, `Tafel ${i+1} Zeile 2`); });
+  const alleKnoten = {};
+  for(const k in EMPFANG_KNOTEN) alleKnoten[k] = EMPFANG_KNOTEN[k];
+  for(const f of EMPFANG_FRAGEN){
+    if(alleKnoten[f.key]) fehler('Frage und Knoten heißen gleich', f.key);
+    alleKnoten[f.key] = f;
+    text(f.t, `Frage ${f.key} Beschriftung`);
+    if(f.t.length > ANTWORT_DECKEL) fehler('Frage zu lang für die Zeile', f.key, f.t.length);
+  }
+  for(const key in alleKnoten){
+    const k = alleKnoten[key];
+    text(k.z1, `Knoten ${key} Zeile 1`);
+    text(k.z2, `Knoten ${key} Zeile 2`);
+  }
+
+  // (2) Erreichbarkeit
+  const pos = {};
+  EMPFANG_FRAGEN.forEach((f, i) => { pos[f.key] = i; });
+  for(const f of EMPFANG_FRAGEN){
+    if(f.frei){
+      if(pos[f.frei] === undefined) fehler('Voraussetzung gibt es nicht', f.key, f.frei);
+      else if(pos[f.frei] > pos[f.key]) fehler('Voraussetzung steht hinter ihrer Frage', f.key, f.frei);
+    }
+    if(f.nach && f.nach > EMPFANG_FRAGEN.length - 1)
+      fehler('Wartefrage wartet auf mehr Fragen, als es gibt', f.key, f.nach);
+  }
+  const einstieg = EMPFANG_FRAGEN.filter(f => !f.frei && !f.nach).length;
+  if(einstieg < EMPFANG_FRAGEN_SICHT)
+    fehler('zu wenige Fragen ohne Voraussetzung', einstieg, 'von', EMPFANG_FRAGEN_SICHT);
+
+  // (3)/(4) Antwortlisten aller Knoten, ohne die Szene zu öffnen.
+  const merk = {knoten:empfang.knoten, gefragt:empfang.gefragt};
+  for(const key in alleKnoten){
+    empfang.knoten = key; empfang.gefragt = new Set();
+    let opts;
+    try { opts = empfangOptionen(); }
+    catch(e){ fehler('Antwortliste wirft', key, e.message); continue; }
+    if(!opts.length) fehler('Knoten ohne Ausgang', key);
+    if(opts.length > 4) fehler('mehr als vier Antworten', key, opts.length);
+    for(const o of opts){
+      if(!o.t) fehler('leere Antwort', key);
+      else if(o.t.length > ANTWORT_DECKEL) fehler('Antwort zu lang', key, o.t, o.t.length);
+      if(typeof o.tun !== 'function') fehler('Antwort ohne Wirkung', key, o.t);
+      text(o.t, `Knoten ${key} Antwort`);
+    }
+  }
+  // Jedes zu-Ziel muss es geben. An der Quelle geprüft und nicht am gebauten
+  // Ergebnis, weil empfangOpt() das Ziel in eine Funktion einpackt.
+  for(const key in EMPFANG_KNOTEN){
+    const k = EMPFANG_KNOTEN[key];
+    if(!k.opts) continue;
+    for(const o of k.opts()) if(o.zu && !alleKnoten[o.zu])
+      fehler('Antwort zeigt auf einen Knoten, den es nicht gibt', key, o.zu);
+  }
+  empfang.knoten = merk.knoten; empfang.gefragt = merk.gefragt;
+
+  // (5) Der Ausgang bleibt der Ausgang aus W8.
+  if(typeof dienstAntritt !== 'function') fehler('dienstAntritt() fehlt, der Empfang hätte kein Ende');
+
+  if(ok) console.log(`E1 Empfang: ${EMPFANG_TAFELN.length} Tafeln, ${EMPFANG_FRAGEN.length} Fragen,`
+    + ` ${Object.keys(EMPFANG_KNOTEN).length} Knoten, Sperrvermerk und Antwortdeckel in Ordnung.`);
+}
+empfangAssert();
+
 // --- Guard, Bauform wie rangAssert()/anredeAssert(). Prueft beim Laden drei
 // Dinge, die man beim spaeteren Weiterschreiben genau so verliert:
 //   (1) Formregeln aus Kapitel 13 auf jeder einzelnen Zeile.
@@ -13396,8 +13853,7 @@ function dienstAssert(){
   // Begriffe, die im Vordruck nichts zu suchen haben: sie gehoeren den Akten II
   // bis V und werden dort einzeln verdient. Bewusst gross geschrieben geprueft,
   // die Kleinschreibung ("kriegen", "zufrieden") soll nicht anschlagen.
-  const SPERRE = ['Nachtrag', 'Ausfertigung', 'Zustell', 'Krieg', 'Frieden', 'Vertrag',
-                  'Trepp', 'Sturz', 'Schattenfürst', 'Anschrift', 'Vorgang 1', 'Amtsleiterin'];
+  const SPERRE = AKTE_SPERRE;   // E1: eine Liste fuer Vordruck und Empfang, siehe oben
   const text = (txt, feld, figur) => {
     if(!txt) return fehler('Text leer', feld);
     if(txt.indexOf('undefined') >= 0) fehler('undefined im Text', feld, txt);

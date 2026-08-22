@@ -593,6 +593,10 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
 7. **Keine Meta-Witze, keine Popkultur, keine Anspielungen auf das Jahr der Entstehung.** Das Spiel soll in fünfzehn Jahren noch funktionieren.
 8. **Kein Blut, kein Sterben, kein Zynismus.** Konfetti. Feierabend. Und niemand ist böse, alle sind nur unzuständig.
 9. **Unten drunter Wärme.** Jede Figur versucht etwas. Am Ende gelingt es. Ohne diese Regel ist das Ganze nur ein langer Behördenwitz, und der trägt keine fünfzig Schichten.
+10. **Die Form ist episch, der Inhalt ist Papier.** Fanfare für einen Aktenvorgang. Das Spiel nimmt sich bitterernst, die Welt bleibt eine Behörde. Episch wird die **Form**, nie der Gegenstand. Regel 1 bleibt dadurch unangetastet: niemand im Spiel merkt, dass die Fanfare komisch ist, am wenigsten die Fanfare. *(Nachgetragen mit E1, 22.08.2026.)*
+11. **Der Spieler ist der Gerade.** Trockenheit braucht ein Gegenüber, das nachfragt. Eine Figur sagt den Satz, der Spieler sagt "wie bitte", und erst dadurch wird aus einer Auskunft ein Gag. Bis U3 hatte das Spiel keinen Kanal dafür, seither hat es einen. Vorher war jede Figur trocken und keine war der Gerade, und damit lief die Trockenheit ins Leere. *(Nachgetragen mit E1, 22.08.2026.)*
+
+**Warum die beiden nachkamen.** Die Rückmeldung lautete: die Witze und Anspielungen tragen nicht, niemand versteht sie. Der Befund dahinter war nicht, dass die Witze fehlten oder zu fein waren, sondern dass sie ohne Takt dastanden. `Anlage 1 liegt nicht vor` ist die Pointe des ersten Akts und stand als Feld acht von zehn in einem Formular. Regel 7 bleibt deshalb ausdrücklich in Kraft: mehr Anspielungen wären die falsche Antwort. Was trägt, ist die Situation, und die Situation braucht Zeit und ein Gegenüber. Siehe `phase-e1-empfang.md`.
 
 **Formregeln, aus dem bestehenden Projekt übernommen und hier verbindlich für alle Texte:**
 
@@ -732,9 +736,22 @@ Kapitel 5 und 18.2. Der eine Kauf, den dieses Spiel anbietet, und die einzige Ar
 
 **Abnahme:** Kein Gegner wurde stärker gemacht, keine Bandbreite verschoben, keine zweite Währung. Der Spaziergangs-Messlauf fährt seither zwei Bauweisen und weist den Abstand aus.
 
+### E1: Der Empfang, der Anfang als Szene — ERLEDIGT (siehe `phase-e1-empfang.md`)
+
+Kapitel 8 und die beiden neuen Regeln aus Kapitel 13. Der Bauabschnitt, der W8 nicht ersetzt, sondern bespielt.
+
+* **Der Anfang ist eine Szene, der Vordruck bleibt das Regal dahinter.** W8 hat den Anfang beantwortet und nicht erzählt: das erste Bild des Spiels waren vierzig Zeilen Amtsdeutsch auf drei Blättern. Der Inhalt war richtig und ist unverändert geblieben, die Form war eine Wand. Gespielt wird jetzt ein Empfang bei Knöterich, nachzulesen ist der Vordruck wie bisher, aus der Szene heraus, aus dem Startbild und aus dem Amt.
+* **Kein einziger neuer Witz.** Jede Pointe der Szene steht wörtlich oder sinngleich schon im Vordruck oder in Kapitel 8. Geändert hat sich, dass sie einzeln kommen, dass jemand darauf antwortet und dass dazwischen Platz ist. Das ist die ganze Behandlung des Befunds "die Witze tragen nicht".
+* **Kein neues System.** Dieselbe `#gespraech`-Tafel aus U3, dieselbe `#ovPanel`-Fläche, dieselbe `kn.seen`-Persistenz. Nebengewinn und Ausschlaggeber: der Anfang sieht damit aus wie das, was danach den ganzen Rest des Spiels trägt, und bringt dem Spieler nebenbei bei, wie man in diesem Spiel redet.
+* **Der Treppeneffekt statt der Aufzählung.** Vierzehn Fragen, drei gleichzeitig auf der Tafel, jede Antwort schaltet die nächste Frage frei und macht die vorige Antwort schlimmer. Zwei Treppen tragen die Szene: die Neubesetzung, die an N. N. endet, und Anlage 1, an deren Ende Knöterich sich verrät. Was er weiß, bleibt vollständig für später aufgehoben; dass er etwas weiß, findet der Spieler selbst.
+* **Die Anrede (P1) wandert aus dem Formularfeld in die Szene.** Dieselbe Angabe, dieselbe Wirkung, derselbe Zusatz, dass sie folgenlos bleibt. Sie wird nur nicht mehr angekreuzt, sondern gefragt, und jemand hört zu.
+* **Ein Ausgang.** Esc, das Kreuz und ein Klick daneben schließen den Empfang nicht. Beide Enden laufen über dasselbe `dienstAntritt()` wie Blatt 3, `kn.seen.einstellung` steht weiter an genau einem Ort.
+
+**Abnahme:** Kein Wort der Akte wandert nach vorn (`empfangAssert()` prüft jede Zeile gegen dieselbe Sperrliste wie der Vordruck). Nichts läuft von selbst ab. Kein Questmarker, kein neues `amt`-Feld, kein neuer Speicherschlüssel. Wer überspringt, landet auf dem Vordruck und damit im alten Ablauf.
+
 ### Was wir ausdrücklich nicht bauen
 
-* Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.
+* ~~Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.~~ **Überholt durch U3** (Nutzerentscheidung, `phase-u3-gespraech.md`): das Gesprächsfenster mit vier Antworten ist gebaut und trägt seit E1 auch den Anfang. Was bleibt: kein *verzweigender* Dialog mit Folgen für den Spielstand. Die Antworten wählen, was gesagt wird, nie was gilt. Einzige Ausnahme ist die Anrede im Empfang, und die war schon vor E1 eine Angabe des Spielers (P1).
 * Keine Cutscene, kein Kamerafahrt-Skript, kein Standbild-Interlude.
 * Keine Vertonung.
 * Keine Questmarker auf der Minimap. Wer suchen soll, bekommt keinen Pfeil. (Ausgenommen die erbraute Wirkung „Aktenlage" aus Phase 3: sie zeigt ungeöffnete Truhen und bereitstehende Kammertüren als Punkte, also Fundorte, keine Ziele, und wird mit dem Fluch „Aktenblindheit" bezahlt.)

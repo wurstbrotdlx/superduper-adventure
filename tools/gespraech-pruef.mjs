@@ -266,6 +266,13 @@ const tafel = page => page.evaluate(() => ({
 // das Spiel liess sich auf einem Telefon nicht starten. Geprueft mit einem
 // echten Wisch, nicht mit einem gesetzten scrollTop, und auf der hoechsten
 // Schriftstufe, weil dort am meisten ueberhaengt.
+//
+// E1 hat den Weg dorthin geaendert, nicht die Sache: startGame() zeigt seither
+// erst den Empfang, und der Vordruck liegt dahinter. Der Lauf klickt sich
+// deshalb ueber ÜBERSPRINGEN auf Blatt 1, statt ihn wie vorher sofort
+// vorzufinden. Ohne diese Zeile mass er die Anrisstafel, die auf ein Telefon
+// passt, und meldete den behobenen Fehlstand als behoben, weil er ihn gar
+// nicht mehr aufsuchte.
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 },
                                          deviceScaleFactor: 2, hasTouch: true, isMobile: true });
@@ -273,6 +280,8 @@ const tafel = page => page.evaluate(() => ({
   await page.goto(URL, { waitUntil: 'load' });
   await page.waitForFunction(() => typeof frameNo !== 'undefined' && frameNo > 0, null, { timeout: 60000 });
   await page.evaluate(() => { document.body.classList.add('touch'); schriftSetzen(2); startGame(); });
+  await page.waitForTimeout(400);
+  await page.evaluate(() => empfangUeberspringen());   // E1: vom Empfang auf den Vordruck
   await page.waitForTimeout(400);
 
   const lage = () => page.evaluate(() => {
