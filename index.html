@@ -10,9 +10,37 @@
      <link href> nicht auf, eine assets/favicon.png wuerde im Pages-Build fehlen. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d0a14'/%3E%3Cg stroke='%234a3c22' stroke-width='1'%3E%3Crect x='4' y='12' width='9' height='13' fill='%23a08f62' transform='rotate(-24 8.5 18.5)'/%3E%3Crect x='19' y='12' width='9' height='13' fill='%23a08f62' transform='rotate(24 23.5 18.5)'/%3E%3Crect x='11.5' y='11' width='9' height='14' fill='%23f0e4c4'/%3E%3C/g%3E%3Ccircle cx='16' cy='7.5' r='4.2' fill='none' stroke='%23f4d97a' stroke-width='2.2'/%3E%3Cpath d='M16 25c2.4 2 2.4 4.2 0 5.6c-2.4-1.4-2.4-3.6 0-5.6z' fill='%23ff9a3c'/%3E%3C/svg%3E">
 <style>
+  /* =====================================================================
+     U3 — ein Regler fuer die ganze Schrift.
+     Die 176 font-size-Angaben dieser Datei standen als feste Pixelzahlen da,
+     verteilt ueber den <style>-Block UND ueber die Inline-Stile, die der
+     JavaScript-Teil in seine Panels schreibt. "Groesser" war damit kein
+     Handgriff, sondern 176. Jede Angabe lautet jetzt
+     calc(Npx * var(--fs)) — die Zahl bleibt die kalibrierte, der Faktor
+     kommt von hier. Auch die Inline-Stile erben ihn, weil eigene
+     Eigenschaften vererbt werden und dort ganz normales CSS steht.
+
+     Die Stufen stehen in SCHRIFT_STUFEN (JS), gewaehlt wird im Inventar
+     unter TON, gemerkt wird in localStorage. Der Auslieferungswert ist
+     die mittlere Stufe, nicht 1: die Bitte lautete, die Schrift duerfe
+     groesser sein, und eine Voreinstellung, die niemand findet, ist keine.
+
+     NICHT erfasst: die Schriften im Canvas (ctx.font). Die sind Konstanten,
+     weil sie sonst pro Frame entstuenden (R6/F73). Die zwei, bei denen es
+     ums Lesen geht — Namensschild und Sprechblase — baut schriftAnwenden()
+     bei jedem Stufenwechsel einmal neu. Das Kammerschild bleibt bewusst
+     aussen vor: seine 9px sind gegen eine 68px breite Holztafel gerechnet
+     (s. drawKammerTuer), groessere Schrift liefe dort ueber den Rand.
+     ===================================================================== */
+  :root{--fs:1.2;}
+
   html,body{margin:0;padding:0;overflow:hidden;background:#05030a;font-family:'Courier New',ui-monospace,monospace;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;overscroll-behavior:none;}
   #game{position:fixed;inset:0;display:block;cursor:crosshair;image-rendering:pixelated;touch-action:none;-webkit-tap-highlight-color:transparent;}
-  #hud,#inv,#overlay{touch-action:manipulation;}
+  #hud,#inv{touch-action:manipulation;}
+  /* U3: pan-y statt manipulation. #overlay rollt seit U3 selbst (s. dort),
+     und ein Vordruck, der laenger ist als das Telefon, muss sich mit dem
+     Daumen bewegen lassen. */
+  #overlay{touch-action:pan-y;}
   #spellTree{touch-action:pan-y;}
   #hud{position:fixed;left:0;right:0;bottom:0;height:96px;pointer-events:none;z-index:10;
        background:linear-gradient(to top,rgba(10,8,16,.95),rgba(10,8,16,.75) 70%,transparent);
@@ -25,64 +53,64 @@
   .orbWrap{width:84px;height:84px;border-radius:50%;border:3px solid #6b5a3a;background:#1a0505;overflow:hidden;position:relative;flex:0 0 auto;box-shadow:0 0 12px rgba(0,0,0,.8) inset;image-rendering:pixelated;}
   #hpFill{position:absolute;left:0;right:0;bottom:0;height:100%;background:radial-gradient(circle at 35% 30%,#ff6a5a,#b31414 60%,#7a0a0a);transition:height .15s;}
   #manaFill{position:absolute;left:0;right:0;bottom:0;height:100%;background:radial-gradient(circle at 35% 30%,#5a9eff,#144cb3 60%,#0a207a);transition:height .15s;}
-  .orbTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:12px;text-shadow:0 1px 2px #000;}
+  .orbTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:calc(12px * var(--fs));text-shadow:0 1px 2px #000;}
   #midHud{display:flex;flex-direction:column;gap:6px;align-items:center;}
   #xpBar{width:340px;height:10px;border:2px solid #6b5a3a;background:#141210;border-radius:5px;overflow:hidden;}
   #xpFill{height:100%;width:0%;background:linear-gradient(90deg,#8a2be2,#d8bfd8);transition:width 0.2s;}
   #beltRow{display:flex;gap:8px;align-items:center;}
-  .beltSlot{pointer-events:auto;cursor:pointer;min-width:54px;height:44px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;color:#e8d9a8;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;padding:0 8px;gap:4px;}
+  .beltSlot{pointer-events:auto;cursor:pointer;min-width:54px;height:44px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;color:#e8d9a8;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:calc(13px * var(--fs));padding:0 8px;gap:4px;}
   .beltSlot:hover{border-color:#c9a227;}
   .beltSlot.disabled{opacity:0.4;filter:grayscale(1);cursor:not-allowed;}
   /* Beschriftungen sind für Touch unsichtbar: Ziel eines Drags ist immer der Button
      selbst, nie ein Kind-Span, der beim HUD-Refresh ausgetauscht werden könnte. */
   .beltSlot *{pointer-events:none;}
-  #statCol{color:#e8d9a8;font-weight:bold;font-size:13px;text-shadow:0 1px 2px #000;display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:130px;}
-  #zone{position:fixed;left:12px;top:12px;color:#f4e6b8;font-size:16px;font-weight:bold;text-shadow:0 2px 4px #000;z-index:10;pointer-events:none;}
+  #statCol{color:#e8d9a8;font-weight:bold;font-size:calc(13px * var(--fs));text-shadow:0 1px 2px #000;display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:130px;}
+  #zone{position:fixed;left:12px;top:12px;color:#f4e6b8;font-size:calc(16px * var(--fs));font-weight:bold;text-shadow:0 2px 4px #000;z-index:10;pointer-events:none;}
   #minimap{position:fixed;top:12px;right:12px;width:128px;height:128px;border:3px solid #6b5a3a;border-radius:4px;z-index:10;background:#000;image-rendering:pixelated;opacity:.92;}
   #bossbar{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(480px,60vw);z-index:11;display:none;}
-  #bossname{display:block;text-align:center;color:#ffd9d9;font-weight:bold;font-size:14px;text-shadow:0 1px 3px #000;margin-bottom:3px;}
+  #bossname{display:block;text-align:center;color:#ffd9d9;font-weight:bold;font-size:calc(14px * var(--fs));text-shadow:0 1px 3px #000;margin-bottom:3px;}
   #bossback{height:14px;border:2px solid #7a1d1d;background:#210808;border-radius:4px;overflow:hidden;}
   #bossfill{height:100%;width:100%;background:linear-gradient(90deg,#8e1010,#e33131);}
   
   #inv{position:fixed;top:50%;right:24px;transform:translateY(-50%);width:min(360px,calc(100vw - 48px));max-height:85vh;overflow-y:auto;z-index:20;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #inv h2{margin:0 0 8px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #inv h2{margin:0 0 8px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #equipGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;}
-  .eqSlot{position:relative;height:52px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;}
-  .eqSlot .lbl{position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:8px;color:#9a8a5f;pointer-events:none;}
+  .eqSlot{position:relative;height:52px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;display:flex;align-items:center;justify-content:center;font-size:calc(22px * var(--fs));cursor:pointer;}
+  .eqSlot .lbl{position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:calc(8px * var(--fs));color:#9a8a5f;pointer-events:none;}
   #skillBox{border:1px solid #7a5a10;border-radius:6px;padding:8px;margin-bottom:8px;background:#1a140b;}
-  #skillBox h4{margin:0 0 6px;color:#f4d97a;font-size:12px;display:flex;justify-content:space-between;}
-  .skillRow{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:4px;}
+  #skillBox h4{margin:0 0 6px;color:#f4d97a;font-size:calc(12px * var(--fs));display:flex;justify-content:space-between;}
+  .skillRow{display:flex;justify-content:space-between;align-items:center;font-size:calc(11px * var(--fs));margin-bottom:4px;}
   .skillBtn{background:#c9a227;border:none;border-radius:3px;color:#000;font-weight:bold;padding:1px 6px;cursor:pointer;}
   .skillBtn:disabled{background:#4a3e20;color:#7a6e50;cursor:default;}
-  #statBox{font-size:11px;line-height:1.4;border:1px solid #5a4a2d;border-radius:6px;padding:6px 8px;margin-bottom:8px;background:#141009;color:#d8c898;}
+  #statBox{font-size:calc(11px * var(--fs));line-height:1.4;border:1px solid #5a4a2d;border-radius:6px;padding:6px 8px;margin-bottom:8px;background:#141009;color:#d8c898;}
   /* S1: Der Ertrag eines Punktes steht neben dem Punkt. Vorher stand da '(+HP)'. */
   .skWert{color:#9a8a5f;font-weight:normal;}
-  #skHint{font-size:10px;color:#f4d97a;margin-top:6px;line-height:1.35;min-height:1px;}
+  #skHint{font-size:calc(10px * var(--fs));color:#f4d97a;margin-top:6px;line-height:1.35;min-height:1px;}
   #skillBox.offen{border-color:#f4d97a;box-shadow:0 0 0 1px rgba(244,217,122,0.25);}
   /* S1: freie Punkte gehoeren in die Dauersicht, nicht nur ins Inventar. */
   #freiTxt{color:#f4d97a;animation:freiPuls 1.6s ease-in-out infinite;}
   @keyframes freiPuls{0%,100%{opacity:1;}50%{opacity:0.45;}}
   #bagGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
-  .bagSlot{height:46px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
+  .bagSlot{height:46px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;align-items:center;justify-content:center;font-size:calc(20px * var(--fs));cursor:pointer;}
 
   #spellTree{position:fixed;top:50%;left:24px;transform:translateY(-50%);width:min(420px,calc(100vw - 48px));max-height:88vh;overflow-y:auto;z-index:20;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #spellTree h2{margin:0 0 10px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #spellTree h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #spellCols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-  .spellColTitle{font-size:11px;text-align:center;color:#c9a227;margin-bottom:4px;}
-  .spellNode{border:2px solid #4c4030;border-radius:6px;padding:6px;margin-bottom:8px;font-size:11px;background:#141009;cursor:pointer;text-align:center;}
-  .spellNode .sIcon{font-size:20px;}
+  .spellColTitle{font-size:calc(11px * var(--fs));text-align:center;color:#c9a227;margin-bottom:4px;}
+  .spellNode{border:2px solid #4c4030;border-radius:6px;padding:6px;margin-bottom:8px;font-size:calc(11px * var(--fs));background:#141009;cursor:pointer;text-align:center;}
+  .spellNode .sIcon{font-size:calc(20px * var(--fs));}
   .spellNode .sName{font-weight:bold;color:#e8d9a8;margin:2px 0;}
-  .spellNode .sDesc{color:#9a8a5f;font-size:9px;line-height:1.3;}
-  .spellNode .sMana{color:#7da0ff;font-size:9px;}
+  .spellNode .sDesc{color:#9a8a5f;font-size:calc(9px * var(--fs));line-height:1.3;}
+  .spellNode .sMana{color:#7da0ff;font-size:calc(9px * var(--fs));}
   .spellNode.known{border-color:#6aff8f;background:#132014;}
   .spellNode.known.active{border-color:#f4d97a;box-shadow:0 0 8px rgba(244,217,122,.6);}
   .spellNode.unlockable{border-color:#c9a227;cursor:pointer;}
   .spellNode.unlockable:hover{background:#241c10;}
   .spellNode.locked{opacity:0.45;cursor:not-allowed;}
   #ultimateRow{margin-top:6px;}
-  .ultNode{border:2px solid #4c4030;border-radius:8px;padding:10px;text-align:center;font-size:12px;background:#1a0f22;cursor:pointer;}
+  .ultNode{border:2px solid #4c4030;border-radius:8px;padding:10px;text-align:center;font-size:calc(12px * var(--fs));background:#1a0f22;cursor:pointer;}
   .ultNode.known{border-color:#c77dff;box-shadow:0 0 12px rgba(199,125,255,.7);}
   .ultNode.unlockable{border-color:#f4d97a;}
   .ultNode.locked{opacity:0.5;cursor:not-allowed;}
@@ -95,147 +123,156 @@
   .rar4{border-color:#ff9f4a; color:#ff9f4a; box-shadow:0 0 10px rgba(255,159,74,.7);}
   .bagSlot:hover,.eqSlot:hover{background:#241c10;}
   
-  #tooltip{position:fixed;z-index:40;display:none;min-width:180px;background:rgba(8,6,12,.96);border:2px solid #8a6d3b;border-radius:8px;color:#ddd;padding:10px 12px;font-size:12px;line-height:1.5;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,0.8);}
-  #tooltip .tname{font-weight:bold;font-size:14px;margin-bottom:4px; border-bottom:1px solid #4c4030; padding-bottom:4px;}
+  #tooltip{position:fixed;z-index:40;display:none;min-width:180px;background:rgba(8,6,12,.96);border:2px solid #8a6d3b;border-radius:8px;color:#ddd;padding:10px 12px;font-size:calc(12px * var(--fs));line-height:1.5;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,0.8);}
+  #tooltip .tname{font-weight:bold;font-size:calc(14px * var(--fs));margin-bottom:4px; border-bottom:1px solid #4c4030; padding-bottom:4px;}
   #tooltip .aff{color:#8fb0ff;}
   #tooltip .fluch{color:#ff8f8f;}
-  #tooltip .hint{margin-top:8px;font-size:10px;color:#9a8a5f;font-style:italic;}
+  #tooltip .hint{margin-top:8px;font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;}
 
   /* --- Vollbildkarte (L) — W-Groß: Ausgleich für das Minimap-Fenster, das bei
      großer Karte nur noch einen Ausschnitt zeigt statt der ganzen Welt. --- */
   #fullmap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px));z-index:21;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #fullmap h2{margin:0 0 8px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #fullmap h2{margin:0 0 8px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #fullmapCanvas{display:block;width:100%;height:auto;aspect-ratio:1/1;border:2px solid #4c4030;border-radius:6px;background:#0a0810;image-rendering:pixelated;}
-  #fullmapLegend{margin-top:8px;font-size:10px;color:#9a8a5f;line-height:1.5;}
+  #fullmapLegend{margin-top:8px;font-size:calc(10px * var(--fs));color:#9a8a5f;line-height:1.5;}
 
   /* --- Kessel & Kladde (K) --- */
   #kessel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 32px));max-height:86vh;overflow-y:auto;z-index:21;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #kessel h2{margin:0 0 2px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
-  #kesselSub{font-size:10px;color:#9a8a5f;margin-bottom:10px;font-style:italic;line-height:1.4;}
+  #kessel h2{margin:0 0 2px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #kesselSub{font-size:calc(10px * var(--fs));color:#9a8a5f;margin-bottom:10px;font-style:italic;line-height:1.4;}
   #kesselTabs{display:flex;gap:6px;margin-bottom:10px;}
   .kTab{flex:1;text-align:center;padding:8px 4px;border:2px solid #4c4030;border-radius:6px;background:#141009;color:#c9b98a;
-        cursor:pointer;font-size:12px;font-weight:bold;min-height:40px;display:flex;align-items:center;justify-content:center;}
+        cursor:pointer;font-size:calc(12px * var(--fs));font-weight:bold;min-height:40px;display:flex;align-items:center;justify-content:center;}
   .kTab.on{border-color:#c9a227;background:#241c10;color:#f4d97a;}
   #potRow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
   .potSlot{height:64px;border:2px dashed #6b5a3a;border-radius:6px;background:#17130d;display:flex;flex-direction:column;
            align-items:center;justify-content:center;cursor:pointer;padding:3px;overflow:hidden;}
   .potSlot.full{border-style:solid;}
-  .potSlot .pi{font-size:18px;line-height:1.1;}
-  .potSlot .pn{font-size:8px;line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
-  #brewBtn{width:100%;font-family:inherit;font-weight:bold;font-size:15px;padding:11px;cursor:pointer;color:#1a1206;
+  .potSlot .pi{font-size:calc(18px * var(--fs));line-height:1.1;}
+  .potSlot .pn{font-size:calc(8px * var(--fs));line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
+  #brewBtn{width:100%;font-family:inherit;font-weight:bold;font-size:calc(15px * var(--fs));padding:11px;cursor:pointer;color:#1a1206;
            background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;margin-bottom:10px;}
   #brewBtn:disabled{background:#4a3e20;color:#7a6e50;cursor:default;}
-  #kesselResult{display:none;border:2px solid #6b5a3a;border-radius:6px;background:#1a140b;padding:8px 10px;margin-bottom:10px;font-size:12px;line-height:1.5;}
-  #kesselResult .rname{font-weight:bold;font-size:13px;margin-bottom:3px;}
+  #kesselResult{display:none;border:2px solid #6b5a3a;border-radius:6px;background:#1a140b;padding:8px 10px;margin-bottom:10px;font-size:calc(12px * var(--fs));line-height:1.5;}
+  #kesselResult .rname{font-weight:bold;font-size:calc(13px * var(--fs));margin-bottom:3px;}
   #zutGrid,#invZutGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
   .zutTile{position:relative;min-height:54px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;
            flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:3px 2px;overflow:hidden;}
   .zutTile:hover{background:#241c10;}
-  .zutTile .zi{font-size:17px;line-height:1;}
-  .zutTile .zn{font-size:7px;line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
-  .zutTile .zc{position:absolute;top:1px;right:3px;font-size:9px;font-weight:bold;color:#f4d97a;text-shadow:0 1px 2px #000;}
-  .zutEmpty{grid-column:1 / -1;font-size:11px;color:#9a8a5f;font-style:italic;padding:6px 2px;}
-  #kladdeBox{font-size:12px;line-height:1.6;}
+  .zutTile .zi{font-size:calc(17px * var(--fs));line-height:1;}
+  .zutTile .zn{font-size:calc(7px * var(--fs));line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
+  .zutTile .zc{position:absolute;top:1px;right:3px;font-size:calc(9px * var(--fs));font-weight:bold;color:#f4d97a;text-shadow:0 1px 2px #000;}
+  .zutEmpty{grid-column:1 / -1;font-size:calc(11px * var(--fs));color:#9a8a5f;font-style:italic;padding:6px 2px;}
+  #kladdeBox{font-size:calc(12px * var(--fs));line-height:1.6;}
   #kladdeBox .kl{margin-bottom:7px;padding-left:14px;text-indent:-14px;}
-  #kladdeBox .klHead{color:#f4d97a;font-weight:bold;font-size:11px;letter-spacing:1px;margin:10px 0 5px;}
+  #kladdeBox .klHead{color:#f4d97a;font-weight:bold;font-size:calc(11px * var(--fs));letter-spacing:1px;margin:10px 0 5px;}
   #kladdeBox .klEmpty{color:#9a8a5f;font-style:italic;}
-  #blaetterBox{font-size:12px;line-height:1.6;}
-  #blaetterBox .klHead{color:#f4d97a;font-weight:bold;font-size:11px;letter-spacing:1px;margin:10px 0 5px;}
+  #blaetterBox{font-size:calc(12px * var(--fs));line-height:1.6;}
+  #blaetterBox .klHead{color:#f4d97a;font-weight:bold;font-size:calc(11px * var(--fs));letter-spacing:1px;margin:10px 0 5px;}
   #blaetterBox .kl{margin-bottom:7px;padding-left:14px;text-indent:-14px;}
   #blaetterBox .klEmpty{color:#9a8a5f;font-style:italic;}
   #blaetterBox .ak{margin-bottom:8px;padding:6px 8px;cursor:pointer;border-left:2px solid #6b5a3a;}
   #blaetterBox .ak:hover{background:rgba(255,255,255,0.04);}
   #blaetterBox .akText{margin-top:4px;color:#d8cba8;font-style:italic;}
   #blaetterBox .akText p{margin:0 0 4px;}
-  #zutBox h4{margin:10px 0 6px;color:#f4d97a;font-size:12px;}
+  #zutBox h4{margin:10px 0 6px;color:#f4d97a;font-size:calc(12px * var(--fs));}
 
   /* Kessel sitzt oben im Inventar, nicht mehr im Gürtel. Der Kessel ist das
      Herzstück der Ausrüstung, also steht er über den Skills. */
   #kesselBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:46px;margin-bottom:10px;
-    border:2px solid #6aff8f;border-radius:6px;background:#132014;color:#e8d9a8;font-weight:bold;font-size:14px;cursor:pointer;}
+    border:2px solid #6aff8f;border-radius:6px;background:#132014;color:#e8d9a8;font-weight:bold;font-size:calc(14px * var(--fs));cursor:pointer;}
   #kesselBtn:hover{background:#1b2e1d;border-color:#9dffb8;}
-  #kesselHint{color:#6aff8f;font-size:11px;font-weight:normal;}
+  #kesselHint{color:#6aff8f;font-size:calc(11px * var(--fs));font-weight:normal;}
   #kesselBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
 
   /* W6: Dienstausweis-Knopf, gleiche Bauform wie #kesselBtn, andere Farbe. */
   #ausweisBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:40px;margin-bottom:10px;
-    border:2px solid #8a6d3b;border-radius:6px;background:#201a10;color:#e8d9a8;font-weight:bold;font-size:13px;cursor:pointer;}
+    border:2px solid #8a6d3b;border-radius:6px;background:#201a10;color:#e8d9a8;font-weight:bold;font-size:calc(13px * var(--fs));cursor:pointer;}
   #ausweisBtn:hover{background:#2a2214;border-color:#c9a227;}
   #ausweisBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
 
   /* Ton-Steuerung sitzt unten im Inventar, nicht mehr im Gürtel */
   #musikBox{margin-top:12px;padding-top:8px;border-top:1px solid #4c4030;}
-  #musikBox h4{margin:0 0 6px;color:#f4d97a;font-size:12px;}
+  #musikBox h4{margin:0 0 6px;color:#f4d97a;font-size:calc(12px * var(--fs));}
   #musikRow{display:flex;align-items:center;gap:10px;}
   #musikRow #musicBtn{flex:0 0 auto;}
   #musicVol{flex:1;min-width:80px;accent-color:#c9a227;cursor:pointer;}
   /* Phase 5: Knöterich-Regler, gleiche Zeile-Logik wie der Rest von #musikBox */
-  #knToneRow{margin-top:8px;display:flex;gap:6px;}
-  .knToneBtn{flex:1;text-align:center;font-size:10px;padding:6px 2px;border:2px solid #4c4030;
+  #knToneRow, #schriftRow{margin-top:8px;display:flex;gap:6px;}
+  .knToneBtn, .schriftBtn{flex:1;text-align:center;font-size:calc(10px * var(--fs));padding:6px 2px;border:2px solid #4c4030;
     border-radius:6px;background:#141009;color:#c9b98a;cursor:pointer;}
-  .knToneBtn.on{border-color:#c9a227;background:#241c10;color:#f4d97a;}
+  .knToneBtn.on, .schriftBtn.on{border-color:#c9a227;background:#241c10;color:#f4d97a;}
 
   /* Phase 5: Dienstzettel und Randnotiz — eigenes oberes Band, unterhalb von
      #zone/#minimap/#bossbar. CSS-Transition statt JS-Frame fürs Ein-/Ausblenden. */
   #knZettel,#knRandnotiz{position:fixed;left:50%;top:46px;
     max-width:min(420px, calc(100vw - 200px));z-index:12;pointer-events:none;
     background:rgba(20,14,10,.92);border:2px solid #8a6d3b;border-radius:8px;color:#f4e6c8;
-    padding:7px 14px;font-size:12px;line-height:1.5;text-align:center;
+    padding:7px 14px;font-size:calc(12px * var(--fs));line-height:1.5;text-align:center;
     opacity:0;transform:translate(-50%,-6px);transition:opacity .25s ease, transform .25s ease, top .2s ease;}
   #knZettel.show,#knRandnotiz.show{opacity:1;transform:translate(-50%,0);}
   #knZettel{display:flex;align-items:center;gap:8px;}
   /* Amtsstempel: gemeinsames Merkmal beider Kanäle, der Kopf trennt sie (gameplay:273/274).
      Rein statisches CSS, kein JS-Pfad, aus dem Skript nicht erreichbar. */
-  #knZettel::before,#knRandnotiz::before{content:'§';display:inline-block;font-size:11px;
+  #knZettel::before,#knRandnotiz::before{content:'§';display:inline-block;font-size:calc(11px * var(--fs));
     font-weight:bold;font-style:normal;line-height:1;padding:2px 4px;color:#c9a227;
     border:1px solid #c9a227;border-radius:2px;transform:rotate(-8deg);opacity:.8;}
   #knZettel::before{flex:0 0 auto;}
   #knRandnotiz::before{margin-right:6px;vertical-align:middle;}
-  #knZettelHead{font-size:15px;line-height:1;flex:0 0 auto;padding:2px;
+  #knZettelHead{font-size:calc(15px * var(--fs));line-height:1;flex:0 0 auto;padding:2px;
     background:#241c10;border:1px solid #8a6d3b;border-radius:2px;}
   #knZettelZ1{font-weight:bold;}
-  #knZettelZ2{font-size:11px;color:#c9b98a;}
-  #knRandnotiz{font-style:italic;font-size:11px;}
+  #knZettelZ2{font-size:calc(11px * var(--fs));color:#c9b98a;}
+  #knRandnotiz{font-style:italic;font-size:calc(11px * var(--fs));}
   body.bossvis #knZettel,body.bossvis #knRandnotiz{top:78px;}
 
   /* --- Symbolschloss (Kammer-Modul, Phase 2) --- */
   #schloss{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(320px,calc(100vw - 32px));z-index:22;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #schloss h2{margin:0 0 10px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
-  #schlossAnz{text-align:center;font-size:26px;letter-spacing:6px;color:#f4d97a;background:#141009;border:2px solid #4c4030;border-radius:6px;padding:8px 0;margin-bottom:10px;}
+  #schloss h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #schlossAnz{text-align:center;font-size:calc(26px * var(--fs));letter-spacing:6px;color:#f4d97a;background:#141009;border:2px solid #4c4030;border-radius:6px;padding:8px 0;margin-bottom:10px;}
   #schlossTasten{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
   .symBtn{min-height:48px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;color:#e8d9a8;
-          display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;}
+          display:flex;align-items:center;justify-content:center;font-size:calc(22px * var(--fs));cursor:pointer;}
   .symBtn:hover{border-color:#c9a227;background:#241c10;}
-  #schlossMsg{margin-top:9px;font-size:11px;color:#9a8a5f;font-style:italic;text-align:center;}
+  #schlossMsg{margin-top:9px;font-size:calc(11px * var(--fs));color:#9a8a5f;font-style:italic;text-align:center;}
 
   /* --- W6: Dienstausweis (18.8), gleiche Bauform wie #schloss/#kessel --- */
   #ausweis{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(340px,calc(100vw - 32px));z-index:21;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #ausweis h2{margin:0 0 10px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #ausweis h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #ausweisKopf{display:flex;gap:12px;align-items:flex-start;}
   #ausweisFoto{image-rendering:pixelated;width:96px;height:108px;flex:0 0 auto;border:2px solid #6b5a3a;border-radius:4px;background:#17130d;}
-  #ausweisFelder{font-size:12px;line-height:1.7;}
+  #ausweisFelder{font-size:calc(12px * var(--fs));line-height:1.7;}
   #ausweisFelder b{color:#f4d97a;}
-  #ausweisInsignien{margin-top:10px;padding-top:8px;border-top:1px solid #5a4a2d;font-size:11px;color:#c9b98a;text-align:left;}
+  #ausweisInsignien{margin-top:10px;padding-top:8px;border-top:1px solid #5a4a2d;font-size:calc(11px * var(--fs));color:#c9b98a;text-align:left;}
   #ausweisInsignien div{padding:2px 0;}
-  #ausweisFuss{margin-top:9px;font-size:10px;color:#9a8a5f;font-style:italic;text-align:center;}
+  #ausweisFuss{margin-top:9px;font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;text-align:center;}
 
   /* --- G5: Amtsstube (Dorf-Gebäude, Taste F) — gleiche Bauform wie #schloss --- */
   #amtFenster{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(320px,calc(100vw - 32px));z-index:22;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #amtFenster h2{margin:0 0 8px;font-size:15px;color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
-  #amtFenster button{width:100%;font-family:inherit;font-weight:bold;font-size:14px;padding:10px;cursor:pointer;color:#1a1206;
+  #amtFenster h2{margin:0 0 8px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #amtFenster button{width:100%;font-family:inherit;font-weight:bold;font-size:calc(14px * var(--fs));padding:10px;cursor:pointer;color:#1a1206;
        background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
 
-  #overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(5,3,10,.88);}
-  #overlay .panel{text-align:center;color:#e8d9a8;max-width:580px;padding:30px;}
-  #overlay h1{font-size:26px;margin:0 0 10px;color:#f4d97a;letter-spacing:2px;text-shadow:0 3px 0 #7a5a10,0 6px 18px #000;text-transform:uppercase;}
+  /* U3: overflow-y und margin:auto statt align-items:center. Ein Flex-Kind,
+     das hoeher ist als sein zentrierender Behaelter, waechst nach BEIDEN
+     Seiten aus ihm heraus, und die obere Haelfte ist dann nicht mehr
+     erreichbar — auch nicht per Rollbalken. Genau das passierte mit der
+     groesseren Schrift auf 390x844: der WEITER-Knopf des
+     Einstellungsvordrucks stand unter dem Bildrand, und das Spiel war auf
+     einem Telefon nicht mehr zu starten (von tools/menue-pruef.mjs gemeldet,
+     nicht im Kopf gefunden). margin:auto zentriert genauso, laesst den
+     Ueberhang aber scrollbar. */
+  #overlay{position:fixed;inset:0;z-index:50;display:flex;justify-content:center;overflow-y:auto;background:rgba(5,3,10,.88);}
+  #overlay .panel{text-align:center;color:#e8d9a8;max-width:580px;padding:30px;margin:auto;}
+  #overlay h1{font-size:calc(26px * var(--fs));margin:0 0 10px;color:#f4d97a;letter-spacing:2px;text-shadow:0 3px 0 #7a5a10,0 6px 18px #000;text-transform:uppercase;}
   #overlay h3{margin:0 0 18px;color:#a855f7;font-weight:bold;}
-  #overlay p{font-size:14px;line-height:1.9;}
-  #overlay button{margin-top:18px;font-family:inherit;font-weight:bold;font-size:18px;padding:12px 34px;cursor:pointer;color:#1a1206;background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
+  #overlay p{font-size:calc(14px * var(--fs));line-height:1.9;}
+  #overlay button{margin-top:18px;font-family:inherit;font-weight:bold;font-size:calc(18px * var(--fs));padding:12px 34px;cursor:pointer;color:#1a1206;background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
   #overlay button:hover{filter:brightness(1.1);}
 
   /* =====================================================================
@@ -299,7 +336,7 @@
   #closeAusweisBtn, #closeFullmapBtn, .panelZu{
     flex:0 0 auto;display:flex;align-items:center;justify-content:center;
     width:28px;height:28px;margin:-3px -4px -3px 0;
-    font-size:13px;line-height:1;color:#2e1d0a;
+    font-size:calc(13px * var(--fs));line-height:1;color:#2e1d0a;
     border-radius:50%;background-size:100% 100%;image-rendering:pixelated;
     background-image:var(--cfui-round, linear-gradient(#c9a227,#8a6d3b));
     text-shadow:0 1px 0 rgba(255,240,200,.45);
@@ -313,13 +350,13 @@
      unten). Nur background-image — border-color und box-shadow bleiben frei,
      die gehoeren den Seltenheitsklassen .rar0..4 und den Zustandsklassen. */
   .bagSlot, .eqSlot, .zutTile, .potSlot, .symBtn, .kTab, .spellNode,
-  .knToneBtn, .ultNode, #schlossAnz, #statBox, #kesselResult{
+  .knToneBtn, .schriftBtn, .ultNode, #schlossAnz, #statBox, #kesselResult{
     background-image:
       radial-gradient(ellipse at 50% -10%, rgba(255,236,192,.11), transparent 68%),
       linear-gradient(rgba(255,255,255,.03), rgba(0,0,0,.30));
   }
   .bagSlot:hover, .eqSlot:hover, .zutTile:hover, .symBtn:hover, .potSlot:hover,
-  .kTab:hover, .knToneBtn:hover{
+  .kTab:hover, .knToneBtn:hover, .schriftBtn:hover{
     background-image:
       radial-gradient(ellipse at 50% -10%, rgba(255,236,192,.18), transparent 68%),
       linear-gradient(rgba(255,255,255,.06), rgba(0,0,0,.24));
@@ -446,6 +483,77 @@
     background:radial-gradient(ellipse at 50% 45%, rgba(5,3,10,.26) 0%, rgba(5,3,10,.66) 100%);}
   body.panelOffen #menuVeil{opacity:1;}
 
+  /* =====================================================================
+     U3 — Das Gespraechsfenster.
+     Bis hierher war ein Gespraech mit einer Dorffigur eine Sprechblase ueber
+     ihrem Kopf und ein Tastendruck, der eine Zeile weiterschaltete. Wer nicht
+     wusste, dass F nochmal geht, hat eine Zeile gelesen und ist gegangen.
+     Was fehlte, war nicht Text — der steht seit W3 vollstaendig da —, sondern
+     ein Ort, an dem er steht, und eine sichtbare Wahl.
+
+     Die Form ist die aus dem Genre (Vorbild Stardew Valley, dort seit je):
+     eine breite Tafel unten am Bild, links das Bild der Figur, oben ihr Name,
+     darunter der Satz, darunter die Antworten als Liste, waehlbar mit Maus,
+     mit den Zifferntasten und mit Pfeil hoch/runter plus Eingabe.
+
+     Die Tafel liegt UNTEN und nicht in der Mitte: der Gespraechspartner steht
+     in der Welt, und die Welt soll dabei sichtbar bleiben. Auf Mobil wandert
+     sie nach oben, aus demselben Grund wie alle anderen Panels — unten liegt
+     der Daumenfaecher (s. Mobile-Breakpoint).
+     ===================================================================== */
+  #gespraech{
+    position:fixed;left:50%;bottom:112px;transform:translateX(-50%);
+    width:min(720px,calc(100vw - 28px));box-sizing:border-box;
+    z-index:21;display:none;
+    background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;
+    color:#e8d9a8;padding:14px;box-shadow:0 10px 44px rgba(0,0,0,.92);
+    background-image:
+      linear-gradient(rgba(78,56,32,.38), rgba(78,56,32,0) 120px),
+      linear-gradient(rgba(24,17,28,.25), rgba(6,4,10,.45));
+    animation:panelAuf .16s ease-out;
+  }
+  #gespraechInnen{display:flex;gap:14px;align-items:stretch;}
+  /* Das Bildfeld. Kein eigenes Portraet im Grafikpack — gezeigt wird der
+     Ruhezustand desselben Blattes, das die Figur auch in der Welt traegt,
+     dreifach vergroessert und nicht geglaettet (Regressionsregel 14). */
+  #gespraechBild{
+    flex:0 0 auto;width:110px;height:135px;
+    border:2px solid #6b5a3a;border-radius:6px;background:#17130d;
+    display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
+  /* Breite vom Feld, Hoehe aus dem Verhaeltnis: auf Mobil ist das Feld
+     schmaler als die 128 Pixel des Bildes, und ohne diese Zeile wuerde es
+     beschnitten statt verkleinert. */
+  #gespraechBild canvas{image-rendering:pixelated;display:block;width:100%;height:auto;}
+  #gespraechRechts{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+  /* overflow-wrap: die laengsten Woerter dieses Spiels sind Amtsdeutsch
+     ("Monsterangelegenheitenanwärter", 30 Zeichen). Auf einer schmalen Tafel
+     passt so eines in keine Zeile, und ohne diese Zeile lief es ueber den
+     Rand hinaus statt umzubrechen — auf 390px Breite genau so gesehen. */
+  #gespraechName{
+    overflow-wrap:break-word;
+    font-size:calc(15px * var(--fs));font-weight:bold;color:#f4d97a;letter-spacing:1px;
+    padding:0 0 6px;margin-bottom:8px;border-bottom:2px solid #7a5a10;
+    text-shadow:0 2px 0 #241a09;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  /* min-height haelt zwei Zeilen frei, damit die Antwortliste nicht springt,
+     wenn ein Satz einzeilig ist und der naechste zweizeilig. */
+  #gespraechText{
+    overflow-wrap:break-word;
+    font-size:calc(16px * var(--fs));line-height:1.45;color:#f4e6c8;
+    min-height:calc(16px * var(--fs) * 2.9);margin-bottom:10px;}
+  #gespraechText .z2{color:#d8c898;}
+  /* Der Blinker am Zeilenende, solange getippt wird — dieselbe Rolle wie das
+     kleine Dreieck im Vorbild: hier laeuft noch Text. */
+  #gespraechText .cur{color:#f4d97a;}
+  #gespraechWahl{display:flex;flex-direction:column;gap:4px;}
+  .gwOpt{
+    display:flex;align-items:center;gap:8px;cursor:pointer;
+    font-size:calc(14px * var(--fs));color:#c9b98a;
+    padding:6px 8px;border:2px solid transparent;border-radius:6px;background:#17130d;}
+  .gwOpt .gwNr{flex:0 0 auto;color:#9a8a5f;font-weight:bold;}
+  .gwOpt.hot{color:#f4e6c8;background:#241a0c;border-color:#c9a227;}
+  .gwOpt.hot .gwNr{color:#f4d97a;}
+  .gwOpt.aus{opacity:.45;cursor:default;}
+
   /* --- Touch-Modus UI (nur body.touch, Desktop unverändert) --- */
   .touchOnly{display:none;}
   body.touch .touchOnly{display:flex;}
@@ -454,7 +562,7 @@
   #touchCluster .tBtn{position:absolute;pointer-events:auto;border:3px solid #6b5a3a;border-radius:50%;
     background:rgba(23,19,13,.85);color:#e8d9a8;display:flex;align-items:center;justify-content:center;
     touch-action:none;-webkit-user-select:none;user-select:none;image-rendering:pixelated;}  /* s. .orbWrap, R6/F34 — deckt #attackBtn mit ab */
-  #attackBtn{width:78px;height:78px;right:14px;bottom:118px;font-size:30px;}
+  #attackBtn{width:78px;height:78px;right:14px;bottom:118px;font-size:calc(30px * var(--fs));}
   #attackBtn.locked{border-color:#ff5a5a;box-shadow:0 0 10px rgba(255,90,90,.6);}
   /* Daumen-Fächer: Kampf-Buttons aus dem Belt um den Attack-Button gruppieren.
      position:fixed nimmt sie aus dem Flex-Flow; Rest des Belts (Menü-Buttons) bleibt zentriert. */
@@ -476,7 +584,7 @@
      Text ist dort die eigentliche Information (Hebel / Schloss / Öffnen). */
   body.touch .beltSlot .bl{display:none;}
   body.touch #spellsBtn, body.touch #invBtn, body.touch #kamExitBtn, body.touch #prioBtn{
-    width:52px;height:52px;min-width:0;padding:0;border-radius:50%;font-size:22px;gap:0;position:relative;
+    width:52px;height:52px;min-width:0;padding:0;border-radius:50%;font-size:calc(22px * var(--fs));gap:0;position:relative;
     border-image-source:none !important;background-image:var(--cfui-round);background-size:100% 100%;image-rendering:pixelated;}   /* s. F18-Kommentar oben */
   body.touch #aktionBtn{height:52px;border-radius:26px;padding:0 14px;border-image-source:none !important;}   /* gleiche Höhe wie die runden; Pille behält ihre Rundung (F18) */
 
@@ -508,7 +616,7 @@
     box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);border-radius:12px;}
   body.touch .orbTxt{display:none;}
   body.touch #spBadge, body.touch #skillBadge{
-    position:absolute;top:-2px;right:-2px;font-size:15px;line-height:1;text-shadow:0 1px 3px #000;}
+    position:absolute;top:-2px;right:-2px;font-size:calc(15px * var(--fs));line-height:1;text-shadow:0 1px 3px #000;}
   body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
   body.touch #spellBtn.cancelHot{border-color:#ff5a5a;background:#2a0d0d;}
   body.touch #spellBtn.cancelHot #spellBtnTxt::after{content:' ✖';color:#ff5a5a;}
@@ -516,27 +624,27 @@
   /* --- Mobile / kleine Screens --- */
   @media (max-width: 480px){
     .orbWrap{width:60px;height:60px;border-width:2px;}
-    .orbTxt{font-size:11px;}
+    .orbTxt{font-size:calc(11px * var(--fs));}
     #xpBar{width:clamp(110px,38vw,340px);}
     #hud{height:auto;min-height:96px;gap:8px;padding:14px 6px 8px;}
     #beltRow{flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 140px);}
-    .beltSlot{min-width:44px;height:44px;font-size:12px;padding:0 6px;}
+    .beltSlot{min-width:44px;height:44px;font-size:calc(12px * var(--fs));padding:0 6px;}
     #musikRow{gap:8px;}
-    #statCol{min-width:0;font-size:11px;}
+    #statCol{min-width:0;font-size:calc(11px * var(--fs));}
     #minimap{width:88px;height:88px;top:8px;right:8px;}
-    #zone{font-size:13px;top:8px;left:8px;max-width:55vw;}
+    #zone{font-size:calc(13px * var(--fs));top:8px;left:8px;max-width:55vw;}
     #bossbar{width:min(480px,86vw);}
     #inv{right:8px;width:min(360px,calc(100vw - 16px));}
     #spellTree{left:8px;width:min(420px,calc(100vw - 16px));}
-    .spellNode{font-size:12px;}
-    .spellNode .sDesc,.spellNode .sMana{font-size:11px;}
-    .eqSlot .lbl{font-size:10px;}
-    #statBox,.skillRow{font-size:12px;}
+    .spellNode{font-size:calc(12px * var(--fs));}
+    .spellNode .sDesc,.spellNode .sMana{font-size:calc(11px * var(--fs));}
+    .eqSlot .lbl{font-size:calc(10px * var(--fs));}
+    #statBox,.skillRow{font-size:calc(12px * var(--fs));}
     #overlay .panel{max-width:94vw;padding:16px 10px;}
-    #overlay h1{font-size:20px;letter-spacing:1px;}
-    #overlay h3{font-size:14px;}
-    #overlay p{font-size:12px;line-height:1.6;}
-    #overlay button{font-size:16px;padding:12px 26px;}
+    #overlay h1{font-size:calc(20px * var(--fs));letter-spacing:1px;}
+    #overlay h3{font-size:calc(14px * var(--fs));}
+    #overlay p{font-size:calc(12px * var(--fs));line-height:1.6;}
+    #overlay button{font-size:calc(16px * var(--fs));padding:12px 26px;}
 
     /* --- Panels: top-verankert, Fächer-Zone frei --- */
     #inv, #spellTree{
@@ -565,11 +673,32 @@
       width:calc(100vw - 16px); max-height:calc(100vh - 96px); overflow-y:auto;
       background-color:rgba(20,14,24,.93);
     }
+    /* U3: Das Gespraechsfenster folgt der Regel der uebrigen Panels und
+       verankert sich oben. Unten liegt der Daumenfaecher (230x250), und
+       ausgerechnet das Fenster, das man am laengsten offen haelt, duerfte
+       ihn nicht zudecken. Das Bildfeld schrumpft mit, sonst bliebe fuer den
+       Text auf 360px Breite nichts uebrig. */
+    #gespraech{
+      top:56px;bottom:auto;left:8px;transform:none;
+      width:calc(100vw - 16px);background-color:rgba(20,14,24,.93);
+      max-height:calc(100vh - 341px);
+      max-height:max(240px, calc(100dvh - 341px));
+      overflow-y:auto;
+    }
+    #gespraechBild{width:72px;height:88px;}
+    #gespraechInnen{gap:10px;}
+    /* Auf 390px Breite traegt der Faktor aus --fs sich selbst zu weit: der
+       Name ging ueber drei Zeilen, die Antworten ueber zwei. Die Grundzahlen
+       geben hier zwei Stufen ab, der Regler wirkt weiter darauf. */
+    #gespraechName{font-size:calc(13px * var(--fs));letter-spacing:0;}
+    #gespraechText{font-size:calc(14px * var(--fs));min-height:calc(14px * var(--fs) * 2.9);}
+    .gwOpt{padding:9px 8px;font-size:calc(13px * var(--fs));}
+
     #zutGrid, #invZutGrid{grid-template-columns:repeat(3,1fr);}
-    .zutTile .zn{font-size:9px;}
-    .zutTile .zi{font-size:19px;}
-    .potSlot .pn{font-size:9px;}
-    .kTab{font-size:13px;}
+    .zutTile .zn{font-size:calc(9px * var(--fs));}
+    .zutTile .zi{font-size:calc(19px * var(--fs));}
+    .potSlot .pn{font-size:calc(9px * var(--fs));}
+    .kTab{font-size:calc(13px * var(--fs));}
 
     /* --- Close-Buttons: 44px Tap-Target ---
        #closeFullmapBtn und der Amtsstuben-Knopf (.panelZu) fehlten hier: die
@@ -582,7 +711,7 @@
     #closeSchlossBtn, #closeFullmapBtn, .panelZu{
       display:flex; align-items:center; justify-content:center;
       width:44px; height:44px; margin:-9px -8px -9px 0;
-      font-size:19px; border-radius:50%; flex:0 0 auto;
+      font-size:calc(19px * var(--fs)); border-radius:50%; flex:0 0 auto;
     }
     #closeInvBtn:active, #closeSpellBtn:active, #closeKesselBtn:active,
     #closeAusweisBtn:active, #closeSchlossBtn:active, #closeFullmapBtn:active,
@@ -591,7 +720,7 @@
     /* --- Zauberbaum: eine Spalte, horizontale Nodes --- */
     #spellCols{grid-template-columns:1fr; gap:0;}
     .spellColTitle{
-      text-align:left; font-size:12px; margin:8px 0 6px;
+      text-align:left; font-size:calc(12px * var(--fs)); margin:8px 0 6px;
       padding-bottom:3px; border-bottom:1px solid #4c4030;
     }
     .spellNode{
@@ -599,13 +728,13 @@
       grid-template-rows:auto auto; column-gap:8px; align-items:center;
       text-align:left; padding:8px 10px; margin-bottom:6px; min-height:28px;
     }
-    .spellNode .sIcon{grid-row:1 / span 2; font-size:24px; text-align:center;}
+    .spellNode .sIcon{grid-row:1 / span 2; font-size:calc(24px * var(--fs)); text-align:center;}
     .spellNode .sName{grid-column:2; grid-row:1; margin:0;}
     .spellNode .sMana{grid-column:3; grid-row:1; justify-self:end; white-space:nowrap;}
     .spellNode .sDesc{grid-column:2 / span 2; grid-row:2;}
 
     /* --- Skill-Buttons: >=40px Tap-Target --- */
-    .skillBtn{min-width:48px; min-height:40px; padding:2px 12px; font-size:15px; border-radius:6px;}
+    .skillBtn{min-width:48px; min-height:40px; padding:2px 12px; font-size:calc(15px * var(--fs)); border-radius:6px;}
     .skillRow{min-height:40px;}
   }
   @media (max-width: 380px){
@@ -625,8 +754,8 @@
     <div id="xpBar"><div id="xpFill"></div></div>
     <div id="beltRow">
       <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)">🧪 <span id="potCount">0</span></div>
-      <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:11px;">· (E)</span></div>
-      <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:11px;">🔒 Ult (R)</span></div>
+      <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:calc(11px * var(--fs));">· (E)</span></div>
+      <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:calc(11px * var(--fs));">🔒 Ult (R)</span></div>
       <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨<span class="bl">Zauber</span><span id="spBadge" style="color:#c77dff;display:none;">★</span></div>
       <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒<span class="bl">Inv</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span></div>
       <div class="beltSlot" id="aktionBtn" title="Benutzen (F)" style="display:none;">🖐️ <span id="aktionTxt">Benutzen</span></div>
@@ -684,6 +813,12 @@
       <div class="knToneBtn" data-v="dienstlich">Dienstlich</div>
       <div class="knToneBtn" data-v="schweigt">Schweigt</div>
     </div>
+    <h4 style="margin-top:10px;">🔠 SCHRIFT</h4>
+    <div id="schriftRow">
+      <div class="schriftBtn" data-v="0">Normal</div>
+      <div class="schriftBtn" data-v="1">Groß</div>
+      <div class="schriftBtn" data-v="2">Größer</div>
+    </div>
   </div>
 </div>
 
@@ -734,11 +869,24 @@
 <div id="amtFenster"></div>
 
 <div id="spellTree">
-  <h2>ZAUBERBAUM <span style="font-size:11px;color:#e8d9a8;">Punkte: <span id="spellPtsCount">0</span></span> <span style="cursor:pointer" id="closeSpellBtn">✖</span></h2>
+  <h2>ZAUBERBAUM <span style="font-size:calc(11px * var(--fs));color:#e8d9a8;">Punkte: <span id="spellPtsCount">0</span></span> <span style="cursor:pointer" id="closeSpellBtn">✖</span></h2>
   <div id="spellCols"></div>
   <div id="ultimateRow"></div>
 </div>
 
+<!-- U3: Das Gespraechsfenster. Die Huelle steht im HTML, damit bakeUiSkin()
+     ihr denselben Pixelrahmen gibt wie den uebrigen Panels; Name, Satz und
+     Antwortliste schreibt gespraechZeichnen(). -->
+<div id="gespraech">
+  <div id="gespraechInnen">
+    <div id="gespraechBild"><canvas id="gespraechPortrait" width="110" height="135"></canvas></div>
+    <div id="gespraechRechts">
+      <div id="gespraechName"><span id="gespraechNameTxt"></span><span class="panelZu" style="cursor:pointer;" onclick="gespraechSchliessen()">✖</span></div>
+      <div id="gespraechText"></div>
+      <div id="gespraechWahl"></div>
+    </div>
+  </div>
+</div>
 <div id="tooltip"></div>
 <div id="knZettel"><span id="knZettelHead">🧑‍💼</span><div id="knZettelText"><div id="knZettelZ1"></div><div id="knZettelZ2"></div></div></div>
 <div id="knRandnotiz"><span id="knRandTxt"></span></div>
@@ -2462,6 +2610,13 @@ dorfMassstabAssert();
 //  Sprite aus CF_NPCS und wandert wie die bisherige Dorf-Staffage; opt:'fest'
 //  ist ein Held-Komposit (bakeNpcSheet()) und steht fest wie Knöterich.
 //
+//  U3, eine Ergänzung: kurz: ist der Name auf dem Schild über dem Kopf. Der
+//  volle name: bleibt, was er war — der Eintrag im Personalverzeichnis, den
+//  das Gesprächsfenster in seiner Kopfzeile führt. Ein Schild, auf dem
+//  'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"' stünde, wäre breiter als
+//  das Haus dahinter. gespraechAssert() hält Deckel (24 Zeichen) und
+//  Zusammengehörigkeit fest: das letzte Wort von kurz muss in name vorkommen.
+//
 //  G6, zwei Ergänzungen an derselben Tabelle:
 //
 //  gestalt:{} beschreibt jede Figur als Held-Komposit, also aus Frisur, Hemd,
@@ -2491,7 +2646,7 @@ dorfMassstabAssert();
 //  Pahl standen vor der Südzeile), nur an den neuen Fußlinien.
 // ===========================================================================
 const DORF_FIGUREN = [
-  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob',
+  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', kurz:'Bürgermeister Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob',
    gestalt:{hair:'h1', chest:2, legs:2, feet:2},
    grund:[
      {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
@@ -2509,7 +2664,7 @@ const DORF_FIGUREN = [
      'Wir werden das Fest feiern. Irgendwann.',
    ]},
 
-  {key:'bramsche', name:'Registratorin Ottilie Bramsche', tx:21, ty:36, opt:'fest',
+  {key:'bramsche', name:'Registratorin Ottilie Bramsche', kurz:'Registratorin Bramsche', tx:21, ty:36, opt:'fest',
    gestalt:{hair:'h3', chest:2, legs:2},
    grund:[
      {z1:'Ordnung ist, was man wiederfindet.', z2:'Alles andere ist Zufall.'},
@@ -2542,7 +2697,7 @@ const DORF_FIGUREN = [
      {z1:'Antrag für heute erledigt.', z2:'Morgen wieder.'},
    ]},
 
-  {key:'zapf', name:'Hausmeister Reinhold Zapf', tx:17, ty:54, opt:'wander', sheet:'jack',
+  {key:'zapf', name:'Hausmeister Reinhold Zapf', kurz:'Hausmeister Zapf', tx:17, ty:54, opt:'wander', sheet:'jack',
    gestalt:{hair:'h1', chest:1, legs:1, feet:0},
    grund:[
      {z1:'Ich reparier das. Nicht fragen.', z2:'Weil sonst nichts läuft.'},
@@ -2560,7 +2715,7 @@ const DORF_FIGUREN = [
      'Nichts kaputt. Komisches Gefühl.',
    ]},
 
-  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe',
+  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', kurz:'Praktikantin Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe',
    gestalt:{hair:'h6', chest:1, legs:0, feet:3},
    grund:[
      {z1:'Man erledigt Monster nicht.', z2:'Man beantwortet sie.'},
@@ -2578,7 +2733,7 @@ const DORF_FIGUREN = [
      'Ich komme mit. Ich habe ja gefragt.',
    ]},
 
-  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', tx:28, ty:40, opt:'wander', sheet:'fin',
+  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', kurz:'Zusteller Trepp', tx:28, ty:40, opt:'wander', sheet:'fin',
    gestalt:{hair:'h2', chest:2, legs:0, feet:1},
    grund:[
      {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Trepp.'},
@@ -2596,7 +2751,7 @@ const DORF_FIGUREN = [
      'Sieben Generationen, jetzt oder nie.',
    ]},
 
-  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
+  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
    gestalt:{hair:'h1', chest:0, legs:0, feet:3},
    grund:[
      {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
@@ -2629,7 +2784,7 @@ const DORF_FIGUREN = [
      ]},
    ]},
 
-  {key:'milb', name:'Gutachter Dr. phil. Milb', tx:8, ty:39, opt:'wander', sheet:'buba',
+  {key:'milb', name:'Gutachter Dr. phil. Milb', kurz:'Gutachter Milb', tx:8, ty:39, opt:'wander', sheet:'buba',
    gestalt:{hair:'h5', chest:2, legs:2, feet:1},
    grund:[
      {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
@@ -2647,7 +2802,7 @@ const DORF_FIGUREN = [
      'Diesmal setze ich keine Note mehr an.',
    ]},
 
-  {key:'pommer', name:'Materialausgabe Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy',
+  {key:'pommer', name:'Materialausgabe Herr Pommer', kurz:'Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy',
    gestalt:{hair:'h2', chest:1, legs:0, feet:4},
    grund:[
      {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
@@ -2665,7 +2820,7 @@ const DORF_FIGUREN = [
      'Zustellen steht nicht in meinem Bestand.',
    ]},
 
-  {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', tx:24, ty:38, opt:'wander', sheet:'bruno',
+  {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', kurz:'Wirt Fass', tx:24, ty:38, opt:'wander', sheet:'bruno',
    gestalt:{hair:'h3', chest:0, legs:2, feet:2},
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
@@ -2683,7 +2838,7 @@ const DORF_FIGUREN = [
      'Es fühlt sich an wie ein letzter Abend.',
    ]},
 
-  {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', tx:5, ty:54, opt:'fest',
+  {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
    gestalt:{hair:'h1'},
    grund:[
      {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
@@ -2738,7 +2893,7 @@ const DORF_FIGUREN = [
      ],
    }},
 
-  {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', tx:8, ty:54, opt:'fest',
+  {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', kurz:'Herr Pahl', tx:8, ty:54, opt:'fest',
    gestalt:{hair:'h4'},
    grund:[
      {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
@@ -5680,7 +5835,7 @@ function renderSpellTree(){
   if(player.level < ZAUBER_AB_STUFE){
     const z = document.createElement('div');
     z.id = 'zauberBefugnisHinweis';
-    z.style.cssText = 'text-align:center;color:#c77dff;margin:4px 0 10px;font-size:13px;';
+    z.style.cssText = 'text-align:center;color:#c77dff;margin:4px 0 10px;font-size:calc(13px * var(--fs));';
     z.textContent = `Zauberbefugnis wird ab Stufe ${ZAUBER_AB_STUFE} erteilt. Aktuelle Stufe: ${player.level}.`;
     cols.parentNode.insertBefore(z, cols);
   }
@@ -6190,6 +6345,9 @@ CONFIG.kammerTueren += amt.ausbauten.tueren;   // Dorf-Ausbau wirkt schon auf di
 // ===========================================================================
 const KN_KEY = 'sda_knoeterich_v1';
 const KN_HAAR = 'h5';                        // fest gewählt, nicht zufällig: Knöterich ist immer derselbe (Grauhaar passt zum a.D.)
+// U3: Was auf seinem Namensschild steht. Kurz wie bei den Dorffiguren (kurz:),
+// und aus demselben Grund: der volle Titel ist ein Verzeichniseintrag.
+const KN_NAME_KURZ = 'Amtsrat a. D. Knöterich';
 // KN_T/KN_POS sind bereits weiter oben deklariert (neben KESSEL_T/KESSEL), siehe Kommentar dort.
 
 const kn = {
@@ -7476,7 +7634,7 @@ function fuehreAktion(){
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
     case AKT_NACHFRAGE: knNachfragen(); break;
-    case AKT_NPC:     npcSprechen(aktObj); break;
+    case AKT_NPC:     gespraechOeffnen(aktObj); break;   // U3: F oeffnet die Tafel; ein zweiter Druck redet darin weiter
     case AKT_AMT:     amtFensterOeffnen(); break;
     case AKT_ZUSTELLEN: zustellen(); break;
   }
@@ -7561,6 +7719,297 @@ function npcSprechen(n){
   n.bubbleHideAt = gameT + 4;
 }
 
+// ===========================================================================
+//  U3: Das Gespraechsfenster
+//
+//  Was vorher da war: npcSprechen() schrieb eine Zeile in n.bubbleText1/2, die
+//  Blase ueber dem Kopf zeigte sie vier Sekunden lang, und wer noch einmal F
+//  drueckte, bekam die naechste. Der Text war vollstaendig, der Weg zu ihm
+//  war ein Geheimnis. Man konnte nicht sehen, dass es weitergeht, man konnte
+//  nichts waehlen, und nach vier Sekunden war der Satz weg, ob gelesen oder
+//  nicht.
+//
+//  Was jetzt da ist: dieselbe Maschinerie, mit einem Ort und einer Wahl. Die
+//  Form ist die aus dem Genre (Stardew Valley: Tafel unten, Bild links, Name
+//  oben, Antworten als Liste, waehlbar per Maus, Ziffer oder Pfeil+Eingabe);
+//  die Sprechweise bleibt die dieses Hauses.
+//
+//  Ausdruecklich NICHT geaendert: der Inhalt. Kein Satz ist neu, keiner ist
+//  weggefallen, keine Verzweigung ist dazugekommen. Was die vier Antworten
+//  tun, tat vorher der wiederholte Tastendruck — nur dass zwei davon
+//  (Anrede, Aktzeile) im Grundzeilen-Zyklus vergraben lagen und man sie
+//  durch Zufall traf statt durch Absicht. Neue Dorftexte sind eine
+//  Inhaltslieferung (figuren-dorf.md) und keine UI-Frage.
+//
+//  Die einzige Antwort MIT Nebenwirkung ist die erste: sie ruft npcSprechen()
+//  unveraendert auf, samt langAnsprechen() (das einen Langvorgang vorruecken
+//  laesst), Bramsches Frage-Zaehler und dem verbrauchten letzterAnlass. Genau
+//  ein Aufruf je Klick, wie vorher genau einer je Tastendruck. Die drei
+//  anderen lesen nur.
+// ===========================================================================
+const gespraech = {npc:null, fig:null, z1:'', z2:'', tipp:0, tippGezeigt:-1, wahl:0, opts:[]};
+let gespraechOffen = false;
+// Anschlaege je Sekunde. 55 liest sich als Schreibmaschine und nicht als
+// Diaschau: die laengste Zeile im Bestand hat 48 Zeichen (Zeichendeckel,
+// knAssertCaps), zwei davon sind also nach knapp zwei Sekunden fertig.
+const GESPRAECH_TEMPO = 55;
+// Wer sich weiter als das entfernt, hat das Gespraech beendet. 58px ist die
+// Reichweite der Kontextaktion (scanAktion), 96 laesst der Figur ihre
+// Wanderleine und dem Spieler einen Schritt, ohne dass das Fenster zufaellt.
+const GESPRAECH_WEG_Q = 96*96;
+
+const gEsc = s => String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// Die Beschriftung der ersten Antwort sagt, was hinter ihr steckt. Sie ist
+// die einzige, die verzweigt — und zwar nach genau denselben Bedingungen, die
+// npcSprechen() gleich darauf auswertet. Steht Bramsches Frage offen, steht
+// es auch auf dem Knopf; hat der Chor auf der Bank etwas gesehen, ebenso.
+function gespraechWeiterText(fig){
+  if(fig.key === 'bramsche' && bramscheFragen > 0) return 'Ich hätte eine Frage.';
+  if(fig.anlass && letzterAnlass && fig.anlass[letzterAnlass] && fig.anlass[letzterAnlass].length)
+    return 'Wegen vorhin …';
+  return 'Und sonst?';
+}
+
+// fig als Parameter und nicht aus gespraech gelesen, damit gespraechAssert()
+// die Liste fuer jede der elf Figuren bauen kann, ohne ein Fenster zu oeffnen.
+function gespraechOptionen(fig){
+  fig = fig || gespraech.fig;
+  if(!fig) return [];
+  return [
+    {t: gespraechWeiterText(fig), tun: () => { npcSprechen(gespraech.npc); gespraechUebernehmen(); }},
+    {t: 'Wie steht es im Dorf?',  tun: () => gespraechSagen(fig.akt[aktStand() - 1], '')},
+    {t: 'Wie war noch mein Titel?', tun: () => { const a = anredeZeile(fig.key); gespraechSagen(a.z1, a.z2); }},
+    {t: 'Auf Wiedersehen.',       tun: () => gespraechSchliessen()},
+  ];
+}
+
+// Setzt einen Satz ins Fenster und laesst ihn neu tippen.
+function gespraechSagen(z1, z2){
+  gespraech.z1 = z1 || ''; gespraech.z2 = z2 || '';
+  gespraech.tipp = 0; gespraech.tippGezeigt = -1;
+  gespraechZeichnen();
+}
+// Uebernimmt, was npcSprechen() gerade in die Blasenfelder geschrieben hat.
+// Die Felder bleiben die Ablage — der Spielstand kennt sie, und Knoeterich
+// benutzt dieselbe Blase weiter.
+function gespraechUebernehmen(){
+  const n = gespraech.npc;
+  if(n) gespraechSagen(n.bubbleText1, n.bubbleText2);
+}
+
+function gespraechOeffnen(n){
+  if(!n || !n.figur) return;
+  // Zweiter Druck auf F bei derselben Figur heisst weiterreden — genau das,
+  // was die Taste vor U3 getan hat. Wer die Tafel nicht braucht, merkt vom
+  // Umbau nichts ausser dass der Satz jetzt stehen bleibt.
+  if(gespraechOffen && gespraech.npc === n){
+    if(gespraech.tipp < gespraech.z1.length + gespraech.z2.length) gespraechFertigTippen();
+    else { npcSprechen(n); gespraechUebernehmen(); }
+    return;
+  }
+  gespraech.npc = n; gespraech.fig = n.figur; gespraech.wahl = 0;
+  gespraechOffen = true;
+  el('gespraech').style.display = 'block';
+  gespraechPortrait(n);
+  // Begruesst wird mit der Anredezeile, und zwar OHNE npcSprechen(). Der Grund
+  // ist keine Geschmacksfrage: npcSprechen() hat Nebenwirkungen, und beim
+  // Oeffnen waeren sie am falschen Ort. Bramsches Frage-Zaehler wuerde noch
+  // beim Aufschlagen der Tafel aufgebraucht, die Antwortliste danach mit
+  // bramscheFragen === 0 gebaut, und "Ich haette eine Frage." waere eine
+  // Beschriftung, die nie erscheint. Dasselbe fuer letzterAnlass auf der Bank.
+  // Fuer alle uebrigen Figuren ist es ohnehin derselbe Satz, den auch der erste
+  // Druck auf F vorher gab: bubbleIdx startet bei -1, Schritt 0 ist die Anrede.
+  // Wer die alte Reihenfolge will, drueckt F zweimal — der zweite Druck redet
+  // in der offenen Tafel weiter.
+  const a = anredeZeile(n.figur.key);
+  gespraechSagen(a.z1, a.z2);
+  MUS.muffle();              // offenes Panel daempft die Musik, wie ueberall
+  panelSicht();              // U1
+}
+
+function gespraechSchliessen(){
+  if(!gespraechOffen) return;
+  gespraechOffen = false; gespraech.npc = null; gespraech.fig = null;
+  el('gespraech').style.display = 'none';
+  MUS.muffle(); panelSicht();
+}
+
+function gespraechFertigTippen(){
+  gespraech.tipp = gespraech.z1.length + gespraech.z2.length;
+  gespraechTextZeichnen();
+}
+
+// Das Bild links. Kein eigenes Portraetblatt im Pack — gezeigt wird der erste
+// Ruheframe desselben Blattes, das die Figur in der Welt traegt, dreifach und
+// ungeglaettet (Regressionsregel 14).
+//
+// Der Ausschnitt ist gemessen, nicht geschaetzt. Die Figur steht im 64x64-Feld
+// nicht formatfuellend, sondern klein in seiner Mitte: im Ruheframe reicht ihre
+// Deckflaeche bei Farmer_Bob von x=24 bis 39 und von y=19 bis zur Fusslinie 40,
+// beim Held-Komposit (Bramsche) von x=25 bis 37 und y=21 bis 40. Ein erster
+// Versuch mit dem halben Feld (x 16..48, y 6..42) zeigte deshalb vor allem
+// leeren Rand — die Figur war vierfach vergroessert und trotzdem verloren.
+//
+// Genommen wird jetzt x 21..43 und y 15..42: waagerecht um ax=32 zentriert,
+// senkrecht vier Pixel ueber dem hoechsten gemessenen Scheitel bis zwei unter
+// die Fusslinie ay=40 — Luft fuer eine Kopfbedeckung, die hoeher sitzt als die
+// drei vermessenen. Fuenffach sind das 110x135. Ganze Zahl, damit kein Pixel
+// zwischen zwei Pixel faellt. Passt fuer beide Bauweisen, Pack-Blatt wie
+// Held-Komposit, weil beide dasselbe 64er-Raster und denselben Anker benutzen.
+const PORTRAET_X = 21, PORTRAET_Y = 15, PORTRAET_B = 22, PORTRAET_H = 27, PORTRAET_SC = 5;
+function gespraechPortrait(n){
+  const c = el('gespraechPortrait'), cc = c.getContext('2d');
+  cc.clearRect(0, 0, c.width, c.height);
+  const s = SHEETS[n.sheetIdle];
+  if(!s || !s.img) return;                       // ohne Blatt bleibt das Feld dunkel
+  // Getoente Figuren (Noergel) genauso wie in drawSpriteAt: die Kopie enthaelt
+  // nur die Zeilen ab rowStart, dort wird ohne Zeilenversatz gelesen.
+  const src = n.tint ? (tintedSheet(n.sheetIdle, n.tint, n.tintA == null ? 0.55 : n.tintA) || s.img) : s.img;
+  const row = n.tint ? 0 : (s.rowStart || 0);
+  cc.imageSmoothingEnabled = false;
+  cc.drawImage(src, PORTRAET_X, row*s.fh + PORTRAET_Y, PORTRAET_B, PORTRAET_H,
+                    0, 0, PORTRAET_B*PORTRAET_SC, PORTRAET_H*PORTRAET_SC);
+}
+
+// Nur der Textteil, damit der Tipp-Takt nicht die ganze Tafel neu baut.
+function gespraechTextZeichnen(){
+  // Auf ganze Zeichen gerundet vergleichen: gespraech.tipp waechst mit dt und
+  // ist fast immer gebrochen. Ohne das Abrunden waere jeder Frame ein anderer
+  // Wert und die Tafel wuerde neu gebaut, auch wenn kein Buchstabe dazukam.
+  const t = Math.floor(gespraech.tipp);
+  if(gespraech.tippGezeigt === t) return;
+  gespraech.tippGezeigt = t;
+  const n1 = Math.min(t, gespraech.z1.length);
+  const n2 = Math.max(0, t - gespraech.z1.length);
+  const fertig = t >= gespraech.z1.length + gespraech.z2.length;
+  // Der Blinker sitzt am Ende des gerade wachsenden Textes und verschwindet,
+  // sobald alles steht — dieselbe Aussage wie das Dreieck im Vorbild.
+  const cur = fertig ? '' : '<span class="cur">▌</span>';
+  const z2 = gespraech.z2 ? `<div class="z2">${gEsc(gespraech.z2.slice(0, n2))}${n1 >= gespraech.z1.length ? cur : ''}</div>` : '';
+  el('gespraechText').innerHTML =
+    `<div>${gEsc(gespraech.z1.slice(0, n1))}${(!gespraech.z2 || n1 < gespraech.z1.length) ? cur : ''}</div>${z2}`;
+}
+
+function gespraechZeichnen(){
+  if(!gespraechOffen) return;
+  el('gespraechNameTxt').textContent = gespraech.fig.name;
+  gespraech.opts = gespraechOptionen();
+  if(gespraech.wahl >= gespraech.opts.length) gespraech.wahl = 0;
+  el('gespraechWahl').innerHTML = gespraech.opts.map((o, i) =>
+    `<div class="gwOpt${i === gespraech.wahl ? ' hot' : ''}" data-i="${i}"><span class="gwNr">${i+1}.</span><span>${gEsc(o.t)}</span></div>`
+  ).join('');
+  gespraech.tippGezeigt = -1;
+  gespraechTextZeichnen();
+}
+
+// Nur die Markierung umhaengen, ohne die Liste neu zu bauen (Pfeiltasten,
+// Mauszeiger). Ein innerHTML pro Mausbewegung waere ein Neubau je Frame.
+function gespraechWahlSetzen(i){
+  if(!gespraechOffen || !gespraech.opts.length) return;
+  gespraech.wahl = ((i % gespraech.opts.length) + gespraech.opts.length) % gespraech.opts.length;
+  const kinder = el('gespraechWahl').children;
+  for(let k = 0; k < kinder.length; k++) kinder[k].classList.toggle('hot', k === gespraech.wahl);
+}
+
+// Eine Antwort ausloesen. Laeuft der Text noch, holt der erste Griff ihn erst
+// zu Ende — sonst waere jeder ungeduldige Klick ein uebersprungener Satz.
+function gespraechWaehlen(i){
+  if(!gespraechOffen) return;
+  if(gespraech.tipp < gespraech.z1.length + gespraech.z2.length){ gespraechFertigTippen(); return; }
+  const o = gespraech.opts[i];
+  if(!o) return;
+  gespraechWahlSetzen(i);
+  o.tun();
+  if(gespraechOffen) gespraechZeichnen();   // die Beschriftungen haengen am Zustand
+}
+
+el('gespraechWahl').addEventListener('mousedown', e => {
+  const z = e.target.closest('.gwOpt'); if(!z) return;
+  e.preventDefault();
+  gespraechWaehlen(+z.dataset.i);
+});
+el('gespraechWahl').addEventListener('mousemove', e => {
+  const z = e.target.closest('.gwOpt'); if(!z) return;
+  gespraechWahlSetzen(+z.dataset.i);
+});
+
+// Tastatur, solange das Fenster offen ist. Liefert true, wenn der Druck
+// verbraucht ist — der grosse keydown-Lauscher steigt dann aus, sonst waere
+// die '1' gleichzeitig eine Antwort und ein Heiltrank.
+// WASD bleibt bewusst frei: wer weggeht, geht weg, und das Fenster merkt es
+// selbst (gespraechTick).
+function gespraechTaste(e){
+  if(!gespraechOffen) return false;
+  const k = e.key;
+  if(k >= '1' && k <= '9'){ e.preventDefault(); gespraechWaehlen(+k - 1); return true; }
+  if(k === 'ArrowUp'){   e.preventDefault(); gespraechWahlSetzen(gespraech.wahl - 1); return true; }
+  if(k === 'ArrowDown'){ e.preventDefault(); gespraechWahlSetzen(gespraech.wahl + 1); return true; }
+  if(k === 'Enter'){     e.preventDefault(); gespraechWaehlen(gespraech.wahl); return true; }
+  return false;
+}
+
+// Laeuft im Takt der Schleife: tippt den Satz weiter und raeumt das Fenster
+// weg, wenn sein Gegenueber nicht mehr da ist. Der zweite Teil ist kein
+// Luxus — npcs wird bei jedem Weltwechsel geleert, ein festgehaltener Eintrag
+// waere eine Leiche mit Sprechblase.
+function gespraechTick(dt){
+  if(!gespraechOffen) return;
+  const n = gespraech.npc;
+  if(!n || state !== 'play' || currentLevel !== 1 || kammer ||
+     npcs.indexOf(n) < 0 || sqDist(player.x, player.y, n.x, n.y) > GESPRAECH_WEG_Q){
+    gespraechSchliessen(); return;
+  }
+  const ganz = gespraech.z1.length + gespraech.z2.length;
+  if(gespraech.tipp < ganz){
+    gespraech.tipp = Math.min(ganz, gespraech.tipp + dt * GESPRAECH_TEMPO);
+    gespraechTextZeichnen();
+  }
+}
+
+// U3-Guard. Er wirft nicht, er meldet — wie die uebrigen. Geprueft wird das,
+// was U3 zugesagt hat und was beim naechsten Eingriff leise kaputtgehen kann:
+//
+//   1. Jede Dorffigur hat ein Schild, und es passt ueber einen Kopf.
+//   2. Das Schild gehoert zu seiner Figur (letztes Wort steht im vollen Namen)
+//      — die Falle beim Nachtragen einer zwoelften Zeile per Kopie.
+//   3. Jede Figur bekommt genau vier Antworten, keine leer, keine zu breit
+//      fuer ihre Zeile.
+//   4. Der Portraetausschnitt liegt im 64er-Raster.
+//
+// Die Schriftstufen prueft schriftAssert() und nicht dieser Guard: sie stehen
+// erst weiter unten im Skript und waeren von hier aus ein ReferenceError durch
+// Temporal Dead Zone — genau der Fehler, den node --check nicht findet (README).
+//
+// Steht hier und nicht bei den uebrigen Guards: er liest DORF_FIGUREN und
+// gespraechOptionen(), beide weiter oben, und die Namensschild-Konstanten aus
+// drawNpcName() sind an dieser Stelle noch in der TDZ. Der Deckel steht
+// deshalb hier als eigene Zahl und nicht als Verweis dorthin.
+const SCHILD_DECKEL = 24, ANTWORT_DECKEL = 28;
+function gespraechAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('U3 Gespräch:', m, ...r); };
+  for(const f of DORF_FIGUREN){
+    if(!f.kurz) { fehler('Figur ohne Namensschild', f.key); continue; }
+    if(f.kurz.length > SCHILD_DECKEL) fehler('Namensschild zu lang', f.key, f.kurz.length);
+    const letztes = f.kurz.replace(/[,.]/g, '').split(/\s+/).pop();
+    if(f.name.indexOf(letztes) < 0) fehler('Namensschild passt nicht zum Namen', f.key, f.kurz);
+    const opts = gespraechOptionen(f);
+    if(opts.length !== 4) fehler('Antwortliste hat nicht vier Zeilen', f.key, opts.length);
+    for(const o of opts){
+      if(!o.t) fehler('leere Antwort', f.key);
+      else if(o.t.length > ANTWORT_DECKEL) fehler('Antwort zu lang', f.key, o.t);
+      if(typeof o.tun !== 'function') fehler('Antwort ohne Wirkung', f.key, o.t);
+    }
+  }
+  if(KN_NAME_KURZ.length > SCHILD_DECKEL) fehler('Knöterichs Schild zu lang', KN_NAME_KURZ.length);
+  if(PORTRAET_X + PORTRAET_B > 64 || PORTRAET_Y + PORTRAET_H > 64)
+    fehler('Porträtausschnitt liegt außerhalb des 64er-Rasters');
+  if(ok) console.log(`U3 Gespräch: ${DORF_FIGUREN.length} Namensschilder und je vier Antworten in Ordnung.`);
+}
+gespraechAssert();
+
 // --- G5: Amtsstube-Panel (Kontext-Taste F am Amt-Gebäude) -------------------
 // Reine Anzeige, kein Kauf (der bleibt showDorf()/dem Schichtende vorbehalten,
 // s. Plan-Entscheidung) — nur Bankguthaben/Ausbauten-Überblick plus die Option,
@@ -7577,15 +8026,15 @@ function amtFensterOeffnen(){
 }
 function amtFensterSchliessen(){ amtFensterOpen = false; el('amtFenster').style.display = 'none'; MUS.muffle(); panelSicht(); }
 function renderAmtFenster(){
-  const rows = AUSBAU_DEFS.map(d => `<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;">
+  const rows = AUSBAU_DEFS.map(d => `<div style="display:flex;justify-content:space-between;font-size:calc(11px * var(--fs));padding:3px 0;">
     <span>${d.name}</span><span style="color:#c9b98a;">${d.unit(amt.ausbauten[d.key])}</span></div>`).join('');
   // amt.schichten zählt abgeschlossene Schichten (Inkrement erst in endShift()). Dieses
   // Panel ist nur im laufenden Dienst offen (fuehreAktion() sperrt alles außer state 'play'),
   // also +1 wie in knBegruessungLine(). showDorf()/showJahresgespraech() bleiben beim Rohwert.
   el('amtFenster').innerHTML = `
     <h2>🏛 Amtsstube <span class="panelZu" style="cursor:pointer;" onclick="amtFensterSchliessen()">✖</span></h2>
-    <p style="font-size:12px;color:#9a8a5f;margin:0 0 4px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
-    <p style="font-size:11px;color:#c9b98a;margin:0 0 8px;">${rangName()}<br>${rangGruppeName()} · ${rangVerhaeltnis()}</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;margin:0 0 4px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
+    <p style="font-size:calc(11px * var(--fs));color:#c9b98a;margin:0 0 8px;">${rangName()}<br>${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <div style="text-align:left;">${rows}</div>
     ${auftragFensterBlock()}
     ${langGiesskanneBlock()}
@@ -7604,10 +8053,10 @@ function auftragFensterBlock(){
               : auftragVerletzt ? 'Hinfällig. Ohne Folgen.'
               : `Stand: ${auftragStandWert(a)} von ${a.ziel}`;
   return `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #5a4a2d;text-align:left;">
-    <div style="font-size:12px;color:#f4d97a;"><b>${def.titel(a)}</b></div>
-    <div style="font-size:11px;color:#9a8a5f;">${def.satz(a)}</div>
-    <div style="font-size:12px;color:${farbe};margin-top:3px;">${zeile}</div>
-    ${auftragFertig || auftragVerletzt ? '' : `<div style="font-size:10px;color:#9a8a5f;margin-top:5px;">
+    <div style="font-size:calc(12px * var(--fs));color:#f4d97a;"><b>${def.titel(a)}</b></div>
+    <div style="font-size:calc(11px * var(--fs));color:#9a8a5f;">${def.satz(a)}</div>
+    <div style="font-size:calc(12px * var(--fs));color:${farbe};margin-top:3px;">${zeile}</div>
+    ${auftragFertig || auftragVerletzt ? '' : `<div style="font-size:calc(10px * var(--fs));color:#9a8a5f;margin-top:5px;">
       <span style="cursor:pointer;text-decoration:underline;" onclick="auftragZurueckgeben()">Aushang zurückgeben</span></div>`}
   </div>`;
 }
@@ -7845,7 +8294,7 @@ function buildTooltip(item, isEquipped){
   if(item.effect){
     // Kessel-Ausrüstung trägt Verben, keine Zahlen. Gerechnet wird intern.
     const wk = WIRKUNG[item.effect.k];
-    html += `<div style="color:#9a8a5f;font-size:10px;margin:-2px 0 5px;">${SLOT_DE[item.base.t]} · ${RARITY[item.rar].name}${item.effect.stufe >= 3 ? ' · Unikat' : ''}</div>`;
+    html += `<div style="color:#9a8a5f;font-size:calc(10px * var(--fs));margin:-2px 0 5px;">${SLOT_DE[item.base.t]} · ${RARITY[item.rar].name}${item.effect.stufe >= 3 ? ' · Unikat' : ''}</div>`;
     html += `<div class="aff">${wk.satz[Math.min(2, item.effect.stufe - 1)]}</div>`;
     if(item.fluch){
       const fd = FLUCH[item.fluch];
@@ -7856,7 +8305,7 @@ function buildTooltip(item, isEquipped){
     }
   } else {
     // Altbestand: keine Zahlen mehr im Tooltip, dafür ein fester Satz je Slot/Affix.
-    html += `<div style="color:#9a8a5f;font-size:10px;margin:-2px 0 5px;">${SLOT_DE[item.base.t]} · ${RARITY[item.rar].name} · Altbestand</div>`;
+    html += `<div style="color:#9a8a5f;font-size:calc(10px * var(--fs));margin:-2px 0 5px;">${SLOT_DE[item.base.t]} · ${RARITY[item.rar].name} · Altbestand</div>`;
     html += `<div class="aff">Solide Dienstausrüstung ohne Vermerk.</div>`;
     item.affixes.forEach(a => html += `<div class="aff">${a.def.satz}</div>`);
   }
@@ -7878,7 +8327,7 @@ function buildTooltip(item, isEquipped){
 function buildZutatTooltip(z){
   const zr = zutatRar(z);
   return `<div class="tname rar${zr}">${zutatName(z)}</div>`
-       + `<div style="color:#9a8a5f;font-size:10px;margin:-2px 0 5px;">Zutat · ${RARITY[zr].name} · ${z.count} im Beutel</div>`
+       + `<div style="color:#9a8a5f;font-size:calc(10px * var(--fs));margin:-2px 0 5px;">Zutat · ${RARITY[zr].name} · ${z.count} im Beutel</div>`
        + `<div class="hint">Gehört in den Kessel (K).</div>`;
 }
 
@@ -8007,7 +8456,7 @@ function renderInventory(){
   for(const key in eqTypes){
     const el = document.getElementById(eqTypes[key]);
     const item = player.equip[key];
-    el.innerHTML = item ? `<span class="lbl">${SLOT_DE[key]}</span><span style="font-size:26px;line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${SLOT_DE[key]}</span>`;
+    el.innerHTML = item ? `<span class="lbl">${SLOT_DE[key]}</span><span style="font-size:calc(26px * var(--fs));line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${SLOT_DE[key]}</span>`;
     el.className = 'eqSlot ' + (item ? `rar${item.rar}` : '');
     // R10/F52: Budget-Flag gilt nur im Equip-Slot. Ohne Reset behauptet der Tooltip
     // am aufgehobenen Stück weiter "Dieser Fluch ruht".
@@ -8019,7 +8468,7 @@ function renderInventory(){
     const slot = document.createElement('div'); slot.className = 'bagSlot';
     const item = player.bag[i];
     if(item){
-      slot.classList.add(`rar${item.rar}`); slot.innerHTML = `<span style="font-size:22px;line-height:1;">${item.base.icon || '❔'}</span>`;
+      slot.classList.add(`rar${item.rar}`); slot.innerHTML = `<span style="font-size:calc(22px * var(--fs));line-height:1;">${item.base.icon || '❔'}</span>`;
       bindTooltip(slot, item, false, () => { player.bag[i] = null; dropItemToFloor(item); renderInventory(); }, () => equipItemFromBag(i));
     }
     bagGrid.appendChild(slot);
@@ -8151,7 +8600,7 @@ function brew(){
   const res = el('kesselResult');
   res.style.display = 'block';
   res.innerHTML = `<div class="rname rar${rar}">${item.base.icon} ${item.name}</div>`
-    + `<div style="color:#9a8a5f;font-size:10px;">${SLOT_DE[slot]} · ${RARITY[rar].name}${stufe>=3?' · Unikat':''}</div>`
+    + `<div style="color:#9a8a5f;font-size:calc(10px * var(--fs));">${SLOT_DE[slot]} · ${RARITY[rar].name}${stufe>=3?' · Unikat':''}</div>`
     + `<div class="aff" style="color:#8fb0ff;">${wk.satz[Math.min(2, stufe-1)]}</div>`
     + (fluchDef ? `<div class="aff" style="color:#ff8f8f;">${fluchDef.satz}</div>` : '');
   renderKesselPane();
@@ -8242,7 +8691,7 @@ function renderKladde(){
     for(const u of uKeys) parts.push(`<div class="kl">${kladde.unikate[u]} ist schon aus dem Kessel gekommen.</div>`);
   }
   if(!parts.length) parts.push('<div class="klEmpty">Noch keine Beobachtungen. Der Kessel schweigt.</div>');
-  else parts.unshift(`<div style="font-size:10px;color:#9a8a5f;font-style:italic;margin-bottom:6px;">${malWort(kladde.crafts)} gekocht. Notiert wird nur, was wirklich passiert ist.</div>`);
+  else parts.unshift(`<div style="font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;margin-bottom:6px;">${malWort(kladde.crafts)} gekocht. Notiert wird nur, was wirklich passiert ist.</div>`);
   el('kladdeBox').innerHTML = parts.join('');
 }
 
@@ -8257,7 +8706,7 @@ function renderBlaetter(){
     el('blaetterBox').innerHTML = bestand + '<div class="klEmpty">Noch keine Aktenfunde. Kammern durchsuchen.</div>';
     return;
   }
-  const parts = [bestand, `<div style="font-size:10px;color:#9a8a5f;font-style:italic;margin-bottom:6px;">${gefunden.length} von ${BLAETTER_KEYS.length} Blättern gefunden.</div>`];
+  const parts = [bestand, `<div style="font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;margin-bottom:6px;">${gefunden.length} von ${BLAETTER_KEYS.length} Blättern gefunden.</div>`];
   for(const id of gefunden){
     const b = BLAETTER[id];
     const titel = `Serie ${b.serie}, Blatt ${b.n}`;
@@ -8414,7 +8863,7 @@ document.getElementById('btnStr').onclick = () => addSkill('str');
 document.getElementById('btnVit').onclick = () => addSkill('vit');
 document.getElementById('btnAgi').onclick = () => addSkill('agi');
 document.getElementById('btnInt').onclick = () => addSkill('int');
-document.getElementById('potionBtn').innerHTML = `<span style="font-size:19px;line-height:1;">🧪</span> <span id="potCount">0</span>`;
+document.getElementById('potionBtn').innerHTML = `<span style="font-size:calc(19px * var(--fs));line-height:1;">🧪</span> <span id="potCount">0</span>`;
 document.getElementById('potionBtn').onclick = drinkPotion;
 document.getElementById('spellBtn').onclick = castActiveSpell;
 document.getElementById('ultBtn').onclick = castUltimate;
@@ -8428,6 +8877,7 @@ document.getElementById('musicVol').oninput = (e)=>{
 };
 
 function update(dt){
+  gespraechTick(dt);   // U3: vor dem state-Ausstieg, damit die Tafel auch dann zugeht, wenn der Zustand wechselt
   if(state !== 'play') return;
   if(hitStopT > 0){ hitStopT -= dt; return; } // Freeze-Frame Effekt
   gameT += dt; if(shakeT > 0) shakeT -= dt;
@@ -9180,7 +9630,14 @@ function render(){
                       const nsc = NPC_SC;   // W3: alle elf Dorffiguren im Held-Maßstab, Komposit wie Blatt
                       drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, nsc, o.flip, o.tint, o.tintA);
                       if(o.key === 'bramsche') drawAnlage3(o.x + 14, o.y + 6);
-                      if(o.bubbleText1 && gameT < o.bubbleHideAt) drawBubble(o.x, o.y, o.bubbleText1, o.bubbleText2);
+                      // U3: Namensschild, entfernungsabhaengig eingeblendet.
+                      // Nur vormerken, gezeichnet wird nach der Schleife (s. npcSchildFlush).
+                      npcSchildMerken(o.x, o.y, o.figur.kurz, gespraech.npc === o);
+                      // U3: Die Blase bleibt, aber nicht neben dem Fenster. Steht
+                      // der Satz schon im Gespraechsfenster, waere sie dieselbe
+                      // Zeile ein zweites Mal.
+                      if(o.bubbleText1 && gameT < o.bubbleHideAt && gespraech.npc !== o)
+                        drawBubble(o.x, o.y, o.bubbleText1, o.bubbleText2);
                       break; }
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
@@ -9191,6 +9648,7 @@ function render(){
       default:           drawPlayer();
     }
   }
+  npcSchildFlush();   // U3: alle Namensschilder auf einmal, ueber allem und ohne Ueberlappung
 
   // --- Touch: Zauber-Preview + Lock-Marker (World-Space) ---
   if(spellAim.active && spellAim.sp){
@@ -9290,7 +9748,7 @@ function drawKessel(){
 function drawBubble(x, y, text1, text2){
   if(!text1) return;
   ctx.save();
-  ctx.textAlign = 'center'; ctx.font = 'bold 11px Courier New';
+  ctx.textAlign = 'center'; ctx.font = BLASE_FONT;   // U3: waechst mit der Schriftstufe
   const by = y - 48;
   const w = Math.max(ctx.measureText(text1).width, ctx.measureText(text2 || '').width) + 16;
   const h = text2 ? 34 : 20;
@@ -9316,6 +9774,10 @@ function drawAlter(){
   drawSpriteAt(hairKey, f, '#8a8a8a', 0.82);
   ctx.restore();
 
+  // U3: Knoeterich bekommt dasselbe Schild wie die elf Dorffiguren. Er
+  // nennt seinen Namen ohnehin im ersten Satz des Spiels (knUpdateBubble),
+  // und er ist die Figur, zu der man am haeufigsten zurueckkommt.
+  npcSchildMerken(x, y, KN_NAME_KURZ, false);
   if(knBubble.visible) drawBubble(x, y, knBubble.text1, knBubble.text2);
 }
 
@@ -9517,10 +9979,176 @@ function drawCorpse(c){
 
 const SIEGEL_STRICH = [4, 4];
 // R6/F73: Fontstrings sind Konstanten, keine pro Frame gebauten Strings.
-const NAME_FONT = 'bold 10px Courier New', NAME_FONT_ELITE = '900 12px Courier New',
-      NAME_FONT_ART = 'bold 9px Courier New';
+// U3: aus const wurde let, und die Zahl darin kommt aus SCHRIFT_GRUND mal der
+// gewaehlten Stufe. Gebaut wird trotzdem nicht pro Frame, sondern einmal je
+// Stufenwechsel in schriftAnwenden() — die Regel bleibt, nur ihr Wert nicht.
+const SCHRIFT_GRUND = {name:12, elite:14, art:10, npc:13, blase:13};
+let NAME_FONT = 'bold 12px Courier New', NAME_FONT_ELITE = '900 14px Courier New',
+    NAME_FONT_ART = 'bold 10px Courier New', NAME_FONT_NPC = 'bold 13px Courier New',
+    BLASE_FONT = 'bold 13px Courier New';
 // Sichtweite der Namensschilder, quadriert (kein hypot im Zeichenpfad).
 const NAME_SICHT_Q = 210*210;
+
+
+// === U3: Namensschilder ueber den Dorffiguren ==============================
+// Die Monster haben ihre seit M2 (drawMon unten), die Nachbarn nicht. Elf
+// Figuren stehen im Dorf, jede mit Namen und Titel in DORF_FIGUREN, und ueber
+// keinem Kopf stand er. Wer wissen wollte, wen er da anspricht, musste ihn
+// ansprechen.
+//
+// Nicht dauerhaft, wie erbeten und wie im Genre ueblich: das Schild blendet
+// sich mit der Entfernung ein und wieder aus. Bis NAH voll, zwischen NAH und
+// FERN linear heruntergezogen, dahinter gar nicht. Ein harter Umschlag laesst
+// Schilder aufpoppen, sobald man einen Schritt macht; das Dorf ist eng
+// bebaut, und elf davon gleichzeitig waeren ein Kataster, kein Dorf.
+//
+// Der Deckel: kurz statt name. 'Wirt Bruno Fass, Gasthaus "Zum Letzten
+// Stempel"' ist der Eintrag im Personalverzeichnis, kein Schild. Der volle
+// Name steht im Gespraechsfenster, dort ist Platz dafuer.
+const NPC_NAME_NAH = 120, NPC_NAME_FERN = 200;
+const NPC_NAME_FERN_Q = NPC_NAME_FERN * NPC_NAME_FERN;
+// Kopfhoehe: das Blatt ist 64px hoch, die Fusslinie liegt auf CF_ANCHOR.ay
+// (40), die Figur beginnt bei y=8 — also 32 Quellpixel ueber dem Anker, mal
+// NPC_SC. Plus 8px Luft, damit die Schrift den Scheitel nicht beruehrt.
+const NPC_NAME_HOCH = 32 * NPC_SC + 8;
+
+// Liefert die Deckkraft des Schildes zu einer Weltposition, 0 wenn keins.
+function npcNameAlpha(x, y){
+  const q = sqDist(player.x, player.y, x, y);
+  if(q >= NPC_NAME_FERN_Q) return 0;
+  const d = Math.sqrt(q);
+  return d <= NPC_NAME_NAH ? 1 : 1 - (d - NPC_NAME_NAH) / (NPC_NAME_FERN - NPC_NAME_NAH);
+}
+
+// Die Schilder werden gesammelt und erst nach der Zeichenschleife ausgegeben.
+// Zwei Gruende, beide gemessen und nicht vermutet:
+//
+//   1. Ueberlappung. Lott, Pahl und Pommer sitzen nebeneinander auf der Bank am
+//      Dorfplatz. Nebeneinander gezeichnet ergaben ihre drei Schilder
+//      "Herr LotHerr PahHerr Pommer" — drei Namen, kein lesbarer. Der Flush
+//      unten legt jedes Schild auf die erste freie Zeile ueber dem Kopf.
+//   2. Reihenfolge. Die Schleife sortiert nach y, ein Schild aus einer frueheren
+//      Zeile lag also unter dem naechsten Haus. Am Ende gezeichnet liegen alle
+//      Schilder ueber allem.
+//
+// Kein Neubau pro Frame: das Feld wird geleert und wieder gefuellt, nicht
+// ersetzt (Regressionsregel 10), und laenger als elf Eintraege wird es nie.
+const npcSchilder = [];
+function npcSchildMerken(x, y, text, imGespraech){
+  if(!text) return;
+  const a = npcNameAlpha(x, y);
+  if(a <= 0.02) return;
+  npcSchilder.push({x, y, text, a, hell: imGespraech});
+}
+
+// Das Schild selbst. Gleiche Lesart wie bei den Monstern (schwarzer Versatz
+// unter heller Schrift, kein Kasten), nur heller und groesser: ein Nachbar ist
+// keine Vorgangsart. Wer gerade im Gespraech ist, bekommt Gold statt Creme —
+// damit bei zwei Figuren nebeneinander zu sehen ist, welche gerade redet.
+// Hoehe einer Ausweichzeile. Kein fester Wert: sie muss mit der Schrift
+// wachsen, sonst ueberlappen die ausgewichenen Schilder auf Stufe 2 wieder.
+// Gesetzt von schriftAnwenden() gleich unten, zusammen mit NAME_FONT_NPC.
+let NPC_SCHILD_ZEILE = 15;
+function npcSchildFlush(){
+  if(!npcSchilder.length) return;
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.font = NAME_FONT_NPC;
+  // Der Naechste zuerst: seine Deckkraft ist die hoechste, und er bekommt
+  // deshalb die unterste Zeile. Wer weiter weg steht, weicht nach oben aus.
+  npcSchilder.sort((p, q) => q.a - p.a);
+  const belegt = [];              // {l, r, zeile} der schon gesetzten Schilder
+  for(const s of npcSchilder){
+    const halb = ctx.measureText(s.text).width / 2 + 4;
+    const l = s.x - halb, r = s.x + halb;
+    let zeile = 0;
+    while(belegt.some(b => b.zeile === zeile && b.l < r && l < b.r)) zeile++;
+    belegt.push({l, r, zeile});
+    const ty = s.y - NPC_NAME_HOCH - zeile * NPC_SCHILD_ZEILE;
+    ctx.globalAlpha = s.a;
+    ctx.fillStyle = '#000';                        ctx.fillText(s.text, s.x + 1, ty + 1);
+    ctx.fillStyle = s.hell ? '#f4d97a' : '#f4e6c8'; ctx.fillText(s.text, s.x, ty);
+  }
+  ctx.restore();
+  npcSchilder.length = 0;
+}
+
+// ===========================================================================
+//  U3: Die Schriftstufe
+//
+//  Drei Stufen, ein Faktor. Der Faktor steht als --fs auf :root und multipliziert
+//  jede der 176 font-size-Angaben dieser Datei (s. den Kommentar oben im
+//  <style>); die Canvas-Schriften, bei denen es ums Lesen geht, baut
+//  schriftAnwenden() aus SCHRIFT_GRUND einmal je Stufenwechsel neu — nicht pro
+//  Frame, R6/F73 gilt weiter.
+//
+//  Voreingestellt ist Stufe 1, nicht 0. Die Bitte lautete, die Schrift duerfe
+//  groesser sein; eine Voreinstellung, die man erst suchen muss, waere keine
+//  Antwort darauf. Wer es enger mag, stellt im Inventar unter SCHRIFT auf
+//  "Normal".
+//
+//  "Normal" heisst dabei genau: jede CSS-Angabe steht wieder auf der Zahl, die
+//  vor U3 dort stand. Fuer die Canvas-Schriften stimmt das NICHT, und zwar
+//  absichtlich: NAME_FONT stand auf 10px, NAME_FONT_ART auf 9px, die
+//  Sprechblase auf 11px — das war die kleinste Schrift im ganzen Spiel, in der
+//  Welt gezeichnet und nicht in einem Menue. Ihre Grundzahlen in SCHRIFT_GRUND
+//  sind einmalig um zwei Pixel angehoben; der Regler multipliziert von dort.
+//
+//  Der Wert liegt in localStorage neben sda_targetPriority und nicht im
+//  Spielstand: er beschreibt den Bildschirm, an dem gespielt wird, nicht die
+//  Laufbahn der Person des Tages. Ein neuer Dienstantritt aendert nichts daran.
+// ===========================================================================
+const SCHRIFT_STUFEN = [1, 1.2, 1.45];
+const SCHRIFT_KEY = 'sda_schrift';
+let schriftStufe = 1;
+
+function schriftAnwenden(){
+  const f = SCHRIFT_STUFEN[schriftStufe] || 1;
+  document.documentElement.style.setProperty('--fs', String(f));
+  // Auf halbe Pixel gerundet: Courier New rastert bei krummen Groessen sichtbar
+  // unruhig, und diese Schriften stehen in der Welt, nicht im Menue.
+  const px = v => (Math.round(v * f * 2) / 2);
+  NAME_FONT       = `bold ${px(SCHRIFT_GRUND.name)}px Courier New`;
+  NAME_FONT_ELITE = `900 ${px(SCHRIFT_GRUND.elite)}px Courier New`;
+  NAME_FONT_ART   = `bold ${px(SCHRIFT_GRUND.art)}px Courier New`;
+  NAME_FONT_NPC   = `bold ${px(SCHRIFT_GRUND.npc)}px Courier New`;
+  BLASE_FONT      = `bold ${px(SCHRIFT_GRUND.blase)}px Courier New`;
+  NPC_SCHILD_ZEILE = px(SCHRIFT_GRUND.npc) + 2;
+  document.querySelectorAll('.schriftBtn').forEach(b => b.classList.toggle('on', +b.dataset.v === schriftStufe));
+}
+
+try{
+  const v = parseInt(localStorage.getItem(SCHRIFT_KEY), 10);
+  if(v >= 0 && v < SCHRIFT_STUFEN.length) schriftStufe = v;
+}catch(_){}
+
+function schriftSetzen(i){
+  if(!(i >= 0 && i < SCHRIFT_STUFEN.length)) return;
+  schriftStufe = i;
+  try{ localStorage.setItem(SCHRIFT_KEY, String(i)); }catch(_){}
+  schriftAnwenden();
+}
+document.querySelectorAll('.schriftBtn').forEach(b => {
+  b.onclick = () => schriftSetzen(+b.dataset.v);
+});
+schriftAnwenden();
+
+// Zusage der Stufe 0: sie ist der Stand vor U3, Pixel fuer Pixel. Wer die
+// Tabelle spaeter anfasst, soll das hier gemeldet bekommen und nicht im Bild
+// suchen muessen. Zweite Zusage: die Stufen steigen, sonst waere "Groesser"
+// eine Luege auf dem Knopf.
+function schriftAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('U3 Schrift:', m, ...r); };
+  if(SCHRIFT_STUFEN[0] !== 1) fehler('Stufe "Normal" ist nicht 1.0', SCHRIFT_STUFEN[0]);
+  if(!SCHRIFT_STUFEN.every((v, i) => v > 0 && (i === 0 || v > SCHRIFT_STUFEN[i-1])))
+    fehler('Stufen steigen nicht', SCHRIFT_STUFEN);
+  if(!(schriftStufe >= 0 && schriftStufe < SCHRIFT_STUFEN.length)) fehler('gewaehlte Stufe liegt daneben', schriftStufe);
+  const gesetzt = document.documentElement.style.getPropertyValue('--fs');
+  if(parseFloat(gesetzt) !== SCHRIFT_STUFEN[schriftStufe]) fehler('--fs steht nicht auf der gewaehlten Stufe', gesetzt);
+  if(ok) console.log(`U3 Schrift: ${SCHRIFT_STUFEN.length} Stufen, gewaehlt ${schriftStufe} (Faktor ${SCHRIFT_STUFEN[schriftStufe]}), in Ordnung.`);
+}
+schriftAssert();
 
 function drawMon(m){
   const d = m.def, sc = (d.sc || 1.5) * (m.elite ? ELITE.sc : 1), psc = d.psc || 1;   // psc: G3-Pixelskala des CF-Rigs, s. MONDEF-Kommentar
@@ -9675,7 +10303,7 @@ const ULT_SPELL = SPELLS.find(s => s.ultimate);
 const spellTitel = sp => sp._titel || (sp._titel = `${sp.name} (E) · ${sp.mana} Mana`);
 const ULT_TITEL = `${ULT_SPELL.name} (R) · ${ULT_SPELL.mana} Mana`;
 // Z2: Schloss-Texte einmal gebaut, updateHUD() vergleicht per Dirty-Check.
-const ZAUBER_SCHLOSS = `🔒 <span style="font-size:9px">ab St. ${ZAUBER_AB_STUFE}</span>`;
+const ZAUBER_SCHLOSS = `🔒 <span style="font-size:calc(9px * var(--fs))">ab St. ${ZAUBER_AB_STUFE}</span>`;
 const ZAUBER_SCHLOSS_TITEL = `Zauberbefugnis ab Stufe ${ZAUBER_AB_STUFE}`;
 
 // Segmente der mobilen Röhren: eins zu Beginn, ab jeder vollen Stufenschwelle
@@ -9716,7 +10344,7 @@ function updateHUD(){
   } else {
   if(as && player.spellsKnown[as.id]){
     el('spellBtn').classList.remove('disabled');
-    setHTML('spellBtnTxt', `${as.icon} <span style="font-size:9px">${as.mana}⦿</span>`);
+    setHTML('spellBtnTxt', `${as.icon} <span style="font-size:calc(9px * var(--fs))">${as.mana}⦿</span>`);
     setAttr('spellBtn', 'title', spellTitel(as));
   } else {
     el('spellBtn').classList.add('disabled');
@@ -9753,16 +10381,16 @@ function showStartScreen(){
   camSnap();   // hinter dem Startbild soll das Dorf stehen, nicht die Kartenecke
   const erst = !kn.seen.einstellung;
   const stand = (CONFIG.schichtModus && amt.schichten > 0)
-    ? `<p style="font-size:12px;color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse 💰 ${amt.bankGold}</p>` : '';
+    ? `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse 💰 ${amt.bankGold}</p>` : '';
   document.getElementById('ovPanel').innerHTML = `
     <h1>DAS MONSTRAL MINISTERIUM</h1>
     <h3>Erledigen. Beglaubigen. Feierabend.</h3>
-    <p style="font-size:16px;color:#f4e6b8;margin:0 0 10px;">Was nicht bearbeitet wird, wird lebendig.</p>
+    <p style="font-size:calc(16px * var(--fs));color:#f4e6b8;margin:0 0 10px;">Was nicht bearbeitet wird, wird lebendig.</p>
     <p>Vierhundert Jahre lang ist hier etwas liegen geblieben. Inzwischen läuft es draußen herum, und das Amt schickt jeden Tag jemanden hinterher. Heute sind Sie das.</p>
     ${stand}
-    <p style="font-size:12px;color:#9a8a5f;">W A S D gehen, Klick oder Leertaste schlagen. Auf dem Handy links gehen, rechts schlagen.</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">W A S D gehen, Klick oder Leertaste schlagen. Auf dem Handy links gehen, rechts schlagen.</p>
     <button onclick="startGame()">${erst ? 'Dienst antreten' : 'Dienst fortsetzen'}</button>
-    ${erst ? '' : `<div><button onclick="showDienstblatt(2,'menu')" style="font-size:13px;padding:9px 20px;margin-top:10px;">Dienstanweisung</button></div>`}
+    ${erst ? '' : `<div><button onclick="showDienstblatt(2,'menu')" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Dienstanweisung</button></div>`}
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
@@ -9773,7 +10401,7 @@ function showDead(){
   document.getElementById('ovPanel').innerHTML = `
     <h1 style="color:#ff5a5a">ÜBERRANNT</h1>
     <p>Monster erledigt: <b>${stats.kills}</b> · Stufe <b>${player.level}</b></p>
-    <p style="font-size:12px;color:#9a8a5f;">${wasKammer ? 'Die Kammer hat dich ausgespuckt. Sie bleibt versiegelt und wartet.'
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${wasKammer ? 'Die Kammer hat dich ausgespuckt. Sie bleibt versiegelt und wartet.'
       : wasShadowland ? 'Das Schattenland hat dich zurück in den Wald geschleudert.' : 'Du wachst am Waldrand wieder auf.'} Stufe, Ausrüstung und Beute bleiben erhalten.</p>
     <button onclick="respawnPlayer()">ZURÜCK IN DEN WALD</button>
   `;
@@ -9789,6 +10417,7 @@ function respawnPlayer(){
   player.swingT = 0; player.castT = 0; player.attackCd = 0; player.spellCd = 0; player.zauberRuhT = 0;
   player.stillT = 0; player.hektikT = 0; player.kampfT = 0; player.platzCd = 0; player.schlagN = 0; goldRotT = 0;
   player.hp = Math.max(1, Math.round(derived.maxHp * 0.5)); player.mana = derived.maxMana;
+  gespraechSchliessen();   // U3: npcs wird gleich neu gesetzt, ein festgehaltener Eintrag waere eine Leiche
   if(kesselOpen) toggleKessel();                                                   // gibt auch die Zutaten aus dem Topf zurück
   if(ausweisOpen) toggleAusweis();
   if(fullmapOpen) toggleFullmap();
@@ -9816,8 +10445,8 @@ function winGame(){
   document.getElementById('ovPanel').innerHTML = `
     <h1 style="color:#a855f7">SACHVERHALT ERLEDIGT</h1>
     <p>Fürst Nachtrag ist zu den Akten genommen. Die Akten liegen noch dort, wo er stand.</p>
-    <p style="font-size:12px;color:#9a8a5f;">Ein Aktenzeichen wird nicht vergeben. Es fehlt die Anschrift, an die man die Erledigung hätte richten können. Das Haus vermerkt: Vorgang 1 bleibt offen, der Anlass ist entfallen.</p>
-    <p style="font-size:12px;font-style:italic;color:#c9b98a;">Trepp trägt den Brief zurück in den Sack. Er sagt nichts.</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">Ein Aktenzeichen wird nicht vergeben. Es fehlt die Anschrift, an die man die Erledigung hätte richten können. Das Haus vermerkt: Vorgang 1 bleibt offen, der Anlass ist entfallen.</p>
+    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">Trepp trägt den Brief zurück in den Sack. Er sagt nichts.</p>
     <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -9891,6 +10520,7 @@ function startShift(){
   currentLevel = 1; schattenlandActive = false; shadowKills = 0; boss = null; portal = null;
   monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   particles.length = 0; corpses.length = 0; floaters.length = 0;
+  gespraechSchliessen();   // U3, s. respawnPlayer
   if(kesselOpen) toggleKessel();
   if(ausweisOpen) toggleAusweis();
   if(fullmapOpen) toggleFullmap();
@@ -9988,6 +10618,7 @@ function startShift(){
 // angefasst — sie speichert sich schon beim Kochen selbst (saveKladde()) und bleibt
 // dadurch unabhängig von diesem Reset garantiert erhalten.
 function endShift(reason){
+  gespraechSchliessen();   // U3, s. respawnPlayer
   if(kesselOpen) toggleKessel();
   if(ausweisOpen) toggleAusweis();
   if(fullmapOpen) toggleFullmap();
@@ -10053,20 +10684,20 @@ function endShift(reason){
 
   document.getElementById('ovPanel').innerHTML = `
     <h1>${titel}</h1>
-    <p style="font-size:12px;color:#9a8a5f;">${anlass}</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${anlass}</p>
     <div id="berichtRoll" style="max-height:30vh;overflow-y:auto;">
-    <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:13px;margin:14px 0;border:1px solid #5a4a2d;">
+    <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:calc(13px * var(--fs));margin:14px 0;border:1px solid #5a4a2d;">
       <b>🧑‍💼 Dienstbericht</b><br>
-      Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:11px;color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
+      Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:calc(11px * var(--fs));color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
       Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
       Überstunden: ${ueberstunden}s<br>${auftragBericht ? '      ' + auftragBericht + '<br>' : ''}
       Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse, ${verwaltung} Verwaltungskostenanteil)
     </div>
     ${rangBerichtBlock()}
     </div>
-    <p id="berichtMehr" style="font-size:11px;color:#7a6a45;margin:2px 0 0;"></p>
+    <p id="berichtMehr" style="font-size:calc(11px * var(--fs));color:#7a6a45;margin:2px 0 0;"></p>
     <div id="wiederBox">${wiederBlockHtml()}</div>
-    <p style="font-size:12px;font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
+    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„${bemerkung}"</p>
     <button onclick="nachSchicht()">WEITER</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -10229,12 +10860,12 @@ function rangZeremonieBlock(){
     <div style="border-top:1px solid #5a4a2d;margin-top:12px;padding-top:10px;">
       <b style="color:#f4d97a;">Beförderungszeremonie</b>
       <div style="max-height:38vh;overflow-y:auto;text-align:left;background:rgba(0,0,0,.4);
-                  padding:10px;border-radius:8px;margin:8px 0;font-size:12px;">${urkunde}</div>
-      <p style="font-size:12px;">${RANG_ZEREMONIE_FIX[0]}</p>
-      <p style="font-size:12px;">${RANG_ZEREMONIE_FIX[1]}</p>
-      <p style="font-size:12px;color:#9a8a5f;">${RANG_ZEREMONIE_FIX[2]}</p>
-      <p style="font-size:12px;color:#9a8a5f;">${RANG_ZEREMONIE_FIX[3]}</p>
-      <p style="font-size:12px;font-style:italic;color:#c9b98a;">Knöterich: „${knSatz}“</p>
+                  padding:10px;border-radius:8px;margin:8px 0;font-size:calc(12px * var(--fs));">${urkunde}</div>
+      <p style="font-size:calc(12px * var(--fs));">${RANG_ZEREMONIE_FIX[0]}</p>
+      <p style="font-size:calc(12px * var(--fs));">${RANG_ZEREMONIE_FIX[1]}</p>
+      <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${RANG_ZEREMONIE_FIX[2]}</p>
+      <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${RANG_ZEREMONIE_FIX[3]}</p>
+      <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">Knöterich: „${knSatz}“</p>
     </div>`;
 }
 
@@ -10258,11 +10889,11 @@ const RANG_BEAT45_ZEILEN = [
 function rangBerichtBlock(){
   const s = amt.schichten;
   if(s === 0 || s % 5 !== 0) return '';
-  if(s % 10 === 0) return `<p style="font-size:12px;color:#f4d97a;">Eine Urkunde liegt zur Aushändigung bereit. Jahresgespräch folgt.</p>`;
-  let zeile = `<p style="font-size:12px;color:#f4d97a;">Die Stelle wurde gehoben. Neue Amtsbezeichnung: ${rangName()}, ${rangGruppeName()}, ${rangVerhaeltnis()}.</p>`;
-  if(s === 25) zeile += RANG_BEAT25.map(z => `<p style="font-size:12px;font-style:italic;color:#c9b98a;">Knöterich: „${z}“</p>`).join('');
-  if(s === 45) zeile += `<p style="font-size:12px;font-style:italic;color:#c9b98a;">Knöterich: „${RANG_BEAT45_WORT}“</p>` +
-    RANG_BEAT45_ZEILEN.map(z => `<p style="font-size:11px;color:#9a8a5f;">${z}</p>`).join('');
+  if(s % 10 === 0) return `<p style="font-size:calc(12px * var(--fs));color:#f4d97a;">Eine Urkunde liegt zur Aushändigung bereit. Jahresgespräch folgt.</p>`;
+  let zeile = `<p style="font-size:calc(12px * var(--fs));color:#f4d97a;">Die Stelle wurde gehoben. Neue Amtsbezeichnung: ${rangName()}, ${rangGruppeName()}, ${rangVerhaeltnis()}.</p>`;
+  if(s === 25) zeile += RANG_BEAT25.map(z => `<p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">Knöterich: „${z}“</p>`).join('');
+  if(s === 45) zeile += `<p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">Knöterich: „${RANG_BEAT45_WORT}“</p>` +
+    RANG_BEAT45_ZEILEN.map(z => `<p style="font-size:calc(11px * var(--fs));color:#9a8a5f;">${z}</p>`).join('');
   return zeile;
 }
 
@@ -10683,10 +11314,10 @@ function vorgangJahresBlock(){
   const idx = Math.floor(amt.schichten/10) - 1;   // gleiche Rechnung wie JAHRES_BONI/rangZeremonieBlock
   const e = idx >= 0 && idx < VORGANG_JAHRES.length ? VORGANG_JAHRES[idx] : null;
   const zwirn = e ? e.zwirn : VORGANG_JAHRES_WEITER;
-  const hinweis = e && e.hinweis ? `<p style="font-size:12px;color:#9a8a5f;">${e.hinweis}</p>` : '';
+  const hinweis = e && e.hinweis ? `<p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${e.hinweis}</p>` : '';
   return `
     <div style="border-top:1px solid #5a4a2d;margin-top:12px;padding-top:10px;">
-      <p style="font-size:12px;font-style:italic;color:#c9b98a;">Zwirn: „${zwirn}“</p>
+      <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">Zwirn: „${zwirn}“</p>
       ${hinweis}
     </div>`;
 }
@@ -10779,7 +11410,7 @@ function vorgangPanelHtml(schritt){
   if(schritt === 1) return `
     <h1>ZUSTELLUNG</h1>
     <p>Er nimmt den Umschlag. Er liest. Er liest lange.</p>
-    <p style="font-size:12px;font-style:italic;color:#c9b98a;">„Vierhundert Jahre. Und Sie kommen einfach vorbei.“</p>
+    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Vierhundert Jahre. Und Sie kommen einfach vorbei.“</p>
     <button onclick="vorgangPanel(2)">WEITER</button>`;
   if(schritt === 2){
     const teile = VORGANG_PUZZLE.map(p => `<p>${p.frei() ? p.text : (p.sonst || p.text)}</p>`).join('');
@@ -10792,7 +11423,7 @@ function vorgangPanelHtml(schritt){
   return `
     <h1>VORGANG 1: GESCHLOSSEN</h1>
     <div style="max-height:38vh;overflow-y:auto;text-align:left;background:rgba(0,0,0,.4);
-                padding:10px;border-radius:8px;margin:10px 0;font-size:12px;">
+                padding:10px;border-radius:8px;margin:10px 0;font-size:calc(12px * var(--fs));">
       <p>Das Ministerium löst sich auf. Sein Auftrag ist erfüllt.</p>
       <p>Knöterichs Entpflichtung wird als vorletzte Amtshandlung bearbeitet. Er darf gehen. Er steht sehr lange auf.</p>
       <p>Sturz genehmigt, als letzte Amtshandlung, das Dorffest.</p>
@@ -11084,11 +11715,11 @@ function showJahresgespraech(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>JAHRESGESPRÄCH</h1>
     <p>Der Bürgermeister bedankt sich für ${amt.schichten} Schichten treuen Dienstes.</p>
-    <p style="font-size:12px;font-style:italic;color:#c9b98a;">„Ich habe alles mitgeschrieben."</p>
+    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Ich habe alles mitgeschrieben."</p>
     <div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;margin:14px 0;border:1px solid #5a4a2d;">
-      <b>${b.name}</b><br><span style="font-size:12px;color:#c9b98a;">${b.text}</span>
+      <b>${b.name}</b><br><span style="font-size:calc(12px * var(--fs));color:#c9b98a;">${b.text}</span>
       ${b.name === 'Kaffeemaschine' && langLaeuft('kaffeemaschine')
-        ? '<br><span style="font-size:11px;color:#9a8a5f;">Zapf trägt sie herein und stellt sie sehr vorsichtig ab. Er sagt nichts dazu. Noch nicht.</span>' : ''}
+        ? '<br><span style="font-size:calc(11px * var(--fs));color:#9a8a5f;">Zapf trägt sie herein und stellt sie sehr vorsichtig ab. Er sagt nichts dazu. Noch nicht.</span>' : ''}
     </div>
     ${vorgangJahresBlock()}
     ${rangZeremonieBlock()}
@@ -11570,11 +12201,11 @@ function langGiesskanneBlock(){
   const st = langStufe('giesskanne');
   if(st >= d.stufen){
     const f = d.fortschritt(d.stufen);
-    return `<p style="font-size:11px;color:#8fdc8f;margin:8px 0 0;">${f.z1} ${f.z2}</p>`;
+    return `<p style="font-size:calc(11px * var(--fs));color:#8fdc8f;margin:8px 0 0;">${f.z1} ${f.z2}</p>`;
   }
-  if(st < 2) return `<p style="font-size:11px;color:#9a8a5f;margin:8px 0 0;">Auf dem leeren Schreibtisch steht eine Pflanze. Sie hängt.</p>`;
-  return `<p style="font-size:11px;color:#c9b98a;margin:8px 0 0;">Der Eimer steht bereit. Die Pflanze hängt weiter.</p>
-    <span onclick="langGiessen()" style="cursor:pointer;color:#f4d97a;font-size:11px;">▸ Die Pflanze gießen</span>`;
+  if(st < 2) return `<p style="font-size:calc(11px * var(--fs));color:#9a8a5f;margin:8px 0 0;">Auf dem leeren Schreibtisch steht eine Pflanze. Sie hängt.</p>`;
+  return `<p style="font-size:calc(11px * var(--fs));color:#c9b98a;margin:8px 0 0;">Der Eimer steht bereit. Die Pflanze hängt weiter.</p>
+    <span onclick="langGiessen()" style="cursor:pointer;color:#f4d97a;font-size:calc(11px * var(--fs));">▸ Die Pflanze gießen</span>`;
 }
 function langGiessen(){ langEreignis('amtstube', null); renderAmtFenster(); }
 
@@ -11781,8 +12412,8 @@ function langBestandBlock(){
     zeilen.push(`<p style="margin:2px 0;color:${langFertig(k) ? '#8fdc8f' : '#c9b98a'};">${d.bestand(st)}</p>`);
   }
   if(!zeilen.length) return '';
-  return `<div style="font-size:11px;margin-bottom:8px;">
-    <div style="font-size:10px;color:#f4d97a;font-weight:bold;margin-bottom:3px;">LAUFENDE VORGÄNGE</div>
+  return `<div style="font-size:calc(11px * var(--fs));margin-bottom:8px;">
+    <div style="font-size:calc(10px * var(--fs));color:#f4d97a;font-weight:bold;margin-bottom:3px;">LAUFENDE VORGÄNGE</div>
     ${zeilen.join('')}</div>`;
 }
 
@@ -12649,10 +13280,10 @@ function gestaltWahlHtml(nr, ziel){
     // heller Text auf dieser Fläche wäre nicht zu lesen. Das Kästchen steht als
     // Zeichen da, die Systemschrift hat kein ☑.
     return `<button onclick="gestaltWaehlen('${g.key}',${nr},'${ziel}')"
-      style="font-size:11px;padding:6px 12px;margin:4px 6px 0 0;${an ? '' : 'filter:grayscale(.6);opacity:.62;'}"
+      style="font-size:calc(11px * var(--fs));padding:6px 12px;margin:4px 6px 0 0;${an ? '' : 'filter:grayscale(.6);opacity:.62;'}"
       >${an ? '[X]' : '[ ]'} ${g.kurz}</button>`;
   };
-  return `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:11px;text-align:left;">
+  return `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:calc(11px * var(--fs));text-align:left;">
       <b style="color:#f4d97a;">Anrede der Person.</b>
       <span style="color:#d8c898;">${GESTALT_TEXT}</span>
       <div>${GESTALT_WAHL.map(knopf).join('')}</div>
@@ -12680,12 +13311,12 @@ function dienstblattHtml(b, ziel){
        <b style="color:#f4d97a;">${i+1}. ${k}.</b> <span style="color:#d8c898;">${v}</span></div>`).join('');
   const bed = (b.bedienung ? b.bedienung() : []).map(([k, v]) =>
     `<div style="padding:3px 0;"><b style="color:#f4d97a;">${k}.</b> <span style="color:#d8c898;">${v}</span></div>`).join('');
-  const bedBox = bed ? `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:11px;">${bed}</div>` : '';
+  const bedBox = bed ? `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:calc(11px * var(--fs));">${bed}</div>` : '';
   const wahlBox = b.gestaltWahl ? gestaltWahlHtml(b.nr, ziel) : '';
   const satz = (b.saetze ? b.saetze() : []).map(s =>
-    `<p style="font-size:12px;color:#c9b98a;margin:6px 0 0;">${s}</p>`).join('');
+    `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;margin:6px 0 0;">${s}</p>`).join('');
   const kn = (b.kn || []).map(z =>
-    `<p style="font-size:12px;font-style:italic;color:#c9b98a;margin:8px 0 0;">Knöterich: „${z}“</p>`).join('');
+    `<p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;margin:8px 0 0;">Knöterich: „${z}“</p>`).join('');
   // Nur der Vordruckteil rollt. Die Schlusssätze und Knöterich stehen darunter
   // und bleiben immer sichtbar: auf Blatt 3 hängt genau dort der Grund, warum
   // man das hier überhaupt tut, und der darf nicht unter der Kante liegen.
@@ -12694,11 +13325,11 @@ function dienstblattHtml(b, ziel){
   // Knopf, den man erst herunterrollen muss, ist ein Knopf, den man nicht sieht.
   return `
     <h1>${b.kopf}</h1>
-    <p style="font-size:12px;color:#9a8a5f;">${b.unter} · ${b.lead}</p>
-    <div id="dienstBox" style="max-height:34vh;overflow-y:auto;text-align:left;font-size:13px;">
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${b.unter} · ${b.lead}</p>
+    <div id="dienstBox" style="max-height:34vh;overflow-y:auto;text-align:left;font-size:calc(13px * var(--fs));">
       ${feld}${punkt}${bedBox}
     </div>
-    <p id="dienstMehr" style="font-size:11px;color:#7a6a45;margin:4px 0 0;"></p>
+    <p id="dienstMehr" style="font-size:calc(11px * var(--fs));color:#7a6a45;margin:4px 0 0;"></p>
     ${wahlBox}
     <div style="text-align:left;">${satz}${kn}</div>`;
 }
@@ -12712,7 +13343,7 @@ function dienstblattHtml(b, ziel){
 function showDienstblatt(nr, ziel){
   const i = clamp(nr | 0, 1, DIENSTBLATT_ANZ);
   const b = DIENSTBLATT[i - 1];
-  const klein = 'font-size:13px;padding:9px 20px;margin:10px 6px 0;';
+  const klein = 'font-size:calc(13px * var(--fs));padding:9px 20px;margin:10px 6px 0;';
   const zurueck = i > 1
     ? `<button onclick="showDienstblatt(${i-1},'${ziel}')" style="${klein}">ZURÜCK</button>` : '';
   const weiter = i < DIENSTBLATT_ANZ
@@ -12724,7 +13355,7 @@ function showDienstblatt(nr, ziel){
   // muessen. Beim ersten Dienstantritt nicht: das Blatt wird zu Ende gelesen
   // oder wenigstens zu Ende geblaettert, sonst unterschreibt man nichts.
   const raus = (ziel !== 'einstellung' && i < DIENSTBLATT_ANZ)
-    ? `<div><button onclick="dienstblattEnde('${ziel}')" style="font-size:11px;padding:6px 14px;margin-top:8px;">SCHLIESSEN</button></div>` : '';
+    ? `<div><button onclick="dienstblattEnde('${ziel}')" style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:8px;">SCHLIESSEN</button></div>` : '';
   document.getElementById('ovPanel').innerHTML = dienstblattHtml(b, ziel) + `<div>${zurueck}${weiter}</div>${raus}`;
   document.getElementById('overlay').style.display = 'flex';
   // Ein abgeschnittener Vordruck sieht aus wie ein Fehler, nicht wie eine
@@ -13002,7 +13633,7 @@ const WIEDER_VERMERK = 'Vermerk: Eine Ausschreibung wird nicht erforderlich.';
 function wiederBlockHtml(){
   if(!wiederSichtbar()) return '';
   const rahmen = (inhalt) => `
-    <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:12px;margin:14px 0;border:1px solid #5a4a2d;">
+    <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:calc(12px * var(--fs));margin:14px 0;border:1px solid #5a4a2d;">
       <b style="color:#f4d97a;">Antrag auf Wiedereinsetzung in den vorigen Stand</b><br>${inhalt}</div>`;
 
   // Bereits bewilligt: der Antrag liegt vor, der Knopf ist weg.
@@ -13021,7 +13652,7 @@ function wiederBlockHtml(){
     <span style="color:#c9b98a;">${WIEDER_KEIN_NEU}</span><br>
     <span>Wiedereinsetzung in Stufe ${wiederStand()}. Gebühr 💰 ${g}, aus der Amtskasse. Bestand: 💰 ${amt.bankGold}.</span><br>
     <span style="color:#9a8a5f;">${WIEDER_ENG}</span><br>
-    <button ${kann ? '' : 'disabled'} onclick="wiederBeantragen()" style="font-size:12px;padding:6px 12px;margin:8px 0 0;">${kann ? 'ANTRAG STELLEN' : 'Amtskasse trägt das nicht'}</button>`);
+    <button ${kann ? '' : 'disabled'} onclick="wiederBeantragen()" style="font-size:calc(12px * var(--fs));padding:6px 12px;margin:8px 0 0;">${kann ? 'ANTRAG STELLEN' : 'Amtskasse trägt das nicht'}</button>`);
 }
 
 // Die einzige Schreibstelle. Prüft alle drei Bedingungen noch einmal selbst,
@@ -13144,21 +13775,21 @@ function showDorf(){
   const rows = AUSBAU_DEFS.map(d => {
     const lvl = amt.ausbauten[d.key], maxed = lvl >= d.max, cost = maxed ? 0 : d.cost(lvl);
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #3a2f1a;">
-      <div><b>${d.name}</b><br><span style="font-size:11px;color:#9a8a5f;">${d.desc} Jetzt: ${d.unit(lvl)}</span></div>
-      <button ${maxed||amt.bankGold<cost?'disabled':''} onclick="buyAusbau('${d.key}')" style="font-size:12px;padding:6px 10px;margin:0;">${maxed?'MAX':'💰'+cost}</button>
+      <div><b>${d.name}</b><br><span style="font-size:calc(11px * var(--fs));color:#9a8a5f;">${d.desc} Jetzt: ${d.unit(lvl)}</span></div>
+      <button ${maxed||amt.bankGold<cost?'disabled':''} onclick="buyAusbau('${d.key}')" style="font-size:calc(12px * var(--fs));padding:6px 10px;margin:0;">${maxed?'MAX':'💰'+cost}</button>
     </div>`;
   }).join('');
 
   const vermRow = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #3a2f1a;">
-    <div><b>Vermutungen in der Kladde</b><br><span style="font-size:11px;color:#9a8a5f;">Die Kladde zeigt zusätzlich unbestätigte Vermutungen.</span></div>
-    <button ${amt.ausbauten.vermutungen||amt.bankGold<100?'disabled':''} onclick="buyVermutungen()" style="font-size:12px;padding:6px 10px;margin:0;">${amt.ausbauten.vermutungen?'AKTIV':'💰100'}</button>
+    <div><b>Vermutungen in der Kladde</b><br><span style="font-size:calc(11px * var(--fs));color:#9a8a5f;">Die Kladde zeigt zusätzlich unbestätigte Vermutungen.</span></div>
+    <button ${amt.ausbauten.vermutungen||amt.bankGold<100?'disabled':''} onclick="buyVermutungen()" style="font-size:calc(12px * var(--fs));padding:6px 10px;margin:0;">${amt.ausbauten.vermutungen?'AKTIV':'💰100'}</button>
   </div>`;
 
   const fluchChoices = amt.ausbauten.startFluchUnlocked
-    ? STARTFLUCH_WAHL.map(k => `<button onclick="waehleStartFluch('${k}')" style="font-size:10px;margin:2px;padding:4px 7px;${amt.ausbauten.startFluch===k?'background:#7a5a10;':''}">${FLUCH[k].kurz}</button>`).join('')
-    : `<button ${amt.bankGold<60?'disabled':''} onclick="unlockStartFluch()" style="font-size:12px;padding:6px 10px;margin:0;">💰60 freischalten</button>`;
+    ? STARTFLUCH_WAHL.map(k => `<button onclick="waehleStartFluch('${k}')" style="font-size:calc(10px * var(--fs));margin:2px;padding:4px 7px;${amt.ausbauten.startFluch===k?'background:#7a5a10;':''}">${FLUCH[k].kurz}</button>`).join('')
+    : `<button ${amt.bankGold<60?'disabled':''} onclick="unlockStartFluch()" style="font-size:calc(12px * var(--fs));padding:6px 10px;margin:0;">💰60 freischalten</button>`;
   const fluchRow = `<div style="padding:6px 0;border-bottom:1px solid #3a2f1a;">
-    <div><b>Startausrüstung mit festem Fluch</b><br><span style="font-size:11px;color:#9a8a5f;">Wähle den milden Fluch, der die Startwaffe jeder Schicht begleitet.</span></div>
+    <div><b>Startausrüstung mit festem Fluch</b><br><span style="font-size:calc(11px * var(--fs));color:#9a8a5f;">Wähle den milden Fluch, der die Startwaffe jeder Schicht begleitet.</span></div>
     <div style="margin-top:6px;">${fluchChoices}</div>
   </div>`;
 
@@ -13167,28 +13798,28 @@ function showDorf(){
   const brettRow = !CONFIG.schichtModus ? '' : `
     <div style="padding:10px 0 4px;border-top:1px solid #5a4a2d;margin-top:8px;">
       <b>Schwarzes Brett</b>
-      <span style="font-size:11px;color:#9a8a5f;">· ein Aushang je Schicht, Abbruch jederzeit</span>
+      <span style="font-size:calc(11px * var(--fs));color:#9a8a5f;">· ein Aushang je Schicht, Abbruch jederzeit</span>
     </div>` + amt.brett.liste.map((a, i) => {
       const def = AUFTRAG_TYPEN[a.typ], gew = !!amt.auftrag && amt.auftrag.typ === a.typ;
       return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #3a2f1a;${gew?'background:rgba(122,90,16,.30);':''}">
         <div><b>${def.titel(a)}</b>
-          <br><span style="font-size:11px;color:#9a8a5f;">${def.satz(a)}</span>
-          <br><span style="font-size:10px;color:#7a6a45;font-style:italic;">${AUFTRAG_BEMERKUNGEN[a.bm]}</span></div>
-        <button onclick="waehleAuftrag(${i})" style="font-size:12px;padding:6px 10px;margin:0;${gew?'background:#7a5a10;':''}">${gew?'ANGENOMMEN':'💰'+a.lohn}</button>
+          <br><span style="font-size:calc(11px * var(--fs));color:#9a8a5f;">${def.satz(a)}</span>
+          <br><span style="font-size:calc(10px * var(--fs));color:#7a6a45;font-style:italic;">${AUFTRAG_BEMERKUNGEN[a.bm]}</span></div>
+        <button onclick="waehleAuftrag(${i})" style="font-size:calc(12px * var(--fs));padding:6px 10px;margin:0;${gew?'background:#7a5a10;':''}">${gew?'ANGENOMMEN':'💰'+a.lohn}</button>
       </div>`;
     }).join('') + `
     <div style="padding:6px 0;text-align:right;">
-      <button onclick="waehleAuftrag(-1)" style="font-size:10px;margin:2px;padding:4px 7px;${amt.auftrag?'':'background:#7a5a10;'}">Kein Aushang</button>
+      <button onclick="waehleAuftrag(-1)" style="font-size:calc(10px * var(--fs));margin:2px;padding:4px 7px;${amt.auftrag?'':'background:#7a5a10;'}">Kein Aushang</button>
     </div>`;
 
   document.getElementById('ovPanel').innerHTML = `
     <h1>AMT FÜR MONSTERANGELEGENHEITEN</h1>
-    <p style="font-size:12px;color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
-    <p style="font-size:12px;color:#c9b98a;">${rangName()} · ${rangGruppeName()} · ${rangVerhaeltnis()}</p>
-    <p style="font-size:11px;color:#9a8a5f;">Nächste Hebung nach Schicht ${(rangStufe()+1)*5}: ${rangNameVon(rangStufe()+1)}</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
+    <p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${rangGruppeName()} · ${rangVerhaeltnis()}</p>
+    <p style="font-size:calc(11px * var(--fs));color:#9a8a5f;">Nächste Hebung nach Schicht ${(rangStufe()+1)*5}: ${rangNameVon(rangStufe()+1)}</p>
     <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
     <button onclick="startShift()">NÄCHSTE SCHICHT ANTRETEN</button>
-    <div><button onclick="showDienstblatt(2,'dorf')" style="font-size:12px;padding:7px 16px;margin-top:10px;">Dienstanweisung</button></div>
+    <div><button onclick="showDienstblatt(2,'dorf')" style="font-size:calc(12px * var(--fs));padding:7px 16px;margin-top:10px;">Dienstanweisung</button></div>
   `;
   document.getElementById('overlay').style.display = 'flex';
   state = 'feierabend';
@@ -13210,6 +13841,10 @@ function showDorf(){
 //  Reihenfolge = Esc-Reihenfolge, damit beide Wege dieselbe Vorstellung davon
 //  haben, was "oben" liegt.
 const PANEL_REGISTER = [
+  // U3: zuerst, weil das Gespraechsfenster mit z-index 21 ueber den Panels
+  // liegt. Damit erbt es UI_INSELN (Klick hinein ist kein Klick daneben),
+  // den Schleier und das Wegwischen, ohne eine eigene Zeile dafuer.
+  {id:'gespraech',  offen:() => gespraechOffen, zu:() => gespraechSchliessen()},
   {id:'inv',        offen:() => invOpen,        zu:() => toggleInventory()},
   {id:'spellTree',  offen:() => spellTreeOpen,  zu:() => toggleSpellTree()},
   {id:'kessel',     offen:() => kesselOpen,     zu:() => toggleKessel()},
@@ -13289,7 +13924,14 @@ window.addEventListener('touchstart', e => {
 }, {capture:true, passive:false});
 
 window.addEventListener('keydown', e => {
-  initAudio(); const k = e.key.toLowerCase();
+  initAudio();
+  // U3: Solange die Tafel offen ist, gehoeren ihr die Ziffern, die Pfeile
+  // hoch/runter und die Eingabetaste. Sonst waere die '1' gleichzeitig eine
+  // Antwort und ein Heiltrank. Q bleibt der Trank, WASD bleibt das Gehen,
+  // Leertaste bleibt der Schlag — ein offenes Panel nimmt in diesem Spiel
+  // den Kampf nicht weg (s. U1).
+  if(gespraechTaste(e)) return;
+  const k = e.key.toLowerCase();
   if(k === 'w') keysDown.w = true; if(k === 'a') keysDown.a = true;
   if(k === 's') keysDown.s = true; if(k === 'd') keysDown.d = true;
   if(e.code === 'Space'){ e.preventDefault(); if(state==='play') tryAttack(aimAngle()); }
@@ -13309,7 +13951,8 @@ window.addEventListener('keydown', e => {
   if(k === 'l') toggleFullmap();
   if(k === 'f') fuehreAktion();
   if(k === 'escape'){                          // Panels schließen ohne Tastenraten
-    if(invOpen) toggleInventory();
+    if(gespraechOffen) gespraechSchliessen();   // U3: liegt oben, geht zuerst
+    else if(invOpen) toggleInventory();
     else if(spellTreeOpen) toggleSpellTree();
     else if(kesselOpen) toggleKessel();
     else if(ausweisOpen) toggleAusweis();
@@ -13572,7 +14215,7 @@ function showLoading(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>Das Monstralministerium</h1>
     <h3>Lade Grafiken…</h3>
-    <p id="loadTxt" style="font-size:13px;color:#9a8a5f;">0 / ${SHEET_LIST.length}</p>`;
+    <p id="loadTxt" style="font-size:calc(13px * var(--fs));color:#9a8a5f;">0 / ${SHEET_LIST.length}</p>`;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
 showLoading();
@@ -13790,7 +14433,7 @@ function bakeUiSkin(){
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
-  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap']){
+  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap', '#gespraech']){
     const el = document.querySelector(sel); if(!el) continue;
     el.style.borderImageSource = `url("${frameUrl}")`;
     el.style.borderImageSlice = '2 2 5 2';

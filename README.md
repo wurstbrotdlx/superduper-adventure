@@ -22,6 +22,8 @@ Dann `http://localhost:8378/adventure/` aufrufen.
 
 `W A S D` Bewegung · `Leertaste` oder Klick Angriff · `Q` oder `1` Trank · `E` Zauber · `R` Ultimate · `T` Zauberbaum · `I` Inventar und Befähigung · `K` Kessel · `M` Musik · `F` Kontextaktion · `Esc` schließt Panels der Reihe nach. Ein Klick oder Tipp **neben** ein offenes Panel schließt es ebenfalls, ohne dabei anzugreifen (seit U1).
 
+Im Gespräch mit einer Dorffigur (seit U3): `F` öffnet die Tafel, ein zweiter Druck redet darin weiter. Solange sie offen ist, wählen `1` bis `4`, Pfeil hoch/runter plus `Eingabe` oder die Maus eine Antwort — die Ziffernreihe gehört dann der Tafel und nicht dem Trank, `Q` bleibt er. Die Schriftgröße steht im Inventar unter **SCHRIFT** in drei Stufen und wird gemerkt.
+
 Touch: virtueller Joystick links, Kampf-Cluster rechts. Der Daumenfächer bleibt mit offenem Panel bedienbar.
 
 ## Entwickeln
@@ -34,7 +36,7 @@ python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</sc
 
 Das fängt Syntaxfehler, **nicht** die Temporal Dead Zone. Der häufigste echte Fehler in diesem Projekt ist ein `ReferenceError` beim Laden, weil eine Funktion, die schon auf Skriptebene läuft, eine erst später deklarierte Konstante liest. Den findet nur der Browser mit offener Konsole.
 
-Das Spiel prüft sich beim Laden selbst. Vierzehn selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`, `zauberAssert`, `befaehigungAssert`, `dienstAssert`, `wiederAssert`, `gestaltAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung, seit M1 die Kampfwerte gegen den Referenzspieler, seit M2 zusätzlich die Modelle gegen die Angriffsart und die Grenzen des Sonderprüfers, seit Z2 die Zauberbefugnis samt Manakopplung, seit S1 die Spreizung zwischen gesteigertem und ungesteigertem Spieler samt Kraftbedarf und Manapool, seit W8 den Sperrvermerk auf die Akte im Einstellungsvordruck, seit W10 die beidseitige Klemme des gespeicherten Dienststandes und seit P1 die Lesarten der Frisuren samt Haarfarbenauswahl. Dazu kommen zwei, die nicht auf Skriptebene laufen, sondern erst hinter `loadAssets()`, weil sie die gebackenen Blätter lesen: `npcAnkerAssert()` misst die Fußlinie, und `dorfSichtAssert()` (seit G6) rechnet nach, ob jede Dorffigur ein Blatt hat und ob sie samt Wanderleine vor den Gebäudefassaden steht statt dahinter. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
+Das Spiel prüft sich beim Laden selbst. Sechzehn selbstaufrufende Guards (`blaetterAssert`, `goldAssert`, `knAssertCaps`, `rangAssert`, `auftragAssertBrett`, `langAssert`, `vorgangAssert`, `anredeAssert`, `monsterAssert`, `zauberAssert`, `befaehigungAssert`, `dienstAssert`, `wiederAssert`, `gestaltAssert`, `gespraechAssert`, `schriftAssert`) belegen Zeichendeckel, Formregeln, Tabellenvollständigkeit, Erreichbarkeit, die Schichtabrechnung, seit M1 die Kampfwerte gegen den Referenzspieler, seit M2 zusätzlich die Modelle gegen die Angriffsart und die Grenzen des Sonderprüfers, seit Z2 die Zauberbefugnis samt Manakopplung, seit S1 die Spreizung zwischen gesteigertem und ungesteigertem Spieler samt Kraftbedarf und Manapool, seit W8 den Sperrvermerk auf die Akte im Einstellungsvordruck, seit W10 die beidseitige Klemme des gespeicherten Dienststandes, seit P1 die Lesarten der Frisuren samt Haarfarbenauswahl und seit U3 die Namensschilder samt Antwortlisten sowie die Schriftstufen. Dazu kommen zwei, die nicht auf Skriptebene laufen, sondern erst hinter `loadAssets()`, weil sie die gebackenen Blätter lesen: `npcAnkerAssert()` misst die Fußlinie, und `dorfSichtAssert()` (seit G6) rechnet nach, ob jede Dorffigur ein Blatt hat und ob sie samt Wanderleine vor den Gebäudefassaden steht statt dahinter. **Sie werfen nie, sie melden.** Eine stille Konsole ist das Abnahmekriterium. *(Diese Zeile nannte bis zum 20.08.2026 sieben und kannte weder `npcAnkerAssert` aus `9b553a8` noch die seither dazugekommenen.)*
 
 Eine Warnung, die immer da steht, ist keine: fünf `Sprite fehlt`-Zeilen standen seit W3 in jeder Konsole, und dahinter steckten fünf unsichtbare Dorffiguren (G6). Wer hier eine Meldung sieht, die „schon immer" da war, hat einen Fund, keine Tapete.
 
@@ -107,6 +109,7 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je ei
 | `phase-m3-stollen.md` | Bauabschnitt M3: das sechste Katalogbiom. Warum kein einziger kammerexklusiver Gegner in die Untere Registratur passte, ein dritter Kammersatz aus einem leeren Ordner, und eine Vorgangsart, die beim Erledigen in zwei kleinere zerfällt |
 | `phase-g6-nachtrag-dorfblaetter.md` | Die fünf offenen Dorf-Blätter aus G6, nachgelegt. Kein Code, aber die Entscheidung, wie `Fisherman_Fin` gerastert ist: 9 Spalten à 64, nicht 18 à 32 wie das Manifest führte |
 | `phase-u2-menuegrafik.md` | Bauabschnitt U2: die Menüs bekommen Pack-Grafik statt CSS, das Pixelkunst nachahmt. Vier Zellen, die Regel „Formen aus dem Pack, Flächen bleiben dunkel", und warum eine richtig gemessene Koordinate noch keine passende Zelle ist |
+| `phase-u3-gespraech.md` | Bauabschnitt U3: Namen über den Köpfen, das Gesprächsfenster mit vier Antworten, ein Regler für alle 176 Schriftgrößen. Dazu der Nebenbefund, warum sich der Einstellungsvordruck auf einem Telefon nicht wegklicken ließ |
 | `phase-u1-menue.md` | Bauabschnitt U1: neben ein Menü zu klicken war ein Angriff, das Menü blieb offen. Der Lauscher in der Einfangphase, warum es kein modaler Vorhang wurde, und ein Menü-Anstrich ohne neue Grafikdatei |
 | `phase-p1-dienstgestalt.md` | Bauabschnitt P1: die Person des Tages bekommt eine Haarfarbe, die es im Dorf nicht gibt, und der Einstellungsvordruck nimmt zum ersten Mal eine Angabe des Spielers entgegen |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 28 Gegner, 7 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
@@ -131,6 +134,7 @@ Drei Regeln, die beim Mitarbeiten nicht optional sind: Jede Phasenüberschrift t
 | `tools/nahfeld-messlauf.mjs` | zählt an der wirklich gesetzten Bevölkerung ab, was in welcher Entfernung vom Dorf steht |
 | `tools/spaziergang-messlauf.mjs` | schickt eine frische Stufe 1 in die echte Welt und misst den Verlauf: erster Kill, Kills, Stufe, Ausgang. Seit S1 zweimal je Aufruf, einmal ohne und einmal mit Steigerung — der Abstand zwischen beiden Zeilen ist der Messwert |
 | `tools/monster-fehlversuch.mjs` | setzt absichtlich Fehler in den Katalog und prüft, ob `monsterAssert()` sie meldet. Ein Guard, der immer schweigt, beweist nichts. |
+| `tools/gespraech-pruef.mjs` | prüft U3 im echten Browser: Namensschild blendet mit der Entfernung ein und aus und verdeckt kein zweites, die Gesprächstafel öffnet, tippt, wählt und schließt auf allen Wegen, der Schriftregler wirkt und wird gemerkt. Stellt fest statt zu messen, Exit-Code 1 bei der ersten Abweichung |
 | `tools/menue-pruef.mjs` | prüft die sieben Panels im echten Browser: Klick daneben schließt, ohne anzugreifen; HUD und Daumenfächer behalten ihre Wirkung; `Esc` bleibt eine Ebene je Druck. Stellt fest statt zu messen, Exit-Code 1 bei der ersten Abweichung. |
 
 ```bash
@@ -142,6 +146,7 @@ node tools/nahfeld-messlauf.mjs
 node tools/spaziergang-messlauf.mjs
 node tools/monster-fehlversuch.mjs
 node tools/menue-pruef.mjs
+node tools/gespraech-pruef.mjs
 node tools/ui-zellen.mjs --pruef         # braucht keinen Server, aber Graphics/
 ```
 
