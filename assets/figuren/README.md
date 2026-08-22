@@ -119,6 +119,15 @@ aber lesbar.
   geschnallten Aktenbündel, dort sitzen jetzt Epauletten. Das ist ein Verlust an
   Erzählung, aber kein Fehler: die Figur trägt auch so.
 
+## Lott und Pahl werden hier trotzdem gemessen
+
+Eine Ausnahme zur Regel unten: `11-lott-pahl-px.png` ist die einzige Datei aus
+diesem Ordner, die ein Werkzeug wirklich liest. Die beiden haben kein
+Einzelporträt in `assets/portraets/`, und `tools/portraet-farben.py` holt ihre
+Haar- und Mantelfarben deshalb aus den beiden Hälften des Doppelporträts. Ins
+Spiel geht davon kein Pixel, nur zwei Hexwerte (siehe
+`phase-g8-figurenfarben.md`).
+
 ## Diese Dateien hier gehen nicht in den Build
 
 Seit U5 sind dreizehn der Motive im Spiel — aber nicht diese Dateien. Sie werden
