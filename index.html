@@ -493,6 +493,115 @@
   body.empfangLaeuft #zone{display:none;}
 
   /* =====================================================================
+     E2 — Die Buehne des Anfangs.
+     Der Empfang lief in seiner ersten Fassung ueber dem Dorf: man sah
+     Marktstaende und Namensschilder hinter den Anrisstafeln, und der
+     Anfang sah dadurch aus wie ein Menue ueber einem laufenden Spiel.
+     Jetzt liegt Schwarz darunter, und das Dorf kommt erst, wenn der
+     Empfang beginnt.
+
+     z-index 15: ueber HUD (10) und Dienstzetteln (12), unter der
+     Gespraechstafel (21) und dem Overlay (50). Beide liegen also darauf,
+     ohne dass an ihren Ebenen etwas geaendert werden muesste.
+
+     Der warme Fleck in der Mitte ist kein Zierrat: auf reinem Schwarz
+     steht Goldschrift hart und billig, mit einem Hauch Waerme darunter
+     sitzt sie in einem Raum. */
+  #introBuehne{
+    position:fixed;inset:0;z-index:15;display:none;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 44%, rgba(84,62,24,.20), rgba(0,0,0,0) 70%),
+      #05040a;
+  }
+  /* Solange die Buehne steht, ist auch das Overlay undurchsichtig. Ohne
+     diese Zeile schimmerte das Dorf durch rgba(5,3,10,.88) hindurch. */
+  body.introBuehne #overlay{background:#05040a;}
+  /* Die Tafeln sind kein Panel, sondern ein Aushang. Der Kasten faellt
+     weg, die Flaeche wird breiter, das Schwarz traegt. */
+  /* Feste Breite statt nur max-width: .panel ist ein Flex-Kind und richtet
+     sich sonst nach seinem Inhalt, wodurch jede Tafel je nach Zeilenlaenge
+     anders breit stand. Eine Urkunde wechselt nicht die Breite. */
+  /* box-sizing ist hier keine Kosmetik, sondern die Bedingung dafuer, dass die
+     Waage in dienstSeitenWiegen() stimmt. Ohne sie ist width die Breite OHNE
+     Polster: das echte Blatt wird vom Overlay auf die Fensterbreite gestaucht,
+     die absolut gesetzte Probe aber nicht, und auf 390 Pixel mass sie
+     einundzwanzig Pixel zu breit. Der Text umbrach dort seltener, jede
+     gemessene Blockhoehe fiel zu klein aus, und die Seite lief ueber. */
+  body.introBuehne #overlay .panel,
+  body.vordruckOffen #overlay .panel{
+    box-sizing:border-box;width:min(760px,92vw);max-width:none;padding:26px 26px 20px;}
+
+  /* --- Amtliche Anmutung -------------------------------------------------
+     Die Buerokraten sind der Adel dieser Welt, also sieht ihr Papier aus
+     wie eine Urkunde und nicht wie ein Hinweisfenster: Kopfzeile in
+     gesperrten Versalien, Doppellinie, Siegel, roemische Blattzahl.
+     Alles aus Schrift und Linien gebaut, keine neue Grafikdatei. */
+  /* Jede dieser vier Regeln steht doppelt, einmal als blosse Klasse und
+     einmal unter #overlay. Das ist kein Versehen: #overlay p setzt eine
+     Schriftgroesse mit Id-Spezifitaet, und eine blosse Klasse verliert
+     dagegen. Ohne den zweiten Selektor standen die Anrisstafeln in 14px,
+     also genau so klein wie der Fliesstext, den sie ueberschreien sollen.
+     Die blosse Klasse wird trotzdem gebraucht, die Buehne liegt ausserhalb
+     des Overlays. */
+  .amtKopf, #overlay .amtKopf{
+    font-size:calc(11px * var(--fs));letter-spacing:.32em;text-transform:uppercase;
+    color:#a89158;margin:0 0 2px;line-height:1.7;}
+  .amtRegel{
+    height:0;border:0;border-top:2px solid #8a6d3b;border-bottom:1px solid #6b5a3a;
+    margin:10px auto 14px;width:100%;}
+  .amtRegel.unten{margin:14px auto 10px;
+    border-top:1px solid #6b5a3a;border-bottom:2px solid #8a6d3b;}
+  .amtFuss, #overlay .amtFuss{
+    font-size:calc(10px * var(--fs));letter-spacing:.3em;text-transform:uppercase;
+    color:#7d6a42;margin:0;}
+  /* Die grosse Zeile. Sie darf gross sein, sie ist der Grund fuer die
+     ganze Buehne. clamp haelt sie auf einem Telefon lesbar, ohne dass sie
+     auf einem breiten Schirm klein wirkt. */
+  .amtGross, #overlay .amtGross{
+    font-size:calc(clamp(25px, 5.2vw, 46px) * var(--fs));
+    line-height:1.18;letter-spacing:.05em;font-weight:bold;color:#ffe9a8;
+    text-shadow:0 3px 0 #6b4d0e, 0 0 30px rgba(244,217,122,.30);
+    margin:0;}
+  .amtKlein, #overlay .amtKlein{
+    font-size:calc(clamp(15px, 2.3vw, 21px) * var(--fs));
+    line-height:1.5;color:#e2d0a2;margin:12px 0 0;}
+  .amtSiegel{display:block;margin:0 auto 10px;opacity:.9;}
+  .amtTitel, #overlay .amtTitel{
+    font-size:calc(clamp(19px, 3.2vw, 27px) * var(--fs));margin:0 0 6px;}
+  .amtLead, #overlay .amtLead{
+    font-size:calc(13px * var(--fs));line-height:1.5;color:#a89158;margin:0 0 4px;}
+  /* Auf einem niedrigen Fenster ist der Urkundenkopf Platz, der dem Inhalt
+     fehlt: Siegel, Kopfzeile und zwei Doppellinien kosten dort ein Drittel
+     der Hoehe, und der Vordruck zerfiel dadurch in dreizehn Seiten. Der
+     Aushang bleibt amtlich, er wird nur schmaler gemacht. */
+  @media (max-height: 720px){
+    .amtSiegel{width:38px;height:38px;margin-bottom:4px;}
+    .amtKopf, #overlay .amtKopf{font-size:calc(10px * var(--fs));line-height:1.3;}
+    .amtRegel{margin:6px auto 8px;}
+    .amtRegel.unten{margin:8px auto 6px;}
+    .amtTitel, #overlay .amtTitel{font-size:calc(clamp(16px, 3vw, 21px) * var(--fs));margin:0 0 3px;}
+  }
+  /* Noch kuerzer: dann faellt das Siegel ganz weg und der Vorspann mit ihm.
+     Der Kopf einer Urkunde ist Schmuck, die elf Punkte darunter sind der
+     Dienst. Wenn eines von beidem weichen muss, weicht der Schmuck. */
+  @media (max-height: 660px){
+    .amtSiegel{display:none;}
+    .amtLead, #overlay .amtLead{display:none;}
+    body.introBuehne #overlay .panel,
+    body.vordruckOffen #overlay .panel{padding:12px 14px 10px;}
+  }
+
+  /* Der Anfang spricht lauter als das Dorf. Dieselbe Tafel, groessere Schrift:
+     im Empfang ist sie das einzige im Bild, im Dorf steht sie ueber einer
+     laufenden Welt und darf sie nicht zudecken. */
+  body.empfangLaeuft #gespraechText{
+    font-size:calc(19px * var(--fs));
+    min-height:calc(19px * var(--fs) * 2.9);}
+  body.empfangLaeuft #gespraechName{font-size:calc(17px * var(--fs));}
+  body.empfangLaeuft .gwOpt{font-size:calc(16px * var(--fs));}
+  body.empfangLaeuft #gespraech{width:min(780px,calc(100vw - 28px));}
+
+  /* =====================================================================
      U3 — Das Gespraechsfenster.
      Bis hierher war ein Gespraech mit einer Dorffigur eine Sprechblase ueber
      ihrem Kopf und ein Tastendruck, der eine Zeile weiterschaltete. Wer nicht
@@ -886,6 +995,10 @@
 <!-- U3: Das Gespraechsfenster. Die Huelle steht im HTML, damit bakeUiSkin()
      ihr denselben Pixelrahmen gibt wie den uebrigen Panels; Name, Satz und
      Antwortliste schreibt gespraechZeichnen(). -->
+<!-- E2: die schwarze Buehne des Anfangs. Liegt unter Gespraechstafel und
+     Overlay und ueber allem uebrigen, siehe #introBuehne im Kopf. -->
+<div id="introBuehne"></div>
+
 <div id="gespraech">
   <div id="gespraechInnen">
     <div id="gespraechBild"><canvas id="gespraechPortrait" width="110" height="135"></canvas></div>
@@ -13311,14 +13424,14 @@ const GESTALT_TEXT = 'Das Haus besetzt die Stelle jeden Tag neu. Wen es dabei ei
 // Die drei Knöpfe. Wie überall in diesem Panel steht der Zustand im onclick der
 // gerenderten Knöpfe, nicht in einer Modulvariablen (gleiche Regel wie bei
 // vorgangPanel(schritt) und showDienstblatt(nr, ziel)).
-function gestaltWahlHtml(nr, ziel){
+function gestaltWahlHtml(nr, ziel, seite){
   const knopf = g => {
     const an = amt.gestalt === g.key;
     // Angekreuzt bleibt beim Gold des Panels, nicht angekreuzt wird ausgegraut.
     // Keine eigene Textfarbe: #overlay button schreibt dunkel auf Gold, und ein
     // heller Text auf dieser Fläche wäre nicht zu lesen. Das Kästchen steht als
     // Zeichen da, die Systemschrift hat kein ☑.
-    return `<button onclick="gestaltWaehlen('${g.key}',${nr},'${ziel}')"
+    return `<button onclick="gestaltWaehlen('${g.key}',${nr},'${ziel}',${seite|0})"
       style="font-size:calc(11px * var(--fs));padding:6px 12px;margin:4px 6px 0 0;${an ? '' : 'filter:grayscale(.6);opacity:.62;'}"
       >${an ? '[X]' : '[ ]'} ${g.kurz}</button>`;
   };
@@ -13332,45 +13445,175 @@ function gestaltWahlHtml(nr, ziel){
 // Übernimmt die Angabe und rendert dasselbe Blatt neu. Nicht mehr: die Gestalt
 // des Tages entsteht erst beim nächsten Schichtantritt (startShift), eine
 // laufende Schicht tauscht niemandem mitten im Dienst das Gesicht.
-function gestaltWaehlen(key, nr, ziel){
+function gestaltWaehlen(key, nr, ziel, seite){
   if(!GESTALT_WAHL.some(g => g.key === key)) return;
   amt.gestalt = key; saveAmt();
-  showDienstblatt(nr, ziel);
+  showDienstblatt(nr, ziel, seite);   // E2: auf derselben Seite bleiben
 }
 
 // Ein Blatt als HTML. Bauform wie rangZeremonieBlock()/vorgangPanelHtml():
 // reine Funktion, kein Seiteneffekt, jedes Neurendern liefert dasselbe.
-function dienstblattHtml(b, ziel){
-  const feld = (b.felder ? b.felder() : []).map(([k, v]) =>
-    `<div style="display:flex;gap:10px;padding:4px 0;border-bottom:1px solid #3a2f1a;">
-       <span style="flex:0 0 40%;color:#9a8a5f;">${k}</span>
-       <span style="flex:1 1 auto;">${v}</span></div>`).join('');
-  const punkt = (b.punkte ? b.punkte() : []).map(([k, v], i) =>
-    `<div style="padding:5px 0;border-bottom:1px solid #3a2f1a;">
-       <b style="color:#f4d97a;">${i+1}. ${k}.</b> <span style="color:#d8c898;">${v}</span></div>`).join('');
+// E2: Der Vordruck blättert, er rollt nicht mehr.
+//
+// Bis hierher lag der ganze Blattinhalt in einem #dienstBox mit
+// max-height:34vh und overflow-y:auto. Auf Blatt 2 standen elf Punkte in
+// einem Kasten, der vier zeigte. Wer nicht wischte, sah ein Drittel, und die
+// Zeile "Das Blatt geht unten weiter." war der Beweis dafür, dass das Layout
+// selbst wusste, dass es zu klein war.
+//
+// Eine Rollkante ist für diesen Text die falsche Bauform, und zwar nicht aus
+// Geschmack: gerollt wird gelesen wie eine Wand, geblättert wird gelesen wie
+// ein Vordruck. Die Punkte tragen außerdem je einen kleinen Witz, und ein
+// Witz, der mit zehn anderen gleichzeitig im Bild steht, ist keiner mehr.
+// Das ist derselbe Befund wie bei den Anrisstafeln, eine Ebene tiefer.
+//
+// **Die Seitengrenzen werden gemessen und nicht gezählt.** Ein erster Versuch
+// mit festen Zahlen (fünf Felder, vier Punkte je Seite) ist an der Messung
+// gescheitert, und zwar nicht knapp: auf 390x844 lief jede zweite Seite über,
+// auf 360x640 bei größter Schriftstufe jede einzelne. Eine feste Zahl kann das
+// auch nicht leisten, denn sie müsste gleichzeitig für einen Punkt mit vier
+// Zeilen Fließtext und ein Feld mit zwei Wörtern gelten, für 360 und für 1280
+// Pixel Breite und für drei Schriftstufen. Was hier gebraucht wird, ist keine
+// Zahl, sondern eine Waage.
+//
+// Gewogen wird einmal je Blatt und Fensterlage, das Ergebnis liegt im Cache,
+// und der Schlüssel enthält alles, was die Höhe ändert. Kein Nachrechnen je
+// Klick, kein Umbauen nach dem Rendern.
+const DIENST_LUFT = 18;            // Rest unter dem letzten Block, damit nichts klebt
+// Ein Knopf in der Form, die showDienstblatt() unter jedes Blatt setzt. Nur
+// zum Wiegen, deshalb ohne onclick.
+const DIENST_KNOPF_PROBE =
+  '<button style="font-size:calc(13px * var(--fs));padding:9px 20px;margin:10px 6px 0;">WEITER</button>';
+
+let dienstSeitenSchluessel = '';
+const dienstSeitenCache = new Map();
+
+// Alles, was die gemessene Höhe verändern kann. Ändert sich einer der Werte,
+// ist der Cache hinfällig.
+function dienstLageSchluessel(){
+  return [innerWidth, innerHeight,
+          getComputedStyle(document.documentElement).getPropertyValue('--fs').trim(),
+          document.body.classList.contains('introBuehne') ? 1 : 0].join('|');
+}
+
+// Ein Blatt als flache Liste von Blöcken. Felder, Punkte, Bedienhilfe, die
+// Wahl der Anrede, Schlusssätze und Knöterich stehen hier gleichberechtigt
+// nebeneinander: die Waage unten kennt keine Sorten, sie kennt nur Höhen.
+//
+// Der Wahlblock trägt seine Seitenzahl im onclick und kann sie beim Wiegen
+// noch nicht kennen. Er kommt deshalb als Marke statt als Zeichenkette durch
+// und wird beim Rendern mit der richtigen Seite neu gebaut.
+function dienstblattBloecke(b, ziel){
+  const bl = [];
+  for(const [k, v] of (b.felder ? b.felder() : []))
+    bl.push({html:
+      `<div style="display:flex;gap:12px;padding:7px 0;border-bottom:1px solid #3a2f1a;">
+         <span style="flex:0 0 38%;color:#a89158;letter-spacing:.04em;">${k}</span>
+         <span style="flex:1 1 auto;color:#f0e2b8;">${v}</span></div>`});
+  (b.punkte ? b.punkte() : []).forEach(([k, v], i) =>
+    bl.push({html:
+      `<div style="padding:8px 0;border-bottom:1px solid #3a2f1a;">
+         <b style="color:#f4d97a;">${i+1}. ${k}.</b> <span style="color:#e2d0a2;">${v}</span></div>`}));
   const bed = (b.bedienung ? b.bedienung() : []).map(([k, v]) =>
-    `<div style="padding:3px 0;"><b style="color:#f4d97a;">${k}.</b> <span style="color:#d8c898;">${v}</span></div>`).join('');
-  const bedBox = bed ? `<div style="background:rgba(0,0,0,.5);padding:10px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:calc(11px * var(--fs));">${bed}</div>` : '';
-  const wahlBox = b.gestaltWahl ? gestaltWahlHtml(b.nr, ziel) : '';
-  const satz = (b.saetze ? b.saetze() : []).map(s =>
-    `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;margin:6px 0 0;">${s}</p>`).join('');
-  const kn = (b.kn || []).map(z =>
-    `<p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;margin:8px 0 0;">Knöterich: „${z}“</p>`).join('');
-  // Nur der Vordruckteil rollt. Die Schlusssätze und Knöterich stehen darunter
-  // und bleiben immer sichtbar: auf Blatt 3 hängt genau dort der Grund, warum
-  // man das hier überhaupt tut, und der darf nicht unter der Kante liegen.
-  // P1: Die drei Wahlknöpfe stehen aus demselben Grund unter der Rollkante und
-  // nicht darin. Sie sind das einzige Bedienelement im ganzen Vordruck, und ein
-  // Knopf, den man erst herunterrollen muss, ist ein Knopf, den man nicht sieht.
+    `<div style="padding:4px 0;"><b style="color:#f4d97a;">${k}.</b> <span style="color:#e2d0a2;">${v}</span></div>`).join('');
+  if(bed) bl.push({html:
+    `<div style="background:rgba(0,0,0,.5);padding:12px;border-radius:8px;border:1px solid #5a4a2d;margin-top:10px;font-size:calc(12px * var(--fs));">${bed}</div>`});
+  if(b.gestaltWahl) bl.push({wahl:true, html: gestaltWahlHtml(b.nr, ziel, 0)});
+  for(const z of (b.saetze ? b.saetze() : []))
+    bl.push({html: `<p style="font-size:calc(14px * var(--fs));color:#e2d0a2;margin:8px 0 0;line-height:1.6;">${z}</p>`});
+  for(const z of (b.kn || []))
+    bl.push({html: `<p style="font-size:calc(13px * var(--fs));font-style:italic;color:#c9b98a;margin:10px 0 0;">Knöterich: „${z}“</p>`});
+  return bl;
+}
+
+// Die Waage. Baut ein unsichtbares Blatt neben dem sichtbaren, misst den
+// Rahmen und jeden Block einzeln und packt danach.
+//
+// Gemessen wird in #overlay und nicht am body: die Schriftgrößen dieses
+// Blattes hängen an #overlay-Selektoren (siehe den Spezifitätskommentar im
+// Kopf), außerhalb bekäme die Probe andere Werte als das Original.
+function dienstSeitenWiegen(b, ziel){
+  const bloecke = dienstblattBloecke(b, ziel);
+  const ov = el('overlay');
+  const vorher = ov.style.display;
+  if(vorher !== 'flex') ov.style.display = 'flex';    // ohne Anzeige keine Maße
+
+  const probe = document.createElement('div');
+  probe.className = 'panel';
+  probe.style.cssText = 'position:absolute;left:-10000px;top:0;visibility:hidden;';
+  // Die Knopfreihe steht im Rahmen der Probe, statt als Zuschlag geschaetzt zu
+  // werden: showDienstblatt() schreibt sie gleich darunter, sie waechst mit der
+  // Schriftstufe, und geschaetzte Zuschlaege sind genau die Sorte Zahl, an der
+  // die erste Fassung dieses Bauabschnitts gescheitert ist.
+  probe.innerHTML = dienstblattRahmen(b, '<div id="dienstProbe"></div>')
+                  + `<div>${DIENST_KNOPF_PROBE}</div>`;
+  ov.appendChild(probe);
+  const kasten = probe.querySelector('#dienstProbe');
+
+  const rahmen = probe.getBoundingClientRect().height;
+  const frei = innerHeight - rahmen - DIENST_LUFT;
+
+  // Mit den Raendern gemessen, nicht ohne. getBoundingClientRect() liefert die
+  // Randbreite nicht mit, und die Schlusssaetze wie Knoeterichs Zeilen tragen
+  // ihren Abstand als margin-top. In der ersten Fassung dieser Waage fehlten
+  // dadurch je Block bis zu zehn Pixel, und genau die liefen am Seitenende
+  // ueber. Zwei aneinanderstossende Raender fallen im echten Satz zusammen,
+  // hier werden sie doppelt gezaehlt: das schaetzt zu hoch statt zu niedrig,
+  // und diese Richtung kostet hoechstens eine Zeile, die andere kostet die
+  // Zusage dieses Bauabschnitts.
+  const hoehen = bloecke.map(bk => {
+    kasten.innerHTML = bk.html;
+    const kind = kasten.firstElementChild;
+    if(!kind) return 0;
+    const cs = getComputedStyle(kind);
+    return kind.getBoundingClientRect().height
+         + (parseFloat(cs.marginTop) || 0) + (parseFloat(cs.marginBottom) || 0);
+  });
+  ov.removeChild(probe);
+  if(vorher !== 'flex') ov.style.display = vorher;
+
+  // Packen. Ein Block, der allein schon zu hoch ist, bekommt trotzdem seine
+  // eigene Seite: lieber eine Seite, die einmal rollt, als eine leere.
+  const seiten = [];
+  let jetzt = [], hoehe = 0;
+  bloecke.forEach((bk, i) => {
+    if(jetzt.length && hoehe + hoehen[i] > frei){ seiten.push(jetzt); jetzt = []; hoehe = 0; }
+    jetzt.push(bk); hoehe += hoehen[i];
+  });
+  if(jetzt.length) seiten.push(jetzt);
+  return seiten.length ? seiten : [[]];
+}
+
+function dienstblattSeiten(b, ziel){
+  const k = dienstLageSchluessel();
+  if(k !== dienstSeitenSchluessel){ dienstSeitenSchluessel = k; dienstSeitenCache.clear(); }
+  const hit = dienstSeitenCache.get(b.nr);
+  if(hit) return hit;
+  const seiten = dienstSeitenWiegen(b, ziel);
+  dienstSeitenCache.set(b.nr, seiten);
+  return seiten;
+}
+
+// Kopf und Fuß eines Blattes, mit einem Loch in der Mitte. Einmal geschrieben,
+// zweimal benutzt: von der Waage und vom Rendern. Stünde er zweimal da, wöge
+// die Probe etwas anderes als das, was danach im Bild steht.
+function dienstblattRahmen(b, innen, fuss){
   return `
-    <h1>${b.kopf}</h1>
-    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${b.unter} · ${b.lead}</p>
-    <div id="dienstBox" style="max-height:34vh;overflow-y:auto;text-align:left;font-size:calc(13px * var(--fs));">
-      ${feld}${punkt}${bedBox}
-    </div>
-    <p id="dienstMehr" style="font-size:calc(11px * var(--fs));color:#7a6a45;margin:4px 0 0;"></p>
-    ${wahlBox}
-    <div style="text-align:left;">${satz}${kn}</div>`;
+    ${siegelSvg(52)}
+    <p class="amtKopf">${gEsc(AMT_KOPFZEILE)}</p>
+    <hr class="amtRegel">
+    <h1 class="amtTitel">${b.kopf}</h1>
+    <p class="amtLead">${b.lead}</p>
+    <div style="text-align:left;font-size:calc(15px * var(--fs));line-height:1.5;">${innen}</div>
+    <hr class="amtRegel unten">
+    <p class="amtFuss">${fuss || b.unter}</p>`;
+}
+
+function dienstblattHtml(b, ziel, seite){
+  const seiten = dienstblattSeiten(b, ziel);
+  const sIdx = clamp(seite | 0, 0, seiten.length - 1);
+  const innen = seiten[sIdx].map(bk => bk.wahl ? gestaltWahlHtml(b.nr, ziel, sIdx) : bk.html).join('');
+  return dienstblattRahmen(b, innen, `${b.unter} · Seite ${sIdx + 1} von ${seiten.length}`);
 }
 
 // Blaettern. `ziel` sagt, wofuer das Blatt gerade offen ist:
@@ -13379,30 +13622,37 @@ function dienstblattHtml(b, ziel){
 //   'dorf'        = im Amt nachgelesen, zurueck ins Amt
 // Der Zustand steckt nur im onclick des jeweils gerenderten Knopfes, nicht in
 // einer Variablen: dieselbe Regel wie bei vorgangPanel(schritt).
-function showDienstblatt(nr, ziel){
+//
+// E2: Dazu kommt die Seite innerhalb des Blattes. WEITER laeuft ueber die
+// Seiten und geht am Blattende auf das naechste Blatt, ZURUECK genauso
+// rueckwaerts. Fuer den Leser ist es dadurch ein einziger Stapel von neun
+// Seiten, und die Blattgrenze merkt er nur an der Ueberschrift.
+function showDienstblatt(nr, ziel, seite){
   const i = clamp(nr | 0, 1, DIENSTBLATT_ANZ);
   const b = DIENSTBLATT[i - 1];
+  el('overlay').style.display = 'flex';   // die Waage braucht ein sichtbares Overlay
+  const anz = dienstblattSeiten(b, ziel).length;
+  const sIdx = clamp(seite | 0, 0, anz - 1);
   const klein = 'font-size:calc(13px * var(--fs));padding:9px 20px;margin:10px 6px 0;';
-  const zurueck = i > 1
-    ? `<button onclick="showDienstblatt(${i-1},'${ziel}')" style="${klein}">ZURÜCK</button>` : '';
-  const weiter = i < DIENSTBLATT_ANZ
-    ? `<button onclick="showDienstblatt(${i+1},'${ziel}')" style="${klein}">WEITER</button>`
+
+  const vorSeite = sIdx > 0 ? [i, sIdx - 1] : (i > 1 ? [i - 1, dienstblattSeiten(DIENSTBLATT[i-2], ziel).length - 1] : null);
+  const nachSeite = sIdx < anz - 1 ? [i, sIdx + 1] : (i < DIENSTBLATT_ANZ ? [i + 1, 0] : null);
+
+  const zurueck = vorSeite
+    ? `<button onclick="showDienstblatt(${vorSeite[0]},'${ziel}',${vorSeite[1]})" style="${klein}">ZURÜCK</button>` : '';
+  const weiter = nachSeite
+    ? `<button onclick="showDienstblatt(${nachSeite[0]},'${ziel}',${nachSeite[1]})" style="${klein}">WEITER</button>`
     : (ziel === 'einstellung'
         ? `<button onclick="dienstAntritt()" style="${klein}">UNTERSCHREIBEN</button>`
         : `<button onclick="dienstblattEnde('${ziel}')" style="${klein}">SCHLIESSEN</button>`);
-  // Beim Nachlesen kommt man aus jedem Blatt heraus, ohne durchblaettern zu
+  // Beim Nachlesen kommt man aus jeder Seite heraus, ohne durchblaettern zu
   // muessen. Beim ersten Dienstantritt nicht: das Blatt wird zu Ende gelesen
   // oder wenigstens zu Ende geblaettert, sonst unterschreibt man nichts.
-  const raus = (ziel !== 'einstellung' && i < DIENSTBLATT_ANZ)
+  const raus = (ziel !== 'einstellung' && nachSeite)
     ? `<div><button onclick="dienstblattEnde('${ziel}')" style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:8px;">SCHLIESSEN</button></div>` : '';
-  document.getElementById('ovPanel').innerHTML = dienstblattHtml(b, ziel) + `<div>${zurueck}${weiter}</div>${raus}`;
-  document.getElementById('overlay').style.display = 'flex';
-  // Ein abgeschnittener Vordruck sieht aus wie ein Fehler, nicht wie eine
-  // Fortsetzung. Nach dem Rendern einmal messen und es dazuschreiben, wenn
-  // wirklich etwas unter der Kante liegt (Blatt 2 auf jedem Gerät, Blatt 1
-  // und 3 nur auf niedrigen Fenstern).
-  const box = document.getElementById('dienstBox'), mehr = document.getElementById('dienstMehr');
-  if(box && mehr && box.scrollHeight > box.clientHeight + 2) mehr.textContent = 'Das Blatt geht unten weiter.';
+  el('ovPanel').innerHTML = dienstblattHtml(b, ziel, sIdx) + `<div>${zurueck}${weiter}</div>${raus}`;
+  el('overlay').style.display = 'flex';
+  document.body.classList.add('vordruckOffen');
 }
 
 // Unterschrift. Der Merker liegt in kn.seen, dem Speicher, der ohnehin schon
@@ -13410,11 +13660,14 @@ function showDienstblatt(nr, ziel){
 // und startShift() ueberlebt (siehe KN_KEY). Kein neues amt-Feld, keine neue
 // Ladezeile in loadAmt().
 function dienstAntritt(){
+  document.body.classList.remove('vordruckOffen');
+  empfangSchliessen();   // E2: hier faellt die Buehne, egal ueber welchen Weg
   kn.seen.einstellung = true; saveKn();
   startShift();
 }
 
 function dienstblattEnde(ziel){
+  document.body.classList.remove('vordruckOffen');
   if(ziel === 'dorf') showDorf(); else showStartScreen();
 }
 
@@ -13565,13 +13818,6 @@ const EMPFANG_FRAGEN = [
    z1:'Anlage 1 anzufordern ist ein Vorgang.',
    z2:'Der Antrag liegt seit vierhundert Jahren hier.'},
 
-  {key:'wer', frei:null, t:'Und Sie? Wer sind Sie?',
-   z1:'Amtsrat außer Dienst. Knöterich.',
-   z2:'Meine Entpflichtung wurde nie bearbeitet.'},
-
-  {key:'ruhestand', frei:'wer', t:'Sie sind also pensioniert.',
-   z1:'Ich bin außer Dienst und im Dienst.',
-   z2:'Beides zugleich. Man gewöhnt sich daran.'},
 ];
 
 const empfang = {knoten:'gruss', gefragt:null};
@@ -13590,9 +13836,45 @@ const empfangOffen = () => EMPFANG_FRAGEN.filter(f =>
 // DIENSTBLATT.felder: empfangAssert() baut die Liste beim Start genauso wie
 // die Tafel beim Rendern, und beide sehen dasselbe.
 const EMPFANG_KNOTEN = {
+  // E2: Die fünf Knoten der Vorstellung. Sie laufen vor dem Anriss und auf
+  // schwarzem Grund, und sie beheben einen Fehlstand der ersten Fassung:
+  // Knöterich sprach dort als erster Mensch des Spiels, ohne dass jemand
+  // gesagt hätte, wer er ist. Er war irgendwer mit einem Formular.
+  //
+  // Sie tun zugleich etwas fürs Erzählen. Nach dieser Vorstellung sind die
+  // Anrisstafeln nicht mehr eine Stimme aus dem Nichts, sondern SEIN Bericht.
+  // Damit ist der Ton der Tafeln gedeckt: nicht das Spiel wird pathetisch,
+  // sondern ein Mann, der seit vierzig Jahren Buch führt und einmal im Leben
+  // erzählen darf. Humor-Grundgesetz 1 bleibt dadurch unangetastet.
+  vorstellung1: {
+    z1:'Sie sind zu früh. Das ist selten.',
+    z2:'Mein Name ist Knöterich. Amtsrat.',
+    opts: () => [{t:'Guten Morgen.', zu:'vorstellung2'}],
+  },
+  vorstellung2: {
+    z1:'Außer Dienst. Das gehört zum Namen.',
+    z2:'Meine Entpflichtung wurde nie bearbeitet.',
+    opts: () => [{t:'Dann sind Sie im Dienst.', zu:'vorstellung3'}],
+  },
+  vorstellung3: {
+    z1:'Ich bin beides. Das ist kein Widerspruch.',
+    z2:'Das ist Verwaltung.',
+    opts: () => [{t:'Und was tun Sie hier?', zu:'vorstellung4'}],
+  },
+  vorstellung4: {
+    z1:'Ich führe Buch. Seit vierzig Jahren.',
+    z2:'Jemand muss aufschreiben, was hier geschieht.',
+    opts: () => [{t:'Was geschieht hier denn?', zu:'vorstellung5'}],
+  },
+  vorstellung5: {
+    z1:'Setzen Sie sich nicht hin. Das dauert.',
+    z2:'Ich sage es einmal. Hören Sie zu.',
+    opts: () => [{t:'Ich höre.', tun:() => empfangAnriss()}],
+  },
+
   gruss: {
-    z1:'Guten Morgen. Sie sind die Neubesetzung.',
-    z2:'Ich führe Buch. Setzen Sie sich nicht hin.',
+    z1:'So weit der Bestand. Jetzt zu Ihnen.',
+    z2:'Sie sind die Neubesetzung. Von heute.',
     hub:true,
   },
 
@@ -13657,8 +13939,8 @@ function empfangSzene(key){
 // Der Vordruck aus der Szene heraus. Er läuft danach seinen eigenen Weg zu
 // Ende (dienstAntritt() auf Blatt 3), die Szene ist damit beendet.
 function empfangVordruck(){
-  empfangSchliessen();
-  showDienstblatt(1, 'einstellung');
+  empfangSzeneAus();
+  showDienstblatt(1, 'einstellung', 0);
 }
 
 // Unterschrift ohne Umweg über die drei Blätter. Derselbe Aufruf, den auch der
@@ -13668,10 +13950,20 @@ function empfangEnde(){
   dienstAntritt();
 }
 
-function empfangSchliessen(){
+// Die Szene endet, die Buehne bleibt. Das ist der Weg auf den Vordruck: er
+// gehoert noch zum Anfang, also steht er auf demselben Schwarz und nicht
+// ueber dem Dorf. Das Dorf kommt erst mit der Unterschrift.
+function empfangSzeneAus(){
   empfangAktiv = false;                       // erst die Flagge, dann schließen
   gespraechSchliessen();
   el('gespraechZu').style.display = '';
+}
+
+// Alles zurueck. Laeuft ueber dienstAntritt(), also ueber beide Enden des
+// Anfangs, und ist auf einem nie begonnenen Empfang ein harmloser Leerlauf.
+function empfangSchliessen(){
+  empfangSzeneAus();
+  buehneAus();
   document.body.classList.remove('empfangLaeuft');
 }
 
@@ -13688,27 +13980,115 @@ function empfangKnoeterich(){
   // Welt ist die Figur 24 Pixel hoch und braucht 0.82, damit "alt und grau"
   // ueberhaupt ankommt. Im fuenffach vergroesserten Portraet deckt derselbe
   // Wert Gesicht und Falten zu, und Knoeterich sah aus wie ein unfertiges
-  // Blatt. Nachgemessen am Bild, nicht geschaetzt.
-  return {sheetIdle:EMPFANG_BLATT, tint:'#8a8a8a', tintA:0.45,
+  // Blatt. Nachgemessen am Bild, nicht geschaetzt: 0.82 war eine graue
+  // Flaeche, 0.45 noch immer teigig, 0.30 laesst Gesicht und Kittel stehen
+  // und bleibt trotzdem erkennbar dieselbe graue Figur wie in der Welt.
+  return {sheetIdle:EMPFANG_BLATT, tint:'#8a8a8a', tintA:0.30,
           figur:{key:'knoeterich', name:KN_NAME_KURZ}};
 }
 
+// --- Das Dienstsiegel -------------------------------------------------------
+// Die Bürokraten sind der Adel dieser Welt, also führt das Haus ein Wappen.
+// Es zeigt einen Paragrafen, denn etwas anderes hat es nicht. Gezeichnet aus
+// Kreisen und Strichen, keine neue Grafikdatei und kein Zeichenschritt im
+// Renderpfad: das hier ist SVG im Panel und nicht auf der Leinwand.
+const SIEGEL_ZAEHNE = 32;
+function siegelSvg(px){
+  let zaehne = '';
+  for(let i = 0; i < SIEGEL_ZAEHNE; i++){
+    const w = (i / SIEGEL_ZAEHNE) * Math.PI * 2;
+    const c = Math.cos(w), sn = Math.sin(w);
+    zaehne += `<line x1="${(32+c*25.5).toFixed(2)}" y1="${(32+sn*25.5).toFixed(2)}"`
+            + ` x2="${(32+c*29).toFixed(2)}" y2="${(32+sn*29).toFixed(2)}"`
+            + ` stroke="#8a6d3b" stroke-width="1.4"/>`;
+  }
+  return `<svg class="amtSiegel" viewBox="0 0 64 64" width="${px}" height="${px}" aria-hidden="true">
+    <circle cx="32" cy="32" r="30.2" fill="none" stroke="#6b5a3a" stroke-width="1"/>
+    ${zaehne}
+    <circle cx="32" cy="32" r="24.6" fill="none" stroke="#c9a227" stroke-width="1.6"/>
+    <circle cx="32" cy="32" r="21.2" fill="none" stroke="#7a5a10" stroke-width="1"/>
+    <text x="32" y="43" text-anchor="middle" font-size="30" font-weight="bold"
+          fill="#f4d97a" font-family="Georgia,'Times New Roman',serif">§</text>
+  </svg>`;
+}
+
+const AMT_KOPFZEILE = 'Ministerium für Monsterangelegenheiten';
+const ROEMISCH = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+
+// --- Die Buehne -------------------------------------------------------------
+// Schwarz unter dem ganzen Anfang. Das Dorf kommt erst, wenn der Empfang
+// beginnt, und dann als Auftritt statt als Hintergrundrauschen.
+function buehneAn(){
+  el('introBuehne').innerHTML = `
+    <div style="position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);text-align:center;width:min(600px,88vw);">
+      ${siegelSvg(104)}
+      <p class="amtKopf" style="margin-top:10px;">${gEsc(AMT_KOPFZEILE)}</p>
+      <hr class="amtRegel">
+      <p class="amtFuss">Vordermühl an der Ablage</p>
+    </div>`;
+  el('introBuehne').style.display = 'block';
+  document.body.classList.add('introBuehne');
+}
+function buehneAus(){
+  el('introBuehne').style.display = 'none';
+  el('introBuehne').innerHTML = '';
+  document.body.classList.remove('introBuehne');
+}
+
+// Die Gespraechstafel oeffnen, ohne eine Weltfigur davorzustellen. Wird von
+// beiden Haelften des Anfangs benutzt, der Vorstellung und dem Empfang.
+function empfangTafelOeffnen(knoten){
+  empfangAktiv = true;
+  const n = empfangKnoeterich();
+  gespraech.npc = n; gespraech.fig = n.figur; gespraech.wahl = 0;
+  gespraechOffen = true;
+  el('gespraech').style.display = 'block';
+  el('gespraechZu').style.display = 'none';   // die Szene hat nur einen Ausgang
+  gespraechPortrait(n);
+  empfangSzene(knoten);
+  panelSicht();
+}
+
+// Die Tafel zumachen, ohne sie zu schliessen: empfangAktiv bleibt stehen, die
+// Szene laeuft weiter. gespraechSchliessen() prallt waehrend des Empfangs ab
+// (das ist seine Aufgabe), also steht der Weg hier ausgeschrieben.
+function empfangTafelZu(){
+  gespraechOffen = false;
+  el('gespraech').style.display = 'none';
+  MUS.muffle(); panelSicht();
+}
+
 // --- Die Anrisstafeln -------------------------------------------------------
-// Sie laufen im #overlay und nicht in der Tafel: erst das große Bild, dann das
-// kleine. Weitergeblättert wird per Klick, nichts läuft von selbst ab. Das ist
-// der Unterschied, auf dem Kapitel 14 besteht, und er ist keine Wortklauberei:
-// wer nicht drückt, steht hier bis morgen.
+// Sie laufen im #overlay auf der schwarzen Buehne. Weitergeblättert wird per
+// Klick, nichts läuft von selbst ab. Das ist der Unterschied, auf dem
+// Kapitel 14 besteht, und er ist keine Wortklauberei: wer nicht drückt, steht
+// hier bis morgen.
+//
+// Die Optik ist die einer Urkunde und nicht die eines Hinweisfensters:
+// Kopfzeile in gesperrten Versalien, Doppellinie, Siegel, römische Blattzahl.
+// Das ist Humor-Grundgesetz 10 als Layout. Der Aufwand, mit dem dieses Haus
+// eine Sache aufmacht, von der es selbst nicht weiß, worum es geht, IST die
+// Pointe. Deshalb darf hier nichts bescheiden aussehen.
+function empfangAnriss(){
+  empfangTafelZu();
+  empfangTafel(0);
+}
+
 function empfangTafel(i){
   const t = EMPFANG_TAFELN[i];
   if(!t){ empfangGespraech(); return; }
   const letzte = i === EMPFANG_TAFELN.length - 1;
   MUS.swell();
   el('ovPanel').innerHTML = `
-    <div style="min-height:34vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;">
-      <p style="font-size:calc(30px * var(--fs));line-height:1.2;color:#f4d97a;letter-spacing:2px;
-                text-shadow:0 3px 0 #241a09;margin:0;">${gEsc(t.z1)}</p>
-      <p style="font-size:calc(17px * var(--fs));line-height:1.4;color:#d8c898;margin:0;">${gEsc(t.z2)}</p>
+    ${siegelSvg(66)}
+    <p class="amtKopf">${gEsc(AMT_KOPFZEILE)}</p>
+    <hr class="amtRegel">
+    <div style="min-height:30vh;display:flex;flex-direction:column;justify-content:center;">
+      <p class="amtGross">${gEsc(t.z1)}</p>
+      <p class="amtKlein">${gEsc(t.z2)}</p>
     </div>
+    <hr class="amtRegel unten">
+    <p class="amtFuss">Blatt ${ROEMISCH[i+1]} von ${ROEMISCH[EMPFANG_TAFELN.length]}</p>
     <button onclick="empfangTafel(${i+1})">${letzte ? 'ANKLOPFEN' : 'WEITER'}</button>
     <div><button onclick="empfangUeberspringen()"
       style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:6px;opacity:.7;">ÜBERSPRINGEN</button></div>`;
@@ -13719,30 +14099,31 @@ function empfangTafel(i){
 // Wer den Anfang kennt, will ihn beim zweiten Mal nicht wieder sehen. Der Weg
 // führt auf den Vordruck und damit auf die Unterschrift, nicht am Kanon vorbei.
 function empfangUeberspringen(){
-  empfangSchliessen();
-  showDienstblatt(1, 'einstellung');
+  empfangSzeneAus();
+  showDienstblatt(1, 'einstellung', 0);
 }
 
+// Der Empfang. Hier faellt die Buehne, und das Dorf steht da.
 function empfangGespraech(){
   el('overlay').style.display = 'none';
+  buehneAus();
   empfang.knoten = 'gruss'; empfang.gefragt = new Set();
-  empfangAktiv = true;
-  const n = empfangKnoeterich();
-  gespraech.npc = n; gespraech.fig = n.figur; gespraech.wahl = 0;
-  gespraechOffen = true;
-  el('gespraech').style.display = 'block';
-  el('gespraechZu').style.display = 'none';   // die Szene hat nur einen Ausgang
-  gespraechPortrait(n);
   MUS.goto('office'); MUS.muffle(false);
-  empfangSzene('gruss');
-  panelSicht();
+  empfangTafelOeffnen('gruss');
 }
 
 // Der Eingang. Ersetzt in startGame() den Sprung auf Blatt 1.
+//
+// Die Reihenfolge ist der Kern von E2: erst der Mann, dann seine Geschichte,
+// dann sein Schreibtisch. In der ersten Fassung kam die Geschichte zuerst und
+// der Mann danach, und dadurch erzaehlte niemand die Geschichte.
 function empfangStarten(){
   empfang.gefragt = new Set();
   document.body.classList.add('empfangLaeuft');
-  empfangTafel(0);
+  buehneAn();
+  el('overlay').style.display = 'none';
+  MUS.goto('office'); MUS.muffle(false);
+  empfangTafelOeffnen('vorstellung1');
 }
 
 // --- Guard, Bauform wie dienstAssert()/gespraechAssert(). Wirft nie, meldet nur.
@@ -13899,6 +14280,36 @@ function dienstAssert(){
     else if(zeile.indexOf(wort + ' Punkte') < 0)
       fehler('Blatt 2 hat', anz, 'Punkte, Knöterich sagt etwas anderes:', zeile);
   }
+  // (2b) E2: Beim Blaettern geht keine Zeile verloren.
+  //
+  // Der Vordruck wird seit E2 nicht mehr am Stueck gerendert, sondern in
+  // Bloecke zerlegt und nach gemessener Hoehe auf Seiten verteilt. Die
+  // Verteilung haengt am Fenster und ist deshalb nicht pruefbar; die Zerlegung
+  // ist es, und sie ist die Stelle, an der beim naechsten Nachtragen etwas
+  // verschwindet: wer eine sechste Zeilenart ergaenzt und sie in
+  // dienstblattBloecke() vergisst, sieht sie nirgends fehlen. Sie waere
+  // einfach nicht mehr im Spiel.
+  for(const b of DIENSTBLATT){
+    const bloecke = dienstblattBloecke(b, 'einstellung');
+    const soll = (b.felder ? b.felder().length : 0)
+               + (b.punkte ? b.punkte().length : 0)
+               + ((b.bedienung && b.bedienung().length) ? 1 : 0)
+               + (b.gestaltWahl ? 1 : 0)
+               + (b.saetze ? b.saetze().length : 0)
+               + (b.kn || []).length;
+    if(bloecke.length !== soll)
+      fehler(`Blatt ${b.nr} zerfällt in`, bloecke.length, 'Blöcke statt', soll);
+    const alles = bloecke.map(x => x.html).join('');
+    for(const [k, v] of (b.felder ? b.felder() : []))
+      if(alles.indexOf(v) < 0) fehler(`Blatt ${b.nr}: Feld fehlt beim Blättern`, k);
+    for(const [k, v] of (b.punkte ? b.punkte() : []))
+      if(alles.indexOf(v) < 0) fehler(`Blatt ${b.nr}: Punkt fehlt beim Blättern`, k);
+    for(const z of (b.saetze ? b.saetze() : []))
+      if(alles.indexOf(z) < 0) fehler(`Blatt ${b.nr}: Schlusssatz fehlt beim Blättern`, z);
+    for(const z of (b.kn || []))
+      if(alles.indexOf(z) < 0) fehler(`Blatt ${b.nr}: Knöterich fehlt beim Blättern`, z);
+  }
+
   const s0 = rangStufe();   // rangStufe() liest amt.schichten, deshalb ueber die Differenz geprueft
   if(RAENGE.length < 2 || rangNameVon(1) === rangNameVon(0))
     fehler('Blatt 3 verspricht eine Hebung nach Schicht 5, RAENGE liefert dieselbe Bezeichnung');

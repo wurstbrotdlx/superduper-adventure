@@ -1,4 +1,5 @@
-// Pruefprotokoll zu Bauabschnitt E1 (phase-e1-empfang.md).
+// Pruefprotokoll zu den Bauabschnitten E1 und E2
+// (phase-e1-empfang.md, phase-e2-staatsakt.md).
 //
 //   python3 serve.py &
 //   node tools/empfang-pruef.mjs [URL]
@@ -9,9 +10,14 @@
 // Geprueft wird, was E1 zugesagt hat, im echten Browser statt in einer
 // Behauptung:
 //
+//   Vorstellung   Knoeterich nennt zuerst seinen Namen, auf schwarzem Grund
+//                 und vor den Tafeln (E2)
+//   Buehne        das Dorf ist waehrend des ganzen Anfangs verdeckt und steht
+//                 erst wieder da, wenn der Empfang beginnt (E2)
 //   Anriss        fuenf Tafeln, einzeln weitergeklickt, nichts laeuft von
 //                 selbst ab; ÜBERSPRINGEN fuehrt auf den Vordruck und nicht
 //                 am Kanon vorbei
+//   Vordruck      blaettert statt zu rollen, keine Seite laeuft ueber (E2)
 //   Szene         oeffnet in der U3-Tafel, nennt Knoeterich, zeichnet sein
 //                 Portraet und bietet vier Antworten
 //   ein Ausgang   Esc, das Kreuz und ein Klick daneben schliessen den Empfang
@@ -90,11 +96,32 @@ async function waehle(page, teil){
   await fertigGetippt(page);
 }
 
+// Den Anfang starten. Danach steht die Vorstellung, nicht das Overlay.
+async function starteAnfang(page){
+  await page.evaluate(() => startGame());
+  await page.waitForTimeout(350);
+  await fertigGetippt(page);
+}
+
+// Durch die Vorstellung. Jeder Knoten hat genau eine Antwort, gedrueckt wird
+// die 1, gewartet wird auf das Tippwerk. Setzt voraus, dass der Anfang laeuft.
+async function durchDieVorstellung(page){
+  let beats = 0;
+  for(let i = 0; i < 12; i++){
+    const drin = await page.evaluate(() => empfangAktiv && gespraechOffen);
+    if(!drin) break;
+    await page.keyboard.press('1');
+    await page.waitForTimeout(120);
+    await fertigGetippt(page);
+    beats++;
+    if(await page.evaluate(() => el('overlay').style.display === 'flex')) break;
+  }
+  return beats;
+}
+
 // Durch die Anrisstafeln bis in die Szene. Geklickt wird der WEITER-Knopf und
 // nicht der letzte im Panel: der letzte waere ÜBERSPRINGEN.
 async function durchDenAnriss(page){
-  await page.evaluate(() => startGame());
-  await page.waitForTimeout(300);
   let tafeln = 0;
   for(let i = 0; i < 12; i++){
     const weiter = await page.evaluate(() => {
@@ -113,12 +140,41 @@ async function durchDenAnriss(page){
   return tafeln;
 }
 
+// Der ganze Anfang am Stueck, bis die Gespraechstafel des Empfangs steht.
+async function bisZumEmpfang(page){
+  await starteAnfang(page);
+  await durchDieVorstellung(page);
+  return await durchDenAnriss(page);
+}
+
 // ------------------------------------------------------------- Anriss und Szene
 {
   const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
+
+  // E2: zuerst der Mann, dann seine Geschichte.
+  await starteAnfang(page);
+  pruef('der Anfang beginnt in der Tafel, nicht im Overlay',
+        await page.evaluate(() => gespraechOffen && el('overlay').style.display !== 'flex'), true);
+  pruef('die Buehne steht', await page.evaluate(() => el('introBuehne').style.display), 'block');
+  pruef('das Dorf ist verdeckt', await page.evaluate(() =>
+        getComputedStyle(el('introBuehne')).backgroundColor !== 'rgba(0, 0, 0, 0)'), true);
+  pruef('Knoeterich nennt zuerst seinen Namen',
+        (await gesagt(page)).includes('Knöterich'), true);
+  const beats = await durchDieVorstellung(page);
+  pruef('die Vorstellung hat fuenf Zuege', beats, 5);
+
+  // Waehrend der Tafeln, nicht danach: mit der letzten faellt die Buehne, und
+  // eine Messung hinterher haette genau das nicht gesehen.
+  pruef('die Buehne traegt auch die Tafeln',
+        await page.evaluate(() => el('introBuehne').style.display), 'block');
+  pruef('die erste Tafel steht', await page.evaluate(() =>
+        el('ovPanel').textContent.includes('VIERHUNDERT')), true);
+
   const tafeln = await durchDenAnriss(page);
   pruef('der Anriss hat fuenf Tafeln', tafeln, 5);
   pruef('danach ist das Overlay weg', await page.evaluate(() => el('overlay').style.display), 'none');
+  pruef('und die Buehne faellt fuer den Empfang',
+        await page.evaluate(() => el('introBuehne').style.display), 'none');
   pruef('die Tafel steht', await page.evaluate(() => el('gespraech').style.display), 'block');
   pruef('sie nennt Knoeterich', await page.$eval('#gespraechNameTxt', n => n.textContent), 'Amtsrat a. D. Knöterich');
   pruef('das Portraet ist gezeichnet', await page.evaluate(() => {
@@ -180,23 +236,63 @@ async function durchDenAnriss(page){
 // ------------------------------------------------- der Weg ueber den Vordruck
 {
   const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
-  await durchDenAnriss(page);
+  await bisZumEmpfang(page);
   await waehle(page, 'Wo unterschreibe ich');
   await waehle(page, 'Männlich');
   await waehle(page, 'Erst den Vordruck');
   await page.waitForTimeout(500);
   const blatt = await page.textContent('#ovPanel');
   pruef('der Vordruck steht', blatt.includes('EINSTELLUNGSVERFÜGUNG'), true);
-  pruef('die Anrede aus der Szene steht im Feld', blatt.includes('männlich gelesen'), true);
+  // E2: Die Anrede steht als zehntes Feld und liegt seit dem Blaettern nicht
+  // mehr auf derselben Seite wie die Ueberschrift. Gesucht wird deshalb ueber
+  // alle Seiten von Blatt 1 statt nur auf der ersten.
+  pruef('die Anrede aus der Szene steht im Feld', await page.evaluate(() => {
+    const n = dienstblattSeiten(DIENSTBLATT[0], 'einstellung').length;
+    for(let i = 0; i < n; i++){
+      showDienstblatt(1, 'einstellung', i);
+      if(el('ovPanel').textContent.includes('männlich gelesen')) return true;
+    }
+    return false;
+  }), true);
   pruef('die Szene ist dabei beendet', await page.evaluate(() => empfangAktiv || gespraechOffen), false);
-  pruef('das HUD ist wieder da', await page.evaluate(() => getComputedStyle(el('hud')).display !== 'none'), true);
-  await page.evaluate(() => showDienstblatt(3, 'einstellung'));
+  // Dieser Weg fuehrt aus dem Empfang heraus, und dort steht das Dorf schon:
+  // die Buehne ist mit dem Empfang gefallen und kommt nicht zurueck. Schwarz
+  // bleibt es nur auf dem anderen Weg, ÜBERSPRINGEN vor dem Empfang.
+  pruef('die Buehne bleibt gefallen',
+        await page.evaluate(() => el('introBuehne').style.display), 'none');
+  pruef('das HUD bleibt bis zur Unterschrift weg',
+        await page.evaluate(() => getComputedStyle(el('hud')).display), 'none');
+  pruef('der Vordruck blaettert statt zu rollen', await page.evaluate(() => {
+    const b = [...document.querySelectorAll('#overlay button')].pop().getBoundingClientRect();
+    return !(el('overlay').scrollHeight > el('overlay').clientHeight + 4) && b.bottom <= innerHeight + 0.5;
+  }), true);
+  pruef('Blatt 1 hat mehrere Seiten',
+        await page.evaluate(() => dienstblattSeiten(DIENSTBLATT[0], 'einstellung').length >= 2), true);
+  // E2: UNTERSCHREIBEN steht auf der LETZTEN Seite des letzten Blattes, nicht
+  // mehr auf dem Blatt als Ganzem.
+  await page.evaluate(() => {
+    const n = dienstblattSeiten(DIENSTBLATT[DIENSTBLATT_ANZ-1], 'einstellung').length;
+    showDienstblatt(DIENSTBLATT_ANZ, 'einstellung', n - 1);
+  });
   await page.waitForTimeout(300);
-  pruef('Blatt 3 bietet UNTERSCHREIBEN',
+  pruef('die letzte Seite bietet UNTERSCHREIBEN',
         (await page.$$eval('#ovPanel button', ns => ns.map(n => n.textContent.trim()))).includes('UNTERSCHREIBEN'), true);
+  pruef('eine Seite davor steht WEITER', await page.evaluate(() => {
+    const n = dienstblattSeiten(DIENSTBLATT[DIENSTBLATT_ANZ-1], 'einstellung').length;
+    showDienstblatt(DIENSTBLATT_ANZ, 'einstellung', n - 2);
+    return [...document.querySelectorAll('#ovPanel button')].some(b => b.textContent.trim() === 'WEITER');
+  }), true);
+  await page.evaluate(() => {
+    const n = dienstblattSeiten(DIENSTBLATT[DIENSTBLATT_ANZ-1], 'einstellung').length;
+    showDienstblatt(DIENSTBLATT_ANZ, 'einstellung', n - 1);
+  });
   await page.evaluate(() => dienstAntritt());
   await page.waitForTimeout(1200);
   pruef('auch dieser Weg startet den Dienst', await page.evaluate(() => state), 'play');
+  pruef('mit der Unterschrift faellt die Buehne',
+        await page.evaluate(() => el('introBuehne').style.display), 'none');
+  pruef('und das HUD ist wieder da',
+        await page.evaluate(() => getComputedStyle(el('hud')).display !== 'none'), true);
   pruef('Konsole still (Vordruckweg)', laut, []);
   await ctx.close();
 }
@@ -204,8 +300,9 @@ async function durchDenAnriss(page){
 // --------------------------------------------------- ueberspringen und einmalig
 {
   const { page, ctx } = await frisch({ viewport: { width: 1100, height: 760 } });
-  await page.evaluate(() => startGame());
-  await page.waitForTimeout(400);
+  await starteAnfang(page);
+  await durchDieVorstellung(page);          // E2: ÜBERSPRINGEN steht erst auf den Tafeln
+  await page.waitForTimeout(200);
   await page.evaluate(() => {
     [...document.querySelectorAll('#ovPanel button')].find(b => /ÜBERSPRINGEN/.test(b.textContent)).click();
   });
@@ -213,8 +310,13 @@ async function durchDenAnriss(page){
   pruef('ÜBERSPRINGEN fuehrt auf den Vordruck',
         (await page.textContent('#ovPanel')).includes('EINSTELLUNGSVERFÜGUNG'), true);
   pruef('und beendet die Szene', await page.evaluate(() => empfangAktiv), false);
-  pruef('und raeumt das HUD wieder frei',
-        await page.evaluate(() => getComputedStyle(el('hud')).display !== 'none'), true);
+  // E2: Hier ist der Empfang noch nicht gelaufen, der Vordruck gehoert also
+  // noch zum Anfang: schwarz bleibt schwarz, das HUD bleibt weg, und beides
+  // endet erst mit der Unterschrift.
+  pruef('die Buehne traegt auch den uebersprungenen Vordruck',
+        await page.evaluate(() => el('introBuehne').style.display), 'block');
+  pruef('das HUD bleibt dabei weg',
+        await page.evaluate(() => getComputedStyle(el('hud')).display), 'none');
 
   await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); showStartScreen(); });
   await page.waitForTimeout(300);
@@ -232,8 +334,14 @@ async function durchDenAnriss(page){
 {
   const { page, ctx, laut } = await frisch({ viewport: { width: 390, height: 844 },
                                              deviceScaleFactor: 2, hasTouch: true, isMobile: true });
-  await page.evaluate(() => { document.body.classList.add('touch'); schriftSetzen(2); startGame(); });
-  await page.waitForTimeout(500);
+  await page.evaluate(() => { document.body.classList.add('touch'); schriftSetzen(2); });
+  await starteAnfang(page);
+  pruef('die Vorstellung steht auf dem Telefon im Bild', await page.evaluate(() => {
+    const t = el('gespraech').getBoundingClientRect();
+    return t.left >= -1 && t.right <= innerWidth + 1 && t.bottom <= innerHeight + 1;
+  }), true);
+  await durchDieVorstellung(page);
+  await page.waitForTimeout(200);
   pruef('die Anrisstafel passt ins Bild', await page.evaluate(() => {
     const b = [...document.querySelectorAll('#ovPanel button')].find(x => /WEITER/.test(x.textContent));
     const r = b.getBoundingClientRect();

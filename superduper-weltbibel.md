@@ -593,7 +593,9 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
 7. **Keine Meta-Witze, keine Popkultur, keine Anspielungen auf das Jahr der Entstehung.** Das Spiel soll in fünfzehn Jahren noch funktionieren.
 8. **Kein Blut, kein Sterben, kein Zynismus.** Konfetti. Feierabend. Und niemand ist böse, alle sind nur unzuständig.
 9. **Unten drunter Wärme.** Jede Figur versucht etwas. Am Ende gelingt es. Ohne diese Regel ist das Ganze nur ein langer Behördenwitz, und der trägt keine fünfzig Schichten.
-10. **Die Form ist episch, der Inhalt ist Papier.** Fanfare für einen Aktenvorgang. Das Spiel nimmt sich bitterernst, die Welt bleibt eine Behörde. Episch wird die **Form**, nie der Gegenstand. Regel 1 bleibt dadurch unangetastet: niemand im Spiel merkt, dass die Fanfare komisch ist, am wenigsten die Fanfare. *(Nachgetragen mit E1, 22.08.2026.)*
+10. **Die Form ist episch, der Inhalt ist Papier.** Fanfare für einen Aktenvorgang. Das Spiel nimmt sich bitterernst, die Welt bleibt eine Behörde. Episch wird die **Form**, nie der Gegenstand. Regel 1 bleibt dadurch unangetastet: niemand im Spiel merkt, dass die Fanfare komisch ist, am wenigsten die Fanfare. *(Nachgetragen mit E1, 22.08.2026.)* **Das gilt auch fürs Auge (E2):** die Bürokraten sind der Adel dieser Welt, ihr Papier trägt Siegel, Doppellinien und römische Blattzahlen, und der Aufwand, mit dem dieses Haus eine Sache aufmacht, von der es selbst nicht weiß, worum es geht, ist die Pointe. Nichts an diesem Haus darf bescheiden aussehen.
+
+    Und die Gegenprobe gehört dazu: der ganze Prunk hängt an einer Sache, die seit vierhundert Jahren nicht erledigt ist. Die Form ist maximal, der Ertrag ist null. Wo das eine ohne das andere steht, ist es kein Gag mehr, sondern nur noch Dekoration.
 11. **Der Spieler ist der Gerade.** Trockenheit braucht ein Gegenüber, das nachfragt. Eine Figur sagt den Satz, der Spieler sagt "wie bitte", und erst dadurch wird aus einer Auskunft ein Gag. Bis U3 hatte das Spiel keinen Kanal dafür, seither hat es einen. Vorher war jede Figur trocken und keine war der Gerade, und damit lief die Trockenheit ins Leere. *(Nachgetragen mit E1, 22.08.2026.)*
 
 **Warum die beiden nachkamen.** Die Rückmeldung lautete: die Witze und Anspielungen tragen nicht, niemand versteht sie. Der Befund dahinter war nicht, dass die Witze fehlten oder zu fein waren, sondern dass sie ohne Takt dastanden. `Anlage 1 liegt nicht vor` ist die Pointe des ersten Akts und stand als Feld acht von zehn in einem Formular. Regel 7 bleibt deshalb ausdrücklich in Kraft: mehr Anspielungen wären die falsche Antwort. Was trägt, ist die Situation, und die Situation braucht Zeit und ein Gegenüber. Siehe `phase-e1-empfang.md`.
@@ -748,6 +750,18 @@ Kapitel 8 und die beiden neuen Regeln aus Kapitel 13. Der Bauabschnitt, der W8 n
 * **Ein Ausgang.** Esc, das Kreuz und ein Klick daneben schließen den Empfang nicht. Beide Enden laufen über dasselbe `dienstAntritt()` wie Blatt 3, `kn.seen.einstellung` steht weiter an genau einem Ort.
 
 **Abnahme:** Kein Wort der Akte wandert nach vorn (`empfangAssert()` prüft jede Zeile gegen dieselbe Sperrliste wie der Vordruck). Nichts läuft von selbst ab. Kein Questmarker, kein neues `amt`-Feld, kein neuer Speicherschlüssel. Wer überspringt, landet auf dem Vordruck und damit im alten Ablauf.
+
+### E2: Staatsakt, die Optik des Anfangs — ERLEDIGT (siehe `phase-e2-staatsakt.md`)
+
+Nachzug zu E1 aus fünf Rückmeldungen zum gespielten Anfang. Kein neuer Inhalt, eine andere Bühne.
+
+* **Der Anfang läuft auf Schwarz.** Eine eigene Bühne unter dem ganzen Vorspann, das Dorf kommt erst mit dem Empfang und dann als Auftritt statt als Hintergrundrauschen.
+* **Erst der Mann, dann seine Geschichte, dann sein Schreibtisch.** Knöterich stellt sich in fünf Zügen vor, bevor die erste Anrisstafel kommt. Das gibt ihm Besessenheit, Hindernis und Sprachmarke in vier Zeilen (Kapitel 8) und deckt zugleich den Ton der Tafeln: was danach kommt, ist SEIN Bericht. Nicht das Spiel wird pathetisch, sondern ein Mann, der seit vierzig Jahren Buch führt und einmal erzählen darf. Regel 1 bleibt dadurch unangetastet.
+* **Die Bürokraten sind der Adel dieser Welt, also sieht ihr Papier aus wie eine Urkunde.** Gesperrte Versalien, Doppellinien, römische Blattzahlen, und ein Dienstsiegel, das einen Paragrafen zeigt, weil das Haus nichts anderes hat. Der Aufwand, mit dem dieses Haus eine Sache aufmacht, von der es selbst nicht weiß, worum es geht, **ist** die Pointe.
+* **Der Vordruck blättert, er rollt nicht.** Gerollt wird gelesen wie eine Wand, geblättert wie ein Vordruck. Die Seitengrenzen werden gemessen und nicht gezählt: eine feste Zahl müsste gleichzeitig für einen Punkt mit vier Zeilen und ein Feld mit zwei Wörtern gelten, für 360 und 1280 Pixel Breite und für drei Schriftstufen.
+* **Die Schrift des Anfangs ist größer als die des Dorfes.** Im Empfang ist die Tafel das einzige im Bild, im Dorf steht sie über einer laufenden Welt.
+
+**Abnahme:** Kein neuer Inhalt, kein neues `amt`-Feld, keine neue Grafikdatei (das Siegel ist SVG im Panel). Keine Seite des Vordrucks läuft über, gemessen über sechs Fensterlagen von 360x640 bis 1280x620.
 
 ### Was wir ausdrücklich nicht bauen
 
