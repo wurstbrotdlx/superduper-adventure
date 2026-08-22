@@ -123,6 +123,14 @@ Konsole still. Die Zeile zählt jetzt vier Szenen:
 Szenen: 4 eingetragen, 9 Introblätter, 12 Fragen, 27 Knoten, Sperrvermerk und Antwortdeckel in Ordnung.
 ```
 
+`szeneAssert()` hat dabei drei Prüfungen dazubekommen, und der Anlass dafür ist eine kleine Peinlichkeit: beim Fortschreiben der Guard-Liste im `README.md` stand am Ende ein Satz da, der beschrieb, was der Guard tun *sollte*, und nicht, was er tat. Statt den Satz abzuschwächen, ist der Guard nachgezogen worden.
+
+* **Der Haken muss auf jemanden zeigen, den es gibt.** Eine Szene mit `figur:` wird gegen `DORF_FIGUREN` geprüft (Knöterich ausgenommen, er hängt an der Kontextaktion). Und sie muss ein `wenn()` haben, sonst wäre sie ab dem ersten Ansprechen dauerhaft fällig und die Figur nie wieder normal ansprechbar.
+* **Der Nachklang darf nicht ins Leere laufen.** Was eine Szene an `letzterAnlass` setzt, muss bei Lott **und** bei Pahl Zeilen haben. Beide Hälften, weil die Quelle die vier Zeilen auf die zwei Figuren verteilt und eine leere Hälfte im Spiel wie ein normales Gespräch aussieht, also unauffällig kaputt ist.
+* **Der Merker muss im Spielstand angelegt sein.** Das ist die teuerste der drei Verwechslungen: `szeneEnde()` schreibt sonst ein Feld, das `startShift()` nicht kennt, `saveKn()` speichert es, und die Szene liefe trotzdem nach dem nächsten Laden noch einmal.
+
+Alle drei sind negativ gegengeprüft, einzeln: jeder wird im laufenden Spiel die Voraussetzung weggenommen, jeder meldet daraufhin genau seinen Satz, und nach dem Zurückstellen ist die Konsole wieder still. Ein Guard, von dem man nicht weiß, ob er überhaupt beißen kann, ist strukturell grün und wertlos; dieselbe Falle hatte SZ2 schon einmal, siehe die eingefrorene Sprechblase weiter oben.
+
 ### Der Prüflauf
 
 `tools/szene-pruef.mjs` wächst von 11 auf **32 Prüfungen**. Neu darin, und alles davon im laufenden Dienst gespielt statt auf der Tabelle gerechnet:
