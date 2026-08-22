@@ -664,11 +664,17 @@
     border-top:2px solid #8a6d3b;box-shadow:inset 0 1px 0 #6b5a3a;
     background:rgba(8,5,12,.55);}
   #gespraechIch{flex:1 1 auto;min-width:0;}
-  /* Das Bildfeld. Kein eigenes Portraet im Grafikpack — gezeigt wird der
-     Ruhezustand desselben Blattes, das die Figur auch in der Welt traegt,
-     dreifach vergroessert und nicht geglaettet (Regressionsregel 14). */
+  /* Das Bildfeld. Seit U5 quadratisch und 128 Pixel breit, weil die gemalten
+     Portraets 128x128 sind: so steht das Bild 1:1 auf dem Schirm, ein Bildpixel
+     auf einem Geraetepixel, ohne krummen Zwischenschritt (Regressionsregel 14).
+     Vorher waren es 110x135 — der Zuschnitt PORTRAET_B x PORTRAET_H mal fuenf,
+     also das Seitenverhaeltnis des Sprite-Ausschnitts. Den gibt es weiter, aber
+     nur noch fuer die Figuren ohne gemaltes Bild (Lott, Pahl); er steht jetzt
+     vierfach und mittig im Quadrat statt fuenffach randfuellend. Andersherum
+     gerechnet — Feld 135 hoch, Portraet auf 135 hochgezogen — waere der
+     haeufige Fall der krumme gewesen und der seltene der saubere. */
   #gespraechBild{
-    flex:0 0 auto;width:110px;height:135px;
+    flex:0 0 auto;width:128px;height:128px;
     border:2px solid #6b5a3a;border-radius:6px;background:#17130d;
     display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
   /* Breite vom Feld, Hoehe aus dem Verhaeltnis: auf Mobil ist das Feld
@@ -854,7 +860,7 @@
       max-height:max(240px, calc(100dvh - 341px));
       overflow-y:auto;
     }
-    #gespraechBild{width:72px;height:88px;}
+    #gespraechBild{width:72px;height:72px;}
     #gespraechOben{gap:10px;padding:10px 10px 8px;}
     #gespraechUnten{gap:10px;padding:8px 10px 10px;}
     /* Das zweite Portraet faellt auf Mobil weg. Auf 360px Breite kostet es
@@ -1060,7 +1066,7 @@
 
 <div id="gespraech">
   <div id="gespraechOben">
-    <div id="gespraechBild"><canvas id="gespraechPortrait" width="110" height="135"></canvas></div>
+    <div id="gespraechBild"><canvas id="gespraechPortrait" width="128" height="128"></canvas></div>
     <div id="gespraechRechts">
       <div id="gespraechName"><span id="gespraechNameTxt"></span><span id="gespraechZu" class="panelZu" style="cursor:pointer;" onclick="gespraechSchliessen()">✖</span></div>
       <div id="gespraechText"></div>
@@ -1633,6 +1639,41 @@ addSheet('dun_chest', 'cf/dungeon/Objects/Chest_anim.png', 8, 'grid', {fw:32, fh
 addSheet('dun_crate', 'cf/dungeon/Objects/crate.png', 1, 'grid', {fw:20, fh:26, ax:10, ay:25});
 addSheet('dun_pot', 'cf/dungeon/Objects/pot.png', 1, 'grid', {fw:14, fh:16, ax:7, ay:15});
 addSheet('dun_cobweb', 'cf/dungeon/Objects/cobweb.png', 1, 'grid', {fw:18, fh:16, ax:9, ay:0});
+
+// ===========================================================================
+//  U5: Die Figurenportraets. Seit U4 zeigt die obere Tafelhaelfte einen
+//  Ausschnitt aus dem laufenden Sprite, weil das Grafikpack keine Portraets
+//  hat. Das Ensemble hat seit dem Bilderlauf vom 22.08. eigene: gemalt, nicht
+//  aus dem Pack, und deshalb ohne Lizenzfrage im Repo (assets/figuren/README).
+//
+//  Was hier geladen wird, ist NICHT die Fassung aus assets/figuren/ — die ist
+//  auf 1024 hochskaliert, damit man sie ansehen kann, und wiegt als Satz
+//  3.091 KB. Geladen wird die echte 128er-Rechnung aus assets/portraets/,
+//  erzeugt mit `python3 tools/figuren-px.py --tafel`: derselbe Bildinhalt in
+//  65 KB. assets/figuren bleibt in SKIP_DIRS von build-single.mjs, dieser
+//  Ordner steht nicht darin und wird eingebacken.
+//
+//  'raw', weil jede Datei ein einzelnes Bild ist und kein Blatt mit Frames.
+//
+//  optional:true ist kein Schoenheitsfehler, sondern die Zusage: fehlt eine
+//  Datei, zeichnet gespraechPortrait() weiter den Sprite-Ausschnitt aus U4.
+//  Eine erwartete Luecke ist keine Warnung — dieselbe Regel wie bei den fuenf
+//  Pack-Blaettern, die nie geliefert wurden.
+//
+//  Der Schluessel ist der aus DORF_FIGUREN, damit Bild und Figur ohne
+//  Zwischentabelle zusammenfinden; portraetAssert() rechnet nach, dass beide
+//  Listen sich decken. Lott und Pahl fehlen mit Absicht: ihr Motiv (11) ist
+//  ein Doppelportraet, jedes Gesicht fuellt die halbe Breite bei voller Hoehe,
+//  und ein Zuschnitt zoege dem jeweils anderen die Haare mit ins Bild. Sie
+//  bleiben auf dem Sprite-Ausschnitt, bis Prompt 11 als zwei Einzelbilder
+//  nachgelaufen ist. Knoeterich steht dabei, obwohl er nicht im Dorf steht:
+//  er fuehrt den Empfang und damit die Tafel (szeneSprecherKnoeterich).
+// ===========================================================================
+const PORTRAET_FIGUREN = ['knoeterich', 'zwirn', 'bramsche', 'zapf', 'lisbeth', 'trepp',
+                          'noergel', 'milb', 'pommer', 'fass', 'nieselbeck', 'umlauf', 'vorblatt'];
+const portraetBlatt = k => 'portraet_' + k;
+for(const k of PORTRAET_FIGUREN)
+  addSheet(portraetBlatt(k), `portraets/${k}.png`, 1, 'raw', {optional:true});
 
 // G3: mehrere SHEET_LIST-Eintraege (ein Anim je Rig-Zeile) zeigen oft auf dieselbe
 // Datei (rowStart unterscheidet sie) — ein Image pro url statt pro Key laden,
@@ -8346,19 +8387,37 @@ function gespraechFertigTippen(){
 // drei vermessenen. Fuenffach sind das 110x135. Ganze Zahl, damit kein Pixel
 // zwischen zwei Pixel faellt. Passt fuer beide Bauweisen, Pack-Blatt wie
 // Held-Komposit, weil beide dasselbe 64er-Raster und denselben Anker benutzen.
-const PORTRAET_X = 21, PORTRAET_Y = 15, PORTRAET_B = 22, PORTRAET_H = 27, PORTRAET_SC = 5;
+//
+// U5: Der Ausschnitt gilt weiter, aber nur noch fuer die Figuren ohne gemaltes
+// Bild. Zwei Zahlen haben sich dabei geaendert, und beide folgen aus dem
+// quadratischen Feld: vierfach statt fuenffach (fuenffach waeren 135 Pixel
+// Hoehe und passten nicht in 128), und mittig statt randfuellend. 88x108 in
+// 128x128 laesst links und rechts je 20 Pixel und oben 20 — ganze Zahlen,
+// damit kein Pixel zwischen zwei Pixel faellt, dieselbe Regel wie oben.
+const PORTRAET_X = 21, PORTRAET_Y = 15, PORTRAET_B = 22, PORTRAET_H = 27, PORTRAET_SC = 4;
 function gespraechPortrait(n){
   const c = el('gespraechPortrait'), cc = c.getContext('2d');
   cc.clearRect(0, 0, c.width, c.height);
+  cc.imageSmoothingEnabled = false;
+  // U5: erst das gemalte Portraet. Es ist eine 128x128-Datei und damit genau
+  // die Leinwand — kein Ausschnitt, kein Raster, keine Zeilenrechnung.
+  //
+  // Und keine Toenung. Noergels gruener Anstrich (tint) faerbt in der Welt ein
+  // Pack-Blatt ein, das ihm nicht gehoert; sein Portraet ist von vornherein er
+  // selbst. Dieselbe Farbe ein zweites Mal darueberzulegen waere kein Kanon,
+  // sondern ein doppelter Auftrag. Wer die Figuren nebeneinander sieht: in der
+  // Welt bleibt er gruen, das ist unveraendert.
+  const p = n.figur && SHEETS[portraetBlatt(n.figur.key)];
+  if(p && p.img){ cc.drawImage(p.img, 0, 0, c.width, c.height); return; }
   const s = SHEETS[n.sheetIdle];
   if(!s || !s.img) return;                       // ohne Blatt bleibt das Feld dunkel
   // Getoente Figuren (Noergel) genauso wie in drawSpriteAt: die Kopie enthaelt
   // nur die Zeilen ab rowStart, dort wird ohne Zeilenversatz gelesen.
   const src = n.tint ? (tintedSheet(n.sheetIdle, n.tint, n.tintA == null ? 0.55 : n.tintA) || s.img) : s.img;
   const row = n.tint ? 0 : (s.rowStart || 0);
-  cc.imageSmoothingEnabled = false;
+  const bb = PORTRAET_B*PORTRAET_SC, hh = PORTRAET_H*PORTRAET_SC;
   cc.drawImage(src, PORTRAET_X, row*s.fh + PORTRAET_Y, PORTRAET_B, PORTRAET_H,
-                    0, 0, PORTRAET_B*PORTRAET_SC, PORTRAET_H*PORTRAET_SC);
+                    (c.width - bb) >> 1, c.height - hh, bb, hh);
 }
 
 // U4: Das Bild rechts unten. Derselbe Ausschnitt, dasselbe Raster, eine Stufe
@@ -8549,7 +8608,17 @@ function gespraechAssert(){
   drin('gespraechText', 'gespraechOben');
   drin('gespraechIchName', 'gespraechUnten');
   drin('gespraechWahl', 'gespraechUnten');
+  // U5: Steht jeder Porträtschlüssel für eine Figur, die auch spricht? Das
+  // Bild wird über figur.key gesucht, ein Tippfehler in PORTRAET_FIGUREN
+  // bliebe deshalb stumm — die Figur bekäme wortlos den Sprite-Ausschnitt,
+  // und die Datei läge ungenutzt im Build. Ob die Datei da ist, prüft
+  // portraetAssert() nach dem Laden; hier geht es nur um die Namen.
+  for(const k of PORTRAET_FIGUREN)
+    if(k !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === k))
+      fehler('Porträtschlüssel gehört zu keiner Figur', k);
+  const ohne = DORF_FIGUREN.filter(f => !PORTRAET_FIGUREN.includes(f.key)).map(f => f.key);
   if(ok) console.log(`U3 Gespräch: ${DORF_FIGUREN.length} Namensschilder, je vier Antworten und zwei Tafelhälften in Ordnung.`);
+  if(ok) console.log(`U5 Porträts: ${PORTRAET_FIGUREN.length} gemalte Bilder zugeordnet, Sprite-Ausschnitt für ${ohne.join(' und ') || 'niemanden'}.`);
 }
 gespraechAssert();
 
@@ -16177,6 +16246,33 @@ function dorfSichtAssert(){
   if(ok) console.log(`G6 Dorfsicht: ${npcs.length} Dorffiguren haben ein Blatt und stehen im Bild.`);
 }
 
+// U5-Guard. Läuft nach loadAssets(), weil es vorher keine Bilddatei gibt —
+// gespraechAssert() steht auf Skriptebene und kann nur die Namen prüfen.
+//
+// Geprüft wird, was zwischen Bilderlauf und Build verrutschen kann:
+//
+//   1. Jedes angemeldete Porträt ist wirklich geladen. Fehlt eines, zeichnet
+//      die Tafel stillschweigend den Sprite-Ausschnitt — kein Absturz, aber
+//      auch keine Meldung, und niemand merkt, dass ein Bild fehlt.
+//   2. Es ist quadratisch. Das Feld ist seit U5 ein Quadrat; ein Bild mit
+//      anderem Verhältnis würde verzerrt statt beschnitten.
+//   3. Es ist die 128er-Fassung und nicht die 1024er aus assets/figuren/.
+//      Die sähe identisch aus und wöge das Zwanzigfache — genau der Fehler,
+//      den man im Bild nicht sieht und erst im fertigen Build bemerkt.
+const PORTRAET_PX = 128;
+function portraetAssert(){
+  let ok = true, da = 0;
+  const warnen = (m, ...r) => { ok = false; console.warn('U5 Porträts:', m, ...r); };
+  for(const k of PORTRAET_FIGUREN){
+    const s = SHEETS[portraetBlatt(k)];
+    if(!s || !s.img){ warnen(`${k} hat kein Bild geladen, die Tafel nimmt den Sprite-Ausschnitt`); continue; }
+    da++;
+    if(s.fw !== s.fh) warnen(`${k} ist nicht quadratisch (${s.fw}x${s.fh}) und wird im Feld verzerrt`);
+    else if(s.fw !== PORTRAET_PX) warnen(`${k} ist ${s.fw}px statt ${PORTRAET_PX}px — die Ansichtsfassung aus assets/figuren/?`);
+  }
+  if(ok) console.log(`U5 Porträts: ${da} gemalte Bilder geladen, quadratisch und im 128er-Raster.`);
+}
+
 // G5: UI-Skin. SHEETS[key].img.src ist bereits die richtige URL für den jeweiligen
 // Kontext (Dev-Server: relativer Pfad, dist/index.html-Build: data:-URI aus
 // ASSET_BLOBS) — kein CSS-url() auf eine Datei nötig, das würde der Build nicht
@@ -16268,6 +16364,7 @@ loadAssets().then(() => {
   assertRigRegistrations();   // GW26c: jetzt sind npc_baked_bramsche/_lott/_pahl da
   npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
   dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst
+  portraetAssert();           // U5: erst hier, vorher gibt es die Bilddateien nicht
   refreshFloor();
   showStartScreen();
   requestAnimationFrame(loop);

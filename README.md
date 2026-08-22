@@ -92,7 +92,7 @@ EOF
 PLAYWRIGHT_PFAD=/pfad/zu/node_modules/playwright/index.js CHROMIUM=$CHROMIUM node tools/spaziergang-messlauf.mjs
 ```
 
-Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je eine Zeile „in Ordnung", sonst steht dort nichts. Vor dem Ausliefern zusätzlich `node tools/build-single.mjs` und die entstandene `dist/index.html` per `file://` laden — der Build nimmt einen anderen Ladeweg (`ASSET_BLOBS` statt HTTP) und kann deshalb Fehler zeigen, die im Quellbaum keine sind, und umgekehrt.
+Was die Sitzung dabei ausgibt, ist die Abnahme: jeder Guard meldet seine Zeile „in Ordnung", sonst steht dort nichts. (Seit U5 sind es vierzehn Zeilen — `gespraechAssert()` meldet zwei, und `portraetAssert()` kommt wie `dorfSichtAssert()` erst nach dem Laden dazu.) Vor dem Ausliefern zusätzlich `node tools/build-single.mjs` und die entstandene `dist/index.html` per `file://` laden — der Build nimmt einen anderen Ladeweg (`ASSET_BLOBS` statt HTTP) und kann deshalb Fehler zeigen, die im Quellbaum keine sind, und umgekehrt.
 
 ## Dokumente
 
@@ -119,6 +119,7 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je ei
 | `phase-g6-nachtrag-dorfblaetter.md` | Die fünf offenen Dorf-Blätter aus G6, nachgelegt. Kein Code, aber die Entscheidung, wie `Fisherman_Fin` gerastert ist: 9 Spalten à 64, nicht 18 à 32 wie das Manifest führte |
 | `phase-u2-menuegrafik.md` | Bauabschnitt U2: die Menüs bekommen Pack-Grafik statt CSS, das Pixelkunst nachahmt. Vier Zellen, die Regel „Formen aus dem Pack, Flächen bleiben dunkel", und warum eine richtig gemessene Koordinate noch keine passende Zelle ist |
 | `phase-u3-gespraech.md` | Bauabschnitt U3: Namen über den Köpfen, das Gesprächsfenster mit vier Antworten, ein Regler für alle 176 Schriftgrößen. Dazu der Nebenbefund, warum sich der Einstellungsvordruck auf einem Telefon nicht wegklicken ließ |
+| `phase-u5-portraets.md` | Bauabschnitt U5: die gemalten Figurenporträts kommen in die obere Tafelhälfte. Warum das Bildfeld dafür quadratisch wird, warum der Sprite-Ausschnitt als Rückfallweg stehen bleibt (Lott und Pahl teilen sich ein Bild) und warum 65 KB statt 3,0 MB in den Build gehen |
 | `phase-u4-dialogtafel.md` | Bauabschnitt U4: die Gesprächstafel zerfällt in zwei Hälften. Oben der NPC mit Porträt und laufendem Satz, unten der Spieler mit Amtsbezeichnung, Antworten und eigenem Bild — und warum die Antworten vorher wie ein Nachsatz derselben Person aussahen |
 | `phase-e2-staatsakt.md` | Bauabschnitt E2: schwarze Bühne, Knöterich stellt sich zuerst vor, Urkundenoptik mit Dienstsiegel, und ein Vordruck, der nach gemessener Höhe blättert statt zu rollen. Mit den drei Fehlern der Waage, die erst die Messung sichtbar gemacht hat |
 | `phase-e1-empfang.md` | Bauabschnitt E1: der Anfang als Szene statt als Stapel Vordrucke. Warum dieselbe Form, die das Intro herb machte, auch die Witze erstickt hat, zwei neue Regeln im Humor-Grundgesetz, und kein einziger neuer Witz |

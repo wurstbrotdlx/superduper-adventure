@@ -45,6 +45,11 @@ abgenommen**. Zwirn (Palette) und die Kaisertür (Stapel zu klein) sind mit
 nachgeschärften Prompts ein zweites Mal gelaufen und im zweiten Anlauf
 abgenommen worden. Damit ist die Sammlung vollständig.
 
+Seit U5 (22.08.2026) sind dreizehn dieser Motive im Spiel, in der oberen Hälfte
+der Gesprächstafel. Nicht dabei: Lott und Pahl (ein Doppelporträt, nicht
+teilbar), Sturz, Nachtrag, Konrad und Anlage 3 (kein Sprechplatz) sowie die
+Kaisertür (kein Gesicht). Siehe `phase-u5-portraets.md`.
+
 Der zweite Lauf hat beides behoben. Zwirn liegt jetzt bei 37.238 statt 84.778
 Farben und in gedecktem Altrosa und Sandton statt Orange und Türkis. Der
 Poststapel wächst über die Türkante hinaus aus dem Bild, und die Tür steht vor
@@ -114,20 +119,31 @@ aber lesbar.
   geschnallten Aktenbündel, dort sitzen jetzt Epauletten. Das ist ein Verlust an
   Erzählung, aber kein Fehler: die Figur trägt auch so.
 
-## Das sind keine Spielgrafiken
+## Diese Dateien hier gehen nicht in den Build
 
-Sie werden von `index.html` **nicht geladen** und gehören in keine Ladeliste. Ihr
-Zweck ist Doku, Kladde und Konzeptarbeit. Die Gesprächstafel schneidet ihr Porträt
-seit U4 aus dem laufenden Sprite (`PORTRAET_X/Y/B/H`) und erwartet das
-64x64-Held-Komposit; ein gemaltes Bild passt dort nicht hinein.
+Seit U5 sind dreizehn der Motive im Spiel — aber nicht diese Dateien. Sie werden
+von `index.html` **nicht geladen** und gehören in keine Ladeliste. Geladen wird
+die echte 128er-Rechnung aus `assets/portraets/`, erzeugt mit
+`python3 tools/figuren-px.py --tafel`. Was hier liegt, ist die Ansichtsfassung und
+der Beleg: die `-px`-Datei ist nach der Quantisierung wieder auf 1024
+hochskaliert, damit man sie ansehen kann, das `.jpg` ist das unangetastete
+Original.
 
-**Sie gehen deshalb auch nicht in den Build.** `tools/build-single.mjs` inliniert
-sonst bewusst alles unter `assets/`, statt die benutzte Teilmenge zu erraten; dieser
-Ordner steht dort in `SKIP_DIRS`. Der Grund ist gemessen: 38 Dateien, 3.091 KB roh,
-als data:-URI 4.124 KB. Ohne den Ausschluss wächst `dist/index.html` von rund
-905 KB auf 5.029 KB, für Bilder, die kein Frame je zeichnet. Wer hier später ein
-Porträt tatsächlich ins Spiel holt, nimmt es aus `SKIP_DIRS` heraus oder kopiert die
-gebrauchte Datei nach `assets/cf/`.
+Der Unterschied ist gemessen: dieselben 19 Motive wiegen als 1024er 3.091 KB und
+als echte 128er 96,8 KB. `tools/build-single.mjs` inliniert bewusst alles unter
+`assets/`, statt die benutzte Teilmenge zu erraten; dieser Ordner steht dort in
+`SKIP_DIRS`, `assets/portraets` nicht.
+
+**Nicht nach `assets/cf/` kopieren.** Eine frühere Fassung dieser Notiz schlug das
+als Weg vor; er funktioniert nicht. `.github/workflows/pages.yml` macht vor dem
+Build `rm -rf assets/cf` und ersetzt den Ordner vollständig durch den Klon des
+privaten Assets-Repos — was dort läge, wäre im ausgelieferten Spiel weg. Committen
+ließe es sich ohnehin nicht, `assets/cf/*` steht in der `.gitignore`.
+
+Wer ein weiteres Motiv ins Spiel holen will (Sturz, Nachtrag, Konrad und Anlage 3
+haben Bilder, aber keinen Sprechplatz), trägt es in `TAFEL` in
+`tools/figuren-px.py` und in `PORTRAET_FIGUREN` in `index.html` ein und lässt das
+Werkzeug laufen. Einzelheiten in `phase-u5-portraets.md`.
 
 ## Warum diese Bilder im Repo liegen dürfen
 
