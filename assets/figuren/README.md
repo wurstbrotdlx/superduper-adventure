@@ -27,11 +27,11 @@ die man ansieht; das Original ist der Beleg.
 | `08-milb` | Gutachter Dr. phil. Milb | da, Profil statt Frontalblick |
 | `09-pommer` | Materialausgabe Herr Pommer | da, Brille kaputt (siehe unten) |
 | `10-fass` | Wirt Bruno Fass | da, sehr enger Ausschnitt |
-| `11-lott-pahl` | Herr Lott und Herr Pahl (Doppelporträt) | offen |
-| `12-nieselbeck` | Wetterbeauftragter Ferdinand Nieselbeck | offen |
-| `13-umlauf` | Reichsbotin Kordula Umlauf | offen |
-| `14-vorblatt` | Reichsministerialdirektor zu Händen Vorblatt | offen |
-| `15-sturz` | Amtsleiterin Dr. Wilhelmine Sturz | offen |
+| `11-lott-pahl` | Herr Lott und Herr Pahl (Doppelporträt) | da, aber drei Köpfe (siehe unten) |
+| `12-nieselbeck` | Wetterbeauftragter Ferdinand Nieselbeck | da |
+| `13-umlauf` | Reichsbotin Kordula Umlauf | da, Stil weicht ab |
+| `14-vorblatt` | Reichsministerialdirektor zu Händen Vorblatt | da |
+| `15-sturz` | Amtsleiterin Dr. Wilhelmine Sturz | da |
 | `16-nachtrag` | Fürst Nachtrag, der Schattenfürst | offen |
 | `17-anlage3` | Anlage 3, Kater | offen |
 | `18-konrad` | Konrad zu Händen Aufschub | offen |
@@ -77,6 +77,24 @@ aber lesbar.
   (78 Prozent Höhe, 16 Prozent Luft oben). Das Hemd ist sandfarben statt grau.
 * **Fass ist sehr eng geschnitten**, die Schultern laufen an beiden Rändern aus dem
   Bild, und die Schattierung ist weicher als bei den übrigen.
+
+## Befunde am dritten Paket (22.08.2026)
+
+* **Lott und Pahl sind zu dritt.** Hinter dem rechten der beiden steht ein dritter,
+  weißhaariger Kopf mit eigenem Ohr und eigener Wange, am rechten Bildrand
+  angeschnitten. Der Prompt verlangt ausdrücklich `exactly two characters`. Dazu ist
+  der Ausschnitt viel zu nah, beide Gesichter füllen das Bild bis an die Kanten, und
+  mit 100.634 Farben ist es das bunteste Bild der Sammlung. Muss neu.
+* **Umlauf fällt stilistisch heraus.** Weiche, gemalte Schattierung mit feinem
+  Raster, eher Comic-Illustration als Pixelkunst; neben Knöterich oder Vorblatt
+  gehängt wirkt sie aus einem anderen Spiel. Inhaltlich stimmt alles, Haar, Uniform,
+  Umhang, Riemen, offener Mund im Satz.
+* **Nieselbeck trägt eine Schiebermütze statt der Dienstmütze**, was ihm sogar
+  steht, und schaut wie gewünscht nach oben. Er ist etwas klein im Bild (85 Prozent
+  Höhe, 9 Prozent Luft oben), aber im Rahmen.
+* **Vorblatt und Sturz sitzen.** Bei Vorblatt fehlen die über die Schultern
+  geschnallten Aktenbündel, dort sitzen jetzt Epauletten. Das ist ein Verlust an
+  Erzählung, aber kein Fehler: die Figur trägt auch so.
 
 ## Das sind keine Spielgrafiken
 
