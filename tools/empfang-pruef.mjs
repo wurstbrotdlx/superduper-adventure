@@ -14,7 +14,7 @@
 //                 und vor den Tafeln (E2)
 //   Buehne        das Dorf ist waehrend des ganzen Anfangs verdeckt und steht
 //                 erst wieder da, wenn der Empfang beginnt (E2)
-//   Anriss        fuenf Tafeln, einzeln weitergeklickt, nichts laeuft von
+//   Intro         neun Blaetter, einzeln weitergeklickt, nichts laeuft von
 //                 selbst ab; ÜBERSPRINGEN fuehrt auf den Vordruck und nicht
 //                 am Kanon vorbei
 //   Vordruck      blaettert statt zu rollen, keine Seite laeuft ueber (E2)
@@ -167,11 +167,16 @@ async function bisZumEmpfang(page){
   // eine Messung hinterher haette genau das nicht gesehen.
   pruef('die Buehne traegt auch die Tafeln',
         await page.evaluate(() => el('introBuehne').style.display), 'block');
-  pruef('die erste Tafel steht', await page.evaluate(() =>
-        el('ovPanel').textContent.includes('VIERHUNDERT')), true);
+  // SZ1: Die fuenf Anrisstafeln aus E1 sind durch die neun Introblaetter aus
+  // weltgeschichte.md ersetzt. Das sind die beiden einzigen Zusagen dieses
+  // Laufs, die sich dadurch geaendert haben, und beide beschreiben Inhalt, der
+  // absichtlich ausgetauscht wurde. Die uebrigen 57 stehen unveraendert und
+  // sind damit der Beweis, dass der Anfang den Umbau der Maschine ueberlebt hat.
+  pruef('das erste Introblatt steht', await page.evaluate(() =>
+        el('ovPanel').textContent.includes('zwölf Bereiche')), true);
 
   const tafeln = await durchDenAnriss(page);
-  pruef('der Anriss hat fuenf Tafeln', tafeln, 5);
+  pruef('das Intro hat neun Blaetter', tafeln, 9);
   pruef('danach ist das Overlay weg', await page.evaluate(() => el('overlay').style.display), 'none');
   pruef('und die Buehne faellt fuer den Empfang',
         await page.evaluate(() => el('introBuehne').style.display), 'none');
