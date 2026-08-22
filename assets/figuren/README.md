@@ -18,7 +18,7 @@ die man ansieht; das Original ist der Beleg.
 | Grundname | Figur | Stand |
 |---|---|---|
 | `01-knoeterich` | Amtsrat a. D. Knöterich | abgenommen |
-| `02-zwirn` | Bürgermeister Alfons Zwirn | Nachlauf, Palette |
+| `02-zwirn` | Bürgermeister Alfons Zwirn | abgenommen (2. Lauf) |
 | `03-bramsche` | Registratorin Ottilie Bramsche | abgenommen |
 | `04-zapf` | Hausmeister Reinhold Zapf | abgenommen |
 | `05-lisbeth` | Praktikantin Lisbeth Fuhr | abgenommen |
@@ -36,13 +36,19 @@ die man ansieht; das Original ist der Beleg.
 | `17-anlage3` | Anlage 3, Kater | abgenommen |
 | `18-konrad` | Konrad zu Händen Aufschub | abgenommen |
 | `19-aussendienst` | Der Außendienst (Spieler) | bewusst ausgelassen, braucht keins |
-| `20-kaisertuer` | Die Tür des Kaisers | Nachlauf, Stapel zu klein |
+| `20-kaisertuer` | Die Tür des Kaisers | abgenommen (2. Lauf) |
 
 ## Abnahme (22.08.2026)
 
-Matthias hat die Sammlung durchgesehen und **siebzehn der neunzehn Motive
-abgenommen**. Neu laufen nur Zwirn (Palette) und die Kaisertür (Stapel zu klein).
-Ihre Prompts in `figuren-bildprompts.md` sind dafür nachgeschärft.
+Matthias hat die Sammlung durchgesehen und **siebzehn der neunzehn Motive sofort
+abgenommen**. Zwirn (Palette) und die Kaisertür (Stapel zu klein) sind mit
+nachgeschärften Prompts ein zweites Mal gelaufen und im zweiten Anlauf
+abgenommen worden. Damit ist die Sammlung vollständig.
+
+Der zweite Lauf hat beides behoben. Zwirn liegt jetzt bei 37.238 statt 84.778
+Farben und in gedecktem Altrosa und Sandton statt Orange und Türkis. Der
+Poststapel wächst über die Türkante hinaus aus dem Bild, und die Tür steht vor
+flachem Grund statt in einem Raum.
 
 Die Befunde unten bleiben stehen, weil sie stimmen, aber sie sind entschieden. Der
 dritte Kopf bei Lott und Pahl, Pommers geronnene Brille, Milbs Halbprofil, Konrads
