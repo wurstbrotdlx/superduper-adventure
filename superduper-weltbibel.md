@@ -894,9 +894,21 @@ Erster von vier Abschnitten, die die neun Szenen aus `weltgeschichte.md`, Kapite
 * **Die Wortsperre ist geteilt.** `AKTE_SPERRE` gilt weiter für den Empfang. Das Intro zeigt genau die Dokumente, die sie verbietet, und bekommt deshalb `AKTE_SPERRE_NAMEN`: **es darf die Papiere zeigen, es darf niemanden beim Namen nennen.**
 * **Szene 1, das Intro:** neun Blätter, wörtlich aus Kapitel 8. Sie ersetzen die fünf Anrisstafeln aus E1 an derselben Stelle im Ablauf. Beide erzählen dieselben vierhundert Jahre; die Tafeln taten es in fünf Behauptungen, das Intro in neun Dokumenten. Der Anfang wird dadurch nicht länger.
 
-### SZ2 bis SZ4: Die übrigen acht Szenen — OFFEN
+### SZ2: Die drei Gesprächsszenen — ERLEDIGT (siehe `phase-sz2-gespraechsszenen.md`)
 
-SZ2 die Gesprächsszenen 2 bis 4, SZ3 der Stopfen und Vorblatts Ankunft samt Blattserie I, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz1-szenensystem.md`, Abschnitt 7.
+Zweiter der vier Abschnitte. SZ1 hatte genau eine Szene, und die lief vor dem Spiel. Diese drei laufen mittendrin, und daran hat sich gezeigt, was der Maschine noch fehlte.
+
+* **Die Maschine hält jetzt die Welt an.** Eine Szene mit `haeltDieWelt` setzt `state = 'szene'` und stellt danach den vorigen Zustand wieder her. Gebaut nach dem Vorbild von `state = 'zustellung'`, also kein neuer Renderpfad und kein neues Panel. Während einer Szene bewegt sich kein Monster und die Schichtuhr steht.
+* **Szenen hängen an Figuren.** `szeneFaellig(figurKey)` sagt beim Ansprechen, ob eine Szene übernehmen will. Der Aufruf steht in `gespraechOeffnen()`, also an genau einer Stelle. Knöterich ist die Ausnahme: er steht nicht in `DORF_FIGUREN`, seine Szene hängt an der Kontextaktion `AKT_NACHFRAGE`.
+* **Szene 2, „Oben ist eine Stadt“:** ab Akt II bei Kordula Umlauf. Zum ersten Mal wechselt der Sprecher mitten in einer Szene, Fass wirft von nebenan zwei Sätze ein. Der Wechsel war die Erweiterung aus SZ1; hier läuft sie zum ersten Mal.
+* **Szene 3, „Die zweite Schublade“:** ab Akt III im Amtspanel, neben der Gießkanne. Vierzig Zwischenbescheide, die alle denselben Satz sagen und sich nur in der Jahreszahl unterscheiden (972 bis 1011). Sie sind ein Blatt mit einem Zähler, nicht vierzig Tafeln. Der Witz ist, dass es nicht aufhört, nicht dass man vierzigmal klicken muss, deshalb erscheint nach drei Blättern ein zweiter Knopf zum letzten. Danach die Zeile, um die es geht: **einundvierzig, und der erste kam vor ihrer Abreise.**
+* **Szene 4, „Knöterichs einer Satz“:** ab Akt IV, wenn der Spieler die vollständige Anschrift hat. Drei Antworten, dann das Wort *Hintermühl*, dann geht er.
+* **Der Nachklang steht bei Lott und Pahl.** Zwei neue Anlässe, `umlauf` und `hintermuehl`, gebaut wie ihre Kampfanlässe. Sie fallen genau einmal, weil `npcSprechen()` `letzterAnlass` beim Lesen verbraucht.
+* **Die Wortsperre gilt für keine der drei.** Sie handeln von der Akte; das ist ihr Inhalt und nicht ihr Fehler.
+
+### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
+
+SZ3 der Stopfen im Steinfeld samt Blattserie I und Postregen sowie Vorblatts Ankunft, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.
 
 ### Was wir ausdrücklich nicht bauen
 
@@ -972,7 +984,7 @@ SZ2 die Gesprächsszenen 2 bis 4, SZ3 der Stopfen und Vorblatts Ankunft samt Bla
 * **Was hinter der Tür mit dem Schild ist.** *(W11.)* Es gibt eine Tür, ein Schild und einen Stapel Post davor. Mehr wird nie gezeigt.
 * **Was Konrad zu Händen Aufschub vortragen wollte.** *(W11.)* Er weiß es selbst nicht mehr genau. Es war wichtig.
 
-**Und was offen ist, weil es noch nicht gebaut wurde** *(Stand W11, kein Vorsatz, sondern eine Liste)*: die neun Szenen aus `weltgeschichte.md`, Kapitel 8, einschließlich Intro und Abspann; die Blattserien G, H und I; die Langvorgänge 10 bis 13; Konrad zu Händen Aufschub und alles, was Hochablage zeigt; und Knöterichs Zuwachs, der bewusst nicht in seine Zeilen gegangen ist, weil er Tasten erklärt und keine Zusammenhänge.
+**Und was offen ist, weil es noch nicht gebaut wurde** *(Stand SZ2, kein Vorsatz, sondern eine Liste)*: von den neun Szenen aus `weltgeschichte.md`, Kapitel 8, noch fünf — der Stopfen, Vorblatts Ankunft, die Versuchung, die Zustellung und der Abspann (Szenen 1 bis 4 stehen, siehe Kapitel 14, SZ1 und SZ2); die Blattserien G, H und I; die Langvorgänge 10 bis 13; Konrad zu Händen Aufschub und alles, was Hochablage zeigt; und Knöterichs Zuwachs, der bewusst nicht in seine Zeilen gegangen ist, weil er Tasten erklärt und keine Zusammenhänge.
 
 ---
 

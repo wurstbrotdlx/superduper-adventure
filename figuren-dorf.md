@@ -61,6 +61,30 @@ Oben ein Ort ist. Stünde sie ab Schicht 1 im Dorf, wäre die Pointe des zweiten
 eins verschenkt. Vorblatt taucht auf, sobald der Spieler anfängt, gefährlich zu werden, und
 nicht vorher. Nur Nieselbeck steht von Anfang an da, und das ist bei ihm der Witz.
 
+---
+
+**Nachtrag SZ2** (siehe `phase-sz2-gespraechsszenen.md`): Drei der neun Szenen aus Kapitel 8
+der `weltgeschichte.md` sind gebaut. Zwei davon hinterlassen etwas bei Figuren, die es
+schon gab, und deshalb wächst diese Datei noch einmal. Auch hier gilt: **keine bestehende
+Zeile ist geändert worden.**
+
+Es kommt an drei Stellen dazu:
+
+* **Fass bekommt einen zweiten Zusatzblock.** Sein erster hängt an `abAkt:4`, der neue an
+  einem Merker (`szeneUmlauf`). Der Unterschied ist inhaltlich: die alten Zeilen darf jeder
+  hören, der weit genug ist, die neuen nur, wer Kordula Umlauf tatsächlich getroffen hat.
+  Dass zwei Blöcke an derselben Figur nebeneinander laufen, ist seit W-Nörgel geklärt.
+* **Lott und Pahl bekommen je zwei neue Anlässe**, `umlauf` und `hintermuehl`. Sie sind
+  gebaut wie ihre bestehenden Anlass-Zeilen zu `crit` oder `goldfund`, hängen aber nicht an
+  einem Kampfereignis, sondern am Ende einer Szene.
+* **Die vierzig Zwischenbescheide der zweiten Schublade** stehen nicht hier, sondern im
+  Code, weil sie kein Figurentext sind, sondern ein Blatt mit einem Jahreszähler.
+
+**Der Nachklang fällt genau einmal.** `npcSprechen()` verbraucht `letzterAnlass` beim
+Lesen. Wer nach der Szene zur Bank geht, hört die Zeile; wer ein zweites Mal fragt, hört
+wieder die Grundzeilen. Das ist kein Sonderweg für die Szenen, sondern dasselbe Verhalten,
+das die Bank seit jeher für jeden Anlass hat.
+
 ## Zwirn — Bürgermeister Alfons Zwirn
 
 Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (17, 37), vor dem Amt. **G6:** Anker von (14, 34) verschoben, dort stand er vollständig hinter der Amtsfassade; nicht auf (14, 38), weil er sonst die Kontextaktion der Amtstür überstimmt. Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 2, Schuhe Stufe 2. **G7:** Anker von (16, 38) auf (17, 37), der Anger beginnt jetzt bei y=34, das Amt ist fünfzehn Kacheln breit.
@@ -394,6 +418,15 @@ Der Wirt weiß, was der Hausname verspricht (Weltgeschichte, Kapitel 6). Er hat 
 
 **Prüfnotiz:** kein Fund. Der Hausname „Zum Letzten Stempel“ bleibt reiner Ortsname und klingt in Grundzeile 2 nur an, wird nie erklärt — genau wie Kapitel 8 es verlangt.
 
+### Zusatzzeilen (SZ2), nach Kordula Umlaufs Besuch
+
+Zweiter Zusatzblock an derselben Figur. Er hängt nicht am Aktstand, sondern am Merker `szeneUmlauf`, also am Ende von Szene 2. Fass wirft in dieser Szene selbst eine Zeile ein („Oben ist eine Redensart“); danach hat er eine Meinung über die Botin, und die steht hier. Der Bäcker ist der Witz: Kordula Umlauf erzählt in der Szene von einem Bruno, der oben Brot backt, und Fass heißt selbst Bruno. Aufgelöst wird das nicht.
+
+* „Die Botin war da. Hat viel geredet.“ (35) / „Und schnell gegessen.“ (21)
+* „Sie kennt einen Bäcker. Bruno heißt er.“ (39) / „Wie ich. Merkwürdig.“ (20)
+
+**Prüfnotiz:** kein Fund. „Oben“ bleibt auch hier unerklärt, der Namensgleichklang wird nur gesetzt, nie kommentiert.
+
 ---
 
 ## Lott — auf der Bank am Dorfplatz
@@ -439,6 +472,14 @@ Vordermühl steht in keinem Bestand (Weltgeschichte, Kapitel 5, und Serie G, Bla
 
 * „Wir zwei standen nie in einem Bestand.“ (38) / „Pahl sagt, das sei ein Glück.“ (29)
 * „Wer nicht geführt wird, bleibt da.“ (34) / „Pahl nickt. Ausnahmsweise.“ (26)
+
+### Anlass-Zeilen (SZ2): der Nachklang der Szenen
+
+Zwei neue Anlässe, gebaut wie die sieben darüber. `umlauf` fällt, nachdem der Spieler Szene 2 gesehen hat, `hintermuehl` nach Szene 4. Von den Zeilen der Quelle liegen zwei hier und zwei bei Pahl; wer beide anspricht, bekommt den vollständigen Wortwechsel, wer nur einen anspricht, die Hälfte. Das ist die Bank, wie sie immer war.
+
+**umlauf:** „Die kommt alle achtzig Jahre.“ (29) / „Pahl merkt sich so etwas.“ (25) — „Eine Botin. Die hat es eilig.“ (29) / „Pahl hätte gern die Liste.“ (26)
+
+**hintermuehl:** „Er hat es gesagt.“ (17) / „Nach vierzig Jahren.“ (20) — „Da war ein Wort. Ein einziges.“ (30) / „Pahl hat es auch gehört.“ (24)
 
 **Prüfnotiz:** kein Fund. Besonders geprüft: „Direkt ins Aktenzeichen“ (kein Bezug zu Alter/Seltenheit), „Jede Gabe hat einen Haken. Amtlich.“ (sagt nur DASS, nie WARUM/WIE, kein Bescheid-Bezug).
 
@@ -487,6 +528,14 @@ Hintermühl von der anderen Seite der Bank (Weltgeschichte, Kapitel 5). Das Dorf
 
 * „Man hat unser Dorf zugeklappt.“ (30) / „Lott spricht nicht darüber.“ (27)
 * „Kein Feuer. Ein Aktendeckel.“ (28) / „Lott war auch dabei.“ (20)
+
+### Anlass-Zeilen (SZ2): die andere Seite der Bank
+
+Dieselben zwei Anlässe wie bei Lott, mit den beiden übrigen Zeilen der Quelle. Pahl nennt in `hintermuehl` das Wort nicht, das Knöterich gesagt hat; er sagt nur, wie lange sie darauf gewartet haben. Ausgesprochen wird *Hintermühl* in Szene 4 genau einmal, und dabei bleibt es.
+
+**umlauf:** „Sie sagt jedes Mal, es war nett.“ (32) / „Lott glaubt ihr das sogar.“ (26) — „Vierzehn Türme. Und sie läuft.“ (30) / „Lott würde den Aufzug nehmen.“ (29)
+
+**hintermuehl:** „Wir haben ja gewartet.“ (22) / „Wir warten gut.“ (15) — „Vierzig Jahre für ein Wort.“ (27) / „Lott sagt gar nichts mehr.“ (26)
 
 **Prüfnotiz:** kein Fund. „Ob ich ein Vorgang bin? Unhöflich.“ bleibt reine Abwehr der Frage (Kapitel 16: „wird nie geklärt“), ohne jede Erklärung.
 
