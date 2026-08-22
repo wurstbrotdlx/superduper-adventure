@@ -93,6 +93,7 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: die vierzehn Guards melden je ei
 | Datei | Was |
 |---|---|
 | `superduper-weltbibel.md` | Die Autorität: Welt, Figuren, Humor, Formregeln, Bauabschnitte. Bei Konflikt zwischen Code und Weltbibel gewinnt die Weltbibel. |
+| `weltgeschichte.md` | Der Erzählstoff: die Chronik von Jahr 0 bis heute, das Reich und sein Adel, vier neue Figuren, drei Blattserien, vier Langvorgänge und neun ausgeschriebene Szenen samt Intro und Abspann. Zuwachs zur Weltbibel, nicht Ersatz: bei Konflikt gewinnt die Weltbibel. |
 | `superduper-gameplay-prompt.md` | Gameplay-Phasen 1 bis 6, Zählertabellen |
 | `superduper-grafik-prompt.md` | Grafik-Phasen G0 bis G5 |
 | `superduper-reparatur-prompt.md` | Reparaturrunden R1 bis R9 |
