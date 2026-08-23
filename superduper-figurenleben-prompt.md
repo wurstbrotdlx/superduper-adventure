@@ -45,6 +45,35 @@ biegen lässt und beim Einbauen dann nicht passt.
 **F1d zuletzt vor der Doku**, weil ein Baum die Hintergrundgeschichte voraussetzt und die
 Auslöser mitbenutzt.
 
+### Wie groß das ist, und was eine Sitzung davon schafft
+
+Ausgerechnet, damit niemand die Größe unterschätzt und auf halber Strecke pfuscht:
+
+| Lieferung | Menge |
+|---|---|
+| F1a | 18 Hintergrundgeschichten à 500 bis 800 Wörter, zusammen rund 11.700 Wörter |
+| F1c | rund 260 Zeilenpaare, jedes einzeln gegengezählt, also über 500 geprüfte Zeilen |
+| F1d | 12 Bäume à 8 bis 14 Knoten, rund 130 Knoten mit je zwei Zeilen und bis zu vier Antworten |
+
+**Das ist keine Sitzung, das sind mehrere.** Deshalb wird jede Lieferung in Blöcke
+zerlegt, und **jeder Block ist ein Commit, der für sich abnehmbar ist**:
+
+* **F1a** in zwei Blöcken zu neun Figuren.
+* **F1c** in Blöcken zu vier Figuren.
+* **F1d** in Blöcken zu drei Bäumen.
+
+**Drei Regeln für den Abbruch**, weil eine Sitzung mittendrin endet und die nächste
+weitermachen können muss:
+
+1. **In `index.html` kommt nur, was fertig ist.** Ein halber Block bleibt im
+   Lieferdokument stehen und wird nicht eingebaut. Ein Guard, der über eine halbe Tabelle
+   läuft, meldet Unsinn oder schweigt falsch.
+2. **Der Statusmarker trägt den Stand**, nicht nur das Wort: `— OFFEN (Stand: 9 von 18)`.
+   Er wird im selben Commit nachgezogen wie der Block.
+3. **Am Ende jedes Blocks steht eine Reststand-Tabelle** im Lieferdokument: welche Figur
+   fertig, welche offen, was der nächsten Sitzung fehlt. Sie wird überschrieben und nicht
+   fortgeschrieben, damit es immer genau einen Stand gibt.
+
 ---
 
 ## 1. Quellenlage und Rangfolge
@@ -467,6 +496,150 @@ Strang hinter einer Skillung, die es nicht gibt, ist ein toter Ast.
 
 ---
 
+### Ein vollständiger Baum als Muster
+
+Damit niemand raten muss, wie das aussieht: **Nieselbeck, elf Knoten, gebaut nach allen
+Regeln dieses Abschnitts.** Er ist kein Vorschlag für den Einbau, sondern ein Maß. Wer
+seinen eigenen Baum daneben legt, sieht in zehn Sekunden, ob er eine Form hat.
+
+**Die Landkarte:**
+
+```
+                  [hub]  "Von früher? Ich bin noch beim Anfang."
+                    |
+   +--------+-------+--------+--------------+
+   |        |       |        |              |
+ eimer   meldung   hut  veranlassung   frostkamm   (nach:3)
+            |                               |
+          tnm   "Was heißt TNM?"        frostkamm2
+            |                               |
+          tnm2  ..... höfliche Wand         |  schaltet den Ausgang um
+            |                               v
+   alle Fragen kehren von selbst      [hubAusgang]
+   an den hub zurück                    "Eine Sache noch."
+                                             |
+                                         [angebot]  ..... die Wahl
+                                          /       \
+                                      dank        kein
+                                        |           |
+                                     Ende        Ende
+```
+
+**Warum er die Regeln erfüllt:** ein Hub mit fünf Strängen, davon drei gleichzeitig
+sichtbar (`sicht:3`) plus Ausgang, also nie mehr als vier Antworten. Eine echte
+Verzweigung mit Kosten (`angebot`), eine erzählerische Sackgasse der Bauart höfliche Wand
+(`tnm2`), ein Kürzel-Strang mit Auflösung (`meldung` → `tnm`), eine Wartefrage, die erst
+nach drei gestellten Fragen auftaucht (`frostkamm`, `nach:3`), und ein Ausgang, der in den
+Grundzeilen-Kreislauf zurückführt. Kein Knoten ohne Ausgang.
+
+**Und eine Eigenheit der Maschine, an der ein selbstgebauter Baum sonst stumm scheitert:**
+`szeneOptionen()` liest `opts` **nur an Knoten, nicht an Fragen**. Eine Frage aus `fragen`
+führt nach ihrer Antwort immer an den Hub zurück, ganz gleich, was man ihr anhängt. Wer
+also eine Wahl anbieten will, hat genau zwei Wege: einen Knoten in `knoten`, der von einem
+anderen Knoten aus angesteuert wird, oder den `hubAusgang`, den einzigen Eintrag der
+Hub-Liste, der frei formuliert werden darf. Dieses Muster nimmt den zweiten: **wer nach dem
+Antrag gefragt hat, bekommt einen anderen Ausgang.** Der Abschied ist auch genau die
+Stelle, an der ein Beamter so etwas anspricht.
+
+**Die Zeilen, gegengezählt:**
+
+| Knoten | Antwortzeile (≤28) | z1 (≤48) | z2 (≤32) |
+|---|---|---|---|
+| `hub` | | „Von früher? Ich bin noch beim Anfang." (37) | „Fragen Sie ruhig." (17) |
+| `eimer` | „Wozu der Eimer?" (15) | „Für den Fall, dass etwas herunterkommt." (39) | „Er steht bereit. Wie ich." (25) |
+| `meldung` | „Was melden Sie täglich?" (23) | „Die TNM. Immer zur selben Stunde." (33) | „Bisher stand nichts darin." (26) |
+| `tnm` *(frei: meldung)* | „Was heißt TNM?" (14) | „Tägliche Niederschlagsmeldung." (30) | „Den langen Namen sagt keiner." (29) |
+| `tnm2` *(frei: tnm)* | „Und warum täglich?" (18) | „Die Meldung ist täglich." (24) | „Das Wetter nicht." (17) |
+| `hut` | „Ihr Hut ist neu?" (16) | „Er ist fast neu. Ich schone ihn." (32) | „Für den ersten Arbeitstag." (26) |
+| `veranlassung` | „Was fehlt dem Regen?" (20) | „Die Veranlassung. Sonst ist alles da." (37) | „Wolken genug. Kein Anlass." (26) |
+| `frostkamm` *(nach: 3)* | „Was liegt im Frostkamm?" (23) | „Mein Antrag auf Verwendung." (27) | „Auf Eis. Ordnungsgemäß abgelegt." (32) |
+| `frostkamm2` *(frei: frostkamm)* | „Holt den niemand zurück?" (24) | „Doch. Wenn jemand ihn anfordert." (32) | „Selbst anfordern darf ich nicht." (32) |
+| `angebot` | | „Sie könnten ihn anfordern." (26) | „Wenn Sie mögen. Ohne Eile." (26) |
+| `dank` | | „Dann steht das jetzt in einer Akte." (35) | „Danke. Wirklich." (16) |
+| `kein` | | „Verstanden. Das ist auch eine Auskunft." (39) | „Der Eimer bleibt trotzdem." (26) |
+
+Antworten auf `angebot`: „Ich fordere ihn an." (19) und „Nicht mein Bereich." (19).
+Schlusszeile von `dank` und `kein`: „Auf Wiedersehen." (16). Der Ausgang am Hub heißt
+„Auf Wiedersehen." (16), solange nach dem Antrag nicht gefragt wurde, und danach
+„Eine Sache noch." (16). `tnm2` braucht keine Rückweg-Zeile: Fragen kehren von selbst an
+den Hub zurück.
+
+**Wo welcher Handgriff sitzt:**
+
+* **Die Wahl mit Kosten** ist `angebot`. Wer anfordert, setzt den Merker
+  `nieselbeckAntrag` und öffnet damit später eine Zusatzzeile bei Bramsche, die den Antrag
+  eingehen sieht. Wer ablehnt, bekommt das Angebot in dieser Schicht nicht wieder. Beides
+  ist eine vollständige Antwort, keine Strafe, und beides ist zu Ende erzählt.
+* **Die Sackgasse** ist `tnm2`, Bauart höfliche Wand: die Frage ist berechtigt, die
+  Antwort stimmt, und sie führt nirgendwohin. Der Spieler lacht und weiß danach genau so
+  viel wie vorher. Genau das ist erlaubt.
+* **Der Kürzel-Strang** ist `meldung` → `tnm`. TNM steht in `ABKUERZUNGEN` (Abschnitt 9),
+  ist hier auflösbar, und keine Zeile braucht die Langform, um verstanden zu werden.
+* **Der Riss** ist `frostkamm`. Er steht hinter `nach:3`, weil er als erste Frage eine
+  Kuriosität wäre und als vierte eine Biografie ist. Das ist derselbe Griff, mit dem der
+  Empfang die Gießkanne versteckt.
+* **Die Wärme** ist `dank`. Zwei Zeilen lang hört der Baum auf, komisch zu sein
+  (Grundgesetz 9). Kein Zwinkern an dieser Stelle, keine Anspielung.
+
+**Und der Code dazu**, wörtlich einsetzbar neben den drei bestehenden Szenen:
+
+```js
+nieselbeckLeben: {
+  figur:'nieselbeck', haeltDieWelt:false, sicht:3,
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 3,
+  sprecher: () => szeneSprecherAusDorf('nieselbeck'),
+  start:'hub',
+  fragen:[
+    {key:'eimer',        t:'Wozu der Eimer?',          z1:'Für den Fall, dass etwas herunterkommt.', z2:'Er steht bereit. Wie ich.'},
+    {key:'meldung',      t:'Was melden Sie täglich?',  z1:'Die TNM. Immer zur selben Stunde.',       z2:'Bisher stand nichts darin.'},
+    {key:'tnm',          t:'Was heißt TNM?',           frei:'meldung',
+                                                      z1:'Tägliche Niederschlagsmeldung.',          z2:'Den langen Namen sagt keiner.'},
+    {key:'tnm2',         t:'Und warum täglich?',       frei:'tnm',
+                                                      z1:'Die Meldung ist täglich.',                z2:'Das Wetter nicht.'},
+    {key:'hut',          t:'Ihr Hut ist neu?',         z1:'Er ist fast neu. Ich schone ihn.',        z2:'Für den ersten Arbeitstag.'},
+    {key:'veranlassung', t:'Was fehlt dem Regen?',     z1:'Die Veranlassung. Sonst ist alles da.',   z2:'Wolken genug. Kein Anlass.'},
+    {key:'frostkamm',    t:'Was liegt im Frostkamm?',  nach:3,
+                                                      z1:'Mein Antrag auf Verwendung.',             z2:'Auf Eis. Ordnungsgemäß abgelegt.'},
+    {key:'frostkamm2',   t:'Holt den niemand zurück?', frei:'frostkamm',
+                                                      z1:'Doch. Wenn jemand ihn anfordert.',        z2:'Selbst anfordern darf ich nicht.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Ich bin noch beim Anfang.', z2:'Fragen Sie ruhig.', hub:true},
+    angebot: {z1:'Sie könnten ihn anfordern.', z2:'Wenn Sie mögen. Ohne Eile.',
+              opts: () => [
+                {t:'Ich fordere ihn an.', tun: () => { kn.flags.nieselbeckAntrag = true; saveKn(); szeneKnoten('dank'); }},
+                {t:'Nicht mein Bereich.', zu:'kein'},
+              ]},
+    dank:    {z1:'Dann steht das jetzt in einer Akte.', z2:'Danke. Wirklich.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('nieselbeckLeben')}]},
+    kein:    {z1:'Verstanden. Das ist auch eine Auskunft.', z2:'Der Eimer bleibt trotzdem.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('nieselbeckLeben')}]},
+  },
+  // Der einzige frei formulierbare Eintrag der Hub-Liste, und damit die Stelle,
+  // an der aus einer beantworteten Frage eine Wahl werden kann.
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('frostkamm2')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('nieselbeckLeben')},
+}
+```
+
+**Drei Dinge, auf die der eigene Baum achten muss:** `szeneEnde()` bekommt hier **keinen**
+Merker, weil der Baum wiederbetretbar ist; `sperre` ist im Muster leer, gehört aber
+gesetzt, sobald ein Baum in die Nähe eines Wortes kommt, das seine Figur nicht kennen darf;
+und der Merker `nieselbeckAntrag` gehört in `kn.flags`, sonst meldet ihn `szeneAssert()`
+zu Recht als unbekannt.
+
+**Was der Guard an diesem Muster nicht sieht, und was deshalb von Hand geklickt wird:**
+`szeneAssert()` prüft jeden Knoten mit leerem `gefragt`-Satz. Der zweite Ausgang erscheint
+aber erst, wenn nach dem Antrag gefragt wurde, und wird vom Guard deshalb nie erzeugt.
+Geprüft ist er erst, wenn ihn jemand im laufenden Spiel gesehen hat. **Jede Bedingung, die
+auf `szene.gefragt` schaut, gehört aus demselben Grund in die Klickliste des vierten
+Prüfdurchgangs.** Und sie wird defensiv geschrieben: `szene.gefragt` ist außerhalb einer
+laufenden Szene `null`, deshalb steht im Muster `szene.gefragt && …` und nicht der direkte
+Zugriff.
+
+---
+
 ## 9. Teil D: Der laufende Gag über die Kurzform
 
 Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. F1 macht daraus
@@ -543,6 +716,21 @@ Eine **Abkürzungstabelle**, in `figuren-leben.md` als Tabelle und im Code als K
 ist, und welche Stufe der Eskalation es trägt. Sie ist die einzige Stelle, an der die
 Langformen stehen; keine zweite Liste.
 
+So sieht sie aus. Die ersten drei Zeilen sind Bestand und werden nur eingetragen, die
+vierte und fünfte zeigen, wie eine neue aussieht:
+
+| Kürzel | Langform | Wer benutzt es | Ab | Auflösbar bei | Stufe |
+|---|---|---|---|---|---|
+| `N. N.` | nicht genannt | das ganze Haus | I | Knöterich im Empfang, danach Bramsche | Wurzel (Bestand) |
+| `a. D.` | außer Dienst | Knöterichs Titel | I | Knöterich, ein einziges Mal | Wurzel (Bestand) |
+| `zu Händen` | wird nie gekürzt, das ist die Aussage | das Reich | III | Bramsche | Wurzel (Bestand) |
+| `TNM` | Tägliche Niederschlagsmeldung | Nieselbeck | I | Nieselbeck selbst, in seinem Baum | I: das gewöhnliche Kürzel |
+| `T.` | die TNM, noch einmal gekürzt | Trepp, weil es auf dem Umschlag kürzer ist | II | Bramsche, und nur sie | II: die Abkürzung der Abkürzung |
+
+Die letzte Zeile ist der ganze Gag in einer Tabellenzeile: **Trepp kürzt eine Abkürzung ab,
+deren Langform er nie gekannt hat, und stellt sie trotzdem zuverlässig zu.** Sieben weitere
+Kürzel werden in F1a erfunden, verteilt über die fünf Stufen, und keines ohne Auflösung.
+
 **Der Guard dazu** (in `knAssertCaps()`, F1b): jedes Kürzel, das in einem Figurentext
 vorkommt, steht in `ABKUERZUNGEN`; jedes Kürzel in `ABKUERZUNGEN` hat eine Auflösung, die
 erreichbar ist; kein Zeilenpaar trägt zwei unerklärte Kürzel. Erkannt wird über zwei
@@ -572,6 +760,14 @@ Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
   ihre Prüfung in `knAssertCaps()`: jedes Kürzel im Figurentext steht in der Tabelle, jedes
   Kürzel in der Tabelle ist im Spiel auflösbar, kein Zeilenpaar trägt zwei unerklärte. Die
   Erkennung läuft über zwei Muster und eine Ausnahmeliste, beides im Kommentar begründet.
+* **Jeder neue Guard wird einmal absichtlich ausgelöst.** F1b baut Prüfungen für Inhalte,
+  die es zu diesem Zeitpunkt noch nicht gibt; eine Prüfung, die über eine leere Menge
+  schweigt, ist nicht bewiesen, sondern nur vorhanden. Also: je neuer Prüfung eine
+  Wegwerf-Verletzung einbauen (ein Zusatzblock mit zwei Schaltern, ein `abStufe:99`, ein
+  Kürzel, das nicht in der Tabelle steht), die Meldung aus der Konsole **wörtlich ins
+  Phasendokument kopieren**, die Verletzung zurücknehmen, Konsole noch einmal still.
+  Erst dann gilt der Guard als gebaut. Das kostet zehn Minuten und ist der einzige
+  Nachweis, den F1b überhaupt erbringen kann.
 * **Die Zählwerke bleiben Papier.** Anspielungen (höchstens fünf), Zwinkern (höchstens
   sechs) und die Dosis je Figur werden im Lieferdokument gezählt und **nicht** im Code
   geprüft. Ein Guard, der Witze zählt, wäre eine Behauptung über Geschmack; ein Guard, der
@@ -771,6 +967,14 @@ Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 > mindestens einer davon endet als höfliche Wand.
 >
 > F1e: Phasendokument, README-Zeile, Weltbibel-Zuwachs, Statusmarker.
+>
+> Halte dich an drei Dinge, die leicht untergehen: **der Musterbaum in Abschnitt 8** ist das
+> Maß, an das du deinen eigenen legst, samt der Eigenheit, dass `opts` nur an Knoten gilt
+> und nicht an Fragen. **Die Blockgrößen in Abschnitt 0** sind verbindlich (F1a neun
+> Figuren, F1c vier, F1d drei je Commit), in `index.html` kommt nur ein vollständiger
+> Block, und jeder Commit hinterlässt eine Reststand-Tabelle plus Statusmarker mit Zahl.
+> **Jeden neuen Guard löst du einmal absichtlich aus** und kopierst die Meldung ins
+> Phasendokument, sonst ist er nur vorhanden und nicht geprüft.
 >
 > Prüf in drei Durchgängen wie in Abschnitt 12, für die Bäume in vier. Abnahme wie in
 > Abschnitt 13: `node --check`, Browser mit stiller Konsole, ein Messlauf je neuem
