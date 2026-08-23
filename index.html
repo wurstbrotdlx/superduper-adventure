@@ -3598,6 +3598,12 @@ const DORF_FIGUREN = [
      // W11: Vorblatt bietet ihm die Entfristung an, damit er die Anschrift auf
      // dem Umschlag nicht liest. Vierzig Jahre Probezeit gegen ein Unterlassen.
      // Nörgel sagt nicht, wie er sich entscheidet.
+     // F1d: die Belohnung aus Lisbeths Baum. Wer Seite zwei gelesen hat, hört
+     // von Nörgel, dass er sie auch kennt. Der Zusammenhang wird nicht erklärt.
+     {merker:'baumBericht', zeilen:[
+       {z1:'Die Praktikantin schreibt etwas auf.', z2:'Seite zwei. Sehr genau.'},
+       {z1:'Ich habe es gelesen. Als Einziger.', z2:'Bisher jedenfalls.'},
+     ]},
      {abAkt:4, zeilen:[
        {z1:'Der Herr aus Oben hat mich angesprochen.', z2:'Er bietet mir die Entfristung.'},
        {z1:'Ich soll dafür etwas nicht tun.',          z2:'Vierzig Jahre. Und jetzt das.'},
@@ -7709,7 +7715,12 @@ const kn = {
   // uebersteht, und weil knAssertCaps() Merkernamen ohnehin gegen diese Tabelle
   // prueft. Eine Szene, die zweimal laeuft, waere schlimmer als eine, die fehlt.
   flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false, hatGesteigert:false, hatLagerGesehen:false,
-         szeneUmlauf:false, szeneSchublade:false, szeneKnoeterich:false},
+         szeneUmlauf:false, szeneSchublade:false, szeneKnoeterich:false,
+         // F1d: was ein Gesprächsbaum sich merken muss. Drei Stück, und jeder
+         // öffnet bei einer ANDEREN Figur zwei Zeilen: das ist die Belohnung,
+         // die ein Baum geben darf. Gold und Erfahrung darf er nicht geben,
+         // sonst wird Reden zum Farmen.
+         baumEimer:false, baumHeft:false, baumBericht:false},
   wissensluecke:{zauber:false, kochen:false, kammer:false, befaehigung:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
   beats:{beat1:false, beat2:false, beat3:false},
   regler:'gespraechig',            // 'gespraechig' | 'dienstlich' | 'schweigt' — Dienstzettel laufen in jeder Stellung
@@ -9318,6 +9329,17 @@ let gespraechOffen = false;
 // Empfang, und ein Ja/Nein genuegte. Jetzt steht hier, WELCHE Szene laeuft, und
 // null heisst: keine.
 let szeneAktiv = null;
+// Die Szenentabelle. Sie wird weiter unten mit dem Empfang befuellt und waechst
+// mit jeder weiteren Szene um einen Eintrag, nicht um einen Sonderfall.
+//
+// F1d: Die Deklaration steht seit dieser Runde hier oben und nicht mehr beim
+// Szenenblock, und zwar aus demselben Grund, aus dem szeneAktiv hier steht:
+// gespraechAssert() laeuft auf Skriptebene, ruft gespraechOptionen(), und die
+// fragt seit F1d ueber baumFaellig() die Tabelle. Stand die Deklaration unten,
+// war das ein ReferenceError durch Temporal Dead Zone beim Laden, den
+// node --check nicht findet und den nur der Browser zeigt (README, Entwickeln).
+// Gemessen: frameNo blieb 0, die Seite hing im Ladebildschirm.
+const SZENEN = {};
 // Der Empfang ist damit eine Szene unter mehreren, und diese Zeile ist die
 // Frage "laeuft gerade er?". Sie ist bewusst KEIN zweites Feld, sondern ein
 // abgeleiteter Lesevorgang auf szeneAktiv, wie es die W5/W6-Doktrin fuer jede
@@ -9330,6 +9352,11 @@ Object.defineProperty(globalThis, 'empfangAktiv', {get: () => szeneAktiv === 'em
 // Diaschau: die laengste Zeile im Bestand hat 48 Zeichen (Zeichendeckel,
 // knAssertCaps), zwei davon sind also nach knapp zwei Sekunden fertig.
 const GESPRAECH_TEMPO = 55;
+// F1d: die Tür zum Gesprächsbaum, als eine Zeile an einer Stelle. Sie steht hier
+// oben und nicht in gespraechOptionen(), weil gespraechAssert() sie ebenfalls
+// liest und noch auf Skriptebene läuft: eine erst später deklarierte Konstante
+// wäre dort ein ReferenceError durch Temporal Dead Zone. 24 Zeichen, Deckel 28.
+const BAUM_EINSTIEG = 'Erzählen Sie von früher.';
 // Wer sich weiter als das entfernt, hat das Gespraech beendet. 58px ist die
 // Reichweite der Kontextaktion (scanAktion), 96 laesst der Figur ihre
 // Wanderleine und dem Spieler einen Schritt, ohne dass das Fenster zufaellt.
@@ -9355,12 +9382,23 @@ function gespraechOptionen(fig){
   if(szeneAktiv) return szeneOptionen();   // E1: die Szene schreibt ihre Liste selbst
   fig = fig || gespraech.fig;
   if(!fig) return [];
-  return [
+  const liste = [
     {t: gespraechWeiterText(fig), tun: () => { npcSprechen(gespraech.npc); gespraechUebernehmen(); }},
     {t: 'Wie steht es im Dorf?',  tun: () => gespraechSagen(fig.akt[aktStand() - 1], '')},
     {t: 'Wie war noch mein Titel?', tun: () => { const a = anredeZeile(fig.key); gespraechSagen(a.z1, a.z2); }},
-    {t: 'Auf Wiedersehen.',       tun: () => gespraechSchliessen()},
   ];
+  // F1d: die Tür zum Gesprächsbaum. Sie steht nur da, wenn die Figur einen hat
+  // und er fällig ist, sie steht als vorletzte Zeile, und der Abschied bleibt
+  // die letzte. Ohne diesen Kanal fände der Spieler die Hintergrundzeilen nur
+  // durch Zufall im Kreislauf, und Grundgesetz 11 verlangt, dass er fragen kann.
+  //
+  // Ein Baum wird NICHT von der Kontextaktion geöffnet, anders als die drei
+  // Szenen aus SZ2: die F-Taste soll weiter das tun, was sie seit W3 tut. Der
+  // Unterschied hängt am Feld baum, siehe baumFaellig() und szeneFaellig().
+  const bk = baumFaellig(fig.key);
+  if(bk) liste.push({t: BAUM_EINSTIEG, tun: () => szeneOeffnen(bk, SZENEN[bk].start)});
+  liste.push({t: 'Auf Wiedersehen.', tun: () => gespraechSchliessen()});
+  return liste;
 }
 
 // Setzt einen Satz ins Fenster und laesst ihn neu tippen.
@@ -9651,7 +9689,13 @@ function gespraechAssert(){
     const letztes = f.kurz.replace(/[,.]/g, '').split(/\s+/).pop();
     if(f.name.indexOf(letztes) < 0) fehler('Namensschild passt nicht zum Namen', f.key, f.kurz);
     const opts = gespraechOptionen(f);
-    if(opts.length !== 4) fehler('Antwortliste hat nicht vier Zeilen', f.key, opts.length);
+    // U3 verlangte genau vier Zeilen. F1d macht daraus vier oder fünf: die
+    // fünfte ist die Tür zum Gesprächsbaum und steht nur da, wenn einer fällig
+    // ist. Was sich nicht ändert, ist die letzte Zeile: der Abschied bleibt
+    // unten, sonst sucht ihn der Spieler in der Mitte.
+    if(opts.length !== 4 && opts.length !== 5) fehler('Antwortliste hat nicht vier oder fünf Zeilen', f.key, opts.length);
+    if(opts.length && opts[opts.length-1].t !== 'Auf Wiedersehen.') fehler('letzte Antwort ist nicht der Abschied', f.key, opts[opts.length-1].t);
+    if(opts.length === 5 && opts[3].t !== BAUM_EINSTIEG) fehler('fünfte Zeile ist nicht die Tür zum Baum', f.key, opts[3].t);
     for(const o of opts){
       if(!o.t) fehler('leere Antwort', f.key);
       else if(o.t.length > ANTWORT_DECKEL) fehler('Antwort zu lang', f.key, o.t);
@@ -9682,7 +9726,7 @@ function gespraechAssert(){
     if(k !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === k))
       fehler('Porträtschlüssel gehört zu keiner Figur', k);
   const ohne = DORF_FIGUREN.filter(f => !PORTRAET_FIGUREN.includes(f.key)).map(f => f.key);
-  if(ok) console.log(`U3 Gespräch: ${DORF_FIGUREN.length} Namensschilder, je vier Antworten und zwei Tafelhälften in Ordnung.`);
+  if(ok) console.log(`U3 Gespräch: ${DORF_FIGUREN.length} Namensschilder, vier oder fünf Antworten und zwei Tafelhälften in Ordnung.`);
   if(ok) console.log(`U5 Porträts: ${PORTRAET_FIGUREN.length} gemalte Bilder zugeordnet, Sprite-Ausschnitt für ${ohne.join(' und ') || 'niemanden'}.`);
 }
 gespraechAssert();
@@ -15550,10 +15594,6 @@ const EMPFANG_FRAGEN = [
 // szeneAktiv (ganz oben, bei der Gespraechstafel); hier steht, wie weit sie ist.
 const szene = {knoten:'', gefragt:null};
 
-// Die Tabelle. Sie wird unten mit dem Empfang befuellt und waechst mit jeder
-// weiteren Szene um einen Eintrag, nicht um einen Sonderfall.
-const SZENEN = {};
-
 const szeneDef = () => SZENEN[szeneAktiv] || null;
 const szeneFragen = () => { const d = szeneDef(); return (d && d.fragen) || []; };
 const szeneFrage = k => szeneFragen().find(f => f.key === k);
@@ -15812,6 +15852,198 @@ SZENEN.knoeterich = {
   },
 };
 
+// ===========================================================================
+//  F1d: Die Gespraechsbaeume
+//
+//  Dieselbe Maschine wie die vier Szenen oben, drei Unterschiede: baum:true
+//  haelt sie aus szeneFaellig() heraus (die F-Taste bleibt, was sie war), sie
+//  halten die Welt nicht an, und sie setzen keinen Merker beim Verlassen, sind
+//  also wiederbetretbar. Betreten werden sie ueber die fuenfte Antwortzeile,
+//  siehe BAUM_EINSTIEG in gespraechOptionen().
+//
+//  Bauform je Baum: ein hub, sechs Fragen (drei frei, zwei mit Voraussetzung,
+//  eine ab der dritten gestellten Frage), und ein Ausgang, der sich aendert,
+//  sobald die tiefste Frage gestellt wurde. Dahinter liegt die Wahl mit ihren
+//  zwei Enden. Warum die Wahl am Ausgang haengt und nicht an einer Frage:
+//  szeneOptionen() liest opts NUR an Knoten, nie an Fragen, und der hubAusgang
+//  ist der einzige frei formulierbare Eintrag der Hub-Liste.
+// ===========================================================================
+
+SZENEN.baumNieselbeck = {
+  baum:true, figur:'nieselbeck', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 3,
+  sprecher: () => szeneSprecherAusDorf('nieselbeck'),
+  fragen:[
+    {key:'eimer', t:'Wozu der Eimer?',
+     z1:'Für den Fall, dass etwas herunterkommt.', z2:'Er steht bereit. Wie ich.'},
+    {key:'meldung', t:'Was melden Sie täglich?',
+     z1:'Die TNM. Immer zur selben Stunde.', z2:'Bisher stand nichts darin.'},
+    {key:'hut', t:'Ihr Hut ist neu?',
+     z1:'Er ist fast neu. Ich schone ihn.', z2:'Für den ersten Arbeitstag.'},
+    {key:'tnm', frei:'eimer', t:'Was heißt TNM?',
+     z1:'Tägliche Niederschlagsmeldung.', z2:'Den langen Namen sagt keiner.'},
+    {key:'tnm2', frei:'tnm', t:'Und warum täglich?',
+     z1:'Die Meldung ist täglich.', z2:'Das Wetter nicht.'},
+    {key:'frostkamm', nach:3, t:'Was liegt im Frostkamm?',
+     z1:'Mein Antrag auf Verwendung.', z2:'Auf Eis. Ordnungsgemäß.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Ich bin noch beim Anfang.', z2:'Fragen Sie ruhig.', hub:true},
+    angebot: {z1:'Sie könnten ihn anfordern.', z2:'Wenn Sie mögen. Ohne Eile.',
+              opts: () => [
+                {t:'Ich fordere ihn an.', tun: () => { kn.flags.baumEimer = true; saveKn(); szeneKnoten('dank'); }},
+                {t:'Nicht mein Bereich.', zu:'kein'},
+              ]},
+    dank:    {z1:'Dann steht das jetzt in einer Akte.', z2:'Danke. Wirklich.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumNieselbeck')}]},
+    kein:    {z1:'Verstanden. Das ist auch eine Auskunft.', z2:'Der Eimer bleibt trotzdem.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumNieselbeck')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('frostkamm')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumNieselbeck')},
+};
+
+SZENEN.baumZwirn = {
+  baum:true, figur:'zwirn', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 4,
+  sprecher: () => szeneSprecherAusDorf('zwirn'),
+  fragen:[
+    {key:'fest', t:'Warum kein Fest?',
+     z1:'Es fehlt die Genehmigung. Nur die.', z2:'Sonst steht alles bereit.'},
+    {key:'amt', t:'Sind Sie mein Vorgesetzter?',
+     z1:'Nein. Ich führe nur das Gespräch.', z2:'Weil sonst niemand darf.'},
+    {key:'dorf', t:'Wie lange sind Sie hier?',
+     z1:'Geboren, geblieben, gewählt worden.', z2:'In dieser Reihenfolge.'},
+    {key:'konfetti', frei:'fest', t:'Und das Konfetti?',
+     z1:'Bestellt. Elf Mal inzwischen.', z2:'Feucht wird es ja doch.'},
+    {key:'kisten', frei:'konfetti', t:'Wer bezahlt das?',
+     z1:'Ich. Ohne Genehmigung kein Titel.', z2:'Ein Haushaltstitel, meine ich.'},
+    {key:'sturz', nach:3, t:'Wer war die Amtsleiterin?',
+     z1:'Sie hat einen Antrag gestellt.', z2:'Ich habe unterschrieben.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Da fange ich gern an.', z2:'Setzen Sie sich ruhig nicht.', hub:true},
+    angebot: {z1:'Sie könnten sich das ansehen.', z2:'Der Keller ist offen. Immer.',
+              opts: () => [
+                {t:'Ich sehe es mir an.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Lieber nicht.', zu:'kein'},
+              ]},
+    dank:    {z1:'Zehn leere Kisten und eine volle.', z2:'Ich beschrifte sie ordentlich.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumZwirn')}]},
+    kein:    {z1:'Verstehe. Es ist auch nur ein Keller.', z2:'Wir werden das angehen.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumZwirn')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('sturz')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumZwirn')},
+};
+
+SZENEN.baumBramsche = {
+  baum:true, figur:'bramsche', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 6,
+  sprecher: () => szeneSprecherAusDorf('bramsche'),
+  fragen:[
+    {key:'ordnung', t:'Warum so streng?',
+     z1:'Weil einmal etwas ohne Antrag ging.', z2:'Das war der Brandabschnitt.'},
+    {key:'unten', t:'Wie ist es hier unten?',
+     z1:'Kühl, trocken, dunkel.', z2:'Drei Gründe, dass etwas hält.'},
+    {key:'kater', t:'Und der Kater?',
+     z1:'Anlage 3 liegt, wo er liegen will.', z2:'Wecken steht mir nicht zu.'},
+    {key:'herr', frei:'ordnung', t:'Wer kam damals?',
+     z1:'Ein Herr aus Hochablage. Sehr höflich.', z2:'Höflichkeit ist kein Antrag.'},
+    {key:'griff', frei:'herr', t:'Sie haben danebengegriffen?',
+     z1:'Ich habe das Falsche hinausgetragen.', z2:'In die Sonne. Drei Tage.'},
+    {key:'heft', nach:3, t:'Führen Sie noch etwas?',
+     z1:'Ein Heft. Nicht das Eingangsbuch.', z2:'In welcher Sache fragen Sie?'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Das ist ein weites Feld.', z2:'Fragen Sie genau.', hub:true},
+    angebot: {z1:'Es steht darin, wer nichts beantragt hat.', z2:'Ich zeige es ungern her.',
+              opts: () => [
+                {t:'Zeigen Sie es mir.', tun: () => { kn.flags.baumHeft = true; saveKn(); szeneKnoten('dank'); }},
+                {t:'Dann eben nicht.', zu:'kein'},
+              ]},
+    dank:    {z1:'Mehr Einträge als im Eingangsbuch.', z2:'Sie stehen inzwischen darin.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumBramsche')}]},
+    kein:    {z1:'Gut. Es geht auch niemanden etwas an.', z2:'In welcher Sache also?',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumBramsche')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('heft')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumBramsche')},
+};
+
+SZENEN.baumLisbeth = {
+  baum:true, figur:'lisbeth', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 4,
+  sprecher: () => szeneSprecherAusDorf('lisbeth'),
+  fragen:[
+    {key:'praktikum', t:'Sechs Jahre Praktikum?',
+     z1:'Sechs. Unbezahlt, aber lehrreich.', z2:'Das sage ich jedes Jahr.'},
+    {key:'frage', t:'Was fragen Sie immer?',
+     z1:'Ob einer vielleicht nur wartet.', z2:'Da wird es meistens still.'},
+    {key:'traum', t:'Ein Amt für Monster?',
+     z1:'Nicht gegen sie. Für sie.', z2:'Den Antrag habe ich fertig.'},
+    {key:'bericht', frei:'praktikum', t:'Was steht im Bericht?',
+     z1:'Beobachtungen. Sechs Jahre davon.', z2:'Seite zwei ist die beste.'},
+    {key:'deckblatt', frei:'bericht', t:'Und auf dem Deckblatt?',
+     z1:'Bericht über das Praktikumsjahr.', z2:'Und dahinter: vorläufig.'},
+    {key:'unter', nach:3, t:'Wer unterschreibt das?',
+     z1:'Eine weisungsbefugte Person.', z2:'Es gibt hier keine.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Ich bin noch beim ersten Jahr.', z2:'Fragen Sie. Bitte.', hub:true},
+    angebot: {z1:'Sie könnten hineinsehen. Wenn Sie mögen.', z2:'Es hat noch niemand gelesen.',
+              opts: () => [
+                {t:'Zeigen Sie mir Seite zwei.', tun: () => { kn.flags.baumBericht = true; saveKn(); szeneKnoten('dank'); }},
+                {t:'Ein andermal.', zu:'kein'},
+              ]},
+    dank:    {z1:'Der Fürst hat einen Titel. Die anderen nicht.', z2:'Steht da. Von mir. In Tinte.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumLisbeth')}]},
+    kein:    {z1:'Auch gut. Es liest ja sonst auch keiner.', z2:'Ich frage trotzdem weiter.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumLisbeth')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('unter')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumLisbeth')},
+};
+
+SZENEN.baumZapf = {
+  baum:true, figur:'zapf', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 3,
+  sprecher: () => szeneSprecherAusDorf('zapf'),
+  fragen:[
+    {key:'werkzeug', t:'Was haben Sie dabei?',
+     z1:'Alles. Sonst käme ich zweimal.', z2:'Zweimal ist Pfusch.'},
+    {key:'kaffee', t:'Warum gegen Kaffee?',
+     z1:'Er tropft. Immer. Überall.', z2:'Ich beseitige das.'},
+    {key:'schild', t:'Wer pflegt das Schild?',
+     z1:'Ich. Seit ich hier bin.', z2:'Es hält länger als Häuser.'},
+    {key:'farbe', frei:'werkzeug', t:'Wie oft schon?',
+     z1:'Zweimal übermalt. Einmal nachgezogen.', z2:'Steht hinten drauf.'},
+    {key:'hinten', frei:'farbe', t:'Was steht hinten drauf?',
+     z1:'Drei Daten. Meine Schrift.', z2:'Damit man weiß, wann wieder.'},
+    {key:'vug', nach:3, t:'Und dieses V. u. g.?',
+     z1:'Das gehört dazu. Machte man so.', z2:'Was es heißt, weiß ich nicht.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Da war auch was kaputt.', z2:'Fragen Sie kurz.', hub:true},
+    angebot: {z1:'Sie könnten hinter das Schild sehen.', z2:'Ist nicht verboten.',
+              opts: () => [
+                {t:'Ich sehe nach.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Lassen wir das.', zu:'kein'},
+              ]},
+    dank:    {z1:'Drei Daten. Sonst nichts.', z2:'Buch führt hier ein anderer.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumZapf')}]},
+    kein:    {z1:'Gut. Ist ja auch nur ein Schild.', z2:'Ich streiche es trotzdem.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumZapf')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('vug')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumZapf')},
+};
+
 // Gemeinsames Ende der drei Szenen: Merker setzen, den Chor auf der Bank
 // vormerken, Tafel zu.
 //
@@ -16015,7 +16247,27 @@ function buehneAus(){
 function szeneFaellig(figurKey){
   for(const k in SZENEN){
     const d = SZENEN[k];
+    if(d.baum) continue;              // F1d: Bäume gehören der Tafel, nicht der F-Taste
     if(d.figur !== figurKey) continue;
+    if(d.wenn && !d.wenn()) continue;
+    return k;
+  }
+  return null;
+}
+
+// F1d: dasselbe für die Gesprächsbäume, und die Trennung ist der ganze
+// Unterschied zwischen ihnen und den drei Szenen aus SZ2. Eine Szene fällt über
+// den Spieler her, sobald er die Figur anspricht, läuft genau einmal und hält
+// die Welt an. Ein Baum wartet in der Antwortliste, läuft, so oft jemand mag,
+// und die Welt läuft weiter. Beides ist dieselbe Maschine, nur zwei Türen.
+//
+// Steht der speziellere Baum vor dem allgemeineren, gewinnt er: diese Schleife
+// nimmt den ersten, dessen wenn() zutrifft, und die Reihenfolge in SZENEN ist
+// die Reihenfolge der Einträge.
+function baumFaellig(figurKey){
+  for(const k in SZENEN){
+    const d = SZENEN[k];
+    if(!d.baum || d.figur !== figurKey) continue;
     if(d.wenn && !d.wenn()) continue;
     return k;
   }
@@ -16029,6 +16281,15 @@ let szeneStateVorher = null;
 function szeneOeffnen(key, knoten){
   const d = SZENEN[key];
   if(!d) return;
+  // F1d: Jede Szene faengt mit einem leeren Fragen-Satz an. Bis hierher stand
+  // diese Zeile nur in empfangStarten(), und das ist gutgegangen, weil die drei
+  // Szenen aus SZ2 gar keine Fragenliste haben: szeneOffen() lief bei ihnen nie.
+  // Die Baeume haben eine, und damit war das null ein echter Absturz beim
+  // Oeffnen. Gefunden nicht vom Guard, sondern beim Durchklicken.
+  //
+  // Sie steht hier und nicht im Aufrufer, weil ein Baum wiederbetretbar ist:
+  // wer zum zweiten Mal hineingeht, soll wieder alle Fragen vorfinden.
+  szene.gefragt = new Set();
   // SZ2: Eine Szene mitten im Dienst haelt die Welt an. Exakt das Muster von
   // state = 'zustellung': update(dt) steigt bei state !== 'play' aus, und
   // gespraechTick(dt) laeuft davor weiter, das Tippwerk bleibt also lebendig.
