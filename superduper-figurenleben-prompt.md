@@ -456,9 +456,10 @@ Strang hinter einer Skillung, die es nicht gibt, ist ein toter Ast.
 
 * **Zwölf Bäume**, einer je ansprechbarer Dorffigur außer Lott und Pahl, die sich einen
   teilen (mit `wer`-Wechsel zwischen den beiden, das ist der Witz der Bank).
-* **Bramsche** bekommt keinen zweiten Fragenkanal, sondern ihr Baum ersetzt für die Dauer
-  des Gesprächs den Frage-Zähler nicht: ihre eine Frage pro Schicht bleibt, wie sie ist.
-  Ihr Baum redet über sie, nicht über die Welt.
+* **Bramsche** behält ihren Fragenkanal unverändert: eine Frage pro Schicht, abgewiesen
+  wie bisher. Ihr Baum läuft daneben und rührt den Zähler nicht an, weil er über sie redet
+  und nicht über die Welt. Wer Auskunft will, stellt einen Antrag. Wer sie kennenlernen
+  will, geht in den Baum.
 * **Vorblatt** darf in seinem Baum nie Nein sagen und nie drohen (Reichsregel 3). Sein
   Baum ist der freundlichste des ganzen Spiels, und das ist der Grund, warum er der
   unangenehmste ist.
