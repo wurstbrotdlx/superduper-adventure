@@ -334,6 +334,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Sprachmarke:** Zwei kurze Sätze. Siezt immer. Nennt Dinge beim Aktenbegriff. Keine Emojis, keine Gedankenstriche.
 * **Der Gag mit doppeltem Boden:** Der Fluch **Amtsschweigen** ist nach seinem Zustand benannt. Er sperrt das Lernen der Kladde. Wer den Fluch trägt, ist für eine Weile Knöterich.
 * **Quest-Hebel:** Die Gießkanne. Siehe Langvorgang 1.
+* **Ansprechbar seit U6** (`phase-u6-knoeterich-tafel.md`). Er war die einzige Figur des Ensembles ohne Gesprächstafel, weil er älter ist als die Tabelle, an der sie hängt. Er hat jetzt sechs Grundzeilen, fünf Aktzeilen und eine Anredeform wie alle anderen (Wortlaut in `figuren-dorf.md`, Serie 3), und sein gemaltes Porträt steht in der Tafel wie im Dienstzettel. **Die Regel darüber ist unverändert und war die schwerste Auflage dieses Abschnitts:** keine der neuen Zeilen erklärt einen Zusammenhang. Sie erklären auch keine Taste, das tun seine eigenen Kanäle; sie sagen, wer er ist und dass er nicht sagen darf, was er weiß.
 
 *(Zuwachs W11.)* Er hat als Einziger im Haus die Rangfolge des Reiches nachgerechnet. Er weiß, dass er im ersten Haus des Reiches sitzt, weil dieses Haus den ältesten offenen Vorgang führt. Er darf es nicht sagen. Er gießt trotzdem jeden Morgen die Pflanze der Frau, die es hätte anordnen können. **Im Spiel steht dieser Zuwachs nicht**, und das ist eine Entscheidung: Knöterich erklärt Tasten, nie Zusammenhänge, und dieser Zusammenhang ist der größte im Spiel.
 
@@ -752,8 +753,8 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 
 ### W3: Das Dorf spricht (setzt Grafik-Phase G5 voraus) — ERLEDIGT
 
-* Zwölf NPCs als Weltfiguren im Dorf, Bedienung über die bestehende Kontextaktion `F`, technisch wie Knöterichs "Nachfragen".
-* Pro Figur vier bis sechs Zeilen plus eine Zeile, die sich mit dem Aktstand ändert. Mehr nicht. Kein Dialogbaum, keine Antwortauswahl.
+* Zwölf NPCs als Weltfiguren im Dorf, Bedienung über die bestehende Kontextaktion `F`, technisch wie Knöterichs "Nachfragen". *(U6: der Vergleich stimmt nicht mehr, weil sich die Richtung umgedreht hat. "Nachfragen" gibt es nicht mehr; Knöterich wird jetzt wie eine Dorffigur angesprochen und nicht die Dorffiguren wie er.)*
+* Pro Figur vier bis sechs Zeilen plus eine Zeile, die sich mit dem Aktstand ändert. Mehr nicht. Kein Dialogbaum, keine Antwortauswahl. *(Die Antwortauswahl ist seit U3 gebaut, siehe Kapitel 14. Das Kontingent gilt unverändert und seit U6 auch für Knöterich: sechs Zeilen plus Aktzeile, nicht mehr.)*
 * Lott und Pahl kommentieren die letzte Aktion des Spielers, gespeist aus den bereits vorhandenen Zählern.
 * Bramsche als Hinweisgeber: eine Frage pro Schicht, Antworten aus einer Tabelle, die nie Kesselgrammatik enthält.
 
@@ -899,7 +900,7 @@ Erster von vier Abschnitten, die die neun Szenen aus `weltgeschichte.md`, Kapite
 Zweiter der vier Abschnitte. SZ1 hatte genau eine Szene, und die lief vor dem Spiel. Diese drei laufen mittendrin, und daran hat sich gezeigt, was der Maschine noch fehlte.
 
 * **Die Maschine hält jetzt die Welt an.** Eine Szene mit `haeltDieWelt` setzt `state = 'szene'` und stellt danach den vorigen Zustand wieder her. Gebaut nach dem Vorbild von `state = 'zustellung'`, also kein neuer Renderpfad und kein neues Panel. Während einer Szene bewegt sich kein Monster und die Schichtuhr steht.
-* **Szenen hängen an Figuren.** `szeneFaellig(figurKey)` sagt beim Ansprechen, ob eine Szene übernehmen will. Der Aufruf steht in `gespraechOeffnen()`, also an genau einer Stelle. Knöterich ist die Ausnahme: er steht nicht in `DORF_FIGUREN`, seine Szene hängt an der Kontextaktion `AKT_NACHFRAGE`.
+* **Szenen hängen an Figuren.** `szeneFaellig(figurKey)` sagt beim Ansprechen, ob eine Szene übernehmen will. Der Aufruf steht in `gespraechOeffnen()`, also an genau einer Stelle. ~~Knöterich ist die Ausnahme: er steht nicht in `DORF_FIGUREN`, seine Szene hängt an der Kontextaktion `AKT_NACHFRAGE`.~~ **Überholt durch U6** (`phase-u6-knoeterich-tafel.md`): Knöterich hat seit U6 einen Figureneintrag (`KN_FIGUR`) und wird über `AKT_NPC` angesprochen wie jede Dorffigur. Der Haken in `gespraechOeffnen()` greift damit auch für ihn, `AKT_NACHFRAGE` ist ersatzlos weg. Dass er nicht in `DORF_FIGUREN` steht, gilt weiter und aus demselben Grund: dort stehen die Figuren, die im Dorf wandern, und er steht fest im Haus.
 * **Szene 2, „Oben ist eine Stadt“:** ab Akt II bei Kordula Umlauf. Zum ersten Mal wechselt der Sprecher mitten in einer Szene, Fass wirft von nebenan zwei Sätze ein. Der Wechsel war die Erweiterung aus SZ1; hier läuft sie zum ersten Mal.
 * **Szene 3, „Die zweite Schublade“:** ab Akt III im Amtspanel, neben der Gießkanne. Vierzig Zwischenbescheide, die alle denselben Satz sagen und sich nur in der Jahreszahl unterscheiden (972 bis 1011). Sie sind ein Blatt mit einem Zähler, nicht vierzig Tafeln. Der Witz ist, dass es nicht aufhört, nicht dass man vierzigmal klicken muss, deshalb erscheint nach drei Blättern ein zweiter Knopf zum letzten. Danach die Zeile, um die es geht: **einundvierzig, und der erste kam vor ihrer Abreise.**
 * **Szene 4, „Knöterichs einer Satz“:** ab Akt IV, wenn der Spieler die vollständige Anschrift hat. Drei Antworten, dann das Wort *Hintermühl*, dann geht er.

@@ -25,6 +25,23 @@
 //   Schrift         der Regler setzt --fs, eine gemessene Schriftgroesse waechst
 //                   mit, und die Stellung ueberlebt einen Neustart
 //
+// Dazu seit U6 (phase-u6-knoeterich-tafel.md):
+//
+//   Knoeterich     die Kontextaktion an der Weltfigur heisst "Ansprechen" und
+//                  oeffnet seine Tafel mit gemaltem Portraet, vollem Namen und
+//                  vier Antworten; sein Grundzeilen-Kreislauf laeuft durch alle
+//                  sechs Zeilen und die Aktzeile; liegt ein Dienstzettel vor,
+//                  kommt "Was stand da eben?" als fuenfte dazu und spielt ihn
+//                  wieder ab; Weggehen schliesst die Tafel wie im Dorf
+//   Dienstzettel   das obere Band traegt dasselbe gemalte Portraet statt des
+//                  Sinnbilds aus der Zeichentabelle
+//   Noergel        traegt Blatt und Massstab der Gruenhaut aus MONDEF und
+//                  steht damit deutlich kleiner als die Menschen im Dorf
+//   Rangfolge      auf Mobil steht die Antwortliste vollstaendig in der Tafel,
+//                  und wenn der Platz nicht reicht, rollt der Satz des
+//                  Gegenuebers. Vor U6 war es umgekehrt: die Tafel rollte als
+//                  Ganzes und die Antworten standen ausserhalb
+//
 // Wie menue-pruef.mjs stellt dieser Lauf fest statt zu messen: jede Zeile ist
 // ein Soll-Ist-Vergleich, der Exit-Code ist 1 bei der ersten Abweichung.
 const pw = (await import(process.env.PLAYWRIGHT_PFAD || 'playwright')).default;
@@ -270,19 +287,125 @@ const tafel = page => page.evaluate(() => ({
   await page.waitForTimeout(200);
   pruef('wer weggeht, beendet das Gespraech', (await tafel(page)).offen, false);
 
-  // --- U5: der Rueckfallweg ------------------------------------------------
-  // Lott und Pahl teilen sich ein Doppelportraet und haben deshalb keins. Sie
-  // sind der Beleg, dass der Weg aus U4 nicht abgebaut, sondern nur ueber-
-  // holt wurde: kein Bild, kein Fehler, sondern der Sprite-Ausschnitt wie
-  // bisher — mittig im Quadrat und mit freien Ecken.
-  await hin(page, 'lott');
-  await page.keyboard.press('f');
-  await page.waitForTimeout(300);
-  const gl = await gemalt(page);
-  pruef('Lott bekommt den Sprite-Ausschnitt', gl.ecke <= 8, true);
-  pruef('und der zeigt trotzdem etwas', gl.deck > 200, true);
+  // --- U5/G10: das geteilte Doppelportraet ---------------------------------
+  // Diese beiden Zeilen prueften bis U6 das Gegenteil dessen, was im Spiel
+  // steht, und liefen dabei rot mit, ohne dass es jemand gelesen hat. U5 hatte
+  // Lott und Pahl als Beleg fuer den Rueckfallweg genommen: ihr Motiv ist ein
+  // Doppelportraet und liess sich nicht in zwei Gesichter schneiden, also
+  // bekamen sie den Sprite-Ausschnitt aus U4. G10 hat das entschieden und
+  // umgedreht (eine Datei, zwei Schluessel, PORTRAET_DATEI) und die Pruefung
+  // nicht nachgezogen. Sie prueft jetzt, was G10 zugesagt hat: beide sehen
+  // dasselbe Bild, und es ist ein gemaltes.
+  //
+  // Damit hat keine Figur mehr den Sprite-Ausschnitt, und die Pruefung dafuer
+  // faellt hier weg statt an einer Figur zu haengen, die ihn nicht nimmt.
+  // Der Weg selbst steht unveraendert in gespraechPortrait(); dass ihn niemand
+  // geht, meldet gespraechAssert() beim Start ("Sprite-Ausschnitt fuer
+  // niemanden").
+  const bild = key => page.evaluate(async k => {
+    const n = npcs.find(x => x.key === k);
+    player.x = n.x + 24; player.y = n.y + 6; camSnap();
+    gespraechOeffnen(n);
+    return el('gespraechPortrait').toDataURL();
+  }, key);
+  const bLott = await bild('lott'), bPahl = await bild('pahl');
   await page.keyboard.press('Escape');
   await page.waitForTimeout(150);
+  pruef('Lott und Pahl sehen dasselbe Bild', bLott === bPahl, true);
+  pruef('und es ist ein gemaltes, kein Ausschnitt', bLott.length > 2000, true);
+
+  // --- U6: Knoeterich hat eine Tafel ---------------------------------------
+  // Er ist die Figur, mit der das Spiel anfaengt, und war bis U6 die einzige,
+  // die man nicht ansprechen konnte. Die Kontextaktion an seiner Kachel hiess
+  // "Nachfragen", gab es erst ab dem ersten Dienstzettel und zeigte einen alten
+  // Zettel noch einmal im oberen Band.
+  await page.evaluate(() => { kn.history = []; player.x = KN_POS.x + 24; player.y = KN_POS.y + 6; camSnap(); });
+  await page.waitForTimeout(400);
+  pruef('Kontextaktion an Knoeterich heisst Ansprechen',
+        await page.evaluate(() => aktTxt), 'Ansprechen');
+  pruef('und sie steht auch ohne Dienstzettel da',
+        await page.evaluate(() => aktObj === knNpc && kn.history.length === 0), true);
+  await page.evaluate(() => fuehreAktion());
+  await page.waitForTimeout(200);
+  const kt = await page.evaluate(() => ({
+    offen: gespraechOffen,
+    name: el('gespraechNameTxt').textContent,
+    antworten: [...document.querySelectorAll('.gwOpt')].map(o => o.innerText.replace(/\s+/g,' ').trim()),
+    blase: knBubble.visible && gespraech.npc === knNpc,
+  }));
+  pruef('F oeffnet seine Tafel', kt.offen, true);
+  pruef('sie nennt seinen vollen Namen', kt.name, 'Amtsrat a. D. Knöterich');
+  pruef('und bietet vier Antworten', kt.antworten.length, 4);
+  pruef('die zweite fragt nach dem Haus, nicht nach dem Dorf',
+        kt.antworten[1].indexOf('Haus') > 0, true);
+  const kg = await gemalt(page);
+  pruef('sein gemaltes Portraet steht in der Tafel', kg.ecke > 8, true);
+  pruef('und fuellt das Feld', kg.deck > 128*128*0.9, true);
+
+  // Der Kreislauf: sechs Grundzeilen und die Aktzeile, keine leer, keine zweimal
+  // hintereinander. Der erste Griff landet auf der Anrede (bubbleIdx startet
+  // bei -1), deshalb acht Griffe fuer sieben verschiedene Zeilen.
+  const kreis = [];
+  for(let i = 0; i < 8; i++){
+    await page.evaluate(() => { gespraechWaehlen(0); gespraechFertigTippen(); });
+    kreis.push(await page.evaluate(() => el('gespraechText').innerText.replace(/\s+/g,' ').trim()));
+  }
+  pruef('keine Zeile im Kreislauf ist leer', kreis.every(z => z.length > 3), true);
+  pruef('der Kreislauf hat sieben verschiedene Zeilen', new Set(kreis).size, 7);
+
+  // Der Nachschlag. Er ersetzt die alte Kontextaktion und steht nur da, wenn es
+  // etwas nachzuschlagen gibt.
+  await page.evaluate(() => {
+    kn.history = [{z1:'Notiert. Ich notiere alles.', z2:'Zweiter Reiter im Kessel.'}];
+    gespraechZeichnen();
+  });
+  const kn5 = await page.evaluate(() =>
+    [...document.querySelectorAll('.gwOpt')].map(o => o.innerText.replace(/\s+/g,' ').trim()));
+  pruef('mit Dienstzettel kommt eine fuenfte Antwort dazu', kn5.length, 5);
+  await page.evaluate(() => { gespraechWaehlen(3); gespraechFertigTippen(); });
+  pruef('und sie spielt den Zettel in der Tafel ab',
+        await page.evaluate(() => el('gespraechText').innerText.replace(/\s+/g,' ').trim()),
+        'Notiert. Ich notiere alles. Zweiter Reiter im Kessel.');
+
+  await page.evaluate(() => { player.x = KN_POS.x + 400; camSnap(); });
+  await page.waitForTimeout(300);
+  pruef('wer von Knoeterich weggeht, beendet auch sein Gespraech',
+        await page.evaluate(() => gespraechOffen), false);
+
+  // --- U6: das Portraet im Dienstzettel ------------------------------------
+  const kopf = await page.evaluate(() => {
+    const c = el('knZettelBild'), cc = c.getContext('2d');
+    const d = cc.getImageData(0, 0, c.width, c.height).data;
+    let deck = 0;
+    for(let i = 3; i < d.length; i += 4) if(d[i] > 8) deck++;
+    return { klasse: el('knZettel').classList.contains('mitBild'),
+             bild: getComputedStyle(c).display,
+             sinnbild: getComputedStyle(el('knZettelSinnbild')).display,
+             deck };
+  });
+  pruef('der Dienstzettel traegt das Portraet', [kopf.klasse, kopf.bild], [true, 'block']);
+  pruef('und das Sinnbild ist weg', kopf.sinnbild, 'none');
+  pruef('das Bild im Zettel ist wirklich gezeichnet', kopf.deck > 128*128*0.9, true);
+
+  // --- U6: Noergel traegt das Blatt der Gruenhaut --------------------------
+  // "Exakt das Sprite der Gruenhaut" heisst zweierlei: dasselbe Blatt und
+  // derselbe Massstab. Den Massstab rechnet drawMon() aus sc mal psc, DRAW_NPC
+  // kennt nur einen Faktor, deshalb wird gegen das Produkt geprueft und mit
+  // einer Toleranz, die die Fliesskommarechnung erlaubt (1.5*1.2 ist in
+  // IEEE-754 nicht genau 1.8).
+  const ng = await page.evaluate(() => {
+    const n = npcs.find(x => x.key === 'noergel');
+    const d = MONDEF.goblin, sg = SHEETS[d.rig + '_idle'];
+    const mensch = npcs.find(x => x.key === 'zwirn');
+    const sm = SHEETS[mensch.sheetIdle];
+    return { blatt: n.sheetIdle, gruenhautBlatt: d.rig + '_idle',
+             skala: n.figur.rigSc, gruenhautSkala: d.sc * d.psc,
+             hoch: sg ? sg.fh * n.figur.rigSc : 0,
+             menschHoch: sm ? sm.fh * NPC_SC : 0 };
+  });
+  pruef('Noergel steht auf dem Blatt der Gruenhaut', ng.blatt, ng.gruenhautBlatt);
+  pruef('und in ihrem Massstab', Math.abs(ng.skala - ng.gruenhautSkala) < 0.001, true);
+  pruef('und ist damit kleiner als die Menschen im Dorf', ng.hoch < ng.menschHoch, true);
 
   // --- Schriftregler -------------------------------------------------------
   const schrift = await page.evaluate(() => {
@@ -345,6 +468,61 @@ const tafel = page => page.evaluate(() => ({
   pruef('Tipp auf den Abschied schliesst', await page.evaluate(() => gespraechOffen), false);
 
   pruef('Konsole still (Touch)', laut, []);
+  await ctx.close();
+}
+
+// ------------------------------------------- U6: der enge Schirm, grosse Schrift
+// Der Fall, an dem die Tafel vor U6 kippte, und er ist kein Randfall: 360x640
+// ist ein verbreitetes Telefonformat, die groesste Schriftstufe ist genau fuer
+// die da, die sie brauchen, und Knoeterich hat als einzige Figur fuenf
+// Antworten. Zusammen brauchte die Tafel mehr Hoehe als sie bekam, und was
+// wegfiel, war das Ende: die Antwortliste stand vollstaendig ausserhalb.
+//
+// Geprueft wird die Rangfolge, nicht die Zahl: die Antworten stehen ganz in der
+// Tafel, das Satzfeld ist das Rollfeld, und die Tafel selbst rollt nicht mehr.
+{
+  const { page, ctx, laut } = await spiel({ viewport: { width: 360, height: 640 },
+                                            deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+  await page.evaluate(() => { document.body.classList.add('touch'); schriftSetzen(2); });
+  await page.waitForTimeout(200);
+  await page.evaluate(() => {
+    player.x = KN_POS.x + 24; player.y = KN_POS.y + 6; camSnap();
+    kn.history = [{z1:'Notiert. Ich notiere alles.', z2:'Zweiter Reiter im Kessel.'}];
+    gespraechOeffnen(knNpc);
+    gespraechFertigTippen();
+  });
+  await page.waitForTimeout(300);
+  const eng = await page.evaluate(() => {
+    const g = el('gespraech'), u = el('gespraechUnten'), t = el('gespraechText'),
+          b = el('gespraechBild');
+    const gr = g.getBoundingClientRect(), ur = u.getBoundingClientRect(),
+          br = b.getBoundingClientRect();
+    return {
+      antworten: document.querySelectorAll('.gwOpt').length,
+      untenGanzInDerTafel: ur.top >= gr.top - 1 && ur.bottom <= gr.bottom + 1,
+      untenGanzImFenster:  ur.top >= -1 && ur.bottom <= innerHeight + 1,
+      tafelRollt: g.scrollHeight > g.clientHeight + 1,
+      satzIstDasRollfeld: getComputedStyle(t).overflowY,
+      bildBleibtGanz: br.height >= 71,
+      tafelImFenster: gr.bottom <= innerHeight + 1,
+      nachgerollt: t.scrollTop > 0,
+      verlaufSteht: el('gespraechRechts').classList.contains('rollt'),
+    };
+  });
+  pruef('Knoeterich hat auf dem engen Schirm fuenf Antworten', eng.antworten, 5);
+  pruef('alle Antworten stehen in der Tafel', eng.untenGanzInDerTafel, true);
+  pruef('und damit im Bild', eng.untenGanzImFenster, true);
+  pruef('die Tafel selbst rollt nicht', eng.tafelRollt, false);
+  pruef('gerollt wird im Satzfeld', eng.satzIstDasRollfeld, 'auto');
+  pruef('das Bildfeld behaelt seine Hoehe', eng.bildBleibtGanz, true);
+  pruef('die Tafel bleibt im Fenster', eng.tafelImFenster, true);
+  // U6: Ein Rollfeld, dem der Satz davonlaeuft, ist so gut wie keins. Das Feld
+  // rollt dem Tippwerk hinterher, und dass es rollen kann, steht als Verlauf
+  // ueber seiner Unterkante.
+  pruef('das Satzfeld ist dem Tippwerk gefolgt', eng.nachgerollt, true);
+  pruef('und zeigt an, dass da noch etwas ist', eng.verlaufSteht, true);
+
+  pruef('Konsole still (enger Schirm)', laut, []);
   await ctx.close();
 }
 
