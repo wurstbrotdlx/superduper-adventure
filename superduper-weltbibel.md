@@ -682,15 +682,25 @@ Warum das richtig ist:
 
 ## 13. Humor-Grundgesetz
 
-Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt, prüft sie hiergegen, bevor sie eingebaut wird.
+Die elf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt, prüft sie hiergegen, bevor sie eingebaut wird.
 
-1. **Die Welt findet sich selbst normal.** Niemand im Spiel weiß, dass er komisch ist. In dem Moment, in dem eine Figur den Witz bemerkt, ist er weg.
+1. **Die Welt findet sich selbst normal, mit gezählten Ausnahmen.** *(Geändert am 23.08.2026 auf Ansage des Projektinhabers, am selben Tag wie Regel 7. Bis dahin lautete sie: „Niemand im Spiel weiß, dass er komisch ist. In dem Moment, in dem eine Figur den Witz bemerkt, ist er weg." Die Nummer bleibt stehen, damit die Verweise in Regel 10, Regel 11 und in den Phasendokumenten weiter zeigen, wohin sie zeigen.)* Der Normalfall ist unverändert und gilt für die große Mehrheit aller Zeilen: die Figuren nehmen ihre Welt vollkommen ernst, und der Witz entsteht daraus, dass niemand ihn bemerkt. Neu ist, dass die Ausnahme erlaubt ist. Eine Figur darf einmal aus ihrer Welt heraussehen, den Spieler als das ansprechen, was er ist, oder trocken bemerken, dass hier etwas nicht stimmt. Vier Bedingungen:
+
+    1. **Gezählt.** Höchstens ein Zwinkern je Figur über ihre gesamte Lebenszeit im Spiel, nie zwei im selben Gespräch. Die meisten Figuren bekommen keins und verlieren dadurch nichts.
+    2. **Aus der Figur heraus.** Das Zwinkern gehört ihr, nicht dem Spiel. Es bleibt in ihrer Sprachmarke, in ihrem Amtsdeutsch und in ihrer Lage. Ein Erzähler, der sich einmischt, ist keine Ausnahme, sondern ein Bruch.
+    3. **Nie dort, wo es weh tut.** Nicht in einem warmen Moment (Regel 9), nicht in der Fanfare (Regel 10), nicht in einer Szene, die etwas trägt. Ein Zwinkern an dieser Stelle kostet mehr, als jeder Gag einbringt.
+    4. **Die Welt selbst bleibt normal.** Erlaubt ist die einzelne Figur, die kurz herausschaut. Nicht erlaubt ist eine Welt, die sich insgesamt für einen Witz hält: Regel 4 (nie über Menschen lachen) und Regel 8 (kein Zynismus) hängen daran und stehen unverändert.
 2. **Der Witz liegt im Verfahren, nicht in der Pointe.** Nicht "Beamter ist faul", sondern "Beamter ist mit vollem Einsatz für die falsche Sache zuständig".
 3. **Amtsdeutsch trifft Alltag.** Der Kontrast trägt alles. "Sie verlieren Konfetti. Das ist selten gut."
 4. **Nie über Menschen lachen, immer über Zuständigkeit.** Keine Figur ist dumm. Jede Figur ist gefangen.
 5. **Absurde Regeln werden konsequent zu Ende befolgt.** Das ist Monkey Island. Wenn Monster gegrüßt werden müssen, dann grüßt man eben.
 6. **Zwei Ebenen in jedem Gag.** Zehnjährige verstehen die Situation, Erwachsene den Paragrafen. Beide lachen an derselben Stelle, aus verschiedenen Gründen. Das ist der ganze Trick der Zielgruppe 10 bis 99.
-7. **Keine Meta-Witze, keine Popkultur, keine Anspielungen auf das Jahr der Entstehung.** Das Spiel soll in fünfzehn Jahren noch funktionieren.
+7. **Popkultur in Maßen, und nur die, die jeder kennt.** *(Geändert am 23.08.2026 auf Ansage des Projektinhabers. Bis dahin lautete die Regel: „Keine Meta-Witze, keine Popkultur, keine Anspielungen auf das Jahr der Entstehung." Die alte Fassung steht so noch in `phase-e1-empfang.md`; datierte Phasendokumente werden nicht rückwirkend umgeschrieben.)* Anspielungen und Zitate sind erlaubt. Sie tragen aber nur unter vier Bedingungen, und die vierte ist die, an der die alte Regel hing:
+
+    1. **Allgemein bekannt.** Wer die Anspielung nicht erkennt, darf nichts vermissen. Die Zeile muss ohne sie vollständig sein und für sich funktionieren. Wird sie erkannt, ist sie ein zweiter Boden, nie der erste.
+    2. **Sparsam.** Richtwert: höchstens eine je Figur, und längst nicht jede Figur bekommt eine. Zwei Anspielungen in einem Gespräch sind eine zu viel. Die Welt bleibt eine Behörde und wird kein Steinbruch.
+    3. **Die Welt erkennt sie nicht als Zitat.** Regel 1 gilt unverändert: niemand im Spiel weiß, dass er komisch ist, und niemand zwinkert. Eine Figur, die eine Anspielung als Anspielung sagt, hat sie kaputtgemacht. Meta-Witze bleiben damit draußen, aber nicht mehr wegen Regel 7, sondern wegen Regel 1.
+    4. **In fünfzehn Jahren noch lesbar.** Was heute erklärt werden muss, muss es dann erst recht. Das Jahr der Entstehung bleibt unsichtbar: keine Tagesnachricht, keine Mode, kein Name, der nächstes Jahr niemandem mehr etwas sagt.
 8. **Kein Blut, kein Sterben, kein Zynismus.** Konfetti. Feierabend. Und niemand ist böse, alle sind nur unzuständig.
 9. **Unten drunter Wärme.** Jede Figur versucht etwas. Am Ende gelingt es. Ohne diese Regel ist das Ganze nur ein langer Behördenwitz, und der trägt keine fünfzig Schichten.
 10. **Die Form ist episch, der Inhalt ist Papier.** Fanfare für einen Aktenvorgang. Das Spiel nimmt sich bitterernst, die Welt bleibt eine Behörde. Episch wird die **Form**, nie der Gegenstand. Regel 1 bleibt dadurch unangetastet: niemand im Spiel merkt, dass die Fanfare komisch ist, am wenigsten die Fanfare. *(Nachgetragen mit E1, 22.08.2026.)* **Das gilt auch fürs Auge (E2):** die Bürokraten sind der Adel dieser Welt, ihr Papier trägt Siegel, Doppellinien und römische Blattzahlen, und der Aufwand, mit dem dieses Haus eine Sache aufmacht, von der es selbst nicht weiß, worum es geht, ist die Pointe. Nichts an diesem Haus darf bescheiden aussehen.
@@ -698,7 +708,7 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
     Und die Gegenprobe gehört dazu: der ganze Prunk hängt an einer Sache, die seit vierhundert Jahren nicht erledigt ist. Die Form ist maximal, der Ertrag ist null. Wo das eine ohne das andere steht, ist es kein Gag mehr, sondern nur noch Dekoration.
 11. **Der Spieler ist der Gerade.** Trockenheit braucht ein Gegenüber, das nachfragt. Eine Figur sagt den Satz, der Spieler sagt "wie bitte", und erst dadurch wird aus einer Auskunft ein Gag. Bis U3 hatte das Spiel keinen Kanal dafür, seither hat es einen. Vorher war jede Figur trocken und keine war der Gerade, und damit lief die Trockenheit ins Leere. *(Nachgetragen mit E1, 22.08.2026.)*
 
-**Warum die beiden nachkamen.** Die Rückmeldung lautete: die Witze und Anspielungen tragen nicht, niemand versteht sie. Der Befund dahinter war nicht, dass die Witze fehlten oder zu fein waren, sondern dass sie ohne Takt dastanden. `Anlage 1 liegt nicht vor` ist die Pointe des ersten Akts und stand als Feld acht von zehn in einem Formular. Regel 7 bleibt deshalb ausdrücklich in Kraft: mehr Anspielungen wären die falsche Antwort. Was trägt, ist die Situation, und die Situation braucht Zeit und ein Gegenüber. Siehe `phase-e1-empfang.md`.
+**Warum die beiden nachkamen.** Die Rückmeldung lautete: die Witze und Anspielungen tragen nicht, niemand versteht sie. Der Befund dahinter war nicht, dass die Witze fehlten oder zu fein waren, sondern dass sie ohne Takt dastanden. `Anlage 1 liegt nicht vor` ist die Pointe des ersten Akts und stand als Feld acht von zehn in einem Formular. Der Befund gilt unverändert: mehr Anspielungen wären die falsche Antwort gewesen. *(Nachtrag 23.08.2026: Regel 7 verbietet sie seit der Änderung oben nicht mehr, sie dosiert sie. Das ändert nichts an diesem Befund. Was eine Situation nicht trägt, trägt ein Zitat erst recht nicht.)* Was trägt, ist die Situation, und die Situation braucht Zeit und ein Gegenüber. Siehe `phase-e1-empfang.md`.
 
 **Sieben Regeln für alles, was im Reich spielt** *(nachgetragen mit W11, Quelle `weltgeschichte.md`, Kapitel 12).* Sie stehen zusätzlich zu den elf oben, nicht an ihrer Stelle.
 
@@ -709,6 +719,24 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
 5. **Die Gegenseite antwortet immer.** Kein Schreiben aus Ablage V bleibt unbeantwortet. Wer eine Zeile für den Fürsten schreibt, schreibt eine höfliche.
 6. **Erledigen ist ein Abschied, kein Sieg.** Kein Text feiert eine Erledigung. Es wird nicht triumphiert. Es wird zugeklappt.
 7. **Am Ende wird es warm.** Ohne diese Regel ist alles hier nur ein sehr langer Behördenwitz, und der trägt keine fünfzig Schichten. Das ist dieselbe Regel wie Nummer 9 oben, und sie steht zweimal da, weil sie zweimal gebrochen werden kann.
+
+**Der laufende Gag: die Kurzform** *(neu am 23.08.2026, ausgeführt mit F1, siehe `superduper-figurenleben-prompt.md`.)*
+
+Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. Der Gag ist im Bestand längst angelegt und wird mit F1 zum durchgehenden Motiv. Drei Wurzeln, alle schon da:
+
+* **N. N.** ist eine Abkürzung, die eine Person geworden ist. Zwei Türen im Haus tragen sie nebeneinander, und alle begründen ihre Entscheidungen mit ihr (Kapitel 4).
+* **a. D.** steht hinter Knöterichs Titel und stimmt nicht. Seine Entpflichtung ist nie bearbeitet worden. Er ist die einzige Figur, deren Abkürzung ihr widerspricht, und er weiß es.
+* **zu Händen** ist die Abkürzung, die ausgeschrieben wird. Im Reich kürzt man Hohe nicht ab, deshalb trägt Vorblatt sie als Namen.
+
+**Die Regel dahinter ist der doppelte Boden (Regel 6): abgekürzt wird, was nicht wichtig genug ist, um ausgeschrieben zu werden.** Kinder sehen komische Buchstaben, Erwachsene sehen eine Rangordnung. Wer im Reich einen vollen Namen bekommt, ist wer. Wer zwei Buchstaben bekommt, ist ein Vorgang.
+
+**Drei Grenzen, ohne die der Gag zur Zumutung wird:**
+
+1. **Jede Abkürzung ist im Spiel auflösbar.** Wer fragt, bekommt die Langform, spätestens bei Bramsche. Ein Kürzel, das nirgends aufgeht, ist kein Gag, sondern eine verschlossene Tür.
+2. **Kein Satz braucht die Langform, um verstanden zu werden.** Die Situation trägt, das Kürzel ist die zweite Etage.
+3. **Höchstens eine unerklärte Abkürzung je Gespräch.** Zwei sind Fachsprache, drei sind eine Wand.
+
+**Die Eskalation läuft über die fünf Akte** und ist in `superduper-figurenleben-prompt.md`, Abschnitt 9, ausgeschrieben: erst gewöhnliche Kürzel, dann die Abkürzung einer Abkürzung, dann dasselbe Kürzel für zweierlei, dann eine Langform, die niemand mehr kennt, und zuletzt die einzige, die niemand je abgekürzt hat.
 
 **Formregeln, aus dem bestehenden Projekt übernommen und hier verbindlich für alle Texte:**
 

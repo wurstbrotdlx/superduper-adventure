@@ -103,8 +103,10 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: jeder Guard meldet seine Zeile �
 | `superduper-gameplay-prompt.md` | Gameplay-Phasen 1 bis 6, Zählertabellen |
 | `superduper-grafik-prompt.md` | Grafik-Phasen G0 bis G5 |
 | `superduper-reparatur-prompt.md` | Reparaturrunden R1 bis R9 |
+| `superduper-figurenleben-prompt.md` | Der Prompt zu Bauabschnitt F1: Hintergrundgeschichten für alle Figuren, die Dialoge, die daraus abgeleitet werden, je Figur ein Gesprächsbaum auf der Szenenmaschine, und der laufende Gag über Abkürzungen. Enthält die Auslöser-Tabelle (Dienstzeit, Schichtphase, Stufe, Rang, Skillung, Ereignis), die Bauarten der erzählerischen Sackgasse, die gezählten Dosen für Popkultur und vierte Wand und die Abnahme dazu. Noch nicht ausgeführt. |
 | `phase-*.md` | Eine Bauanleitung je Bauabschnitt, mit Abnahme und Prüfprotokoll |
 | `figuren-dorf.md`, `blaetter-serie-a-b.md` | Inhaltslieferungen (Figurentexte, Aktenfunde) |
+| `figuren-leben.md` | Inhaltslieferung F1a: die Hintergrundgeschichten des Ensembles, je Figur zwölf Felder samt der einen neuen Tatsache, den Verhältnissen untereinander und dem Gesprächsstoff für die Bäume. Stand: 9 von 18 Figuren. |
 | `phase-m1-monsterkatalog.md` | Bauabschnitt M1: der Katalog im Code, Entscheidungen und Prüfprotokoll |
 | `phase-z1-zauberbalance.md` | Bauabschnitt Z1: warum Zauberspam jeden Nahkampf schlug, vier Eingriffe, Vorher-Nachher-Messung |
 | `phase-m2-nahfeld-und-namen.md` | Bauabschnitt M2: Schwierigkeit nach Entfernung vom Dorf, der Sonderprüfer, Namen über den Köpfen, zwei versiegelte Gegner |
