@@ -1,7 +1,8 @@
 # Bauabschnitt G10 — Ein Monsterrig für Nörgel, ein Bild für zwei — ERLEDIGT
 
-Vier Eingriffe, alle vier von außen angestoßen und alle vier klein. Der erste
-hebt eine Grenze auf, die G9 noch als endgültig notiert hatte.
+Fünf Eingriffe, alle von außen angestoßen. Der erste hebt eine Grenze auf, die
+G9 noch als endgültig notiert hatte; der letzte berichtigt einen Fehler, den G8
+gemacht und derweil als erledigt gemeldet hat.
 
 ## G10-1. Nörgel steht auf einem Monsterrig
 
@@ -82,17 +83,63 @@ Ergebnis `#e1ac62`. Der zweite Punkt ist als vierter Eintrag `haeufigste` im
 Sonderfall-Eintrag verallgemeinert und steht damit dem nächsten Blondschopf
 bereit.
 
-## G10-4. Milb hat keinen Hut
+## G10-4. Milb hatte doch einen Hut, und das war ein Fehler aus G8
 
-Hatte er nie. `hut:` steht bei genau zwei Figuren, Trepp und Nieselbeck, beide
-mit Dienstmütze auf dem Porträt. Milbs Zeile trägt `hair:'h5'` und sonst nichts
-am Kopf.
+Erst die falsche Antwort, weil sie lehrreich ist: `hut:` steht bei genau zwei
+Figuren, Trepp und Nieselbeck. In Milbs Zeile stand nichts am Kopf, und der
+naheliegende Verdacht war seine Frisur `h5` (langes offenes Haar über hoher
+Glatze), die auf 42 Pixeln als Kappe durchgehen kann.
 
-Was an ihm auffallen kann und kein Hut ist: **h5 ist langes offenes Haar**, sein
-Porträt zeigt aber eine hohe Glatze mit grauem Haar nur an den Seiten. Das Pack
-hat keine Frisur „kahl mit Seitenhaar"; h5 legt ihm eine volle Haarmasse auf den
-Kopf, und die kann auf 42 Pixeln als Kappe durchgehen. Das ist die Stelle, an
-der zu drehen wäre — nicht der Hut.
+Dann kam ein Screenshot vom Telefon. Milb trägt darauf einen **breitkrempigen
+Strohhut**, und zwar unverkennbar.
+
+**Der Grund: `komposit:true` fehlte bei drei Figuren.** G8 hatte entschieden,
+dass alle acht Wandernden ihr Paketblatt gegen das Komposit ihres Porträts
+tauschen. Eingetragen wurde das Flag bei fünf — Zwirn, Zapf, Lisbeth, Trepp und
+Nörgel. Milb, Pommer und Fass bekamen nur ihre neue `gestalt`-Zeile.
+
+| Figur | lief seit G8 auf | ist im Bild |
+|---|---|---|
+| Milb | `Farmer_Buba` | ein Bauer mit Strohhut. Ein Gutachter mit Strohhut. |
+| Pommer | `Bartender_Katy` | eine Wirtin |
+| Fass | `Bartender_Bruno` | ein Wirt |
+
+Das Flag ist bei allen dreien nachgetragen. Fass ist der einzige, bei dem das
+Paketblatt konzeptionell passt — ein Wirt für einen Wirt —, und er bekommt es
+trotzdem, weil ein halber Stand schlimmer ist als beide Antworten; ein
+gestrichenes Wort holt es zurück.
+
+### Warum kein Guard etwas gesagt hat
+
+Das ist der eigentliche Befund. Die Konsolenzeile aus G6 lautet:
+
+```
+G6 Dorfsicht: 3 von 8 NPC-Blättern liegen nicht im Grafikpaket,
+diese Figuren laufen als Held-Komposit: milb, pommer, fass.
+```
+
+Sie nennt **genau die drei** — weil `ersetzt` nur zählt, wer *kein* `komposit`
+trägt. Die Information stand da, drei Bauabschnitte lang, in jeder Konsole. Sie
+war nur nicht von dem gewöhnlichen Zustand „ohne Grafikpaket fehlt alles" zu
+unterscheiden, und ich habe sie jedes Mal als eben diesen gelesen.
+
+Was gefehlt hat, ist die **Gegenprobe**: eine Zeile, die nicht sagt, wer auf ein
+Komposit ausweicht, sondern wer auf einem Paketblatt *läuft*.
+
+```
+G6 Dorfsicht: 1 Figuren laufen auf ihrem Paketblatt statt auf dem
+Komposit ihres Porträts: milb.
+```
+
+Sie schweigt ohne Grafikpaket (dann läuft niemand auf einem Paketblatt) und
+schweigt, wenn alle acht das Flag tragen. Nimmt man einer Figur das Flag, nennt
+sie sie beim Namen — nachgewiesen, nicht behauptet: einmal mit untergeschobenen
+Paketblättern und vollständigen Flags (still), einmal mit einem entfernten Flag
+(meldet `milb`).
+
+**Milbs Frisur bleibt damit offen.** Der Strohhut ist weg, weil das Paketblatt
+weg ist. Ob `h5` über seiner Glatze als Kappe durchgeht, entscheidet der nächste
+Blick — jetzt zum ersten Mal an der Figur, die gemeint war.
 
 ## Die Guards
 
@@ -134,6 +181,7 @@ Hautton, 1 auf einem Monsterrig.
 | `node tools/reich-pruef.mjs` | 35 von 35 |
 | `node tools/build-single.mjs` | läuft, 1036 KB (vorher 1023) |
 | `node tools/figuren-kontaktbogen.mjs` | 15 Figuren, **15 mit Porträt** (vorher 13) |
+| Gegenprobe zum Paketblatt-Guard | still bei acht Flags, meldet `milb` bei sieben |
 
 **Am Bild geprüft:** der Kontaktbogen zeigt Lott und Pahl beide mit dem
 Doppelbild — der Gag trägt — und Pommers Haar ist auf seinem Porträt
@@ -149,8 +197,11 @@ Fußlinie: `orc_chief` hat `ay:30`, gemessen im Kessel und nicht im Dorf.
 - **Ein Lauf mit Grafikpaket.** `node tools/figuren-kontaktbogen.mjs` neben dem
   Assets-Repo. Vier Punkte: Nörgels Größe, seine Fußlinie, ob die Mütze bei
   Trepp und Nieselbeck auf dem Kopf sitzt, und Vorblatts fast schwarzer Mantel.
-- **Milbs Frisur.** Siehe G10-4. Braucht eine Entscheidung am Bild, keine
-  Messung.
+- **Milbs Frisur.** Siehe G10-4. Der Strohhut ist weg; ob `h5` über der Glatze
+  als Kappe durchgeht, braucht eine Entscheidung am Bild, keine Messung.
+- **Fass und sein Paketblatt.** Bartender_Bruno ist konzeptionell die bessere
+  Zeichnung für einen Wirt. Er läuft jetzt trotzdem als Komposit; ein
+  gestrichenes `komposit:true` dreht das um.
 - **Nörgel und das Empfangsbekenntnis** teilen sich ein Blatt. Wenn das zu nah
   aneinander liegt, trennt sie ein `tint` auf Nörgels Zeile.
 - **Die anderen Völker.** `CF_RIGS` hat vier Goblins, Skelette, Ritter und
