@@ -1,41 +1,48 @@
 # Bauabschnitt F1: Figurenleben — OFFEN
 
-Der Prompt für die Hintergrundgeschichten aller Figuren und für die Dialoge, die daraus
-entstehen. Er ist so geschrieben, dass eine frische Sitzung ihn allein ausführen kann:
-alles, was sie wissen muss, steht hier oder ist von hier aus mit einer Zeilenangabe
-auffindbar.
+Der Prompt für die Hintergrundgeschichten aller Figuren, für die Dialoge, die daraus
+entstehen, und für die Gesprächsbäume, in denen sich der Spieler verlaufen darf. Er ist so
+geschrieben, dass eine frische Sitzung ihn allein ausführen kann: alles, was sie wissen
+muss, steht hier oder ist von hier aus mit einer Zeilenangabe auffindbar.
 
-**Ziel in drei Sätzen.** Jede ansprechbare Figur bekommt eine Hintergrundgeschichte, die
+**Ziel in vier Sätzen.** Jede ansprechbare Figur bekommt eine Hintergrundgeschichte, die
 fundiert ist (jede Tatsache belegt oder widerspruchsfrei anschlussfähig), spannend (sie
 hält etwas zurück, das später fällt) und komisch im Ton dieses Hauses. Aus dieser
 Geschichte werden Dialogzeilen abgeleitet, die im Gesprächsfenster erscheinen: manche
 ohne Bedingung, andere nach Dienstzeit, nach einem Ereignis, nach der Stufe des Spielers
-oder nach seiner Skillung. Am Ende soll das Dorf nicht mehr aus vierzehn Sprechautomaten
-bestehen, sondern aus vierzehn Leuten, die etwas mitbekommen.
+oder nach seiner Skillung. Wer weiterfragt, landet nicht in einer Zeilenschleife, sondern
+in einem Gesprächsbaum mit Verzweigungen, Wahlmöglichkeiten und Sackgassen. Am Ende soll
+das Dorf nicht mehr aus vierzehn Sprechautomaten bestehen, sondern aus vierzehn Leuten,
+die etwas mitbekommen und mit denen sich ein Gespräch führen lässt.
 
-**Das Spiel bekommt dabei kein neues System.** Alles unten hängt an den Feldern, die
-`DORF_FIGUREN` schon hat. Was dazukommt, sind Schalter an einem bestehenden Block und
-Zeilen in einer bestehenden Tabelle.
+**Das Spiel bekommt dabei kein neues System.** Die Zeilen hängen an den Feldern, die
+`DORF_FIGUREN` schon hat. Die Bäume laufen auf der Szenenmaschine, die SZ1 und SZ2 gebaut
+haben. Was dazukommt, sind Schalter an bestehenden Blöcken und Einträge in bestehenden
+Tabellen.
 
 ---
 
 ## 0. Wie dieser Prompt benutzt wird
 
-Er läuft in vier Lieferungen, jede für sich abnehmbar und jede ein eigener Commit:
+Er läuft in fünf Lieferungen, jede für sich abnehmbar und jede ein eigener Commit:
 
 | Lieferung | Inhalt | Datei |
 |---|---|---|
 | **F1a** | Hintergrundgeschichten, alle Figuren, kein Code | `figuren-leben.md` |
 | **F1b** | Die neuen Auslöser im Code, ohne eine einzige neue Zeile Text | `index.html` |
 | **F1c** | Die Dialogzeilen, gegengezählt, figurenweise | `figuren-leben.md`, `index.html` |
-| **F1d** | Phasendokument, README-Zeile, Weltbibel-Zuwachs | `phase-f1-figurenleben.md`, `README.md`, `superduper-weltbibel.md` |
+| **F1d** | Die Gesprächsbäume, Inhalt und Einbau | `figuren-baeume.md`, `index.html` |
+| **F1e** | Phasendokument, README-Zeile, Weltbibel-Zuwachs | `phase-f1-figurenleben.md`, `README.md`, `superduper-weltbibel.md` |
 
-**F1a vor F1c, ohne Ausnahme.** Wer die Zeilen vor der Geschichte schreibt, bekommt
-Sprüche statt Figuren. Der Zweck der Reihenfolge ist, dass jede Zeile in F1c auf einen
-Absatz in F1a zeigen kann. Kann sie das nicht, ist sie gestrichen.
+**F1a vor allem anderen, ohne Ausnahme.** Wer die Zeilen vor der Geschichte schreibt,
+bekommt Sprüche statt Figuren. Der Zweck der Reihenfolge ist, dass jede Zeile und jeder
+Knoten auf einen Absatz in F1a zeigen kann. Kann er das nicht, ist er gestrichen.
 
 **F1b vor F1c**, weil ein Auslöser, den es noch nicht gibt, sich beim Schreiben beliebig
 biegen lässt und beim Einbauen dann nicht passt.
+
+**F1d zuletzt vor der Doku**, weil ein Baum die Hintergrundgeschichte voraussetzt und die
+Auslöser mitbenutzt.
 
 ---
 
@@ -50,8 +57,10 @@ Bei Widerspruch gewinnt die höhere Zeile:
    Weltbibel, nicht Ersatz.
 3. `figuren-dorf.md` — die vorhandenen Figurentexte, Serie 1 (elf) und Serie 2 (drei),
    samt Zeichennachweis. **Keine ihrer Zeilen wird angefasst.**
-4. Die Phasendokumente `phase-w3`, `phase-w11`, `phase-w-noergel`, `phase-sz2`,
-   `phase-u3`, `phase-u4`, `phase-anrede` — sie erklären, warum etwas so gebaut ist.
+4. Die Phasendokumente `phase-w3`, `phase-w11`, `phase-w-noergel`, `phase-sz1`,
+   `phase-sz2`, `phase-u3`, `phase-u4`, `phase-e1`, `phase-anrede` — sie erklären, warum
+   etwas so gebaut ist. Datierte Dokumente werden nicht rückwirkend umgeschrieben; wo
+   eines der Weltbibel widerspricht, gilt die Weltbibel.
 5. `index.html` — der Bestand. Er ist Wahrheit über die Mechanik und niemals Autorität
    über die Welt.
 
@@ -94,7 +103,9 @@ Hochablage und bleibt dort.
 
 Vor der ersten Zeile lesen und danach gegen jede Zeile halten:
 
-* **Humor-Grundgesetz**, elf Regeln, `superduper-weltbibel.md` Kapitel 13.
+* **Humor-Grundgesetz**, elf Regeln, `superduper-weltbibel.md` Kapitel 13. **Regel 7 ist
+  am 23.08.2026 geändert worden** und verbietet Popkultur nicht mehr, sie dosiert sie:
+  siehe Abschnitt 4 unten. Alle anderen zehn stehen unverändert.
 * **Sieben Regeln für alles, was im Reich spielt**, ebenda, aus `weltgeschichte.md`
   Kapitel 12. Darunter die harte: **über den Kaiser wird ausschließlich im Präsens
   gesprochen.** `knAssertCaps()` prüft das bei jedem Start.
@@ -119,10 +130,8 @@ Vor der ersten Zeile lesen und danach gegen jede Zeile halten:
 
 ## 4. Was LucasArts-Humor in diesem Haus heißt
 
-Der Auftrag sagt „LucasArts-Humor", und das ist eine Handwerksanweisung und keine
-Einladung zur Anspielung. **Regel 7 des Grundgesetzes bleibt in Kraft: keine Meta-Witze,
-keine Popkultur, keine Zitate.** Niemand sagt einen Satz, der aus einem anderen Spiel
-stammt. Was übernommen wird, sind die Handgriffe:
+Der Auftrag sagt „LucasArts-Humor", und das ist zuerst eine Handwerksanweisung. Acht
+Handgriffe:
 
 1. **Der Gerade und der Trockene.** Eine Figur sagt eine Auskunft, der Spieler fragt
    „wie bitte", und erst dadurch wird aus der Auskunft ein Gag (Grundgesetz 11). Bei
@@ -143,9 +152,37 @@ stammt. Was übernommen wird, sind die Handgriffe:
 8. **Wärme unten drunter.** Jede Figur versucht etwas, und am Ende gelingt es. Ohne diese
    Regel ist alles hier nur ein sehr langer Behördenwitz.
 
+### Popkultur und Zitate: erlaubt, dosiert
+
+Die alte Regel 7 („keine Meta-Witze, keine Popkultur, keine Anspielungen") ist am
+23.08.2026 gestrichen und ersetzt worden, die neue Fassung steht in der Weltbibel. Für F1
+heißt sie ausgeschrieben:
+
+* **Erlaubt sind Anspielungen und Zitate, die jeder kennt.** Die Schwelle ist nicht
+  „Kenner erkennen es", sondern „eine Zehnjährige und eine Neunundneunzigjährige haben es
+  beide schon einmal gehört". Alles Speziellere ist ein Zwinkern unter Eingeweihten und
+  bleibt draußen.
+* **Die Zeile muss ohne die Anspielung vollständig sein.** Wer sie nicht erkennt, darf
+  nichts vermissen und merkt nicht, dass ihm etwas entgeht. Wer sie erkennt, bekommt einen
+  zweiten Boden. Das ist dieselbe Bauart wie Grundgesetz 6, nur eine Etage höher.
+* **Dosis, verbindlich für F1:** **höchstens fünf Anspielungen über die gesamte
+  Lieferung**, höchstens eine je Figur, und in keinem Gesprächsbaum mehr als eine. Sie
+  werden im Lieferdokument einzeln aufgeführt, mit Figur und Fundstelle, damit die Zahl
+  nachzählbar ist und nicht geschätzt.
+* **Die Welt erkennt sie nicht als Zitat.** Regel 1 gilt unverändert: niemand zwinkert,
+  niemand weiß, dass er komisch ist, keine Figur sagt einen Satz „in Anführungszeichen".
+  Eine Anspielung funktioniert hier nur, wenn sie im Amtsdeutsch dieser Welt aufgeht und
+  eine Figur sie völlig ernst meint. **Meta-Witze bleiben verboten**, aber nicht mehr über
+  Regel 7, sondern über Regel 1.
+* **Kein Verfallsdatum.** Was in fünfzehn Jahren erklärt werden muss, wird heute nicht
+  eingebaut. Keine Tagesnachricht, keine Mode, kein Name, der nächstes Jahr niemandem mehr
+  etwas sagt.
+* **Im Zweifel weglassen.** Eine Anspielung ist ein Bonus, nie die Pointe. Wo sie die
+  Pointe trägt, ist die Zeile falsch gebaut, und zwar unabhängig von der Anspielung.
+
 **Fünf Verbote, die den Ton kaputtmachen:** Sarkasmus gegen eine Person. Zynismus über
-das Amt selbst. Eine Figur, die merkt, dass sie komisch ist. Ein Wortspiel, das nur auf
-Deutsch der Gegenwart funktioniert. Und Blut, Sterben, Ketten, Grausamkeit in jeder Form.
+das Amt selbst. Eine Figur, die merkt, dass sie komisch ist. Eine Anspielung, die nur als
+Anspielung funktioniert. Und Blut, Sterben, Ketten, Grausamkeit in jeder Form.
 
 ---
 
@@ -166,7 +203,8 @@ Kapitel 8 und werden **übernommen, nicht neu erfunden**:
 | **Der blinde Fleck** | Was sie über sich selbst falsch weiß. Hier sitzt die Wärme. |
 | **Drei Verhältnisse** | Zu drei namentlich genannten anderen Figuren, je ein Satz. Sie müssen zusammenpassen: wenn A über B etwas sagt, muss B es aushalten. |
 | **Was sie nie sagen wird** | Ausdrückliche Sperrliste je Figur, mindestens zwei Punkte. |
-| **Die eine neue Tatsache** | Genau eine harte Tatsache, die es vorher nicht gab und die ab jetzt gilt. Sie wandert nach F1d als Absatz *(Zuwachs F1)* in Weltbibel Kapitel 8. |
+| **Die eine neue Tatsache** | Genau eine harte Tatsache, die es vorher nicht gab und die ab jetzt gilt. Sie wandert nach F1e als Absatz *(Zuwachs F1)* in Weltbibel Kapitel 8. |
+| **Der Gesprächsstoff** | Drei bis fünf Themen, über die diese Figur reden kann, ohne ihr Geheimnis zu verraten. Das ist die Vorlage für ihren Baum in F1d. |
 | **Belege** | Liste der Fundstellen, Datei und Kapitel oder Zeile. Neue Tatsachen als **neu** markiert. |
 
 **Kontingent:** genau eine neue harte Tatsache je Figur. Nicht zwei. Wer mehr braucht,
@@ -177,20 +215,21 @@ hat die Figur nicht verstanden, sondern nachgelegt.
 * **Knöterich.** Sein Geheimnis steht schon fest und ist das größte des Spiels: er hat
   den Vorgang 1 vollständig gelesen und darf nichts sagen. Seine Hintergrundgeschichte
   wird geschrieben, **seine Zeilen aber nicht angetastet**: er erklärt Tasten, nie
-  Zusammenhänge. Was in F1c für ihn entsteht, sind höchstens Randnotizen im bestehenden
-  `RANDNOTIZ`-Format, keine Auskünfte.
+  Zusammenhänge. Er bekommt in F1d auch keinen Baum. Was für ihn entsteht, sind höchstens
+  Randnotizen im bestehenden `RANDNOTIZ`-Format.
 * **Lott und Pahl** teilen sich einen Abschnitt und ein Porträt. Ihre Geschichte ist eine
-  Geschichte, erzählt aus zwei Sesseln derselben Bank. Ob sie Vorgänge sind, bleibt offen
+  Geschichte, erzählt aus zwei Sesseln derselben Bank. Ihr Baum in F1d ist einer, mit
+  Sprecherwechsel (`wer`) statt zwei Bäumen. Ob sie Vorgänge sind, bleibt offen
   (Weltbibel Kapitel 16) und wird auch von F1 nicht entschieden.
 * **Anlage 3** bekommt einen halben Abschnitt und keine Zeile. Er ist ein Kater. Auf
   Reichspapier gelesen ist er der dritte Sohn eines Adelshauses, und das bleibt ein
   stiller Gag.
 * **Sturz und Nachtrag** bekommen ihre Abschnitte, weil das halbe Dorf über sie spricht,
-  aber keine eigenen Dialogzeilen. Was über sie gesagt wird, sagen andere.
+  aber keine eigenen Dialogzeilen und keinen Baum. Was über sie gesagt wird, sagen andere.
 
 ---
 
-## 6. Teil B: Die Dialoge
+## 6. Teil B: Die Dialogzeilen
 
 **Ableitungsregel, die alles trägt:** jede neue Zeile zeigt auf genau ein Feld der
 Hintergrundgeschichte. Im Lieferdokument steht das als Klammer hinter der Zeile, etwa
@@ -245,7 +284,7 @@ Vorhandene Anlässe (`RANDNOTIZ`, Zeile 7272): `crit`, `ultimate`, `levelup`,
 `kammerAbbruch`, `fluch`, `goldfund`, `untaetigkeit`, dazu `umlauf` und `hintermuehl`
 aus SZ2.
 
-**Neu in F1b, vier Schalter derselben Bauart:**
+**Neu in F1b, weitere Schalter derselben Bauart:**
 
 | Klasse | Feld | Bedingung | Zustandsquelle |
 |---|---|---|---|
@@ -263,7 +302,7 @@ aus SZ2.
    erweitert. `skill` trägt `ab` als Beiwert, nicht als zweiten Schalter.
 2. **Kein Auslöser darf unerreichbar sein.** Ein `abStufe` über der erreichbaren
    Höchststufe, ein `abSchicht` über fünfzig, ein Merker, den niemand setzt, ein
-   `anlass`-Schlüssel, den nichts auslöst: alles drei meldet der Guard.
+   `anlass`-Schlüssel, den nichts auslöst: alles meldet der Guard.
 3. **Im freien Spiel ohne Schichten ist alles offen**, was an Schichten, Akten oder Rang
    hängt. Das ist die Regel von `serieFrei()` und `figDa()`, und sie gilt weiter.
 4. **Auslöser staffeln, nicht stapeln.** Über alle Figuren hinweg soll in jeder Schicht
@@ -272,13 +311,136 @@ aus SZ2.
 5. **Ereigniszeilen sind Kommentar, nie Auskunft.** Wer gerade kritisch getroffen hat,
    bekommt keine Geschichte erzählt, sondern einen Satz.
 6. **Keine Zeile hängt an zwei Bedingungen.** Wer das braucht, hat einen Langvorgang
-   gebaut, und Langvorgänge sind in Kapitel 10 abschließend aufgezählt.
+   gebaut, und Langvorgänge sind in Kapitel 10 abschließend aufgezählt. Für zwei
+   Bedingungen gibt es ab F1d den Baum: dort ist die zweite Bedingung der Weg dorthin.
 
 ---
 
-## 8. Der Code, den F1 kostet
+## 8. Teil C: Die Gesprächsbäume
+
+Das ist der Teil, der aus dem Dorf ein Rollenspiel macht. Bisher ist ein Dorfgespräch eine
+Zeilenschleife: drücken, Satz, drücken, nächster Satz. Ab F1d kann der Spieler bei jeder
+Figur einen Faden aufnehmen, sich für eine Richtung entscheiden, dabei etwas verpassen und
+sich verlaufen.
+
+### Die Maschine steht schon
+
+**Es wird keine zweite Dialogmaschine gebaut.** SZ1 und SZ2 haben eine, und sie kann
+alles, was ein Baum braucht (`index.html`, Szenenmaschine ab Zeile 14681, Tabelle `SZENEN` ab Zeile 14868):
+
+| Feld | Was es tut |
+|---|---|
+| `knoten` | `{key: {z1, z2, opts(), hub, wer}}`, die Knoten des Baums |
+| `opts()` | die Antwortliste eines Knotens, jede mit `zu` (Ziel) oder `tun` (Wirkung) und optional `wenn` (Bedingung) |
+| `fragen` | Fragenliste mit `frei` (Voraussetzung) und `nach` (Wartezahl), der Treppeneffekt |
+| `hub` / `hubAusgang` | der Knoten, zu dem alles zurückführt, plus sein Ausgang |
+| `sicht` | wie viele offene Fragen gleichzeitig auf der Tafel stehen, Auslieferung 3 |
+| `wer` | Sprecherwechsel mitten im Baum, Porträt und Namensschild wechseln mit |
+| `sperre` | Wortliste, die in diesem Baum nicht vorkommen darf |
+| `wenn` / `figur` | wann der Baum fällig ist und an welcher Figur er hängt (`szeneFaellig()`) |
+| `haeltDieWelt` | ob die Welt stehen bleibt, solange geredet wird |
+
+Ein Figurenbaum ist damit ein Eintrag in `SZENEN` mit drei Unterschieden zu den drei
+bestehenden Szenen:
+
+1. **`haeltDieWelt:false`.** Ein Dorfgespräch ist keine Staatsaktion. Die Schichtuhr läuft
+   weiter, die Monster bleiben in Bewegung. Wer währenddessen angegriffen wird, hat eben
+   im Freien geplaudert. **Das ist die einzige Stelle, an der F1d das Verhalten der
+   Maschine anfasst**, und sie ist ein bestehendes Feld, kein neuer Pfad.
+2. **Wiederbetretbar.** Die drei bestehenden Szenen laufen genau einmal und setzen dabei
+   einen Merker. Ein Figurenbaum setzt keinen, sondern prüft in `wenn()` seine Auslöser.
+   Wer zweimal kommt, kommt wieder hinein. Was sich beim zweiten Mal ändert, steht unten.
+3. **Einstieg über die Tafel.** Der Baum wird nicht durch das Ansprechen ausgelöst (das
+   bleibt der Zeilenkreislauf), sondern über eine eigene Antwortzeile, siehe Abschnitt 9.
+
+### Aufbau eines Baums
+
+Je Figur **ein** Baum, **acht bis vierzehn Knoten**, gebaut nach diesem Muster:
+
+* **Ein Hub.** Von dort gehen drei bis fünf Stränge ab, plus der Ausgang. Auf der Tafel
+  stehen nach `sicht:3` immer die drei obersten offenen Stränge und der Ausgang: vier
+  Zeilen, genau die Breite, die U3 gebaut hat und die `szeneAssert()` erzwingt.
+* **Je Strang zwei bis vier Knoten.** Ein Strang, der nach einem Knoten zurückführt, ist
+  eine Auskunft und kein Strang.
+* **Mindestens eine echte Verzweigung je Baum**, also eine Stelle, an der zwei Antworten
+  zu verschiedenen Knoten führen und **nicht** wieder zusammenlaufen.
+* **Mindestens eine Sackgasse je Baum**, siehe unten.
+* **Der Ausgang führt zurück in den Kreislauf**, nicht ins Nichts: nach dem Baum steht der
+  Spieler wieder vor derselben Figur mit denselben Grundzeilen.
+
+### Was „richtig RPG" hier heißt, und was es nicht heißt
+
+* **Eine Wahl kostet etwas.** Mindestens einmal je Baum schließt eine Antwort eine andere
+  aus. Wer Bramsche nach dem Brandabschnitt fragt, bekommt an diesem Tag nichts mehr über
+  Hochablage. Ohne Kosten ist eine Verzweigung nur eine Reihenfolge.
+* **Die Belohnung ist Wissen und Zugang, niemals Gold oder Erfahrung.** Ein Baum darf
+  einen Fundort verraten, eine zusätzliche Frage bei Bramsche freischalten, einen Merker
+  setzen, eine Zusatzzeile bei einer anderen Figur öffnen. Er darf **nichts** ausschütten,
+  was sich wiederholen lässt: sonst wird Reden zum Farmen, und das erste, was die Spieler
+  dann tun, ist das Gespräch wegzuklicken.
+* **Der Spieler wird nie bestraft.** Keine Sackgasse kostet Leben, Gold, Zeit oder eine
+  Wertung. Sie kostet höchstens eine Auskunft, die er heute nicht mehr bekommt.
+* **Kein Gesinnungssystem, keine Punkte, keine Beziehungswerte.** Die Figuren merken sich
+  Ereignisse (Merker), keine Sympathien. Diese Welt führt Akten, keine Gefühlslisten.
+* **Niemand wird ausgefragt.** Jede Figur darf jederzeit höflich nicht antworten. Das ist
+  in diesem Haus keine Sperre, sondern Charakterzeichnung.
+
+### Sackgassen, und der Unterschied zwischen zwei Sorten
+
+**Eine strukturelle Sackgasse ist ein Fehler.** `szeneAssert()` meldet jeden Knoten ohne
+Ausgang („Knoten ohne Ausgang"), und das bleibt so: aus jedem Knoten führt eine Antwort
+heraus, immer. Ein Spieler, der nicht mehr weiterklicken kann, hat keinen Baum gefunden,
+sondern einen Bug.
+
+**Eine erzählerische Sackgasse ist das Ziel.** Vier zugelassene Bauarten, jede mindestens
+einmal über die ganze Lieferung:
+
+| Bauart | Was passiert | Was der Spieler mitnimmt |
+|---|---|---|
+| **Die höfliche Wand** | Die Figur antwortet mit einem Satz, der nichts sagt, und der Strang endet am Hub. | Die Gewissheit, dass hier etwas ist. |
+| **Die verbrannte Frage** | Wer A fragt, bekommt B in dieser Schicht nicht mehr (`frei`, `nach`, oder ein Merker). | Eine Entscheidung, die er beim nächsten Mal anders trifft. |
+| **Der Umweg** | Drei Knoten, die ausführlich zum Hub zurückführen und dabei eine Kleinigkeit hinterlassen. | Eine Beobachtung, die bei einer anderen Figur später zählt. |
+| **Der falsche Faden** | Eine Auskunft, die stimmt und nicht weiterhilft. | Ein Lacher, und kein Spott über ihn. |
+
+**Die Regel dahinter:** eine Sackgasse ist eine Antwort, die zu Ende erzählt ist, und
+niemals eine, die verschluckt wird. Der Spieler soll denken „ich hätte etwas anderes
+fragen sollen", nicht „das Spiel hat mich rausgeworfen".
+
+### Auslöser im Baum
+
+Die Schalter aus Abschnitt 7 gelten auch hier, und hier zahlen sie sich doppelt aus:
+
+* **Ein ganzer Baum** hängt an `wenn()` in seinem `SZENEN`-Eintrag. Vor Schicht 3 hat
+  niemand etwas zu erzählen.
+* **Ein einzelner Strang** hängt an `wenn` in `opts()`. Das ist die Stelle, an der die
+  Skillung Richtungen bekommt: wer den Frostzweig gelernt hat, kann Nieselbeck etwas
+  fragen, das ein Nahkämpfer nie zu Gesicht bekommt, und umgekehrt.
+* **Eine Nachfrage** hängt an `frei` (erst nach Frage X) oder `nach` (erst ab der N-ten
+  gestellten Frage). Das ist der Treppeneffekt aus dem Empfang, und er ist die billigste
+  Art, Tiefe zu erzeugen.
+
+**Jede dieser Bedingungen muss erreichbar sein**, und der Guard rechnet das nach. Ein
+Strang hinter einer Skillung, die es nicht gibt, ist ein toter Ast.
+
+### Umfang und Sonderfälle
+
+* **Zwölf Bäume**, einer je ansprechbarer Dorffigur außer Lott und Pahl, die sich einen
+  teilen (mit `wer`-Wechsel zwischen den beiden, das ist der Witz der Bank).
+* **Bramsche** bekommt keinen zweiten Fragenkanal, sondern ihr Baum ersetzt für die Dauer
+  des Gesprächs den Frage-Zähler nicht: ihre eine Frage pro Schicht bleibt, wie sie ist.
+  Ihr Baum redet über sie, nicht über die Welt.
+* **Vorblatt** darf in seinem Baum nie Nein sagen und nie drohen (Reichsregel 3). Sein
+  Baum ist der freundlichste des ganzen Spiels, und das ist der Grund, warum er der
+  unangenehmste ist.
+* **Knöterich bekommt keinen Baum.** Er erklärt Tasten, nie Zusammenhänge.
+
+---
+
+## 9. Der Code, den F1 kostet
 
 Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
+
+**Aus F1b, die Auslöser:**
 
 * **`figZusatz()`** (Zeile 8519): aus zwei Zweigen werden acht. Eine Tabelle von
   Schaltername zu Prüffunktion, damit die Funktion kurz bleibt und `knAssertCaps()`
@@ -290,22 +452,36 @@ Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
   Stelle, wo das Ereignis passiert, und einen Eintrag in einer neuen Liste
   `ANLASS_QUELLEN`, gegen die der Guard prüft. Vorschlag, sparsam: `erstzustellung`,
   `rangaufstieg`, `dienstunfaehig`, `kesselErst`. Mehr nur mit Begründung.
-* **Die fünfte Antwortzeile.** `gespraechOptionen()` liefert heute vier feste Antworten,
-  `gespraechAssert()` verlangt genau vier. Neu: hat die Figur freigeschaltete
-  Hintergrundzeilen, erscheint als vorletzte Antwort **„Erzählen Sie von früher."** (24
-  Zeichen, Deckel 28), und der Abschied bleibt die letzte. Der Guard prüft dann vier oder
-  fünf Antworten und dass die letzte immer der Abschied ist. **Begründung:** ohne diesen
-  Kanal findet der Spieler die Hintergrundzeilen nur durch Zufall im Kreislauf, und
-  Grundgesetz 11 verlangt, dass er fragen kann. Wer diesen Punkt streichen will, muss
-  vorher zeigen, wie die Geschichte sonst absichtlich erreichbar wird.
+
+**Aus F1d, die Bäume:**
+
+* **Die Einstiegszeile.** `gespraechOptionen()` (Zeile 8667) liefert heute vier feste
+  Antworten, `gespraechAssert()` (Zeile 8958) verlangt genau vier. Neu: hat die Figur
+  einen fälligen Baum (`szeneFaellig()` mit den Auslösern aus Abschnitt 7), erscheint als
+  vorletzte Antwort **„Erzählen Sie von früher."** (24 Zeichen, Deckel 28) und öffnet ihn;
+  der Abschied bleibt die letzte. Der Guard prüft dann vier **oder** fünf Antworten, dass
+  die letzte immer der Abschied ist, und dass die fünfte nur steht, wenn ein Baum fällig
+  ist. **Innerhalb** eines Baums bleibt es bei höchstens vier Antworten je Knoten, wie
+  `szeneAssert()` es heute erzwingt. Die Asymmetrie ist Absicht: die Figurenliste ist ein
+  Menü, ein Baumknoten ist ein Gespräch.
+* **`szeneFaellig()`** (Zeile 15328) darf mehrere Bäume je Figur unterscheiden und nimmt
+  dafür den ersten, dessen `wenn()` zutrifft. Das kann sie heute schon; was fehlt, ist
+  eine Ordnung, in der der speziellere Baum vor dem allgemeineren steht. Eine Zeile
+  Kommentar dazu genügt, aber sie muss dastehen.
+* **`szeneAssert()`** (Zeile 15530) zählt die Figurenbäume mit. Neue Prüfungen: jeder Baum
+  hat einen Ausgang, der in den Kreislauf zurückführt; jeder Strang ist erreichbar; kein
+  `wenn` hängt an einer Bedingung, die es nicht gibt; kein Baum setzt einen Merker, den
+  der Spielstand nicht kennt; und die Anspielungszahl aus Abschnitt 4 steht als Zahl im
+  Lieferdokument, nicht im Code.
 * **Kein neues Speicherfeld**, wo eine Ableitung reicht. Stufe, Rang, Schicht und Skillung
   stehen bereits im Spielstand; sie werden gelesen und nicht gespiegelt. Das ist die
   W5/W6-Doktrin: zwei Felder für denselben Zustand sind zwei Wahrheiten, und die zweite
-  driftet.
+  driftet. Was ein Baum sich merken **muss** (eine verbrannte Frage, eine getroffene
+  Wahl), wird ein Merker in `kn.flags` und steht damit im Spielstand, den es schon gibt.
 
 ---
 
-## 9. Ausgabeformat
+## 10. Ausgabeformat
 
 **`figuren-leben.md`** wird gebaut wie `figuren-dorf.md`, weil das Format sich bewährt
 hat: Kopf mit Auftrag, Entstehung und Sperrvermerk, dann je Figur ein Abschnitt, dann ein
@@ -329,30 +505,39 @@ zusatz:[
 ]
 ```
 
+**`figuren-baeume.md`** bekommt je Figur erst eine **Landkarte** des Baums (Hub, Stränge,
+wo die Verzweigung liegt, wo die Sackgasse liegt, was eine Wahl kostet), dann die Knoten
+als Tabelle mit gegengezählten Zeichen, dann den Codeblock im `SZENEN`-Format. Die
+Landkarte ist keine Zierde: an ihr sieht man in zehn Sekunden, ob der Baum eine Form hat
+oder nur eine Liste ist.
+
 Die Zahlen in Klammern sind **gezählt, nicht geschätzt**. Wer schätzt, produziert den
 Fehler, den `knAssertCaps()` beim nächsten Start meldet, und verliert die Runde damit
 zweimal.
 
 ---
 
-## 10. Selbstprüfung, drei Durchgänge
+## 11. Selbstprüfung, drei Durchgänge
 
 Dasselbe Verfahren, das die elf Figuren der Serie 1 sauber gemacht hat, und es hat
 damals zwei Funde gehabt:
 
 1. **Entwurf** je Figur, aus der Hintergrundgeschichte heraus.
 2. **Zweiter Durchgang, unabhängig:** gegen Sperrvermerk, Humor-Grundgesetz, Formregeln,
-   Zeichendeckel, Kaiser-Präsens. Repariert wird hier, nicht später.
+   Zeichendeckel, Kaiser-Präsens, und seit F1 zusätzlich gegen die Anspielungsdosis aus
+   Abschnitt 4. Repariert wird hier, nicht später.
 3. **Dritter Durchgang, wieder unabhängig, nur eine Frage:** leckt irgendeine Zeile
    Kesselgrammatik? Das ist der Durchgang, der bei Serie 1 zwei fertige Formulierungen
    gekippt hat.
 
-Am Ende steht je Figur eine **Prüfnotiz** im Lieferdokument, auch wenn sie „kein Fund"
-lautet.
+Für die Bäume kommt ein vierter dazu, und er wird geklickt und nicht gelesen: **jeden
+Strang einmal bis zum Ende gehen**, jede Sackgasse betreten, jede Verzweigung beide Male
+nehmen. Am Ende steht je Figur eine **Prüfnotiz** im Lieferdokument, auch wenn sie „kein
+Fund" lautet.
 
 ---
 
-## 11. Abnahme und Prüfprotokoll
+## 12. Abnahme und Prüfprotokoll
 
 Nichts gilt als fertig, was nur behauptet ist. Die dritte Mitarbeitsregel des Repos meint
 das wörtlich.
@@ -370,9 +555,11 @@ Abgenommen ist F1, wenn:
   zusätzlich etwas sagt,
 * `knAssertCaps()` die neuen Zeilen, Schalter und Schwellen mitprüft und dabei schweigt,
 * `gespraechAssert()` die vier oder fünf Antworten bestätigt,
+* `szeneAssert()` die Figurenbäume mitzählt und seine Zeile um deren Zahl erweitert,
 * eine Figur mit jedem neuen Schaltertyp im laufenden Spiel nachweislich ihre Zeile sagt
-  (Messlauf unter `tools/`, Vorbild `tools/spaziergang-messlauf.mjs`), und die Messung im
-  Phasendokument steht,
+  und **ein vollständiger Baum im laufenden Spiel durchgeklickt ist**, samt Sackgasse
+  (Messlauf unter `tools/`, Vorbild `tools/spaziergang-messlauf.mjs`); beides steht mit
+  Ausgabe im Phasendokument,
 * `node tools/build-single.mjs` durchläuft und die entstandene `dist/index.html` per
   `file://` dasselbe zeigt.
 
@@ -381,50 +568,67 @@ war, hat einen Fund und keine Tapete.
 
 ---
 
-## 12. Was ausdrücklich nicht passiert
+## 13. Was ausdrücklich nicht passiert
 
 * Keine bestehende Zeile aus `figuren-dorf.md` wird geändert. F1 ist Zuwachs.
 * Keine Kesselgrammatik, in keiner Andeutung, von keiner Figur.
 * Kein Monster bekommt einen Titel. Ausnahme bleibt Fürst Nachtrag.
 * Der Kaiser wird nirgends in der Vergangenheit erwähnt.
-* Keine Popkultur, keine Anspielung auf das Jahr der Entstehung, kein Meta-Witz.
+* Keine Meta-Witze. Popkultur ja, aber nach der Dosis aus Abschnitt 4 und nie als Zwinkern.
 * Kein Blut, kein Sterben, kein Zynismus. Konfetti und Feierabend.
-* Knöterich erklärt weiterhin Tasten und keine Zusammenhänge.
-* Kein achter Langvorgang, kein neues System, kein neues Speicherfeld für ableitbaren
-  Zustand.
+* Knöterich erklärt weiterhin Tasten und keine Zusammenhänge, und bekommt keinen Baum.
+* Keine zweite Dialogmaschine neben `SZENEN`, kein achter Langvorgang, kein neues
+  Speicherfeld für ableitbaren Zustand.
+* Kein Knoten ohne Ausgang, keine Belohnung aus einem Baum, die sich wiederholen lässt.
 * Kein Statusmarker bleibt stehen: jede Überschrift trägt `— ERLEDIGT` oder `— OFFEN`,
   nachgezogen im selben Commit.
 
 ---
 
-## 13. Der Kurzprompt zum Kopieren
+## 14. Der Kurzprompt zum Kopieren
 
 Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 
 > Lies `superduper-weltbibel.md` (Kapitel 7, 8, 9, 13, 17, 19), `weltgeschichte.md`
 > (Kapitel 3, 6, 12), `figuren-dorf.md` und in `index.html` den Block `DORF_FIGUREN` samt
-> `npcCycle()`, `npcSprechen()`, `figZusatz()`, `knAssertCaps()` und `gespraechOptionen()`.
-> Arbeite dann `superduper-figurenleben-prompt.md` ab, Lieferung F1a bis F1d in dieser
-> Reihenfolge, je ein Commit.
+> `npcCycle()`, `npcSprechen()`, `figZusatz()`, `knAssertCaps()`, `gespraechOptionen()`
+> sowie den Szenenblock `SZENEN` mit `szeneOptionen()`, `szeneKnoten()`, `szeneFaellig()`
+> und `szeneAssert()`. Arbeite dann `superduper-figurenleben-prompt.md` ab, Lieferung F1a
+> bis F1e in dieser Reihenfolge, je ein Commit.
 >
 > F1a: schreib für jede der vierzehn Dorffiguren, für Knöterich, Sturz, Nachtrag und
 > Anlage 3 eine Hintergrundgeschichte von 500 bis 800 Wörtern nach der Gliederung in
 > Abschnitt 5 (Besessenheit, Hindernis, Sprachmarke, Herkunft, Riss, Geheimnis, blinder
-> Fleck, drei Verhältnisse, was sie nie sagt, die eine neue Tatsache, Belege). Fundiert
-> heißt: jede Tatsache belegt oder als neu markiert und gegen die Chronik abgeglichen.
-> Humor nach Abschnitt 4: der Gerade und der Trockene, Dreierregel mit Kippsatz, Rückruf,
-> die konsequent befolgte Regel, die höfliche Katastrophe, Untertreibung, voller Einsatz
-> für die falsche Sache, Wärme unten drunter. Keine Anspielungen.
+> Fleck, drei Verhältnisse, was sie nie sagt, die eine neue Tatsache, Gesprächsstoff,
+> Belege). Fundiert heißt: jede Tatsache belegt oder als neu markiert und gegen die
+> Chronik abgeglichen. Humor nach Abschnitt 4: der Gerade und der Trockene, Dreierregel
+> mit Kippsatz, Rückruf, die konsequent befolgte Regel, die höfliche Katastrophe,
+> Untertreibung, voller Einsatz für die falsche Sache, Wärme unten drunter. Popkultur ist
+> erlaubt, aber nur allgemein bekannte, höchstens fünf Anspielungen in der ganzen
+> Lieferung, höchstens eine je Figur, jede Zeile muss ohne sie vollständig sein, und keine
+> Figur zwinkert.
 >
-> F1b: bau die vier neuen Schaltertypen für `zusatz` ein (`abSchicht`, `phase`, `abStufe`,
+> F1b: bau die neuen Schaltertypen für `zusatz` ein (`abSchicht`, `phase`, `abStufe`,
 > `abRang`, `skill`+`ab`, `zauber`/`zweig`), genau einer je Block, alles aus vorhandenem
 > Zustand abgeleitet, `knAssertCaps()` erweitert, keine neue Textzeile.
 >
 > F1c: leite je Figur zwölf neue Zeilenpaare plus Ereigniszeilen aus der
 > Hintergrundgeschichte ab, jede Zeile mit Verweis auf ihr Feld, Zeichen gegengezählt,
-> Deckel 48/32/44/28. Drei Prüfdurchgänge wie in Abschnitt 10.
+> Deckel 48/32/44/28.
 >
-> F1d: Phasendokument, README-Zeile, Weltbibel-Zuwachs, Statusmarker.
+> F1d: bau je Figur einen Gesprächsbaum als Eintrag in `SZENEN` mit `haeltDieWelt:false`,
+> acht bis vierzehn Knoten, ein Hub, drei bis fünf Stränge, mindestens eine echte
+> Verzweigung und mindestens eine erzählerische Sackgasse (höfliche Wand, verbrannte
+> Frage, Umweg oder falscher Faden). Struktureller Knoten ohne Ausgang ist ein Fehler und
+> bleibt einer. Eine Wahl muss einmal je Baum etwas kosten. Belohnung ist Wissen und
+> Zugang, nie Gold oder Erfahrung. Einstieg über eine fünfte Antwortzeile „Erzählen Sie
+> von früher.", der Abschied bleibt letzte Zeile, im Baum höchstens vier Antworten je
+> Knoten. Lott und Pahl teilen sich einen Baum mit Sprecherwechsel, Knöterich bekommt
+> keinen.
 >
-> Abnahme wie in Abschnitt 11: `node --check`, Browser mit stiller Konsole, ein Messlauf
-> je neuem Schaltertyp. Nichts gilt als fertig, was nur behauptet ist.
+> F1e: Phasendokument, README-Zeile, Weltbibel-Zuwachs, Statusmarker.
+>
+> Prüf in drei Durchgängen wie in Abschnitt 11, für die Bäume in vier. Abnahme wie in
+> Abschnitt 12: `node --check`, Browser mit stiller Konsole, ein Messlauf je neuem
+> Schaltertyp und ein vollständig durchgeklickter Baum. Nichts gilt als fertig, was nur
+> behauptet ist.
