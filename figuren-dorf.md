@@ -277,6 +277,8 @@ Seine Amtsbezeichnung lautet Schattenlandzustellungsbevollmächtigter. Ein Bevol
 
 Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: Kachel (1, 36). Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 0, Schuhe Stufe 3. **G7:** Anker von (8, 38) auf (1, 36), Nordwestecke des Angers, neben Haus 1.
 
+**Nachtrag G9/G10/U6 zur Optik.** Die Zeile oben ist überholt und bleibt als Stand stehen. G9 hat die Tönung durch einen eigenen Hautton ersetzt (`#949341`, färbt Gesicht und Hände statt der ganzen Figur), G10 hat ihn auf ein Monsterrig gestellt, weil er ein Kobold ist und das Helden-Rig keine spitzen Ohren hat, und U6 hat das Rig berichtigt: nicht `orc_chief`, sondern `goblin_maceman` im Maßstab der Grünhaut (`rigSc` 1,8 = `sc` 1,5 mal `psc` 1,2 aus `MONDEF.goblin`). Er trägt damit exakt das Sprite der Gegner, über die er unten sagt „Grünhaut. Wie ich.", und steht gut halb so hoch wie die Menschen um ihn herum. Das Komposit aus `gestalt` bleibt der Rückfallweg ohne Grafikpaket.
+
 ### Grundzeilen (Kreislauf)
 
 1. „Vierzig Jahre Probezeit.“ (24) / „Nächstes Jahr wird entfristet.“ (30)
@@ -695,6 +697,86 @@ richtig.
 
 ---
 
+## Dorf-Figuren, Serie 3: Knöterich — ERLEDIGT (eingebaut mit U6)
+
+Inhaltslieferung zu Bauabschnitt **U6** (`phase-u6-knoeterich-tafel.md`). Quelle ist Kapitel 8 der
+Weltbibel, Abschnitt „Amtsrat a. D. Knöterich". Er ist die Figur, die diese Datei in ihrem ersten
+Satz ausdrücklich ausgelassen hat („existiert bereits im Code"), und das war zwei Jahre lang
+richtig: er hatte seine eigenen Kanäle und keine Tafel. Seit U6 hat er eine, und damit braucht er
+dasselbe Zeilenkontingent wie die vierzehn anderen.
+
+**Er steht trotzdem nicht in `DORF_FIGUREN`.** Sein Eintrag heißt `KN_FIGUR` und liegt in seinem
+eigenen Block, weil er im Haus steht und nicht im Dorf. Für die Zeilen macht das keinen
+Unterschied: `knAssertCaps()` prüft sie seit U6 in derselben Schleife, mit denselben Deckeln.
+
+### Knöterich — Amtsrat a. D. Knöterich
+
+Optik: Held-Komposit aus `KN_GESTALT` (Haar h1, Haarfarbe `#746a5a`, Hemd „hof" `#706150`, Hose
+„hof", Schuhe), in der Welt grau getönt. Steht fest auf `KN_T` (zwei Kacheln westlich des
+Kessels), gezeichnet von `drawAlter()` und nicht von `DRAW_NPC`. Schild über dem Kopf:
+„Amtsrat a. D. Knöterich" (23). Porträt: `assets/portraets/knoeterich.png`, seit U5 geladen.
+
+**Die Regel über allen Zeilen (Kapitel 8): er erklärt Tasten, nie Zusammenhänge.** Er ist der
+letzte Mensch, der den Vorgang 1 vollständig gelesen hat. Er weiß alles und darf nichts sagen,
+und die Amtsverschwiegenheit endet nicht mit der Pensionierung. Keine der elf Zeilen unten sagt,
+was er weiß. Zwei sagen, dass er es nicht sagen darf, und eine sagt es, indem sie das Thema
+wechselt.
+
+#### Grundzeilen (Kreislauf)
+
+1. „Ich führe Buch. Seit vierzig Jahren." (36) / „Auch über Sie." (14)
+2. „Meine Entpflichtung liegt noch vor." (35) / „Sie wird bearbeitet." (20)
+3. „Außer Dienst und im Dienst." (27) / „Beides steht in der Akte." (25)
+4. „Fragen Sie mich nichts über Vorgänge." (37) / „Amtsverschwiegenheit." (21)
+5. „Ich komme morgens früher als nötig." (35) / „Das steht nirgends." (19)
+6. „Ich gieße. Mehr sage ich dazu nicht." (36) / „Es ist keine Dienstaufgabe." (27)
+
+Zeile 1 ist seine Besessenheit, wörtlich aus Kapitel 8. Zeile 2 und 3 sind sein Hindernis: die
+Entpflichtung wurde nie bearbeitet, er ist gleichzeitig außer Dienst und im Dienst. Zeile 4 ist
+sein Geheimnis, von der einen Seite, von der er es zeigen darf. Zeile 5 und 6 sind die Gießkanne,
+und sie sind der Grund, aus dem sie hier stehen dürfen: Kapitel 8 sagt über sie „Er sagt nichts
+dazu", und genau das sagt er. Dass er kommt, ohne zu müssen, und gießt, ohne zuständig zu sein,
+steht im Bild und nicht in einer Erklärung.
+
+#### Aktzeilen
+
+I. „Neuzugang vermerkt. Die Akte ist offen." (39)
+II. „Der Posteingang wächst. Vermerkt." (33)
+III. „Mehr Schriftverkehr als sonst. Notiert." (39)
+IV. „Man fragt mich viel. Ich antworte nicht." (40)
+V. „Meine Entpflichtung steht weiter aus." (37)
+
+Die fünf halten sich absichtlich an seinen Schreibtisch. Die Dorffiguren kommentieren, was im
+Dorf passiert; er kommentiert, was auf seinem Tisch davon ankommt. Akt IV nennt den Andrang und
+nicht seinen Grund. Akt V nennt das Ende nicht: sein Vorgang ist der, der offen bleibt, bis er
+in Kapitel 9 als vorletzte Amtshandlung bearbeitet wird.
+
+#### Anredeform (18.5)
+
+„Herr oder Frau &lt;Titel&gt;." (Deckel 48, gebaut wie bei den übrigen elf) / „Vollständig. Immer." (19)
+
+Die zweite Zeile ist keine neue Charakterisierung, sondern seine Regel aus Kapitel 18.5,
+wortkarg gesagt: „Immer vollständig, immer korrekt, immer inklusive Herr oder Frau. Jedes Mal."
+
+#### Antwortliste
+
+Vier Antworten wie bei allen, plus eine fünfte, die es nur bei ihm gibt und nur dann, wenn
+schon ein Dienstzettel gelaufen ist:
+
+1. „Und sonst?" (Kreislauf)
+2. „Wie steht es im Haus?" (21) — bei allen anderen „Wie steht es im Dorf?". Er steht im Haus.
+3. „Wie war noch mein Titel?" (Anredeform)
+4. „Was stand da eben?" (18) — spielt die letzten Dienstzettel ab, einen je Griff, höchstens drei
+5. „Auf Wiedersehen."
+
+**Prüfnotiz:** kein Fund. Zeile 4 des Kreislaufs war die einzige heikle, und sie war zuerst
+länger: ein Entwurf ließ ihn sagen, worüber er schweigt. Das ist genau die Grenze aus Kapitel 8.
+Was jetzt dasteht, nennt den Grund und nicht den Gegenstand. Sein Zuwachs aus W11 (die Rangfolge
+des Reiches, das erste Haus, die Pflanze der Frau, die es hätte anordnen können) steht hier
+bewusst nicht — die Weltbibel lässt ihn ausdrücklich draußen, und U6 ändert daran nichts.
+
+---
+
 ## Zusammenfassung Zeichendeckel-Nachweis
 
 Alle 11 Figuren × (6 Grundzeilenpaare + 5 Aktzeilen) plus Bramsches 8 Fragen/Antworten und 3 Abweisungen plus Lotts und Pahls je 21 Anlass-Zeilen**paare** (7 Anlässe × 3 Paare = 42 Zeilen je Figur) wurden gegengezählt: kein `z1` über 48, kein `z2` über 32, keine Aktzeile über 44 Zeichen.
@@ -710,3 +792,10 @@ Emoji und Sperrliste, und `tools/reich-pruef.mjs` prüft im Browser, dass sie zu
 erscheinen. Ein Fund gab es: siehe die Notiz zur Rang-Antwort bei Bramsche.
 
 *(Korrektur GW22: die dreistufige Prüfung galt unter der Bedingung „solange kein Text umformuliert wird“. W5 hat drei Aktzeilen umformuliert (siehe oben). Sie sind gegen Sperrvermerk und Formregeln nachgeprüft: sauber. Seit GW14 prüft `knAssertCaps()` beides ohnehin maschinell mit, die Bedingung hängt also nicht mehr an einer einmaligen Sitzung.)*
+
+**Nachtrag U6.** Dazugekommen ist eine zwölfte Figur mit 6 Grundzeilenpaaren, 5 Aktzeilen und
+einer Anredeform: Knöterich. Sie sind gegengezählt und stehen mit ihrer Zeichenzahl da. Von Hand
+nachgemessen wird auch das nicht mehr: `knAssertCaps()` liest seit U6
+`DORF_FIGUREN.concat([KN_FIGUR])` und prüft seine Zeilen bei jedem Start mit, `anredeAssert()`
+seine Anredeform über den ganzen Laufbahnverlauf, und `tools/gespraech-pruef.mjs` fährt seinen
+Kreislauf im Browser einmal durch.

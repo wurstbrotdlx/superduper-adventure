@@ -150,6 +150,31 @@ korrigiert. Der Rest der Vorgaben ist unverändert eingehalten.
 
 ---
 
+## Der Zusammenstoß mit U6
+
+Während F1 lief, ist U6 in `main` gegangen und hat dieselbe Stelle angefasst: Knöterich
+bekommt dort eine eigene Gesprächstafel, und seine Antwortliste bekommt eine **fünfte
+Zeile** („Was stand da eben?", der Ersatz für die alte Kontextaktion Nachfragen). F1d baut
+an derselben Stelle die andere fünfte Zeile ein, die Tür zum Gesprächsbaum.
+
+**Aufgelöst ohne Kompromiss, weil beide sich ausschließen:** Knöterich hat keinen Baum, er
+erklärt Tasten und keine Zusammenhänge. Und keine Dorffigur führt Buch. Es steht also nie
+mehr als eine der beiden fünften Zeilen da. Beide Absätze stehen jetzt untereinander in
+`gespraechOptionen()`, mit einem Kommentar, der genau das festhält.
+
+Nachgemessen im laufenden Spiel:
+
+```
+Knöterich:  Und sonst? | Wie steht es im Haus? | Wie war noch mein Titel? | Was stand da eben? | Auf Wiedersehen.
+Nieselbeck: Und sonst? | Wie steht es im Dorf? | Wie war noch mein Titel? | Erzählen Sie von früher. | Auf Wiedersehen.
+```
+
+Die beiden Guards prüfen weiter getrennt: `gespraechAssert()` läuft über `DORF_FIGUREN`
+(dort ist Knöterich nicht) und prüft, dass eine fünfte Zeile die Tür zum Baum ist; U6s
+eigener Block prüft Knöterichs Liste in beiden Ständen, mit und ohne Verlauf.
+
+---
+
 ## Prüfprotokoll
 
 **Baseline vor dem ersten Eingriff**, damit jede spätere Messung einen Vergleich hat:

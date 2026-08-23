@@ -1,5 +1,17 @@
 # Bauabschnitt G10 — Ein Monsterrig für Nörgel, ein Bild für zwei — ERLEDIGT
 
+> **Nachtrag U6.** Der offene Punkt „Nörgels Größe" unten ist erledigt, und die
+> Antwort war die unangenehme: das Rig war falsch gewählt. `orc_chief` misst im
+> Idle-Frame nicht 20 bis 24 Pixel, wie G10-1 gerechnet hat, sondern 28; mal
+> `rigSc` 1,9 stand Nörgel damit exakt so hoch wie die Menschen im Dorf. Er
+> trägt seit U6 `goblin_maceman` mit `rigSc` 1,8, also Blatt und Maßstab der
+> Grünhaut aus `MONDEF.goblin` (`sc` 1,5 mal `psc` 1,2). Damit stimmt auch
+> „Grünhaut. Wie ich." im Bild. Siehe `phase-u6-knoeterich-tafel.md`.
+>
+> Erledigt ist damit ebenfalls der letzte Punkt der offenen Liste: Nörgel und
+> das Empfangsbekenntnis teilen sich kein Blatt mehr, ein trennendes `tint`
+> braucht es nicht.
+
 Fünf Eingriffe, alle von außen angestoßen. Der erste hebt eine Grenze auf, die
 G9 noch als endgültig notiert hatte; der letzte berichtigt einen Fehler, den G8
 gemacht und derweil als erledigt gemeldet hat.
