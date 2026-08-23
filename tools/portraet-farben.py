@@ -66,6 +66,11 @@ ZONEN = {
 # Sonderfaelle. Wo die Standardzone etwas anderes trifft als das, was sie treffen
 # soll, steht hier das eigene Fenster und der Grund dafuer. Jeder Eintrag ist ein
 # Befund am Bild, keine Geschmacksentscheidung.
+#
+# Vierter Eintrag, optional: 'haeufigste' nimmt die haeufigste Einzelfarbe der
+# Zone statt des Familienmittels. Gebraucht genau dort, wo das Mittel den
+# Schatten UNTER dem Haar mitwiegt und die Farbe damit ins Braune zieht - auf 64
+# Pixeln liest sich Haar an seinem Lichtton, nicht an seinem Flaechenmittel.
 SONDER = {
     ('knoeterich', 'haar'): ((0.10, 0.90, 0.04, 0.14, None), UMRISS,
         'gescheiteltes Haar ueber hoher Stirn - die Standardzone misst die Stirn, '
@@ -79,19 +84,31 @@ SONDER = {
     ('vorblatt', 'hemd'): (ZONEN['hemd'], 0.0,
         'derselbe Grund: der Mantel ist so dunkel wie seine Kontur. Mit der '
         'Grenze bliebe nur die Goldbordüre stehen, und die ist nicht der Mantel'),
+    ('pommer', 'haar'): ((0.30, 0.70, 0.02, 0.08, None), UMRISS,
+        'kurzes blondes Haar ueber hoher Stirn. Die Standardzone reicht bis auf '
+        'die Stirn, und Blond und Haut sind derselbe Farbton - der Familientest '
+        'kann sie nicht trennen. Fenster auf das oberste Sechzehntel verengt, wo '
+        'nur Haar ist, und der Lichtton genommen: das Mittel wiegt den Schatten '
+        'unter dem Pony mit und zoege das Blond ins Braune', True),
 }
 
-# Lott und Pahl haben kein eigenes Portraet - Motiv 11 ist ein Doppelportraet und
-# laesst sich nicht in zwei Gesichter schneiden (assets/portraets/README.md).
-# Fuer die Farbe reicht es trotzdem: jeder von beiden fuellt seine Bildhaelfte,
-# und gemessen wird hier nur Haar und Mantel, nicht das Gesicht.
+# Lott und Pahl teilen sich ein Portraet - Motiv 11 ist ein Doppelbild und laesst
+# sich nicht in zwei Gesichter schneiden. Seit G10 zeigt die Tafel es beiden (das
+# ist der Witz, siehe phase-g10), und gemessen wird aus derselben Datei, die das
+# Spiel laedt: jeder von beiden fuellt seine Bildhaelfte. Gemessen wird nur Haar
+# und Mantel, nicht das Gesicht.
+#
+# QUELLE selbst faellt aus der Zeilenliste heraus - eine Messung ueber beide
+# Haelften zugleich waere ein Mischwert aus zwei Maenteln und stuende fuer
+# niemanden.
 # Der Zuschnitt ist ein anderer als bei den Einzelportraets: beide Koepfe setzen
 # erst bei knapp einem Siebtel Bildhoehe an, die Standardzone traefe darueber nur
 # Grund. Deshalb ein eigenes Haarfenster fuer diese beiden.
 DOPPEL_ZONEN = dict(ZONEN, haar=(0.22, 0.78, 0.16, 0.34, None))
+DOPPEL_QUELLE = 'lott-pahl'
 DOPPEL = {
-    'lott': (os.path.join(FIGUREN, '11-lott-pahl-px.png'), 0.02, 0.46),
-    'pahl': (os.path.join(FIGUREN, '11-lott-pahl-px.png'), 0.52, 0.96),
+    'lott': (os.path.join(PORTRAET, DOPPEL_QUELLE + '.png'), 0.02, 0.46),
+    'pahl': (os.path.join(PORTRAET, DOPPEL_QUELLE + '.png'), 0.52, 0.96),
 }
 
 def hexv(c):  return '#%02x%02x%02x' % tuple(int(round(v)) for v in c)
@@ -165,8 +182,13 @@ def messen(key, pfad, xoff=0.0, xspan=1.0):
     grund = Counter([px[0,0], px[w-1,0], px[0,h-1], px[w-1,h-1]]).most_common(1)[0][0]
     aus = {'groesse': f'{w}x{h}', 'grund': grund}
     for name, fenster in (DOPPEL_ZONEN if key in DOPPEL else ZONEN).items():
-        f, u, _ = SONDER.get((key, name), (fenster, UMRISS, None))
-        aus[name] = messeZone(px, w, h, grund, f, u, xoff, xspan)
+        eintrag = SONDER.get((key, name))
+        f, u = (eintrag[0], eintrag[1]) if eintrag else (fenster, UMRISS)
+        haeufigste = bool(eintrag and len(eintrag) > 3 and eintrag[3])
+        mittel, top = messeZone(px, w, h, grund, f, u, xoff, xspan)
+        if haeufigste and top:
+            mittel = brauchbar(top[0])
+        aus[name] = (mittel, top)
     return aus
 
 def ausIndex():
@@ -181,8 +203,12 @@ def ausIndex():
     pfad = os.path.join(HIER, '..', 'index.html')
     text = open(pfad, encoding='utf-8').read()
     aus = {}
-    for m in re.finditer(r"\{key:'([a-z0-9]+)',[^\n]*?\n(?:\s*//[^\n]*\n)*\s*gestalt:\{([^}]*)\}", text):
-        aus[m.group(1)] = m.group(2)
+    # Zwischen der Kopfzeile und gestalt darf beliebiges stehen - Kommentare, und
+    # seit G10 auch Felder wie rig/rigSc. Nicht-gierig bis zum ersten gestalt,
+    # und die Suche bricht am naechsten {key: ab, damit kein Eintrag den seines
+    # Nachbarn erwischt, falls einer selbst keine gestalt hat.
+    for m in re.finditer(r"\{key:'([a-z0-9]+)',((?:(?!\{key:')[\s\S])*?)gestalt:\{([^}]*)\}", text):
+        aus[m.group(1)] = m.group(3)
     kn = re.search(r'const KN_GESTALT = \{([^}]*)\}', text)
     if kn: aus['knoeterich'] = kn.group(1)
     werte = {}
@@ -222,7 +248,8 @@ def main():
     reihen = []
     if os.path.isdir(PORTRAET):
         for n in sorted(os.listdir(PORTRAET)):
-            if n.endswith('.png'): reihen.append((n[:-4], os.path.join(PORTRAET, n), 0.0, 1.0))
+            if n.endswith('.png') and n[:-4] != DOPPEL_QUELLE:
+                reihen.append((n[:-4], os.path.join(PORTRAET, n), 0.0, 1.0))
     for key, (pfad, a, b) in DOPPEL.items():
         if os.path.exists(pfad): reihen.append((key, pfad, a, b - a))
     if not reihen:
@@ -245,9 +272,17 @@ def main():
     if breit: print('Je Zone: Mittelton der Farbfamilie, dahinter die zwei haeufigsten Einzelfarben.')
     if SONDER:
         print('\n* eigenes Messfenster:')
-        for (key, name), (_, _, grund) in SONDER.items():
-            print(f'  {key}.{name}: {grund}')
+        for (key, name), eintrag in SONDER.items():
+            print(f'  {key}.{name}: {eintrag[2]}')
     return 0
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except BrokenPipeError:
+        # `... | head` schliesst die Pipe mitten im Schreiben. Ohne das hier
+        # steht darunter ein Traceback, der wie ein Fehler aussieht und keiner
+        # ist. stdout auf devnull umbiegen, damit auch das Aufraeumen von Python
+        # nichts mehr zu schreiben versucht.
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+        sys.exit(0)

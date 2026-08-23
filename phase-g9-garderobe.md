@@ -1,5 +1,11 @@
 # Bauabschnitt G9 — Die Garderobe, der Hut und Nörgels Haut — ERLEDIGT
 
+> **Nachtrag G10.** Eine Stelle unten ist überholt: „Spitze Ohren. Das
+> Helden-Rig hat keine." Das stimmt weiter, war aber die falsche Frage —
+> Nörgel steht seit G10 auf `orc_chief`, dem Blatt des Empfangsbekenntnisses,
+> und hat seine Ohren. Sein Komposit samt `hautFarbe` bleibt als Rückfallweg.
+> Siehe `phase-g10-rig-und-doppelbild.md`.
+
 G8 hat den Dorffiguren die Farben ihrer Porträts gegeben. G9 nimmt die
 Beschränkungen weg, mit denen G8 gelebt hat: das Vokabular für Kleidung, die
 fehlende Kopfbedeckung und die Haut, die keine war.

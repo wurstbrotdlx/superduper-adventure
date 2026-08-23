@@ -1,5 +1,11 @@
 # Bauabschnitt U5 — Die Figurenporträts kommen in die Tafel — ERLEDIGT
 
+> **Nachtrag G10.** Der offene Punkt „Lott und Pahl" ist erledigt, aber
+> anders als hier vorgesehen: nicht als zwei Einzelporträts, sondern als
+> dasselbe Doppelbild für beide. Damit hat jede Dorffigur ein gemaltes
+> Porträt und der Sprite-Ausschnitt ist ein Weg, den niemand mehr geht.
+> Siehe `phase-g10-rig-und-doppelbild.md`.
+
 Seit dem Bilderlauf vom 22.08.2026 hat das Ensemble neunzehn gemalte Porträts.
 Sie lagen in `assets/figuren/`, standen in keiner Ladeliste und wurden vom Build
 ausdrücklich übersprungen. U5 holt dreizehn davon ins Spiel, dorthin, wo seit U4

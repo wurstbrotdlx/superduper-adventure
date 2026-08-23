@@ -1,5 +1,13 @@
 # Bauabschnitt G8 — Die Dorffiguren tragen die Farben ihrer Porträts — ERLEDIGT
 
+> **Nachtrag G10, und er ist eine Berichtigung.** Der Abschnitt G8-4 unten
+> behauptet, „alle acht wandernden Figuren tragen jetzt `komposit:true`". Das
+> war falsch. **Fünf trugen es**; Milb, Pommer und Fass haben es nie bekommen
+> und liefen seit G8 weiter auf ihrem Paketblatt — Milb als Farmer_Buba samt
+> Strohhut, Pommer als Bartender_Katy. Gefunden hat es nicht ein Guard, sondern
+> ein Blick aufs Telefon. Berichtigt in G10, samt der Gegenprobe, die es hätte
+> melden müssen.
+>
 > **Nachtrag G9.** Drei Stellen dieses Dokuments sind überholt, der Rest gilt.
 > Kleidung heißt nicht mehr `chest`/`legs`/`feet` (Rüstungsstufen), sondern
 > `hemd`/`hose`/`schuh` aus `CF_GARDEROBE`. Es gibt eine Kopfbedeckung (`hut`),
@@ -131,6 +139,15 @@ Zeichnung auseinanderlaufen, muss also eines von beiden weichen, und G8
 entscheidet für das Porträt: alle acht wandernden Figuren tragen jetzt
 `komposit:true` und werden als Komposit gebacken, auch wenn ihr Blatt im Paket
 liegt.
+
+> **Berichtigung (G10).** Dieser Absatz stimmt als Absicht und stimmte nicht als
+> Tatsache. Eingetragen wurde das Flag bei fünf Figuren — Zwirn, Zapf, Lisbeth,
+> Trepp und Nörgel. Milb, Pommer und Fass bekamen nur ihre neue `gestalt`-Zeile
+> und behielten ihr Paketblatt. Die Konsolenzeile aus G6 hat es sogar gesagt
+> („diese Figuren laufen als Held-Komposit: milb, pommer, fass" nennt genau die
+> drei ohne Flag, weil `ersetzt` nur zählt, wer kein `komposit` trägt) — nur war
+> das ohne Grafikpaket nicht von einem gewöhnlichen Fehlen zu unterscheiden.
+> Nachgetragen in G10.
 
 Das ist eine Zeile in `DORF_FIGUREN` und keine Weiche im Code. Wer bei einer
 Figur das Paketblatt für die bessere Zeichnung hält, streicht dort das Flag und
