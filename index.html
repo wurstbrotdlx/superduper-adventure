@@ -7279,6 +7279,115 @@ const RANDNOTIZ = {
   untaetigkeit: ['Sie stehen. Ich auch. Ich werde bezahlt.', 'Pause ist nicht beantragt.', 'Die Monster warten nicht ewig.', 'Ich notiere Stillstand.'],
 };
 
+// ===========================================================================
+//  F1b: Die Schalter eines Zusatzblocks, und die Kurzform-Tabelle
+//
+//  Bis W11 hatte ein Zusatzblock genau zwei mögliche Schalter, abAkt und merker,
+//  und figZusatz() prüfte sie mit einem Ternär. F1 braucht sechs weitere, und
+//  acht Zweige nebeneinander wären der Punkt, an dem eine Tabelle billiger ist
+//  als Code. Wichtiger als die Kürze ist aber, dass es GENAU EINE Tabelle gibt:
+//  figZusatz() liest sie, um zu entscheiden, knAssertCaps() liest dieselbe, um zu
+//  prüfen. Zwei Listen wären zwei Wahrheiten, und die zweite driftet (W5/W6).
+//
+//  frei(w, z)  entscheidet, ob der Block offen ist. w ist der Wert des Schalters,
+//              z der Block selbst (nur skill braucht ihn, wegen ab:).
+//  pruef(w, z) meldet einen Text, wenn der Wert unbrauchbar ist, sonst null.
+//              Läuft auf Skriptebene in knAssertCaps() und darf deshalb nichts
+//              anfassen, was erst weiter unten deklariert wird. frei() darf es,
+//              weil es erst zur Laufzeit gerufen wird.
+//
+//  Die Obergrenzen sind keine Willkür, sondern die Reichweite des Spiels: fünfzig
+//  Schichten sind fünf Akte, die zehnte Rangstufe liegt hinter der fünfzigsten
+//  Schicht, der Monsterkatalog spannt die Stufen 1 bis 10 und das Ultimate liegt
+//  auf 13. Was darüber steht, ist kein hoher Anspruch, sondern ein Tippfehler,
+//  und genau den soll die Prüfung finden.
+// ===========================================================================
+const ZUSATZ_SCHALTER = {
+  abAkt:     {frei: w => !CONFIG.schichtModus || aktStand() >= w,
+              pruef: w => (w >= 1 && w <= 5) ? null : 'nennt einen Akt, den es nicht gibt: ' + w},
+  merker:    {frei: w => !!kn.flags[w],
+              pruef: w => (w in kn.flags) ? null : 'nennt einen Merker, den es nicht gibt: ' + w},
+  abSchicht: {frei: w => !CONFIG.schichtModus || amt.schichten >= w,
+              pruef: w => (w >= 1 && w <= 50) ? null : 'nennt eine Schicht ausserhalb der fünfzig: ' + w},
+  abStufe:   {frei: w => player.level >= w,
+              pruef: w => (w >= 1 && w <= 20) ? null : 'nennt eine Stufe, die niemand erreicht: ' + w},
+  abRang:    {frei: w => !CONFIG.schichtModus || rangStufe() >= w,
+              pruef: w => (w >= 1 && w <= 10) ? null : 'nennt eine Rangstufe, die es nicht gibt: ' + w},
+  skill:     {frei: (w, z) => player.skills[w] >= (z.ab || 1),
+              pruef: (w, z) => !(w in {str:1, vit:1, agi:1, int:1}) ? 'nennt eine Befähigung, die es nicht gibt: ' + w
+                             : !(z.ab >= 1 && z.ab <= 30) ? 'nennt einen Punktestand, den niemand erreicht: ' + z.ab : null},
+  zauber:    {frei: w => !!player.spellsKnown[w],
+              pruef: w => SPELLS.some(sp => sp.id === w) ? null : 'nennt einen Zauber, den es nicht gibt: ' + w},
+  zweig:     {frei: w => kenntZweig(w),
+              pruef: w => (w === 0 || w === 1 || w === 2) ? null : 'nennt einen Zauberzweig, den es nicht gibt: ' + w},
+  // Die einzige Bedingung, die wieder falsch werden kann. Das ist gewollt und
+  // ungefährlich: npcCycle() hält den Zeiger per Modulo im Bereich, der Spieler
+  // sieht dann die nächste Zeile und keinen Fehler. Ohne Schichtmodus gibt es
+  // keine Schichtuhr, dort steht beides offen, wie bei serieFrei() und figDa().
+  phase:     {frei: w => !CONFIG.schichtModus ? true
+                       : w === 'antritt' ? shiftT > 0.75 * CONFIG.schichtDauer
+                                         : shiftT < 0.25 * CONFIG.schichtDauer,
+              pruef: w => (w === 'antritt' || w === 'feierabend') ? null : 'nennt eine Schichtphase, die es nicht gibt: ' + w},
+};
+
+// Woher ein Anlass kommt. Ein Pool an einer Figur, den nichts auslöst, ist eine
+// Zeile, die nie jemand hört, und das ist derselbe stumme Fall, den GW14 bei den
+// Grundzeilen gefunden hat. RANDNOTIZ liefert die Schlüssel aus Knöterichs
+// Kanälen, SZENE_ANLASS die aus den Szenen; weil letzteres erst weit unten steht,
+// stehen seine beiden Werte hier als Liste und werden dort gegengeprüft.
+const ANLASS_QUELLEN = ['umlauf', 'hintermuehl'];
+
+// ---------------------------------------------------------------------------
+//  Die Kurzform. Behörden kürzen ab, und diese hier tut es, seit es sie gibt.
+//  Die Tabelle ist die EINZIGE Stelle, an der die Langformen stehen; wer ein
+//  Kürzel in eine Sprechblase schreibt, das hier fehlt, bekommt es beim nächsten
+//  Start gemeldet. Herkunft und Begründung je Eintrag: figuren-leben.md.
+//
+//  wo: die Figur, bei der das Kürzel im Spiel aufgeht. Der Guard prüft, dass es
+//  sie gibt; ein Kürzel ohne Auflösestelle ist kein Gag, sondern eine
+//  verschlossene Tür.
+//
+//  Nicht in dieser Tabelle steht der Vorgang 1, und das ist der Witz: er hat in
+//  vierhundert Jahren nie ein Kürzel bekommen, weil ihn nie jemand oft genug
+//  erwähnt hat, als dass sich das Abkürzen gelohnt hätte. Wer ihm eines gibt,
+//  nimmt Akt V seine Pointe.
+// ---------------------------------------------------------------------------
+const ABKUERZUNGEN = {
+  'N. N.':     {lang: 'nicht genannt',                        wo: 'bramsche'},
+  'a. D.':     {lang: 'außer Dienst',                         wo: 'knoeterich'},
+  'n. O.':     {lang: 'nach der Ordnung',                     wo: 'bramsche'},
+  'TNM':       {lang: 'Tägliche Niederschlagsmeldung',        wo: 'nieselbeck'},
+  'MfM':       {lang: 'Ministerium für Monsterangelegenheiten', wo: 'bramsche'},
+  'T.':        {lang: 'die TNM, noch einmal gekürzt',         wo: 'bramsche'},
+  'GA':        {lang: 'Gutachterliche Ansetzung',             wo: 'milb'},
+  'ZB':        {lang: 'Zwischenbescheid oder Zuständigkeitsbereich', wo: 'bramsche'},
+  'AL':        {lang: 'Amtsleitung oder Anhängige Lage',      wo: 'bramsche'},
+  'V. u. g.':  {lang: 'vorgelesen und genehmigt',             wo: 'zapf'},
+};
+
+// Was wie ein Kürzel aussieht und keins ist. Kurz gehalten und einzeln begründet,
+// damit die Liste nicht zur Hintertür wird:
+//   römische Zahlen  Zuständigkeitsbereich VII, Ablage V, Akt III
+//   Versalien        IM TERMIN auf dem Türschild, Urkundenzeilen in Großschrift
+//   Tastennamen      WASD. Eine Taste ist keine Abkürzung dieser Welt, sondern
+//                    Eingabe, und Knöterich erklärt Tasten. Der Guard hat sie
+//                    beim ersten Lauf gemeldet, und das war richtig von ihm.
+const ABK_ROEMISCH = /^[IVXLC]+$/;
+const ABK_AUSNAHME = ['IM', 'TERMIN', 'ZUM', 'FÜRST', 'BLATT', 'ANLAGE', 'ABLAGE', 'WASD'];
+// Zwei Muster: Großbuchstabenfolgen mit mindestens zwei Versalien, und
+// Punktkürzel der Form "X. Y." samt der zusammengeschriebenen Fassung "X.Y.",
+// die im Bestand beide vorkommen. Die Schreibweise wird vor dem Nachschlagen
+// vereinheitlicht.
+//
+// Die Wortgrenze steht hier als Lookaround und nicht als \b, und das ist kein
+// Geschmack, sondern ein gemessener Befund: \b ist in JavaScript ASCII-basiert,
+// und damit liegt zwischen T und ü eine Wortgrenze. Mit \b hat dieses Muster
+// beim ersten Lauf 117 Meldungen erzeugt, darunter "Tü" aus Tür und "Fü" aus
+// Fürst. Die Lookarounds kennen die Umlaute und zählen sie zum Wort.
+const ABK_GROSS = /(?<![A-Za-zÄÖÜäöüß])[A-ZÄÖÜ]{1,2}[a-zäöüß]?[A-ZÄÖÜ]{1,3}(?![A-Za-zÄÖÜäöüß])/g;
+const ABK_PUNKT = /(?<![A-Za-zÄÖÜäöüß])[A-Za-zÄÖÜäöü]\.(?:\s?[A-Za-zÄÖÜäöü]\.)+/g;
+const abkNorm = k => k.replace(/\.\s*/g, '. ').trim();
+
 function knOrdinal(n){
   const W = ['Nullte','Erste','Zweite','Dritte','Vierte','Fünfte','Sechste','Siebte','Achte','Neunte','Zehnte'];
   return W[n] || (n + '.');
@@ -7349,13 +7458,31 @@ function knAssertCaps(){
     // die Zeilen wären schlicht nie zu sehen, und genau so eine stumme Figur ist
     // der Fall, den dieser Guard seit GW14 melden soll.
     if(fig.zusatz) for(const z of fig.zusatz){
-      // W11: Ein Block hängt entweder an einem Merker oder an einem Akt, nie an
-      // beidem und nie an keinem. Ohne Schalter wären die Zeilen von Anfang an
-      // da, mit zweien wäre nicht zu sagen, welcher gilt.
-      if(!!z.merker === !!z.abAkt) rows.push([null,0,'Figur ' + fig.key + ' hat einen Zusatzblock ohne genau einen Schalter']);
-      if(z.merker && !(z.merker in kn.flags)) rows.push([null,0,'Figur ' + fig.key + ' nennt einen Merker, den es nicht gibt: ' + z.merker]);
-      if(z.abAkt && !(z.abAkt >= 1 && z.abAkt <= 5)) rows.push([null,0,'Figur ' + fig.key + ' nennt einen Akt, den es nicht gibt: ' + z.abAkt]);
+      // W11: Ein Block hängt an genau einem Schalter, nie an zweien und nie an
+      // keinem. Ohne Schalter wären die Zeilen von Anfang an da, mit zweien wäre
+      // nicht zu sagen, welcher gilt. F1b: aus zwei möglichen Schaltern sind acht
+      // geworden, die Regel ist dieselbe geblieben, und gezählt wird jetzt gegen
+      // dieselbe Tabelle, aus der figZusatz() liest.
+      const genannt = Object.keys(ZUSATZ_SCHALTER).filter(k => k in z);
+      if(genannt.length !== 1)
+        rows.push([null,0,'Figur ' + fig.key + ' hat einen Zusatzblock mit ' + genannt.length + ' Schaltern statt genau einem']);
+      for(const k of genannt){
+        const m = ZUSATZ_SCHALTER[k].pruef(z[k], z);
+        if(m) rows.push([null,0,'Figur ' + fig.key + ' ' + m]);
+      }
+      // ab: gehört zu skill und sonst nirgendwohin. Ein ab: an einem anderen
+      // Schalter sähe aus wie eine Bedingung und wäre keine.
+      if('ab' in z && !('skill' in z))
+        rows.push([null,0,'Figur ' + fig.key + ' hat ein ab ohne skill']);
       for(const p of z.zeilen) rows.push([p.z1,48],[p.z2,32]);
+    }
+    // F1b: Ein Anlass-Pool, den nichts auslöst, ist eine Zeile, die nie jemand
+    // hört. Die Schlüssel kommen aus Knöterichs Kanälen (RANDNOTIZ) und aus den
+    // Szenen (SZENE_ANLASS, hier als ANLASS_QUELLEN, weil die Tabelle selbst
+    // erst weit unten steht und von hier aus in der TDZ läge).
+    if(fig.anlass) for(const key in fig.anlass){
+      if(!(key in RANDNOTIZ) && ANLASS_QUELLEN.indexOf(key) < 0)
+        rows.push([null,0,'Figur ' + fig.key + ' wartet auf einen Anlass, den nichts auslöst: ' + key]);
     }
   }
   // Das Rekord-Suffix aus knBegruessungLine() steht hier bewusst nicht: es prüft seine
@@ -7390,6 +7517,28 @@ function knAssertCaps(){
     // vorweggenommen. Deshalb steht diese Regel als Prüfung im Code und nicht
     // nur als Satz in einem Dokument.
     if(KAISER_PRAETERITUM.test(txt)) fehler('Der Kaiser steht in der Vergangenheit:', txt);
+    // F1b: Der laufende Gag über die Kurzform hat eine Bedingung, ohne die er zur
+    // Zumutung wird: jedes Kürzel ist im Spiel auflösbar. Geprüft wird deshalb
+    // nicht, ob abgekürzt wird, sondern ob das Kürzel in ABKUERZUNGEN steht, wo
+    // seine Langform und seine Auflösestelle stehen. Ein dreizehntes fällt damit
+    // beim nächsten Start auf und nicht erst der Spielerin in Akt IV.
+    for(const roh of (txt.match(ABK_PUNKT) || [])){
+      const k = abkNorm(roh);
+      if(!(k in ABKUERZUNGEN)) fehler('Abkürzung ohne Eintrag in ABKUERZUNGEN:', k, 'in', txt);
+    }
+    for(const k of (txt.match(ABK_GROSS) || [])){
+      if(ABK_ROEMISCH.test(k) || ABK_AUSNAHME.indexOf(k) >= 0) continue;
+      if(!(k in ABKUERZUNGEN)) fehler('Abkürzung ohne Eintrag in ABKUERZUNGEN:', k, 'in', txt);
+    }
+  }
+  // F1b: und die Gegenrichtung. Ein Kürzel, dessen Auflösestelle es nicht gibt,
+  // ist eine verschlossene Tür, und das ist genau der Fall, den der Gag nicht
+  // haben darf. Knöterich steht nicht in DORF_FIGUREN und ist deshalb genannt.
+  for(const k in ABKUERZUNGEN){
+    const wo = ABKUERZUNGEN[k].wo;
+    if(!ABKUERZUNGEN[k].lang) fehler('Abkürzung ohne Langform:', k);
+    if(wo !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === wo))
+      fehler('Abkürzung ohne Auflösestelle:', k, 'verweist auf', wo);
   }
   console.assert(ok, 'Knöterich: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
@@ -8520,8 +8669,16 @@ function figZusatz(fig){
   if(!fig.zusatz) return [];
   let out = [];
   for(const z of fig.zusatz){
-    const frei = z.merker ? kn.flags[z.merker]
-                          : (!CONFIG.schichtModus || aktStand() >= z.abAkt);
+    // F1b: Der Schalter steht in ZUSATZ_SCHALTER, nicht hier. Genau ein Schlüssel
+    // je Block ist die Regel, knAssertCaps() rechnet sie beim Start nach; findet
+    // diese Schleife trotzdem keinen, bleibt der Block zu, statt von selbst
+    // aufzugehen. Ein Block ohne Schalter ist ein Fehler und kein Freibrief.
+    let frei = false;
+    for(const k in ZUSATZ_SCHALTER){
+      if(!(k in z)) continue;
+      frei = !!ZUSATZ_SCHALTER[k].frei(z[k], z);
+      break;
+    }
     if(frei) out = out.concat(z.zeilen);
   }
   return out;
