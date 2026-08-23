@@ -1,4 +1,5 @@
-// Pruefprotokoll zu Bauabschnitt G8 (phase-g8-figurenfarben.md).
+// Pruefprotokoll zu den Bauabschnitten G8 und G9
+// (phase-g8-figurenfarben.md, phase-g9-garderobe.md).
 //
 //   python3 serve.py &
 //   node tools/figurenfarben-messlauf.mjs [URL]
@@ -124,11 +125,60 @@ const rechnung = await page.evaluate(() => {
   const nachGemerkt = FARB_CACHE.size;
   FARB_CACHE.delete('pruef_keil|#123456');
 
+  // --- G9: die Hautrechnung -------------------------------------------------
+  // Ein eigenes Blatt mit vier Sorten Pixel nebeneinander, jede in einer eigenen
+  // Zelle: Haut (warmes Orange), ein Auge (dunkles Grau), eine Kontur (fast
+  // Schwarz) und ein Hemd (Blau). hautBlatt() darf genau die erste anfassen.
+  const hautProbe = (() => {
+    const HAUT = [214, 150, 100], AUGE = [64, 64, 68], KONTUR = [12, 12, 14], HEMD = [60, 90, 170];
+    const c2 = document.createElement('canvas');
+    c2.width = 576; c2.height = 64;
+    const g2 = c2.getContext('2d');
+    const sorten = [HAUT, AUGE, KONTUR, HEMD];
+    for(let x = 0; x < 576; x++){
+      const v = sorten[Math.floor(x / 144)];
+      // Haut mit einer Helligkeitsrampe, damit die Schattierung pruefbar bleibt.
+      const k = v === HAUT ? 0.55 + (x % 144) / 144 * 0.7 : 1;
+      g2.fillStyle = `rgb(${Math.min(255, Math.round(v[0]*k))},${Math.min(255, Math.round(v[1]*k))},${Math.min(255, Math.round(v[2]*k))})`;
+      g2.fillRect(x, 0, 1, 64);
+    }
+    SHEETS['pruef_haut'] = {img:c2, cols:9, n:9, fw:64, fh:64, ax:32, ay:40, rowStart:0};
+
+    const vorherPx = lese(c2);
+    const aus = hautBlatt('pruef_haut', '#949341', false);
+    const px = lese(aus);
+    const z = hsl('#949341');
+    let hautFalsch = 0, fremdAngefasst = 0, hellVerloren = 0;
+    const g2c = c2.getContext('2d', {willReadFrequently:true});
+    const roh = g2c.getImageData(0, 0, 576, 64).data;
+    const neu = aus.getContext('2d', {willReadFrequently:true}).getImageData(0, 0, 576, 64).data;
+    for(let i = 0; i < roh.length; i += 4){
+      const x = (i / 4) % 576;
+      const istHaut = x < 144;
+      const gleich = roh[i] === neu[i] && roh[i+1] === neu[i+1] && roh[i+2] === neu[i+2];
+      if(!istHaut){ if(!gleich) fremdAngefasst++; continue; }
+      if(gleich){ hautFalsch++; continue; }              // Haut haette sich aendern muessen
+      const mx = Math.max(neu[i], neu[i+1], neu[i+2]), mn = Math.min(neu[i], neu[i+1], neu[i+2]);
+      if(mx > mn){
+        const h = hexHsl('#' + [neu[i], neu[i+1], neu[i+2]].map(v => v.toString(16).padStart(2, '0')).join('')).h;
+        const d = Math.abs(h - z.h);
+        if(Math.min(d, 1 - d) > 0.03) hautFalsch++;
+      }
+      // Die eigene Helligkeit muss erhalten bleiben (das ist die Schattierung).
+      const lAlt = (Math.max(roh[i], roh[i+1], roh[i+2]) + Math.min(roh[i], roh[i+1], roh[i+2])) / 510;
+      const lNeu = (mx + mn) / 510;
+      if(Math.abs(lAlt - lNeu) > 0.02) hellVerloren++;
+    }
+    return {hautFalsch, fremdAngefasst, hellVerloren, unveraendert: vorherPx.length > 0};
+  })();
+
   return {
     ziele: ziele.length,
     abw,
     hose: [dunkler('#aabbcc', HOSE_DUNKLER), dunkler('#ffffff', 0.5), dunkler(null, 0.5)],
     cache: [nachFluechtig - vorher, nachGemerkt - vorher],
+    haut: hautProbe,
+    garderobe: Object.keys(CF_GARDEROBE).map(s => `${s}:${Object.keys(CF_GARDEROBE[s]).length}`).join(' '),
   };
 });
 
@@ -140,6 +190,12 @@ pruef('die Abstufung bleibt monoton', rechnung.abw.monoton, 0);
 pruef('die Hose ist das abgedunkelte Hemd, ohne Hemd bleibt sie leer',
       rechnung.hose, ['#7a8793', '#808080', null]);
 pruef('ein Figurenblatt fuellt den Cache nicht, ein gemerktes schon', rechnung.cache, [0, 1]);
+
+console.log(`\nTeil 1b — die Hautrechnung (G9, Graukeil aus Haut, Auge, Kontur und Hemd)\n`);
+pruef('jeder Hautpixel nimmt den Zielfarbton an', rechnung.haut.hautFalsch, 0);
+pruef('Auge, Kontur und Hemd bleiben unangetastet', rechnung.haut.fremdAngefasst, 0);
+pruef('die Schattierung der Haut bleibt erhalten', rechnung.haut.hellVerloren, 0);
+console.log(`      Garderobe: ${rechnung.garderobe}`);
 
 // --- Teil 2: die Figuren ----------------------------------------------------
 const figuren = await page.evaluate(() => {
@@ -172,7 +228,7 @@ const figuren = await page.evaluate(() => {
   // Traegt die Welt ueberhaupt Grafik? Ein Blatt des Helden-Rigs reicht als Probe.
   if(!SHEETS['cfbody_idle'] || !SHEETS['cfbody_idle'].img) return {grafik:false};
 
-  const ohneHaar = [], ohneHemd = [], ohneBlatt = [];
+  const ohneHaar = [], ohneHemd = [], ohneBlatt = [], ohneHaut = [];
   const alle = [{key:'knoeterich', blatt:EMPFANG_BLATT, gestalt:KN_GESTALT},
                 ...DORF_FIGUREN.map(f => ({key:f.key, blatt:`npc_baked_${f.key}`, gestalt:f.gestalt}))];
   for(const f of alle){
@@ -180,6 +236,7 @@ const figuren = await page.evaluate(() => {
     if(!d){ ohneBlatt.push(f.key); continue; }
     if(f.gestalt.haarFarbe && !trifft(d, f.gestalt.haarFarbe)) ohneHaar.push(f.key);
     if(f.gestalt.hemdFarbe && !trifft(d, f.gestalt.hemdFarbe)) ohneHemd.push(f.key);
+    if(f.gestalt.hautFarbe && !trifft(d, f.gestalt.hautFarbe)) ohneHaut.push(f.key);
   }
 
   // Das komposit-Flag: es muss auch dann gelten, wenn das Paketblatt daliegt.
@@ -195,7 +252,15 @@ const figuren = await page.evaluate(() => {
     const soll = f.komposit ? `npc_baked_${f.key}` : k;
     if(b !== soll) falsch.push(`${f.key}: ${b} statt ${soll}`);
   }
-  return {grafik:true, ohneBlatt, ohneHaar, ohneHemd, falsch, figuren:alle.length,
+  // G9: Traegt jede Ebene, die eine Figur bestellt hat, wirklich ein Blatt?
+  const ohneEbene = [];
+  for(const f of alle)
+    for(const slot of ['hemd', 'hose', 'schuh', 'hut']){
+      const form = f.gestalt[slot];
+      if(form && !SHEETS[`cf${slot}_${form}_idle`]) ohneEbene.push(`${f.key}.${slot}=${form}`);
+    }
+  return {grafik:true, ohneBlatt, ohneHaar, ohneHemd, ohneHaut, ohneEbene, falsch, figuren:alle.length,
+          huete:alle.filter(f => f.gestalt.hut).length,
           komposit:wander.filter(f => f.komposit).length, wander:wander.length};
 });
 
@@ -205,10 +270,12 @@ if(!figuren.grafik){
   console.log('  Blaetter zu messen. Dieser Lauf faellt damit nicht durch, er sagt nur');
   console.log('  nichts ueber die Figuren. Mit Grafikpaket wiederholen.');
 } else {
-  console.log(`\nTeil 2 — die Figuren (${figuren.figuren} Komposite, ${figuren.komposit} von ${figuren.wander} Wandernden auf komposit:true)\n`);
+  console.log(`\nTeil 2 — die Figuren (${figuren.figuren} Komposite, ${figuren.komposit} von ${figuren.wander} Wandernden auf komposit:true, ${figuren.huete} mit Hut)\n`);
   pruef('jede Figur hat ein gebackenes Blatt', figuren.ohneBlatt, []);
   pruef('die Haarfarbe des Portraets kommt im Sprite an', figuren.ohneHaar, []);
   pruef('die Hemdfarbe des Portraets kommt im Sprite an', figuren.ohneHemd, []);
+  pruef('der Hautton kommt im Sprite an', figuren.ohneHaut, []);
+  pruef('jede bestellte Garderoben-Ebene hat ein Blatt', figuren.ohneEbene, []);
   pruef('komposit:true schlaegt ein vorhandenes Paketblatt', figuren.falsch, []);
 }
 

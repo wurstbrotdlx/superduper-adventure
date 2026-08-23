@@ -1,5 +1,13 @@
 # Bauabschnitt G8 — Die Dorffiguren tragen die Farben ihrer Porträts — ERLEDIGT
 
+> **Nachtrag G9.** Drei Stellen dieses Dokuments sind überholt, der Rest gilt.
+> Kleidung heißt nicht mehr `chest`/`legs`/`feet` (Rüstungsstufen), sondern
+> `hemd`/`hose`/`schuh` aus `CF_GARDEROBE`. Es gibt eine Kopfbedeckung (`hut`),
+> und Trepps wie Nieselbecks Mützenfarbe sitzt jetzt auf einer Mütze statt auf
+> einer Frisur. Und der Körper bleibt nicht mehr ungefärbt: `hautBlatt()` färbt
+> Nörgels Haut, ohne Augen und Konturen einzuebnen. Siehe
+> `phase-g9-garderobe.md`. Die gemessenen Hexwerte unten sind unverändert.
+
 Seit U5 zeigt die Gesprächstafel dreizehn gemalte Porträts. Zwei Sekunden später
 steht dieselbe Figur wieder im Dorf und sieht aus wie jemand anders. Der
 Bürgermeister ist auf seinem Bild ein feister Amtsträger mit Ordenskette und

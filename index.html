@@ -1320,6 +1320,72 @@ const CF_BOOT_FILES = [
 ];
 CF_BOOT_FILES.forEach((f, i) => addCfHeroLayer(`cffeet_${i}`, f));
 
+// ===========================================================================
+//  G9: Die Garderobe der Dorffiguren.
+//
+//  Bis G8 drückte eine Dorffigur ihre Kleidung als Rüstungsstufe aus:
+//  gestalt.chest war 0 bis 4, dieselben Keys, die am Spieler an CRAFT_BASE.armor
+//  hängen. Das war nie gemeint, es war nur das, was dalag — und es hat sich
+//  gerächt. Vorblatt trug einen goldenen Plattenpanzer, weil „Mantel" in diesem
+//  Vokabular nicht vorkam. Eine Registratorin in Stufe 2 zu kleiden sagt über
+//  ihr Kleid nichts aus.
+//
+//  Die Garderobe ersetzt die Stufe durch den Namen des Kleidungsstücks. Der
+//  Spieler behält seine fünf Stufen unangetastet (CF_ARMOR_FILES oben, das ist
+//  seine Ausrüstung und keine Garderobe); die Figuren bekommen ihre eigene.
+//
+//  Was hier steht, ist an `assets/cf/manifest.json` abgelesen und nicht geraten.
+//  Das Pack liefert fünf Hemdformen, vier Hosenformen, neun Schuhfarben, sechs
+//  Frisuren in je fünf Naturtönen und — bis G9 ungenutzt — eine Kopfbedeckung
+//  und zwei Helme. Alle liegen auf demselben 9x56-Raster à 64x64 wie
+//  Player_Base, sind also Drop-ins für addCfHeroLayer().
+//
+//  Je Form steht genau EINE Datei. Das ist kein Sparen, sondern eine Folge der
+//  Rechnung in farbBlatt(): sie normiert die Helligkeitsspanne des Blattes auf
+//  ein Band um die Zielfarbe und legt deren Farbton und Sättigung auf jeden
+//  Pixel. Der Farbton der Quelle überlebt das nicht. Ob wir von
+//  Lumberjack_Shirt_1_Green oder _Red ausgehen, ändert am Ergebnis nichts —
+//  dieselbe Zeichnung, dieselbe Helligkeitsverteilung. Die Farbvarianten des
+//  Packs sind für uns Dubletten; die Form ist die Auswahl.
+//
+//  Die Namen sind deutsch und beschreiben das Kleidungsstück, nicht die Datei:
+//  wer hier eine Figur einkleidet, soll ihr Porträt ansehen und nicht das
+//  Grafikpaket.
+// ===========================================================================
+const CF_GARDEROBE = {
+  hemd: {
+    hemd:   'Chest/OG_Shirt/Shirt_1_Red.png',                           // schlicht, offener Kragen
+    kittel: 'Chest/Farmer_Shirt/Farmer_Shirt_1_Green.png',              // Arbeitskittel mit Trägern
+    karo:   'Chest/Lumberjack_Shirt/Lumberjack_Shirt_1_Green.png',      // G9 neu: offenes Arbeitshemd
+    hof:    'Chest/Royal_Shirt/Royal_Shirt_1_Blue.png',                 // hoher Kragen, Borte
+    panzer: 'Chest/Plate_Chest/Plate_Chest_Iron.png',                   // trägt im Dorf niemand, steht der Vollständigkeit halber
+  },
+  hose: {
+    hose:   'Legs/OG_Pants/Pants_1_Red.png',
+    latz:   'Legs/Farmer_Pants/Farmer_Pants_1_Green.png',
+    hof:    'Legs/Royal_Pants/Royal_Pants_1_Blue.png',
+    panzer: 'Legs/Plate_Legs/Plate_Legs_Iron.png',
+  },
+  // Schwarz statt Orange als einzige Schuhform: im Dorf ist Sichtbarkeit kein
+  // Argument (die fünf Spielerfarben stehen weiter oben und bleiben), und wer
+  // eine andere Farbe will, gibt schuhFarbe an.
+  schuh: {
+    schuh: 'Feet/Shoes_1_Black.png',
+  },
+  // G9 neu. Farmer_Hat_1 ist die einzige echte Kopfbedeckung des Packs; die
+  // beiden Helme sind Rüstung und stehen hier nur, damit niemand sie noch
+  // einmal suchen muss. Der Hut wird NACH dem Haar gezeichnet und deckt es zu —
+  // genau das, was Trepps und Nieselbecks Porträt zeigt.
+  hut: {
+    muetze:     'Accessories/Farmer_Hat_1.png',
+    helm:       'Head/Plate_Helmet_1/Plate_Helmet_1_Iron.png',
+    helmSchwer: 'Head/Plate_Helmet_2/Heavy_Plate_Helmet_1_Iron.png',
+  },
+};
+for(const slot in CF_GARDEROBE)
+  for(const form in CF_GARDEROBE[slot])
+    addCfHeroLayer(`cf${slot}_${form}`, CF_GARDEROBE[slot][form]);
+
 // Waffen-Slot: das Pack liefert kein eigenes Anim-Rig fürs Tools-Layer (Iron_Sword.png
 // ist ein eigenständiges 4x9-Sheet, inkompatibles Raster zum Player_Base-Blatt) —
 // ein einzelnes Klingen-Frame ersetzt das bisherige Emoji-Icon, per Tint nach
@@ -1871,6 +1937,87 @@ function dunkler(hex, f){
   return '#' + [1, 3, 5].map(n => z(n).toString(16).padStart(2, '0')).join('');
 }
 
+// ===========================================================================
+//  G9: Haut umfärben, und zwar nur die Haut.
+//
+//  Nörgel ist ein Kobold. Seit W3 bekam er dafür eine Tönung über die ganze
+//  Figur — grün lag dann auch auf seinem Hemd, seiner Hose und seinen Schuhen,
+//  und damit die Tönung das Bild nicht zukleisterte, musste sie schwach bleiben
+//  (0.22). Das Ergebnis war ein Mensch mit einem Grünstich, kein Kobold.
+//
+//  farbBlatt() taugt hier nicht. Sie legt die Helligkeitsspanne des ganzen
+//  Blattes auf ein Band um die Zielfarbe und färbt jeden Pixel — auf dem
+//  Körperblatt sitzen aber Gesicht, Augen und Kontur. Aus zwei Augen und einem
+//  Mund würde eine grüne Fläche.
+//
+//  Diese Rechnung geht deshalb andersherum vor: sie sucht die Haut und lässt
+//  alles andere in Ruhe. Ein Pixel gilt als Haut, wenn sein Farbton im warmen
+//  Fenster liegt (HAUT_VON bis HAUT_BIS, über den Rot-Nullpunkt hinweg) und er
+//  bunt genug ist (HAUT_SAT). Augen, Zähne, Weißes und die dunklen Konturen
+//  sind unbunt oder liegen außerhalb und bleiben unangetastet.
+//
+//  Was ein Hautpixel behält, ist seine eigene Helligkeit. Nur Farbton und
+//  Sättigung kommen von der Zielfarbe. Damit bleibt die gesamte Schattierung
+//  des Gesichts erhalten — die Figur wird grün, nicht flach.
+//
+//  Die drei Konstanten sind am Cute-Fantasy-Hautton angesetzt (ein warmes
+//  Orange) und bewusst weit gefasst: lieber ein Schattenrand zu viel mitgefärbt
+//  als eine Wange zu wenig. Wer sie nachziehen will, misst sie mit
+//  `node tools/figuren-kontaktbogen.mjs` am Bild nach.
+// ===========================================================================
+const HAUT_VON = 0.94, HAUT_BIS = 0.14;   // Farbtonfenster über den Rot-Nullpunkt hinweg
+const HAUT_SAT = 0.12;                     // darunter ist ein Pixel unbunt (Auge, Kontur, Weißes)
+
+function hautBlatt(key, hex, merken){
+  const ck = 'haut|' + key + '|' + hex;
+  if(merken !== false){ const hit = FARB_CACHE.get(ck); if(hit !== undefined) return hit; }
+  const s = SHEETS[key]; if(!s || !s.img) return null;
+  const rows = Math.max(1, Math.ceil(s.n / s.cols));
+  const c = document.createElement('canvas');
+  c.width = s.img.width; c.height = rows * s.fh;
+  const cc = c.getContext('2d', {willReadFrequently:true});
+  cc.drawImage(s.img, 0, (s.rowStart||0)*s.fh, c.width, c.height, 0, 0, c.width, c.height);
+
+  let bild;
+  // Gleiche Vorsicht wie in farbBlatt(): ein fremdorigin geladenes Blatt wirft
+  // hier, und dann bleibt die Haut in ihrem Naturton statt dass der Wurf den
+  // Rest mitreisst.
+  try { bild = cc.getImageData(0, 0, c.width, c.height); }
+  catch(e){ FARB_CACHE.set(ck, null); console.warn('hautBlatt: Blatt nicht lesbar', key, e.name); return null; }
+
+  const d = bild.data;
+  const ziel = hexHsl(hex);
+  for(let i = 0; i < d.length; i += 4){
+    if(d[i+3] <= 8) continue;
+    const r = d[i]/255, g = d[i+1]/255, b = d[i+2]/255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), dd = mx - mn;
+    if(!dd) continue;                                   // reines Grau: Kontur oder Auge
+    const l = (mx + mn) / 2;
+    const sat = l > 0.5 ? dd/(2-mx-mn) : dd/(mx+mn);
+    if(sat < HAUT_SAT) continue;                        // zu blass für Haut
+    let h = mx === r ? ((g-b)/dd + (g < b ? 6 : 0)) : mx === g ? (b-r)/dd + 2 : (r-g)/dd + 4;
+    h /= 6;
+    if(!(h >= HAUT_VON || h <= HAUT_BIS)) continue;     // nicht im warmen Fenster
+    // Eigene Helligkeit behalten, Farbton und Sättigung von der Zielfarbe.
+    const q = l < 0.5 ? l * (1 + ziel.s) : l + ziel.s - l * ziel.s, pp = 2*l - q;
+    d[i]   = Math.round(hslKanal(pp, q, ziel.h + 1/3) * 255);
+    d[i+1] = Math.round(hslKanal(pp, q, ziel.h) * 255);
+    d[i+2] = Math.round(hslKanal(pp, q, ziel.h - 1/3) * 255);
+  }
+  cc.putImageData(bild, 0, 0);
+  if(merken !== false) FARB_CACHE.set(ck, c);
+  return c;
+}
+
+// Wie blitFarbFrame, nur mit der Hautrechnung. Ohne hex derselbe gewöhnliche Weg.
+function blitHautFrame(destCtx, key, hex, frame, dx, dy, merken){
+  if(!hex) return blitLayerFrame(destCtx, key, frame, dx, dy);
+  const s = SHEETS[key]; if(!s || !s.img) return;
+  const src = hautBlatt(key, hex, merken); if(!src) return blitLayerFrame(destCtx, key, frame, dx, dy);
+  const i = ((frame|0) % s.n + s.n) % s.n;
+  destCtx.drawImage(src, (i % s.cols)*s.fw, ((i/s.cols)|0)*s.fh, s.fw, s.fh, dx, dy, s.fw, s.fh);
+}
+
 // Zeichnet Frame mit Anker im aktuellen Transform-Ursprung (für exotische Skalierung).
 function drawSpriteAt(key, frame, tint, tintA){
   const s = SHEETS[key]; if(!s) return;
@@ -1984,21 +2131,27 @@ function bakeHeroSheet(){
 //  an den Porträts gemessen (`python3 tools/portraet-farben.py`, Einzelheiten
 //  in phase-g8-figurenfarben.md), nicht ausgesucht.
 //
-//  Was ohne Farbe bleibt: der Körper (dort sitzen Gesicht und Augen, ein
-//  Helligkeitsband darüber machte aus beidem eine Fläche — Nörgels Grün kommt
-//  deshalb weiter als Tönung über die ganze Figur) und die Schuhe (sechs Pixel
-//  am Boden, die fünf Paketfarben reichen). Die Hose ist nicht gemessen,
-//  sondern aus dem Hemd abgeleitet, siehe HOSE_DUNKLER.
+//  G9 hebt zwei Beschränkungen von G8 auf. Die Kleidung heißt nicht mehr nach
+//  einer Rüstungsstufe, sondern nach dem Kleidungsstück (CF_GARDEROBE), und es
+//  ist eine Kopfbedeckung dazugekommen. Und der Körper bleibt nicht länger
+//  außen vor: hautBlatt() sucht die Haut und lässt Augen und Konturen stehen,
+//  Nörgel ist damit ein grüner Kobold statt eines Menschen mit Grünstich.
+//
+//  Die Hose ist weiterhin der einzige abgeleitete Wert (aus dem Hemd, siehe
+//  HOSE_DUNKLER), weil die Porträts an der Brust enden.
 // ===========================================================================
 const HERO_ANIM_N = {};
 for(const [anim, , n] of CF_HERO_ANIMS) HERO_ANIM_N[anim] = n;
 
 function bakeNpcSheet(key, gestalt, anim){
   const n = HERO_ANIM_N[anim] || 6;
-  const chest = gestalt.chest ?? -1, legs = gestalt.legs ?? -1, feet = gestalt.feet ?? -1;
   // Ohne hemdFarbe bleibt auch die Hose auf ihrer Paketfarbe: eine abgedunkelte
   // Ableitung aus nichts wäre nichts, und dunkler() gibt hex unverändert zurück.
-  const hose = gestalt.hoseFarbe || dunkler(gestalt.hemdFarbe, HOSE_DUNKLER);
+  const hoseFarbe = gestalt.hoseFarbe || dunkler(gestalt.hemdFarbe, HOSE_DUNKLER);
+  // G9: Der Hut nimmt die Kopffarbe, wenn er keine eigene hat. Bei Trepp und
+  // Nieselbeck ist die gemessene Scheitelfarbe ohnehin die Mütze — sie sitzt
+  // jetzt auf der Mütze statt auf einer Frisur, die eine sein sollte.
+  const hutFarbe = gestalt.hutFarbe || gestalt.haarFarbe;
   const canvas = document.createElement('canvas');
   canvas.width = n * 64; canvas.height = 64;
   const bctx = canvas.getContext('2d');
@@ -2006,12 +2159,15 @@ function bakeNpcSheet(key, gestalt, anim){
     const dx = f * 64;
     // merken:false — diese Blätter werden genau einmal gebraucht, hier. Siehe
     // den Kommentar bei FARB_CACHE.
-    if(legs >= 0) blitFarbFrame(bctx, `cflegs_${legs}_${anim}`, hose, f, dx, 0, false);
-    if(feet >= 0) blitLayerFrame(bctx, `cffeet_${feet}_${anim}`, f, dx, 0);
-    blitLayerFrame(bctx, `cfbody_${anim}`, f, dx, 0);
-    if(chest >= 0) blitFarbFrame(bctx, `cfchest_${chest}_${anim}`, gestalt.hemdFarbe, f, dx, 0, false);
+    if(gestalt.hose)  blitFarbFrame(bctx, `cfhose_${gestalt.hose}_${anim}`,   hoseFarbe,           f, dx, 0, false);
+    if(gestalt.schuh) blitFarbFrame(bctx, `cfschuh_${gestalt.schuh}_${anim}`, gestalt.schuhFarbe,  f, dx, 0, false);
+    // Körper und Hände sind beide Haut und bekommen denselben Ton — ein Kobold
+    // mit grünem Gesicht und rosa Händen wäre ein neuer Fehler.
+    blitHautFrame(bctx, `cfbody_${anim}`, gestalt.hautFarbe, f, dx, 0, false);
+    if(gestalt.hemd)  blitFarbFrame(bctx, `cfhemd_${gestalt.hemd}_${anim}`,   gestalt.hemdFarbe,   f, dx, 0, false);
     blitFarbFrame(bctx, `cfhair_${gestalt.hair}_${anim}`, gestalt.haarFarbe, f, dx, 0, false);
-    blitLayerFrame(bctx, `cfhands_${anim}`, f, dx, 0);
+    if(gestalt.hut)   blitFarbFrame(bctx, `cfhut_${gestalt.hut}_${anim}`,     hutFarbe,            f, dx, 0, false);
+    blitHautFrame(bctx, `cfhands_${anim}`, gestalt.hautFarbe, f, dx, 0, false);
   }
   SHEETS[key] = {img:canvas, cols:n, n, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
 }
@@ -2978,7 +3134,7 @@ dorfMassstabAssert();
 const DORF_FIGUREN = [
   {key:'zwirn', name:'Bürgermeister Alfons Zwirn', kurz:'Bürgermeister Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob', komposit:true,
    // schüttere sandige Haare über blanker Kopfhaut, ockerbraune Weste
-   gestalt:{hair:'h1', haarFarbe:'#9f704b', chest:2, hemdFarbe:'#765937', legs:2, feet:2},
+   gestalt:{hair:'h1', haarFarbe:'#9f704b', hemd:'hof', hemdFarbe:'#765937', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
      {z1:'Eine Genehmigung fehlt uns noch.', z2:'Da bin ich dran.'},
@@ -3006,7 +3162,7 @@ const DORF_FIGUREN = [
    // schwarzer Turmknoten (h6 ist der hochgesteckte Knoten, h3 war der
    // Undercut und nur gewählt, weil Blatt 3 das schwarze ist), verblichenes
    // Königsblau mit weißem Kragen
-   gestalt:{hair:'h6', haarFarbe:'#0d1b21', chest:2, hemdFarbe:'#384b66', legs:2},
+   gestalt:{hair:'h6', haarFarbe:'#0d1b21', hemd:'hof', hemdFarbe:'#384b66', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Ordnung ist, was man wiederfindet.', z2:'Alles andere ist Zufall.'},
      {z1:'In welcher Sache sprechen Sie mich an?', z2:'Ohne Antrag sage ich nichts.'},
@@ -3062,7 +3218,7 @@ const DORF_FIGUREN = [
 
   {key:'zapf', name:'Hausmeister Reinhold Zapf', kurz:'Hausmeister Zapf', tx:17, ty:54, opt:'wander', sheet:'jack', komposit:true,
    // kurzes braunes Haar, verblichen grüne Latzhose über dem Unterhemd
-   gestalt:{hair:'h1', haarFarbe:'#24200c', chest:1, hemdFarbe:'#8c8959', legs:1, feet:0},
+   gestalt:{hair:'h1', haarFarbe:'#24200c', hemd:'kittel', hemdFarbe:'#8c8959', hose:'latz', schuh:'schuh'},
    grund:[
      {z1:'Ich reparier das. Nicht fragen.', z2:'Weil sonst nichts läuft.'},
      {z1:'Das Regal wackelt. Ich keile es fest.', z2:'Sonst kippt hier alles um.'},
@@ -3087,7 +3243,7 @@ const DORF_FIGUREN = [
 
   {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', kurz:'Praktikantin Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe', komposit:true,
    // dunkles Haar aus einem lockeren Knoten, grüne Bluse
-   gestalt:{hair:'h6', haarFarbe:'#362620', chest:1, hemdFarbe:'#656848', legs:0, feet:3},
+   gestalt:{hair:'h6', haarFarbe:'#362620', hemd:'kittel', hemdFarbe:'#656848', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Man erledigt Monster nicht.', z2:'Man beantwortet sie.'},
      {z1:'Und wenn er einfach nur wartet?', z2:'Das fragt hier keiner gern.'},
@@ -3112,9 +3268,12 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'trepp', name:'Zusteller Emil Trepp der Siebte', kurz:'Zusteller Trepp', tx:28, ty:40, opt:'wander', sheet:'fin', komposit:true,
-   // die blaugraue Dienstmütze sitzt auf dem Haar-Layer, die Uniform darunter
-   // hat fast denselben Ton — beides gemessen, nicht angeglichen
-   gestalt:{hair:'h2', haarFarbe:'#474c61', chest:2, hemdFarbe:'#494f63', legs:0, feet:1},
+   // G9: die Dienstmütze ist jetzt eine Mütze und keine blaugraue Frisur mehr.
+   // Haar und Mütze teilen sich den einen gemessenen Ton: seine blonde Tolle
+   // schaut auf dem Porträt so wenig hervor, dass sie sich im 128er-Raster
+   // nicht verlässlich messen lässt (die Schläfenprobe trifft Haut).
+   gestalt:{hair:'h2', haarFarbe:'#474c61', hut:'muetze',
+            hemd:'hof', hemdFarbe:'#494f63', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Trepp.'},
      {z1:'Wenn ich kurz stören darf.', z2:'Der Brief ist immer im Sack.'},
@@ -3138,12 +3297,17 @@ const DORF_FIGUREN = [
      {z1:'Schattenlandzustellungsbevollmächtigter.', z2:'Steht so im Ausweis. Ehrlich.'},
    ]}]},
 
-  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', komposit:true, tint:'#949341', tintA:0.22,
-   // Der einzige, dessen Haut die Tönung trägt: er ist ein Kobold. #949341 ist
-   // sein gemessener Gesichtston und ersetzt das geschätzte #7a9c5a. Das Hemd
-   // ist sandfarben und nicht grau — so steht es auf dem Bild, und das Bild
-   // gilt (assets/figuren/README.md, Befunde am zweiten Paket).
-   gestalt:{hair:'h1', haarFarbe:'#455033', chest:0, hemdFarbe:'#b49354', legs:0, feet:3},
+  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', komposit:true,
+   // G9: der einzige mit hautFarbe. Er ist ein Kobold, und bis G8 war das eine
+   // schwache Tönung über die ganze Figur — grün lag dann auch auf seinem Hemd,
+   // und weil es das Bild sonst zugekleistert hätte, blieb sie bei 0.22. Das
+   // Ergebnis war ein Mensch mit Grünstich. Jetzt färbt hautBlatt() Gesicht und
+   // Hände und lässt Augen, Konturen und Kleidung stehen; tint/tintA sind
+   // ersatzlos weg. #949341 ist sein gemessener Gesichtston.
+   // Das Hemd ist sandfarben und nicht grau — so steht es auf dem Bild, und das
+   // Bild gilt (assets/figuren/README.md, Befunde am zweiten Paket).
+   gestalt:{hair:'h1', haarFarbe:'#455033', hautFarbe:'#949341',
+            hemd:'hemd', hemdFarbe:'#b49354', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
      {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie.'},
@@ -3184,7 +3348,7 @@ const DORF_FIGUREN = [
 
   {key:'milb', name:'Gutachter Dr. phil. Milb', kurz:'Gutachter Milb', tx:8, ty:39, opt:'wander', sheet:'buba',
    // langes graues Haar bis zum Kragen, blauer Gelehrtenmantel
-   gestalt:{hair:'h5', haarFarbe:'#68624d', chest:2, hemdFarbe:'#314f62', legs:2, feet:1},
+   gestalt:{hair:'h5', haarFarbe:'#68624d', hemd:'hof', hemdFarbe:'#314f62', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
      {z1:'Diese Kammer würde ich einstufen.', z2:'Ungefragt, versteht sich.'},
@@ -3210,7 +3374,7 @@ const DORF_FIGUREN = [
 
   {key:'pommer', name:'Materialausgabe Herr Pommer', kurz:'Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy',
    // kurzes blondes Haar (h1 statt der Tolle h2), Khakikittel
-   gestalt:{hair:'h1', haarFarbe:'#b48651', chest:1, hemdFarbe:'#9d8e63', legs:0, feet:4},
+   gestalt:{hair:'h1', haarFarbe:'#b48651', hemd:'kittel', hemdFarbe:'#9d8e63', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
      {z1:'Auf dem Antrag steht Montag. Nicht heute.', z2:'Kommen Sie am Montag wieder.'},
@@ -3234,8 +3398,10 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', kurz:'Wirt Fass', tx:24, ty:38, opt:'wander', sheet:'bruno',
-   // kurzes schwarzes Haar, offenes stumpfrotes Hemd
-   gestalt:{hair:'h3', haarFarbe:'#2d1b0e', chest:0, hemdFarbe:'#793530', legs:2, feet:2},
+   // kurzes schwarzes Haar, offenes stumpfrotes Hemd. G9: das Karohemd
+   // (Lumberjack) ist die Form mit offenem Kragen und passt zum Wirt mit
+   // Lederschürze besser als das schlichte.
+   gestalt:{hair:'h3', haarFarbe:'#2d1b0e', hemd:'karo', hemdFarbe:'#793530', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
      {z1:'Zum Letzten Stempel schließt nie zu früh.', z2:'Bleib, so lang du willst.'},
@@ -3270,7 +3436,7 @@ const DORF_FIGUREN = [
   {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
    // Haarreste und geflickter brauner Mantel, gemessen an der linken Hälfte des
    // Doppelporträts (Motiv 11). Bis G8 trug er gar keine Kleiderebene.
-   gestalt:{hair:'h1', haarFarbe:'#aa7357', chest:0, hemdFarbe:'#875b46', legs:0},
+   gestalt:{hair:'h1', haarFarbe:'#aa7357', hemd:'karo', hemdFarbe:'#875b46', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
      {z1:'Der Neue. Schlägt wieder alles kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
@@ -3345,7 +3511,7 @@ const DORF_FIGUREN = [
    // rotblond ins Weiße, grauer Mantel mit falschen Knöpfen, gemessen an der
    // rechten Hälfte desselben Doppelporträts. Die beiden unterscheiden sich im
    // Dorf am Mantel, nicht am Haar — auf dem Bild sind beide fast kahl.
-   gestalt:{hair:'h4', haarFarbe:'#b87653', chest:0, hemdFarbe:'#7e6b65', legs:0},
+   gestalt:{hair:'h4', haarFarbe:'#b87653', hemd:'hemd', hemdFarbe:'#7e6b65', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
      {z1:'Sie kämpfen. Ich sehe nur zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
@@ -3430,10 +3596,12 @@ const DORF_FIGUREN = [
   // in npcSchildFlush() faengt gleiche Zeilen ab, nicht zwei Figuren, die
   // praktisch am selben Punkt stehen.
   {key:'nieselbeck', name:'Wetterbeauftragter Ferdinand Nieselbeck', kurz:'Herr Nieselbeck', tx:21, ty:42, opt:'fest',
-   // die grüne Wetterdienstmütze sitzt auf dem Haar-Layer und deckt sein graues
-   // Haar zu, wie auf dem Bild; h1 statt h5, ein Mann unter einer Mütze hat
-   // kein langes offenes Haar. Jacke bis oben zugeknöpft, dasselbe Grün.
-   gestalt:{hair:'h1', haarFarbe:'#71825f', chest:1, hemdFarbe:'#586833', legs:1, feet:0},
+   // G9: die grüne Wetterdienstmütze ist jetzt eine Mütze und deckt sein Haar
+   // zu, wie auf dem Bild. Wie bei Trepp teilen sich Haar und Mütze den einen
+   // gemessenen Ton — sein graues Haar schaut zu wenig hervor, die
+   // Schläfenprobe trifft Mützenschatten. Jacke bis oben zugeknöpft, dasselbe Grün.
+   gestalt:{hair:'h1', haarFarbe:'#71825f', hut:'muetze',
+            hemd:'kittel', hemdFarbe:'#586833', hose:'latz', schuh:'schuh'},
    grund:[
      {z1:'Gemeldet wird: keine Niederschläge.', z2:'Wie gestern. Wie immer.'},
      {z1:'Ich habe einen Eimer. Für den Fall.', z2:'Der Eimer ist bereit.'},
@@ -3457,7 +3625,7 @@ const DORF_FIGUREN = [
    // Seitenscheitels h4 — der war die rothaarige Vorlage und nicht die Form).
    // Am Kragen liegt der graue Reiseumhang, nicht die blaue Uniform darunter:
    // gemessen wird, was man sieht.
-   gestalt:{hair:'h5', haarFarbe:'#711d0d', chest:2, hemdFarbe:'#524b54', legs:2, feet:4},
+   gestalt:{hair:'h5', haarFarbe:'#711d0d', hemd:'hof', hemdFarbe:'#524b54', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Vierzehn Türme, ein Aufzug, neun Stockwerke.', z2:'Der Rest ist Treppe.'},
      {z1:'Ich bin im Umlauf. Seit einer Weile.', z2:'Man gewöhnt sich daran.'},
@@ -3479,12 +3647,13 @@ const DORF_FIGUREN = [
   // zwei Kacheln suedlich davon, damit er die Kontextaktion der Tuer nicht
   // ueberstimmt (derselbe Grund, aus dem Zwirn in G6 gewandert ist).
   {key:'vorblatt', name:'Reichsministerialdirektor zu Händen Vorblatt', kurz:'zu Händen Vorblatt', tx:11, ty:37, opt:'fest', abAkt:3,
-   // glattes schwarzes Haar, dunkler Mantel mit stumpfer Goldbordüre. Stufe 2
-   // (Hofhemd mit Borte) statt 4 (goldener Plattenpanzer): ein
-   // Reichsministerialdirektor trägt keine Rüstung. Mantel und Haar sind
+   // glattes schwarzes Haar, dunkler Mantel mit stumpfer Goldbordüre. Das
+   // Hofhemd ist die Form mit hohem Kragen und Borte; G8 hatte hier noch einen
+   // goldenen Plattenpanzer, weil das Vokabular nur Rüstungsstufen kannte, und
+   // ein Reichsministerialdirektor trägt keine Rüstung. Mantel und Haar sind
    // beide praktisch Schwarz, #171717 ist der angehobene Messwert — siehe
    // brauchbar() in tools/portraet-farben.py.
-   gestalt:{hair:'h3', haarFarbe:'#171717', chest:2, hemdFarbe:'#171717', legs:2, feet:3},
+   gestalt:{hair:'h3', haarFarbe:'#171717', hemd:'hof', hemdFarbe:'#171717', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Ihr Anliegen wird bearbeitet.', z2:'Das ist bereits sehr viel.'},
      {z1:'Nein sage ich grundsätzlich nicht.', z2:'Nein wäre eine Entscheidung.'},
@@ -6922,7 +7091,7 @@ const KN_KEY = 'sda_knoeterich_v1';
 // Die graue Tönung in drawAlter() bleibt, wie sie ist. "Alt und grau" ist eine
 // Entscheidung aus E1 und keine Notlösung; der Dreiteiler kommt jetzt darunter
 // zum Vorschein, statt dass die Figur unbekleidet unter der Tönung steht.
-const KN_GESTALT = {hair:'h1', haarFarbe:'#746a5a', chest:2, hemdFarbe:'#706150', legs:2, feet:1};
+const KN_GESTALT = {hair:'h1', haarFarbe:'#746a5a', hemd:'hof', hemdFarbe:'#706150', hose:'hof', schuh:'schuh'};
 const EMPFANG_BLATT = 'npc_baked_knoeterich';
 // U3: Was auf seinem Namensschild steht. Kurz wie bei den Dorffiguren (kurz:),
 // und aus demselben Grund: der volle Titel ist ein Verzeichniseintrag.
@@ -8778,21 +8947,26 @@ gespraechAssert();
 //   1. Die Frisur gibt es. Ein Blatt cfhair_h7_idle existiert nicht, und
 //      blitFarbFrame() kehrt bei einem fehlenden Key still um — die Figur wäre
 //      kahl statt falsch frisiert, und niemand bekäme eine Meldung.
-//   2. Jeder Farbwert ist ein Hexwert. hexHsl() liest mit parseInt() und macht
+//   2. Jedes Kleidungsstück gibt es. Dieselbe Stille: ein hemd:'frack' zöge die
+//      Figur einfach aus, ohne dass irgendwo etwas meldet.
+//   3. Jeder Farbwert ist ein Hexwert. hexHsl() liest mit parseInt() und macht
 //      aus '#hallo' klaglos NaN; die Rechnung liefert dann eine schwarze Fläche.
-//   3. Die Stufen liegen im Bereich der geladenen Blätter.
-//   4. Keine Farbe ohne Ebene. hemdFarbe ohne chest ist ein Wert, den nie
+//   4. Keine Farbe ohne Ebene. hemdFarbe ohne hemd ist ein Wert, den nie
 //      jemand liest — meist die Hälfte einer abgebrochenen Änderung.
-//   5. komposit steht nur bei Wandernden. Bei opt:'fest' ist das Komposit
+//   5. Keine Rüstungsstufe mehr. G9 hat chest/legs/feet durch die Garderobe
+//      ersetzt; wer die alten Felder wieder einträgt, bekommt keine Kleidung,
+//      sondern gar nichts. Der Guard sagt es, statt die Figur auszuziehen.
+//   6. komposit steht nur bei Wandernden. Bei opt:'fest' ist das Komposit
 //      ohnehin der einzige Weg, das Flag wäre dort eine Behauptung ohne Wirkung.
-//   6. Keine zwei Figuren sehen gleich aus. Frisur, Haarfarbe, Hemdstufe und
-//      Hemdfarbe sind zusammen das, was man auf 24 Pixeln unterscheidet. Zwei
-//      gleiche Vierlinge im selben Dorf sind kein Stil, sondern ein
+//   7. Keine zwei Figuren sehen gleich aus. Frisur, Haarfarbe, Hemdform,
+//      Hemdfarbe und Hut sind zusammen das, was man auf 24 Pixeln unterscheidet.
+//      Zwei gleiche Fünflinge im selben Dorf sind kein Stil, sondern ein
 //      Kopierfehler — und der wäre im Bild schwerer zu finden als hier.
 const HEXWERT = /^#[0-9a-f]{6}$/i;
+const FARBFELD = {haarFarbe:'hair', hemdFarbe:'hemd', hoseFarbe:'hose', schuhFarbe:'schuh', hutFarbe:'hut'};
 function figurenFarbenAssert(){
   let ok = true;
-  const fehler = (m, ...r) => { ok = false; console.error('G8 Figurenfarben:', m, ...r); };
+  const fehler = (m, ...r) => { ok = false; console.error('G9 Figurenfarben:', m, ...r); };
   const gesehen = new Map();
   // Knöterich steht nicht in der Tabelle, trägt aber dasselbe Komposit.
   const alle = [{key:'knoeterich', opt:'fest', gestalt:KN_GESTALT}, ...DORF_FIGUREN];
@@ -8800,20 +8974,27 @@ function figurenFarbenAssert(){
     const g = f.gestalt;
     if(!g){ fehler('Figur ohne Gestalt', f.key); continue; }
     if(!HAIRS.includes(g.hair)) fehler('Frisur gibt es nicht', f.key, g.hair);
-    for(const feld of ['haarFarbe', 'hemdFarbe', 'hoseFarbe'])
-      if(g[feld] != null && !HEXWERT.test(g[feld])) fehler('kein Hexwert', f.key, feld, g[feld]);
-    if(g.chest != null && (g.chest < 0 || g.chest >= CF_ARMOR_FILES.length)) fehler('Hemdstufe außerhalb', f.key, g.chest);
-    if(g.legs  != null && (g.legs  < 0 || g.legs  >= CF_ARMOR_FILES.length)) fehler('Hosenstufe außerhalb', f.key, g.legs);
-    if(g.feet  != null && (g.feet  < 0 || g.feet  >= CF_BOOT_FILES.length))  fehler('Schuhstufe außerhalb', f.key, g.feet);
-    if(g.hemdFarbe && g.chest == null) fehler('Hemdfarbe ohne Hemd', f.key);
-    if(g.hoseFarbe && g.legs  == null) fehler('Hosenfarbe ohne Hose', f.key);
+    for(const slot of ['hemd', 'hose', 'schuh', 'hut'])
+      if(g[slot] != null && !CF_GARDEROBE[slot][g[slot]])
+        fehler(`${slot} gibt es nicht in der Garderobe`, f.key, g[slot]);
+    for(const feld in FARBFELD){
+      if(g[feld] == null) continue;
+      if(!HEXWERT.test(g[feld])) fehler('kein Hexwert', f.key, feld, g[feld]);
+      // haarFarbe hängt an hair (immer da), die übrigen an ihrem Slot.
+      const slot = FARBFELD[feld];
+      if(slot !== 'hair' && g[slot] == null) fehler(`${feld} ohne ${slot}`, f.key);
+    }
+    if(g.hautFarbe != null && !HEXWERT.test(g.hautFarbe)) fehler('kein Hexwert', f.key, 'hautFarbe', g.hautFarbe);
+    for(const alt of ['chest', 'legs', 'feet'])
+      if(g[alt] != null) fehler(`${alt} ist seit G9 die Garderobe (hemd/hose/schuh)`, f.key);
     if(f.komposit && f.opt === 'fest') fehler('komposit bei einer festen Figur ist wirkungslos', f.key);
-    const bild = `${g.hair}|${g.haarFarbe || '-'}|${g.chest ?? '-'}|${g.hemdFarbe || '-'}`;
+    const bild = `${g.hair}|${g.haarFarbe || '-'}|${g.hemd || '-'}|${g.hemdFarbe || '-'}|${g.hut || '-'}`;
     if(gesehen.has(bild)) fehler('sieht aus wie', f.key, gesehen.get(bild));
     else gesehen.set(bild, f.key);
   }
-  const gemalt = alle.filter(f => f.gestalt && f.gestalt.haarFarbe).length;
-  if(ok) console.log(`G8 Figurenfarben: ${gemalt} von ${alle.length} Figuren tragen die Farben ihres Porträts.`);
+  const behuetet = alle.filter(f => f.gestalt && f.gestalt.hut).length;
+  const haut = alle.filter(f => f.gestalt && f.gestalt.hautFarbe).length;
+  if(ok) console.log(`G9 Figurenfarben: ${alle.length} Figuren eingekleidet, ${behuetet} mit Kopfbedeckung, ${haut} mit eigenem Hautton.`);
 }
 figurenFarbenAssert();
 
