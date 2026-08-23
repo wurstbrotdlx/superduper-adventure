@@ -3193,7 +3193,46 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:2, zeilen:[
      {z1:'Ich habe damals eine Anfrage geschickt.', z2:'Nach Oben. Vor acht Jahren.'},
      {z1:'Vielleicht ist die Antwort unterwegs.',   z2:'Post braucht eben ihre Zeit.'},
-   ]}]},
+   ]},
+   {abSchicht:6, zeilen:[
+     {z1:'Sie sind noch da. Das ist ungewöhnlich.', z2:'Die meisten bleiben einen Tag.'},
+     {z1:'Ich merke mir Gesichter. Ihres jetzt auch.', z2:'Bei mir ist das ein Verfahren.'},
+   ]},
+   {abStufe:6, zeilen:[
+     {z1:'Sie treten fester auf als am Montag.', z2:'Das sage ich als Bürgermeister.'},
+     {z1:'Sie könnten ein Fest eröffnen.', z2:'Wenn eines stattfände.'},
+   ]},
+   {skill:'int', ab:4, zeilen:[
+     {z1:'Sie lesen Anträge. Man sieht das.', z2:'Woran? Am Blick.'},
+     {z1:'Verstehen Sie etwas von Genehmigungen?', z2:'Ich frage rein dienstlich.'},
+   ]},
+   {abRang:3, zeilen:[
+     {z1:'Man redet Sie jetzt anders an.', z2:'Das erleichtert die Einladung.'},
+     {z1:'Ein Rang ist gut. Ein Fest wäre besser.', z2:'Beides ginge auch.'},
+   ]},
+   {phase:'antritt', zeilen:[
+     {z1:'Guten Morgen! Heute wird ein guter Tag.', z2:'Wie jeder. Es ist ja schön.'},
+     {z1:'Ich stehe hier und schüttele Hände.', z2:'Auch wenn keine da ist.'},
+   ]},
+   {abAkt:4, zeilen:[
+     {z1:'Im Keller stehen elf Kisten.', z2:'Zehn davon sind leer.'},
+     {z1:'Ich bestelle jedes Jahr neu.', z2:'Feuchtes Konfetti taugt nichts.'},
+   ]}
+   ],
+   anlass:{
+     levelup:[
+       {z1:'Ein Aufstieg! Herzlichen Glückwunsch.', z2:'Ich sage das gern öffentlich.'},
+       {z1:'Da wäre eine Feier angebracht.', z2:'Sobald das geklärt ist.'},
+     ],
+     goldfund:[
+       {z1:'So viel Gold. Sehr erfreulich.', z2:'Ein Fest kostet auch etwas.'},
+       {z1:'Legen Sie etwas zurück.', z2:'Für später. Für uns alle.'},
+     ],
+     untaetigkeit:[
+       {z1:'Stehen Sie ruhig. Ich rede weiter.', z2:'Ich bin dran. Wie immer.'},
+       {z1:'Eine Pause ist auch Planung.', z2:'So sehe ich das seit elf Jahren.'},
+     ]
+   }},
 
   {key:'bramsche', name:'Registratorin Ottilie Bramsche', kurz:'Registratorin Bramsche', tx:21, ty:36, opt:'fest',
    // schwarzer Turmknoten (h6 ist der hochgesteckte Knoten, h3 war der
@@ -3251,7 +3290,46 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:3, zeilen:[
      {z1:'Damals kam ein Herr aus Hochablage.',  z2:'Er war ausgesprochen höflich.'},
      {z1:'Seitdem gebe ich nichts ohne Antrag.', z2:'Höflichkeit ist kein Antrag.'},
-   ]}]},
+   ]},
+   {abSchicht:8, zeilen:[
+     {z1:'Sie kommen wieder. Notiert.', z2:'Nicht jeder kommt wieder.'},
+     {z1:'Ihr Name steht inzwischen zweimal.', z2:'Einmal richtig, einmal falsch.'},
+   ]},
+   {abStufe:9, zeilen:[
+     {z1:'Sie tragen mehr als beim ersten Mal.', z2:'Ich führe darüber nichts.'},
+     {z1:'Was Sie da draußen holen, kommt hier an.', z2:'Irgendwann. Alles kommt an.'},
+   ]},
+   {skill:'int', ab:6, zeilen:[
+     {z1:'Sie stellen die Frage jetzt richtig.', z2:'Das ist selten und angenehm.'},
+     {z1:'Ein Antrag beginnt im Kopf.', z2:'Bei Ihnen offenbar auch.'},
+   ]},
+   {abRang:5, zeilen:[
+     {z1:'Höherer Dienst. Das ändert nichts.', z2:'Der Antrag bleibt ein Antrag.'},
+     {z1:'Ihr Titel öffnet hier keine Tür.', z2:'Ein Wortlaut schon.'},
+   ]},
+   {phase:'feierabend', zeilen:[
+     {z1:'Unten ist es kühl. Immer.', z2:'Kühl, trocken, dunkel.'},
+     {z1:'Ich gehe später als alle anderen.', z2:'Es liegt ja auch mehr hier.'},
+   ]},
+   {merker:'hatKammerBetreten', zeilen:[
+     {z1:'Sie waren in einer Kammer.', z2:'Ordnung gibt es dort keine.'},
+     {z1:'Wer dort ablegt, findet nichts wieder.', z2:'Kein Vorwurf. Fast keiner.'},
+   ]}
+   ],
+   anlass:{
+     kammerAbbruch:[
+       {z1:'Zurückgegangen. Auch das ist ein Vorgang.', z2:'Ich vermerke es kommentarlos.'},
+       {z1:'Leer herausgekommen? In welcher Sache?', z2:'Nicht jede Frage hat eine Akte.'},
+     ],
+     fluch:[
+       {z1:'Sie haben etwas unterschrieben.', z2:'Gelesen haben Sie es nicht.'},
+       {z1:'Auflagen stehen immer unten.', z2:'Ich lese immer unten zuerst.'},
+     ],
+     goldfund:[
+       {z1:'Ein Fund. Der gehört verzeichnet.', z2:'Von mir aus auch später.'},
+       {z1:'Gold ist einfach. Es fragt nichts.', z2:'Akten fragen. Ständig.'},
+     ]
+   }},
 
   {key:'zapf', name:'Hausmeister Reinhold Zapf', kurz:'Hausmeister Zapf', tx:17, ty:54, opt:'wander', sheet:'jack', komposit:true,
    // kurzes braunes Haar, verblichen grüne Latzhose über dem Unterhemd
@@ -3276,7 +3354,46 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:4, zeilen:[
      {z1:'Im Steinfeld brummt der Boden.', z2:'Ich hole das Werkzeug.'},
      {z1:'Ein Rohr. Verstopft. Sehr alt.', z2:'Kriegen wir auf.'},
-   ]}]},
+   ]},
+   {abSchicht:4, zeilen:[
+     {z1:'Sie sind noch hier. Gut.', z2:'Spart mir das Namenlernen.'},
+     {z1:'Vierter Tag. Nichts kaputt.', z2:'Von Ihnen jedenfalls.'},
+   ]},
+   {abStufe:8, zeilen:[
+     {z1:'Sie sind schwerer geworden.', z2:'Die Dielen sagen es mir.'},
+     {z1:'Ich habe nachgeölt. Vorsorglich.', z2:'Man weiß ja nie.'},
+   ]},
+   {skill:'str', ab:6, zeilen:[
+     {z1:'Sie tragen jetzt selber.', z2:'Gut. Ich habe zwei Hände.'},
+     {z1:'Kraft ist praktisch. Werkzeug auch.', z2:'Werkzeug hält länger.'},
+   ]},
+   {abRang:6, zeilen:[
+     {z1:'Sie haben jetzt einen Titel.', z2:'Türen klemmen trotzdem.'},
+     {z1:'Titel repariert nichts.', z2:'Ich schon.'},
+   ]},
+   {phase:'antritt', zeilen:[
+     {z1:'Ich bin vor Ihnen da. Immer.', z2:'Aufschließen dauert sonst.'},
+     {z1:'Kaffee läuft. Tropft auch.', z2:'Ich stelle was drunter.'},
+   ]},
+   {abAkt:5, zeilen:[
+     {z1:'Das Schild ist wieder trocken.', z2:'Hält noch zwanzig Jahre.'},
+     {z1:'Hinten drauf steht, wann.', z2:'Zum dritten Mal inzwischen.'},
+   ]}
+   ],
+   anlass:{
+     crit:[
+       {z1:'Sauber. Nichts nachzuarbeiten.', z2:'So mache ich das auch.'},
+       {z1:'Einmal richtig. Reicht meistens.', z2:'Zweimal ist Pfusch.'},
+     ],
+     ultimate:[
+       {z1:'Viel Licht. Wenig Nutzen.', z2:'Wer räumt das jetzt auf?'},
+       {z1:'Das gibt Arbeit. Meine.', z2:'Ich sage nichts weiter.'},
+     ],
+     untaetigkeit:[
+       {z1:'Stehen kostet nichts. Stimmt nicht.', z2:'Es kostet Zeit.'},
+       {z1:'Wenn Sie schon dastehen.', z2:'Halten Sie mal kurz.'},
+     ]
+   }},
 
   {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', kurz:'Praktikantin Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe', komposit:true,
    // dunkles Haar aus einem lockeren Knoten, grüne Bluse
@@ -3302,7 +3419,46 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:3, zeilen:[
      {z1:'Der Fürst hat einen Titel. Die anderen nicht.', z2:'Steht in meinem Bericht.'},
      {z1:'Seite zwei. Hat nie jemand gelesen.',           z2:'Ist vielleicht auch nichts.'},
-   ]}]},
+   ]},
+   {abSchicht:5, zeilen:[
+     {z1:'Sie sind länger hier als die meisten.', z2:'Ich zähle mit. Berufskrankheit.'},
+     {z1:'Fünf Tage. Bei mir sind es sechs Jahre.', z2:'Nicht als Vorwurf. Nur so.'},
+   ]},
+   {abStufe:7, zeilen:[
+     {z1:'Sie werden besser. Merkt das jemand?', z2:'Ich meine: schriftlich.'},
+     {z1:'Wer bescheinigt Ihnen das eigentlich?', z2:'Bei mir bescheinigt es keiner.'},
+   ]},
+   {zweig:1, zeilen:[
+     {z1:'Sie frieren Dinge ein statt sie zu treffen.', z2:'Das ist fast schon höflich.'},
+     {z1:'Ein Eingefrorener kann noch antworten.', z2:'Ein Erledigter nicht mehr.'},
+   ]},
+   {abRang:4, zeilen:[
+     {z1:'Sie steigen auf. Ich freue mich wirklich.', z2:'Und frage trotzdem weiter.'},
+     {z1:'Wer Sie befördert, könnte auch unterschreiben.', z2:'Nur so ein Gedanke.'},
+   ]},
+   {phase:'feierabend', zeilen:[
+     {z1:'Ich bleibe noch. Der Bericht wächst.', z2:'Seite zwei ist die spannende.'},
+     {z1:'Abends fragt niemand zurück.', z2:'Da schreibe ich am besten.'},
+   ]},
+   {abAkt:2, zeilen:[
+     {z1:'Auf jedem Deckblatt steht: vorläufig.', z2:'Sechsmal. Von mir geschrieben.'},
+     {z1:'Ich habe das Wort nie geändert.', z2:'Es stimmte ja jedes Jahr.'},
+   ]}
+   ],
+   anlass:{
+     crit:[
+       {z1:'Das war laut. Hat er etwas gesagt?', z2:'Ich frage für das Protokoll.'},
+       {z1:'Sie treffen gut. Ich frage trotzdem.', z2:'Beides geht gleichzeitig.'},
+     ],
+     levelup:[
+       {z1:'Aufstieg. Und wer trägt das ein?', z2:'Bei Ihnen tut es jemand.'},
+       {z1:'Herzlichen Glückwunsch. Ehrlich.', z2:'Ich meine das nicht spitz.'},
+     ],
+     untaetigkeit:[
+       {z1:'Sie stehen. Denken Sie nach?', z2:'Das machen hier wenige.'},
+       {z1:'Und wenn er einfach nur wartet?', z2:'Ich frage das öfter.'},
+     ]
+   }},
 
   {key:'trepp', name:'Zusteller Emil Trepp der Siebte', kurz:'Zusteller Trepp', tx:28, ty:40, opt:'wander', sheet:'fin', komposit:true,
    // G9: die Dienstmütze ist jetzt eine Mütze und keine blaugraue Frisur mehr.

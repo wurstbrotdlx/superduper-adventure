@@ -1224,3 +1224,169 @@ Lisbeths Berichtstitel steht auch über der Tür. Sturz führt in Ablage V dasse
 Knöterich in Vordermühl führt, und keiner von beiden weiß es. Und Vorblatts durchgeschriebener
 Stempel liegt aus demselben Grund im Fach, aus dem Knöterich nicht in den Ruhestand kommt.
 **Keine dieser Verbindungen wird im Spiel erklärt.**
+
+# Teil B: Die Dialogzeilen (F1c)
+
+Zwölf neue Zeilenpaare je Dorffigur über die sechs Auslöserklassen, dazu
+Ereigniszeilen zu mindestens drei Anlässen. **Keine bestehende Zeile ist geändert
+worden**, alles hängt sich als eigener `zusatz`-Block oder `anlass`-Pool an.
+
+**Die Zahlen in Klammern sind gezählt und nicht geschätzt.** Sie kommen aus dem
+Generator, der auch die Codefassung erzeugt: derselbe Lauf prüft Zeichendeckel,
+Gedankenstriche, Kaiser-Präsens, die Sperrliste `PRUEF_GEHEIM` wortgleich aus
+`index.html` und jede Abkürzung gegen `ABKUERZUNGEN`. Wo dahinter *(Feld)* steht,
+ist das der Absatz der Hintergrundgeschichte, auf den die Zeile zeigt.
+
+## Block 1: Zwirn, Bramsche, Zapf, Lisbeth
+
+### zwirn
+
+**abSchicht:6**
+* „Sie sind noch da. Das ist ungewöhnlich." (39) / „Die meisten bleiben einen Tag." (30)   *(Herkunft)*
+* „Ich merke mir Gesichter. Ihres jetzt auch." (42) / „Bei mir ist das ein Verfahren." (30)   *(blinder Fleck)*
+
+**abStufe:6**
+* „Sie treten fester auf als am Montag." (36) / „Das sage ich als Bürgermeister." (31)   *(Sprachmarke)*
+* „Sie könnten ein Fest eröffnen." (30) / „Wenn eines stattfände." (22)   *(Besessenheit)*
+
+**skill:'int', ab:4**
+* „Sie lesen Anträge. Man sieht das." (33) / „Woran? Am Blick." (16)   *(Verhältnis zu Pommer)*
+* „Verstehen Sie etwas von Genehmigungen?" (38) / „Ich frage rein dienstlich." (26)   *(Hindernis)*
+
+**abRang:3**
+* „Man redet Sie jetzt anders an." (30) / „Das erleichtert die Einladung." (30)   *(Besessenheit)*
+* „Ein Rang ist gut. Ein Fest wäre besser." (39) / „Beides ginge auch." (18)   *(Sprachmarke)*
+
+**phase:'antritt'**
+* „Guten Morgen! Heute wird ein guter Tag." (39) / „Wie jeder. Es ist ja schön." (27)   *(Sprachmarke)*
+* „Ich stehe hier und schüttele Hände." (35) / „Auch wenn keine da ist." (23)   *(blinder Fleck)*
+
+**abAkt:4**
+* „Im Keller stehen elf Kisten." (28) / „Zehn davon sind leer." (21)   *(neue Tatsache)*
+* „Ich bestelle jedes Jahr neu." (28) / „Feuchtes Konfetti taugt nichts." (31)   *(neue Tatsache)*
+
+**anlass levelup**
+* „Ein Aufstieg! Herzlichen Glückwunsch." (37) / „Ich sage das gern öffentlich." (29)   *(Sprachmarke)*
+* „Da wäre eine Feier angebracht." (30) / „Sobald das geklärt ist." (23)   *(Besessenheit)*
+
+**anlass goldfund**
+* „So viel Gold. Sehr erfreulich." (30) / „Ein Fest kostet auch etwas." (27)   *(neue Tatsache)*
+* „Legen Sie etwas zurück." (23) / „Für später. Für uns alle." (25)   *(Besessenheit)*
+
+**anlass untaetigkeit**
+* „Stehen Sie ruhig. Ich rede weiter." (34) / „Ich bin dran. Wie immer." (24)   *(Sprachmarke)*
+* „Eine Pause ist auch Planung." (28) / „So sehe ich das seit elf Jahren." (32)   *(blinder Fleck)*
+
+### bramsche
+
+**abSchicht:8**
+* „Sie kommen wieder. Notiert." (27) / „Nicht jeder kommt wieder." (25)   *(Herkunft)*
+* „Ihr Name steht inzwischen zweimal." (34) / „Einmal richtig, einmal falsch." (30)   *(neue Tatsache)*
+
+**abStufe:9**
+* „Sie tragen mehr als beim ersten Mal." (36) / „Ich führe darüber nichts." (25)   *(Besessenheit)*
+* „Was Sie da draußen holen, kommt hier an." (40) / „Irgendwann. Alles kommt an." (27)   *(Besessenheit)*
+
+**skill:'int', ab:6**
+* „Sie stellen die Frage jetzt richtig." (36) / „Das ist selten und angenehm." (28)   *(Spielfunktion)*
+* „Ein Antrag beginnt im Kopf." (27) / „Bei Ihnen offenbar auch." (24)   *(Hindernis)*
+
+**abRang:5**
+* „Höherer Dienst. Das ändert nichts." (34) / „Der Antrag bleibt ein Antrag." (29)   *(Hindernis)*
+* „Ihr Titel öffnet hier keine Tür." (32) / „Ein Wortlaut schon." (19)   *(blinder Fleck)*
+
+**phase:'feierabend'**
+* „Unten ist es kühl. Immer." (25) / „Kühl, trocken, dunkel." (22)   *(Herkunft)*
+* „Ich gehe später als alle anderen." (33) / „Es liegt ja auch mehr hier." (27)   *(Besessenheit)*
+
+**merker:'hatKammerBetreten'**
+* „Sie waren in einer Kammer." (26) / „Ordnung gibt es dort keine." (27)   *(Besessenheit)*
+* „Wer dort ablegt, findet nichts wieder." (38) / „Kein Vorwurf. Fast keiner." (26)   *(Sprachmarke)*
+
+**anlass kammerAbbruch**
+* „Zurückgegangen. Auch das ist ein Vorgang." (41) / „Ich vermerke es kommentarlos." (29)   *(Sprachmarke)*
+* „Leer herausgekommen? In welcher Sache?" (38) / „Nicht jede Frage hat eine Akte." (31)   *(Sprachmarke)*
+
+**anlass fluch**
+* „Sie haben etwas unterschrieben." (31) / „Gelesen haben Sie es nicht." (27)   *(Riss)*
+* „Auflagen stehen immer unten." (28) / „Ich lese immer unten zuerst." (28)   *(Besessenheit)*
+
+**anlass goldfund**
+* „Ein Fund. Der gehört verzeichnet." (33) / „Von mir aus auch später." (24)   *(Besessenheit)*
+* „Gold ist einfach. Es fragt nichts." (34) / „Akten fragen. Ständig." (22)   *(blinder Fleck)*
+
+### zapf
+
+**abSchicht:4**
+* „Sie sind noch hier. Gut." (24) / „Spart mir das Namenlernen." (26)   *(Sprachmarke)*
+* „Vierter Tag. Nichts kaputt." (27) / „Von Ihnen jedenfalls." (21)   *(Sprachmarke)*
+
+**abStufe:8**
+* „Sie sind schwerer geworden." (27) / „Die Dielen sagen es mir." (24)   *(blinder Fleck)*
+* „Ich habe nachgeölt. Vorsorglich." (32) / „Man weiß ja nie." (16)   *(Besessenheit)*
+
+**skill:'str', ab:6**
+* „Sie tragen jetzt selber." (24) / „Gut. Ich habe zwei Hände." (25)   *(Sprachmarke)*
+* „Kraft ist praktisch. Werkzeug auch." (35) / „Werkzeug hält länger." (21)   *(Besessenheit)*
+
+**abRang:6**
+* „Sie haben jetzt einen Titel." (28) / „Türen klemmen trotzdem." (23)   *(Sprachmarke)*
+* „Titel repariert nichts." (23) / „Ich schon." (10)   *(Sprachmarke)*
+
+**phase:'antritt'**
+* „Ich bin vor Ihnen da. Immer." (28) / „Aufschließen dauert sonst." (26)   *(Besessenheit)*
+* „Kaffee läuft. Tropft auch." (26) / „Ich stelle was drunter." (23)   *(Sprachmarke)*
+
+**abAkt:5**
+* „Das Schild ist wieder trocken." (30) / „Hält noch zwanzig Jahre." (24)   *(neue Tatsache)*
+* „Hinten drauf steht, wann." (25) / „Zum dritten Mal inzwischen." (27)   *(neue Tatsache)*
+
+**anlass crit**
+* „Sauber. Nichts nachzuarbeiten." (30) / „So mache ich das auch." (22)   *(Sprachmarke)*
+* „Einmal richtig. Reicht meistens." (32) / „Zweimal ist Pfusch." (19)   *(Besessenheit)*
+
+**anlass ultimate**
+* „Viel Licht. Wenig Nutzen." (25) / „Wer räumt das jetzt auf?" (24)   *(Sprachmarke)*
+* „Das gibt Arbeit. Meine." (23) / „Ich sage nichts weiter." (23)   *(blinder Fleck)*
+
+**anlass untaetigkeit**
+* „Stehen kostet nichts. Stimmt nicht." (35) / „Es kostet Zeit." (15)   *(Sprachmarke)*
+* „Wenn Sie schon dastehen." (24) / „Halten Sie mal kurz." (20)   *(Sprachmarke)*
+
+### lisbeth
+
+**abSchicht:5**
+* „Sie sind länger hier als die meisten." (37) / „Ich zähle mit. Berufskrankheit." (31)   *(Riss)*
+* „Fünf Tage. Bei mir sind es sechs Jahre." (39) / „Nicht als Vorwurf. Nur so." (26)   *(Hindernis)*
+
+**abStufe:7**
+* „Sie werden besser. Merkt das jemand?" (36) / „Ich meine: schriftlich." (23)   *(Hindernis)*
+* „Wer bescheinigt Ihnen das eigentlich?" (37) / „Bei mir bescheinigt es keiner." (30)   *(Riss)*
+
+**zweig:1**
+* „Sie frieren Dinge ein statt sie zu treffen." (43) / „Das ist fast schon höflich." (27)   *(Besessenheit)*
+* „Ein Eingefrorener kann noch antworten." (38) / „Ein Erledigter nicht mehr." (26)   *(Besessenheit)*
+
+**abRang:4**
+* „Sie steigen auf. Ich freue mich wirklich." (41) / „Und frage trotzdem weiter." (26)   *(Sprachmarke)*
+* „Wer Sie befördert, könnte auch unterschreiben." (46) / „Nur so ein Gedanke." (19)   *(Hindernis)*
+
+**phase:'feierabend'**
+* „Ich bleibe noch. Der Bericht wächst." (36) / „Seite zwei ist die spannende." (29)   *(Geheimnis)*
+* „Abends fragt niemand zurück." (28) / „Da schreibe ich am besten." (26)   *(Riss)*
+
+**abAkt:2**
+* „Auf jedem Deckblatt steht: vorläufig." (37) / „Sechsmal. Von mir geschrieben." (30)   *(neue Tatsache)*
+* „Ich habe das Wort nie geändert." (31) / „Es stimmte ja jedes Jahr." (25)   *(neue Tatsache)*
+
+**anlass crit**
+* „Das war laut. Hat er etwas gesagt?" (34) / „Ich frage für das Protokoll." (28)   *(Sprachmarke)*
+* „Sie treffen gut. Ich frage trotzdem." (36) / „Beides geht gleichzeitig." (25)   *(Besessenheit)*
+
+**anlass levelup**
+* „Aufstieg. Und wer trägt das ein?" (32) / „Bei Ihnen tut es jemand." (24)   *(Hindernis)*
+* „Herzlichen Glückwunsch. Ehrlich." (32) / „Ich meine das nicht spitz." (26)   *(blinder Fleck)*
+
+**anlass untaetigkeit**
+* „Sie stehen. Denken Sie nach?" (28) / „Das machen hier wenige." (23)   *(Besessenheit)*
+* „Und wenn er einfach nur wartet?" (31) / „Ich frage das öfter." (20)   *(Sprachmarke)*
