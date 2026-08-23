@@ -16044,6 +16044,291 @@ SZENEN.baumZapf = {
     : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumZapf')},
 };
 
+SZENEN.baumTrepp = {
+  baum:true, figur:'trepp', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 5,
+  sprecher: () => szeneSprecherAusDorf('trepp'),
+  fragen:[
+    {key:'sack', t:'Was ist in dem Sack?',
+     z1:'Ein Brief. Sonst nichts mehr.', z2:'Der Rest ist längst zugestellt.'},
+    {key:'sieben', t:'Sieben Generationen?',
+     z1:'Emil der Erste war der Zusteller.', z2:'Ich bin der Siebte davon.'},
+    {key:'naht', t:'Der Sack ist geflickt?',
+     z1:'Zweimal. Herr Zapf war das.', z2:'Er nimmt nichts dafür.'},
+    {key:'schrift', frei:'sack', t:'Warum lesen Sie es nicht?',
+     z1:'Die Schrift ist mir fremd.', z2:'Nicht unleserlich. Fremd.'},
+    {key:'starren', frei:'schrift', t:'Sie starren sie an?',
+     z1:'Jeden Tag. Seit vierzig Jahren.', z2:'Man gewöhnt sich Strichen an.'},
+    {key:'vater', nach:3, t:'Wie kam der Sack zu Ihnen?',
+     z1:'Mein Vater hat ihn mir gegeben.', z2:'Mit fünf Wörtern dazu.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Wenn ich kurz stören darf.', z2:'Da gäbe es einiges.', hub:true},
+    angebot: {z1:'Ich könnte sie Ihnen sagen.', z2:'Wenn Sie kurz Zeit hätten.',
+              opts: () => [
+                {t:'Sagen Sie sie mir.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Ein andermal.', zu:'kein'},
+              ]},
+    dank:    {z1:'Er ist noch nicht zugestellt.', z2:'Mehr sagt man dabei nicht.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumTrepp')}]},
+    kein:    {z1:'Natürlich. Es ist ja auch nur ein Satz.', z2:'Er wartet. Wie alles hier.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumTrepp')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('vater')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumTrepp')},
+};
+
+SZENEN.baumNoergel = {
+  baum:true, figur:'noergel', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 6,
+  sprecher: () => szeneSprecherAusDorf('noergel'),
+  fragen:[
+    {key:'probe', t:'Vierzig Jahre auf Probe?',
+     z1:'Neununddreißig und ein Rest.', z2:'Ich rechne genau. Berufsschaden.'},
+    {key:'grün', t:'Sie sind eine Grünhaut?',
+     z1:'Eine Beschwerde. Sehr ausdauernd.', z2:'Irgendwann schreibt man selbst.'},
+    {key:'krawatte', t:'Warum die Krawatte?',
+     z1:'Weil sie zur Dienstkleidung gehört.', z2:'Fällt trotzdem niemandem auf.'},
+    {key:'antrag', frei:'probe', t:'Woher haben Sie die?',
+     z1:'Beantragt. Bei der Materialausgabe.', z2:'Ordnungsgemäß. Mit Wortlaut.'},
+    {key:'bestand', frei:'antrag', t:'Steht sie in einem Bestand?',
+     z1:'Als einziges Stück. Meines.', z2:'Das ist beinahe ein Beweis.'},
+    {key:'lager', nach:3, t:'Und die vor der Palisade?',
+     z1:'Meine Leute. Sie warten dort.', z2:'Seit vierhundert Jahren.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Das ist eine lange Beschwerde.', z2:'Ich kürze sie ab.', hub:true},
+    angebot: {z1:'Sie könnten selbst hingehen.', z2:'Ohne zu schlagen, meine ich.',
+              opts: () => [
+                {t:'Ich gehe hin.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Zu gefährlich.', zu:'kein'},
+              ]},
+    dank:    {z1:'Dann sehen Sie es. Mehr will ich nicht.', z2:'Beschwerde hiermit erledigt.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumNoergel')}]},
+    kein:    {z1:'Verständlich. Ich beschwere mich trotzdem.', z2:'Nicht über Sie. Über das.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumNoergel')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('lager')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumNoergel')},
+};
+
+SZENEN.baumMilb = {
+  baum:true, figur:'milb', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 5,
+  sprecher: () => szeneSprecherAusDorf('milb'),
+  fragen:[
+    {key:'note', t:'Wie stufen Sie ein?',
+     z1:'Nach Merkmalen. Streng nach Vordruck.', z2:'Andere raten. Ich setze an.'},
+    {key:'gefühl', t:'Kammern stimmen nicht?',
+     z1:'Das beunruhigt mich seit Jahren.', z2:'Meine Zahlen stimmen ja.'},
+    {key:'titel', t:'Was ist Ihre Hoheitsstufe?',
+     z1:'Freiherr. Knapp, aber erreicht.', z2:'Ich habe es nachgerechnet.'},
+    {key:'ga', frei:'note', t:'Was heißt GA?',
+     z1:'Gutachterliche Ansetzung. Mein Wort.', z2:'Ich habe es selbst gebildet.'},
+    {key:'kurz', frei:'ga', t:'Warum kürzen Sie das ab?',
+     z1:'Weil ich es oft schreibe.', z2:'Was oft kommt, wird kürzer.'},
+    {key:'vordruck', nach:3, t:'Und der Vordruck selbst?',
+     z1:'Sechs Zeilen. Ich kenne ihn genau.', z2:'Seit vierzig Jahren derselbe.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Das setze ich mit Vier an.', z2:'Fragen Sie ruhig weiter.', hub:true},
+    angebot: {z1:'Ich könnte ihn Ihnen zeigen.', z2:'Er liegt hier. Natürlich.',
+              opts: () => [
+                {t:'Zeigen Sie ihn mir.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Nicht nötig.', zu:'kein'},
+              ]},
+    dank:    {z1:'Sechs Zeilen, von eins bis sechs.', z2:'Mehr braucht eine Skala nicht.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumMilb')}]},
+    kein:    {z1:'Wie Sie meinen. Ich setze Sie mit Drei an.', z2:'Höchstens.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumMilb')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('vordruck')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumMilb')},
+};
+
+SZENEN.baumPommer = {
+  baum:true, figur:'pommer', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 5,
+  sprecher: () => szeneSprecherAusDorf('pommer'),
+  fragen:[
+    {key:'wortlaut', t:'Warum so genau?',
+     z1:'Weil auf dem Antrag etwas steht.', z2:'Ich gebe aus, was dasteht.'},
+    {key:'liste', t:'Was ist das für eine Liste?',
+     z1:'Ausgaben ohne Antrag. Seit Jahren.', z2:'Sie ist leer. Das ist sie.'},
+    {key:'bestand', t:'Wie kamen Sie hierher?',
+     z1:'Übernommen. Und zwei Jahre geräumt.', z2:'Danach stimmte der Bestand.'},
+    {key:'fehl', frei:'wortlaut', t:'Hat damals etwas gefehlt?',
+     z1:'Es war nie da. Vermisst wurde es.', z2:'Beides gleichzeitig, ja.'},
+    {key:'beweis', frei:'fehl', t:'Ein Antrag beweist etwas?',
+     z1:'Dass die Sache überhaupt besteht.', z2:'Sonst ist sie nur behauptet.'},
+    {key:'abend', nach:3, t:'Was tun Sie abends?',
+     z1:'Ich räume ein. Und schreibe etwas.', z2:'Nichts Dienstliches. Fast.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Dazu bräuchte ich einen Antrag.', z2:'Ich mache eine Ausnahme.', hub:true},
+    angebot: {z1:'Ich könnte Ihnen eines zeigen.', z2:'Herausgeben kann ich es nicht.',
+              opts: () => [
+                {t:'Zeigen Sie es.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Dann eben nicht.', zu:'kein'},
+              ]},
+    dank:    {z1:'Ein Entwurf. Für einen Fall, den es nicht gibt.', z2:'Beraten darf ich ja nicht.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumPommer')}]},
+    kein:    {z1:'Richtig. Es steht auch nicht in meinem Bestand.', z2:'Kein Antrag, kein Material.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumPommer')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('abend')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumPommer')},
+};
+
+SZENEN.baumFass = {
+  baum:true, figur:'fass', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 4,
+  sprecher: () => szeneSprecherAusDorf('fass'),
+  fragen:[
+    {key:'gast', t:'Wer kommt hier abends her?',
+     z1:'Alle. Und alle gehen wieder.', z2:'Vor dem Käse meistens.'},
+    {key:'name', t:'Woher kommt der Name?',
+     z1:'Vom Großvater. Der wusste mehr.', z2:'Erklärt hat er ihn nie.'},
+    {key:'trepp', t:'Und der Zusteller?',
+     z1:'Sitzt jeden Abend hier. Trinkt nichts.', z2:'Ich stell ihm was hin.'},
+    {key:'letzte', frei:'gast', t:'Was verspricht der Name?',
+     z1:'Dass einer den letzten setzt.', z2:'Irgendwann tut das jemand.'},
+    {key:'regal', frei:'letzte', t:'Was steht oben im Regal?',
+     z1:'Ein Krug. Der bleibt oben stehen.', z2:'Auch wenn alle anderen weg sind.'},
+    {key:'warum', nach:3, t:'Warum rührt ihn keiner an?',
+     z1:'Weil er gebraucht wird. Später.', z2:'So hat es der Großvater gesagt.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Setz dich erst mal.', z2:'Das dauert nämlich.', hub:true},
+    angebot: {z1:'Du könntest ihn dir ansehen.', z2:'Anfassen ist was anderes.',
+              opts: () => [
+                {t:'Ich sehe ihn mir an.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Lass ihn stehen.', zu:'kein'},
+              ]},
+    dank:    {z1:'Kein Staub drauf. Ich mach das jede Woche.', z2:'Vierzig Jahre. Bisher.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumFass')}]},
+    kein:    {z1:'Gut so. Setz dich lieber hin.', z2:'Der Käse kommt gleich.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumFass')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('warum')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumFass')},
+};
+
+// Der Baum der Bank. Einer für zwei Figuren, mit Sprecherwechsel: die zwei
+// Fragen über Hintermühl und das gute Ende gehören Pahl, alles andere Lott.
+// Das ist derselbe Griff, den SZ1 für Vorblatts Versammlung gebaut hat, hier
+// aber der Witz der Figur: Lott redet über Pahl, und wenn es ernst wird, redet
+// Pahl selbst.
+SZENEN.baumBank = {
+  baum:true, figur:'lott', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 8,
+  sprecher: () => szeneSprecherAusDorf('lott'),
+  fragen:[
+    {key:'bank', t:'Wie lange sitzen Sie hier?',
+     z1:'Länger als das Dorf steht.', z2:'Pahl sagt, das stimmt sogar.'},
+    {key:'neu', t:'Warum der Neue?',
+     z1:'Weil vor Ihnen schon viele kamen.', z2:'Der Name blieb. Sie wechseln.'},
+    {key:'brummen', t:'Was brummt im Steinfeld?',
+     z1:'Das war schon immer so.', z2:'Pahl hat mal nachgesehen.'},
+    {key:'woher', frei:'bank', t:'Woher kommen Sie zwei?',
+     z1:'Von flussaufwärts. Hintermühl.', z2:'Es gibt das nicht mehr.'},
+    {key:'wiese', wer:'pahl', frei:'woher', t:'Was ist dort passiert?',
+     z1:'Nichts. Genau das ist es ja.', z2:'Kein Feuer. Ein Aktendeckel.'},
+    {key:'steine', wer:'pahl', nach:3, t:'Auf der Wiese liegen Steine.',
+     z1:'Sortiert. Das fällt Leuten auf.', z2:'Uns hat es niemand gedankt.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Da fragt uns selten wer.', z2:'Pahl, sag du erst.', hub:true},
+    angebot: {z1:'Wir könnten sagen, wer das war.', z2:'Pahl findet die Frage unhöflich.',
+              opts: () => [
+                {t:'Wer war es denn?', tun: () => { szeneKnoten('dank'); }},
+                {t:'Dann eben nicht.', zu:'kein'},
+              ]},
+    dank:    {wer:'pahl', z1:'Wir zwei. Am letzten Tag. Ohne Auftrag.', z2:'Man räumt auf. Macht man so.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumBank')}]},
+    kein:    {z1:'Sehen Sie. Er hat es Ihnen erspart.', z2:'Setzen Sie sich lieber.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumBank')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('steine')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumBank')},
+};
+
+SZENEN.baumUmlauf = {
+  baum:true, figur:'umlauf', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 12,
+  sprecher: () => szeneSprecherAusDorf('umlauf'),
+  fragen:[
+    {key:'oben', t:'Wie ist es oben?',
+     z1:'Vierzehn Türme, ein Aufzug, sauber.', z2:'Und sehr leise. Sehr.'},
+    {key:'zettel', t:'Was steht auf dem Zettel?',
+     z1:'Stellen. Vorne durch, hinten elf.', z2:'Die Rückseite wächst mit.'},
+    {key:'rohr', t:'Warum laufen Sie?',
+     z1:'Weil die Rohrpost steht. Seit immer.', z2:'Laufen geht auch. Schneller.'},
+    {key:'ziel', frei:'oben', t:'Kommen Sie irgendwann an?',
+     z1:'Ankommen ist nicht vorgesehen.', z2:'Weitergeben schon.'},
+    {key:'einmal', frei:'ziel', t:'Waren Sie je mal fertig?',
+     z1:'Einmal habe ich es versucht.', z2:'In Hochablage. Eine Stunde.'},
+    {key:'stunde', nach:3, t:'Und wie war das?',
+     z1:'Lang. Länger als jeder Weg.', z2:'Danach zwei Tage aufgeholt.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Ich bin selten irgendwo lange.', z2:'Fragen Sie schnell.', hub:true},
+    angebot: {z1:'Ich könnte es noch mal versuchen.', z2:'Hier zum Beispiel. Kurz.',
+              opts: () => [
+                {t:'Setzen Sie sich doch.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Sie müssen ja weiter.', zu:'kein'},
+              ]},
+    dank:    {z1:'Eine Minute. Das ist mein Rekord.', z2:'Nett hier. Wirklich. Weiter.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumUmlauf')}]},
+    kein:    {z1:'Ja. Elf Stellen. Sie verstehen.', z2:'War trotzdem nett bei Ihnen.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumUmlauf')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('stunde')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumUmlauf')},
+};
+
+SZENEN.baumVorblatt = {
+  baum:true, figur:'vorblatt', haeltDieWelt:false, sicht:3, start:'hub',
+  wenn: () => !CONFIG.schichtModus || amt.schichten >= 22,
+  sprecher: () => szeneSprecherAusDorf('vorblatt'),
+  fragen:[
+    {key:'anhang', t:'Wofür sind Sie zuständig?',
+     z1:'Für Anhängiges. Das ist beinahe alles.', z2:'Es wird gern unterschätzt.'},
+    {key:'stempel', t:'Was steht auf dem Stempel?',
+     z1:'Ihr Anliegen wird bearbeitet.', z2:'Das ist bereits sehr viel.'},
+    {key:'wagen', t:'Und Ihr Fuhrwerk?',
+     z1:'Zwei Amtsschimmel. Sehr verlässlich.', z2:'Was sie ziehen, lebt länger.'},
+    {key:'nein', frei:'anhang', t:'Sagen Sie jemals Nein?',
+     z1:'Nein wäre eine Entscheidung.', z2:'Wir prüfen das lieber gern.'},
+    {key:'fach', frei:'nein', t:'Was liegt in Ihrem Fach?',
+     z1:'Ein Stempel. Nicht mehr im Dienst.', z2:'Und nicht außer Dienst.'},
+    {key:'alt', nach:3, t:'Warum nicht wegwerfen?',
+     z1:'Ausmustern wäre eine Entscheidung.', z2:'Sie kennen das Problem.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher? Das ist ein anhängiger Zeitraum.', z2:'Fragen Sie unbesorgt.', hub:true},
+    angebot: {z1:'Ich könnte ihn Ihnen zeigen.', z2:'Gern. Zeigen ist unverbindlich.',
+              opts: () => [
+                {t:'Zeigen Sie ihn.', tun: () => { szeneKnoten('dank'); }},
+                {t:'Nicht nötig.', zu:'kein'},
+              ]},
+    dank:    {z1:'Durchgeschrieben. Dreißig Jahre lang.', z2:'Er hat viel aufgehalten.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumVorblatt')}]},
+    kein:    {z1:'Wie Sie wünschen. Wir prüfen das gern.', z2:'Hochablage grüßt sehr.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumVorblatt')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('alt')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumVorblatt')},
+};
+
 // Gemeinsames Ende der drei Szenen: Merker setzen, den Chor auf der Bank
 // vormerken, Tafel zu.
 //
