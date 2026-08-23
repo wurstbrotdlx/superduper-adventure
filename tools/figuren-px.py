@@ -47,6 +47,16 @@ TAFEL = {
     'milb':       '08-milb',
     'pommer':     '09-pommer',
     'fass':       '10-fass',
+    # G10: Lott und Pahl bekommen BEIDE das Doppelportraet, Motiv 11. Das ist
+    # kein Notbehelf, sondern der Witz: wer den einen anspricht, sieht beide
+    # grinsen, und wer danach den anderen anspricht, sieht dasselbe Bild noch
+    # einmal. Die zwei sitzen seit W3 nebeneinander auf derselben Bank und sind
+    # in jedem ihrer Saetze ein Paar; ein Einzelportraet haette sie getrennt.
+    # Die Datei heisst deshalb nach beiden und nicht nach einem: index.html
+    # haengt ueber PORTRAET_DATEI beide Figurenschluessel an dasselbe Blatt, und
+    # loadAssets() laedt es an einer URL genau einmal. Zwei bytegleiche Dateien
+    # waeren 7 KB umsonst im Build.
+    'lott-pahl':  '11-lott-pahl',
     'nieselbeck': '12-nieselbeck',
     'umlauf':     '13-umlauf',
     'vorblatt':   '14-vorblatt',

@@ -1,6 +1,6 @@
 # assets/portraets/ — Die Spielfassung der Figurenporträts
 
-Dreizehn Bilder, 128x128, 32 Farben. Das sind die Dateien, die `index.html`
+Vierzehn Dateien für fünfzehn Figuren, 128x128, 32 Farben. Das sind die Dateien, die `index.html`
 tatsächlich lädt und die `tools/build-single.mjs` in `dist/index.html` einbackt.
 
 Sie sind **erzeugt, nicht gepflegt**. Quelle sind die Originale in
@@ -48,10 +48,13 @@ Einzelheiten in `phase-g8-figurenfarben.md`.
 
 ## Wer fehlt
 
-**Lott und Pahl** teilen sich ein Doppelporträt (Motiv 11), das sich nicht in
-zwei Gesichter schneiden lässt. Sie bekommen in der Tafel weiter den
-Sprite-Ausschnitt aus U4. Das ist kein Mangel, sondern der dokumentierte
-Rückfallweg — siehe `phase-u5-portraets.md`.
+**Niemand mehr.** Bis G10 fehlten hier Lott und Pahl: ihr Motiv 11 ist ein
+Doppelporträt und lässt sich nicht in zwei Gesichter schneiden. Seit G10 zeigt
+die Tafel es **beiden** — `lott-pahl.png`, eine Datei, zwei Figurenschlüssel
+(`PORTRAET_DATEI` in `index.html`). Wer den einen anspricht, sieht beide
+grinsen, und wer danach den anderen anspricht, sieht dasselbe Bild noch einmal.
+Das ist der Witz, nicht der Mangel, und damit hat jede Dorffigur ein gemaltes
+Porträt — siehe `phase-g10-rig-und-doppelbild.md`.
 
 **Sturz, Nachtrag, Konrad, Anlage 3 und die Kaisertür** haben Bilder, aber
 keinen Sprechplatz in der Tafel. Sie bleiben in `assets/figuren/`, bis es eine

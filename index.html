@@ -1728,18 +1728,30 @@ addSheet('dun_cobweb', 'cf/dungeon/Objects/cobweb.png', 1, 'grid', {fw:18, fh:16
 //
 //  Der Schluessel ist der aus DORF_FIGUREN, damit Bild und Figur ohne
 //  Zwischentabelle zusammenfinden; portraetAssert() rechnet nach, dass beide
-//  Listen sich decken. Lott und Pahl fehlen mit Absicht: ihr Motiv (11) ist
-//  ein Doppelportraet, jedes Gesicht fuellt die halbe Breite bei voller Hoehe,
-//  und ein Zuschnitt zoege dem jeweils anderen die Haare mit ins Bild. Sie
-//  bleiben auf dem Sprite-Ausschnitt, bis Prompt 11 als zwei Einzelbilder
-//  nachgelaufen ist. Knoeterich steht dabei, obwohl er nicht im Dorf steht:
+//  Listen sich decken. Knoeterich steht dabei, obwohl er nicht im Dorf steht:
 //  er fuehrt den Empfang und damit die Tafel (szeneSprecherKnoeterich).
+//
+//  G10: Lott und Pahl kommen dazu, und zwar BEIDE mit demselben Bild. U5 hatte
+//  sie ausgelassen, weil Motiv 11 ein Doppelportraet ist und ein Zuschnitt dem
+//  jeweils anderen die Haare mit ins Bild zoege. Der Zuschnitt bleibt unmoeglich
+//  — nur ist das Doppelbild fuer beide die bessere Antwort und nicht die
+//  schlechtere. Die zwei sitzen seit W3 auf derselben Bank und sind in jedem
+//  ihrer Saetze ein Paar; wer den einen anspricht, sieht beide grinsen, und wer
+//  danach den anderen anspricht, sieht dasselbe Bild noch einmal. Das ist der
+//  Witz, nicht der Mangel.
+//
+//  PORTRAET_DATEI haengt beide Schluessel an dieselbe Datei. Sie bekommen je
+//  einen eigenen SHEETS-Eintrag (die Tafel sucht ueber figur.key), aber
+//  loadAssets() bringt das Bild an einer URL nur einmal — zwei bytegleiche
+//  Dateien waeren 7 KB umsonst im Build.
 // ===========================================================================
 const PORTRAET_FIGUREN = ['knoeterich', 'zwirn', 'bramsche', 'zapf', 'lisbeth', 'trepp',
-                          'noergel', 'milb', 'pommer', 'fass', 'nieselbeck', 'umlauf', 'vorblatt'];
+                          'noergel', 'milb', 'pommer', 'fass', 'lott', 'pahl',
+                          'nieselbeck', 'umlauf', 'vorblatt'];
+const PORTRAET_DATEI = {lott: 'lott-pahl', pahl: 'lott-pahl'};
 const portraetBlatt = k => 'portraet_' + k;
 for(const k of PORTRAET_FIGUREN)
-  addSheet(portraetBlatt(k), `portraets/${k}.png`, 1, 'raw', {optional:true});
+  addSheet(portraetBlatt(k), `portraets/${PORTRAET_DATEI[k] || k}.png`, 1, 'raw', {optional:true});
 
 // G3: mehrere SHEET_LIST-Eintraege (ein Anim je Rig-Zeile) zeigen oft auf dieselbe
 // Datei (rowStart unterscheidet sie) — ein Image pro url statt pro Key laden,
@@ -2202,6 +2214,16 @@ function bakeNpcSheet(key, gestalt, anim){
 // bessere Figur hält, streicht das Flag bei ihr und bekommt es zurück. Die
 // acht Blätter bleiben deshalb geladen und CF_NPCS steht unverändert.
 function npcBlaetter(nd){
+  // G10: ein Monsterrig schlaegt alles. Nicht jede Figur des Ensembles ist ein
+  // Mensch — Noergel ist ein Kobold, und das Helden-Rig hat keine spitzen Ohren.
+  // Statt sie ihm anzumalen, bekommt er das Blatt, auf dem sie schon sind.
+  // CF_RIGS traegt sieben Voelker, die im Kessel ohnehin geladen werden; ein
+  // Rig kostet hier also keine Datei, nur eine Zeile.
+  //
+  // Kein 'else': faellt das Rigblatt aus (im Quellbaum ohne Grafikpaket), greift
+  // darunter derselbe Weg wie bisher, und die Figur steht als Komposit da.
+  if(nd.rig && (!assetsReady || SHEETS[`${nd.rig}_idle`]))
+    return {idle:`${nd.rig}_idle`, walk:`${nd.rig}_walk`};
   if(nd.opt !== 'fest' && !nd.komposit && (!assetsReady || SHEETS[`cfnpc_${nd.sheet}_idle`]))
     return {idle:`cfnpc_${nd.sheet}_idle`, walk:`cfnpc_${nd.sheet}_walk`};
   if(nd.opt === 'fest') return {idle:`npc_baked_${nd.key}`, walk:`npc_baked_${nd.key}`};
@@ -3298,6 +3320,22 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', komposit:true,
+   // G10: Nörgel bekommt ein Monsterrig. Sein Porträt zeigt einen Kobold mit
+   // gewaltigen spitzen Ohren, und das Helden-Rig hat keine — G9 konnte ihm die
+   // Haut grün färben, aber keine Ohren anwachsen lassen. orc_chief ist dasselbe
+   // Blatt, auf dem im Lager der Beschwerden das Empfangsbekenntnis steht: das
+   // Volk stimmt, die Ohren sind schon da, und geladen wird es ohnehin.
+   //
+   // rigSc 1.9 ist gerechnet und nicht geraten, aber ungeprüft. Der Körper des
+   // Orks misst 20 bis 24 Pixel (Messung in CF_RIGS), das Held-Komposit rund 32
+   // bei NPC_SC 1.656, also 53 Pixel im Bild. 22 mal 1,9 sind 42 — Nörgel steht
+   // damit rund vier Fünftel so hoch wie die Menschen um ihn herum, und das ist
+   // die Absicht: er ist ein kleiner Sachbearbeiter, kein Häuptling. Das
+   // Empfangsbekenntnis steht auf 2.3 und bleibt der größere.
+   //
+   // gestalt bleibt stehen und ist ab hier der Rückfallweg: ohne Grafikpaket
+   // gibt es kein Rigblatt, dann steht wieder das grünhäutige Komposit da.
+   rig:'orc_chief', rigSc:1.9,
    // G9: der einzige mit hautFarbe. Er ist ein Kobold, und bis G8 war das eine
    // schwache Tönung über die ganze Figur — grün lag dann auch auf seinem Hemd,
    // und weil es das Bild sonst zugekleistert hätte, blieb sie bei 0.22. Das
@@ -3373,8 +3411,14 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'pommer', name:'Materialausgabe Herr Pommer', kurz:'Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy',
-   // kurzes blondes Haar (h1 statt der Tolle h2), Khakikittel
-   gestalt:{hair:'h1', haarFarbe:'#b48651', hemd:'kittel', hemdFarbe:'#9d8e63', hose:'hose', schuh:'schuh'},
+   // kurzes blondes Haar (h1 statt der Tolle h2), Khakikittel. G10: #e1ac62
+   // statt #b48651. Die Standardzone reichte bis auf seine hohe Stirn, und
+   // Blond und Haut sind derselbe Farbton — der Familientest konnte sie nicht
+   // trennen, das Mittel wog den Schatten unter dem Pony mit, und heraus kam
+   // ein Braun. Gemessen wird jetzt das oberste Sechzehntel und dort der
+   // Lichtton: auf 64 Pixeln liest sich Haar an seinem Licht, nicht an seinem
+   // Flächenmittel.
+   gestalt:{hair:'h1', haarFarbe:'#e1ac62', hemd:'kittel', hemdFarbe:'#9d8e63', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
      {z1:'Auf dem Antrag steht Montag. Nicht heute.', z2:'Kommen Sie am Montag wieder.'},
@@ -3435,8 +3479,11 @@ const DORF_FIGUREN = [
 
   {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
    // Haarreste und geflickter brauner Mantel, gemessen an der linken Hälfte des
-   // Doppelporträts (Motiv 11). Bis G8 trug er gar keine Kleiderebene.
-   gestalt:{hair:'h1', haarFarbe:'#aa7357', hemd:'karo', hemdFarbe:'#875b46', hose:'hose', schuh:'schuh'},
+   // Doppelporträts (Motiv 11). Bis G8 trug er gar keine Kleiderebene. G10: die
+   // Werte kommen jetzt aus der 128er-Tafelfassung, die das Spiel wirklich lädt,
+   // statt aus der hochskalierten Ansichtsfassung — daher die Verschiebung um
+   // ein bis zwei Zahlenschritte.
+   gestalt:{hair:'h1', haarFarbe:'#a77256', hemd:'karo', hemdFarbe:'#855944', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
      {z1:'Der Neue. Schlägt wieder alles kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
@@ -3511,7 +3558,7 @@ const DORF_FIGUREN = [
    // rotblond ins Weiße, grauer Mantel mit falschen Knöpfen, gemessen an der
    // rechten Hälfte desselben Doppelporträts. Die beiden unterscheiden sich im
    // Dorf am Mantel, nicht am Haar — auf dem Bild sind beide fast kahl.
-   gestalt:{hair:'h4', haarFarbe:'#b87653', hemd:'hemd', hemdFarbe:'#7e6b65', hose:'hose', schuh:'schuh'},
+   gestalt:{hair:'h4', haarFarbe:'#b77451', hemd:'hemd', hemdFarbe:'#7d6a63', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
      {z1:'Sie kämpfen. Ich sehe nur zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
@@ -8962,6 +9009,10 @@ gespraechAssert();
 //      Hemdfarbe und Hut sind zusammen das, was man auf 24 Pixeln unterscheidet.
 //      Zwei gleiche Fünflinge im selben Dorf sind kein Stil, sondern ein
 //      Kopierfehler — und der wäre im Bild schwerer zu finden als hier.
+//   8. G10: Ein Monsterrig gibt es, und es kann laufen. Ein rig:'ork' ohne
+//      Eintrag in CF_RIGS liefe still ins Leere und die Figur stünde als
+//      Komposit da — sichtbar nur dem, der genau diese Figur ansieht. Und ein
+//      Rig ohne walk-Reihe schlitterte im Standbild über den Anger.
 const HEXWERT = /^#[0-9a-f]{6}$/i;
 const FARBFELD = {haarFarbe:'hair', hemdFarbe:'hemd', hoseFarbe:'hose', schuhFarbe:'schuh', hutFarbe:'hut'};
 function figurenFarbenAssert(){
@@ -8988,13 +9039,22 @@ function figurenFarbenAssert(){
     for(const alt of ['chest', 'legs', 'feet'])
       if(g[alt] != null) fehler(`${alt} ist seit G9 die Garderobe (hemd/hose/schuh)`, f.key);
     if(f.komposit && f.opt === 'fest') fehler('komposit bei einer festen Figur ist wirkungslos', f.key);
+    if(f.rig){
+      const r = CF_RIGS[f.rig];
+      if(!r) fehler('Rig gibt es nicht', f.key, f.rig);
+      else for(const anim of ['idle', 'walk'])
+        if(!r.anims[anim]) fehler(`Rig ohne ${anim}-Reihe`, f.key, f.rig);
+    }
+    if(f.rigSc != null && !f.rig) fehler('rigSc ohne rig ist wirkungslos', f.key);
     const bild = `${g.hair}|${g.haarFarbe || '-'}|${g.hemd || '-'}|${g.hemdFarbe || '-'}|${g.hut || '-'}`;
     if(gesehen.has(bild)) fehler('sieht aus wie', f.key, gesehen.get(bild));
     else gesehen.set(bild, f.key);
   }
   const behuetet = alle.filter(f => f.gestalt && f.gestalt.hut).length;
   const haut = alle.filter(f => f.gestalt && f.gestalt.hautFarbe).length;
-  if(ok) console.log(`G9 Figurenfarben: ${alle.length} Figuren eingekleidet, ${behuetet} mit Kopfbedeckung, ${haut} mit eigenem Hautton.`);
+  const rigs = alle.filter(f => f.rig).length;
+  if(ok) console.log(`G10 Figurenfarben: ${alle.length} Figuren eingekleidet, ${behuetet} mit Kopfbedeckung, `
+    + `${haut} mit eigenem Hautton, ${rigs} auf einem Monsterrig.`);
 }
 figurenFarbenAssert();
 
@@ -10617,7 +10677,12 @@ function render(){
       case DRAW_NPC: { drawShadowEllipse(o.x, o.y+4, 9);   // G5: Dorf-Staffage, gleiches Muster wie DRAW_CRITTER
                       const nmoving = !!(o.vx||o.vy);
                       const nkey = nmoving ? o.sheetWalk : o.sheetIdle;
-                      const nsc = NPC_SC;   // W3: alle Dorffiguren im Held-Maßstab, Komposit wie Blatt
+                      // W3: alle Dorffiguren im Held-Maßstab, Komposit wie Blatt.
+                      // G10: ausser wer ein Monsterrig traegt — die Rigs haben
+                      // eigene Zellmasse (orc_chief 32x32 gegen 64x64 beim
+                      // Komposit) und brauchen ihren eigenen Faktor, sonst
+                      // stuende die Figur halb so gross daneben.
+                      const nsc = (o.figur && o.figur.rigSc) || NPC_SC;
                       drawSprite(nkey, animFrame(nkey, gameT + o.phase, nmoving ? 6 : 3), o.x, o.y, nsc, o.flip, o.tint, o.tintA);
                       if(o.key === 'bramsche') drawAnlage3(o.x + 14, o.y + 6);
                       // U3: Namensschild, entfernungsabhaengig eingeblendet.
