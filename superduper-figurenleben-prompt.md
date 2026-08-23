@@ -1,4 +1,4 @@
-# Bauabschnitt F1: Figurenleben — OFFEN
+# Bauabschnitt F1: Figurenleben — ERLEDIGT (23.08.2026)
 
 Der Prompt für die Hintergrundgeschichten aller Figuren, für die Dialoge, die daraus
 entstehen, und für die Gesprächsbäume, in denen sich der Spieler verlaufen darf. Er ist so
@@ -53,7 +53,7 @@ Ausgerechnet, damit niemand die Größe unterschätzt und auf halber Strecke pfu
 |---|---|
 | F1a | 18 Hintergrundgeschichten à 500 bis 800 Wörter, zusammen rund 11.700 Wörter |
 | F1c | rund 260 Zeilenpaare, jedes einzeln gegengezählt, also über 500 geprüfte Zeilen |
-| F1d | 12 Bäume à 8 bis 14 Knoten, rund 130 Knoten mit je zwei Zeilen und bis zu vier Antworten |
+| F1d | 13 Bäume à 8 bis 14 Knoten, rund 130 Knoten mit je zwei Zeilen und bis zu vier Antworten |
 
 **Das ist keine Sitzung, das sind mehrere.** Deshalb wird jede Lieferung in Blöcke
 zerlegt, und **jeder Block ist ein Commit, der für sich abnehmbar ist**:
@@ -483,8 +483,10 @@ Strang hinter einer Skillung, die es nicht gibt, ist ein toter Ast.
 
 ### Umfang und Sonderfälle
 
-* **Zwölf Bäume**, einer je ansprechbarer Dorffigur außer Lott und Pahl, die sich einen
-  teilen (mit `wer`-Wechsel zwischen den beiden, das ist der Witz der Bank).
+* **Dreizehn Bäume**, einer je ansprechbarer Dorffigur außer Lott und Pahl, die sich einen
+  teilen (mit `wer`-Wechsel zwischen den beiden, das ist der Witz der Bank). *(Berichtigt bei
+  der Ausführung: hier stand zuerst zwölf, das war falsch gerechnet. Vierzehn Dorffiguren
+  minus die geteilte Bank sind dreizehn.)*
 * **Bramsche** behält ihren Fragenkanal unverändert: eine Frage pro Schicht, abgewiesen
   wie bisher. Ihr Baum läuft daneben und rührt den Zähler nicht an, weil er über sie redet
   und nicht über die Welt. Wer Auskunft will, stellt einen Antrag. Wer sie kennenlernen
@@ -963,7 +965,7 @@ Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 > Zugang, nie Gold oder Erfahrung. Einstieg über eine fünfte Antwortzeile „Erzählen Sie
 > von früher.", der Abschied bleibt letzte Zeile, im Baum höchstens vier Antworten je
 > Knoten. Lott und Pahl teilen sich einen Baum mit Sprecherwechsel, Knöterich bekommt
-> keinen. Mindestens drei Bäume tragen einen Strang „Was heißt das?" auf ein Kürzel, und
+> keinen (dreizehn insgesamt). Mindestens drei Bäume tragen einen Strang „Was heißt das?" auf ein Kürzel, und
 > mindestens einer davon endet als höfliche Wand.
 >
 > F1e: Phasendokument, README-Zeile, Weltbibel-Zuwachs, Statusmarker.
