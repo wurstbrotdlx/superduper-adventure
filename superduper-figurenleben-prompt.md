@@ -11,9 +11,10 @@ hält etwas zurück, das später fällt) und komisch im Ton dieses Hauses. Aus d
 Geschichte werden Dialogzeilen abgeleitet, die im Gesprächsfenster erscheinen: manche
 ohne Bedingung, andere nach Dienstzeit, nach einem Ereignis, nach der Stufe des Spielers
 oder nach seiner Skillung. Wer weiterfragt, landet nicht in einer Zeilenschleife, sondern
-in einem Gesprächsbaum mit Verzweigungen, Wahlmöglichkeiten und Sackgassen. Am Ende soll
-das Dorf nicht mehr aus vierzehn Sprechautomaten bestehen, sondern aus vierzehn Leuten,
-die etwas mitbekommen und mit denen sich ein Gespräch führen lässt.
+in einem Gesprächsbaum mit Verzweigungen, Wahlmöglichkeiten und Sackgassen. Quer durch
+alles läuft ein Gag über Abkürzungen, der über fünf Akte steigt statt sich zu wiederholen.
+Am Ende soll das Dorf nicht mehr aus vierzehn Sprechautomaten bestehen, sondern aus
+vierzehn Leuten, die etwas mitbekommen und mit denen sich ein Gespräch führen lässt.
 
 **Das Spiel bekommt dabei kein neues System.** Die Zeilen hängen an den Feldern, die
 `DORF_FIGUREN` schon hat. Die Bäume laufen auf der Szenenmaschine, die SZ1 und SZ2 gebaut
@@ -28,8 +29,8 @@ Er läuft in fünf Lieferungen, jede für sich abnehmbar und jede ein eigener Co
 
 | Lieferung | Inhalt | Datei |
 |---|---|---|
-| **F1a** | Hintergrundgeschichten, alle Figuren, kein Code | `figuren-leben.md` |
-| **F1b** | Die neuen Auslöser im Code, ohne eine einzige neue Zeile Text | `index.html` |
+| **F1a** | Hintergrundgeschichten, alle Figuren, dazu die Abkürzungstabelle. Kein Code | `figuren-leben.md` |
+| **F1b** | Die neuen Auslöser im Code plus `ABKUERZUNGEN` und ihr Guard, ohne eine einzige neue Zeile Text | `index.html` |
 | **F1c** | Die Dialogzeilen, gegengezählt, figurenweise | `figuren-leben.md`, `index.html` |
 | **F1d** | Die Gesprächsbäume, Inhalt und Einbau | `figuren-baeume.md`, `index.html` |
 | **F1e** | Phasendokument, README-Zeile, Weltbibel-Zuwachs | `phase-f1-figurenleben.md`, `README.md`, `superduper-weltbibel.md` |
@@ -103,9 +104,12 @@ Hochablage und bleibt dort.
 
 Vor der ersten Zeile lesen und danach gegen jede Zeile halten:
 
-* **Humor-Grundgesetz**, elf Regeln, `superduper-weltbibel.md` Kapitel 13. **Regel 7 ist
-  am 23.08.2026 geändert worden** und verbietet Popkultur nicht mehr, sie dosiert sie:
-  siehe Abschnitt 4 unten. Alle anderen zehn stehen unverändert.
+* **Humor-Grundgesetz**, elf Regeln, `superduper-weltbibel.md` Kapitel 13. **Zwei davon sind
+  am 23.08.2026 geändert worden**, beide vom Verbot zur Dosis: Regel 7 (Popkultur) und
+  Regel 1 (die Welt findet sich selbst normal). Beide neuen Fassungen stehen ausgeschrieben
+  in Abschnitt 4 unten. Die anderen neun stehen unverändert, und **Regel 4 (nie über
+  Menschen lachen), Regel 8 (kein Zynismus) und Regel 9 (Wärme) hängen an Regel 1**: was
+  dort erlaubt ist, ist es nur, solange diese drei unangetastet bleiben.
 * **Sieben Regeln für alles, was im Reich spielt**, ebenda, aus `weltgeschichte.md`
   Kapitel 12. Darunter die harte: **über den Kaiser wird ausschließlich im Präsens
   gesprochen.** `knAssertCaps()` prüft das bei jedem Start.
@@ -180,9 +184,35 @@ heißt sie ausgeschrieben:
 * **Im Zweifel weglassen.** Eine Anspielung ist ein Bonus, nie die Pointe. Wo sie die
   Pointe trägt, ist die Zeile falsch gebaut, und zwar unabhängig von der Anspielung.
 
+### Die vierte Wand: erlaubt, gezählt
+
+Regel 1 lautete „niemand im Spiel weiß, dass er komisch ist" und ist am 23.08.2026
+ebenfalls von einem Verbot zu einer Dosis geworden. Für F1 heißt das:
+
+* **Eine Figur darf einmal herausschauen.** Sie darf den Spieler als das ansprechen, was
+  er ist, sie darf trocken bemerken, dass an ihrer Lage etwas nicht stimmt, sie darf
+  merken, dass sie zum vierten Mal dieselbe Frage beantwortet. Das ist der Witz, den eine
+  Behörde von selbst hergibt: wer Formulare ausfüllt, ahnt irgendwann, dass er in einem
+  Verfahren steckt und nicht in einem Leben.
+* **Höchstens ein Zwinkern je Figur über das ganze Spiel**, nie zwei im selben Gespräch,
+  und **nie zwei Figuren im selben Baum**. Wie bei den Anspielungen wird gezählt und im
+  Lieferdokument aufgeführt. Der Richtwert für F1: **höchstens sechs im ganzen Ensemble**,
+  also weniger als die Hälfte der Figuren bekommt eins.
+* **Das Zwinkern gehört der Figur, nicht dem Spiel.** Es bleibt in ihrer Sprachmarke und
+  in ihrem Amtsdeutsch. Kein Erzähler mischt sich ein, keine Figur nennt Tasten, Menüs,
+  Spielstände oder Bildschirme, keine sagt „Spieler". Sie darf ahnen, dass sie beobachtet
+  wird. Sie darf nicht wissen, womit.
+* **Nie dort, wo es weh tut.** Nicht im warmen Moment (Regel 9), nicht in der Fanfare
+  (Regel 10), nicht in einer Szene, die etwas trägt. Ein Zwinkern kostet dort mehr, als
+  jeder Gag einbringt. Die stillen zwei Zeilen bei der Gießkanne bleiben still.
+* **Die Welt als Ganzes bleibt normal.** Erlaubt ist die einzelne Figur, die kurz
+  herausschaut. Nicht erlaubt ist ein Spiel, das sich insgesamt für einen Witz hält:
+  Regel 4 und Regel 8 stehen unverändert, und ohne sie kippt das Ganze in Hohn.
+
 **Fünf Verbote, die den Ton kaputtmachen:** Sarkasmus gegen eine Person. Zynismus über
-das Amt selbst. Eine Figur, die merkt, dass sie komisch ist. Eine Anspielung, die nur als
-Anspielung funktioniert. Und Blut, Sterben, Ketten, Grausamkeit in jeder Form.
+das Amt selbst. Eine Anspielung, die nur als Anspielung funktioniert. Ein Zwinkern, das
+über die Dosis hinausgeht oder aus dem Spiel statt aus der Figur kommt. Und Blut, Sterben,
+Ketten, Grausamkeit in jeder Form.
 
 ---
 
@@ -351,7 +381,7 @@ bestehenden Szenen:
    einen Merker. Ein Figurenbaum setzt keinen, sondern prüft in `wenn()` seine Auslöser.
    Wer zweimal kommt, kommt wieder hinein. Was sich beim zweiten Mal ändert, steht unten.
 3. **Einstieg über die Tafel.** Der Baum wird nicht durch das Ansprechen ausgelöst (das
-   bleibt der Zeilenkreislauf), sondern über eine eigene Antwortzeile, siehe Abschnitt 9.
+   bleibt der Zeilenkreislauf), sondern über eine eigene Antwortzeile, siehe Abschnitt 10.
 
 ### Aufbau eines Baums
 
@@ -436,7 +466,91 @@ Strang hinter einer Skillung, die es nicht gibt, ist ein toter Ast.
 
 ---
 
-## 9. Der Code, den F1 kostet
+## 9. Teil D: Der laufende Gag über die Kurzform
+
+Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. F1 macht daraus
+einen Gag, der über fünf Akte läuft. **Er wird nicht erfunden, er wird freigelegt:** drei
+Wurzeln stehen längst im Bestand, und zwei davon tragen bereits das halbe Spiel.
+
+### Die drei Wurzeln im Bestand
+
+| Kürzel | Wo es steht | Warum es schon ein Gag ist |
+|---|---|---|
+| **N. N.** | Zwei Türen im Haus, die Amtsleitung, das Dorffest (Weltbibel Kapitel 4) | Eine Abkürzung, die eine Person geworden ist. Alle begründen ihre Entscheidungen mit ihr. Die Weltbibel nennt sie den stabilsten Running Gag des Spiels. |
+| **a. D.** | Knöterichs Titel | Sie stimmt nicht. Seine Entpflichtung ist nie bearbeitet worden. Die einzige Abkürzung im Spiel, die ihrer Figur widerspricht, und er weiß es. |
+| **zu Händen** | Vorblatts Name (Weltgeschichte Kapitel 6) | Die Abkürzung, die ausgeschrieben wird. Im Reich kürzt man Hohe nicht ab. Er trägt sie als Namen und merkt es nicht. |
+
+**Die Regel dahinter, und sie ist der doppelte Boden (Grundgesetz 6): abgekürzt wird, was
+nicht wichtig genug ist, um ausgeschrieben zu werden.** Kinder sehen komische Buchstaben,
+Erwachsene sehen eine Rangordnung. Wer im Reich einen vollen Namen bekommt, ist wer. Wer
+zwei Buchstaben bekommt, ist ein Vorgang. **Das ist der Grund, aus dem dieser Gag über
+fünfzig Schichten trägt und nicht nach drei Zeilen verbraucht ist.**
+
+### Die Eskalation über die fünf Akte
+
+Ein Running Gag, der jedes Mal dasselbe tut, ist eine Wiederholung. Dieser hier steigt:
+
+| Akt | Stufe | Was passiert |
+|---|---|---|
+| **I** | **Das gewöhnliche Kürzel** | Figuren benutzen Kürzel, die sich aus dem Zusammenhang ergeben. Der Spieler lernt beiläufig, dass hier abgekürzt wird. Nichts daran ist komisch, und genau deshalb funktioniert alles Spätere. |
+| **II** | **Die Abkürzung der Abkürzung** | Ein Kürzel ist jemandem zu lang geworden und hat selbst ein kürzeres bekommen. Milb ist stolz darauf. Niemand widerspricht. |
+| **III** | **Die Kollision** | Zwei Stellen benutzen dasselbe Kürzel für Verschiedenes, und beide haben recht. Vordermühl meint das eine, Hochablage das andere. Es merkt nur der Spieler, und es wird nie aufgeklärt. |
+| **IV** | **Die verlorene Langform** | Jemand wird nach der Langform gefragt und kennt sie nicht mehr. Das Kürzel hat die Sache überlebt, um die es ging. Hier kippt der Gag ins Stille, und das ist Absicht (Regel 9). |
+| **V** | **Die Sache, die niemand abgekürzt hat** | Der Vorgang 1 trägt in vierhundert Jahren kein Kürzel. Nicht, weil er zu wichtig wäre. Sondern weil ihn nie jemand oft genug erwähnt hat, als dass sich das Abkürzen gelohnt hätte. Das ist die Pointe des ganzen Gags, sie gehört Akt V, und sie fällt in genau einer Zeile. |
+
+**Die Stufen hängen an `abAkt`**, dem Schalter, den es schon gibt. Kein neuer Mechanismus,
+keine eigene Zählung.
+
+### Wer den Gag trägt
+
+Nicht alle. Ein Gag, den jede Figur macht, ist ein Tick des Autors und keine Welt.
+
+| Figur | Ihre Rolle im Gag |
+|---|---|
+| **Milb**, Gutachter | Erfindet Kürzel und ist stolz darauf. Kürzt in Akt II eine Abkürzung ab. Kürzt am Ende seinen eigenen Titel. |
+| **Bramsche**, Registratur | Kennt jede Langform und gibt sie nur auf Antrag heraus. **Sie ist die Auflösestelle des ganzen Gags**, und damit der Grund, warum das Kürzel nie zur Wand wird. |
+| **Lisbeth**, Praktikantin | Fragt nach, was es heißt. Sie ist die Gerade (Regel 11) und die Einzige, die fragen darf, ohne begriffsstutzig zu wirken. Sie fragt einmal zu viel, und das ist ihr bester Moment. |
+| **Nörgel**, auf Probe | Kürzt falsch ab. Niemand korrigiert ihn. In Akt IV stellt sich heraus, dass sein falsches Kürzel inzwischen von zwei anderen benutzt wird. |
+| **Vorblatt**, Reich | Kürzt Menschen ab, ausgesprochen höflich. Wer bei ihm zwei Buchstaben hat, ist ein Vorgang. **Hier hat der Gag Zähne**, und er droht dabei nie (Reichsregel 3). |
+| **Trepp**, Zusteller | Liest Kürzel von Umschlägen ab, ohne sie zu verstehen, und stellt trotzdem zu. |
+| **Zwirn**, Bürgermeister | Hat für das Dorffest ein Kürzel und benutzt es, als wäre das Fest dadurch ein Vorhaben. |
+| **Lott und Pahl** | Kürzen nichts ab. Sie haben Zeit. Ihr Kommentar von der Bank ist die Gegenstimme, ohne die der Gag ein Selbstläufer würde. |
+| **Knöterich** | Benutzt kein Kürzel, das er nicht auflösen darf. Sein `a. D.` ist das einzige, das ihm gehört, und es stimmt nicht. Er sagt dazu nichts. |
+
+### Grenzen, ohne die der Gag zur Zumutung wird
+
+1. **Jede Abkürzung ist im Spiel auflösbar.** Wer fragt, bekommt die Langform, spätestens
+   bei Bramsche. Ein Kürzel, das nirgends aufgeht, ist kein Gag, sondern eine verschlossene
+   Tür. **Das ist zugleich der beste Strang, den ein Gesprächsbaum haben kann:** „Was heißt
+   das?" ist eine Frage, die ein Spieler von selbst stellt.
+2. **Kein Satz braucht die Langform, um verstanden zu werden.** Die Situation trägt, das
+   Kürzel ist die zweite Etage. Wer es nicht auflöst, verliert nichts.
+3. **Höchstens eine unerklärte Abkürzung je Gespräch.** Zwei sind Fachsprache, drei sind
+   eine Wand.
+4. **Höchstens zwölf Kürzel im ganzen Spiel**, die drei bestehenden mitgezählt. Je Akt
+   höchstens eines neu.
+5. **Nie ein Kürzel, um den Zeichendeckel zu erreichen.** Ein Kürzel, das nur dasteht, weil
+   die Zeile sonst 51 Zeichen hätte, ist ein Formfehler und kein Gag. Dann wird die Zeile
+   umgeschrieben, nicht abgekürzt.
+6. **Keine Abkürzung fasst Kesselgrammatik zusammen.** Der Sperrvermerk gilt für Kürzel
+   genauso, und ein Kürzel ist die verführerischste Art, ihn zu brechen.
+
+### Was geliefert wird
+
+Eine **Abkürzungstabelle**, in `figuren-leben.md` als Tabelle und im Code als Konstante
+`ABKUERZUNGEN`, mit je Kürzel: Langform, wer es benutzt, ab welchem Akt, wo es auflösbar
+ist, und welche Stufe der Eskalation es trägt. Sie ist die einzige Stelle, an der die
+Langformen stehen; keine zweite Liste.
+
+**Der Guard dazu** (in `knAssertCaps()`, F1b): jedes Kürzel, das in einem Figurentext
+vorkommt, steht in `ABKUERZUNGEN`; jedes Kürzel in `ABKUERZUNGEN` hat eine Auflösung, die
+erreichbar ist; kein Zeilenpaar trägt zwei unerklärte Kürzel. Erkannt wird über zwei
+Muster (Großbuchstabenfolgen ab zwei Zeichen und Punktkürzel der Form `X. Y.`) plus eine
+kurze Ausnahmeliste für Wörter, die keine Kürzel sind. **Der Guard ist der Punkt, an dem
+dieser Gag aufhört, Fleißarbeit zu sein:** eine dreizehnte Abkürzung fällt beim nächsten
+Start auf, und nicht erst der Spielerin in Akt IV.
+
+## 10. Der Code, den F1 kostet
 
 Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
 
@@ -452,6 +566,16 @@ Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
   Stelle, wo das Ereignis passiert, und einen Eintrag in einer neuen Liste
   `ANLASS_QUELLEN`, gegen die der Guard prüft. Vorschlag, sparsam: `erstzustellung`,
   `rangaufstieg`, `dienstunfaehig`, `kesselErst`. Mehr nur mit Begründung.
+
+* **`ABKUERZUNGEN`**, die Tabelle aus Abschnitt 9, als Konstante neben `RANDNOTIZ`, plus
+  ihre Prüfung in `knAssertCaps()`: jedes Kürzel im Figurentext steht in der Tabelle, jedes
+  Kürzel in der Tabelle ist im Spiel auflösbar, kein Zeilenpaar trägt zwei unerklärte. Die
+  Erkennung läuft über zwei Muster und eine Ausnahmeliste, beides im Kommentar begründet.
+* **Die Zählwerke bleiben Papier.** Anspielungen (höchstens fünf), Zwinkern (höchstens
+  sechs) und die Dosis je Figur werden im Lieferdokument gezählt und **nicht** im Code
+  geprüft. Ein Guard, der Witze zählt, wäre eine Behauptung über Geschmack; ein Guard, der
+  Kürzel auflöst, ist eine Prüfung auf Vollständigkeit. Der Unterschied ist die Grenze
+  dieses Abschnitts.
 
 **Aus F1d, die Bäume:**
 
@@ -481,7 +605,7 @@ Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
 
 ---
 
-## 10. Ausgabeformat
+## 11. Ausgabeformat
 
 **`figuren-leben.md`** wird gebaut wie `figuren-dorf.md`, weil das Format sich bewährt
 hat: Kopf mit Auftrag, Entstehung und Sperrvermerk, dann je Figur ein Abschnitt, dann ein
@@ -517,15 +641,17 @@ zweimal.
 
 ---
 
-## 11. Selbstprüfung, drei Durchgänge
+## 12. Selbstprüfung, drei Durchgänge
 
 Dasselbe Verfahren, das die elf Figuren der Serie 1 sauber gemacht hat, und es hat
 damals zwei Funde gehabt:
 
 1. **Entwurf** je Figur, aus der Hintergrundgeschichte heraus.
 2. **Zweiter Durchgang, unabhängig:** gegen Sperrvermerk, Humor-Grundgesetz, Formregeln,
-   Zeichendeckel, Kaiser-Präsens, und seit F1 zusätzlich gegen die Anspielungsdosis aus
-   Abschnitt 4. Repariert wird hier, nicht später.
+   Zeichendeckel, Kaiser-Präsens, und seit F1 zusätzlich gegen die drei Dosen: Anspielungen
+   (höchstens fünf), Zwinkern (höchstens sechs), unerklärte Kürzel (höchstens eines je
+   Gespräch). Alle drei werden **gezählt und als Liste ins Lieferdokument geschrieben**,
+   nicht überschlagen. Repariert wird hier, nicht später.
 3. **Dritter Durchgang, wieder unabhängig, nur eine Frage:** leckt irgendeine Zeile
    Kesselgrammatik? Das ist der Durchgang, der bei Serie 1 zwei fertige Formulierungen
    gekippt hat.
@@ -537,7 +663,7 @@ Fund" lautet.
 
 ---
 
-## 12. Abnahme und Prüfprotokoll
+## 13. Abnahme und Prüfprotokoll
 
 Nichts gilt als fertig, was nur behauptet ist. Die dritte Mitarbeitsregel des Repos meint
 das wörtlich.
@@ -555,6 +681,7 @@ Abgenommen ist F1, wenn:
   zusätzlich etwas sagt,
 * `knAssertCaps()` die neuen Zeilen, Schalter und Schwellen mitprüft und dabei schweigt,
 * `gespraechAssert()` die vier oder fünf Antworten bestätigt,
+* `knAssertCaps()` jede benutzte Abkürzung in `ABKUERZUNGEN` wiederfindet und schweigt,
 * `szeneAssert()` die Figurenbäume mitzählt und seine Zeile um deren Zahl erweitert,
 * eine Figur mit jedem neuen Schaltertyp im laufenden Spiel nachweislich ihre Zeile sagt
   und **ein vollständiger Baum im laufenden Spiel durchgeklickt ist**, samt Sackgasse
@@ -568,13 +695,18 @@ war, hat einen Fund und keine Tapete.
 
 ---
 
-## 13. Was ausdrücklich nicht passiert
+## 14. Was ausdrücklich nicht passiert
 
 * Keine bestehende Zeile aus `figuren-dorf.md` wird geändert. F1 ist Zuwachs.
 * Keine Kesselgrammatik, in keiner Andeutung, von keiner Figur.
 * Kein Monster bekommt einen Titel. Ausnahme bleibt Fürst Nachtrag.
 * Der Kaiser wird nirgends in der Vergangenheit erwähnt.
-* Keine Meta-Witze. Popkultur ja, aber nach der Dosis aus Abschnitt 4 und nie als Zwinkern.
+* Popkultur ja, Zwinkern ja, beides nur nach der Dosis aus Abschnitt 4 und beides gezählt.
+  Kein Erzähler, der sich einmischt; keine Figur, die Tasten, Menüs oder Spielstände nennt.
+* Kein Zwinkern und keine Anspielung im warmen Moment, in der Fanfare oder in einer Szene,
+  die etwas trägt.
+* Keine dreizehnte Abkürzung, kein Kürzel ohne Auflösung, kein Kürzel für Kesselgrammatik,
+  und keines, das nur den Zeichendeckel rettet.
 * Kein Blut, kein Sterben, kein Zynismus. Konfetti und Feierabend.
 * Knöterich erklärt weiterhin Tasten und keine Zusammenhänge, und bekommt keinen Baum.
 * Keine zweite Dialogmaschine neben `SZENEN`, kein achter Langvorgang, kein neues
@@ -585,7 +717,7 @@ war, hat einen Fund und keine Tapete.
 
 ---
 
-## 14. Der Kurzprompt zum Kopieren
+## 15. Der Kurzprompt zum Kopieren
 
 Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 
@@ -605,8 +737,18 @@ Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 > mit Kippsatz, Rückruf, die konsequent befolgte Regel, die höfliche Katastrophe,
 > Untertreibung, voller Einsatz für die falsche Sache, Wärme unten drunter. Popkultur ist
 > erlaubt, aber nur allgemein bekannte, höchstens fünf Anspielungen in der ganzen
-> Lieferung, höchstens eine je Figur, jede Zeile muss ohne sie vollständig sein, und keine
-> Figur zwinkert.
+> Lieferung, höchstens eine je Figur, und jede Zeile muss ohne sie vollständig sein. Auch
+> die vierte Wand darf gezählt fallen: höchstens ein Zwinkern je Figur, höchstens sechs im
+> ganzen Ensemble, immer aus der Figur heraus und nie im warmen Moment. Liefere beide
+> Zählungen als Liste mit.
+>
+> Dazu der laufende Gag über Abkürzungen (Abschnitt 9): freilegen, nicht erfinden. Die drei
+> Wurzeln sind N. N., a. D. und zu Händen. Die Regel dahinter ist, dass abgekürzt wird, was
+> nicht wichtig genug ist, um ausgeschrieben zu werden. Fünf Stufen über die Akte
+> (gewöhnliches Kürzel, Abkürzung der Abkürzung, Kollision, verlorene Langform, und in Akt
+> V die Sache, die nie ein Kürzel bekommen hat: Vorgang 1). Höchstens zwölf Kürzel im
+> Spiel, jedes bei Bramsche auflösbar, höchstens eines unerklärt je Gespräch. Tabelle
+> `ABKUERZUNGEN` plus Guard in `knAssertCaps()`.
 >
 > F1b: bau die neuen Schaltertypen für `zusatz` ein (`abSchicht`, `phase`, `abStufe`,
 > `abRang`, `skill`+`ab`, `zauber`/`zweig`), genau einer je Block, alles aus vorhandenem
@@ -624,11 +766,12 @@ Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 > Zugang, nie Gold oder Erfahrung. Einstieg über eine fünfte Antwortzeile „Erzählen Sie
 > von früher.", der Abschied bleibt letzte Zeile, im Baum höchstens vier Antworten je
 > Knoten. Lott und Pahl teilen sich einen Baum mit Sprecherwechsel, Knöterich bekommt
-> keinen.
+> keinen. Mindestens drei Bäume tragen einen Strang „Was heißt das?" auf ein Kürzel, und
+> mindestens einer davon endet als höfliche Wand.
 >
 > F1e: Phasendokument, README-Zeile, Weltbibel-Zuwachs, Statusmarker.
 >
-> Prüf in drei Durchgängen wie in Abschnitt 11, für die Bäume in vier. Abnahme wie in
-> Abschnitt 12: `node --check`, Browser mit stiller Konsole, ein Messlauf je neuem
+> Prüf in drei Durchgängen wie in Abschnitt 12, für die Bäume in vier. Abnahme wie in
+> Abschnitt 13: `node --check`, Browser mit stiller Konsole, ein Messlauf je neuem
 > Schaltertyp und ein vollständig durchgeklickter Baum. Nichts gilt als fertig, was nur
 > behauptet ist.

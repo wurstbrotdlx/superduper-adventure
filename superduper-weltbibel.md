@@ -682,9 +682,14 @@ Warum das richtig ist:
 
 ## 13. Humor-Grundgesetz
 
-Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt, prüft sie hiergegen, bevor sie eingebaut wird.
+Die elf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt, prüft sie hiergegen, bevor sie eingebaut wird.
 
-1. **Die Welt findet sich selbst normal.** Niemand im Spiel weiß, dass er komisch ist. In dem Moment, in dem eine Figur den Witz bemerkt, ist er weg.
+1. **Die Welt findet sich selbst normal, mit gezählten Ausnahmen.** *(Geändert am 23.08.2026 auf Ansage des Projektinhabers, am selben Tag wie Regel 7. Bis dahin lautete sie: „Niemand im Spiel weiß, dass er komisch ist. In dem Moment, in dem eine Figur den Witz bemerkt, ist er weg." Die Nummer bleibt stehen, damit die Verweise in Regel 10, Regel 11 und in den Phasendokumenten weiter zeigen, wohin sie zeigen.)* Der Normalfall ist unverändert und gilt für die große Mehrheit aller Zeilen: die Figuren nehmen ihre Welt vollkommen ernst, und der Witz entsteht daraus, dass niemand ihn bemerkt. Neu ist, dass die Ausnahme erlaubt ist. Eine Figur darf einmal aus ihrer Welt heraussehen, den Spieler als das ansprechen, was er ist, oder trocken bemerken, dass hier etwas nicht stimmt. Vier Bedingungen:
+
+    1. **Gezählt.** Höchstens ein Zwinkern je Figur über ihre gesamte Lebenszeit im Spiel, nie zwei im selben Gespräch. Die meisten Figuren bekommen keins und verlieren dadurch nichts.
+    2. **Aus der Figur heraus.** Das Zwinkern gehört ihr, nicht dem Spiel. Es bleibt in ihrer Sprachmarke, in ihrem Amtsdeutsch und in ihrer Lage. Ein Erzähler, der sich einmischt, ist keine Ausnahme, sondern ein Bruch.
+    3. **Nie dort, wo es weh tut.** Nicht in einem warmen Moment (Regel 9), nicht in der Fanfare (Regel 10), nicht in einer Szene, die etwas trägt. Ein Zwinkern an dieser Stelle kostet mehr, als jeder Gag einbringt.
+    4. **Die Welt selbst bleibt normal.** Erlaubt ist die einzelne Figur, die kurz herausschaut. Nicht erlaubt ist eine Welt, die sich insgesamt für einen Witz hält: Regel 4 (nie über Menschen lachen) und Regel 8 (kein Zynismus) hängen daran und stehen unverändert.
 2. **Der Witz liegt im Verfahren, nicht in der Pointe.** Nicht "Beamter ist faul", sondern "Beamter ist mit vollem Einsatz für die falsche Sache zuständig".
 3. **Amtsdeutsch trifft Alltag.** Der Kontrast trägt alles. "Sie verlieren Konfetti. Das ist selten gut."
 4. **Nie über Menschen lachen, immer über Zuständigkeit.** Keine Figur ist dumm. Jede Figur ist gefangen.
@@ -714,6 +719,24 @@ Die neun Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt
 5. **Die Gegenseite antwortet immer.** Kein Schreiben aus Ablage V bleibt unbeantwortet. Wer eine Zeile für den Fürsten schreibt, schreibt eine höfliche.
 6. **Erledigen ist ein Abschied, kein Sieg.** Kein Text feiert eine Erledigung. Es wird nicht triumphiert. Es wird zugeklappt.
 7. **Am Ende wird es warm.** Ohne diese Regel ist alles hier nur ein sehr langer Behördenwitz, und der trägt keine fünfzig Schichten. Das ist dieselbe Regel wie Nummer 9 oben, und sie steht zweimal da, weil sie zweimal gebrochen werden kann.
+
+**Der laufende Gag: die Kurzform** *(neu am 23.08.2026, ausgeführt mit F1, siehe `superduper-figurenleben-prompt.md`.)*
+
+Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. Der Gag ist im Bestand längst angelegt und wird mit F1 zum durchgehenden Motiv. Drei Wurzeln, alle schon da:
+
+* **N. N.** ist eine Abkürzung, die eine Person geworden ist. Zwei Türen im Haus tragen sie nebeneinander, und alle begründen ihre Entscheidungen mit ihr (Kapitel 4).
+* **a. D.** steht hinter Knöterichs Titel und stimmt nicht. Seine Entpflichtung ist nie bearbeitet worden. Er ist die einzige Figur, deren Abkürzung ihr widerspricht, und er weiß es.
+* **zu Händen** ist die Abkürzung, die ausgeschrieben wird. Im Reich kürzt man Hohe nicht ab, deshalb trägt Vorblatt sie als Namen.
+
+**Die Regel dahinter ist der doppelte Boden (Regel 6): abgekürzt wird, was nicht wichtig genug ist, um ausgeschrieben zu werden.** Kinder sehen komische Buchstaben, Erwachsene sehen eine Rangordnung. Wer im Reich einen vollen Namen bekommt, ist wer. Wer zwei Buchstaben bekommt, ist ein Vorgang.
+
+**Drei Grenzen, ohne die der Gag zur Zumutung wird:**
+
+1. **Jede Abkürzung ist im Spiel auflösbar.** Wer fragt, bekommt die Langform, spätestens bei Bramsche. Ein Kürzel, das nirgends aufgeht, ist kein Gag, sondern eine verschlossene Tür.
+2. **Kein Satz braucht die Langform, um verstanden zu werden.** Die Situation trägt, das Kürzel ist die zweite Etage.
+3. **Höchstens eine unerklärte Abkürzung je Gespräch.** Zwei sind Fachsprache, drei sind eine Wand.
+
+**Die Eskalation läuft über die fünf Akte** und ist in `superduper-figurenleben-prompt.md`, Abschnitt 9, ausgeschrieben: erst gewöhnliche Kürzel, dann die Abkürzung einer Abkürzung, dann dasselbe Kürzel für zweierlei, dann eine Langform, die niemand mehr kennt, und zuletzt die einzige, die niemand je abgekürzt hat.
 
 **Formregeln, aus dem bestehenden Projekt übernommen und hier verbindlich für alle Texte:**
 
