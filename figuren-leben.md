@@ -1390,3 +1390,411 @@ ist das der Absatz der Hintergrundgeschichte, auf den die Zeile zeigt.
 **anlass untaetigkeit**
 * „Sie stehen. Denken Sie nach?" (28) / „Das machen hier wenige." (23)   *(Besessenheit)*
 * „Und wenn er einfach nur wartet?" (31) / „Ich frage das öfter." (20)   *(Sprachmarke)*
+
+## Block 2: Trepp, Nörgel, Milb, Pommer
+
+### trepp
+
+**abSchicht:7**
+* „Wenn ich kurz stören darf." (26) / „Sie sind länger da als üblich." (30)   *(Herkunft)*
+* „Wenn ich kurz stören darf." (26) / „Ich frage jeden. Wirklich jeden." (32)   *(Sprachmarke)*
+
+**abStufe:10**
+* „Sie könnten weit gehen. Weiter als ich." (39) / „Ich gehe nur im Dorf." (21)   *(Hindernis)*
+* „Wenn ich kurz stören darf." (26) / „Tragen Sie eigentlich Post?" (27)   *(Besessenheit)*
+
+**skill:'agi', ab:6**
+* „Sie sind schnell. Das wäre nützlich." (36) / „Für Zustellungen, meine ich." (28)   *(Besessenheit)*
+* „Wenn ich kurz stören darf." (26) / „Schnell hilft nicht bei weit." (29)   *(blinder Fleck)*
+
+**abRang:7**
+* „Sie haben jetzt eine Bezeichnung." (33) / „Meine ist länger. Leider." (25)   *(Herkunft)*
+* „Wenn ich kurz stören darf." (26) / „Bezeichnungen sagen wenig." (26)   *(blinder Fleck)*
+
+**phase:'feierabend'**
+* „Wenn ich kurz stören darf." (26) / „Ich gehe gleich zum Gasthaus." (29)   *(Verhältnis zu Fass)*
+* „Der Sack kommt mit. Immer." (26) / „Auch abends. Auch sonntags." (27)   *(Besessenheit)*
+
+**abAkt:3**
+* „Mein Vater hat mir fünf Wörter gesagt." (38) / „Bei der Übergabe. Nur die." (26)   *(neue Tatsache)*
+* „Er ist noch nicht zugestellt." (29) / „So geht der Satz. Sechsmal." (27)   *(neue Tatsache)*
+
+**anlass untaetigkeit**
+* „Wenn ich kurz stören darf." (26) / „Sie stehen. Ich auch. Anders." (29)   *(Sprachmarke)*
+* „Warten kann ich gut." (20) / „Sieben Generationen Übung." (26)   *(Herkunft)*
+
+**anlass goldfund**
+* „Wenn ich kurz stören darf." (26) / „Gold wiegt. Post auch." (22)   *(Sprachmarke)*
+* „Das trage ich nicht mit." (24) / „Ich habe schon etwas dabei." (27)   *(Besessenheit)*
+
+**anlass crit**
+* „Entschuldigung. Das war laut." (29) / „Ich bin nur vorbeigekommen." (27)   *(Sprachmarke)*
+* „Wenn ich kurz stören darf." (26) / „Nein? Dann später." (18)   *(Sprachmarke)*
+
+### noergel
+
+**abSchicht:9**
+* „Sie sind neun Tage hier." (24) / „Ich bin vierzig Jahre auf Probe." (32)   *(Besessenheit)*
+* „Das ist kein Vorwurf an Sie." (28) / „Es ist einer. Nur nicht an Sie." (31)   *(Sprachmarke)*
+
+**abStufe:5**
+* „Sie steigen auf. Zulässig." (26) / „Bei mir ist das anders geregelt." (32)   *(Hindernis)*
+* „Aufstieg ohne Antrag. Interessant." (34) / „Ich habe damals einen gestellt." (31)   *(neue Tatsache)*
+
+**skill:'int', ab:5**
+* „Sie lesen. Das fällt hier auf." (30) / „Lesen können wenige. Ich schon." (31)   *(Geheimnis)*
+* „Schrift ist Schrift. Man muss sie kennen." (41) / „Man muss wissen, woher sie ist." (31)   *(Geheimnis)*
+
+**abRang:5**
+* „Sie werden befördert. Ich gratuliere." (37) / „Beschwerde folgt trotzdem." (26)   *(Sprachmarke)*
+* „Ihr Verhältnis ist jetzt anders." (32) / „Meines heißt weiter: auf Probe." (31)   *(Besessenheit)*
+
+**phase:'antritt'**
+* „Ich bin schon da. Wie immer." (28) / „Unbefristet wäre ich auch da." (29)   *(blinder Fleck)*
+* „Krawatte sitzt. Habe ich geprüft." (33) / „Fällt trotzdem niemandem auf." (29)   *(neue Tatsache)*
+
+**abAkt:2**
+* „Die Krawatte ist beantragt worden." (34) / „Mit Antrag. Ordnungsgemäß." (26)   *(neue Tatsache)*
+* „Sie steht in einem Bestand." (27) / „Als einziges Stück. Meines." (27)   *(neue Tatsache)*
+
+**anlass fluch**
+* „Kleingedrucktes. Sie lesen nicht." (33) / „Ich lese immer. Berufsschaden." (30)   *(Geheimnis)*
+* „Eine Auflage mehr. Zulässig." (28) / „Beschwerde wäre möglich." (24)   *(Sprachmarke)*
+
+**anlass untaetigkeit**
+* „Sie stehen herum. Verständlich." (31) / „Ich stehe seit vierzig Jahren." (30)   *(Besessenheit)*
+* „Nicht meine Zuständigkeit." (26) / „Ich sage es trotzdem." (21)   *(Sprachmarke)*
+
+**anlass kammerAbbruch**
+* „Abgebrochen. Das ist ein Recht." (31) / „Steht sogar irgendwo." (21)   *(Sprachmarke)*
+* „Zurückgehen ist kein Fehler." (28) / „Fehler sehen anders aus." (24)   *(Riss)*
+
+### milb
+
+**abSchicht:6**
+* „Ihre Verweildauer setze ich mit Vier an." (40) / „Das ist gut. Für hier." (22)   *(Sprachmarke)*
+* „Neue Kräfte halten selten." (26) / „Sie halten. Bemerkenswert." (26)   *(Herkunft)*
+
+**abStufe:6**
+* „Ihre Entwicklung: Stufe Drei." (29) / „Ich habe das angesetzt." (23)   *(Sprachmarke)*
+* „Ich weiß, dass ich nichts weiß." (31) / „Das setze ich mit Zwei an." (26)   *(blinder Fleck, Anspielung 1)*
+
+**skill:'int', ab:7**
+* „Sie denken. Das ist selten messbar." (35) / „Ich versuche es trotzdem." (25)   *(Besessenheit)*
+* „Eine GA über Sie wäre reizvoll." (31) / „Ungefragt, versteht sich." (25)   *(Sprachmarke)*
+
+**abRang:6**
+* „Ihr Rang entspricht etwa Ritter." (32) / „Meiner ist Freiherr. Knapp." (27)   *(Geheimnis)*
+* „Wir sind fast auf einer Höhe." (29) / „Fast. Ich bin eine höher." (25)   *(blinder Fleck)*
+
+**phase:'antritt'**
+* „Morgens sind meine Zahlen genauer." (34) / „Nachmittags auch. Anders." (25)   *(blinder Fleck)*
+* „Ich habe zwei Kammern angesetzt." (32) / „Vor dem Frühstück." (18)   *(Besessenheit)*
+
+**merker:'hatGesteigert'**
+* „Sie haben Punkte vergeben." (26) / „Nach welchem Maßstab?" (21)   *(Besessenheit)*
+* „Es gibt einen Vordruck dafür." (29) / „Sechs Zeilen. Ich kenne ihn." (28)   *(Hinweis auf LV7)*
+
+**anlass crit**
+* „Diesen Schlag setze ich mit Fünf an." (36) / „Höchstens." (10)   *(Sprachmarke)*
+* „Sauber getroffen. Notenwert hoch." (33) / „Ich korrigiere das später." (26)   *(Hindernis)*
+
+**anlass ultimate**
+* „Das war überdimensioniert." (26) / „Ich setze es trotzdem hoch an." (30)   *(Hindernis)*
+* „Beeindruckend. Eine Stufe zu viel." (34) / „Wie meistens bei so etwas." (26)   *(blinder Fleck)*
+
+**anlass kammerAbbruch**
+* „Diese Kammer war falsch eingestuft." (35) / „Von mir. Vermutlich." (20)   *(Hindernis)*
+* „Abbruch ist eine Bewertung." (27) / „Eine schlechte, aber eine." (26)   *(Sprachmarke)*
+
+### pommer
+
+**abSchicht:7**
+* „Sie stehen in meiner Liste. Zweimal." (36) / „Beide Male mit Antrag." (22)   *(Besessenheit)*
+* „Sie holen ordentlich ab." (24) / „Das sage ich nicht oft." (23)   *(blinder Fleck)*
+
+**abStufe:9**
+* „Sie tragen mehr. Steht das im Antrag?" (37) / „Ich frage das jeden." (20)   *(Hindernis)*
+* „Größere Ausrüstung, größerer Antrag." (36) / „So ist die Reihenfolge." (23)   *(Besessenheit)*
+
+**skill:'str', ab:8**
+* „Sie tragen jetzt schwer." (24) / „Auf dem Antrag stand leicht." (28)   *(Sprachmarke)*
+* „Schwer ist nicht leicht." (24) / „Ich lese nur vor." (17)   *(Sprachmarke)*
+
+**abRang:8**
+* „Höherer Dienst. Bitte den Antrag." (33) / „Auch dann. Gerade dann." (23)   *(Hindernis)*
+* „Ihr Titel steht jetzt oben drauf." (33) / „Der Wortlaut bleibt gleich." (27)   *(Besessenheit)*
+
+**phase:'feierabend'**
+* „Ausgabe schließt. Der Antrag nicht." (35) / „Den können Sie immer stellen." (29)   *(Riss)*
+* „Ich räume ein. Sie räumen ab." (29) / „So war das nicht gemeint." (25)   *(Sprachmarke)*
+
+**merker:'hatGekocht'**
+* „Was Sie da mischen, war einmal Bestand." (39) / „Irgendwo steht es noch drin." (28)   *(Riss)*
+* „Bei mir kam nie etwas ohne Antrag heraus." (41) / „Bei Ihnen offenbar schon." (25)   *(Geheimnis)*
+
+**anlass goldfund**
+* „Ein Fund. Steht der im Antrag?" (30) / „Nein. Also nicht meiner." (24)   *(Besessenheit)*
+* „Gold gebe ich nicht aus." (24) / „Ich gebe aus, was dasteht." (26)   *(Sprachmarke)*
+
+**anlass fluch**
+* „Sie haben unterschrieben. Wo genau?" (35) / „Das würde mich interessieren." (29)   *(Besessenheit)*
+* „Kleingedrucktes ist auch Wortlaut." (34) / „Sogar besonders." (16)   *(Sprachmarke)*
+
+**anlass untaetigkeit**
+* „Sie stehen vor der Ausgabe." (27) / „Ohne Antrag bleibt sie zu." (26)   *(Hindernis)*
+* „Ich warte gern. Beruflich." (26) / „Sie offenbar auch." (18)   *(blinder Fleck)*
+
+
+## Block 3: Fass, Lott, Pahl, Nieselbeck
+
+### fass
+
+**abSchicht:10**
+* „Zehn Tage. Du hältst durch." (27) / „Setz dich mal richtig hin." (26)   *(Besessenheit)*
+* „Du warst schon öfter hier." (26) / „Merke ich mir. Berufssache." (27)   *(Geheimnis)*
+
+**abStufe:7**
+* „Du siehst kräftiger aus." (24) / „Iss trotzdem was." (17)   *(Sprachmarke)*
+* „Wer viel trägt, sitzt gern." (27) / „Der Stuhl steht schon da." (25)   *(Besessenheit)*
+
+**skill:'vit', ab:6**
+* „Du steckst mehr weg als früher." (31) / „Das sieht man am Abend." (23)   *(blinder Fleck)*
+* „Zäh ist gut. Zäh bleibt sitzen." (31) / „Hoffe ich jedenfalls." (21)   *(Besessenheit)*
+
+**abRang:5**
+* „Jetzt hast du einen Titel." (26) / „Hier heißt du trotzdem du." (26)   *(Sprachmarke)*
+* „Titel zahlen nicht mit." (23) / „Du zahlst mit. Danke." (21)   *(Sprachmarke)*
+
+**phase:'feierabend'**
+* „Feierabend. Bleib noch etwas." (29) / „Der Käse kommt gleich." (22)   *(Besessenheit)*
+* „Alle stehen auf. Immer alle." (28) / „Einer bleibt bestimmt mal." (26)   *(Riss)*
+
+**abAkt:4**
+* „Oben steht ein Krug. Der bleibt oben." (37) / „Großvater hat das gesagt." (25)   *(neue Tatsache)*
+* „Einer wird gebraucht. Irgendwann." (33) / „Ich staube ihn ab. Das reicht." (30)   *(neue Tatsache)*
+
+**anlass goldfund**
+* „Gold! Dann bleibst du heute länger." (35) / „Sag ich mal so." (15)   *(Besessenheit)*
+* „Der Erste heute geht aufs Haus." (31) / „Der zweite auch. Bleib nur." (27)   *(Besessenheit)*
+
+**anlass levelup**
+* „Aufgestiegen? Setz dich drauf." (30) / „Ich hol was Ordentliches." (25)   *(Sprachmarke)*
+* „Das feiert man. Kurz wenigstens." (32) / „Kurz reicht mir schon." (22)   *(Riss)*
+
+**anlass crit**
+* „Hab ich bis hierher gehört." (27) / „Klang teuer für den anderen." (28)   *(Sprachmarke)*
+* „Du haust ordentlich hin." (24) / „Trink was. Auf mich." (20)   *(Sprachmarke)*
+
+### lott
+
+**abSchicht:12**
+* „Sie haben uns schon einmal gefragt." (35) / „Wir sitzen hier. Wir merken das." (32)   *(Zwinkern 1)*
+* „Der Neue ist keiner mehr." (25) / „Pahl sagt, das dauert immer." (28)   *(Verhältnis zum Spieler)*
+
+**abStufe:8**
+* „Der Neue wird groß. Ich nicht." (30) / „Ich sitze. Das reicht mir." (26)   *(Sprachmarke)*
+* „Sie wachsen. Die Bank nicht." (28) / „Pahl hat nachgemessen." (22)   *(Sprachmarke)*
+
+**skill:'str', ab:7**
+* „Der Neue trägt was weg." (23) / „Ich trage nichts. Nie." (22)   *(Sprachmarke)*
+* „Kraft ist praktisch da draußen." (31) / „Hier drin reicht Sitzen." (24)   *(blinder Fleck)*
+
+**abRang:6**
+* „Der Neue hat jetzt was Amtliches." (33) / „Wir zwei haben gar nichts." (26)   *(Herkunft)*
+* „Ein Titel. Sehr fein." (21) / „Pahl gratuliert. Ich nicke." (27)   *(Sprachmarke)*
+
+**phase:'antritt'**
+* „Früh unterwegs. Wie immer." (26) / „Wir sitzen schon länger da." (27)   *(Sprachmarke)*
+* „Guten Morgen. Von uns beiden." (29) / „Pahl sagt es selten selbst." (27)   *(Verhältnis)*
+
+**abAkt:5**
+* „Wir haben damals aufgeräumt." (28) / „Steine sortiert. Das war es." (28)   *(neue Tatsache)*
+* „Man macht das so am Ende." (25) / „Pahl hat rechts gemacht." (24)   *(neue Tatsache)*
+
+### pahl
+
+**abSchicht:12**
+* „Sie gehen nie richtig weg." (26) / „Sie kommen immer wieder her." (28)   *(Zwinkern 2)*
+* „Wir kennen Ihren Gang inzwischen." (33) / „Lott hört ihn zuerst." (21)   *(Verhältnis)*
+
+**abStufe:8**
+* „Sie sind gewachsen. Sauber." (27) / „Lott hat es auch bemerkt." (25)   *(Sprachmarke)*
+* „Wachsen ist ein guter Beruf." (28) / „Ich habe einen anderen." (23)   *(Besessenheit)*
+
+**zweig:0**
+* „Sie machen Licht da draußen." (28) / „Lott mag das nicht." (19)   *(Verhältnis)*
+* „Feuer ist warm. Hier auch." (26) / „Die Bank steht in der Sonne." (28)   *(Sprachmarke)*
+
+**abRang:6**
+* „Man redet Sie jetzt mit Titel an." (33) / „Uns redet gar niemand an." (25)   *(Herkunft)*
+* „Sehr schön für Sie. Ehrlich." (28) / „Lott meint das auch so." (23)   *(blinder Fleck)*
+
+**phase:'feierabend'**
+* „Die Sonne geht. Wir bleiben." (28) / „Lott zuerst. Er sitzt näher." (28)   *(Sprachmarke)*
+* „Abends redet es sich besser." (28) / „Da fragt niemand mehr nach." (27)   *(Geheimnis)*
+
+**abAkt:5**
+* „Wir haben die Steine gelegt." (28) / „Ordentlich. Wie es sich gehört." (31)   *(neue Tatsache)*
+* „Danach sind wir losgegangen." (28) / „Und dann haben wir uns gesetzt." (31)   *(neue Tatsache)*
+
+### nieselbeck
+
+**abSchicht:11**
+* „Gemeldet wird: Sie sind noch hier." (34) / „Das ist bemerkenswert." (22)   *(Sprachmarke)*
+* „Elf Tage. Ich zähle mit." (24) / „Zählen gehört zur Stelle." (25)   *(Besessenheit)*
+
+**abStufe:9**
+* „Gemeldet wird: Sie sind gewachsen." (34) / „Wetter bleibt unverändert." (26)   *(Sprachmarke)*
+* „Sie ändern sich. Das Wetter nicht." (34) / „Einer von uns beiden reicht." (28)   *(blinder Fleck)*
+
+**zweig:1**
+* „Sie machen Eis. Das ist Niederschlag." (37) / „Fast. Nicht ganz. Leider." (25)   *(Besessenheit)*
+* „Gemeldet wird: örtliches Eis." (29) / „Nicht amtlich. Aber schön." (26)   *(Besessenheit)*
+
+**abRang:4**
+* „Sie steigen. Meine Stelle bleibt." (33) / „Sie war nie unbesetzt." (22)   *(Herkunft)*
+* „Gemeldet wird: ein Aufstieg im Haus." (36) / „Das melde ich gern mit." (23)   *(Sprachmarke)*
+
+**phase:'antritt'**
+* „Gemeldet wird: keine Niederschläge." (35) / „Vorbereitungen abgeschlossen." (29)   *(Sprachmarke)*
+* „Guten Morgen. Der Eimer steht." (30) / „Wie gestern. Wie immer." (23)   *(Besessenheit)*
+
+**abAkt:3**
+* „Ich führe zwei Tabellen." (24) / „Eine davon ist leer." (20)   *(neue Tatsache)*
+* „Die Kopfzeile ziehe ich nach." (29) / „Jedes Jahr. Tinte verblasst." (28)   *(neue Tatsache)*
+
+**anlass untaetigkeit**
+* „Gemeldet wird: Stillstand." (26) / „Ich kenne das gut." (18)   *(blinder Fleck)*
+* „Stehen ist keine Verzögerung." (29) / „Es ist Bereitschaft." (20)   *(Besessenheit)*
+
+**anlass levelup**
+* „Gemeldet wird: ein Aufstieg." (28) / „Vorbereitungen unverändert." (27)   *(Sprachmarke)*
+* „Sie kommen voran. Schön." (24) / „Ich stehe weiter bereit." (24)   *(Besessenheit)*
+
+**anlass kammerAbbruch**
+* „Zurückgekommen. Auch gut." (25) / „Man kann nicht immer los." (25)   *(Verhältnis zum Spieler)*
+* „Gemeldet wird: eine Rückkehr." (29) / „Trocken zurück. Wie immer." (26)   *(Sprachmarke)*
+
+
+## Block 4: Umlauf, Vorblatt, und acht Fragen für Bramsche
+
+### umlauf
+
+**abSchicht:14**
+* „Sie schon wieder. Schön." (24) / „Ich bin nur kurz da. Wie immer." (31)   *(Sprachmarke)*
+* „Vierzehn Tage, elf Stellen, ein Weg." (36) / „Ihrer ist kürzer. Beneidenswert." (32)   *(Hindernis)*
+
+**abStufe:10**
+* „Sie sind gewachsen, würde ich sagen." (36) / „Ich sehe viele. Ich vergleiche." (31)   *(Herkunft)*
+* „Weiterkommen können Sie gut." (28) / „Ankommen ist etwas anderes." (27)   *(Besessenheit)*
+
+**skill:'agi', ab:7**
+* „Sie sind schnell. Wir zwei also." (32) / „Schnell und trotzdem nie fertig." (32)   *(Hindernis)*
+* „Laufen ist kein Beruf, sagt man." (32) / „Doch. Ist es. Meiner." (21)   *(blinder Fleck)*
+
+**abRang:6**
+* „Ihr Titel wird oben eingetragen." (32) / „Von jemandem. Irgendwann." (25)   *(Geheimnis)*
+* „Ich melde so etwas gern weiter." (31) / „Erzählen ist mein Beruf." (24)   *(Geheimnis)*
+
+**phase:'feierabend'**
+* „Ich muss weiter. War nett bei Ihnen." (36) / „Ich bin dann mal weg." (21)   *(Sprachmarke, Anspielung 2)*
+* „Abends laufe ich am besten." (27) / „Da hält mich niemand auf." (25)   *(Besessenheit)*
+
+**abAkt:4**
+* „Ich habe mich einmal hingesetzt." (32) / „Eine Stunde. In Hochablage." (27)   *(neue Tatsache)*
+* „Es war die längste meines Lebens." (33) / „Danach zwei Tage aufgeholt." (27)   *(neue Tatsache)*
+
+**anlass levelup**
+* „Aufstieg! Das erzähle ich weiter." (33) / „Nicht böse gemeint. Nur so." (27)   *(Geheimnis)*
+* „Sie kommen voran. Wirklich." (27) / „Ich komme auch voran. Anders." (29)   *(Besessenheit)*
+
+**anlass goldfund**
+* „Gold! Das trage ich nicht." (26) / „Ich trage nur Papier." (21)   *(Herkunft)*
+* „Schwer wird man langsam." (24) / „Ich bleibe leicht. Beruflich." (29)   *(Sprachmarke)*
+
+**anlass untaetigkeit**
+* „Sie stehen. Wie halten Sie das aus?" (35) / „Ich frage aus Neugier." (22)   *(blinder Fleck)*
+* „Stillstehen habe ich mal probiert." (34) / „Nicht mein Fach. Weiter." (24)   *(neue Tatsache)*
+
+### vorblatt
+
+**abSchicht:24**
+* „Sie sind noch im Dienst. Bemerkenswert." (39) / „Wir prüfen das gern." (20)   *(Sprachmarke)*
+* „Ihre Stelle ist täglich befristet." (34) / „Das schafft eine gewisse Ruhe." (30)   *(Besessenheit)*
+
+**abStufe:12**
+* „Sie sind gestiegen. Ich gratuliere." (35) / „Ihr Anliegen wird bearbeitet." (29)   *(Sprachmarke)*
+* „Wachstum ist ein Vorgang." (25) / „Auch dieser ist anhängig." (25)   *(Besessenheit)*
+
+**skill:'int', ab:8**
+* „Sie lesen viel. Das prüfen wir gern." (36) / „Nicht Sie. Wir." (15)   *(Sprachmarke)*
+* „Ein lesender Außendienst. Reizend." (34) / „Selten. Sehr selten." (20)   *(Riss)*
+
+**abRang:8**
+* „Höherer Dienst. Fast einer von uns." (35) / „Fast. Sie verstehen." (20)   *(Sprachmarke)*
+* „Ihr Titel ist ordentlich erworben." (34) / „Ordentlich ist das Wichtigste." (30)   *(Herkunft)*
+
+**phase:'antritt'**
+* „Sie fangen früh an. Löblich." (28) / „Früh ist beinahe eine Haltung." (30)   *(Sprachmarke)*
+* „Hochablage grüßt. Auch morgens." (31) / „Hochablage grüßt sehr gern." (27)   *(Sprachmarke)*
+
+**abAkt:4**
+* „In meinem Fach liegt ein Stempel." (33) / „Er ist durchgeschrieben." (24)   *(neue Tatsache)*
+* „Ausmustern wäre eine Entscheidung." (34) / „Sie verstehen das Problem." (26)   *(neue Tatsache)*
+
+**anlass ultimate**
+* „Sehr aufwendig. Wir prüfen das gern." (36) / „Nicht heute. Aber gern." (23)   *(Sprachmarke)*
+* „Das war groß. Und anhängig." (27) / „Beides zugleich. Bemerkenswert." (31)   *(Besessenheit)*
+
+**anlass fluch**
+* „Sie haben gezeichnet. Sehr korrekt." (35) / „Gezeichnet wird zu selten." (26)   *(Sprachmarke)*
+* „Eine Auflage. Wie schön." (24) / „Auflagen halten Dinge offen." (28)   *(Besessenheit)*
+
+**anlass untaetigkeit**
+* „Sie stehen. Das ist völlig zulässig." (36) / „Stehen ist auch bearbeiten." (27)   *(Besessenheit)*
+* „Nehmen Sie sich Zeit. Viel Zeit." (32) / „Zeit haben wir reichlich." (25)   *(Riss)*
+
+### bramsche, neue Fragen
+
+* „Wer ist Herr Nieselbeck?" (24) → „Er ist der Wetterbeauftragte." (29) / „Die Stelle war nie unbesetzt." (29)
+* „Was ist mit Hintermühl?" (23) → „Hintermühl ist abgeschlossen." (29) / „Der Bestand wurde geschlossen." (30)
+* „Wer sind Lott und Pahl?" (23) → „Zwei Leute von dort. Sie sitzen." (32) / „Mehr frage ich nicht nach." (26)
+* „Wer ist zu Händen Vorblatt?" (27) → „Er ist für Anhängiges zuständig." (32) / „Das ist beinahe alles." (22)
+* „Was heißt AL?" (13) → „AL heißt Amtsleitung." (21) / „Bei Hohen heißt es anders." (26)
+* „Was heißt n. O.?" (16) → „Nach der Ordnung. So zählen wir." (32) / „Seit dem ersten Blatt." (22)
+* „Was heißt MfM?" (14) → „Ministerium für Monsterangelegenheiten." (39) / „Im Dorf sagt man Amt." (21)
+* „Was heißt TNM?" (14) → „Tägliche Niederschlagsmeldung." (30) / „Herr Nieselbeck führt sie." (26)
+
+---
+
+## Die Zählung der Dosen
+
+**Anspielungen: zwei von höchstens fünf.**
+
+1. **Milb**, `abStufe:6`: „Ich weiß, dass ich nichts weiß." / „Das setze ich mit Zwei an."
+   Der Satz ist zweieinhalbtausend Jahre alt und jedem geläufig. Die Zeile funktioniert
+   ohne ihn vollständig: ein Gutachter benotet sein eigenes Nichtwissen, und das ist genau
+   sein Hindernis. Wer die Herkunft kennt, bekommt eine zweite Etage. Milb zwinkert nicht,
+   er setzt an.
+2. **Umlauf**, `phase:'feierabend'`: „Ich muss weiter. War nett bei Ihnen." / „Ich bin dann
+   mal weg." Der Satz ist die wörtliche Beschreibung ihres Berufs und ihr Kern: sie ist
+   immer weg. Erkennt man ihn nicht, fehlt nichts.
+
+Drei bleiben unverbraucht. Das ist Absicht: im Zweifel weglassen.
+
+**Zwinkern: zwei von höchstens sechs.**
+
+1. **Lott**, `abSchicht:12`: „Sie haben uns schon einmal gefragt." / „Wir sitzen hier. Wir
+   merken das." Er bemerkt, dass der Spieler wiederkommt und dasselbe fragt. Das ist aus
+   der Figur heraus gedacht und nicht aus dem Spiel: die beiden sitzen seit vierzig Jahren
+   auf derselben Bank und sehen zu.
+2. **Pahl**, `abSchicht:12`: „Sie gehen nie richtig weg." / „Sie kommen immer wieder her."
+   Dieselbe Beobachtung von der anderen Seite der Bank.
+
+Beide stehen bei den einzigen Figuren, die nicht im Dienst sind, beide erst ab der zwölften
+Schicht, und beide nennen weder Taste noch Menü noch Spielstand. Vier bleiben unverbraucht.
+
+**Unerklärte Kürzel je Gespräch: höchstens eines.** In den Zeilen dieser Lieferung stehen
+`GA` (Milb) und `AL`, `n. O.`, `MfM`, `TNM` (Bramsches Antworten, dort jeweils aufgelöst).
+Milbs `GA` ist das einzige unerklärte, und es geht in seinem Baum in F1d auf.

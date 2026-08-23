@@ -3278,6 +3278,16 @@ const DORF_FIGUREN = [
      {frage:'Was brummt im Steinfeld?', z1:'Unter dem Steinfeld liegt eine Röhre.', z2:'Die Rohrpost. Sie steht still.'},
      {frage:'Wer ist der Kaiser?', z1:'Ordinat der Vierte ist im Termin.', z2:'Seit dem Jahr 588.'},
      {frage:'Was heißt zu Händen?', z1:'Zu Händen schreibt man an Hohe.', z2:'Gewöhnliche bekommen nur Post.'},
+     // F1c: acht Fragen zu Leuten und zur Kurzform. Bramsche ist die
+     // Auflösestelle des Abkürzungs-Gags, hier geht der erste Teil davon auf.
+     {frage:'Wer ist Herr Nieselbeck?', z1:'Er ist der Wetterbeauftragte.', z2:'Die Stelle war nie unbesetzt.'},
+     {frage:'Was ist mit Hintermühl?', z1:'Hintermühl ist abgeschlossen.', z2:'Der Bestand wurde geschlossen.'},
+     {frage:'Wer sind Lott und Pahl?', z1:'Zwei Leute von dort. Sie sitzen.', z2:'Mehr frage ich nicht nach.'},
+     {frage:'Wer ist zu Händen Vorblatt?', z1:'Er ist für Anhängiges zuständig.', z2:'Das ist beinahe alles.'},
+     {frage:'Was heißt AL?', z1:'AL heißt Amtsleitung.', z2:'Bei Hohen heißt es anders.'},
+     {frage:'Was heißt n. O.?', z1:'Nach der Ordnung. So zählen wir.', z2:'Seit dem ersten Blatt.'},
+     {frage:'Was heißt MfM?', z1:'Ministerium für Monsterangelegenheiten.', z2:'Im Dorf sagt man Amt.'},
+     {frage:'Was heißt TNM?', z1:'Tägliche Niederschlagsmeldung.', z2:'Herr Nieselbeck führt sie.'},
    ],
    abweisung:[
      {z1:'Eine Frage pro Schicht.', z2:'Die Ihre ist verbraucht.'},
@@ -3488,7 +3498,46 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:3, zeilen:[
      {z1:'Wenn ich kurz stören darf.',               z2:'Meine Bezeichnung ist sehr lang.'},
      {z1:'Schattenlandzustellungsbevollmächtigter.', z2:'Steht so im Ausweis. Ehrlich.'},
-   ]}]},
+   ]},
+   {abSchicht:7, zeilen:[
+     {z1:'Wenn ich kurz stören darf.', z2:'Sie sind länger da als üblich.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Ich frage jeden. Wirklich jeden.'},
+   ]},
+   {abStufe:10, zeilen:[
+     {z1:'Sie könnten weit gehen. Weiter als ich.', z2:'Ich gehe nur im Dorf.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Tragen Sie eigentlich Post?'},
+   ]},
+   {skill:'agi', ab:6, zeilen:[
+     {z1:'Sie sind schnell. Das wäre nützlich.', z2:'Für Zustellungen, meine ich.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Schnell hilft nicht bei weit.'},
+   ]},
+   {abRang:7, zeilen:[
+     {z1:'Sie haben jetzt eine Bezeichnung.', z2:'Meine ist länger. Leider.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Bezeichnungen sagen wenig.'},
+   ]},
+   {phase:'feierabend', zeilen:[
+     {z1:'Wenn ich kurz stören darf.', z2:'Ich gehe gleich zum Gasthaus.'},
+     {z1:'Der Sack kommt mit. Immer.', z2:'Auch abends. Auch sonntags.'},
+   ]},
+   {abAkt:3, zeilen:[
+     {z1:'Mein Vater hat mir fünf Wörter gesagt.', z2:'Bei der Übergabe. Nur die.'},
+     {z1:'Er ist noch nicht zugestellt.', z2:'So geht der Satz. Sechsmal.'},
+   ]}
+   ],
+   anlass:{
+     untaetigkeit:[
+       {z1:'Wenn ich kurz stören darf.', z2:'Sie stehen. Ich auch. Anders.'},
+       {z1:'Warten kann ich gut.', z2:'Sieben Generationen Übung.'},
+     ],
+     goldfund:[
+       {z1:'Wenn ich kurz stören darf.', z2:'Gold wiegt. Post auch.'},
+       {z1:'Das trage ich nicht mit.', z2:'Ich habe schon etwas dabei.'},
+     ],
+     crit:[
+       {z1:'Entschuldigung. Das war laut.', z2:'Ich bin nur vorbeigekommen.'},
+       {z1:'Wenn ich kurz stören darf.', z2:'Nein? Dann später.'},
+     ]
+   }},
 
   {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', komposit:true,
    // G10: Nörgel bekommt ein Monsterrig. Sein Porträt zeigt einen Kobold mit
@@ -3553,7 +3602,45 @@ const DORF_FIGUREN = [
        {z1:'Der Herr aus Oben hat mich angesprochen.', z2:'Er bietet mir die Entfristung.'},
        {z1:'Ich soll dafür etwas nicht tun.',          z2:'Vierzig Jahre. Und jetzt das.'},
      ]},
+   {abSchicht:9, zeilen:[
+     {z1:'Sie sind neun Tage hier.', z2:'Ich bin vierzig Jahre auf Probe.'},
+     {z1:'Das ist kein Vorwurf an Sie.', z2:'Es ist einer. Nur nicht an Sie.'},
    ]},
+   {abStufe:5, zeilen:[
+     {z1:'Sie steigen auf. Zulässig.', z2:'Bei mir ist das anders geregelt.'},
+     {z1:'Aufstieg ohne Antrag. Interessant.', z2:'Ich habe damals einen gestellt.'},
+   ]},
+   {skill:'int', ab:5, zeilen:[
+     {z1:'Sie lesen. Das fällt hier auf.', z2:'Lesen können wenige. Ich schon.'},
+     {z1:'Schrift ist Schrift. Man muss sie kennen.', z2:'Man muss wissen, woher sie ist.'},
+   ]},
+   {abRang:5, zeilen:[
+     {z1:'Sie werden befördert. Ich gratuliere.', z2:'Beschwerde folgt trotzdem.'},
+     {z1:'Ihr Verhältnis ist jetzt anders.', z2:'Meines heißt weiter: auf Probe.'},
+   ]},
+   {phase:'antritt', zeilen:[
+     {z1:'Ich bin schon da. Wie immer.', z2:'Unbefristet wäre ich auch da.'},
+     {z1:'Krawatte sitzt. Habe ich geprüft.', z2:'Fällt trotzdem niemandem auf.'},
+   ]},
+   {abAkt:2, zeilen:[
+     {z1:'Die Krawatte ist beantragt worden.', z2:'Mit Antrag. Ordnungsgemäß.'},
+     {z1:'Sie steht in einem Bestand.', z2:'Als einziges Stück. Meines.'},
+   ]}
+   ],
+   anlass:{
+     fluch:[
+       {z1:'Kleingedrucktes. Sie lesen nicht.', z2:'Ich lese immer. Berufsschaden.'},
+       {z1:'Eine Auflage mehr. Zulässig.', z2:'Beschwerde wäre möglich.'},
+     ],
+     untaetigkeit:[
+       {z1:'Sie stehen herum. Verständlich.', z2:'Ich stehe seit vierzig Jahren.'},
+       {z1:'Nicht meine Zuständigkeit.', z2:'Ich sage es trotzdem.'},
+     ],
+     kammerAbbruch:[
+       {z1:'Abgebrochen. Das ist ein Recht.', z2:'Steht sogar irgendwo.'},
+       {z1:'Zurückgehen ist kein Fehler.', z2:'Fehler sehen anders aus.'},
+     ]
+   }},
 
   {key:'milb', name:'Gutachter Dr. phil. Milb', kurz:'Gutachter Milb', tx:8, ty:39, opt:'wander', sheet:'buba', komposit:true,
    // langes graues Haar bis zum Kragen, blauer Gelehrtenmantel. G10: das
@@ -3581,7 +3668,46 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:2, zeilen:[
      {z1:'Unser ältester Vorgang wird ein Jahr.', z2:'Das reicht für Freiherr. Knapp.'},
      {z1:'Ich stelle mich als Freiherr vor.',     z2:'Geschätzt, nicht geraten.'},
-   ]}]},
+   ]},
+   {abSchicht:6, zeilen:[
+     {z1:'Ihre Verweildauer setze ich mit Vier an.', z2:'Das ist gut. Für hier.'},
+     {z1:'Neue Kräfte halten selten.', z2:'Sie halten. Bemerkenswert.'},
+   ]},
+   {abStufe:6, zeilen:[
+     {z1:'Ihre Entwicklung: Stufe Drei.', z2:'Ich habe das angesetzt.'},
+     {z1:'Ich weiß, dass ich nichts weiß.', z2:'Das setze ich mit Zwei an.'},
+   ]},
+   {skill:'int', ab:7, zeilen:[
+     {z1:'Sie denken. Das ist selten messbar.', z2:'Ich versuche es trotzdem.'},
+     {z1:'Eine GA über Sie wäre reizvoll.', z2:'Ungefragt, versteht sich.'},
+   ]},
+   {abRang:6, zeilen:[
+     {z1:'Ihr Rang entspricht etwa Ritter.', z2:'Meiner ist Freiherr. Knapp.'},
+     {z1:'Wir sind fast auf einer Höhe.', z2:'Fast. Ich bin eine höher.'},
+   ]},
+   {phase:'antritt', zeilen:[
+     {z1:'Morgens sind meine Zahlen genauer.', z2:'Nachmittags auch. Anders.'},
+     {z1:'Ich habe zwei Kammern angesetzt.', z2:'Vor dem Frühstück.'},
+   ]},
+   {merker:'hatGesteigert', zeilen:[
+     {z1:'Sie haben Punkte vergeben.', z2:'Nach welchem Maßstab?'},
+     {z1:'Es gibt einen Vordruck dafür.', z2:'Sechs Zeilen. Ich kenne ihn.'},
+   ]}
+   ],
+   anlass:{
+     crit:[
+       {z1:'Diesen Schlag setze ich mit Fünf an.', z2:'Höchstens.'},
+       {z1:'Sauber getroffen. Notenwert hoch.', z2:'Ich korrigiere das später.'},
+     ],
+     ultimate:[
+       {z1:'Das war überdimensioniert.', z2:'Ich setze es trotzdem hoch an.'},
+       {z1:'Beeindruckend. Eine Stufe zu viel.', z2:'Wie meistens bei so etwas.'},
+     ],
+     kammerAbbruch:[
+       {z1:'Diese Kammer war falsch eingestuft.', z2:'Von mir. Vermutlich.'},
+       {z1:'Abbruch ist eine Bewertung.', z2:'Eine schlechte, aber eine.'},
+     ]
+   }},
 
   {key:'pommer', name:'Materialausgabe Herr Pommer', kurz:'Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy', komposit:true,
    // kurzes blondes Haar (h1 statt der Tolle h2), Khakikittel. G10: #e1ac62
@@ -3612,7 +3738,46 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:2, zeilen:[
      {z1:'Ich führe eine Liste. Seit Jahren.',  z2:'Sie ist leer. Das ist die Liste.'},
      {z1:'Nichts ohne Antrag ausgegeben. Nie.', z2:'Steht alles nicht darin.'},
-   ]}]},
+   ]},
+   {abSchicht:7, zeilen:[
+     {z1:'Sie stehen in meiner Liste. Zweimal.', z2:'Beide Male mit Antrag.'},
+     {z1:'Sie holen ordentlich ab.', z2:'Das sage ich nicht oft.'},
+   ]},
+   {abStufe:9, zeilen:[
+     {z1:'Sie tragen mehr. Steht das im Antrag?', z2:'Ich frage das jeden.'},
+     {z1:'Größere Ausrüstung, größerer Antrag.', z2:'So ist die Reihenfolge.'},
+   ]},
+   {skill:'str', ab:8, zeilen:[
+     {z1:'Sie tragen jetzt schwer.', z2:'Auf dem Antrag stand leicht.'},
+     {z1:'Schwer ist nicht leicht.', z2:'Ich lese nur vor.'},
+   ]},
+   {abRang:8, zeilen:[
+     {z1:'Höherer Dienst. Bitte den Antrag.', z2:'Auch dann. Gerade dann.'},
+     {z1:'Ihr Titel steht jetzt oben drauf.', z2:'Der Wortlaut bleibt gleich.'},
+   ]},
+   {phase:'feierabend', zeilen:[
+     {z1:'Ausgabe schließt. Der Antrag nicht.', z2:'Den können Sie immer stellen.'},
+     {z1:'Ich räume ein. Sie räumen ab.', z2:'So war das nicht gemeint.'},
+   ]},
+   {merker:'hatGekocht', zeilen:[
+     {z1:'Was Sie da mischen, war einmal Bestand.', z2:'Irgendwo steht es noch drin.'},
+     {z1:'Bei mir kam nie etwas ohne Antrag heraus.', z2:'Bei Ihnen offenbar schon.'},
+   ]}
+   ],
+   anlass:{
+     goldfund:[
+       {z1:'Ein Fund. Steht der im Antrag?', z2:'Nein. Also nicht meiner.'},
+       {z1:'Gold gebe ich nicht aus.', z2:'Ich gebe aus, was dasteht.'},
+     ],
+     fluch:[
+       {z1:'Sie haben unterschrieben. Wo genau?', z2:'Das würde mich interessieren.'},
+       {z1:'Kleingedrucktes ist auch Wortlaut.', z2:'Sogar besonders.'},
+     ],
+     untaetigkeit:[
+       {z1:'Sie stehen vor der Ausgabe.', z2:'Ohne Antrag bleibt sie zu.'},
+       {z1:'Ich warte gern. Beruflich.', z2:'Sie offenbar auch.'},
+     ]
+   }},
 
   // G10: fass ist der einzige der drei, bei dem das Paketblatt konzeptionell
   // passt — Bartender_Bruno ist ein Wirt und Fass ist einer. Trotzdem
@@ -3653,7 +3818,46 @@ const DORF_FIGUREN = [
    {merker:'szeneUmlauf', zeilen:[
      {z1:'Die Botin war da. Hat viel geredet.',    z2:'Und schnell gegessen.'},
      {z1:'Sie kennt einen Bäcker. Bruno heißt er.', z2:'Wie ich. Merkwürdig.'},
-   ]}]},
+   ]},
+   {abSchicht:10, zeilen:[
+     {z1:'Zehn Tage. Du hältst durch.', z2:'Setz dich mal richtig hin.'},
+     {z1:'Du warst schon öfter hier.', z2:'Merke ich mir. Berufssache.'},
+   ]},
+   {abStufe:7, zeilen:[
+     {z1:'Du siehst kräftiger aus.', z2:'Iss trotzdem was.'},
+     {z1:'Wer viel trägt, sitzt gern.', z2:'Der Stuhl steht schon da.'},
+   ]},
+   {skill:'vit', ab:6, zeilen:[
+     {z1:'Du steckst mehr weg als früher.', z2:'Das sieht man am Abend.'},
+     {z1:'Zäh ist gut. Zäh bleibt sitzen.', z2:'Hoffe ich jedenfalls.'},
+   ]},
+   {abRang:5, zeilen:[
+     {z1:'Jetzt hast du einen Titel.', z2:'Hier heißt du trotzdem du.'},
+     {z1:'Titel zahlen nicht mit.', z2:'Du zahlst mit. Danke.'},
+   ]},
+   {phase:'feierabend', zeilen:[
+     {z1:'Feierabend. Bleib noch etwas.', z2:'Der Käse kommt gleich.'},
+     {z1:'Alle stehen auf. Immer alle.', z2:'Einer bleibt bestimmt mal.'},
+   ]},
+   {abAkt:4, zeilen:[
+     {z1:'Oben steht ein Krug. Der bleibt oben.', z2:'Großvater hat das gesagt.'},
+     {z1:'Einer wird gebraucht. Irgendwann.', z2:'Ich staube ihn ab. Das reicht.'},
+   ]}
+   ],
+   anlass:{
+     goldfund:[
+       {z1:'Gold! Dann bleibst du heute länger.', z2:'Sag ich mal so.'},
+       {z1:'Der Erste heute geht aufs Haus.', z2:'Der zweite auch. Bleib nur.'},
+     ],
+     levelup:[
+       {z1:'Aufgestiegen? Setz dich drauf.', z2:'Ich hol was Ordentliches.'},
+       {z1:'Das feiert man. Kurz wenigstens.', z2:'Kurz reicht mir schon.'},
+     ],
+     crit:[
+       {z1:'Hab ich bis hierher gehört.', z2:'Klang teuer für den anderen.'},
+       {z1:'Du haust ordentlich hin.', z2:'Trink was. Auf mich.'},
+     ]
+   }},
 
   {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
    // Haarreste und geflickter brauner Mantel, gemessen an der linken Hälfte des
@@ -3683,7 +3887,32 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:3, zeilen:[
      {z1:'Wir zwei standen nie in einem Bestand.', z2:'Pahl sagt, das sei ein Glück.'},
      {z1:'Wer nicht geführt wird, bleibt da.',     z2:'Pahl nickt. Ausnahmsweise.'},
-   ]}],
+   ]},
+   {abSchicht:12, zeilen:[
+     {z1:'Sie haben uns schon einmal gefragt.', z2:'Wir sitzen hier. Wir merken das.'},
+     {z1:'Der Neue ist keiner mehr.', z2:'Pahl sagt, das dauert immer.'},
+   ]},
+   {abStufe:8, zeilen:[
+     {z1:'Der Neue wird groß. Ich nicht.', z2:'Ich sitze. Das reicht mir.'},
+     {z1:'Sie wachsen. Die Bank nicht.', z2:'Pahl hat nachgemessen.'},
+   ]},
+   {skill:'str', ab:7, zeilen:[
+     {z1:'Der Neue trägt was weg.', z2:'Ich trage nichts. Nie.'},
+     {z1:'Kraft ist praktisch da draußen.', z2:'Hier drin reicht Sitzen.'},
+   ]},
+   {abRang:6, zeilen:[
+     {z1:'Der Neue hat jetzt was Amtliches.', z2:'Wir zwei haben gar nichts.'},
+     {z1:'Ein Titel. Sehr fein.', z2:'Pahl gratuliert. Ich nicke.'},
+   ]},
+   {phase:'antritt', zeilen:[
+     {z1:'Früh unterwegs. Wie immer.', z2:'Wir sitzen schon länger da.'},
+     {z1:'Guten Morgen. Von uns beiden.', z2:'Pahl sagt es selten selbst.'},
+   ]},
+   {abAkt:5, zeilen:[
+     {z1:'Wir haben damals aufgeräumt.', z2:'Steine sortiert. Das war es.'},
+     {z1:'Man macht das so am Ende.', z2:'Pahl hat rechts gemacht.'},
+   ]}
+   ],
    anlass:{
      crit:[
        {z1:'Direkt ins Aktenzeichen.', z2:'Pahl schweigt. Wie erwartet.'},
@@ -3758,7 +3987,32 @@ const DORF_FIGUREN = [
    zusatz:[{abAkt:3, zeilen:[
      {z1:'Man hat unser Dorf zugeklappt.', z2:'Lott spricht nicht darüber.'},
      {z1:'Kein Feuer. Ein Aktendeckel.',   z2:'Lott war auch dabei.'},
-   ]}],
+   ]},
+   {abSchicht:12, zeilen:[
+     {z1:'Sie gehen nie richtig weg.', z2:'Sie kommen immer wieder her.'},
+     {z1:'Wir kennen Ihren Gang inzwischen.', z2:'Lott hört ihn zuerst.'},
+   ]},
+   {abStufe:8, zeilen:[
+     {z1:'Sie sind gewachsen. Sauber.', z2:'Lott hat es auch bemerkt.'},
+     {z1:'Wachsen ist ein guter Beruf.', z2:'Ich habe einen anderen.'},
+   ]},
+   {zweig:0, zeilen:[
+     {z1:'Sie machen Licht da draußen.', z2:'Lott mag das nicht.'},
+     {z1:'Feuer ist warm. Hier auch.', z2:'Die Bank steht in der Sonne.'},
+   ]},
+   {abRang:6, zeilen:[
+     {z1:'Man redet Sie jetzt mit Titel an.', z2:'Uns redet gar niemand an.'},
+     {z1:'Sehr schön für Sie. Ehrlich.', z2:'Lott meint das auch so.'},
+   ]},
+   {phase:'feierabend', zeilen:[
+     {z1:'Die Sonne geht. Wir bleiben.', z2:'Lott zuerst. Er sitzt näher.'},
+     {z1:'Abends redet es sich besser.', z2:'Da fragt niemand mehr nach.'},
+   ]},
+   {abAkt:5, zeilen:[
+     {z1:'Wir haben die Steine gelegt.', z2:'Ordentlich. Wie es sich gehört.'},
+     {z1:'Danach sind wir losgegangen.', z2:'Und dann haben wir uns gesetzt.'},
+   ]}
+   ],
    anlass:{
      crit:[
        {z1:'Ein Treffer. Sauber getroffen.', z2:'Lott hat sowas noch nie gesehen.'},
@@ -3841,7 +4095,47 @@ const DORF_FIGUREN = [
      'Dreiundvierzig Jahre. Der Eimer hält.',
      'Wenn Sie hinauf müssen: Es wird schön.',
      'Ich stehe bereit. Man weiß ja nie.',
+   ],
+   zusatz:[
+   {abSchicht:11, zeilen:[
+     {z1:'Gemeldet wird: Sie sind noch hier.', z2:'Das ist bemerkenswert.'},
+     {z1:'Elf Tage. Ich zähle mit.', z2:'Zählen gehört zur Stelle.'},
    ]},
+   {abStufe:9, zeilen:[
+     {z1:'Gemeldet wird: Sie sind gewachsen.', z2:'Wetter bleibt unverändert.'},
+     {z1:'Sie ändern sich. Das Wetter nicht.', z2:'Einer von uns beiden reicht.'},
+   ]},
+   {zweig:1, zeilen:[
+     {z1:'Sie machen Eis. Das ist Niederschlag.', z2:'Fast. Nicht ganz. Leider.'},
+     {z1:'Gemeldet wird: örtliches Eis.', z2:'Nicht amtlich. Aber schön.'},
+   ]},
+   {abRang:4, zeilen:[
+     {z1:'Sie steigen. Meine Stelle bleibt.', z2:'Sie war nie unbesetzt.'},
+     {z1:'Gemeldet wird: ein Aufstieg im Haus.', z2:'Das melde ich gern mit.'},
+   ]},
+   {phase:'antritt', zeilen:[
+     {z1:'Gemeldet wird: keine Niederschläge.', z2:'Vorbereitungen abgeschlossen.'},
+     {z1:'Guten Morgen. Der Eimer steht.', z2:'Wie gestern. Wie immer.'},
+   ]},
+   {abAkt:3, zeilen:[
+     {z1:'Ich führe zwei Tabellen.', z2:'Eine davon ist leer.'},
+     {z1:'Die Kopfzeile ziehe ich nach.', z2:'Jedes Jahr. Tinte verblasst.'},
+   ]}
+   ],
+   anlass:{
+     untaetigkeit:[
+       {z1:'Gemeldet wird: Stillstand.', z2:'Ich kenne das gut.'},
+       {z1:'Stehen ist keine Verzögerung.', z2:'Es ist Bereitschaft.'},
+     ],
+     levelup:[
+       {z1:'Gemeldet wird: ein Aufstieg.', z2:'Vorbereitungen unverändert.'},
+       {z1:'Sie kommen voran. Schön.', z2:'Ich stehe weiter bereit.'},
+     ],
+     kammerAbbruch:[
+       {z1:'Zurückgekommen. Auch gut.', z2:'Man kann nicht immer los.'},
+       {z1:'Gemeldet wird: eine Rückkehr.', z2:'Trocken zurück. Wie immer.'},
+     ]
+   }},
 
   // Sie bringt die Welt ins Dorf: ueber sie erfaehrt der Spieler zum ersten Mal,
   // dass Oben ein Ort ist. Deshalb abAkt:2 und keine Aktzeile fuer Akt I.
@@ -3865,7 +4159,47 @@ const DORF_FIGUREN = [
      'Ihre Stelle ist ausgeschrieben. Jedes Jahr.',
      'Ich habe erzählt, dass es hier vorangeht.',
      'Diesmal komme ich mit. Nur bis zum Tor.',
+   ],
+   zusatz:[
+   {abSchicht:14, zeilen:[
+     {z1:'Sie schon wieder. Schön.', z2:'Ich bin nur kurz da. Wie immer.'},
+     {z1:'Vierzehn Tage, elf Stellen, ein Weg.', z2:'Ihrer ist kürzer. Beneidenswert.'},
    ]},
+   {abStufe:10, zeilen:[
+     {z1:'Sie sind gewachsen, würde ich sagen.', z2:'Ich sehe viele. Ich vergleiche.'},
+     {z1:'Weiterkommen können Sie gut.', z2:'Ankommen ist etwas anderes.'},
+   ]},
+   {skill:'agi', ab:7, zeilen:[
+     {z1:'Sie sind schnell. Wir zwei also.', z2:'Schnell und trotzdem nie fertig.'},
+     {z1:'Laufen ist kein Beruf, sagt man.', z2:'Doch. Ist es. Meiner.'},
+   ]},
+   {abRang:6, zeilen:[
+     {z1:'Ihr Titel wird oben eingetragen.', z2:'Von jemandem. Irgendwann.'},
+     {z1:'Ich melde so etwas gern weiter.', z2:'Erzählen ist mein Beruf.'},
+   ]},
+   {phase:'feierabend', zeilen:[
+     {z1:'Ich muss weiter. War nett bei Ihnen.', z2:'Ich bin dann mal weg.'},
+     {z1:'Abends laufe ich am besten.', z2:'Da hält mich niemand auf.'},
+   ]},
+   {abAkt:4, zeilen:[
+     {z1:'Ich habe mich einmal hingesetzt.', z2:'Eine Stunde. In Hochablage.'},
+     {z1:'Es war die längste meines Lebens.', z2:'Danach zwei Tage aufgeholt.'},
+   ]}
+   ],
+   anlass:{
+     levelup:[
+       {z1:'Aufstieg! Das erzähle ich weiter.', z2:'Nicht böse gemeint. Nur so.'},
+       {z1:'Sie kommen voran. Wirklich.', z2:'Ich komme auch voran. Anders.'},
+     ],
+     goldfund:[
+       {z1:'Gold! Das trage ich nicht.', z2:'Ich trage nur Papier.'},
+       {z1:'Schwer wird man langsam.', z2:'Ich bleibe leicht. Beruflich.'},
+     ],
+     untaetigkeit:[
+       {z1:'Sie stehen. Wie halten Sie das aus?', z2:'Ich frage aus Neugier.'},
+       {z1:'Stillstehen habe ich mal probiert.', z2:'Nicht mein Fach. Weiter.'},
+     ]
+   }},
 
   // Der Gegenspieler. Er taucht auf, sobald der Spieler anfaengt, gefaehrlich zu
   // werden, also ab Akt III. Anker vor der Amtstuer, weil er nicht hindurchpasst;
@@ -3893,7 +4227,47 @@ const DORF_FIGUREN = [
      'Man hört wenig aus Ihrem Haus. Sehr gut.',
      'Ein Umschlag. Reizend. Geben Sie ihn mir.',
      'Ich war zuständig. Nun bin ich hier.',
+   ],
+   zusatz:[
+   {abSchicht:24, zeilen:[
+     {z1:'Sie sind noch im Dienst. Bemerkenswert.', z2:'Wir prüfen das gern.'},
+     {z1:'Ihre Stelle ist täglich befristet.', z2:'Das schafft eine gewisse Ruhe.'},
    ]},
+   {abStufe:12, zeilen:[
+     {z1:'Sie sind gestiegen. Ich gratuliere.', z2:'Ihr Anliegen wird bearbeitet.'},
+     {z1:'Wachstum ist ein Vorgang.', z2:'Auch dieser ist anhängig.'},
+   ]},
+   {skill:'int', ab:8, zeilen:[
+     {z1:'Sie lesen viel. Das prüfen wir gern.', z2:'Nicht Sie. Wir.'},
+     {z1:'Ein lesender Außendienst. Reizend.', z2:'Selten. Sehr selten.'},
+   ]},
+   {abRang:8, zeilen:[
+     {z1:'Höherer Dienst. Fast einer von uns.', z2:'Fast. Sie verstehen.'},
+     {z1:'Ihr Titel ist ordentlich erworben.', z2:'Ordentlich ist das Wichtigste.'},
+   ]},
+   {phase:'antritt', zeilen:[
+     {z1:'Sie fangen früh an. Löblich.', z2:'Früh ist beinahe eine Haltung.'},
+     {z1:'Hochablage grüßt. Auch morgens.', z2:'Hochablage grüßt sehr gern.'},
+   ]},
+   {abAkt:4, zeilen:[
+     {z1:'In meinem Fach liegt ein Stempel.', z2:'Er ist durchgeschrieben.'},
+     {z1:'Ausmustern wäre eine Entscheidung.', z2:'Sie verstehen das Problem.'},
+   ]}
+   ],
+   anlass:{
+     ultimate:[
+       {z1:'Sehr aufwendig. Wir prüfen das gern.', z2:'Nicht heute. Aber gern.'},
+       {z1:'Das war groß. Und anhängig.', z2:'Beides zugleich. Bemerkenswert.'},
+     ],
+     fluch:[
+       {z1:'Sie haben gezeichnet. Sehr korrekt.', z2:'Gezeichnet wird zu selten.'},
+       {z1:'Eine Auflage. Wie schön.', z2:'Auflagen halten Dinge offen.'},
+     ],
+     untaetigkeit:[
+       {z1:'Sie stehen. Das ist völlig zulässig.', z2:'Stehen ist auch bearbeiten.'},
+       {z1:'Nehmen Sie sich Zeit. Viel Zeit.', z2:'Zeit haben wir reichlich.'},
+     ]
+   }},
 ];
 // Literale oben bewusst im alten 80er-Raster (vgl. figuren-dorf.md) — einmalig
 // um DORF_DX/DORF_DY verschoben, bevor genMap() die Anker liest (:2443 unten).
