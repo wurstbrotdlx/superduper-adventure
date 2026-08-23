@@ -1209,7 +1209,7 @@ const HAIRS = CF_HAIR.map(h => h.key);
 // Naturtönen des Pakets und nicht in ihrer Reihe: der Spieler soll sich auf einem
 // vollen Dorfplatz und in einer Horde in einem Blick selbst finden. Das Blatt wird
 // dafür nicht ausgetauscht (das Grafikpaket hat diese Farben nicht), sondern
-// umgefärbt, siehe haarBlatt() weiter unten.
+// umgefärbt, siehe farbBlatt() weiter unten.
 // Die Namen sind Bürobedarf. Das ist kein Gag am Rand: das Haus benennt nichts
 // nach dem, wonach es aussieht, sondern nach dem, wo es herkommt.
 const CF_HAARTON = [
@@ -1779,8 +1779,22 @@ function tintedSheet(key, color, alpha){
 // Einmal je Blatt und Farbe gebacken, danach aus dem Cache. Gebacken werden nur
 // die Zeilen, die der Key wirklich benutzt (gleiche Regel wie tintedSheet), das
 // sind bei den Haar-Layern 576x64 statt 576x3584.
-const HAAR_CACHE = new Map();
-const HAAR_BAND = 0.22;      // halbe Breite des Helligkeitsbands um die Zielfarbe
+//
+// G8: die Rechnung hieß bis hierher haarBlatt() und konnte immer schon mehr, als
+// ihr Name zugab — sie kennt keine Frisur, sie kennt ein Blatt und eine
+// Zielfarbe. Seit G8 laufen auch Hemd und Hose darüber, damit die Dorffiguren
+// die Farben ihres gemalten Porträts tragen können und nicht die fünf, die das
+// Grafikpaket mitbringt. Deshalb heißt sie jetzt farbBlatt(); an der Rechnung
+// hat sich nichts geändert.
+//
+// merken=false umgeht den Cache. Der Spieler wechselt Haar und Rüstung im
+// laufenden Spiel und backt deshalb immer wieder dieselben Kombinationen — für
+// ihn ist der Cache der ganze Sinn. Die Dorffiguren werden genau einmal beim
+// Laden gebacken; ihre 69 umgefärbten Blätter blieben danach für immer im
+// Speicher liegen, ohne je wieder gelesen zu werden. Nachgezählt und nicht
+// geschätzt: 69 Blätter zu je 576x64 sind 9,7 MB.
+const FARB_CACHE = new Map();
+const FARB_BAND = 0.22;      // halbe Breite des Helligkeitsbands um die Zielfarbe
 
 // #rrggbb -> {h, s, l}. Klein gehalten und nur hier gebraucht: es gibt im ganzen
 // Spiel sonst keine Farbrechnung, eine allgemeine Farbbibliothek wäre Ballast.
@@ -1800,9 +1814,9 @@ function hslKanal(p, q, t){
   return p;
 }
 
-function haarBlatt(key, hex){
+function farbBlatt(key, hex, merken){
   const ck = key + '|' + hex;
-  const hit = HAAR_CACHE.get(ck); if(hit !== undefined) return hit;
+  if(merken !== false){ const hit = FARB_CACHE.get(ck); if(hit !== undefined) return hit; }
   const s = SHEETS[key]; if(!s || !s.img) return null;
   const rows = Math.max(1, Math.ceil(s.n / s.cols));
   const c = document.createElement('canvas');
@@ -1812,11 +1826,11 @@ function haarBlatt(key, hex){
 
   let bild;
   // getImageData wirft bei einem fremdorigin geladenen Blatt. Dann bleibt das
-  // Haar in seinem Naturton (blitHaarFrame fällt auf blitLayerFrame zurück),
+  // Haar in seinem Naturton (blitFarbFrame fällt auf blitLayerFrame zurück),
   // statt dass ein Wurf auf Skriptebene den Rest mitreißt. Gleiche Vorsicht wie
   // in npcAnkerAssert().
   try { bild = cc.getImageData(0, 0, c.width, c.height); }
-  catch(e){ HAAR_CACHE.set(ck, null); console.warn('haarBlatt: Blatt nicht lesbar', key, e.name); return null; }
+  catch(e){ FARB_CACHE.set(ck, null); console.warn('farbBlatt: Blatt nicht lesbar', key, e.name); return null; }
 
   const d = bild.data;
   let lo = 1, hi = 0;
@@ -1827,7 +1841,7 @@ function haarBlatt(key, hex){
     if(l > hi) hi = l;
   }
   const ziel = hexHsl(hex);
-  const l0 = Math.max(0.06, ziel.l - HAAR_BAND), l1 = Math.min(0.94, ziel.l + HAAR_BAND);
+  const l0 = Math.max(0.06, ziel.l - FARB_BAND), l1 = Math.min(0.94, ziel.l + FARB_BAND);
   const spanne = hi - lo;
   for(let i = 0; i < d.length; i += 4){
     if(d[i+3] <= 8) continue;
@@ -1840,8 +1854,21 @@ function haarBlatt(key, hex){
     d[i+2] = Math.round(hslKanal(p, q, ziel.h - 1/3) * 255);
   }
   cc.putImageData(bild, 0, 0);
-  HAAR_CACHE.set(ck, c);
+  if(merken !== false) FARB_CACHE.set(ck, c);
   return c;
+}
+
+// G8: Hose aus Hemd. Die Porträts enden an der Brust, eine gemessene Hosenfarbe
+// gibt es also für niemanden. Statt fünfzehn Werte zu erfinden, wird sie
+// abgeleitet: derselbe Farbton, um ein Viertel abgedunkelt. Das ist die
+// Beobachtung an den Porträts selbst — Zapfs Latzhose ist dunkler als sein
+// Hemd, Vorblatts Mantel dunkler als sein Kragen — und es hält die Figur in
+// einer Farbfamilie, statt sie zweifarbig auseinanderfallen zu lassen.
+const HOSE_DUNKLER = 0.72;
+function dunkler(hex, f){
+  if(!hex) return hex;
+  const z = n => Math.max(0, Math.min(255, Math.round(parseInt(hex.slice(n, n+2), 16) * f)));
+  return '#' + [1, 3, 5].map(n => z(n).toString(16).padStart(2, '0')).join('');
 }
 
 // Zeichnet Frame mit Anker im aktuellen Transform-Ursprung (für exotische Skalierung).
@@ -1892,11 +1919,11 @@ function blitLayerFrame(destCtx, key, frame, dx, dy){
 // P1: dasselbe für die umgefärbte Kopie. Sie enthält nur die Zeilen ab rowStart,
 // deshalb wird hier ohne den Zeilenversatz gelesen (gleiche Regel wie bei den
 // getönten Kopien in drawSpriteAt). hex leer heißt Naturton, dann läuft es über
-// den gewöhnlichen Weg, und die Dorffiguren bleiben unangetastet.
-function blitHaarFrame(destCtx, key, hex, frame, dx, dy){
+// den gewöhnlichen Weg — so bleibt eine Figur ohne eigene Farbe unangetastet.
+function blitFarbFrame(destCtx, key, hex, frame, dx, dy, merken){
   if(!hex) return blitLayerFrame(destCtx, key, frame, dx, dy);
   const s = SHEETS[key]; if(!s || !s.img) return;
-  const src = haarBlatt(key, hex); if(!src) return blitLayerFrame(destCtx, key, frame, dx, dy);
+  const src = farbBlatt(key, hex, merken); if(!src) return blitLayerFrame(destCtx, key, frame, dx, dy);
   const i = ((frame|0) % s.n + s.n) % s.n;
   destCtx.drawImage(src, (i % s.cols)*s.fw, ((i/s.cols)|0)*s.fh, s.fw, s.fh, dx, dy, s.fw, s.fh);
 }
@@ -1924,7 +1951,7 @@ function bakeHeroSheet(){
       if(bootsTier >= 0) blitLayerFrame(bctx, `cffeet_${bootsTier}_${anim}`, f, dx, 0);
       blitLayerFrame(bctx, `cfbody_${anim}`, f, dx, 0);
       if(armorTier >= 0) blitLayerFrame(bctx, `cfchest_${armorTier}_${anim}`, f, dx, 0);
-      blitHaarFrame(bctx, `cfhair_${player.hair}_${anim}`, haarHex(player.haarTon), f, dx, 0);
+      blitFarbFrame(bctx, `cfhair_${player.hair}_${anim}`, haarHex(player.haarTon), f, dx, 0);
       blitLayerFrame(bctx, `cfhands_${anim}`, f, dx, 0);
     }
     offset += n;
@@ -1944,6 +1971,24 @@ function bakeHeroSheet(){
 //  sonst schliddert sie im Standbild über den Platz. Welche Reihe wie viele
 //  Frames hat, steht in CF_HERO_ANIMS und wird von dort gelesen statt hier noch
 //  einmal behauptet.
+//
+//  G8: das Komposit trägt jetzt Farbe. Bis hierher konnte eine Figur nur unter
+//  dem wählen, was das Grafikpaket geschnitten hat: sechs Frisuren in ihrer
+//  Auslieferungsfarbe, fünf Hemden, fünf Hosen, fünf Paar Schuhe. Bramsches
+//  Turmknoten musste deshalb schwarz sein, weil Blatt 3 schwarz ist, und
+//  Knöterich trug Frisur 5, weil das die graue war — die Silhouette folgte der
+//  Farbe statt umgekehrt.
+//
+//  Über farbBlatt() ist das aufgehoben: haarFarbe, hemdFarbe und hoseFarbe sind
+//  freie Hexwerte, und die Frisur wird nach ihrer Form gewählt. Die Werte sind
+//  an den Porträts gemessen (`python3 tools/portraet-farben.py`, Einzelheiten
+//  in phase-g8-figurenfarben.md), nicht ausgesucht.
+//
+//  Was ohne Farbe bleibt: der Körper (dort sitzen Gesicht und Augen, ein
+//  Helligkeitsband darüber machte aus beidem eine Fläche — Nörgels Grün kommt
+//  deshalb weiter als Tönung über die ganze Figur) und die Schuhe (sechs Pixel
+//  am Boden, die fünf Paketfarben reichen). Die Hose ist nicht gemessen,
+//  sondern aus dem Hemd abgeleitet, siehe HOSE_DUNKLER.
 // ===========================================================================
 const HERO_ANIM_N = {};
 for(const [anim, , n] of CF_HERO_ANIMS) HERO_ANIM_N[anim] = n;
@@ -1951,16 +1996,21 @@ for(const [anim, , n] of CF_HERO_ANIMS) HERO_ANIM_N[anim] = n;
 function bakeNpcSheet(key, gestalt, anim){
   const n = HERO_ANIM_N[anim] || 6;
   const chest = gestalt.chest ?? -1, legs = gestalt.legs ?? -1, feet = gestalt.feet ?? -1;
+  // Ohne hemdFarbe bleibt auch die Hose auf ihrer Paketfarbe: eine abgedunkelte
+  // Ableitung aus nichts wäre nichts, und dunkler() gibt hex unverändert zurück.
+  const hose = gestalt.hoseFarbe || dunkler(gestalt.hemdFarbe, HOSE_DUNKLER);
   const canvas = document.createElement('canvas');
   canvas.width = n * 64; canvas.height = 64;
   const bctx = canvas.getContext('2d');
   for(let f = 0; f < n; f++){
     const dx = f * 64;
-    if(legs >= 0) blitLayerFrame(bctx, `cflegs_${legs}_${anim}`, f, dx, 0);
+    // merken:false — diese Blätter werden genau einmal gebraucht, hier. Siehe
+    // den Kommentar bei FARB_CACHE.
+    if(legs >= 0) blitFarbFrame(bctx, `cflegs_${legs}_${anim}`, hose, f, dx, 0, false);
     if(feet >= 0) blitLayerFrame(bctx, `cffeet_${feet}_${anim}`, f, dx, 0);
     blitLayerFrame(bctx, `cfbody_${anim}`, f, dx, 0);
-    if(chest >= 0) blitLayerFrame(bctx, `cfchest_${chest}_${anim}`, f, dx, 0);
-    blitLayerFrame(bctx, `cfhair_${gestalt.hair}_${anim}`, f, dx, 0);
+    if(chest >= 0) blitFarbFrame(bctx, `cfchest_${chest}_${anim}`, gestalt.hemdFarbe, f, dx, 0, false);
+    blitFarbFrame(bctx, `cfhair_${gestalt.hair}_${anim}`, gestalt.haarFarbe, f, dx, 0, false);
     blitLayerFrame(bctx, `cfhands_${anim}`, f, dx, 0);
   }
   SHEETS[key] = {img:canvas, cols:n, n, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
@@ -1983,8 +2033,20 @@ function bakeNpcSheet(key, gestalt, anim){
 // gestalt:{} ihr eigenes Aussehen. Legt jemand die Blätter später ins Paket,
 // greift der erste Zweig hier von selbst wieder auf sie zu, ohne dass eine
 // Zeile zurückgebaut werden muss.
+//
+// G8: genau dieses Zurückgreifen ist jetzt das Problem. Ein Paketblatt zeigt
+// Farmer Bob, Bartender Katy und Miner Mike — fertige Figuren, an denen sich
+// nichts einstellen lässt. Seit die Porträts da sind, ist das der sichtbare
+// Bruch: Bürgermeister Zwirn ist auf seinem Bild ein feister Amtsträger mit
+// Ordenskette und im Dorf ein Bauer, Herr Pommer ist auf seinem Bild ein
+// hagerer Mann mit Halbmondbrille und im Dorf eine Wirtin.
+//
+// komposit:true entscheidet das je Figur zugunsten des Porträts. Es ist eine
+// Zeile in DORF_FIGUREN und keine Weiche im Code: wer das Paketblatt für die
+// bessere Figur hält, streicht das Flag bei ihr und bekommt es zurück. Die
+// acht Blätter bleiben deshalb geladen und CF_NPCS steht unverändert.
 function npcBlaetter(nd){
-  if(nd.opt !== 'fest' && (!assetsReady || SHEETS[`cfnpc_${nd.sheet}_idle`]))
+  if(nd.opt !== 'fest' && !nd.komposit && (!assetsReady || SHEETS[`cfnpc_${nd.sheet}_idle`]))
     return {idle:`cfnpc_${nd.sheet}_idle`, walk:`cfnpc_${nd.sheet}_walk`};
   if(nd.opt === 'fest') return {idle:`npc_baked_${nd.key}`, walk:`npc_baked_${nd.key}`};
   return {idle:`npc_baked_${nd.key}`, walk:`npc_baked_${nd.key}_lauf`};
@@ -1992,12 +2054,19 @@ function npcBlaetter(nd){
 
 function bakeAllNpcSheets(){
   const ersetzt = [];
+  // G8: Knöterich steht nicht in DORF_FIGUREN (er ist älter als die Tabelle),
+  // trägt aber dasselbe Komposit. Vorher buk ihn erst der Empfang, und die
+  // Weltfigur zeichnete daneben Körper und Haar einzeln — zwei Wege zu einem
+  // Aussehen. Jetzt gibt es nur diesen, und drawAlter() blittet ein Sprite.
+  bakeNpcSheet(EMPFANG_BLATT, KN_GESTALT, 'idle');
   for(const f of DORF_FIGUREN){
     if(f.opt === 'fest'){ bakeNpcSheet(`npc_baked_${f.key}`, f.gestalt, 'idle'); continue; }
-    if(SHEETS[`cfnpc_${f.sheet}_idle`]) continue;      // eigenes Blatt ist da, kein Ersatz nötig
+    // komposit:true heißt: das Porträt hat gegen das Paketblatt entschieden, es
+    // wird gebacken, auch wenn das Blatt daliegt (siehe npcBlaetter()).
+    if(!f.komposit && SHEETS[`cfnpc_${f.sheet}_idle`]) continue;   // eigenes Blatt ist da, kein Ersatz nötig
     bakeNpcSheet(`npc_baked_${f.key}`, f.gestalt, 'idle');
     bakeNpcSheet(`npc_baked_${f.key}_lauf`, f.gestalt, 'run');
-    ersetzt.push(f.key);
+    if(!f.komposit) ersetzt.push(f.key);
   }
   // Eine Zeile statt zehn Warnungen, und sie sagt, was Sache ist: nicht "kaputt",
   // sondern "nicht im Paket, Ersatz steht". Wer die Blätter lizenziert und nach
@@ -2855,6 +2924,25 @@ dorfMassstabAssert();
 //  Grafikpaket liegt, siehe npcBlaetter(). Für fünf der acht ist das der
 //  Regelfall und nicht die Ausnahme.
 //
+//  G8, drei Ergänzungen an derselben Tabelle:
+//
+//  gestalt:{} hat drei Felder dazubekommen: haarFarbe, hemdFarbe und das
+//  selten gebrauchte hoseFarbe. Es sind freie Hexwerte, gemessen am gemalten
+//  Porträt der Figur (`python3 tools/portraet-farben.py`), und bakeNpcSheet()
+//  schickt die drei Ebenen damit durch farbBlatt(). Ohne die Felder bleibt eine
+//  Ebene auf ihrer Paketfarbe; nichts hier ist Pflicht.
+//
+//  komposit:true heißt, dass diese Figur auch dann als Komposit gebacken wird,
+//  wenn ihr CF_NPCS-Blatt im Paket liegt. Es steht bei allen acht Wandernden,
+//  weil ein fertiges Paketblatt jemand anderen zeigt als das Porträt; die
+//  Begründung je Figur steht in phase-g8-figurenfarben.md. Wer eine davon
+//  zurückholen will, streicht dort ihr Flag.
+//
+//  Die Frisur ist seit G8 nach ihrer Form gewählt und nicht mehr nach der
+//  Farbe, in der das Paket sie ausliefert. Fünf Zuordnungen sind dabei
+//  gewandert (Knöterich, Bramsche, Pommer, Nieselbeck, Umlauf), und wo eine
+//  gewandert ist, steht der Grund über der Zeile.
+//
 //  Fünf Heimatanker sind gewandert: Zwirn 14/34 -> 16/38, Zapf 16/46 -> 16/47,
 //  Lisbeth 10/42 -> 8/40, Trepp 22/41 -> 22/40, Pommer 13/45 -> 13/47. Sie
 //  standen auf begehbaren Kacheln, aber innerhalb der Deckfläche eines Gebäudes,
@@ -2888,8 +2976,9 @@ dorfMassstabAssert();
 //  Pahl standen vor der Südzeile), nur an den neuen Fußlinien.
 // ===========================================================================
 const DORF_FIGUREN = [
-  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', kurz:'Bürgermeister Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob',
-   gestalt:{hair:'h1', chest:2, legs:2, feet:2},
+  {key:'zwirn', name:'Bürgermeister Alfons Zwirn', kurz:'Bürgermeister Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob', komposit:true,
+   // schüttere sandige Haare über blanker Kopfhaut, ockerbraune Weste
+   gestalt:{hair:'h1', haarFarbe:'#9f704b', chest:2, hemdFarbe:'#765937', legs:2, feet:2},
    grund:[
      {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
      {z1:'Eine Genehmigung fehlt uns noch.', z2:'Da bin ich dran.'},
@@ -2914,7 +3003,10 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'bramsche', name:'Registratorin Ottilie Bramsche', kurz:'Registratorin Bramsche', tx:21, ty:36, opt:'fest',
-   gestalt:{hair:'h3', chest:2, legs:2},
+   // schwarzer Turmknoten (h6 ist der hochgesteckte Knoten, h3 war der
+   // Undercut und nur gewählt, weil Blatt 3 das schwarze ist), verblichenes
+   // Königsblau mit weißem Kragen
+   gestalt:{hair:'h6', haarFarbe:'#0d1b21', chest:2, hemdFarbe:'#384b66', legs:2},
    grund:[
      {z1:'Ordnung ist, was man wiederfindet.', z2:'Alles andere ist Zufall.'},
      {z1:'In welcher Sache sprechen Sie mich an?', z2:'Ohne Antrag sage ich nichts.'},
@@ -2968,8 +3060,9 @@ const DORF_FIGUREN = [
      {z1:'Seitdem gebe ich nichts ohne Antrag.', z2:'Höflichkeit ist kein Antrag.'},
    ]}]},
 
-  {key:'zapf', name:'Hausmeister Reinhold Zapf', kurz:'Hausmeister Zapf', tx:17, ty:54, opt:'wander', sheet:'jack',
-   gestalt:{hair:'h1', chest:1, legs:1, feet:0},
+  {key:'zapf', name:'Hausmeister Reinhold Zapf', kurz:'Hausmeister Zapf', tx:17, ty:54, opt:'wander', sheet:'jack', komposit:true,
+   // kurzes braunes Haar, verblichen grüne Latzhose über dem Unterhemd
+   gestalt:{hair:'h1', haarFarbe:'#24200c', chest:1, hemdFarbe:'#8c8959', legs:1, feet:0},
    grund:[
      {z1:'Ich reparier das. Nicht fragen.', z2:'Weil sonst nichts läuft.'},
      {z1:'Das Regal wackelt. Ich keile es fest.', z2:'Sonst kippt hier alles um.'},
@@ -2992,8 +3085,9 @@ const DORF_FIGUREN = [
      {z1:'Ein Rohr. Verstopft. Sehr alt.', z2:'Kriegen wir auf.'},
    ]}]},
 
-  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', kurz:'Praktikantin Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe',
-   gestalt:{hair:'h6', chest:1, legs:0, feet:3},
+  {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', kurz:'Praktikantin Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe', komposit:true,
+   // dunkles Haar aus einem lockeren Knoten, grüne Bluse
+   gestalt:{hair:'h6', haarFarbe:'#362620', chest:1, hemdFarbe:'#656848', legs:0, feet:3},
    grund:[
      {z1:'Man erledigt Monster nicht.', z2:'Man beantwortet sie.'},
      {z1:'Und wenn er einfach nur wartet?', z2:'Das fragt hier keiner gern.'},
@@ -3017,8 +3111,10 @@ const DORF_FIGUREN = [
      {z1:'Seite zwei. Hat nie jemand gelesen.',           z2:'Ist vielleicht auch nichts.'},
    ]}]},
 
-  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', kurz:'Zusteller Trepp', tx:28, ty:40, opt:'wander', sheet:'fin',
-   gestalt:{hair:'h2', chest:2, legs:0, feet:1},
+  {key:'trepp', name:'Zusteller Emil Trepp der Siebte', kurz:'Zusteller Trepp', tx:28, ty:40, opt:'wander', sheet:'fin', komposit:true,
+   // die blaugraue Dienstmütze sitzt auf dem Haar-Layer, die Uniform darunter
+   // hat fast denselben Ton — beides gemessen, nicht angeglichen
+   gestalt:{hair:'h2', haarFarbe:'#474c61', chest:2, hemdFarbe:'#494f63', legs:0, feet:1},
    grund:[
      {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Trepp.'},
      {z1:'Wenn ich kurz stören darf.', z2:'Der Brief ist immer im Sack.'},
@@ -3042,8 +3138,12 @@ const DORF_FIGUREN = [
      {z1:'Schattenlandzustellungsbevollmächtigter.', z2:'Steht so im Ausweis. Ehrlich.'},
    ]}]},
 
-  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', tint:'#7a9c5a', tintA:0.22,
-   gestalt:{hair:'h1', chest:0, legs:0, feet:3},
+  {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', komposit:true, tint:'#949341', tintA:0.22,
+   // Der einzige, dessen Haut die Tönung trägt: er ist ein Kobold. #949341 ist
+   // sein gemessener Gesichtston und ersetzt das geschätzte #7a9c5a. Das Hemd
+   // ist sandfarben und nicht grau — so steht es auf dem Bild, und das Bild
+   // gilt (assets/figuren/README.md, Befunde am zweiten Paket).
+   gestalt:{hair:'h1', haarFarbe:'#455033', chest:0, hemdFarbe:'#b49354', legs:0, feet:3},
    grund:[
      {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
      {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie.'},
@@ -3083,7 +3183,8 @@ const DORF_FIGUREN = [
    ]},
 
   {key:'milb', name:'Gutachter Dr. phil. Milb', kurz:'Gutachter Milb', tx:8, ty:39, opt:'wander', sheet:'buba',
-   gestalt:{hair:'h5', chest:2, legs:2, feet:1},
+   // langes graues Haar bis zum Kragen, blauer Gelehrtenmantel
+   gestalt:{hair:'h5', haarFarbe:'#68624d', chest:2, hemdFarbe:'#314f62', legs:2, feet:1},
    grund:[
      {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
      {z1:'Diese Kammer würde ich einstufen.', z2:'Ungefragt, versteht sich.'},
@@ -3108,7 +3209,8 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'pommer', name:'Materialausgabe Herr Pommer', kurz:'Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy',
-   gestalt:{hair:'h2', chest:1, legs:0, feet:4},
+   // kurzes blondes Haar (h1 statt der Tolle h2), Khakikittel
+   gestalt:{hair:'h1', haarFarbe:'#b48651', chest:1, hemdFarbe:'#9d8e63', legs:0, feet:4},
    grund:[
      {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
      {z1:'Auf dem Antrag steht Montag. Nicht heute.', z2:'Kommen Sie am Montag wieder.'},
@@ -3132,7 +3234,8 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', kurz:'Wirt Fass', tx:24, ty:38, opt:'wander', sheet:'bruno',
-   gestalt:{hair:'h3', chest:0, legs:2, feet:2},
+   // kurzes schwarzes Haar, offenes stumpfrotes Hemd
+   gestalt:{hair:'h3', haarFarbe:'#2d1b0e', chest:0, hemdFarbe:'#793530', legs:2, feet:2},
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
      {z1:'Zum Letzten Stempel schließt nie zu früh.', z2:'Bleib, so lang du willst.'},
@@ -3165,7 +3268,9 @@ const DORF_FIGUREN = [
    ]}]},
 
   {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
-   gestalt:{hair:'h1'},
+   // Haarreste und geflickter brauner Mantel, gemessen an der linken Hälfte des
+   // Doppelporträts (Motiv 11). Bis G8 trug er gar keine Kleiderebene.
+   gestalt:{hair:'h1', haarFarbe:'#aa7357', chest:0, hemdFarbe:'#875b46', legs:0},
    grund:[
      {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
      {z1:'Der Neue. Schlägt wieder alles kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
@@ -3237,7 +3342,10 @@ const DORF_FIGUREN = [
    }},
 
   {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', kurz:'Herr Pahl', tx:8, ty:54, opt:'fest',
-   gestalt:{hair:'h4'},
+   // rotblond ins Weiße, grauer Mantel mit falschen Knöpfen, gemessen an der
+   // rechten Hälfte desselben Doppelporträts. Die beiden unterscheiden sich im
+   // Dorf am Mantel, nicht am Haar — auf dem Bild sind beide fast kahl.
+   gestalt:{hair:'h4', haarFarbe:'#b87653', chest:0, hemdFarbe:'#7e6b65', legs:0},
    grund:[
      {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
      {z1:'Sie kämpfen. Ich sehe nur zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
@@ -3322,7 +3430,10 @@ const DORF_FIGUREN = [
   // in npcSchildFlush() faengt gleiche Zeilen ab, nicht zwei Figuren, die
   // praktisch am selben Punkt stehen.
   {key:'nieselbeck', name:'Wetterbeauftragter Ferdinand Nieselbeck', kurz:'Herr Nieselbeck', tx:21, ty:42, opt:'fest',
-   gestalt:{hair:'h5', chest:1, legs:1, feet:0},
+   // die grüne Wetterdienstmütze sitzt auf dem Haar-Layer und deckt sein graues
+   // Haar zu, wie auf dem Bild; h1 statt h5, ein Mann unter einer Mütze hat
+   // kein langes offenes Haar. Jacke bis oben zugeknöpft, dasselbe Grün.
+   gestalt:{hair:'h1', haarFarbe:'#71825f', chest:1, hemdFarbe:'#586833', legs:1, feet:0},
    grund:[
      {z1:'Gemeldet wird: keine Niederschläge.', z2:'Wie gestern. Wie immer.'},
      {z1:'Ich habe einen Eimer. Für den Fall.', z2:'Der Eimer ist bereit.'},
@@ -3342,7 +3453,11 @@ const DORF_FIGUREN = [
   // Sie bringt die Welt ins Dorf: ueber sie erfaehrt der Spieler zum ersten Mal,
   // dass Oben ein Ort ist. Deshalb abAkt:2 und keine Aktzeile fuer Akt I.
   {key:'umlauf', name:'Reichsbotin Kordula Umlauf', kurz:'Reichsbotin Umlauf', tx:26, ty:42, opt:'fest', abAkt:2,
-   gestalt:{hair:'h4', chest:2, legs:2, feet:4},
+   // rotes Haar, aus dem Band geflogen (h5, langes offenes Haar, statt des
+   // Seitenscheitels h4 — der war die rothaarige Vorlage und nicht die Form).
+   // Am Kragen liegt der graue Reiseumhang, nicht die blaue Uniform darunter:
+   // gemessen wird, was man sieht.
+   gestalt:{hair:'h5', haarFarbe:'#711d0d', chest:2, hemdFarbe:'#524b54', legs:2, feet:4},
    grund:[
      {z1:'Vierzehn Türme, ein Aufzug, neun Stockwerke.', z2:'Der Rest ist Treppe.'},
      {z1:'Ich bin im Umlauf. Seit einer Weile.', z2:'Man gewöhnt sich daran.'},
@@ -3364,7 +3479,12 @@ const DORF_FIGUREN = [
   // zwei Kacheln suedlich davon, damit er die Kontextaktion der Tuer nicht
   // ueberstimmt (derselbe Grund, aus dem Zwirn in G6 gewandert ist).
   {key:'vorblatt', name:'Reichsministerialdirektor zu Händen Vorblatt', kurz:'zu Händen Vorblatt', tx:11, ty:37, opt:'fest', abAkt:3,
-   gestalt:{hair:'h3', chest:4, legs:4, feet:3},
+   // glattes schwarzes Haar, dunkler Mantel mit stumpfer Goldbordüre. Stufe 2
+   // (Hofhemd mit Borte) statt 4 (goldener Plattenpanzer): ein
+   // Reichsministerialdirektor trägt keine Rüstung. Mantel und Haar sind
+   // beide praktisch Schwarz, #171717 ist der angehobene Messwert — siehe
+   // brauchbar() in tools/portraet-farben.py.
+   gestalt:{hair:'h3', haarFarbe:'#171717', chest:2, hemdFarbe:'#171717', legs:2, feet:3},
    grund:[
      {z1:'Ihr Anliegen wird bearbeitet.', z2:'Das ist bereits sehr viel.'},
      {z1:'Nein sage ich grundsätzlich nicht.', z2:'Nein wäre eine Entscheidung.'},
@@ -6788,7 +6908,22 @@ CONFIG.kammerTueren += amt.ausbauten.tueren;   // Dorf-Ausbau wirkt schon auf di
 //  ist die Schichtbegrüßung, die pro Schicht neu feuert (siehe startShift()).
 // ===========================================================================
 const KN_KEY = 'sda_knoeterich_v1';
-const KN_HAAR = 'h5';                        // fest gewählt, nicht zufällig: Knöterich ist immer derselbe (Grauhaar passt zum a.D.)
+// G8: Knöterichs Aussehen, und zwar an einer einzigen Stelle. Er steht nicht in
+// DORF_FIGUREN — er ist älter als die Tabelle und wohnt im Haus statt im Dorf
+// (KN_POS, drawAlter) —, trägt aber dasselbe Komposit wie sie, und die Farben
+// stehen wie bei ihnen in tools/portraet-farben.py gemessen.
+//
+// Die Frisur war bis G8 h5, und der Kommentar dahinter sagte auch warum:
+// "Grauhaar passt zum a.D.". Das war die Farbe von Blatt 5 und nicht seine Form
+// — h5 ist langes offenes Haar, sein Porträt zeigt einen gescheitelten
+// Kurzhaarschnitt. Seit farbBlatt() ist Grau kein Grund mehr, eine Form zu
+// wählen: h1 ist die Form, #746a5a die gemessene Farbe.
+//
+// Die graue Tönung in drawAlter() bleibt, wie sie ist. "Alt und grau" ist eine
+// Entscheidung aus E1 und keine Notlösung; der Dreiteiler kommt jetzt darunter
+// zum Vorschein, statt dass die Figur unbekleidet unter der Tönung steht.
+const KN_GESTALT = {hair:'h1', haarFarbe:'#746a5a', chest:2, hemdFarbe:'#706150', legs:2, feet:1};
+const EMPFANG_BLATT = 'npc_baked_knoeterich';
 // U3: Was auf seinem Namensschild steht. Kurz wie bei den Dorffiguren (kurz:),
 // und aus demselben Grund: der volle Titel ist ein Verzeichniseintrag.
 const KN_NAME_KURZ = 'Amtsrat a. D. Knöterich';
@@ -6959,6 +7094,11 @@ function knAssertCaps(){
     // bei opt:'wander' als Ersatz für ein fehlendes CF_NPCS-Blatt. Beides muss
     // da sein, sonst steht die Figur unsichtbar im Dorf, und genau das war der
     // Zustand, den dieser Guard hätte melden sollen und nicht gemeldet hat.
+    //
+    // G8: seit komposit:true ist das Komposit für die Wandernden nicht mehr der
+    // Ersatz, sondern der Regelfall. sheet: bleibt trotzdem Pflicht — es ist der
+    // Weg zurück, und ein Flag zu streichen soll nicht bedeuten, dass eine Figur
+    // danach ohne Blatt dasteht. Farben und Stufen prüft figurenFarbenAssert().
     if(fig.opt === 'wander' && !fig.sheet) rows.push([null,0,'Figur ' + fig.key + ' ohne Sprite']);
     if(!fig.gestalt || !fig.gestalt.hair) rows.push([null,0,'Figur ' + fig.key + ' ohne Gestalt']);
     for(const p of fig.grund) rows.push([p.z1,48],[p.z2,32]);
@@ -8621,6 +8761,61 @@ function gespraechAssert(){
   if(ok) console.log(`U5 Porträts: ${PORTRAET_FIGUREN.length} gemalte Bilder zugeordnet, Sprite-Ausschnitt für ${ohne.join(' und ') || 'niemanden'}.`);
 }
 gespraechAssert();
+
+// G8-Guard, auf Skriptebene wie gespraechAssert() und aus demselben Grund: was
+// er prüft, steht in einer Tabelle und nicht in einer Bilddatei.
+//
+// Der Fehler, gegen den er steht, ist stumm. Ein Tippfehler in einem Hexwert,
+// eine Frisur, die es nicht gibt, eine Stufe über dem Rand von CF_ARMOR_FILES —
+// nichts davon wirft. farbBlatt() bekäme dann keinen Ton oder kein Blatt und
+// fiele auf den Naturton zurück, bakeNpcSheet() ließe die Ebene einfach weg.
+// Die Figur stünde im Dorf, hätte einen Namen, ein Schild und ein Gespräch, und
+// nur ihre Farbe wäre wieder die aus dem Grafikpaket. Genau das war der
+// Ausgangspunkt von G8, und es soll nicht durch die Hintertür zurückkommen.
+//
+// Sechs Prüfungen, alle an dem, was ein Eingriff versehentlich verstellt:
+//
+//   1. Die Frisur gibt es. Ein Blatt cfhair_h7_idle existiert nicht, und
+//      blitFarbFrame() kehrt bei einem fehlenden Key still um — die Figur wäre
+//      kahl statt falsch frisiert, und niemand bekäme eine Meldung.
+//   2. Jeder Farbwert ist ein Hexwert. hexHsl() liest mit parseInt() und macht
+//      aus '#hallo' klaglos NaN; die Rechnung liefert dann eine schwarze Fläche.
+//   3. Die Stufen liegen im Bereich der geladenen Blätter.
+//   4. Keine Farbe ohne Ebene. hemdFarbe ohne chest ist ein Wert, den nie
+//      jemand liest — meist die Hälfte einer abgebrochenen Änderung.
+//   5. komposit steht nur bei Wandernden. Bei opt:'fest' ist das Komposit
+//      ohnehin der einzige Weg, das Flag wäre dort eine Behauptung ohne Wirkung.
+//   6. Keine zwei Figuren sehen gleich aus. Frisur, Haarfarbe, Hemdstufe und
+//      Hemdfarbe sind zusammen das, was man auf 24 Pixeln unterscheidet. Zwei
+//      gleiche Vierlinge im selben Dorf sind kein Stil, sondern ein
+//      Kopierfehler — und der wäre im Bild schwerer zu finden als hier.
+const HEXWERT = /^#[0-9a-f]{6}$/i;
+function figurenFarbenAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('G8 Figurenfarben:', m, ...r); };
+  const gesehen = new Map();
+  // Knöterich steht nicht in der Tabelle, trägt aber dasselbe Komposit.
+  const alle = [{key:'knoeterich', opt:'fest', gestalt:KN_GESTALT}, ...DORF_FIGUREN];
+  for(const f of alle){
+    const g = f.gestalt;
+    if(!g){ fehler('Figur ohne Gestalt', f.key); continue; }
+    if(!HAIRS.includes(g.hair)) fehler('Frisur gibt es nicht', f.key, g.hair);
+    for(const feld of ['haarFarbe', 'hemdFarbe', 'hoseFarbe'])
+      if(g[feld] != null && !HEXWERT.test(g[feld])) fehler('kein Hexwert', f.key, feld, g[feld]);
+    if(g.chest != null && (g.chest < 0 || g.chest >= CF_ARMOR_FILES.length)) fehler('Hemdstufe außerhalb', f.key, g.chest);
+    if(g.legs  != null && (g.legs  < 0 || g.legs  >= CF_ARMOR_FILES.length)) fehler('Hosenstufe außerhalb', f.key, g.legs);
+    if(g.feet  != null && (g.feet  < 0 || g.feet  >= CF_BOOT_FILES.length))  fehler('Schuhstufe außerhalb', f.key, g.feet);
+    if(g.hemdFarbe && g.chest == null) fehler('Hemdfarbe ohne Hemd', f.key);
+    if(g.hoseFarbe && g.legs  == null) fehler('Hosenfarbe ohne Hose', f.key);
+    if(f.komposit && f.opt === 'fest') fehler('komposit bei einer festen Figur ist wirkungslos', f.key);
+    const bild = `${g.hair}|${g.haarFarbe || '-'}|${g.chest ?? '-'}|${g.hemdFarbe || '-'}`;
+    if(gesehen.has(bild)) fehler('sieht aus wie', f.key, gesehen.get(bild));
+    else gesehen.set(bild, f.key);
+  }
+  const gemalt = alle.filter(f => f.gestalt && f.gestalt.haarFarbe).length;
+  if(ok) console.log(`G8 Figurenfarben: ${gemalt} von ${alle.length} Figuren tragen die Farben ihres Porträts.`);
+}
+figurenFarbenAssert();
 
 // --- G5: Amtsstube-Panel (Kontext-Taste F am Amt-Gebäude) -------------------
 // Reine Anzeige, kein Kauf (der bleibt showDorf()/dem Schichtende vorbehalten,
@@ -10380,13 +10575,17 @@ function drawBubble(x, y, text1, text2){
 function drawAlter(){
   const x = KN_POS.x, y = KN_POS.y;
   drawShadowEllipse(x, y + 2, 10);
-  const key = 'cfbody_idle', hairKey = `cfhair_${KN_HAAR}_idle`;
+  // G8: ein Blatt statt zwei Ebenen. Vorher wurden Körper und Haar hier einzeln
+  // geblittet, während der Empfang dieselbe Figur als Komposit buk — zwei Wege
+  // zu einem Aussehen, und nur einer davon konnte einen Anzug tragen. Solange
+  // die Assets noch laden, ist das Blatt nicht da und drawSpriteAt() kehrt
+  // still um, wie überall sonst auch.
+  const key = SHEETS[EMPFANG_BLATT] ? EMPFANG_BLATT : 'cfbody_idle';
   const f = animFrame(key, gameT, 7);
   ctx.save();
   ctx.translate(x, y + 9);
   ctx.scale(PLAYER_SC * 0.92, PLAYER_SC * 0.92);
   drawSpriteAt(key, f, '#8a8a8a', 0.82);
-  drawSpriteAt(hairKey, f, '#8a8a8a', 0.82);
   ctx.restore();
 
   // U3: Knoeterich bekommt dasselbe Schild wie die uebrigen Dorffiguren. Er
@@ -14780,12 +14979,16 @@ function empfangSchliessen(){
 
 // Knöterichs Porträt. Er ist die einzige Figur des Ensembles ohne Eintrag in
 // DORF_FIGUREN: er steht nicht im Dorf, er steht im Haus (KN_POS, drawAlter).
-// Sein Bild entsteht deshalb hier auf demselben Weg wie das der fünf Figuren
-// ohne Pack-Blatt, als Held-Komposit, und mit derselben grauen Tönung, die ihn
-// auch in der Welt trägt. Ein zweiter Aufruf ist harmlos, gebacken wird einmal.
-const EMPFANG_BLATT = 'npc_baked_knoeterich';
+// Sein Bild entsteht deshalb auf demselben Weg wie das der Figuren ohne
+// Pack-Blatt, als Held-Komposit aus KN_GESTALT, und mit derselben grauen
+// Tönung, die ihn auch in der Welt trägt.
+//
+// G8: gebacken wird das Blatt seit G8 in bakeAllNpcSheets() zusammen mit den
+// übrigen, weil drawAlter() es jetzt ebenfalls zeichnet. Die Zeile hier bleibt
+// als Netz für den Fall, dass eine Szene vor dem Laden startet — sie ist dann
+// derselbe Aufruf mit demselben Ergebnis, kein zweiter Kanon.
 function szeneSprecherKnoeterich(){
-  if(!SHEETS[EMPFANG_BLATT]) bakeNpcSheet(EMPFANG_BLATT, {hair:KN_HAAR}, 'idle');
+  if(!SHEETS[EMPFANG_BLATT]) bakeNpcSheet(EMPFANG_BLATT, KN_GESTALT, 'idle');
   // Dieselbe Farbe wie drawAlter(), aber schwaecher aufgetragen. Das ist kein
   // zweiter Kanon, sondern dieselbe Aussage in einer anderen Groesse: in der
   // Welt ist die Figur 24 Pixel hoch und braucht 0.82, damit "alt und grau"

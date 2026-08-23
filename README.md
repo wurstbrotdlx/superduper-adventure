@@ -127,6 +127,7 @@ Was die Sitzung dabei ausgibt, ist die Abnahme: jeder Guard meldet seine Zeile �
 | `phase-sz1-szenensystem.md` | Bauabschnitt SZ1: die Szenenmaschine, die E1 und E2 gebaut hatten, ohne sie so zu nennen, wird vom Empfang gelöst. Dazu das Intro aus der Weltgeschichte, neun Blätter, das die fünf Anrisstafeln ersetzt, und die geteilte Wortsperre: das Intro darf die Papiere zeigen, es darf niemanden beim Namen nennen |
 | `phase-sz2-gespraechsszenen.md` | Bauabschnitt SZ2: die Szenen 2, 3 und 4, die ersten, die im laufenden Dienst spielen. Wie die Maschine dabei die Welt anhalten gelernt hat, warum die vierzig Zwischenbescheide ein Blatt mit einem Zähler sind, und zwei Befunde, die kein Guard gefunden hat, sondern erst der Blick aufs Bild |
 | `phase-w11-reich-im-dorf.md` | Bauabschnitt W11: das Reich kommt im Dorf an. Drei neue Figuren aus der Weltgeschichte, davon zwei erst ab einem späteren Akt, zehn Zuwächse bei den bestehenden Figuren, und der Guard, der von jetzt an darauf achtet, dass niemand vom Kaiser in der Vergangenheitsform spricht |
+| `phase-g8-figurenfarben.md` | Bauabschnitt G8: die Dorffiguren tragen im Dorf die Haar- und Kleiderfarben ihres gemalten Porträts. Warum die Frisur bis dahin der Farbe folgte statt umgekehrt, warum acht fertige Paketfiguren dafür weichen, und die Messung, die die Hexwerte im Code an die Bilder bindet |
 | `phase-p1-dienstgestalt.md` | Bauabschnitt P1: die Person des Tages bekommt eine Haarfarbe, die es im Dorf nicht gibt, und der Einstellungsvordruck nimmt zum ersten Mal eine Angabe des Spielers entgegen |
 | `monsterkatalog-stufe-1-10.md` | Die Lieferung: 28 Gegner, 7 Biome, Rechenbasis und Selbstprüfung. Erzeugt von `tools/monsterkatalog.py`, nicht von Hand pflegen. |
 | `monsterkatalog.json` | Derselbe Katalog als reine Daten, gleiche Quelle |
@@ -154,10 +155,13 @@ Drei Regeln, die beim Mitarbeiten nicht optional sind: Jede Phasenüberschrift t
 | `tools/empfang-pruef.mjs` | prüft E1 und E2 im echten Browser: die Vorstellung läuft vor den Tafeln, die schwarze Bühne verdeckt das Dorf und fällt erst mit dem Empfang, der Anriss blättert einzeln, die Szene öffnet mit Porträt und vier Antworten, Esc und Kreuz und Klick daneben prallen ab, der Treppeneffekt schaltet Nachfragen frei, der Vordruck blättert ohne überzulaufen, beide Ausgänge starten den Dienst. 59 Prüfungen, Exit-Code 1 bei der ersten Abweichung |
 | `tools/szene-pruef.mjs` | prüft SZ1 und SZ2 im echten Browser: jede eingetragene Szene hat Sprecher, Knoten und ein Ende, jeder Knoten ist vom Start aus erreichbar (Fixpunktlauf über den Graphen, weil der Treppeneffekt sich nicht ablesen lässt), die Wortsperre hängt an der Szene, der Sprecherwechsel tauscht Porträt und Kopfzeile, jedes Introblatt steht auf 390x844 im Bild, und seit SZ2 wird Szene 2 in der laufenden Schicht wirklich gespielt: sie wird fällig, sie hält die Welt an, sie gibt sie wieder frei, sie setzt ihren Merker, sie fällt kein zweites Mal, und während sie läuft steht keine Sprechblase im Dorf. 32 Prüfungen, Exit-Code 1 bei der ersten Abweichung |
 | `tools/reich-pruef.mjs` | prüft W11 im echten Browser: die drei neuen Figuren erscheinen zum richtigen Akt und vorher nicht, die zehn Zuwachs-Blöcke schalten im richtigen Akt frei, kein Grundzeilen-Kreislauf läuft in eine leere Sprechblase, Bramsches Tabelle ist doppelfrei, und kein neuer Name sprengt die Kopfzeile. 35 Prüfungen, Exit-Code 1 bei der ersten Abweichung |
+| `tools/portraet-farben.py` | misst die Haar- und Kleiderfarben der Figurenporträts aus `assets/portraets/` und gibt die Hexwerte aus, die in `DORF_FIGUREN` stehen. `--breit` zeigt die häufigsten Einzelfarben dazu, `--pruef` liest die Werte aus `index.html` zurück und hält sie gegen die Messung. Braucht Pillow, keinen Server |
+| `tools/figurenfarben-messlauf.mjs` | prüft G8 im echten Browser. Teil 1 schickt einen selbstgebauten Graukeil durch `farbBlatt()` und misst nach, wo das Helligkeitsband liegt, ob der Farbton ankommt und ob die Figurenblätter den Cache in Ruhe lassen — ohne Grafikpaket. Teil 2 misst an den wirklich gebackenen Blättern, ob die Porträtfarben im Sprite ankommen, und entfällt mit einer Zeile, wenn `assets/cf/` nicht danebenliegt |
 | `tools/menue-pruef.mjs` | prüft die sieben Panels im echten Browser: Klick daneben schließt, ohne anzugreifen; HUD und Daumenfächer behalten ihre Wirkung; `Esc` bleibt eine Ebene je Druck. Stellt fest statt zu messen, Exit-Code 1 bei der ersten Abweichung. |
 
 ```bash
 python3 tools/monsterkatalog.py
+python3 tools/portraet-farben.py --pruef # braucht keinen Server, aber Pillow
 python3 serve.py &                       # der Messlauf braucht das Spiel im Browser
 node tools/monster-messlauf.mjs
 node tools/zauber-messlauf.mjs
@@ -169,6 +173,7 @@ node tools/gespraech-pruef.mjs
 node tools/empfang-pruef.mjs
 node tools/reich-pruef.mjs
 node tools/szene-pruef.mjs
+node tools/figurenfarben-messlauf.mjs    # Teil 2 braucht assets/cf/
 node tools/ui-zellen.mjs --pruef         # braucht keinen Server, aber Graphics/
 ```
 

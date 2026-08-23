@@ -30,6 +30,22 @@ Ordner nicht.
 und ist in `assets/figuren/` richtig; hier zählt die Zuordnung zu `DORF_FIGUREN`
 in `index.html`, denn dort wird über `n.figur.key` gesucht.
 
+## Seit G8 hängt noch etwas daran
+
+Diese dreizehn Bilder sind nicht mehr nur das, was die Gesprächstafel zeigt. Seit
+G8 sind sie auch die Quelle für die Haar- und Kleiderfarben der Figuren im Dorf:
+`python3 tools/portraet-farben.py` misst sie hier heraus, und die Hexwerte stehen
+als `haarFarbe` und `hemdFarbe` in `DORF_FIGUREN`.
+
+Wer ein Motiv neu laufen lässt, ändert damit auch das Sprite. Der Abgleich
+zwischen beiden ist eine Zeile:
+
+```bash
+python3 tools/portraet-farben.py --pruef
+```
+
+Einzelheiten in `phase-g8-figurenfarben.md`.
+
 ## Wer fehlt
 
 **Lott und Pahl** teilen sich ein Doppelporträt (Motiv 11), das sich nicht in
