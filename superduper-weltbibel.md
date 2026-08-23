@@ -507,6 +507,37 @@ Kein Auftritt. Nie. Es gibt eine Tür, ein Schild mit der Aufschrift **IM TERMIN
 
 ---
 
+### Zuwachs F1: siebzehn neue Tatsachen *(23.08.2026)*
+
+Ausgeführt mit Bauabschnitt F1, ausformuliert in `figuren-leben.md`, gebaut in
+`phase-f1-figurenleben.md`. Sie stehen hier gesammelt und nicht je Figur verteilt, weil sie
+aus einer Lieferung stammen und das Kapitel sonst auf das Doppelte wächst. **Je Figur genau
+eine, mehr war nicht zugelassen.**
+
+* **Knöterich:** Die Kladde beginnt auf Seite zwei. Er hat die erste freigelassen, für den Eintrag, der dann noch nachzutragen wäre. Er blättert nie zurück.
+* **Zwirn:** Er kauft das Konfetti seit elf Jahren privat. Ohne Genehmigung kein Haushaltstitel. Im Keller stehen elf Kisten, zehn davon leer und beschriftet.
+* **Bramsche:** Sie führt ein Verzeichnis der nicht gestellten Anträge. Es hat mehr Einträge als das Eingangsbuch.
+* **Zapf:** Auf der Rückseite des Provisorium-Schildes stehen drei Daten in seiner Schrift, gezeichnet mit `V. u. g.`. Was das heißt, weiß er nicht mehr.
+* **Lisbeth:** Alle sechs Praktikumsberichte tragen denselben Titel: „Bericht über das Praktikumsjahr, vorläufig."
+* **Trepp:** Die Übergabe des Sacks hat eine Formel aus fünf Wörtern. Der Siebte hat niemanden mehr, dem er sie sagen könnte.
+* **Nörgel:** Die Krawatte ist 972 ordnungsgemäß beantragt und ausgegeben worden und steht bis heute in Pommers Bestand.
+* **Milb:** Seine Skala hat sechs Stufen, weil der Vordruck sechs Zeilen hat. Die siebte steht auf der Rückseite. **Gesperrt bis Langvorgang 7.**
+* **Pommer:** Er schreibt abends Antragsentwürfe für Fälle, die nie eingetreten sind. **Gesperrt bis Langvorgang 12.**
+* **Fass:** Oben im Regal steht ein Krug, aus dem nie jemand getrunken hat. Der Großvater sagte, einer werde gebraucht, wenn es so weit ist.
+* **Lott und Pahl:** Sie haben die Steine in Hintermühl sortiert, an ihrem letzten Tag, ohne Auftrag. Die Chronik nennt die Sortierung und lässt offen, wer sie vorgenommen hat.
+* **Nieselbeck:** Die zweite Tabelle ist seit dreiundvierzig Jahren leer. Nur die Kopfzeile wird jedes Jahr nachgezogen, weil Tinte verblasst.
+* **Umlauf:** Sie hat das Ankommen einmal geübt, eine Stunde lang in Hochablage, und es nicht ausgehalten.
+* **Vorblatt:** Der Stempel ist sein zweiter. Der erste liegt durchgeschrieben im Fach, weil die Ausmusterung eine Entscheidung wäre.
+* **Sturz:** Sie führt am Hof des Fürsten ein Eingangsbuch. Es ist die einzige vollständige Akte über Ablage V.
+* **Fürst Nachtrag:** Jeder seiner Briefe beginnt mit „Ihr Schreiben ging hier ein." Es ist der Satz, den er selbst nie bekommen hat.
+* **Anlage 3:** „Anlage 3" ist kein Name, sondern eine Fundstelle. Bramsche ruft ihn nicht, sie schlägt ihn nach.
+
+**Und ein laufender Gag dazu**, die Kurzform, siehe Kapitel 13 und die Abkürzungstabelle in
+`figuren-leben.md`: zwölf Kürzel, vier davon aus dem Bestand, eines davon leer, weil der
+Vorgang 1 nie eines bekommen hat.
+
+---
+
 ## 9. Der Hauptvorgang, fünf Akte
 
 Aufgehängt am bestehenden **Jahresgespräch alle 10 Schichten** (Phase 4). Null neue Systeme. Jeder Akt bringt zusätzlich zum bestehenden Jahresbonus eine Erkenntnis.
