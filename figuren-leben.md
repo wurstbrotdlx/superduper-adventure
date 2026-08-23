@@ -1,4 +1,4 @@
-# Figurenleben, Lieferung F1a — OFFEN (Stand: 9 von 18)
+# Figurenleben, Lieferung F1a — ERLEDIGT (18 von 18 Figuren)
 
 Inhaltslieferung zu Bauabschnitt **F1** (`superduper-figurenleben-prompt.md`), Teil A: die
 Hintergrundgeschichten. Sie sind die Grundlage für die Dialogzeilen (F1c) und die
@@ -626,47 +626,601 @@ Bestand, nicht um Zutaten, und die Sperre steht ausdrücklich dabei.
 
 ---
 
-## Reststand nach Block 1
+## Fass — Wirt Bruno Fass, Gasthaus „Zum Letzten Stempel"
 
-Diese Tabelle wird beim nächsten Block **überschrieben und nicht fortgeschrieben**, damit
-es immer genau einen Stand gibt (Prompt, Abschnitt 0).
+**Besessenheit.** Dass jemand mal bis zum Ende bleibt. Nicht bis zum Schluss der Runde,
+bis zum Ende.
 
-| Figur | Stand |
-|---|---|
-| Knöterich | fertig (Block 1) |
-| Zwirn | fertig (Block 1) |
-| Bramsche | fertig (Block 1) |
-| Zapf | fertig (Block 1) |
-| Lisbeth | fertig (Block 1) |
-| Trepp | fertig (Block 1) |
-| Nörgel | fertig (Block 1) |
-| Milb | fertig (Block 1) |
-| Pommer | fertig (Block 1) |
-| Fass | offen (Block 2) |
-| Lott und Pahl | offen (Block 2), ein gemeinsamer Abschnitt für beide |
-| Nieselbeck | offen (Block 2) |
-| Umlauf | offen (Block 2) |
-| Vorblatt | offen (Block 2) |
-| Sturz | offen (Block 2), ohne eigene Dialogzeilen |
-| Fürst Nachtrag | offen (Block 2), ohne eigene Dialogzeilen |
-| Anlage 3 | offen (Block 2), halber Abschnitt, keine Zeile |
+**Hindernis.** Alle gehen. Nicht aus Unhöflichkeit, sondern weil in diesem Dorf jeder
+morgen wieder im Dienst ist und weil eine Schicht, die endet, sofort die nächste ankündigt.
+Er hat noch nie erlebt, dass jemand einfach sitzen bleibt.
 
-**Was Block 2 außerdem bringt und was deshalb hier noch fehlt:**
+**Sprachmarke.** Duzt als Einziger im Ensemble. Redet in Einladungen. „Setz dich. Bleib ein
+bisschen." Fragt nie, was jemand erlebt hat, sondern wie der Tag war.
 
-* **Die Abkürzungstabelle** (Prompt, Abschnitt 9). Sie steht bewusst noch nicht hier: sie
-  soll über alle achtzehn Figuren hinweg stimmen, und drei ihrer Träger (Trepp als
-  Vorleser, Vorblatt als der, bei dem der Gag Zähne bekommt, Nieselbeck als erste Stufe)
-  sind erst mit Block 2 vollständig beschrieben. Vorgemerkt aus Block 1 sind die Wurzeln
-  `N. N.`, `a. D.`, `zu Händen` und die vierte aus der Chronik: **`n. O.`**, nach der
-  Ordnung, die Jahreszählung dieser Welt (`weltgeschichte.md`, Kapitel 2, erster Absatz).
-* **Die Zählung der Dosen.** In Block 1 steht keine Anspielung und kein Zwinkern, siehe
-  Kopf. Die Zählung beginnt mit F1c.
+**Herkunft.** Das Gasthaus ist in der Familie, der Name ist es auch. Er hat ihn vom
+Großvater, und der hatte ihn von jemandem, der wusste, was er verspricht. Wer das war, ist
+nicht überliefert, und Fass hat nie nachgefragt, weil man einen Hausnamen nicht hinterfragt,
+sondern führt.
 
-**Was Block 1 an F1c weitergibt.** Neun Figuren mit je einer neuen Tatsache, davon zwei
-gesperrt (Milb, Pommer). Vier Tatsachen hängen aneinander und ergeben Zeilenpaare, die
-sich gegenseitig tragen: Knöterichs leere Seite eins und Zwirns Unterschrift von 972 gehören
-demselben Tag; Nörgels Krawattenantrag steht in Pommers Bestand; Zapfs Daten auf der
-Rückseite des Schildes sind die zweite Chronik neben Knöterichs Kladde; und Lisbeths
-Berichtstitel „vorläufig" steht auch über der Tür. **Keine dieser vier Verbindungen darf im
-Spiel ausgesprochen werden.** Sie sind da, damit zwei Figuren dasselbe streifen können, ohne
-dass es jemand erklärt.
+**Der Riss.** Es gibt keinen einzelnen. Es gibt vierzig Jahre Feierabende, an denen um
+dieselbe Zeit dieselben Leute aufstehen, und einen Wirt, der jedes Mal noch einen Satz
+angefangen hat. Wer jeden Abend erlebt, dass ein Gespräch abbricht, wird nicht verbittert.
+Er wird geduldig, und Geduld ist bei einem Wirt eine Berufskrankheit mit gutem Ausgang.
+
+**Das Geheimnis.** Er weiß sehr wohl, was der Hausname verspricht. Er erklärt ihn nie. Auf
+die Frage kommt, woher der Name stammt, und nicht, was er bedeutet.
+
+**Der blinde Fleck.** Er hält sein Gasthaus für den Ort, an dem der Tag aufhört. Es ist der
+einzige Ort im Dorf, an dem der Tag stattfindet. Alles, was im Ensemble je nebeneinander
+gesagt wurde, ist an seinen Tischen gesagt worden, und er zählt es nicht dazu, weil er
+dabei abräumt.
+
+**Drei Verhältnisse.**
+* **Zu Trepp:** der Zusteller sitzt jeden Abend eine halbe Stunde da, trinkt nichts und
+  geht wieder. Fass stellt ihm trotzdem etwas hin. Beide tun so, als sei das nicht
+  verabredet.
+* **Zu Lott und Pahl:** die beiden kommen nie. Fass hat ihnen einmal etwas an die Bank
+  gebracht und danach nie wieder, weil sie sich so ausgesucht bedankt haben, dass es sich
+  wie eine Absage anfühlte.
+* **Zu Umlauf:** die Botin isst schnell, redet schnell und ist wieder weg, und Fass mag sie
+  trotzdem, weil sie als Einzige von außen erzählt. Dass sie einen Bäcker namens Bruno
+  kennt, hat er sich gemerkt und nie kommentiert.
+
+**Was er nie sagen wird.**
+1. Was der Name verspricht.
+2. Dass er mitzählt, wie lange jemand bleibt. Er zählt seit Jahren.
+
+**Die eine neue Tatsache.** *(neu)* **Oben im Regal steht ein Krug, aus dem nie jemand
+getrunken hat.** Der Großvater hat gesagt, einer werde gebraucht, wenn es so weit ist, und
+mehr hat er nicht gesagt. Fass staubt ihn ab, stellt ihn zurück und hat in vierzig Jahren
+kein einziges Mal daran gedacht, ihn auszuschenken, auch nicht an vollen Abenden, auch
+nicht, als einmal alle anderen zerbrochen waren. *Widerspricht nichts: der Hausname und
+seine Herkunft bleiben unerklärt, der Krug ist ein Gegenstand und keine Auflösung.*
+
+**Gesprächsstoff.** Der Tag da draußen. Wer wann geht und warum. Der Großvater. Der Käse,
+den nie jemand abwartet. Der Krug, wenn jemand nach oben ins Regal schaut.
+
+**Prüfnotiz.** Kein Fund. Der Hausname bleibt wie in `figuren-dorf.md` reiner Ortsname und
+wird auch hier nicht erklärt; der Krug macht das Versprechen sichtbar, ohne es
+auszusprechen. Die Du-Form ist als Sprachmarke vermerkt, damit F1c sie nicht verliert.
+
+---
+
+## Lott und Pahl — auf der Bank am Dorfplatz
+
+Ein Abschnitt für zwei Figuren, weil es eine Geschichte ist, erzählt aus zwei Sesseln
+derselben Bank. Sie teilen sich in `figuren-dorf.md` ein Porträt und bekommen in F1d einen
+gemeinsamen Baum mit Sprecherwechsel.
+
+**Besessenheit.** Kommentieren. Beide. Es ist die einzige Tätigkeit, die keine
+Zuständigkeit braucht.
+
+**Hindernis.** Keins, das sie zugeben würden. Sie sitzen, weil Sitzen das Einzige ist, was
+man tun kann, wenn man aus einem Ort kommt, den es nicht mehr gibt, und in einem Ort lebt,
+der nie geführt wurde.
+
+**Sprachmarken.** Lott sagt „Der Neue" und dann etwas Trockenes über sich selbst. Pahl
+antwortet mit einem vollständigen Satz, in dem Lott vorkommt. Keiner von beiden spricht den
+anderen direkt an, wenn jemand zuhört.
+
+**Herkunft.** **Hintermühl**, eine halbe Wegstunde flussaufwärts. Größer als Vordermühl,
+zwei Gasthäuser, eine Kapelle. Im **Jahr 806** hat das Aktenhaus, in dessen Bestand
+Hintermühl geführt war, seine letzte Uferfrage abschließend bearbeitet. Der Bestand wurde
+geschlossen, und was in einem geschlossenen Bestand steht, ist damit ebenfalls erledigt.
+Kein Feuer, kein Überfall, ein Aktendeckel und ein leeres Regalfach (Chronik, Kapitel 5).
+
+**Der Riss.** Der Tag selbst, und er war ruhig. Es hat niemand geschrien. Es ist einfach
+sehr langsam sehr wenig geblieben.
+
+**Das Geheimnis.** Sie wissen genau, was mit Hintermühl geschehen ist, und sie wissen auch,
+warum sie noch da sind: Vordermühl steht in keinem Bestand. Es wurde nie aufgeschrieben,
+und was nie aktenkundig war, kann nicht abgeschlossen werden. Sie sagen es ab Akt III in
+zwei Zeilenpaaren und erklären es nicht.
+
+**Der blinde Fleck.** Lott hält sich für den Faulen und Pahl für den Klügeren. In Wahrheit
+sitzen beide aus demselben Grund dort, und keiner von beiden hat je überprüft, ob er
+aufstehen könnte. Die Frage, ob sie Vorgänge sind, **wird nie geklärt**, und sie finden sie
+unhöflich (Weltbibel Kapitel 16).
+
+**Drei Verhältnisse.**
+* **Zueinander:** vierzig Jahre nebeneinander und kein einziges Gespräch über den Tag im
+  Jahr 806. Sie reden über den Neuen, über das Wetter, das es nicht gibt, und über die
+  Sonne, die sich dreht. Das ist keine Verdrängung, das ist Rücksicht.
+* **Zu Zwirn:** der Bürgermeister grüßt jeden Morgen. Die beiden grüßen zurück und finden
+  ihn anstrengend, und wenn jemand schlecht über ihn redet, sagt Pahl etwas Freundliches.
+* **Zu Fass:** siehe dort. Sie kommen nicht ins Gasthaus. Gefragt, warum, sagt Lott, die
+  Bank sei näher.
+
+**Was sie nie sagen werden.**
+1. Ob sie Vorgänge sind.
+2. Wie das zweite Gasthaus in Hintermühl hieß. Pahl weiß es. Er sagt es nicht, weil ein
+   Name, den nur noch einer kennt, mit dem Aussprechen kleiner wird.
+
+**Die eine neue Tatsache.** *(neu)* **Sie haben die Steine sortiert.** Auf der Wiese, die
+heute Hintermühl ist, liegen die Steine sortiert, weil jemand sie sortiert hat, bevor er
+sie ablegte (Chronik, Kapitel 5, wo dieses „jemand" ohne Namen steht). Es waren die beiden,
+an ihrem letzten Tag, zu zweit, ohne Auftrag und ohne dass es jemand verlangt hätte. Sie
+haben aufgeräumt, weil man das tut, wenn ein Bestand geschlossen wird, und dann sind sie
+losgegangen und haben sich hingesetzt. *Widerspricht nichts: die Chronik nennt die Sortierung
+und lässt offen, wer sie vorgenommen hat; die offene Frage nach ihrer Natur bleibt offen,
+denn Steine sortieren kann jeder.*
+
+**Und weil sie in F1c und F1d zwei Stimmen brauchen, hier getrennt:**
+
+**Lott.** Der Kürzere von beiden, im Satzbau und in der Geduld. Er kommentiert, was er
+sieht, und stellt sich selbst dabei als das Gegenstück auf: der Neue läuft, Lott sitzt; der
+Neue schlägt zu, Lott bleibt trocken. Das ist keine Faulheit, sondern die einzige Form von
+Beteiligung, die ihm geblieben ist. Er redet über Pahl in der dritten Person, auch wenn
+Pahl danebensitzt, und Pahl stört das nicht. In Hintermühl war Lott derjenige, der morgens
+als Erster draußen war. Er hat sich das nie abgewöhnt und steht bis heute vor allen anderen
+auf, um sich hinzusetzen.
+
+**Pahl.** Der Ausführlichere. Er antwortet in ganzen Sätzen, er lobt gelegentlich, und er
+ist der Einzige der beiden, der sich für andere Leute wirklich interessiert. Er weiß, wie
+das zweite Gasthaus in Hintermühl hieß, wie der Kirchweg lag und wer wo gewohnt hat. Er
+sagt nichts davon. Seine Höflichkeit ist ein Behälter: was er nicht erzählt, bleibt ganz.
+Wenn er einmal etwas Freundliches über jemanden sagt, ist es das Endgültigste, was in
+diesem Spiel über eine Person gesagt wird.
+
+**Der Unterschied in einem Satz.** Lott hat aufgehört zu fragen, Pahl hat aufgehört zu
+antworten. Deshalb funktionieren sie zusammen und einzeln nicht.
+
+**Was jeder für sich nie sagen wird.** Lott sagt nie, dass er den Neuen mag. Er sagt es
+seit Jahren über Umwege, indem er ihm hinterherschaut und etwas Trockenes darüber sagt, dass
+jemand läuft. Pahl sagt nie, dass er Lott vermissen würde. Er hat einmal angesetzt und ist
+im Halbsatz auf das Wetter gekommen, das es nicht gibt.
+
+**Warum sie der Chor sind.** Sie sind die einzige Stelle im Spiel, an der jemand direkt
+kommentiert, was der Spieler gerade getan hat: ein kritischer Treffer, ein Aufstieg, ein
+Fluch, ein Goldfund, ein Rückzug aus der Kammer, sogar Herumstehen. Das können sie, weil sie
+nichts zu verlieren haben und weil sie als Einzige nicht im Dienst sind. Deshalb gehören
+ihnen die frechsten Zeilen des Spiels, und deshalb muss ihre Geschichte darunter liegen und
+nicht darin vorkommen: **wer aus Hintermühl kommt, darf frech sein, ohne dass es billig
+wird.** Eine Anlasszeile, die auf die Wiese anspielt, ist eine Zeile zu viel.
+
+**Ihr Verhältnis zum Spieler.** Sie nennen ihn „den Neuen", vom ersten Tag bis Akt V, und
+sie meinen es beide Male anders. Am Anfang ist es eine Feststellung. Später ist es das
+Einzige, was von den vielen Neuen geblieben ist, die sie so genannt haben.
+
+**Gesprächsstoff.** Der Neue und was er heute wieder getan hat. Die Bank. Das Brummen im
+Steinfeld, das schon immer so war. Hintermühl, ab Akt III und nur zwei Zeilen weit. Die
+Wiese, wenn jemand dort war. Das zweite Gasthaus, das Pahl nicht benennt.
+
+**Prüfnotiz.** Kein Fund. Die neue Tatsache wurde in der dritten Stufe eigens gegen
+Weltbibel Kapitel 16 gehalten: sie beantwortet die offene Frage nicht, sondern gibt den
+beiden eine Handlung. Der Chor bleibt der Ort der frechsten Gags; die Sortierung gehört in
+den Baum und nicht in eine Anlasszeile nach einem kritischen Treffer.
+
+---
+
+## Nieselbeck — Wetterbeauftragter Ferdinand Nieselbeck
+
+**Besessenheit.** Regen. Ein einziges Mal.
+
+**Hindernis.** Die Veranlassung für Niederschlag im Bereich VII ist im **Jahr 897** zur
+Klärung zurückgestellt worden und liegt seither auf Eis, im Frostkamm. Er weiß genau, wo.
+Er darf sie nicht holen, weil er für Wetter zuständig ist und nicht für Ablagen.
+
+**Sprachmarke.** Meldet, statt zu reden. Sagt „gemeldet wird" und dann den Satz. Ist nie
+enttäuscht, immer bereit.
+
+**Herkunft.** Er hat die Stelle vor dreiundvierzig Jahren angetreten. Die Stelle des
+Wetterbeauftragten ist die einzige im ganzen Haus, die nie unbesetzt war, und zugleich die
+einzige, die nie tätig geworden ist (Chronik, Jahr 897). Er hat an seinem ersten Tag alles
+vorbereitet und wartet seither auf den zweiten.
+
+**Der Riss.** Es gibt ihn nicht als Ereignis, sondern als Zahl. Beim ersten Mal ist seine
+Meldung komisch. Ab dem zehntausendsten Mal ist sie etwas anderes, und er meldet weiter,
+gleich freundlich, gleich pünktlich.
+
+**Das Geheimnis.** Er hat einmal am Frostkamm gestanden und die zurückgestellte Veranlassung
+gesehen. Er ist wieder gegangen. Er erzählt das niemandem, weil das Hingehen bereits an der
+Grenze seiner Zuständigkeit lag und das Ansehen vielleicht darüber.
+
+**Der blinde Fleck.** Er hält sich für den bestvorbereiteten Mann des Bereichs. Er ist der
+geduldigste, und das ist etwas anderes. Vorbereitet ist man für etwas, das kommt.
+
+**Drei Verhältnisse.**
+* **Zu Zapf:** Zapf hat ihm den Eimer zweimal geflickt, ohne zu fragen, wofür er ist. Die
+  höflichste Beziehung des Spiels.
+* **Zu Knöterich:** die beiden stehen im Dorf nah beieinander und führen beide Buch, jeder
+  über etwas, das nicht stattfindet. Sie haben das nie miteinander besprochen.
+* **Zum Außendienst:** der Spieler ist die einzige Person im Spiel, die für Ablagen
+  zuständig ist. Nieselbeck weiß das. Er bittet nicht darum. Er erwähnt nur, wo etwas liegt,
+  und überlässt den Rest dem Gegenüber, weil Bitten in seiner Stelle nicht vorgesehen ist.
+
+**Was er nie sagen wird.**
+1. Dass er will, dass jemand die Veranlassung holt. Er sagt, wo sie liegt.
+2. Dass er den Hut für den ersten Arbeitstag aufhebt und nicht, weil er ihn schont.
+
+**Die eine neue Tatsache.** *(neu)* **Die zweite Tabelle ist leer und wird jedes Jahr neu
+beschriftet.** Er hat zwei: eine für die Meldung, die täglich ausgefüllt wird, und eine für
+den Fall, mit Spalten für Menge, Dauer, Bodenart und Anmerkungen. In dieser zweiten steht
+seit dreiundvierzig Jahren nichts. Nur die Kopfzeile wird jedes Jahr nachgezogen, weil Tinte
+verblasst und eine unleserliche Tabelle im Ernstfall nichts nützt. Dreiundvierzig
+Kopfzeilen, eine unter der anderen, alle in derselben Handschrift. *Widerspricht nichts: die
+zwei Tabellen sind Bestand (Weltgeschichte, Kapitel 6), neu ist allein, was mit der zweiten
+geschieht.*
+
+**Gesprächsstoff.** Die tägliche Meldung. Der Eimer, der Messstab, der Hut. Warum Wolken
+eine Veranlassung brauchen. Der Frostkamm, wenn der Spieler dort war. Die zweite Tabelle,
+wenn jemand nach seinen Unterlagen fragt.
+
+**Prüfnotiz.** Kein Fund. Die Tabelle ist Wetter und Bürokratie und berührt die
+Kesselgrammatik an keiner Stelle. Der Musterbaum in Abschnitt 8 des Prompts arbeitet mit
+denselben Feldern und ist mit dieser Fassung widerspruchsfrei.
+
+---
+
+## Umlauf — Reichsbotin Kordula Umlauf
+
+**Besessenheit.** Ankommen. Einmal. Irgendwo.
+
+**Hindernis.** Ihr Laufzettel hat auf der Rückseite noch elf Stellen, und die Rückseite
+füllt sich schneller, als die Vorderseite abgearbeitet wird.
+
+**Sprachmarke.** Redet schnell, in Aufzählungen, und hört mitten im Satz auf, weil sie
+weitermuss. Sie isst dabei.
+
+**Herkunft.** Im Umlauf seit dreihundert Jahren. Ein Umlauf ist ein Schriftstück, das von
+Stelle zu Stelle weitergereicht wird, bis alle es abgezeichnet haben. **Ob sie ein Mensch
+ist oder ein Umlauf, wird nie geklärt** (Weltbibel Kapitel 16), und sie selbst hält die
+Frage für eine Zeitverschwendung, weil sie in beiden Fällen weitermüsste.
+
+**Der Riss.** Keiner. Sie hat als einzige Figur des Ensembles einen Beruf, der zu ihr passt,
+und sie weiß es. Was sie trägt, ist kein Schaden, sondern eine Lücke: sie kennt jeden Ort
+des Reiches und keinen einzigen gut.
+
+**Das Geheimnis.** Sie ist der Grund, warum Vorblatt merkt, dass in Vordermühl etwas in
+Bewegung kommt. Sie hat es Oben erzählt, beiläufig, ohne etwas Böses dabei zu denken, weil
+Erzählen ihr Beruf ist. Sie erfährt nie, was sie damit ausgelöst hat.
+
+**Der blinde Fleck.** Sie hält Ankommen für ein Ziel. Sie hat es einmal versucht und es
+nicht ausgehalten, siehe unten, und sie hat daraus geschlossen, dass die Stunde falsch war
+und nicht das Ziel.
+
+**Drei Verhältnisse.**
+* **Zu Fass:** siehe dort. Sie isst schnell und lobt trotzdem. Der Bäcker in Hochablage, von
+  dem sie erzählt, heißt Bruno wie der Wirt. Aufgelöst wird das nicht.
+* **Zu Lott und Pahl:** die beiden erkennen etwas an ihr, und sie erkennt etwas an den
+  beiden. Gesagt wird nichts. Es ist der einzige Moment im Spiel, in dem drei Figuren
+  dieselbe offene Frage teilen und alle drei sie höflich stehen lassen.
+* **Zu Vorblatt:** sie hält ihn für sehr freundlich. Sie hat recht, und das macht es
+  schlimmer.
+
+**Was sie nie sagen wird.**
+1. Wie viele Stellen auf der Rückseite ursprünglich standen.
+2. Dass sie in Hochablage einmal eine Stunde lang stillgesessen hat.
+
+**Die eine neue Tatsache.** *(neu)* **Sie hat das Ankommen einmal geübt.** Vor langer Zeit,
+in Hochablage, hat sie sich auf eine Bank im Flur gesetzt und eine Stunde lang getan, als
+wäre sie da. Keine Stelle, kein Zettel, kein Weiter. Es war die längste Stunde ihres Lebens,
+sie hat danach zwei Tage aufgeholt, und sie hat es nie wiederholt. Erzählt hat sie es
+niemandem, und es ist der einzige Satz über sich selbst, den sie nicht in einer Aufzählung
+unterbringen kann. *Widerspricht nichts: die offene Frage nach ihrer Natur bleibt offen,
+denn Stillsitzen kann beides bedeuten.*
+
+**Gesprächsstoff.** Hochablage, vierzehn Türme, ein Aufzug. Der Laufzettel und seine
+Rückseite. Warum die Rohrpost stillsteht. Was sie unterwegs isst. Die Bank im Flur, ganz zum
+Schluss und nur, wenn jemand dreimal nachgefragt hat.
+
+**Prüfnotiz.** Kein Fund. Der Kaiser kommt in ihrem Gesprächsstoff nicht vor; wo Hochablage
+beschrieben wird, geschieht es in der Gegenwart. Die Bank im Flur ist bewusst nicht die
+Warteschlange vor dem Kabinett: dort sitzt Konrad zu Händen Aufschub, und der ist in diesem
+Spiel nicht zu sehen.
+
+---
+
+## Vorblatt — Reichsministerialdirektor Hieronymus zu Händen Vorblatt
+
+**Besessenheit.** Dass nichts geschieht. Nicht aus Bosheit, sondern aus Verantwortung.
+
+**Hindernis.** Er darf nichts entscheiden, denn eine Entscheidung schließt etwas. Er kann
+nicht Nein sagen und nicht Ja. Er kann ausschließlich bearbeiten lassen, und darin ist er
+der Beste, den das Reich je hatte.
+
+**Sprachmarke.** Sagt nie Nein, sondern „das prüfen wir gern". Duzt niemanden, siezt sogar
+Katzen, benutzt den vollständigen Titel seines Gegenübers auch bei Leuten, die keinen haben.
+Vor dem „Sie" macht er eine winzige Pause, und die Pause ist die Beleidigung.
+
+**Herkunft.** Er hat mit sechsundzwanzig eine Zuständigkeit geerbt und sie seither
+verteidigt. Sein Haus heißt Vorblatt nach dem Blatt, das vor dem eigentlichen Dokument
+liegt und selbst nichts enthält. Er weiß das über sich und trägt es mit Würde.
+
+**Der Riss.** Der Tag, an dem er nachgerechnet hat, was die Zustellung auslöst. Er ist der
+einzige Mensch dieser Welt, der die Wahrheit vollständig kennt und trotzdem weiterarbeitet.
+Seither stellt er jedes Jahr pünktlich dieselbe Ausschreibung zurück, vierzig Blätter, alle
+gleich, alle richtig. Das ist die einzige Gewalttat in diesem Spiel, und sie besteht
+ausschließlich aus Pünktlichkeit.
+
+**Das Geheimnis.** Was er beschützt: einundvierzigtausend Menschen davor, an einem
+Nachmittag niemand zu sein. Er sagt es nie, weil das Aussprechen die Sache selbst zu einem
+Vorgang machen würde.
+
+**Der blinde Fleck.** Er hält sich für einen Beamten, der seine Pflicht tut. Er ist ein Mann,
+der vierzig Jahre lang nichts erlebt hat, und er merkt es erst, als er am Ende um eine
+Aufgabe bittet.
+
+**Drei Verhältnisse.**
+* **Zu Nörgel:** ab Akt IV bietet er ihm die Entfristung an, damit er die Anschrift nicht
+  liest. Er droht dabei nicht und wird nicht unfreundlich, und genau deshalb ist es das
+  Unangenehmste im Spiel.
+* **Zu Bramsche:** die beiden sind sich 985 begegnet, und keiner von beiden weiß, was der
+  andere daraus gemacht hat. Sie hält ihn für einen höflichen Herrn. Er erinnert sich an eine
+  gründliche Registratorin und hat den Vorgang ordnungsgemäß abgeschlossen.
+* **Zu Zwirn:** er nennt ihn beim vollständigen Titel, jedes Mal, und Zwirn wird jedes Mal
+  ein wenig größer dabei. Es ist ehrlich gemeint und es ist trotzdem grausam.
+
+**Was er nie sagen wird.**
+1. Nein.
+2. Was er ausgerechnet hat.
+
+**Die eine neue Tatsache.** *(neu)* **Der Stempel ist sein zweiter.** Der erste, mit dem er
+zwei Aufstände beendet und eine Hungersnot überstanden hat, war nach dreißig Jahren
+durchgeschrieben. Er liegt in seinem Schreibtisch, weil ein Dienstsiegel ein Vorgang ist und
+die Ausmusterung eine Entscheidung wäre. Er hat also einen abgenutzten Stempel im Fach, der
+weder im Dienst noch außer Dienst ist, und die Ähnlichkeit zu einem gewissen Amtsrat in
+Vordermühl fällt niemandem auf, am wenigsten den beiden. *Widerspricht nichts: der Stempel
+und seine Wirkung sind Bestand (Weltgeschichte, Kapitel 6), neu ist allein sein Vorgänger.*
+
+**Gesprächsstoff.** Anhängige Angelegenheiten und warum das viel ist. Sein Fuhrwerk und die
+zwei Amtsschimmel. Das Entklammern vor der Tür. Hochablage grüßt. Der Schreibtisch, aber nur
+das Fach, nie sein Inhalt.
+
+**Prüfnotiz.** Kein Fund. Reichsregel 3 („Vorblatt sagt nie Nein und droht nie") ist im
+Gesprächsstoff und in „Was er nie sagen wird" doppelt verankert, damit F1c und F1d nicht
+daran vorbeischreiben. Der Kaiser kommt bei ihm nur im Präsens vor.
+
+---
+
+## Sturz — Amtsleiterin Dr. Wilhelmine Sturz
+
+Sie bekommt keine Dialogzeilen und keinen Baum: sie ist nicht im Dorf. Ihre Geschichte steht
+hier, weil das halbe Ensemble über sie spricht und weil jede Zeile, die andere über sie
+sagen, an dieser Fassung gemessen wird.
+
+**Besessenheit.** Dass etwas geschieht. Sie ist die einzige Figur der ganzen Welt, die je
+etwas selbst getan hat.
+
+**Hindernis.** Sie hat sich geirrt, und zwar am ersten Tag: sie ist ohne den Brief
+losgegangen, weil sie den Sack für unzuständig hielt und sich selbst für ausreichend. Seit
+dem zweiten Tag weiß sie es.
+
+**Sprachmarke.** Kurz, sachlich, ohne Höflichkeitsformeln, und mit den Jahren immer kürzer.
+Ihr letzter Bericht ist einzeilig.
+
+**Herkunft.** Ministerialdirektorin des Hauses, höchster Beamtenposten. Im **Jahr 972** hat
+sie beschlossen, den Brief selbst zuzustellen, weil es sonst niemand tat, hat einen
+Dienstreiseantrag gestellt, den Zwirn unterschrieben hat, und ist nach Ablage V gegangen
+(Chronik, Jahr 972).
+
+**Der Riss.** Nicht das Weggehen. Die Antwort, die nie kam. Sie hat zehn Berichte nach Hause
+geschrieben, sachlich, dann gereizt, dann still. Sie liegen alle in der Registratur.
+Ungeöffnet. Unter dem Kater.
+
+**Das Geheimnis.** Sie lebt, sie ist Gast und nicht Gefangene, und was sie in vierzig Jahren
+am wütendsten gemacht hat, ist nicht der Fürst: **er hat auf jeden ihrer Berichte
+geantwortet.** Ihr eigenes Haus nicht.
+
+**Der blinde Fleck.** Sie hält ihr Schweigen für Würde. Es ist der einzige Fehler, den sie
+zweimal macht: sie hat aufgehört, sich zu erklären, genau wie das Haus aufgehört hat zu
+antworten. **Ob sie zurück ins Amt geht, bleibt offen** (Weltbibel Kapitel 16).
+
+**Drei Verhältnisse.**
+* **Zu Knöterich:** er gießt seit vierzig Jahren ihre Pflanze und sagt nichts dazu. Sie weiß
+  es nicht. Es ist die längste einseitige Beziehung des Spiels.
+* **Zu Zwirn:** seine Unterschrift hat sie hinausgelassen. Sie hat nie einen Gedanken daran
+  verschwendet, ob er dafür etwas kann, und er verschwendet seit vierzig Jahren nichts
+  anderes.
+* **Zum Fürsten:** ein Gastverhältnis zwischen zwei Leuten, die beide auf Antwort warten.
+  Er hat ihr geantwortet. Sie hat es zur Kenntnis genommen und weitergeschrieben.
+
+**Was sie nie sagen wird.**
+1. Dass sie sich geirrt hat. Sie hat es einmal geschrieben, in einer Zeile, und danach nicht
+   mehr.
+2. Dass sie nach Hause will.
+
+**Die eine neue Tatsache.** *(neu)* **Sie führt drüben ein Eingangsbuch.** Seit vierzig
+Jahren notiert sie am Hof des Fürsten, was dort eingeht und was beantwortet wird, Tag für
+Tag, mit Datum und Aktenzeichen. Es ist die einzige vollständige Akte über Ablage V, die
+existiert, und sie hat sie geführt, weil man das tut. Das ist die Amtsleiterin, die sie
+geblieben ist: kein Haus, keine Befugnis, kein Adressat, und trotzdem ein Eingangsbuch.
+*Widerspricht nichts: ihre zehn Berichte und deren Verbleib bleiben unverändert, das Buch
+ist etwas anderes und hat nie jemand angefordert.*
+
+**Gesprächsstoff.** Keiner. Sie spricht in diesem Spiel erst in Akt V. Was hier steht, ist
+das Maß für die Zeilen, die andere über sie sagen.
+
+**Prüfnotiz.** Kein Fund. Die offene Frage aus Kapitel 16 bleibt offen: das Eingangsbuch sagt
+nichts darüber, ob sie zurückgeht. Ihre Berichte werden nicht umgezählt, es bleiben zehn.
+
+---
+
+## Fürst Nachtrag — genannt der Schattenfürst
+
+Auch er bekommt keine Dialogzeilen und keinen Baum. Er ist das Finale.
+
+**Besessenheit.** Eine Antwort.
+
+**Hindernis.** Er hat vierhundert Jahre lang geschrieben und nie eine bekommen. Irgendwann
+hat er aufgehört zu schreiben und angefangen, Portale zu schicken.
+
+**Sprachmarke.** Höflich. Furchtbar höflich. Er duzt niemanden. Seine Briefe werden im
+Spielverlauf immer höflicher, und das ist das Unheimlichste daran.
+
+**Herkunft.** Er ist der Nachtrag zum Vorgang 1: der Teil, der angehängt und nie gelesen
+wurde. Im Vertrag von **612** steht sein vollständiger Titel, und es hat ihn nie jemand zu
+Ende gelesen: Bevollmächtigter der Gegenseite in Sachen Vorgang 1, zeichnungsberechtigt,
+**unbenachrichtigt**.
+
+**Der Riss.** Sieben Jahre Mahnstufen mit immer demselben Wortlaut, sechs Schreiben, alle
+mit Eingangsstempel, keins mit Ausgang. Der letzte trägt in anderer Feder einen einzigen
+zusätzlichen Satz, und es ist der einzige Satz dieser Geschichte, in dem jemand die
+Beherrschung verliert: „Es ist eine kurze Frage."
+
+**Das Geheimnis.** Sein Hof funktioniert, weil er antwortet. Jedem, sofort, handschriftlich.
+Ablage V ist der geordnetste Ort dieser Welt. Das Reich fürchtet ihn nicht wegen seines
+Heeres, sondern weil ein Fürst, der antwortet, Vorgänge schließt, und wer Vorgänge schließt,
+löscht Zuständigkeiten.
+
+**Der blinde Fleck.** Er hält jeden Besuch für die nächste Nichtantwort und wehrt sich, und
+danach schreibt er einen höflichen Brief darüber, den niemand liest. Er ist nicht zu
+besiegen, er ist zu beantworten, und er weiß es selbst nicht.
+
+**Sein Hof.** Er besteht aus Post. Jeder Höfling war einmal ein Schreiben: der Kämmerer eine
+Eingabe von 640, die nie beschieden wurde, die Zofe eine Bitte um Nachricht, der Hofmeister
+eine Beschwerde über eine Beschwerde. Sie sind gebildet, sie tragen ihre Ränder ordentlich
+und sie sprechen leise. Was beantwortet wird, wird ruhig, und deshalb ist der Papierkorb
+dieser Welt ihr geordnetster Ort. Das Ungeheuerliche an seinen Ungeheuern ist, dass sie alle
+einmal eine Frage waren.
+
+**Drei Verhältnisse.**
+* **Zu Sturz:** er hat auf jeden ihrer Berichte geantwortet. Vierzig Jahre lang. Sie hat es
+  zur Kenntnis genommen. Für ihn ist das die längste Korrespondenz seines Lebens.
+* **Zu Trepp:** die beiden haben vierhundert Jahre lang aufeinander gewartet, jeder in dem
+  Glauben, der andere sei am Zug. Sie begegnen sich in Akt IV zum ersten Mal.
+* **Zum Lager der Beschwerden:** von seiner Seite aus ist es keine Belagerung, sondern eine
+  Empfangsstelle. Man steht dort seit vierhundert Jahren bereit, etwas entgegenzunehmen.
+
+**Was er nie sagen wird.**
+1. Etwas Unhöfliches.
+2. Dass er wütend ist. Er ist es nicht mehr. Das ist das Schlimmste daran.
+
+**Die eine neue Tatsache.** *(neu)* **Jeder seiner Briefe beginnt mit derselben Zeile:
+„Ihr Schreiben ging hier ein."** Vierhundert Jahre, jeder Brief, jede Antwort, dieselbe
+erste Zeile. Es ist der Satz, den er selbst nie bekommen hat, und er stellt ihn jedem
+anderen an den Anfang. *Widerspricht nichts: seine Höflichkeit und die vier Blätter der
+Serie F sind Bestand, die Anrede ist neu und verrät nichts über den Ausgang von Akt V.*
+
+**Gesprächsstoff.** Keiner im laufenden Spiel. Was hier steht, ist das Maß für die Blätter
+der Serie F und für Akt V.
+
+**Prüfnotiz.** Kein Fund. Die neue Anredezeile ist gegen den Zeichendeckel geprüft und
+passt als `z1` (25 Zeichen), falls sie je in einer Sprechblase gebraucht wird. Sein Titel
+bleibt die einzige Ausnahme von der Regel, dass Monster keine Titel haben.
+
+---
+
+## Anlage 3 — Kater
+
+Ein halber Abschnitt, weil er ein Kater ist. Er bekommt keine Zeile.
+
+**Was er ist.** Der Kater der Registratorin. Er schläft auf genau der Akte, die man braucht.
+Immer. Bramsche weckt ihn nicht und sagt, dazu sei sie nicht befugt, und sie lacht nicht
+dabei.
+
+**Der stille Gag.** **Anlage** ist im Reich ein Aktenhausname, und eine Nummer hinter einem
+Hausnamen ist in Hochablage die Schreibweise für ein nachgeordnetes Familienmitglied. Auf
+Reichspapier gelesen ist er der dritte Sohn eines Adelshauses. Aufgelöst wird das nie; wenn
+Vorblatt ihn siezt, ist das kein Scherz, sondern korrekte Anrede.
+
+**Sein Verhältnis zum Haus.** Er liegt auf Sturz' Berichten. Zehn Stück, ungeöffnet. Es ist
+die wärmste Stelle der Registratur, und niemand hat je nachgesehen, warum.
+
+**Die eine neue Tatsache.** *(neu)* **Er hört auf keinen Namen, weil „Anlage 3" keiner ist.**
+Es ist eine Fundstelle. Bramsche ruft ihn nicht, sie schlägt ihn nach: sie sagt, wo er liegt,
+nicht wie er heißt. Wer ihn rufen will, muss ihn also zitieren, und das hat außer ihr noch
+niemand richtig hinbekommen. *Widerspricht nichts: dass er auf der richtigen Akte liegt,
+bleibt unerklärt und ungeklärt.*
+
+**Sein Verhältnis zu Vorblatt.** Der Reichsministerialdirektor siezt ihn. Für Vorblatt ist
+das keine Höflichkeit gegenüber einem Tier, sondern die korrekte Anrede gegenüber einem
+Hausnamen mit Nummer, und er würde sich wundern, wenn es jemand anders hielte. Bramsche
+korrigiert ihn nicht. Sie hat in diesem einen Punkt beschlossen, dass beide recht haben.
+
+**Was er für Langvorgang 2 bedeutet.** Man kann ihn nicht wegnehmen. Man muss ihm etwas
+Besseres anbieten, und was besser ist als die wärmste Stelle der Registratur, muss man erst
+einmal finden. Das ist die ganze Aufgabe, und sie ist deshalb schwer, weil sie freundlich
+ist.
+
+**Prüfnotiz.** Kein Fund. Warum er immer richtig liegt, wird ausdrücklich **nicht**
+aufgelöst: eine Erklärung würde aus einem Gag eine Mechanik machen.
+
+---
+## Die Abkürzungstabelle
+
+Der laufende Gag über die Kurzform (Prompt, Abschnitt 9). **Zwölf Kürzel, mehr nicht.** Vier
+sind Bestand und werden nur eingetragen, acht sind neu und verteilen sich über die fünf
+Stufen. Diese Tabelle ist die einzige Stelle, an der die Langformen stehen; sie wird in F1b
+als Konstante `ABKUERZUNGEN` in den Code übernommen und dort geprüft.
+
+| # | Kürzel | Langform | Wer benutzt es | Ab | Auflösbar bei | Stufe |
+|---|---|---|---|---|---|---|
+| 1 | `N. N.` | nicht genannt | das ganze Haus | I | Knöterich im Empfang, danach Bramsche | Wurzel (Bestand) |
+| 2 | `a. D.` | außer Dienst | Knöterichs Titel | I | Knöterich, ein einziges Mal | Wurzel (Bestand) |
+| 3 | `zu Händen` | wird nie gekürzt, das ist die Aussage | das Reich | III | Bramsche | Wurzel (Bestand) |
+| 4 | `n. O.` | nach der Ordnung, die Jahreszählung | jede Urkunde, jedes Blatt | I | Bramsche | Wurzel (Bestand) |
+| 5 | `TNM` | Tägliche Niederschlagsmeldung | Nieselbeck | I | Nieselbeck selbst, in seinem Baum | I: das gewöhnliche Kürzel |
+| 6 | `MfM` | Ministerium für Monsterangelegenheiten | Zwirn auf Antragsformularen, Pommer auf Bestandslisten | I | Bramsche | I: das gewöhnliche Kürzel |
+| 7 | `T.` | die TNM, noch einmal gekürzt | Trepp, weil es auf dem Umschlag kürzer ist | II | Bramsche, und nur sie | II: die Abkürzung der Abkürzung |
+| 8 | `GA` | Gutachterliche Ansetzung | Milb, stolz | II | Milb, ausführlich | II: die Abkürzung der Abkürzung |
+| 9 | `ZB` | Zwischenbescheid **oder** Zuständigkeitsbereich | Vorblatt meint das eine, Bramsche das andere | III | beide, und beide haben recht | III: die Kollision |
+| 10 | `AL` | Amtsleitung | Nörgel, Zwirn, Pommer | III | Bramsche | III: die Kollision, zweite Hälfte: bei Vorblatt heißt `AL` Anhängige Lage |
+| 11 | `V. u. g.` | vorgelesen und genehmigt | Zapf auf der Rückseite des Schildes | IV | **niemand mehr** | IV: die verlorene Langform |
+| 12 | *keins* | Vorgang 1 | niemand | V | entfällt | V: die Sache, die nie eines bekommen hat |
+
+**Zur letzten Zeile.** Sie ist kein Eintrag, sondern das Fehlen eines Eintrags, und sie
+gehört trotzdem in die Tabelle, damit beim Schreiben niemand auf die Idee kommt, dem
+Vorgang 1 eines zu geben. Der Grund steht in Akt V und in einer einzigen Zeile: nicht weil
+er zu wichtig wäre, sondern weil ihn nie jemand oft genug erwähnt hat, als dass sich das
+Abkürzen gelohnt hätte.
+
+**Zu Nummer 11.** Zapf hat die drei Daten auf der Rückseite des Provisorium-Schildes mit
+`V. u. g.` gezeichnet, weil das damals so üblich war. Was es heißt, weiß er nicht mehr; er
+weiß nur, dass es dazugehört. Das ist die vierte Stufe zum Anfassen: das Kürzel hat die
+Sache überlebt, um die es ging. **Die Langform steht hier und darf im Spiel nirgends
+fallen** — der Witz ist, dass niemand sie mehr kennt.
+
+**Zu Nummer 9 und 10, der Kollision.** Zwei Kürzel, die an zwei Orten Verschiedenes
+bedeuten, und beide Seiten haben recht. Es wird nie aufgeklärt, niemand im Spiel bemerkt es,
+und der Spieler merkt es nur, wenn er beiden zuhört. Genau dafür sind die Bäume da.
+
+**Die Grenzen, gegengezählt:** zwölf Einträge, davon einer leer. Vier Wurzeln aus dem
+Bestand, acht neu. Je Akt kommt höchstens eines dazu (I: drei, II: zwei, III: zwei, IV: eins,
+V: keins). Jedes auflösbare Kürzel hat genau eine benannte Auflösestelle, sieben davon
+Bramsche, was ihre Rolle als Auflösestelle des ganzen Gags trägt.
+
+---
+
+## Reststand nach Block 2
+
+**F1a ist vollständig.** Achtzehn Figuren, achtzehn neue Tatsachen, eine Abkürzungstabelle.
+Diese Tabelle ersetzt die aus Block 1.
+
+| Figur | Stand | Neue Tatsache |
+|---|---|---|
+| Knöterich | fertig | Die Kladde beginnt auf Seite zwei |
+| Zwirn | fertig | Elf Jahre Konfetti aus eigener Tasche |
+| Bramsche | fertig | Das Verzeichnis der nicht gestellten Anträge |
+| Zapf | fertig | Drei Daten auf der Rückseite des Schildes |
+| Lisbeth | fertig | Alle sechs Berichte heißen „vorläufig" |
+| Trepp | fertig | Die Übergabeformel aus fünf Wörtern |
+| Nörgel | fertig | Die Krawatte ist ordnungsgemäß beantragt |
+| Milb | fertig | Sechs Stufen, weil der Vordruck sechs Zeilen hat *(gesperrt, LV7)* |
+| Pommer | fertig | Er schreibt Antragsentwürfe *(gesperrt, LV12)* |
+| Fass | fertig | Der Krug, aus dem nie jemand getrunken hat |
+| Lott und Pahl | fertig | Sie haben die Steine sortiert |
+| Nieselbeck | fertig | Die zweite Tabelle, dreiundvierzig Kopfzeilen |
+| Umlauf | fertig | Sie hat das Ankommen einmal geübt |
+| Vorblatt | fertig | Der Stempel ist sein zweiter |
+| Sturz | fertig | Sie führt drüben ein Eingangsbuch |
+| Fürst Nachtrag | fertig | „Ihr Schreiben ging hier ein." |
+| Anlage 3 | fertig | „Anlage 3" ist kein Name, sondern eine Fundstelle |
+
+**Drei Figuren bekommen keine Dialogzeilen:** Sturz, Nachtrag und Anlage 3. Ihre Abschnitte
+sind das Maß für das, was andere über sie sagen.
+
+**Was an F1c weitergeht.** Vierzehn Dorffiguren mit Gesprächsstoff, zwölf davon mit Baum in
+F1d. Zwei Tatsachen sind gesperrt und dürfen in keiner Sprechblase fallen (Milb, Pommer),
+eine Langform ebenfalls (`V. u. g.`). Die Zählung von Anspielungen und Zwinkern beginnt in
+F1c bei null; in F1a steht keine von beiden.
+
+**Verbindungen, die tragen, ohne ausgesprochen zu werden.** Knöterichs leere Seite eins und
+Zwirns Unterschrift gehören demselben Tag im Jahr 972, an dem auch Nörgels Probezeit begann.
+Nörgels Krawatte steht in Pommers Bestand. Zapfs Daten sind die zweite Chronik neben
+Knöterichs Kladde, und sie sind mit einem Kürzel gezeichnet, das er nicht mehr auflösen kann.
+Lisbeths Berichtstitel steht auch über der Tür. Sturz führt in Ablage V dasselbe Buch, das
+Knöterich in Vordermühl führt, und keiner von beiden weiß es. Und Vorblatts durchgeschriebener
+Stempel liegt aus demselben Grund im Fach, aus dem Knöterich nicht in den Ruhestand kommt.
+**Keine dieser Verbindungen wird im Spiel erklärt.**
