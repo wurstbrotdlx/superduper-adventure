@@ -412,6 +412,16 @@ Neu anzulegen in `sda_knoeterich_v1`, alle über die Lebenszeit: `traenke`, `kam
 
 ### Nachschlagen
 
+> **Überholt durch U6** (`phase-u6-knoeterich-tafel.md`). Die Sache gibt es
+> weiter, den Weg dorthin nicht mehr. `AKT_NACHFRAGE` ist ersatzlos entfernt;
+> Knöterich wird seit U6 über `AKT_NPC` angesprochen wie jede Dorffigur, die
+> Kontextaktion heißt „Ansprechen" und steht immer da. Das Nachschlagen ist die
+> fünfte Antwort seiner Gesprächstafel („Was stand da eben?") und erscheint
+> weiterhin nur, wenn schon ein Zettel gelaufen ist; der Zyklus über die letzten
+> drei, die Ausnahme von Cooldown, Budget und Prio und die Zählung in
+> `kn.history` sind unverändert. Angezeigt wird er nicht mehr im Zettel-Layout,
+> sondern als Satz in der Tafel. Der Absatz unten bleibt als Stand stehen.
+
 Neue Kontextaktion an der Weltfigur: `AKT_NACHFRAGE = 9` in der Konstantenzeile (`AKT_TUER` bis `AKT_GRUSS`, ~2475), Angebot in `scanAktion()` im `!kammer`-Zweig hinter dem `currentLevel !== 1`-Guard neben der `kammerTueren`-Schleife, Ausführung in `fuehreAktion()`. Text „Nachfragen".
 
 Verhalten: zeigt den zuletzt gezeigten Dienstzettel, beim nächsten Druck den zweitletzten, dann den drittletzten, dann wieder von vorn. Wurde noch nie ein Zettel gezeigt, wird die Aktion gar nicht angeboten. Die Wiederholung ist spielerausgelöst und deshalb von Cooldown, Budget, Verstummen und Prio ausgenommen; sie startet den Cooldown auch nicht neu und respektiert nur die Sperrzone „offenes Panel". Angezeigt wird sie im Zettel-Layout.

@@ -223,6 +223,25 @@
   #knRandnotiz::before{margin-right:6px;vertical-align:middle;}
   #knZettelHead{font-size:calc(15px * var(--fs));line-height:1;flex:0 0 auto;padding:2px;
     background:#241c10;border:1px solid #8a6d3b;border-radius:2px;}
+  /* U6: Der Kopf am Dienstzettel war ein Sinnbild aus der Zeichentabelle, und
+     zwar seit Phase 5, als es Knoeterich noch nicht gemalt gab. Es gibt ihn
+     inzwischen (assets/portraets/knoeterich.png, seit U5 in der Tafel), und
+     wer den Zettel liest, soll denselben Mann sehen wie im Gespraech: ein
+     Kanal, ein Gesicht.
+
+     32 und nicht calc(32px * var(--fs)): das Bild ist 128 Pixel breit, 32 ist
+     exakt ein Viertel davon, und ein Viertel ist der einzige Faktor in diesem
+     Band, bei dem kein Bildpixel zwischen zwei Geraetepixel faellt
+     (Regressionsregel 14). Die Schriftstufe traegt weiter die Zeilen daneben,
+     und die bestimmen die Hoehe des Bandes ohnehin.
+
+     Das Sinnbild bleibt als Rueckfall stehen und ist sichtbar, bis das Bild
+     wirklich gezeichnet ist. Die Klasse setzt knZettelPortrait() nach dem
+     Laden; ohne Bilddatei bleibt der Zettel genau der von vorher. */
+  #knZettelBild{display:none;width:32px;height:32px;image-rendering:pixelated;}
+  #knZettel.mitBild #knZettelHead{padding:0;line-height:0;font-size:0;}
+  #knZettel.mitBild #knZettelBild{display:block;}
+  #knZettel.mitBild #knZettelSinnbild{display:none;}
   #knZettelZ1{font-weight:bold;}
   #knZettelZ2{font-size:calc(11px * var(--fs));color:#c9b98a;}
   #knRandnotiz{font-style:italic;font-size:calc(11px * var(--fs));}
@@ -652,7 +671,34 @@
      gesprochen wird und welche er selbst bedient. Also zwei Felder mit einer
      Kante dazwischen: oben der Satz, der einlaeuft, unten die Wahl, die
      wartet. Die Kante ist die Doppellinie des Hauses (.amtRegel). */
-  #gespraechOben{display:flex;gap:14px;align-items:stretch;padding:14px 14px 12px;}
+  /* U6 — Welche Haelfte nachgibt, wenn der Platz nicht reicht.
+     Bis hierher gab die Tafel als Ganzes nach: sie bekam auf Mobil eine
+     Hoechsthoehe und ein overflow-y, und was nicht mehr hineinpasste, war
+     weggerollt. Weggerollt war dabei immer dasselbe, naemlich das Ende, und
+     das Ende ist die untere Haelfte mit den Antworten. Auf 360x640 bei der
+     groessten Schriftstufe stand die Antwortliste vollstaendig ausserhalb der
+     Tafel: der Spieler sah einen Satz und keine einzige Wahl und musste
+     scrollen, um zu erfahren, dass es ueberhaupt eine gibt.
+
+     Das ist genau die falsche Reihenfolge. Der Satz des Gegenuebers ist Text
+     und darf rollen, die Wahl ist Bedienung und muss stehen. Also eine Spalte
+     mit einer Hoechsthoehe (#gespraechInnen), in der die obere Haelfte
+     nachgibt (flex:1, min-height:0) und die untere nicht (flex:0 0 auto);
+     gerollt wird im Satzfeld selbst.
+
+     Die Huelle ist noetig, weil die Hoechsthoehe und das Nachgeben zusammen an
+     EINEM Kasten haengen muessen, und die Tafel selbst kann es nicht sein:
+     gespraechOeffnen() schreibt ihr display:block als Inline-Stil, ein
+     display:flex aus dem Stylesheet kaeme dagegen nicht an, und ein
+     !important dagegen wuerde auch das display:none beim Schliessen
+     ueberstimmen. Eine Zeile HTML ist billiger als ein Fenster, das nicht mehr
+     zugeht. */
+  #gespraechInnen{
+    display:flex;flex-direction:column;min-height:0;
+    max-height:calc(100vh - 140px);
+    max-height:calc(100dvh - 140px);}
+  #gespraechOben{display:flex;gap:14px;align-items:stretch;padding:14px 14px 12px;
+    flex:1 1 auto;min-height:0;}
   /* align-items:center und nicht flex-end: das Bildfeld haelt die untere
      Haelfte auf 108px, und im Empfang steht dort oft nur eine einzige Antwort.
      Bottom-buendig stuende sie dann unter einem Streifen Nichts; mittig steht
@@ -660,6 +706,7 @@
      setzt align-self das Bild auf die Unterkante. */
   #gespraechUnten{
     display:flex;gap:12px;align-items:center;
+    flex:0 0 auto;
     padding:10px 14px 12px;
     border-top:2px solid #8a6d3b;box-shadow:inset 0 1px 0 #6b5a3a;
     background:rgba(8,5,12,.55);}
@@ -681,7 +728,17 @@
      schmaler als die 128 Pixel des Bildes, und ohne diese Zeile wuerde es
      beschnitten statt verkleinert. */
   #gespraechBild canvas{image-rendering:pixelated;display:block;width:100%;height:auto;}
-  #gespraechRechts{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+  #gespraechRechts{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-direction:column;position:relative;}
+  /* U6: Ein Rollfeld, dem man nicht ansieht, dass es eins ist, ist kein
+     Angebot, sondern ein abgeschnittener Satz. Der Verlauf steht deshalb
+     ueber der Unterkante des Satzfeldes, sobald dort etwas liegt, was nicht
+     mehr im Bild ist. Die Klasse setzt gespraechTextZeichnen(), und zwar nur
+     bei einem Wechsel: eine Zeichenaenderung je Buchstabe waere ein
+     Stilschreibvorgang je Buchstabe. pointer-events:none, damit der Verlauf
+     nicht das Rollen unter sich abfaengt. */
+  #gespraechRechts.rollt::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:20px;pointer-events:none;
+    background:linear-gradient(rgba(20,14,24,0), rgba(20,14,24,.92));}
   /* U4: Das Gegenstueck unten rechts, vier- statt fuenffach. Kleiner als das
      Portraet oben, weil oben steht, wer redet, und unten nur, wer zuhoert.
      Es steht auf der Unterkante der Tafel (align-items:flex-end), wie die
@@ -702,10 +759,17 @@
     text-shadow:0 2px 0 #241a09;display:flex;justify-content:space-between;align-items:center;gap:10px;}
   /* min-height haelt zwei Zeilen frei, damit die Antwortliste nicht springt,
      wenn ein Satz einzeilig ist und der naechste zweizeilig. */
+  /* U6: das rollende Feld. flex:1 1 auto plus min-height:0 laesst es kleiner
+     werden als seinen Inhalt, overflow-y macht daraus ein Rollfeld statt eines
+     Ueberlaufs. min-height haelt weiter zwei Zeilen frei; das ist kein
+     Widerspruch, sondern die Untergrenze, unter die auch das Rollen nicht
+     geht. Auf dem Schirm ist das fast immer wirkungslos, weil die Tafel unten
+     steht und nach oben Platz hat. Es greift, wenn keiner da ist. */
   #gespraechText{
     overflow-wrap:break-word;
     font-size:calc(16px * var(--fs));line-height:1.45;color:#f4e6c8;
-    min-height:calc(16px * var(--fs) * 2.9);margin-bottom:0;}
+    min-height:calc(16px * var(--fs) * 2.9);margin-bottom:0;
+    flex:1 1 auto;overflow-y:auto;}
   #gespraechText .z2{color:#d8c898;}
   /* Der Blinker am Zeilenende, solange getippt wird — dieselbe Rolle wie das
      kleine Dreieck im Vorbild: hier laeuft noch Text. */
@@ -853,15 +917,56 @@
        ausgerechnet das Fenster, das man am laengsten offen haelt, duerfte
        ihn nicht zudecken. Das Bildfeld schrumpft mit, sonst bliebe fuer den
        Text auf 360px Breite nichts uebrig. */
+    /* U6: Die Arbeitshoehe sitzt jetzt an der Huelle (#gespraechInnen), nicht
+       mehr an der Tafel. Was hier bleibt, ist nur noch die Notbremse: die Tafel
+       darf unter keinen Umstaenden aus dem Fenster laufen. Sie greift auf einem
+       liegenden Telefon, wo auch ein einziges Feld nicht mehr hinpasst; in
+       jedem stehenden Format ist die Huelle kleiner und diese Zeile wirkungslos.
+       Ohne sie waere der Fall "passt nirgends" nicht gerollt, sondern
+       abgeschnitten, denn die Tafel traegt seit U4 overflow:hidden fuer ihre
+       Trennkante. */
     #gespraech{
       top:56px;bottom:auto;left:8px;transform:none;
       width:calc(100vw - 16px);background-color:rgba(20,14,24,.93);
-      max-height:calc(100vh - 341px);
-      max-height:max(240px, calc(100dvh - 341px));
+      max-height:calc(100vh - 64px);
+      max-height:calc(100dvh - 64px);
       overflow-y:auto;
     }
+    /* Die Hoehe, mit der die Tafel wirklich rechnet. Was frueher die ganze
+       Tafel wegrollte, rollt seither im Satzfeld (s. #gespraechInnen oben).
+
+       341 ist geblieben, wo es herkam: 56 oben plus der Daumenfaecher unten
+       (230x250, der oberste Knopf reicht bis 268 hinauf) plus Luft. Solange
+       das Fenster hoch genug ist, bleibt der Faecher deshalb frei und die
+       Tafel steht, wo sie stand.
+
+       Der Boden ist von 240 auf 440 gestiegen, und das ist der eigentliche
+       Eingriff an dieser Stelle. Ein Boden sagt: so viel Platz nimmt sich die
+       Tafel notfalls, auch wenn das Fenster kleiner rechnet. 240 war weniger,
+       als die untere Haelfte allein braucht. Gemessen auf 360 Pixel Breite bei
+       der groessten Schriftstufe, ueber jede Figur und jeden Szenenknoten:
+       316 bei Knoeterichs fuenf Antworten, 268 bei den vier des Dorfes, 220
+       bei der laengsten Szenenliste. Unterhalb der 316 KOENNEN die Antworten
+       nicht vollstaendig dastehen, gleich welche Haelfte nachgibt. 440 traegt
+       sie samt der 90 des Bildfeldes und laesst noch Luft fuer zwei
+       Satzzeilen.
+
+       Auf einem hohen Schirm aendert das nichts, dort gewinnt die Rechnung und
+       der Faecher bleibt frei. Auf einem kurzen waechst die Tafel in den
+       Faecher hinein, und das ist die Entscheidung: waehrend eines Gespraechs
+       wird nicht gekaempft, und wer weggehen will, hat das Kreuz, die Antwort
+       "Auf Wiedersehen." und den freien Streifen unter der Tafel. */
+    #gespraechInnen{
+      max-height:calc(100vh - 341px);
+      max-height:max(440px, calc(100dvh - 341px));
+    }
+    /* Die Untergrenze der oberen Haelfte. Sie darf nachgeben, aber nicht unter
+       ihr Bildfeld: 72 Pixel Portraet plus 10 und 8 Innenabstand. Ohne sie
+       schoebe eine sehr lange Antwortliste das Bild unter die Trennkante,
+       weil #gespraechBild als Zeilenkind in der Breite schrumpft und nicht in
+       der Hoehe. */
     #gespraechBild{width:72px;height:72px;}
-    #gespraechOben{gap:10px;padding:10px 10px 8px;}
+    #gespraechOben{gap:10px;padding:10px 10px 8px;min-height:90px;}
     #gespraechUnten{gap:10px;padding:8px 10px 10px;}
     /* Das zweite Portraet faellt auf Mobil weg. Auf 360px Breite kostet es
        ein Viertel der Zeile, und was es sagt — "hier antworten Sie" — sagt
@@ -1065,6 +1170,7 @@
 <div id="introBuehne"></div>
 
 <div id="gespraech">
+  <div id="gespraechInnen">
   <div id="gespraechOben">
     <div id="gespraechBild"><canvas id="gespraechPortrait" width="128" height="128"></canvas></div>
     <div id="gespraechRechts">
@@ -1079,9 +1185,10 @@
     </div>
     <div id="gespraechIchBild"><canvas id="gespraechIchPortrait" width="88" height="108"></canvas></div>
   </div>
+  </div>
 </div>
 <div id="tooltip"></div>
-<div id="knZettel"><span id="knZettelHead">🧑‍💼</span><div id="knZettelText"><div id="knZettelZ1"></div><div id="knZettelZ2"></div></div></div>
+<div id="knZettel"><span id="knZettelHead"><canvas id="knZettelBild" width="128" height="128"></canvas><span id="knZettelSinnbild">🧑‍💼</span></span><div id="knZettelText"><div id="knZettelZ1"></div><div id="knZettelZ2"></div></div></div>
 <div id="knRandnotiz"><span id="knRandTxt"></span></div>
 <div id="overlay"><div class="panel" id="ovPanel"></div></div>
 
@@ -3337,20 +3444,28 @@ const DORF_FIGUREN = [
   {key:'noergel', name:'Nörgel, Sachbearbeiter auf Probe', kurz:'Nörgel, auf Probe', tx:1, ty:36, opt:'wander', sheet:'mike', komposit:true,
    // G10: Nörgel bekommt ein Monsterrig. Sein Porträt zeigt einen Kobold mit
    // gewaltigen spitzen Ohren, und das Helden-Rig hat keine — G9 konnte ihm die
-   // Haut grün färben, aber keine Ohren anwachsen lassen. orc_chief ist dasselbe
-   // Blatt, auf dem im Lager der Beschwerden das Empfangsbekenntnis steht: das
-   // Volk stimmt, die Ohren sind schon da, und geladen wird es ohnehin.
+   // Haut grün färben, aber keine Ohren anwachsen lassen.
    //
-   // rigSc 1.9 ist gerechnet und nicht geraten, aber ungeprüft. Der Körper des
-   // Orks misst 20 bis 24 Pixel (Messung in CF_RIGS), das Held-Komposit rund 32
-   // bei NPC_SC 1.656, also 53 Pixel im Bild. 22 mal 1,9 sind 42 — Nörgel steht
-   // damit rund vier Fünftel so hoch wie die Menschen um ihn herum, und das ist
-   // die Absicht: er ist ein kleiner Sachbearbeiter, kein Häuptling. Das
-   // Empfangsbekenntnis steht auf 2.3 und bleibt der größere.
+   // U6: aber nicht mehr das Ork-Blatt. G10 hatte orc_chief genommen, weil es
+   // ohnehin geladen wird (das Empfangsbekenntnis am Lagertor steht darauf),
+   // und die Größe nachgerechnet statt nachgemessen: "Körper 20 bis 24 Pixel"
+   // stand als Schätzung im Kommentar. Gemessen sind es 28 (Idle-Seitenzeile,
+   // Frame 0, Deckfläche y 2..30), mal rigSc 1.9 also 53 Pixel — exakt die
+   // Höhe der Menschen um ihn herum. Der kleine Sachbearbeiter war so groß wie
+   // ein Häuptling, weil er einer war.
+   //
+   // Jetzt trägt er das Blatt der Grünhaut, also genau das, was im Wald als
+   // Grünhaut herumläuft (MONDEF.goblin: rig goblin_maceman, sc 1.5, psc 1.2).
+   // Das ist kein zweites Aussehen für dasselbe Volk, sondern dasselbe: er
+   // sagt "Grünhaut. Wie ich." über seine Leute hinter der Palisade, und ab
+   // hier stimmt das auch im Bild. rigSc 1.8 ist deshalb keine freie Zahl,
+   // sondern sc mal psc aus MONDEF — drawMon() multipliziert beide, DRAW_NPC
+   // kennt nur einen Faktor. Gemessen: Deckfläche 16 Pixel hoch, mal 1,8 sind
+   // 29 im Bild, gut die Hälfte der Menschen.
    //
    // gestalt bleibt stehen und ist ab hier der Rückfallweg: ohne Grafikpaket
    // gibt es kein Rigblatt, dann steht wieder das grünhäutige Komposit da.
-   rig:'orc_chief', rigSc:1.9,
+   rig:'goblin_maceman', rigSc:1.8,
    // G9: der einzige mit hautFarbe. Er ist ein Kobold, und bis G8 war das eine
    // schwache Tönung über die ganze Figur — grün lag dann auch auf seinem Hemd,
    // und weil es das Bild sonst zugekleistert hätte, blieb sie bei 0.22. Das
@@ -7167,6 +7282,61 @@ const EMPFANG_BLATT = 'npc_baked_knoeterich';
 const KN_NAME_KURZ = 'Amtsrat a. D. Knöterich';
 // KN_T/KN_POS sind bereits weiter oben deklariert (neben KESSEL_T/KESSEL), siehe Kommentar dort.
 
+// ---------------------------------------------------------------------------
+//  U6: Knöterich bekommt einen Tabelleneintrag wie jede Dorffigur.
+//
+//  Bis hierher war er die einzige Figur des Ensembles ohne einen: er kam vor
+//  DORF_FIGUREN, wohnt im Haus statt im Dorf und sprach ausschliesslich in
+//  seinen eigenen Kanaelen (Dienstzettel, Randnotiz, Blase). Ansprechbar war er
+//  auch, aber nur zum Nachschlagen: die Kontextaktion hiess "Nachfragen" und
+//  zeigte einen alten Dienstzettel noch einmal im oberen Band. Wer neben der
+//  Figur stand, mit der er die ersten fuenf Minuten des Spiels verbracht hat,
+//  konnte mit ihr nicht reden.
+//
+//  Ab hier schon, und zwar ueber dieselbe Tafel wie bei allen anderen. Der
+//  Eintrag traegt deshalb genau die Felder, die npcCycle() und
+//  gespraechOptionen() lesen — key, name, grund, akt —, plus opt/gestalt fuer
+//  die beiden Guards, die ueber die Tabelle laufen. In DORF_FIGUREN gehoert er
+//  trotzdem nicht: dort stehen die Figuren, die genMap() ins Dorf setzt und
+//  DRAW_NPC zeichnet, und er steht fest im Haus und wird von drawAlter()
+//  gezeichnet. Zwei Zeilen fuer dieselbe Figur waeren zwei Wahrheiten.
+//
+//  Die Zeilen halten die Regel aus Kapitel 8: er erklaert Tasten, nie
+//  Zusammenhaenge. Nichts davon sagt, was er weiss. Sie sagen, dass er es
+//  nicht sagen darf, und genau das ist die Figur. Sein Zuwachs aus W11 (die
+//  Rangfolge des Reiches) bleibt aus demselben Grund draussen, wie die
+//  Weltbibel ihn ausdruecklich draussen laesst.
+const KN_FIGUR = {
+  key:'knoeterich', name:KN_NAME_KURZ, kurz:KN_NAME_KURZ, opt:'fest', gestalt:KN_GESTALT,
+  grund:[
+    {z1:'Ich führe Buch. Seit vierzig Jahren.',    z2:'Auch über Sie.'},
+    {z1:'Meine Entpflichtung liegt noch vor.',     z2:'Sie wird bearbeitet.'},
+    {z1:'Außer Dienst und im Dienst.',             z2:'Beides steht in der Akte.'},
+    {z1:'Fragen Sie mich nichts über Vorgänge.',   z2:'Amtsverschwiegenheit.'},
+    {z1:'Ich komme morgens früher als nötig.',     z2:'Das steht nirgends.'},
+    {z1:'Ich gieße. Mehr sage ich dazu nicht.',    z2:'Es ist keine Dienstaufgabe.'},
+  ],
+  akt:[
+    'Neuzugang vermerkt. Die Akte ist offen.',
+    'Der Posteingang wächst. Vermerkt.',
+    'Mehr Schriftverkehr als sonst. Notiert.',
+    'Man fragt mich viel. Ich antworte nicht.',
+    'Meine Entpflichtung steht weiter aus.',
+  ],
+};
+// Die Figur als Eintrag, wie ihn die Tafel erwartet. Ein Objekt fuer die ganze
+// Sitzung und nicht eins je Aufruf: bubbleIdx ist der Zeiger im
+// Grundzeilen-Kreislauf, und der soll zwischen zwei Gespraechen stehen bleiben,
+// genau wie bei den Dorffiguren (dort haelt ihn der npcs-Eintrag).
+//
+// x/y stehen fest auf KN_POS. Damit misst gespraechTick() die Entfernung gegen
+// dieselben Zahlen wie bei jeder anderen Figur, ohne einen zweiten Weg.
+// sheetIdle/tint sind der Rueckfall des Portraets: liegt das gemalte Bild da,
+// nimmt gespraechPortrait() es und liest beides gar nicht.
+const knNpc = {key:'knoeterich', figur:KN_FIGUR, x:KN_POS.x, y:KN_POS.y,
+               sheetIdle:EMPFANG_BLATT, tint:'#8a8a8a', tintA:0.30,
+               bubbleIdx:-1, bubbleText1:'', bubbleText2:'', bubbleHideAt:0};
+
 const kn = {
   seen:{}, pending:{}, varB:{}, escReady:{},
   counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0},
@@ -7310,7 +7480,11 @@ function knAssertCaps(){
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
   // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
   // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
-  for(const fig of DORF_FIGUREN){
+  // U6: Knöterich läuft ab hier durch dieselbe Prüfung. Seine Tafelzeilen sind
+  // Sprechblasen wie alle anderen, und die Strukturzusicherung (sechs
+  // Grundzeilenpaare, fünf Aktzeilen, keine leer) gilt für ihn genauso: eine
+  // fehlende Aktzeile wäre bei ihm ebenso eine stumme Figur wie im Dorf.
+  for(const fig of DORF_FIGUREN.concat([KN_FIGUR])){
     // GW14: Strukturzusicherung. Ohne sie fiele eine Figur mit zu kurzer Tabelle
     // stumm aus — drawBubble() steigt bei leerem Text wortlos aus, und der Guard
     // iterierte nur, was da ist, statt zu prüfen, dass alles da ist.
@@ -7654,18 +7828,23 @@ function knEvaluateZettel(){
   knDisplayZettel(winner);
 }
 
-function knNachfragen(){
-  if(!kn.history.length) return;
-  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen) return;
-  if(document.getElementById('overlay').style.display === 'flex') return;
+// Der Nachschlag: der zuletzt gezeigte Dienstzettel noch einmal, bei jedem
+// Aufruf einer weiter zurueck, hoechstens drei (Cap in kn.history).
+//
+// U6: Er liefert die Zeilen jetzt, statt sie selbst anzuzeigen. Bis hierher
+// schrieb er sie ins obere Band (#knZettel) und war eine eigene Kontextaktion
+// an der Weltfigur; seit Knoeterich eine Gespraechstafel hat, ist er eine
+// Antwort darin ("Was stand da eben?") und der Satz laeuft ein wie jeder
+// andere. Damit faellt auch die Sperrliste weg, die hier stand: bei offener
+// Tafel ist ohnehin kein zweites Panel offen, und das Band anzusteuern,
+// waehrend die Tafel darunter steht, war der Fall, den sie abfing.
+// Liefert null, wenn noch kein Zettel gelaufen ist; die Antwort steht dann
+// gar nicht erst in der Liste.
+function knNachfragenZeile(){
   const n = kn.history.length;
+  if(!n) return null;
   knNfIdx = (knNfIdx + 1) % n;
-  const item = kn.history[n - 1 - knNfIdx];
-  setTxt('knZettelZ1', item.z1);
-  if(item.z2){ setStyle('knZettelZ2', 'display', 'block'); setTxt('knZettelZ2', item.z2); }
-  else setStyle('knZettelZ2', 'display', 'none');
-  el('knZettel').classList.add('show');
-  knZettel.active = true; knZettelHideAt = gameT + 6;
+  return kn.history[n - 1 - knNfIdx];
 }
 
 // Zentraler Takt: Blase und Ausblenden laufen jeden Frame (billig), die teure
@@ -8424,7 +8603,11 @@ function modulGeloest(k, mod){
 // --- Aktionen (Taste F / Kontext-Button) ------------------------------------
 // Kein Closure-Bau pro Frame: der beste Kandidat landet in drei festen Feldern.
 let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_NACHFRAGE=9, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12;
+// U6: AKT_NACHFRAGE (war 9) ist ersatzlos weg. Knoeterich wird jetzt ueber
+// AKT_NPC angesprochen wie jede andere Figur; das Nachschlagen ist eine Antwort
+// in seiner Tafel geworden. Die 9 bleibt frei und wird nicht nachbesetzt: die
+// Zahlen sind Sprungmarken in einem switch und stehen in keinem Spielstand.
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -8457,8 +8640,12 @@ function scanAktion(dt){
       if(near && aktArt !== AKT_ZUSTELLEN) aktBiete(player.x, player.y, AKT_GRUSS, null, 'Grüßen');
     }
     if(currentLevel !== 1) return;
-    // Phase 5: Knöterich bietet "Nachfragen" nur, wenn schon einmal ein Zettel gezeigt wurde.
-    if(kn.history.length) aktBiete(KN_POS.x, KN_POS.y, AKT_NACHFRAGE, null, 'Nachfragen');
+    // Phase 5: Knöterich steht fest im Haus und wird von drawAlter() gezeichnet,
+    // deshalb steht sein Angebot hier und nicht in der npcs-Schleife darunter.
+    // U6: "Nachfragen" heißt jetzt "Ansprechen" und wird immer angeboten, nicht
+    // erst ab dem ersten Dienstzettel. Was dahinter steht, ist keine Anzeige
+    // mehr, sondern seine Gesprächstafel, und die hat er von Anfang an.
+    aktBiete(KN_POS.x, KN_POS.y, AKT_NPC, knNpc, 'Ansprechen');
     // W3: eigene Weltposition je Figur. W11: wer erst ab einem spaeteren Akt im
     // Dorf steht, ist vorher auch nicht ansprechbar.
     for(const n of npcs) if(figDa(n.figur)) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');
@@ -8493,11 +8680,12 @@ function fuehreAktion(){
     case AKT_AUSGANG: verlasseKammer(); break;
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
-    // SZ2: Erst fragen, ob eine Szene diesen Griff will. Knoeterich ist keine
-    // Dorffigur, sein Haken sitzt deshalb hier und nicht in gespraechOeffnen().
-    case AKT_NACHFRAGE: { const sz = szeneAktiv ? null : szeneFaellig('knoeterich');
-                          if(sz) szeneOeffnen(sz, SZENEN[sz].start); else knNachfragen(); break; }
-    case AKT_NPC:     gespraechOeffnen(aktObj); break;   // U3: F oeffnet die Tafel; ein zweiter Druck redet darin weiter
+    // U3: F oeffnet die Tafel; ein zweiter Druck redet darin weiter.
+    // SZ2 hatte fuer Knoeterich einen zweiten Fall daneben, weil er keine
+    // Dorffigur war und der Szenenhaken in gespraechOeffnen() sitzt. Seit U6
+    // hat er einen Figureneintrag und geht denselben Weg: der Haken greift von
+    // selbst, die Ausnahme ist weg.
+    case AKT_NPC:     gespraechOeffnen(aktObj); break;
     case AKT_AMT:     amtFensterOeffnen(); break;
     case AKT_ZUSTELLEN: zustellen(); break;
   }
@@ -8619,7 +8807,7 @@ function npcSprechen(n){
 //  ein Aufruf je Klick, wie vorher genau einer je Tastendruck. Die drei
 //  anderen lesen nur.
 // ===========================================================================
-const gespraech = {npc:null, fig:null, z1:'', z2:'', tipp:0, tippGezeigt:-1, wahl:0, opts:[]};
+const gespraech = {npc:null, fig:null, z1:'', z2:'', tipp:0, tippGezeigt:-1, wahl:0, opts:[], rollt:false};
 let gespraechOffen = false;
 // E1: Laeuft der Empfang, gehoert die Tafel der Szene und nicht dem Dorf. Die
 // Steht hier oben und nicht beim Szenenblock weiter unten, weil
@@ -8668,12 +8856,26 @@ function gespraechOptionen(fig){
   if(szeneAktiv) return szeneOptionen();   // E1: die Szene schreibt ihre Liste selbst
   fig = fig || gespraech.fig;
   if(!fig) return [];
-  return [
+  const kno = fig.key === 'knoeterich';
+  const liste = [
     {t: gespraechWeiterText(fig), tun: () => { npcSprechen(gespraech.npc); gespraechUebernehmen(); }},
-    {t: 'Wie steht es im Dorf?',  tun: () => gespraechSagen(fig.akt[aktStand() - 1], '')},
+    // U6: Knoeterich steht im Haus und nicht im Dorf. Dieselbe Antwort, dieselbe
+    // Quelle (fig.akt), nur nach dem gefragt, wo er wirklich sitzt.
+    {t: kno ? 'Wie steht es im Haus?' : 'Wie steht es im Dorf?',
+                                  tun: () => gespraechSagen(fig.akt[aktStand() - 1], '')},
     {t: 'Wie war noch mein Titel?', tun: () => { const a = anredeZeile(fig.key); gespraechSagen(a.z1, a.z2); }},
-    {t: 'Auf Wiedersehen.',       tun: () => gespraechSchliessen()},
   ];
+  // U6: Die fuenfte Antwort, und die einzige, die es nur bei einer Figur gibt.
+  // Sie ersetzt die alte Kontextaktion "Nachfragen": derselbe Zyklus durch die
+  // letzten drei Dienstzettel, nur steht der Satz jetzt in der Tafel statt im
+  // oberen Band. Sie erscheint erst, wenn es etwas nachzuschlagen gibt — das
+  // war schon die Regel der Kontextaktion, und eine Antwort, die "nichts" sagt,
+  // waere eine Zeile weniger fuer die vier, die etwas sagen.
+  if(kno && kn.history.length)
+    liste.push({t:'Was stand da eben?', tun: () => { const z = knNachfragenZeile();
+                                                     if(z) gespraechSagen(z.z1, z.z2); }});
+  liste.push({t: 'Auf Wiedersehen.',    tun: () => gespraechSchliessen()});
+  return liste;
 }
 
 // Setzt einen Satz ins Fenster und laesst ihn neu tippen.
@@ -8840,8 +9042,24 @@ function gespraechTextZeichnen(){
   // sobald alles steht — dieselbe Aussage wie das Dreieck im Vorbild.
   const cur = fertig ? '' : '<span class="cur">▌</span>';
   const z2 = gespraech.z2 ? `<div class="z2">${gEsc(gespraech.z2.slice(0, n2))}${n1 >= gespraech.z1.length ? cur : ''}</div>` : '';
-  el('gespraechText').innerHTML =
+  const feld = el('gespraechText');
+  feld.innerHTML =
     `<div>${gEsc(gespraech.z1.slice(0, n1))}${(!gespraech.z2 || n1 < gespraech.z1.length) ? cur : ''}</div>${z2}`;
+  // U6: Seit das Satzfeld rollen kann (enger Schirm, grosse Schrift), muss es
+  // dem Tippwerk hinterherrollen. Sonst laeuft der Satz ausserhalb des Bildes
+  // weiter, der Blinker steht unter der Kante, und wer nicht von selbst wischt,
+  // liest die halbe Zeile. Nach unten und nicht an den Anfang: der Blinker ist
+  // die Stelle, an der gerade geschrieben wird, und die will man sehen.
+  //
+  // Ein Lesevorgang auf scrollHeight je Buchstabe (nicht je Frame): das ist
+  // dieselbe Groessenordnung wie das innerHTML darueber, das seit U3 an
+  // derselben Stelle steht und aus demselben Grund erlaubt ist.
+  const zuviel = feld.scrollHeight > feld.clientHeight + 1;
+  if(zuviel) feld.scrollTop = feld.scrollHeight;
+  if(zuviel !== gespraech.rollt){
+    gespraech.rollt = zuviel;
+    el('gespraechRechts').classList.toggle('rollt', zuviel);
+  }
 }
 
 function gespraechZeichnen(){
@@ -8920,8 +9138,12 @@ function gespraechTick(dt){
   // deshalb uebersprungen, das Tippwerk darunter gilt unveraendert fuer beide.
   // SZ1: gilt jetzt fuer jede Szene und nicht nur fuer den Empfang.
   if(!szeneAktiv){
+    // U6: Knoeterich steht nicht in npcs, sondern fest im Haus. Die Frage "gibt
+    // es dich noch?" hat bei ihm keinen Sinn, die Frage "stehst du noch neben
+    // mir?" schon: sein Eintrag traegt KN_POS in x/y, die Entfernung wird also
+    // gegen dieselben Zahlen gemessen wie bei jeder Dorffigur.
     if(!n || state !== 'play' || currentLevel !== 1 || kammer ||
-       npcs.indexOf(n) < 0 || sqDist(player.x, player.y, n.x, n.y) > GESPRAECH_WEG_Q){
+       (n !== knNpc && npcs.indexOf(n) < 0) || sqDist(player.x, player.y, n.x, n.y) > GESPRAECH_WEG_Q){
       gespraechSchliessen(); return;
     }
   }
@@ -8972,6 +9194,25 @@ function gespraechAssert(){
     }
   }
   if(KN_NAME_KURZ.length > SCHILD_DECKEL) fehler('Knöterichs Schild zu lang', KN_NAME_KURZ.length);
+  // U6: Knöterichs eigene Antwortliste. Sie ist die einzige im Spiel, die ihre
+  // Länge ändert: die Nachschlag-Antwort steht nur da, wenn überhaupt schon ein
+  // Dienstzettel gelaufen ist. Geprüft werden deshalb beide Stände. kn.history
+  // wird dafür gespiegelt und exakt zurückgesetzt, Idiom aus anredeAssert().
+  {
+    const echt = kn.history;
+    try {
+      for(const [hist, soll] of [[[], 4], [[{z1:'Vermerkt.', z2:'Notiert.'}], 5]]){
+        kn.history = hist;
+        const opts = gespraechOptionen(KN_FIGUR);
+        if(opts.length !== soll) fehler('Knöterichs Antwortliste hat', opts.length, 'Zeilen statt', soll);
+        for(const o of opts){
+          if(!o.t) fehler('leere Antwort', 'knoeterich');
+          else if(o.t.length > ANTWORT_DECKEL) fehler('Antwort zu lang', 'knoeterich', o.t);
+          if(typeof o.tun !== 'function') fehler('Antwort ohne Wirkung', 'knoeterich', o.t);
+        }
+      }
+    } finally { kn.history = echt; }
+  }
   if(PORTRAET_X + PORTRAET_B > 64 || PORTRAET_Y + PORTRAET_H > 64)
     fehler('Porträtausschnitt liegt außerhalb des 64er-Rasters');
   // U4: die Zweiteilung. Geprüft wird nicht, wie es aussieht, sondern wo die
@@ -9042,7 +9283,9 @@ function figurenFarbenAssert(){
   const fehler = (m, ...r) => { ok = false; console.error('G9 Figurenfarben:', m, ...r); };
   const gesehen = new Map();
   // Knöterich steht nicht in der Tabelle, trägt aber dasselbe Komposit.
-  const alle = [{key:'knoeterich', opt:'fest', gestalt:KN_GESTALT}, ...DORF_FIGUREN];
+  // U6: und seit U6 gibt es seinen Eintrag wirklich (KN_FIGUR) statt eines
+  // Abzugs davon, der hier nur für diesen Guard gebaut wurde.
+  const alle = [KN_FIGUR, ...DORF_FIGUREN];
   for(const f of alle){
     const g = f.gestalt;
     if(!g){ fehler('Figur ohne Gestalt', f.key); continue; }
@@ -10859,14 +11102,20 @@ function drawAlter(){
   // U3: Knoeterich bekommt dasselbe Schild wie die uebrigen Dorffiguren. Er
   // nennt seinen Namen ohnehin im ersten Satz des Spiels (knUpdateBubble),
   // und er ist die Figur, zu der man am haeufigsten zurueckkommt.
-  npcSchildMerken(x, y, KN_NAME_KURZ, false);
+  // U6: der vierte Parameter ist "wird gerade angesprochen" und stand hier fest
+  // auf false, weil Knoeterich kein Gespraech hatte. Jetzt hat er eins, und sein
+  // Schild hebt sich waehrenddessen hervor wie das jeder Dorffigur.
+  npcSchildMerken(x, y, KN_NAME_KURZ, gespraech.npc === knNpc);
   // SZ2: Waehrend einer Szene redet niemand dazwischen. Der Weltstopp friert
   // gameT ein, und eine Blase, die beim Beginn der Szene gerade stand, stuende
   // damit die ganze Szene lang weiter: sie lag im Bild ueber Knoeterichs
   // Namensschild, zwei Texte an derselben Stelle, keiner davon lesbar. Gefunden
   // im Bild, nicht im Guard. Nach der Szene laeuft die Uhr weiter und die Blase
   // geht von selbst aus, ihre Restzeit ist unberuehrt.
-  if(knBubble.visible && !szeneAktiv) drawBubble(x, y, knBubble.text1, knBubble.text2);
+  // U6: dieselbe Regel wie bei den Dorffiguren (DRAW_NPC): steht der Satz schon
+  // in der Tafel, waere die Blase daneben dieselbe Zeile ein zweites Mal.
+  if(knBubble.visible && !szeneAktiv && gespraech.npc !== knNpc)
+    drawBubble(x, y, knBubble.text1, knBubble.text2);
 }
 
 // W3: der Kater Anlage 3, kein Sprite, keine Kontextaktion — laut Kapitel 8
@@ -12284,6 +12533,14 @@ const ANREDE = {
   // hinter dem Und, und sie ist die einzige Unhöflichkeit, die er sich leistet.
   vorblatt: () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
                     z2:'Und. Sie sind heute im Dienst.'}),
+  // U6: die zwoelfte Form, und die einzige fuer jemanden, der nicht im Dorf
+  // steht. Sie fehlte, solange Knoeterich keine Tafel hatte: anredeZeile()
+  // faellt bei einem unbekannten Schluessel auf den nackten Rangnamen zurueck,
+  // und ausgerechnet der Mann, von dem 18.5 die Vollform "jedes Mal" verlangt,
+  // haette den blossen Titel gesagt. Die zweite Zeile ist keine neue
+  // Charakterisierung, sondern seine Regel aus Kapitel 18.5, wortkarg gesagt.
+  knoeterich: () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                      z2:'Vollständig. Immer.'}),
 };
 function anredeZeile(key){ const f = ANREDE[key]; return f ? f() : {z1: rangName() + '.', z2:''}; }
 
@@ -12309,7 +12566,12 @@ function anredeAssert(){
 
   // (1) Jede Figur aus DORF_FIGUREN hat eine Form, und keine Form ist verwaist.
   for(const fig of DORF_FIGUREN) if(!ANREDE[fig.key]) fehler('Figur ohne Anredeform', fig.key);
-  for(const k in ANREDE) if(!DORF_FIGUREN.some(f => f.key === k)) fehler('Anredeform ohne Figur', k);
+  // U6: Knöterich ist die eine Form ohne Zeile in DORF_FIGUREN. Er steht im Haus
+  // statt im Dorf (KN_FIGUR), spricht aber seit U6 über dieselbe Tafel, und
+  // gespraechOptionen() fragt ihn nach der Anrede wie jeden anderen. Dieselbe
+  // Ausnahme führen gespraechAssert() und szeneAssert() bereits.
+  if(!ANREDE.knoeterich) fehler('Figur ohne Anredeform', 'knoeterich');
+  for(const k in ANREDE) if(k !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === k)) fehler('Anredeform ohne Figur', k);
 
   // GW26i: alle vier Spiegel stehen vor dem try, damit finally sie sieht, und
   // der Block umfasst BEIDE Sweeps — nicht nur den zweiten.
@@ -15265,8 +15527,12 @@ function szeneSprecherKnoeterich(){
   // Blatt. Nachgemessen am Bild, nicht geschaetzt: 0.82 war eine graue
   // Flaeche, 0.45 noch immer teigig, 0.30 laesst Gesicht und Kittel stehen
   // und bleibt trotzdem erkennbar dieselbe graue Figur wie in der Welt.
-  return {sheetIdle:EMPFANG_BLATT, tint:'#8a8a8a', tintA:0.30,
-          figur:{key:'knoeterich', name:KN_NAME_KURZ}};
+  // U6: Zurueck kommt der eine Eintrag (knNpc) und nicht mehr ein frisch
+  // gebautes Objekt je Aufruf. Das war solange harmlos, wie Knoeterich nur in
+  // Szenen sprach; seit er eine eigene Tafel hat, waere es eine zweite Figur
+  // mit demselben Namen: gespraech.npc !== knNpc, und die Blase ueber seinem
+  // Kopf wuesste waehrend einer Szene nicht, dass er gerade spricht.
+  return knNpc;
 }
 
 // --- Das Dienstsiegel -------------------------------------------------------
@@ -16744,6 +17010,25 @@ function portraetAssert(){
   if(ok) console.log(`U5 Porträts: ${da} gemalte Bilder geladen, quadratisch und im 128er-Raster.`);
 }
 
+// U6: Das Portraet in den Dienstzettel. Einmal nach dem Laden gezeichnet und
+// danach nie wieder: der Zettel wechselt seinen Text, nicht seinen Absender.
+// Ein Canvas und kein <img src>, aus demselben Grund wie ueberall sonst in
+// diesem Projekt — SHEETS[].img traegt im Quellbaum einen Pfad und im
+// Einzeldatei-Build eine data:-URI, und wer hier ein CSS-url() oder ein festes
+// src schriebe, haette eine zweite Ladestelle, die der Build nicht kennt.
+//
+// Kehrt still um, wenn das Bild fehlt (addSheet fuehrt es als optional). Dann
+// bleibt die Klasse 'mitBild' aus und im Kopf steht das Sinnbild wie bisher.
+function knZettelPortrait(){
+  const c = el('knZettelBild'), s = SHEETS[portraetBlatt('knoeterich')];
+  if(!c || !s || !s.img) return;
+  const cc = c.getContext('2d');
+  cc.imageSmoothingEnabled = false;
+  cc.clearRect(0, 0, c.width, c.height);
+  cc.drawImage(s.img, 0, 0, c.width, c.height);
+  el('knZettel').classList.add('mitBild');
+}
+
 // G5: UI-Skin. SHEETS[key].img.src ist bereits die richtige URL für den jeweiligen
 // Kontext (Dev-Server: relativer Pfad, dist/index.html-Build: data:-URI aus
 // ASSET_BLOBS) — kein CSS-url() auf eine Datei nötig, das würde der Build nicht
@@ -16836,6 +17121,7 @@ loadAssets().then(() => {
   npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
   dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst
   portraetAssert();           // U5: erst hier, vorher gibt es die Bilddateien nicht
+  knZettelPortrait();         // U6: und aus demselben Grund einen Schritt danach
   refreshFloor();
   showStartScreen();
   requestAnimationFrame(loop);
