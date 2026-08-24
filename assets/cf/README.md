@@ -73,13 +73,14 @@ reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `index.html`).
 *(Der Hut ist seit G9 überholt: er ist dort Trepps und Nieselbecks Dienstmütze
 und wird gebraucht. Siehe den G9-Abschnitt unten.)*
 
-### Von G9 gebraucht (`player/`) — fehlt derzeit im Paket
+### Von G9 gebraucht (`player/`)
 
 Bauabschnitt G9 hat aus der Rüstungsstufe eine **Garderobe** gemacht
 (`CF_GARDEROBE` in `index.html`) und dabei vier Dateien in Dienst genommen, die
-diese Liste bis zum G9-Nachtrag nicht kannte. Sie liegen deshalb bis heute nicht
-im Assets-Repo, und was das anrichtet, stand in jeder Konsole: vier
-`Sprite fehlt`-Gruppen, und dahinter Wirt Fass und Herr Lott ohne Hemd.
+diese Liste bis zum G9-Nachtrag nicht kannte. Sie lagen deshalb drei
+Bauabschnitte lang nicht im Assets-Repo, und was das anrichtete, stand in jeder
+Konsole: vier `Sprite fehlt`-Gruppen, und dahinter Wirt Fass und Herr Lott ohne
+Hemd. Seit dem G9-Nachtrag sind sie da.
 
 | Zielordner | Datei | Wofür |
 |---|---|---|
@@ -99,13 +100,22 @@ Cute_Fantasy/Player/Head/Plate_Helmet_1/Plate_Helmet_1_Iron.png
 Cute_Fantasy/Player/Head/Plate_Helmet_2/Heavy_Plate_Helmet_1_Iron.png
 ```
 
-**Solange sie fehlen, läuft das Spiel trotzdem angezogen.** Der G9-Nachtrag hat
-dafür `CF_GARDEROBE_ERSATZ` gebaut: das Karohemd fällt auf `hemd` zurück, die
-Mütze hat keinen Ersatz (das Pack hat genau eine Kopfbedeckung, und ein Helm auf
-dem Zusteller wäre eine andere Figur), die beiden Helme trägt ohnehin niemand.
-`garderobeAssert()` meldet beim Start in einer Zeile, was ersetzt wurde und wer
-deshalb ohne Kopfbedeckung im Dorf steht. Wer die vier Dateien hierher legt,
-sieht diese Zeile kürzer werden und Trepps Mütze erscheinen.
+**Fehlen sie, läuft das Spiel trotzdem angezogen.** Der G9-Nachtrag hat dafür
+`CF_GARDEROBE_ERSATZ` gebaut: das Karohemd fällt auf `hemd` zurück, die Mütze hat
+keinen Ersatz (das Pack hat genau eine Kopfbedeckung, und ein Helm auf dem
+Zusteller wäre eine andere Figur), die beiden Helme trägt ohnehin niemand. Der
+Ersatzweg bleibt stehen, auch jetzt, wo die Dateien da sind — er ist für den
+nächsten, der ohne vollständiges Paket klont, und er hat den Fund überhaupt erst
+sichtbar gemacht. `garderobeAssert()` meldet beim Start in einer Zeile, was
+ersetzt wurde und wer ohne Kopfbedeckung im Dorf steht; mit allen vier Dateien
+lautet sie `13 Formen, keine ersetzt.`
+
+**Zur Mütze**, damit es niemand noch einmal misst: `Farmer_Hat_1` ist über alle
+zehn Packs hinweg die einzige Kopfbedeckung auf dem Heldenraster, die kein Helm
+ist. Sie ist eine breitkrempige Krempe und nicht die flache Schirmmütze, die
+Trepps und Nieselbecks Porträts zeigen. Das ist gesehen, verglichen und
+entschieden: die Krempe bleibt. Eine Kopfbedeckung, die als solche erkennbar
+ist, schlägt eine Mützenfarbe auf einer Frisur.
 
 ### Von G3 gebraucht (`enemies/`, `deco/`)
 

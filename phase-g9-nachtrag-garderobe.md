@@ -189,17 +189,75 @@ Nach der Rücknahme meldet der Guard wieder seine eine Zeile.
 * **`phase-g9-garderobe.md` bleibt, wie es ist.** Datierter Bericht, Stand statt
   Wegweiser, nicht rückwirkend umgeschrieben. Was daran überholt ist, steht hier.
 
+## Nachtrag zum Nachtrag: die Dateien sind da (24.08.2026, derselbe Tag)
+
+Der Abschnitt darüber sagt, die vier Dateien seien nicht dazugekommen. Wenige
+Stunden später sind sie es. Die zehn lizenzierten Packs lagen daneben, die vier
+Dateien sind nach `assets/cf/player/` kopiert und im Assets-Repo gelandet
+(`wurstbrotdlx/superduper-adventure-assets#4`), nachgemessen mit 576x3584 und
+damit auf dem 9x56-Raster à 64x64 wie `Player_Base` — Drop-ins, keine Codezeile.
+
+Die Startzeile lautet seither:
+
+```
+G9 Garderobe: 13 Formen, keine ersetzt.
+```
+
+Fass und Lott tragen wieder ihr Karohemd statt des Ersatzhemds, Trepp und
+Nieselbeck eine Kopfbedeckung.
+
+**Der Ersatzweg bleibt trotzdem stehen.** Er ist nicht das Pflaster für diese
+vier Dateien, sondern die Antwort auf die Bauart: `blitFarbFrame()` kehrt bei
+einem fehlenden Key still um, und wer ohne vollständiges Paket klont, soll
+angezogene Figuren sehen und eine Zeile lesen, die sagt warum. Ohne ihn wäre
+derselbe Fund beim nächsten Mal wieder unsichtbar.
+
+### Die Mütze, angesehen statt vermutet
+
+`Farmer_Hat_1` ist im Bild **eine breitkrempige Krempe** und nicht die flache
+Schirmmütze, die Trepps und Nieselbecks Porträts zeigen. G9 hat sie „die einzige
+echte Kopfbedeckung des Packs" genannt und damit recht behalten, auch nach der
+Gegenprobe über alle zehn Packs: 129 Dateien liegen auf dem Heldenraster, davon
+sind alle Kopf-Ebenen entweder Frisuren, Plattenhelme oder eben diese eine
+Krempe. Eine Dienstmütze gibt es nicht.
+
+**Entscheidung: die Krempe bleibt.** Eine Kopfbedeckung, die als solche
+erkennbar ist, schlägt eine Mützenfarbe auf einer Frisur — Nieselbeck hatte
+sonst weiterhin grünes Haar, und genau das sollte G9 abstellen. Der Preis steht
+im Bild: Trepp sieht damit nach Postkutscher aus und nicht nach Zusteller. Das
+ist eine Weltfrage und keine Technikfrage, sie ist gestellt und beantwortet
+worden, und sie wird hier festgehalten, damit niemand die Messung wiederholt.
+
+Die Alternativen, die dabei verworfen wurden: `hut:'muetze'` bei beiden
+streichen (ehrlicher, aber grünes Haar), die Krempe im Blatt über alle Frames zu
+einer flachen Mütze schneiden (die Lizenz erlaubte es, das Repo hat Präzedenz
+für handgeschnittene Zellen, aber es ist Pixelarbeit mit ungewissem Ausgang),
+und die beiden Fälle zu trennen.
+
+### Zweites Prüfprotokoll, mit den Dateien
+
+| Lauf | Ergebnis |
+|---|---|
+| `index.html` im Browser | 16 Guard-Zeilen, keine Warnung, **keine 404 mehr**, `G9 Garderobe: 13 Formen, keine ersetzt.`, `frameNo` 153 |
+| `node tools/build-single.mjs` | sauber, 140 eingebettete Dateien (vier mehr), `dist/index.html` 2495 KB |
+| `dist/index.html` per `file://` | 16 Guard-Zeilen, keine Warnung, keine Fehlermeldung, `frameNo` 154 |
+| `tools/figurenfarben-messlauf.mjs` | keine Abweichung, und diesmal auch **keine Notizzeile** — nichts ersetzt, niemand ohne Kopfbedeckung |
+
+Die Rastermessung der vier Dateien vor dem Kopieren: alle vier 576x3584, also
+9x56 Zellen à 64x64. Genau das, was `manifest.json` und der G9-Kommentar über
+`CF_GARDEROBE` vorhergesagt hatten.
+
+---
+
 ## Bewusst offen
 
-* **Trepp und Nieselbeck tragen ihre Mützenfarbe weiter im Haar.** G9 hat die
-  Mütze eingeführt, damit genau das aufhört, und ohne die Datei hört es nicht
-  auf. Nieselbeck hat deshalb grünes Haar. Der Guard nennt beide beim Namen, bis
-  `Farmer_Hat_1.png` im Paket liegt.
 * **Die vier 404-Zeilen im Quellbaum bleiben.** Der Browser fragt die vier
   Dateien an, bekommt sie nicht, und das steht als Netzwerkfehler in der Konsole,
   nicht als Warnung des Spiels. Im Einzeldatei-Build sind sie weg, weil
   `ASSET_BLOBS` gar nicht erst danach fragt. Sie zu unterdrücken hieße, eine
-  Ladeliste zu pflegen, die es nur für diesen Fall gäbe.
+  Ladeliste zu pflegen, die es nur für diesen Fall gäbe. *(Mit den Dateien im
+  Paket sind auch sie weg. Sie kommen wieder, sobald jemand ohne vollständiges
+  Paket klont, und das ist richtig so.)*
 * **`CF_GARDEROBE_ERSATZ` deckt nur die Garderobe, nicht die Ausrüstung des
   Spielers.** `CF_ARMOR_FILES` liegt daneben und hat denselben Ausfall nicht,
   weil alle fünf Stufen im Paket liegen. Käme dort eine Datei dazu, die fehlt,
