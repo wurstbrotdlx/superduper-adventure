@@ -270,6 +270,13 @@ eine andere Tabellenform gegeben und Zwirn weitere Zusatzblöcke, die beiden Wer
 darauf nicht nachgezogen worden. Kein Befund dieser Phase und hier nicht behoben, weil das
 Nachziehen eine Entscheidung über F1s Sollwerte verlangt und nicht über diesen Strang.
 
+> **Erledigt am 24.08.2026** in `phase-f1-nachtrag-pruefwerkzeuge.md`. Die Entscheidung ist
+> zugunsten der Sollwerte gefallen: beide Werkzeuge maßen die Welt von vor F1, keine der
+> fünfundzwanzig Zusagen war gebrochen. Zwei Angaben dieses Absatzes waren dabei zu eng
+> gefasst — es sind nicht zwei Fehlschläge, sondern dreizehn und zwölf, und bei `reich-pruef`
+> liegt es nicht an Zwirns Zusatzblöcken allein, sondern daran, dass die Gesamtlänge von
+> `figZusatz()` inzwischen acht weitere Schalter mitzählt.
+
 **Die drei neuen Prüfungen sind einzeln ausgelöst worden**, jede mit einer Verletzung, die
 danach zurückgenommen wurde. Wortlaut aus der Konsole:
 

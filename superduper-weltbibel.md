@@ -979,6 +979,15 @@ Der achte Strang in `LANGVORGAENGE` und der erste nach W7. Kapitel 10, Nummer 4:
 * **Knöterich ist nicht in der Kette**, obwohl das `a. D.` hinter seinem Titel die ganze Begründung wäre. Er erklärt Tasten und keine Zusammenhänge, und er erreicht `npcCycle()` gar nicht. Lisbeth berichtet stattdessen, was er getan hat: auf sein Schild gezeigt und nichts gesagt.
 * **Neunter Zusatzschalter** `ZUSATZ_SCHALTER.lang`: ein Strang kann von jetzt an Zeilen bei jeder Figur öffnen, ohne dass jemand einen Merker anlegt. Drei neue Prüfungen in `langAssert()`, ein neues Werkzeug `tools/langvorgang-pruef.mjs`.
 
+### F1-Nachtrag: Zwei Prüfwerkzeuge — ERLEDIGT (siehe `phase-f1-nachtrag-pruefwerkzeuge.md`)
+
+`tools/szene-pruef.mjs` und `tools/reich-pruef.mjs` standen seit F1 auf 32 von 45 und 23 von 35, gegengeprobt auf `dd209fc` mit denselben Zahlen. Keine der fünfundzwanzig gemeldeten Zusagen war gebrochen; beide Werkzeuge maßen die Welt von vor F1. An `index.html` ist keine Zeile geändert.
+
+* **Pflichtfelder, die nie welche waren.** `szene-pruef` verlangte von jeder Szene `sprecher`, `knoten`, `ende` und `sperre`. `szeneAssert()` verlangt die ersten zwei und liest `sperre` überall als `(d.sperre || [])`. Dass alle vier Felder Pflicht seien, war nie die Regel, sondern der zufällige Zustand einer Tabelle mit vier Zeilen. F1s dreizehn Bäume lassen `ende` weg, weil sie an jedem Blatt ausdrücklich über `szeneEnde()` enden und nie durchfallen, und `sperre`, weil sie mitten im Spiel laufen — derselbe Satz, den der SZ2-Block für seine drei Szenen schon aufschreibt.
+* **Eine Summe, die immer mehr Bauabschnitte mitzählt.** `reich-pruef` maß W11s Zusage als Gesamtlänge von `figZusatz()` gegen `[0, 2]`. Das trug, solange `abAkt` der einzige Schalter war; heute hängen an denselben Figuren sechs bis neun Blöcke an neun Schaltern, mehrere davon am Spielerstand und an der Tageszeit. Gemessen wird jetzt am Schalter, und zwar für jeden `abAkt`-Block, also seither auch für die, die F1 dazugelegt hat. 35 Prüfungen sind dadurch 55 geworden.
+* **Warum eine Differenz Nörgel nicht isoliert.** `amt.schichten` treibt nicht nur den Akt, sondern über die Schichtabrechnung auch den Rang: beim Schritt von Akt III nach Akt IV gehen bei ihm `abAkt=4` und `abRang=5` gemeinsam auf. Ein einzelner Block ist über die Schichten grundsätzlich nicht als Differenz zu messen. Sauber messbar ist der Merker, weil er nichts außer sich selbst bewegt.
+* **Vier Eingriffe** haben die neuen Prüfungen einzeln ausgelöst und sind zurückgenommen.
+
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 
 SZ3 der Stopfen im Steinfeld samt Blattserie I und Postregen sowie Vorblatts Ankunft, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.

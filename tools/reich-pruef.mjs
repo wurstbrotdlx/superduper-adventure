@@ -65,19 +65,53 @@ const zeilen = await page.evaluate(() => {
   CONFIG.schichtModus = true;
 
   // --- Zusatzzeilen ---------------------------------------------------------
+  // Bis zum 24.08.2026 mass dieser Abschnitt die Gesamtlaenge von figZusatz()
+  // gegen [0, 2]. Das ging nur so lange gut, wie abAkt der einzige Schalter im
+  // Spiel war. Inzwischen traegt jede dieser Figuren sechs bis neun Bloecke an
+  // abSchicht, abStufe, skill, abRang, phase, merker, zweig und lang, mehrere
+  // davon in denselben Akten, und einige eine ZWEITE abAkt-Stufe aus F1. Die
+  // Summe misst damit lauter Bauabschnitte, die W11 nichts angehen, und meldete
+  // zehn Fehlschlaege fuer eine Zusage, die gar nicht gebrochen war.
+  //
+  // Geprueft wird jetzt die Zusage selbst, und zwar am Schalter statt an der
+  // Summe: kein abAkt-Block ist einen Akt vor seinem Akt frei, jeder ist es in
+  // seinem, und jeder oeffnet zwei Zeilen. Das gilt seither auch fuer die
+  // Bloecke, die F1 dazugelegt hat, der Lauf deckt also mehr ab als vorher.
   const ZUS = {zwirn: 2, milb: 2, pommer: 2, bramsche: 3, lisbeth: 3, trepp: 3,
-               lott: 3, pahl: 3, zapf: 4, fass: 4};
+               lott: 3, pahl: 3, zapf: 4, fass: 4, noergel: 4};
   for(const k in ZUS){
-    amt.schichten = (ZUS[k] - 2) * 10;
-    const vorher = figZusatz(fig(k)).length;
-    amt.schichten = (ZUS[k] - 1) * 10;
-    const nachher = figZusatz(fig(k)).length;
-    pruef(`${k} Zusatzzeilen erst ab Akt ${ZUS[k]}`, [vorher, nachher], [0, 2]);
+    const bloecke = (fig(k).zusatz || []).filter(z => 'abAkt' in z);
+    pruef(`${k} hat einen Zusatzblock ab Akt ${ZUS[k]}`,
+          bloecke.some(z => z.abAkt === ZUS[k]), true);
+    bloecke.forEach((z, i) => {
+      // Akt 1 hat kein Davor. aktStand() deckelt bei 5, ein Block ab Akt 5
+      // waere in seinem eigenen Akt nicht mehr von Akt 4 zu unterscheiden.
+      amt.schichten = Math.max(0, (z.abAkt - 2) * 10);
+      const vorher = z.abAkt <= 1 ? false : !!ZUSATZ_SCHALTER.abAkt.frei(z.abAkt, z);
+      amt.schichten = (z.abAkt - 1) * 10;
+      const nachher = !!ZUSATZ_SCHALTER.abAkt.frei(z.abAkt, z);
+      pruef(`${k} Block ${i + 1} schaltet genau in Akt ${z.abAkt}`,
+            [vorher, nachher, z.zeilen.length], [false, true, 2]);
+    });
   }
-  amt.schichten = 30; kn.flags.hatLagerGesehen = false;
-  pruef('noergel ohne Lagerbesuch nur der Akt-Block', figZusatz(fig('noergel')).length, 2);
-  kn.flags.hatLagerGesehen = true;
-  pruef('noergel mit Lagerbesuch beide Bloecke', figZusatz(fig('noergel')).length, 6);
+  // Noergels zweiter W11-Block haengt am Merker. Sein Aktblock steht schon in
+  // der Schleife oben; als Differenz waere er nicht zu messen, weil mit den
+  // Schichten auch der Rang steigt und beim Schritt von Akt 3 nach Akt 4 zwei
+  // Bloecke aufgehen, abAkt=4 und abRang=5. Genau daran ist die alte Fassung
+  // dieses Abschnitts gescheitert.
+  //
+  // Der Merker dagegen ist als Differenz sauber zu messen: er bewegt nichts
+  // ausser sich selbst, waehrend Akt, Rang und Stufe stehenbleiben. Das ist die
+  // Zusage "sie stoeren sich nicht", und sie wird hier zweimal gestellt, in
+  // Akt 3 mit geschlossenem und in Akt 4 mit offenem Aktblock.
+  for(const [akt, sch] of [[3, 20], [4, 30]]){
+    amt.schichten = sch;
+    kn.flags.hatLagerGesehen = false;
+    const ohne = figZusatz(fig('noergel')).length;
+    kn.flags.hatLagerGesehen = true;
+    const mit = figZusatz(fig('noergel')).length;
+    pruef(`noergels Lagerblock legt in Akt ${akt} vier Zeilen dazu`, mit - ohne, 4);
+  }
   kn.flags.hatLagerGesehen = false;
 
   // --- Zyklus ---------------------------------------------------------------
