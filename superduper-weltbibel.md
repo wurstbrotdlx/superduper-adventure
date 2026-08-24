@@ -625,7 +625,7 @@ Persistent wie die Kladde. Jeder endet in einer dauerhaften Kleinigkeit, passt a
 | 1 | **Die Gießkanne** | Knöterich | Die Pflanze auf dem leeren Schreibtisch geht ein, während Knöterich krank ist. Man muss herausfinden, was sie braucht, ohne dass er es sagt. | Er redet danach eine Spur wärmer. Kein Bonus. Absichtlich kein Bonus. |
 | 2 | **Anlage 3** | Bramsche | Der Kater liegt auf der Akte. Man kann ihn nicht wegnehmen. Man muss ihm etwas Besseres anbieten. | Registratur-Zugang: eine zusätzliche Frage pro Schicht. |
 | 3 | **Das Dorffest** | Zwirn | Läuft über das ganze Spiel. Elf Anläufe, elf Absagen, jede aus einem anderen Grund. | Zahlt sich erst im Abspann aus. |
-| 4 | **Der sechste Praktikumsbericht** | Lisbeth | Sie braucht eine weisungsbefugte Unterschrift. Es gibt keine. Am Ende unterschreibt Nörgel, weil er im Dienst ist. | Schafft den **Präzedenzfall**, dass ein Monster wirksam unterschreiben kann. Ohne diesen Fall funktioniert Akt V nicht. |
+| 4 | **Der sechste Praktikumsbericht** *(gebaut, `phase-lv4-praktikumsbericht.md`)* | Lisbeth | Sie braucht eine weisungsbefugte Unterschrift. Es gibt keine. Am Ende unterschreibt Nörgel, weil er im Dienst ist. Acht Beats über Lisbeth, Zwirn, Bramsche, Vorblatt und Nörgel. | Schafft den **Präzedenzfall**, dass ein Monster wirksam unterschreiben kann. Ohne diesen Fall funktioniert Akt V nicht. Im Spiel: zwei Zeilen bei Lisbeth, zwei bei Nörgel und ein zweiter Absatz im vierten Puzzleteil des Finales. Kein Bonus. |
 | 5 | **Die Kaffeemaschine** | Zapf | Die Maschine im Amt ist das Schwestergerät des Kessels. Sie ist beleidigt. | Der bestehende Jahresbonus "Kaffeemaschine" bekommt seine Geschichte. |
 | 6 | **Nörgels Probezeit** | Nörgel | Vierzig Jahre Probe. Man sammelt seine eigenen Dienstberichte und legt sie ihm vor. | Er redet. Er ist die zweite Hinweisquelle im Spiel, und zwar die ehrlichere. |
 | 7 | **Der falsche Gutachter** | Dr. Milb | Man weist ihm nach, dass er systematisch eine Stufe danebenliegt. Erfordert Buchführung über mehrere Schichten. | Kammerschilder zeigen danach den echten Wert. Ein Ausbau, der aus einer Geschichte entsteht. |
@@ -636,9 +636,13 @@ Persistent wie die Kladde. Jeder endet in einer dauerhaften Kleinigkeit, passt a
 | 12 | **Der richtige Wortlaut** *(W11, entworfen, nicht gebaut)* | Bramsche und Pommer | Die Archivausfertigung liegt in Zimmer 4. Bramsche gibt sie ohne korrekt gestellten Antrag nicht heraus. Pommer weiß, wie ein Antrag formuliert sein muss, weil er nur ausgibt, was dasteht. Man muss beiden dieselbe Sache in verschiedenen Worten erzählen. | Die Archivausfertigung. Sie beweist, dass der Krieg nicht zu Ende ist, und ist in Akt V das Blatt, das Sturz gegenzeichnet. |
 | 13 | **Einundvierzig Blätter** *(W11, entworfen, nicht gebaut)* | Vorblatt | Jeden Zwischenbescheid sammeln, den er je in dieses Haus geschickt hat. Vierzig liegen im Schreibtisch, der einundvierzigste klebt in Akt V auf dem Umschlag. | Wer alle hat, darf Vorblatt in Szene 7 eine fünfte Antwort geben. | 
 
-**Zum Stand der vier neuen.** Sie sind in `weltgeschichte.md`, Kapitel 10, vollständig entworfen und stehen hier, damit die Tabelle vollständig ist. Gebaut ist keiner von ihnen. Im Code stehen weiterhin sieben Stränge in `LANGVORGAENGE`; die Zahl neun in der Überschrift war schon vorher eine Planungszahl und keine Codezahl.
+**Zum Stand der vier neuen.** Sie sind in `weltgeschichte.md`, Kapitel 10, vollständig entworfen und stehen hier, damit die Tabelle vollständig ist. Gebaut ist keiner von ihnen.
+
+**Stand im Code: acht Stränge in `LANGVORGAENGE`.** Sieben aus W7, dazu Nummer 4 aus Langvorgang 4 (`phase-lv4-praktikumsbericht.md`, 24.08.2026). Nummer 8, die Zustellung, ist weiterhin der W5-Hauptstrang selbst und kein Tabelleneintrag. Die Zahl neun in der alten Überschrift war schon vorher eine Planungszahl und keine Codezahl.
 
 **Regel für alle Langvorgänge:** Sie dürfen den Spielfluss nie blockieren. Kein Langvorgang darf für den Hauptvorgang notwendig sein, mit genau einer Ausnahme: Nummer 4, und die ist so gebaut, dass sie nebenbei mitläuft.
+
+**Wie diese Ausnahme gebaut ist** *(nachgetragen mit Langvorgang 4)*, weil der Satz oben sonst zwei Dinge auf einmal verlangt: „notwendig" ist erzählerisch gemeint und nicht mechanisch. Nummer 4 ist an keiner Stelle Bedingung, `vorgangZustellbar()` liest ihn nicht, das Finale wird nie verweigert, und `langAssert()` beweist das weiterhin positiv. Was er ändert, ist das vierte Puzzleteil des fünften Aktes: mit Präzedenzfall ist Sturz' Begründung ein Rückgriff, ohne ihn ein Zufall. Der Wortlaut aus Kapitel 9 steht in beiden Fällen da, der Zusatz kommt dazu und nimmt nichts weg. Wer den Strang verpasst, spielt das Spiel bis zum Ende durch und merkt nichts davon.
 
 ---
 
@@ -965,6 +969,15 @@ Zweiter der vier Abschnitte. SZ1 hatte genau eine Szene, und die lief vor dem Sp
 * **Szene 4, „Knöterichs einer Satz“:** ab Akt IV, wenn der Spieler die vollständige Anschrift hat. Drei Antworten, dann das Wort *Hintermühl*, dann geht er.
 * **Der Nachklang steht bei Lott und Pahl.** Zwei neue Anlässe, `umlauf` und `hintermuehl`, gebaut wie ihre Kampfanlässe. Sie fallen genau einmal, weil `npcSprechen()` `letzterAnlass` beim Lesen verbraucht.
 * **Die Wortsperre gilt für keine der drei.** Sie handeln von der Akte; das ist ihr Inhalt und nicht ihr Fehler.
+
+### LV4: Der sechste Praktikumsbericht — ERLEDIGT (siehe `phase-lv4-praktikumsbericht.md`)
+
+Der achte Strang in `LANGVORGAENGE` und der erste nach W7. Kapitel 10, Nummer 4: Lisbeth braucht eine weisungsbefugte Unterschrift, es gibt keine, am Ende unterschreibt Nörgel, weil er im Dienst ist.
+
+* **Acht Beats an fünf Figuren** (Lisbeth, Zwirn, Bramsche, Vorblatt, Nörgel), Bauform und Tabelle unverändert aus W7. Kein neues System, kein `amt`-Feld, kein `apply()`, kein Merker im Spielstand, keine neue Kachel.
+* **Der Präzedenzfall wirkt im Finale und nirgends sonst.** `VORGANG_PUZZLE` kennt seit W5 `frei`/`text`/`sonst`; das vierte Teil hat jetzt beide Fassungen. Der Kanon aus Kapitel 9 steht in der `sonst`-Fassung, damit ein fehlender Strang nichts wegnimmt.
+* **Knöterich ist nicht in der Kette**, obwohl das `a. D.` hinter seinem Titel die ganze Begründung wäre. Er erklärt Tasten und keine Zusammenhänge, und er erreicht `npcCycle()` gar nicht. Lisbeth berichtet stattdessen, was er getan hat: auf sein Schild gezeigt und nichts gesagt.
+* **Neunter Zusatzschalter** `ZUSATZ_SCHALTER.lang`: ein Strang kann von jetzt an Zeilen bei jeder Figur öffnen, ohne dass jemand einen Merker anlegt. Drei neue Prüfungen in `langAssert()`, ein neues Werkzeug `tools/langvorgang-pruef.mjs`.
 
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 
