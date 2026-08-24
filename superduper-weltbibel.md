@@ -1040,9 +1040,21 @@ Der erste Schritt aus `WELT-ERWEITERUNG-2026-08-24.md`: nicht größer, sondern 
 
 **Abnahme:** Kein Auftrag, kein Langvorgang, kein Aktenfund und keine Adresszeile hängt an der unteren Ebene. Wer nie hinabsteigt, spielt das Spiel unverändert weiter.
 
-### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
+### SZ3: Der Stopfen und die Entklammerung — ERLEDIGT (siehe `phase-sz3-stopfen.md`)
 
-SZ3 der Stopfen im Steinfeld samt Blattserie I und Postregen sowie Vorblatts Ankunft, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.
+Szenen 5 und 6, beide aus `weltgeschichte.md` Kapitel 8 übernommen, kein Satz erfunden. Der zweite Schritt aus `WELT-ERWEITERUNG-2026-08-24.md`.
+
+* **Die brummende Stelle ist kein Ziel, sondern eine Wahrnehmung.** Kein Marker, kein Pfeil, kein Eintrag im Brett — wer näher als 150 Pixel steht, liest „Der Boden brummt", und mehr gibt es nicht. Sie brummt ausdrücklich schon vor Akt IV, weil sie seit 741 brummt; nur das Angebot hängt am Akt. Gesucht statt gewürfelt, wie die Koppel in G11 und die Buchten in G12, und einmal je Welt statt einmal je Schicht.
+* **Langvorgang 10, der erste Strang mit Ortsschritten.** Nachsehen, freilegen, Zapf holen, öffnen. Bei Stufe 2 bietet die Stelle nichts an, weil dort Zapf fehlt und der im Dorf steht.
+* **Serie I ist der dritte Fundweg** und der einzige, der an einem Ereignis hängt statt an einem Ort: sechs Blätter, überall, aber erst nach dem Stopfen. Der Bestand geht von 48 auf 54 in sieben Serien.
+* **Der Postregen ist die Ankündigung, nicht das Finale.** Drei Schichten Papier im Dorf, aus dem vorhandenen Konfetti. Der Postregen des Endes bleibt dem Ende vorbehalten.
+* **Vorblatt kommt an, statt dazustehen.** W11 hat ihn auf Akt III gesetzt und seinen Auftritt selbst als offen geführt. Seit SZ3 ist der Auftritt gebaut, also gilt er: `abAkt` 4 plus `daWenn`, und Szene 6 ist die Ankunft. Sie fällt zwei Schichten nach dem Stopfen oder zwei Schichten nach der vierten Adresszeile, der frühere Weg gewinnt. Damit hat der Stopfen den Preis, den die Weltgeschichte ihm gibt: nicht dass der Gegenspieler kommt, sondern wann.
+
+**Abnahme:** Wer nie ins Steinfeld geht, spielt das Spiel unverändert zu Ende. Der Strang ist für den Hauptvorgang nirgends Bedingung, die Ausfertigung hängt weiter allein an den vier Adresszeilen.
+
+### SZ4: Die übrigen drei Szenen — OFFEN
+
+Die Versuchung als Versammlung im Amtsflur, die Zustellung als Ausbau von `vorgangPanel()`, der Abspann als Tafelstapel. Szene 8 und 9 existieren dort bereits in Kurzform. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.
 
 ### Was wir ausdrücklich nicht bauen
 

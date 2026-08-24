@@ -22,8 +22,10 @@
 //   der Abstieg         baut die Ebene neu: eigene Raeume, eigene Tore, eigene
 //                       Truhe (zu), eigene Ausgangsrune, Spieler am Einstieg,
 //                       kein zweites Loch im Boden
-//   Waechter            unten stehen nur die drei der Sperrablage, und mehr je
-//                       Raum als oben
+//   Waechter            unten stehen nur die drei der Sperrablage plus der Alte
+//                       Schrecken. Die DICHTE prueft dieser Lauf nicht mehr —
+//                       sie haengt an der Modulwahl und gehoert deshalb in
+//                       ebene-messlauf.mjs, der ueber vierzig Kammern mittelt
 //   einmal je Kammer    die zweite Truhe zaehlt den Auftrag NICHT ein zweites
 //                       Mal und laesst die Tuer nicht doppelt nachwachsen. Das
 //                       ist der Fund, den kein Bild zeigt und jede
@@ -175,7 +177,7 @@ const unten = await page.evaluate(() => {
     cdUnveraendert: kammer.tuer.cd === cdVorher,
     ereignisUnveraendert: window.__kammerEreignis === ereignisVorher,
     goldUnveraendert: player.gold === goldVorher,
-    stollenRoster: KAM_STOLLEN.slice(),
+    stollenRoster: KAM_STOLLEN.slice(), aufschlag: KAM_EBENE2_WAECHTER,
     startBegehbar: walkT(Math.floor(kammer.start.x/TS), Math.floor(kammer.start.y/TS)),
     truheBegehbar: walkT(Math.floor(kammer.truhe.x/TS), Math.floor(kammer.truhe.y/TS)),
     leiterGeladen: !!(SHEETS['dun3_ladder'] && SHEETS['dun3_ladder'].img),
@@ -204,8 +206,18 @@ pruef('unten stehen nur Waechter der Sperrablage und der Schatzkammer',
       unten.waechter.filter(t => unten.stollenRoster.indexOf(t) < 0 && t !== 'bossgeneric'), []);
 pruef('der Alte Schrecken bewacht auch die untere Truhe',
       unten.waechter.indexOf('bossgeneric') >= 0, true);
-pruef('und mehr je Raum als oben',
-      unten.waechterUnten / Math.max(1, unten.mods) > unten.obenWaechter / Math.max(1, unten.raeumeOben - 2), true);
+// Die Wächterdichte wird hier NICHT mehr verglichen, und das ist eine
+// Berichtigung: die Zeile stand bis SZ3 als Soll-Ist-Vergleich an einer
+// Stichprobe von genau einer Kammer und ist deshalb geflackert. Zwei der acht
+// Raetselmodule setzen ihre Waechter selbst (`welle` spawnt 3 + diff und traegt
+// keineWaechter), und ob eines davon gezogen wird, entscheidet der Zufall —
+// der Vergleich mass also mal die Regel und mal die Modulwahl.
+//
+// Was hier bleibt, ist die Regel selbst (sie ist deterministisch), und die
+// Dichte misst `ebene-messlauf.mjs` ueber vierzig Kammern. Eine Verteilung
+// gehoert in einen Messlauf und nicht in eine Zeile mit ist und soll.
+pruef('der Aufschlag je Raum steht in der Tabelle', unten.aufschlag >= 1, true);
+pruef('und unten steht wirklich jemand', unten.waechterUnten >= 2, true);
 pruef('der Abstieg zaehlt keinen Kammerabschluss', unten.ereignisUnveraendert, true);
 pruef('er laesst die Tuer nicht doppelt nachwachsen', unten.cdUnveraendert, true);
 pruef('und zahlt beim Abstieg selbst nichts aus', unten.goldUnveraendert, true);

@@ -65,11 +65,16 @@ const zeilen = await page.evaluate(() => {
     schichtModus: CONFIG.schichtModus, schichten: amt.schichten,
     lang: JSON.stringify(kladde.lang), vorgang: JSON.stringify(kladde.vorgang),
     crafts: kladde.crafts, roh: localStorage.getItem(KLADDE_KEY),
+    // SZ3: Vorblatts Anwesenheit haengt seit der Entklammerung nicht mehr am
+    // Akt allein, sondern an seiner Ankunft. Die Kette laeuft ueber ihn, also
+    // muss dieser Lauf sie herstellen koennen — und hinterher zuruecknehmen.
+    vorblatt: kn.flags.szeneVorblatt,
   };
   const zurueck = () => {
     CONFIG.schichtModus = sicherung.schichtModus; amt.schichten = sicherung.schichten;
     kladde.lang = JSON.parse(sicherung.lang); kladde.vorgang = JSON.parse(sicherung.vorgang);
     kladde.crafts = sicherung.crafts;
+    kn.flags.szeneVorblatt = sicherung.vorblatt;
     if(sicherung.roh === null) localStorage.removeItem(KLADDE_KEY);
     else localStorage.setItem(KLADDE_KEY, sicherung.roh);
   };
@@ -94,9 +99,12 @@ const zeilen = await page.evaluate(() => {
   }
 
   // --- Die Kette, Schritt fuer Schritt --------------------------------------
-  // Akt III, damit Vorblatt im Dorf steht. Gelaufen wird ueber langAnsprechen(),
-  // also genau den Pfad, den npcCycle() nimmt.
-  amt.schichten = 25; kladde.lang = {}; langSchicht = {};
+  // Akt IV und angekommen, damit Vorblatt im Dorf steht. SZ3 hat ihn von Akt III
+  // auf Akt IV geschoben und zusaetzlich an die Entklammerung gehaengt; beides
+  // muss hier stehen, sonst haelt die Kette bei Stufe 3, und genau das hat
+  // dieser Lauf beim ersten Mal nach SZ3 gemeldet. Gelaufen wird ueber
+  // langAnsprechen(), also genau den Pfad, den npcCycle() nimmt.
+  amt.schichten = 35; kn.flags.szeneVorblatt = true; kladde.lang = {}; langSchicht = {};
   const FALSCH = {lisbeth: 'trepp', zwirn: 'trepp', bramsche: 'trepp', vorblatt: 'trepp', noergel: 'trepp'};
   for(let i = 0; i < BERICHT_DRAN.length; i++){
     const dran = BERICHT_DRAN[i];
@@ -114,12 +122,18 @@ const zeilen = await page.evaluate(() => {
   pruef('eine fertige Kette meldet keine Zeile mehr', langAnsprechen('lisbeth'), null);
 
   // --- Die Kette haelt an Vorblatt, solange Oben nicht da ist ---------------
-  amt.schichten = 15; kladde.lang = {}; langSchicht = {};       // Akt II
+  // Seit SZ3 ist "Oben ist da" keine Schichtzahl mehr, sondern ein Ereignis.
+  // Der Lauf prueft deshalb beide Haelften einzeln: der Akt allein reicht nicht,
+  // und die Ankunft allein auch nicht.
+  amt.schichten = 15; kn.flags.szeneVorblatt = false; kladde.lang = {}; langSchicht = {};   // Akt II
   for(let runde = 0; runde < 4; runde++) for(const k of BERICHT_DRAN) langAnsprechen(k);
   pruef('in Akt II haelt die Kette an Stufe 3', langStufe('bericht'), 3);
-  amt.schichten = 25;
+  amt.schichten = 35;                                            // Akt IV, aber nicht angekommen
   for(let runde = 0; runde < 6; runde++) for(const k of BERICHT_DRAN) langAnsprechen(k);
-  pruef('ab Akt III laeuft sie durch', langStufe('bericht'), 8);
+  pruef('Akt IV allein loest sie nicht', langStufe('bericht'), 3);
+  kn.flags.szeneVorblatt = true;                                 // die Entklammerung ist gelaufen
+  for(let runde = 0; runde < 6; runde++) for(const k of BERICHT_DRAN) langAnsprechen(k);
+  pruef('erst mit der Entklammerung laeuft sie durch', langStufe('bericht'), 8);
 
   // --- Belohnung ------------------------------------------------------------
   kladde.lang = {bericht: rohEnde};
