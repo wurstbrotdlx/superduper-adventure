@@ -377,7 +377,7 @@ entsprechen. Zusammen 1098 Byte.
 | Datei | Quelle | Rect | Verwendung |
 |---|---|---|---|
 | `ui/slot_dark.png` | `UI_Buttons.png` | (129,17) 14x14 | Beutel-, Ausruestungs-, Zutaten- und Symbolfelder |
-| `ui/btn_close.png` | `UI_Buttons.png` | (737,33) 14x14 | Schliessknopf aller sieben Panels |
+| `ui/btn_close.png` | `UI_Buttons.png` | (737,33) 14x14 | Schliessknopf aller acht Panels mit Kopfband |
 | `ui/btn_pill.png` | `UI_Buttons.png` | (1,17) 30x14 | Kochknopf, Overlay-Knoepfe, Amtsstuben-Knopf |
 | `ui/sel_white.png` | `UI_Selectors.png` | (11,10) 26x28 | Auswahlrahmen: Feld unter dem Zeiger, aktiver Zauber |
 

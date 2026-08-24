@@ -115,6 +115,48 @@
   .ultNode.unlockable{border-color:#f4d97a;}
   .ultNode.locked{opacity:0.5;cursor:not-allowed;}
 
+  /* --- K1: Zulagen. Die Karte ist das einzige neue Formteil; Panelgrund,
+     Kopfband, Schliessknopf und Rollbalken erbt #zulagen aus der U1-Gruppe
+     weiter unten. Seitenverhaeltnis wie eine Karteikarte, Stufe II gold,
+     Stufe III violett mit Schein — dieselbe Lesart wie .rar2/.rar3 und
+     .ultNode.known, damit ein Kracher aussieht wie ein Kracher. --- */
+  #zulagen{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 48px));max-height:88vh;overflow-y:auto;z-index:20;display:none;
+       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
+  #zulagen h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  #zulagen h4{margin:12px 0 4px;font-size:calc(12px * var(--fs));color:#c9a227;display:flex;justify-content:space-between;align-items:baseline;}
+  #zulagen h4 span{color:#9a8a5f;font-weight:normal;font-size:calc(10px * var(--fs));}
+  .zulSub{font-size:calc(11px * var(--fs));color:#9a8a5f;margin-bottom:6px;line-height:1.4;}
+  .zulReihe{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  /* Die Kartei traegt dieselben drei Spalten wie die Reihen darueber, nur
+     flachere Karten. Vier waren einmal drin und teilten 'Grossbrandverfuegung'
+     mitten im Wort: dieses Haus baut lange Woerter, und die Spalte hat sich
+     danach zu richten, nicht umgekehrt. */
+  .zulReihe.klein{grid-template-columns:repeat(3,1fr);}
+  /* min-width:0 und die Trennung sind kein Feinschliff: Rasterfelder stehen von
+     Haus aus auf min-width:auto, und ein langes Wort wie 'Vollziehbarkeit'
+     drueckt seine Spalte dann breiter als ihren Anteil. Auf 390px Breite lief
+     damit die dritte Karte aus dem Panel heraus. hyphens:auto trennt nach den
+     Regeln der Dokumentsprache (das <html> traegt lang="de"), break-word ist
+     nur der Notnagel darunter: 'Haerte-fallregelung' liest sich, 'Haertefallre'
+     mit hartem Bruch nicht. Amtsdeutsch baut lange Woerter, das ist hier
+     Programm und muss die Karte deshalb aushalten. */
+  .zulKarte{border:2px solid #4c4030;border-radius:8px;background:#141009;padding:7px 6px;text-align:center;cursor:pointer;
+       display:flex;flex-direction:column;gap:3px;min-height:132px;position:relative;
+       min-width:0;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word;}
+  .zulKarte .zStufe{position:absolute;top:3px;right:6px;font-size:calc(9px * var(--fs));color:#c9a227;letter-spacing:1px;}
+  .zulKarte .zText{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .zulKarte .zIcon{font-size:calc(24px * var(--fs));line-height:1.15;}
+  .zulKarte .zName{font-weight:bold;font-size:calc(11px * var(--fs));color:#e8d9a8;line-height:1.25;}
+  .zulKarte .zSatz{font-size:calc(9px * var(--fs));color:#9a8a5f;line-height:1.3;}
+  .zulKarte.s2{border-color:#c9a227;}
+  .zulKarte.s3{border-color:#c77dff;box-shadow:0 0 8px rgba(199,125,255,.5);}
+  .zulKarte.angelegt{border-color:#6aff8f;background:#132014;}
+  .zulKarte.leer, .zulKarte.zu{border-style:dashed;opacity:.5;cursor:default;justify-content:center;}
+  .zulReihe.klein .zulKarte{min-height:106px;}
+  .zulReihe.klein .zulKarte .zIcon{font-size:calc(19px * var(--fs));}
+  .zulLeer{font-size:calc(11px * var(--fs));color:#9a8a5f;line-height:1.5;}
+  .zulRest{margin-top:7px;font-size:calc(10px * var(--fs));color:#c9a227;}
+
   /* Rarities */
   .rar0{border-color:#b8b8b0; color:#e8e8e0;}
   .rar1{border-color:#5c86ff; color:#5c86ff;}
@@ -301,9 +343,10 @@
   #overlay button:hover{filter:brightness(1.1);}
 
   /* =====================================================================
-     U1 — Menue-Anmutung. Sieben Panels (#inv, #spellTree, #kessel, #schloss,
-     #ausweis, #fullmap, #amtFenster) tragen seit jeher dieselbe Rezeptur in
-     sieben Kopien: rgba(20,14,24,.96), 3px #8a6d3b, radius 10, padding 14.
+     U1 — Menue-Anmutung. Acht Panels (#inv, #spellTree, #kessel, #schloss,
+     #ausweis, #fullmap, #amtFenster, #zulagen) tragen seit jeher dieselbe
+     Rezeptur in acht Kopien: rgba(20,14,24,.96), 3px #8a6d3b, radius 10,
+     padding 14. (#zulagen kam mit K1 dazu und erbt hier alles.)
      Darueber legt bakeUiSkin() den Pixelrahmen aus UI_Frames.png (G5).
      Was zwischen Rahmen und Inhalt fehlte, ergaenzt dieser Block:
      ein Kopfband, das beim Scrollen stehen bleibt, ein Grund, der sich vom
@@ -321,7 +364,7 @@
      setzen weiter unten background-color auf .93 (durchsichtiger, weil das
      Panel dort fast den ganzen Schirm fuellt) — mit der Kurzschrift haetten
      sie diesen Verlauf mitgeloescht. */
-  #inv, #spellTree, #kessel, #schloss, #ausweis, #fullmap, #amtFenster{
+  #inv, #spellTree, #kessel, #schloss, #ausweis, #fullmap, #amtFenster, #zulagen{
     background-image:
       linear-gradient(rgba(78,56,32,.38), rgba(78,56,32,0) 150px),
       linear-gradient(rgba(24,17,28,.25), rgba(6,4,10,.45));
@@ -338,7 +381,7 @@
      knopf aus dem Bild, und der Weg zurueck war Esc oder Hochscrollen.
      top:-14px = negatives Panel-Padding, damit es buendig oben klebt. */
   #inv > h2, #spellTree > h2, #kessel > h2, #schloss > h2,
-  #ausweis > h2, #fullmap > h2, #amtFenster > h2{
+  #ausweis > h2, #fullmap > h2, #amtFenster > h2, #zulagen > h2{
     position:sticky;top:-14px;z-index:3;
     margin:-14px -14px 12px;padding:10px 14px;gap:10px;
     background:linear-gradient(#3d2e19,#261c0f 65%,#1b1309);
@@ -375,7 +418,7 @@
      unten). Nur background-image — border-color und box-shadow bleiben frei,
      die gehoeren den Seltenheitsklassen .rar0..4 und den Zustandsklassen. */
   .bagSlot, .eqSlot, .zutTile, .potSlot, .symBtn, .kTab, .spellNode,
-  .knToneBtn, .schriftBtn, .ultNode, #schlossAnz, #statBox, #kesselResult{
+  .knToneBtn, .schriftBtn, .ultNode, .zulKarte, #schlossAnz, #statBox, #kesselResult{
     background-image:
       radial-gradient(ellipse at 50% -10%, rgba(255,236,192,.11), transparent 68%),
       linear-gradient(rgba(255,255,255,.03), rgba(0,0,0,.30));
@@ -397,13 +440,15 @@
 
   /* Rollbalken. Der Systembalken ist hellgrau und der einzige Fleck im Panel,
      der nicht aus dieser Welt stammt. */
-  #inv, #spellTree, #kessel, #ausweis{scrollbar-width:thin;scrollbar-color:#7a5f33 rgba(0,0,0,.35);}
+  #inv, #spellTree, #kessel, #ausweis, #zulagen{scrollbar-width:thin;scrollbar-color:#7a5f33 rgba(0,0,0,.35);}
   #inv::-webkit-scrollbar, #spellTree::-webkit-scrollbar,
-  #kessel::-webkit-scrollbar, #ausweis::-webkit-scrollbar{width:10px;}
+  #kessel::-webkit-scrollbar, #ausweis::-webkit-scrollbar, #zulagen::-webkit-scrollbar{width:10px;}
   #inv::-webkit-scrollbar-track, #spellTree::-webkit-scrollbar-track,
-  #kessel::-webkit-scrollbar-track, #ausweis::-webkit-scrollbar-track{background:rgba(0,0,0,.35);}
+  #kessel::-webkit-scrollbar-track, #ausweis::-webkit-scrollbar-track,
+  #zulagen::-webkit-scrollbar-track{background:rgba(0,0,0,.35);}
   #inv::-webkit-scrollbar-thumb, #spellTree::-webkit-scrollbar-thumb,
-  #kessel::-webkit-scrollbar-thumb, #ausweis::-webkit-scrollbar-thumb{
+  #kessel::-webkit-scrollbar-thumb, #ausweis::-webkit-scrollbar-thumb,
+  #zulagen::-webkit-scrollbar-thumb{
     background:linear-gradient(#9a7c44,#5a4a2d);border-radius:6px;
     border:2px solid transparent;background-clip:padding-box;}
 
@@ -413,7 +458,7 @@
      kein Abschneiden, sondern ein Verdecken. Jetzt endet das Panel oberhalb des
      HUD-Streifens (96px hoch, plus Luft). Auf Mobil ueberschreiben die
      Breakpoints weiter unten diese Werte wie bisher. */
-  #inv, #spellTree, #kessel{
+  #inv, #spellTree, #kessel, #zulagen{
     max-height:calc(100vh - 200px);
     max-height:max(260px, calc(100dvh - 200px));
   }
@@ -919,6 +964,30 @@
       max-height:max(240px, calc(100dvh - 341px));
       background-color:rgba(20,14,24,.93);
     }
+    /* K1: Zulagen wie der Kessel, breit und oben verankert. Die Kartei rueckt
+       auf drei Spalten, vier waeren auf 360px Breite Briefmarken. */
+    #zulagen{
+      top:56px; left:8px; transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px);
+      max-height:calc(100vh - 341px);
+      max-height:max(240px, calc(100dvh - 341px));
+      background-color:rgba(20,14,24,.93);
+    }
+    /* Auf 360 bis 390px Breite bleiben je Karte rund hundert Pixel, und darin
+       steht kein Wort dieses Hauses. 'Haertefallregelung' braucht auf Courier
+       das Anderthalbfache, hyphens:auto hilft nur, wo der Browser ein deutsches
+       Trennwoerterbuch mitbringt, und darauf ist kein Verlass. Statt die Schrift
+       zu schrumpfen, bis sie niemand mehr liest, wird die Karte zur Zeile:
+       Sinnbild links, Text rechts, eine je Reihe. Drei Zeilen untereinander sind
+       auf einem Telefon ohnehin die Form, in der man waehlt. */
+    .zulReihe, .zulReihe.klein{grid-template-columns:1fr;gap:6px;}
+    .zulKarte{flex-direction:row;align-items:center;text-align:left;gap:10px;min-height:0;padding:8px 10px;}
+    .zulReihe.klein .zulKarte{min-height:0;}
+    .zulKarte .zIcon, .zulReihe.klein .zulKarte .zIcon{font-size:calc(26px * var(--fs));flex:0 0 auto;}
+    .zulKarte .zText{min-width:0;}
+    .zulKarte .zStufe{position:static;margin-left:auto;flex:0 0 auto;align-self:flex-start;}
+    .zulKarte .zSatz{font-size:calc(11px * var(--fs));}
+    .zulKarte.leer, .zulKarte.zu{justify-content:center;text-align:center;padding:12px 10px;}
     #schloss{
       top:56px; left:8px; transform:none; box-sizing:border-box;
       width:calc(100vw - 16px); background-color:rgba(20,14,24,.93);
@@ -1059,6 +1128,7 @@
       <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:calc(11px * var(--fs));">· (E)</span></div>
       <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:calc(11px * var(--fs));">🔒 Ult (R)</span></div>
       <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨<span class="bl">Zauber</span><span id="spBadge" style="color:#c77dff;display:none;">★</span></div>
+      <div class="beltSlot" id="zulagenBtn" title="Zulagen (Z)">🗂️<span class="bl">Zulagen</span><span id="zulBadge" style="color:#5ac8ff;display:none;">★</span></div>
       <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒<span class="bl">Inv</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span></div>
       <div class="beltSlot" id="aktionBtn" title="Benutzen (F)" style="display:none;">🖐️ <span id="aktionTxt">Benutzen</span></div>
       <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;">🏳️<span class="bl">Abbruch</span></div>
@@ -1185,6 +1255,17 @@
   <h2>ZAUBERBAUM <span style="font-size:calc(11px * var(--fs));color:#e8d9a8;">Punkte: <span id="spellPtsCount">0</span></span> <span style="cursor:pointer" id="closeSpellBtn">✖</span></h2>
   <div id="spellCols"></div>
   <div id="ultimateRow"></div>
+</div>
+
+<!-- K1: Zulagen. Statisches Geruest wie #spellTree, Inhalt schreibt
+     renderZulagen(). Der Schliessknopf traegt .panelZu und erbt damit
+     Rundknopf, Hover und die cfuiX-Zelle, ohne eine eigene ID in drei
+     Selektorlisten nachzutragen. -->
+<div id="zulagen">
+  <h2>🗂️ ZULAGEN <span class="panelZu" style="cursor:pointer" id="closeZulagenBtn">✖</span></h2>
+  <div id="zulZiehung"></div>
+  <div id="zulMappe"></div>
+  <div id="zulKartei"></div>
 </div>
 
 <!-- U3: Das Gespraechsfenster. Die Huelle steht im HTML, damit bakeUiSkin()
@@ -6014,6 +6095,145 @@ const WIRKUNG = {
     satz:['Verschlossene Türen stehen dir auf der Karte.', 'Türen und Truhen stehen dir auf der Karte.', 'Auf deiner Karte ist nichts mehr geheim.']},
 };
 
+// ===========================================================================
+//  K1: DIE ZULAGEN — was die Personalstelle nach jedem Aufstieg vorlegt
+//
+//  Die Fiktion (Weltbibel Kapitel 5): das Haus zahlt keine Erfahrung aus, es
+//  genehmigt sie. Mit jedem Aufstieg legt die Personalstelle drei Zulagen vor,
+//  eine wird bewilligt, die anderen beiden gelten als nicht beantragt. Getragen
+//  wird in der Dienstmappe, und die fasst wenig: ein Fach bis Stufe 5, zwei bis
+//  Stufe 15, drei darueber. Was nicht eingelegt ist, liegt in der Kartei und
+//  laesst sich ausserhalb des Gefechts umstecken.
+//
+//  Der Bezeichner heisst ueberall zulage*, nie karte*: FX.karte ist seit
+//  Phase 3 die Wirkung 'Aktenlage' und 'Karte' im Anzeigetext ist die Weltkarte.
+//  'Befugnis' war auch vergeben, das ist seit Z2 die Zaubererlaubnis ab Stufe 4.
+//
+//  Aufbau je Familie, absichtlich derselbe Schnitt wie WIRKUNG oben:
+//    name       Amtsname der Karte
+//    icon       Sinnbild, steht nur auf der Karte, nie im Satz
+//    fx         Aggregat-Schluessel in FX. Entweder ein bestehender (dann erbt
+//               die Karte den Hook der Kessel-Wirkung) oder einer der sechs
+//               neuen aus K1 (Waffengattung, Zauberzweig).
+//    wert       Zaehlerpunkte je Stufe I/II/III. Stufe I ist genau ein
+//               Wirkungsrang, Stufe III liegt einen Punkt ueber dem Unikat der
+//               Ausruestung. Das ist der Kracher, und er braucht keine zweite
+//               Formel: alle Deckel (Bollwerk 40, Sparsamkeit 55, Crit 75) sind
+//               Math.min an ihrer Fundstelle und fangen jede Summe.
+//    stapelbar  ob zwei gleiche Karten gleichzeitig in der Mappe liegen duerfen
+//    unikat     Name der Stufe III, wie bei WIRKUNG
+//    modus      nur mit dieser Waffengattung wirksam (dagger/sword/doubleaxe)
+//    zweig      nur fuer diesen Zauberzweig wirksam (0 Feuer, 1 Frost, 2 Arkan)
+//    satz       Anzeigetext je Stufe. Ganze Saetze, KEINE Zahlen, keine
+//               Gedankenstriche (Weltbibel Kapitel 13). Gerechnet wird intern,
+//               zulagenAssert() prueft beides bei jedem Laden nach.
+//
+//  Diese Tabelle steht VOR recalc() (das noch auf Skriptebene laeuft) und vor
+//  player. Das ist dieselbe TDZ-Disziplin wie bei den S1-Konstanten weiter unten.
+// ===========================================================================
+const ZULAGE = {
+  // --- Waffengattung. Bis K1 war w.base.mode reine Animationswahl. ----------
+  stichprobe: {name:'Stichprobe', icon:'🔪', fx:'dolch', modus:'dagger',
+    wert:[1,2,4], stapelbar:true, unikat:'Stichprobe ohne Vorankündigung',
+    satz:['Dein Dolch nimmt Stichproben.',
+          'Deine Stichproben fallen gründlich aus.',
+          'Jede Stichprobe gilt als vollständige Prüfung.']},
+  klingenzulage: {name:'Klingenzulage', icon:'⚔️', fx:'schwert', modus:'sword',
+    wert:[1,2,4], stapelbar:true, unikat:'Hoheitliche Klingenführung',
+    satz:['Dein Schwert liegt besser in der Hand.',
+          'Dein Schwert liegt deutlich besser in der Hand.',
+          'Dein Schwert gilt amtlich als Argument.']},
+  pauschalabfertigung: {name:'Pauschalabfertigung', icon:'🪓', fx:'axt', modus:'doubleaxe',
+    wert:[1,2,4], stapelbar:true, unikat:'Spaltung letzter Instanz',
+    satz:['Deine Axt fertigt gründlicher ab.',
+          'Deine Axt fertigt erheblich gründlicher ab.',
+          'Was deine Axt trifft, ist abschließend geteilt.']},
+  // --- Zauberzweig. Blitz ist im Haus kein eigenes Element, sondern Arkan. --
+  brandschutzausnahme: {name:'Brandschutzausnahme', icon:'🔥', fx:'feuer', zweig:0,
+    wert:[1,2,4], stapelbar:true, unikat:'Großbrandverfügung',
+    satz:['Deine Feuerzauber dürfen heißer brennen.',
+          'Deine Feuerzauber dürfen deutlich heißer brennen.',
+          'Deine Feuerzauber gelten als angeordnetes Großfeuer.']},
+  kaltverfuegung: {name:'Kaltverfügung', icon:'❄️', fx:'frost', zweig:1,
+    wert:[1,2,4], stapelbar:true, unikat:'Kaltverfügung mit sofortiger Vollziehbarkeit',
+    satz:['Deine Frostzauber beißen kälter.',
+          'Deine Frostzauber beißen deutlich kälter.',
+          'Wen deine Frostzauber treffen, der ist kaltgestellt.']},
+  blitzbeschluss: {name:'Blitzbeschluss', icon:'⚡', fx:'arkan', zweig:2,
+    wert:[1,2,4], stapelbar:true, unikat:'Unanfechtbarer Blitzbeschluss',
+    satz:['Deine Arkanzauber schlagen härter ein.',
+          'Deine Arkanzauber schlagen deutlich härter ein.',
+          'Gegen deine Arkanzauber gibt es keinen Widerspruch.']},
+  // --- Allgemein. Erben die Hooks der Kessel-Wirkungen. ---------------------
+  vollzugszulage: {name:'Vollzugszulage', icon:'🔨', fx:'dmg',
+    wert:[1,2,4], stapelbar:true, unikat:'Sofortvollzug',
+    satz:['Deine Angriffe tragen zusätzliche Härte.',
+          'Deine Angriffe tragen erhebliche zusätzliche Härte.',
+          'Deine Angriffe werden sofort vollzogen. Die Anhörung entfällt.']},
+  erschwerniszulage: {name:'Erschwerniszulage', icon:'⛑️', fx:'leben',
+    wert:[1,2,4], stapelbar:true, unikat:'Volle Belastungsstufe',
+    satz:['Du bist für Erschwernisse eingestuft. Du hältst mehr aus.',
+          'Deine Einstufung steigt. Du hältst deutlich mehr aus.',
+          'Du bist für die höchste Belastung zugelassen.']},
+  haertefallregelung: {name:'Härtefallregelung', icon:'🛡️', fx:'bollwerk',
+    wert:[1,2,4], stapelbar:false, unikat:'Bestandsschutz',
+    satz:['Schläge treffen dich milder. Du giltst als Härtefall.',
+          'Schläge treffen dich deutlich milder.',
+          'Du genießt Bestandsschutz. Vieles prallt einfach ab.']},
+  gebuehrenbefreiung: {name:'Gebührenbefreiung', icon:'🧾', fx:'sparsam',
+    wert:[1,2,4], stapelbar:false, unikat:'Schwarze Null',
+    satz:['Deine Zauber sind teilweise von der Gebühr befreit.',
+          'Deine Zauber sind weitgehend von der Gebühr befreit.',
+          'Deine Zauber kosten beinahe nichts. Die Gebührenstelle schweigt.']},
+  pruefvermerk: {name:'Prüfvermerk', icon:'🔍', fx:'crit',
+    wert:[1,2,4], stapelbar:false, unikat:'Beanstandung mit Folgen',
+    satz:['Ab und zu findest du eine empfindliche Stelle.',
+          'Du findest auffällig oft eine empfindliche Stelle.',
+          'Fast jede deiner Prüfungen endet mit einer Beanstandung.']},
+  eilverfahren: {name:'Eilverfahren', icon:'⏱️', fx:'tempo',
+    wert:[1,2,4], stapelbar:false, unikat:'Eilverfahren wegen Gefahr im Verzug',
+    satz:['Deine Schläge werden bevorzugt bearbeitet.',
+          'Deine Schläge überholen den Dienstweg.',
+          'Deine Schläge sind erledigt, bevor der Vorgang angelegt ist.']},
+  dienstweg: {name:'Dienstweg', icon:'🥾', fx:'speed',
+    wert:[1,2,4], stapelbar:false, unikat:'Abkürzung, beglaubigt',
+    satz:['Du kennst die kürzeren Flure.',
+          'Du kennst die deutlich kürzeren Flure.',
+          'Dein Dienstweg ist amtlich abgekürzt.']},
+  // Die letzten beiden tragen auf Stufe III bewusst einen Punkt weniger.
+  // Manaregeneration und Erfahrungsgewinn wirken dauernd und verstaerken sich
+  // selbst; der volle Kracher waere hier der Zauberspam aus der Zeit vor Z2
+  // beziehungsweise eine Stufenleiter, die sich selbst ueberholt.
+  laufender_bezug: {name:'Laufender Bezug', icon:'☕', fx:'mana',
+    wert:[1,2,3], stapelbar:false, unikat:'Unerschöpflichkeitsklausel',
+    satz:['Dein Mana kommt als laufender Bezug.',
+          'Dein laufender Bezug fällt üppiger aus.',
+          'Dein Vorrat gilt als unerschöpflich. Fast.']},
+  dienstalterszulage: {name:'Dienstalterszulage', icon:'🗓️', fx:'xp',
+    wert:[1,2,3], stapelbar:false, unikat:'Altgedient',
+    satz:['Dein Dienstalter wächst schneller als der Kalender.',
+          'Dein Dienstalter wächst deutlich schneller als der Kalender.',
+          'Du giltst als altgedient. Seit heute Morgen.']},
+};
+
+// Die Faecher der Dienstmappe. Absteigend, damit find() die erste passende
+// Zeile nimmt. Das ist die einzige Stelle, an der die Schwellen stehen.
+const ZULAGE_FAECHER = [{abStufe:15, n:3}, {abStufe:5, n:2}, {abStufe:1, n:1}];
+const zulageSlots = st => ZULAGE_FAECHER.find(f => st >= f.abStufe).n;
+const ZULAGE_MAPPE_NAME = ['Mappe', 'Doppelmappe', 'Ordner'];
+const ZULAGE_STAPEL_MAX = 2;   // stapelbar heisst zweimal, nicht dreimal
+const ZULAGE_ROEMISCH = ['I', 'II', 'III'];
+
+// Stufengewichte der Ziehung in Prozent, absteigend nach abStufe. w2/w3 sind
+// die Chancen auf Stufe II und III, der Rest ist Stufe I. Vor Stufe 5 gibt es
+// keinen Kracher: ein Unikat in der ersten Minute entwertet die ganze Leiter.
+const ZULAGE_STUFEN_GEWICHT = [
+  {abStufe:15, w2:45, w3:40},
+  {abStufe:10, w2:50, w3:20},
+  {abStufe:5,  w2:40, w3:5},
+  {abStufe:1,  w2:20, w3:0},
+];
+
 // Adjektive: w = Biom-Gewicht, minMon = nötige Monster-Seltenheit (0..3).
 // Mehrere Adjektive dürfen auf dieselbe Wirkung zeigen; genau das macht die
 // Kladde interessant.
@@ -6619,6 +6839,14 @@ const player = {
   langsamT:0, haltT:0, trankSperreT:0, sichtT:0,
   // Z5: Sperrzeit der Manaregeneration nach einem Zauber (s. update).
   zauberRuhT:0,
+  // K1: Die Zulagen. zulagenKartei traegt ALLE bewilligten Karten der Schicht,
+  // die eingelegten tragen angelegt:true — die Dienstmappe ist also eine Sicht
+  // auf dieses eine Feld, kein zweites Array (ein Feld zu spiegeln reicht den
+  // Guards). zulagenZiehungen sind offene Vorlagen, zulagenAngebot die drei,
+  // die gerade offen liegen, oder null. Alles je Schicht: persoenliche
+  // Qualifikation ist nicht uebertragbar (Weltbibel Kapitel 5), startShift()
+  // setzt zurueck, nichts davon geht nach localStorage.
+  zulagenKartei:[], zulagenZiehungen:0, zulagenAngebot:null,
 };
 player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
 
@@ -6699,7 +6927,11 @@ let goldRotT = 0;   // Sekundentakt für Fluch 'Goldschwund'
 // Frame; die Hooks unten lesen bloß Zahlen aus diesem festen Objekt.
 const FX = {slow:0, crit:0, dmg:0, armor:0, speed:0, mana:0, regen:0, exact:0,
             gold:0, xp:0, knock:0, potion:0, arc:0, beute:0,
-            leech:0, zauber:0, sparsam:0, tempo:0, leben:0, magnet:0, schreck:0, bollwerk:0, nachschlag:0, karte:0};
+            leech:0, zauber:0, sparsam:0, tempo:0, leben:0, magnet:0, schreck:0, bollwerk:0, nachschlag:0, karte:0,
+            // K1: die sechs Schluessel ohne WIRKUNG-Gegenstueck. Sie werden nur
+            // von Zulagen gefuellt und nur an zwei Stellen gelesen: die drei
+            // Gattungen in recalc(), die drei Zweige in castSpell().
+            dolch:0, schwert:0, axt:0, feuer:0, frost:0, arkan:0};
 
 // Aggregierte Flüche der getragenen Ausrüstung, 0 oder 1 (mehrfach gleicher Fluch
 // wirkt nicht stärker). Fluchbudget in recalc(): höchstens zwei harte Flüche
@@ -6773,6 +7005,15 @@ function recalc(){
       }
     }
   }
+  // K1: Die eingelegten Zulagen zahlen in dieselben Aggregate ein wie die
+  // Kessel-Wirkungen darueber. Eine dritte Quelle neben Ausruestung und Fluch,
+  // mit demselben Rechenweg: Stufe rein, Zaehlerpunkte drauf. Was in der Kartei
+  // liegt und nicht in der Mappe, wirkt nicht.
+  for(const zk of player.zulagenKartei){
+    if(!zk.angelegt) continue;
+    const zf = ZULAGE[zk.familie];
+    if(zf) FX[zf.fx] += zf.wert[zk.stufe - 1];
+  }
   // S1: Die Stufe schenkt fast nichts mehr, der Punkt traegt alles. Herleitung
   // und Messung in phase-s1-befaehigung.md, die Kurzfassung: der Referenzspieler
   // des Katalogs steigert je Stufe einen Punkt Kraft und einen Punkt Zaehigkeit
@@ -6783,8 +7024,14 @@ function recalc(){
   //   Schaden vorher +3/+4 je Punkt Kraft           ->  +3/+5, dafuer schwaechere Klingen
   // Der Punkt ist in beiden Faellen das Zehn- bis Vierzehnfache der Stufe. Eine
   // Stufe ohne Steigerung ist damit fast nur noch die Erlaubnis, zu steigern.
-  let dmgMin = (w? w.base.dmg[0] : 1) + player.skills.str*KRAFT_DMG[0] + dmgBonus + FX.dmg*4;
-  let dmgMax = (w? w.base.dmg[1] : 2) + player.skills.str*KRAFT_DMG[1] + dmgBonus + FX.dmg*6;
+  // K1: Zuschlag der Gattungszulagen. player.attackMode steht oben in dieser
+  // Funktion und kam bis K1 nur in der Zeichnung vor; hier bekommt die Wahl
+  // zwischen Dolch, Schwert und Doppelaxt zum ersten Mal eine Zahl. Etwas mehr
+  // je Punkt als das gattungsfreie FX.dmg, weil eine Gattungskarte mit der
+  // naechsten Waffe wertlos werden kann.
+  const gattung = {dagger:FX.dolch, sword:FX.schwert, doubleaxe:FX.axt}[player.attackMode] || 0;
+  let dmgMin = (w? w.base.dmg[0] : 1) + player.skills.str*KRAFT_DMG[0] + dmgBonus + FX.dmg*4 + gattung*5;
+  let dmgMax = (w? w.base.dmg[1] : 2) + player.skills.str*KRAFT_DMG[1] + dmgBonus + FX.dmg*6 + gattung*7;
   let aps = (w? w.base.aps : 1.3) * (1 + player.skills.agi*0.05) * (1 + FX.tempo*0.10);   // Wirkung 'Schlagzahl'
   let hpB = player.skills.vit*ZAEH_HP + hpBonus;
   const maxHp = HP_BASIS + (player.level-1)*HP_JE_STUFE + hpB + FX.leben*18;   // Wirkung 'Leibesfülle'
@@ -7866,6 +8113,12 @@ function gainXP(x){
   let need = xpFuerStufe(player.level);
   while(player.xp >= need){
     player.xp -= need; player.level++; player.skillPoints += PUNKTE_JE_STUFE;
+    // K1: Jeder Aufstieg legt eine Vorlage bereit. Sie draengt nicht: das Panel
+    // oeffnet sich nicht von selbst, ein Fenster mitten im Gefecht waere eine
+    // Zumutung (Panels halten das Spiel nicht an, s. U1). Gemeldet wird ueber
+    // den Floater unten und das Sternchen am Guertel, gewaehlt wird, wann es
+    // passt. Mehrere Aufstiege in einem Zug stapeln den Zaehler.
+    player.zulagenZiehungen++; zulagenAngebotSicherstellen();
     // Z2: Zauberpunkte gibt es erst mit der Befugnis. Die Punkte der Stufen 2
     // und 3 entfallen ersatzlos (kein Aufsparen): Zauber sind dadurch insgesamt
     // seltener, und das Ultimate rueckt von Stufe 11 auf Stufe 13.
@@ -7886,6 +8139,9 @@ function gainXP(x){
       floaters.push({x:player.x, y:player.y-74, txt:'ZAUBERBEFUGNIS ERTEILT', col:'#c77dff', t:3.0, big:true});
     if(player.level >= ZAUBER_AB_STUFE)
       floaters.push({x:player.x, y:player.y-96, txt:'+1 Zauberpunkt', col:'#c77dff', t:1.5});
+    // K1: dieselbe Lesart wie die Befaehigungspunkte zwei Zeilen hoeher — sagen,
+    // was es gibt, und wo es liegt.
+    floaters.push({x:player.x, y:player.y-118, txt:'Zulage zur Wahl' + (touchMode ? ' · Gürtel' : ' · [Z]'), col:'#5ac8ff', t:2.6});
     sfx.level(); addShake(10, 0.4);
     kn.counters.levelUps = (kn.counters.levelUps||0) + 1;
     if(kn.counters.levelUps >= 2) knRandnotiz('levelup');
@@ -8137,7 +8393,12 @@ function castSpell(sp, target){                          // target: optionaler W
   if(CFX.schleuder) moveEnt(player, -Math.cos(dir)*46, -Math.sin(dir)*46);   // Fluch 'Schleuderrückstoß'
 
   const zweig = sp.ultimate ? 'ult' : sp.branch;         // Kammer-Sonderregeln lesen das mit
-  const sd = Math.round(sp.dmg * (1 + FX.zauber*0.12));  // Wirkung 'Zauberkraft'
+  // K1: Zweigzuschlag der Zulagen, zusaetzlich zur zweigfreien Wirkung
+  // 'Zauberkraft'. Das Ultimate bleibt aussen vor: es kostet den ganzen Pool
+  // und traegt seinen Wert selbst (Z1), ein Zweigzuschlag darauf waere die
+  // Rueckkehr des Zauberspams durch die Hintertuer.
+  const zweigZu = sp.ultimate ? 0 : ([FX.feuer, FX.frost, FX.arkan][sp.branch] || 0);
+  const sd = Math.round(sp.dmg * (1 + FX.zauber*0.12 + zweigZu*0.15));  // Wirkung 'Zauberkraft' + K1
   // Z1: Zauber würfeln ihren Crit wie jeder Waffentreffer. Bis hierher stand an
   // allen Zauber-Aufrufen von hurtMon() ein festes true. Gemeint war der Effekt
   // (Ton, Partikel, große Zahl), gewirkt hat aber auch der Schadensfaktor 1,7:
@@ -8193,6 +8454,199 @@ function castSpell(sp, target){                          // target: optionaler W
     saveKn();
   }
   updateHUD();
+}
+
+// ===================== ZULAGEN (K1) =========================================
+//  Die Maschine hinter dem Katalog weiter oben. Vier Teile: die Ziehung (drei
+//  liegen aus, eine wird bewilligt), die Dienstmappe (ein bis drei Faecher, je
+//  nach Stufe), die Kartei (was nicht eingelegt ist) und das Panel dazu.
+//
+//  Die Funktionen stehen hier und nicht weiter oben, weil sie SPELLS und
+//  spellKnown() lesen. Funktionsdeklarationen werden hochgezogen, gainXP()
+//  weiter oben darf sie also rufen; ausgefuehrt wird auf Skriptebene nur, was
+//  die Guards ganz unten anstossen, und da steht alles.
+// ===========================================================================
+let zulagenOpen = false;
+
+// Halbes Los fuer Karten, die im Moment nichts taeten: die Gattung liegt nicht
+// in der Hand, oder der Zweig hat noch keinen gelernten Spruch. Nie null Lose —
+// die Kartei behaelt jede Karte bis Schichtende, und die naechste Klinge aus
+// dem Kessel kann die tote Karte zur besten machen. Abwerten, nicht sperren.
+function zulageFamilienGewicht(id){
+  const zf = ZULAGE[id];
+  if(zf.modus && player.attackMode !== zf.modus) return 1;
+  if(zf.zweig !== undefined && (player.level < ZAUBER_AB_STUFE ||
+     !SPELLS.some(sp => sp.branch === zf.zweig && !sp.ultimate && spellKnown(sp.id)))) return 1;
+  return 2;
+}
+
+function zulageStufeWuerfeln(){
+  const g = ZULAGE_STUFEN_GEWICHT.find(z => player.level >= z.abStufe) || ZULAGE_STUFEN_GEWICHT[ZULAGE_STUFEN_GEWICHT.length - 1];
+  const r = Math.random() * 100;
+  return r < g.w3 ? 3 : r < g.w3 + g.w2 ? 2 : 1;
+}
+
+// Legt drei aus, wenn eine Ziehung offen ist und nichts anderes ausliegt. Drei
+// VERSCHIEDENE Familien: dieselbe Familie zweimal in einem Angebot waere eine
+// Scheinwahl. Ein einmal ausliegendes Angebot bleibt liegen, bis gewaehlt wird;
+// Panel zu und wieder auf wuerfelt nicht neu.
+function zulagenAngebotSicherstellen(){
+  if(player.zulagenAngebot || player.zulagenZiehungen <= 0) return;
+  player.zulagenZiehungen--;
+  const lose = Object.keys(ZULAGE).map(id => ({id, w: zulageFamilienGewicht(id)}));
+  const wahl = [];
+  while(wahl.length < 3 && lose.length){
+    const summe = lose.reduce((a, l) => a + l.w, 0);
+    let r = Math.random() * summe;
+    let i = lose.findIndex(l => (r -= l.w) < 0);
+    if(i < 0) i = lose.length - 1;
+    wahl.push(lose.splice(i, 1)[0].id);
+  }
+  player.zulagenAngebot = wahl.map(id => ({familie:id, stufe:zulageStufeWuerfeln()}));
+}
+
+function zulageWaehlen(i){
+  const ang = player.zulagenAngebot;
+  if(!ang || !ang[i]) return;
+  player.zulagenKartei.push({familie:ang[i].familie, stufe:ang[i].stufe, angelegt:false});
+  player.zulagenAngebot = null;
+  // Bequemlichkeit: die frisch bewilligte Karte legt sich selbst ein, wenn ein
+  // Fach frei ist und die Stapelregel nichts dagegen hat. Still, weil ein
+  // Misserfolg hier keine Meldung braucht: die Karte liegt dann sichtbar in
+  // der Kartei, und das Panel steht ohnehin offen.
+  zulageAnlegen(player.zulagenKartei.length - 1, true);
+  zulagenAngebotSicherstellen();
+  recalc(); updateHUD(); renderZulagen();
+}
+
+// Die Dienstmappe ist eine Sicht auf die Kartei, kein zweites Array.
+function zulageMappe(){ return player.zulagenKartei.filter(zk => zk.angelegt); }
+
+function zulageMeldung(txt){
+  floaters.push({x:player.x, y:player.y-30, txt, col:'#9a8a5f', t:1.2});
+}
+
+function zulageAnlegen(idx, still){
+  const zk = player.zulagenKartei[idx];
+  if(!zk || zk.angelegt) return;
+  // 'Ausserhalb des Gefechts' ist dasselbe Fenster wie beim Nuechternheitsgebot:
+  // hurtPlayer() setzt kampfT, und solange es laeuft, wird nicht umgesteckt.
+  // Eine Mappe im Gefecht neu zu sortieren waere kein Spiel, sondern eine Pause.
+  if(player.kampfT > 0){ if(!still) zulageMeldung('Nicht im Gefecht'); return; }
+  const mappe = zulageMappe();
+  if(mappe.length >= zulageSlots(player.level)){ if(!still) zulageMeldung('Dienstmappe voll'); return; }
+  const zf = ZULAGE[zk.familie];
+  const gleiche = mappe.filter(m => m.familie === zk.familie).length;
+  if(gleiche >= (zf.stapelbar ? ZULAGE_STAPEL_MAX : 1)){
+    if(!still) zulageMeldung(zf.stapelbar ? 'Zweimal ist das Maß' : 'Eine je Sache');
+    return;
+  }
+  zk.angelegt = true;
+  recalc(); updateHUD(); renderZulagen();
+}
+
+function zulageAblegen(idx){
+  const zk = player.zulagenKartei[idx];
+  if(!zk || !zk.angelegt) return;
+  if(player.kampfT > 0){ zulageMeldung('Nicht im Gefecht'); return; }
+  zk.angelegt = false;
+  recalc(); updateHUD(); renderZulagen();
+}
+
+function toggleZulagen(){
+  zulagenOpen = !zulagenOpen;
+  document.getElementById('zulagen').style.display = zulagenOpen ? 'block' : 'none';
+  if(zulagenOpen){ renderZulagen(); knIdleT = 0; }
+  panelSicht();   // U1
+  MUS.muffle();   // offenes Panel daempft die Musik
+}
+
+function zulageName(zf, stufe){ return stufe >= 3 ? zf.unikat : zf.name; }
+
+// Die Stufenziffer steht ZULETZT im Markup, obwohl sie oben rechts sitzt: auf
+// dem Telefon wird die Karte zur Zeile, die Ziffer verliert ihre absolute Lage
+// und rueckt als letztes Feld mit margin-left:auto an den rechten Rand. Stuende
+// sie vorn, schoebe dasselbe margin alles andere vor sich her.
+function zulageKarteHTML(zf, stufe, extra){
+  return `<div class="zulKarte s${stufe}${extra || ''}">
+    <div class="zIcon">${zf.icon}</div>
+    <div class="zText">
+      <div class="zName">${zulageName(zf, stufe)}</div>
+      <div class="zSatz">${zf.satz[stufe - 1]}</div>
+    </div>
+    <div class="zStufe">${ZULAGE_ROEMISCH[stufe - 1]}</div>
+  </div>`;
+}
+
+// Tooltip in der Bauform von buildTooltip(): Name, Einordnung, ganzer Satz,
+// Hinweiszeile. Keine Zahl, wie im ganzen Haus (s. Kommentar ueber WIRKUNG).
+function zulageTooltip(zk, hinweis){
+  const zf = ZULAGE[zk.familie];
+  const farbe = zk.stufe >= 3 ? '#c77dff' : zk.stufe === 2 ? '#f2c94c' : '#e8e8e0';
+  return `<div class="tname" style="color:${farbe}">${zf.icon} ${zulageName(zf, zk.stufe)}</div>`
+       + `<div style="color:#c9a227;">Zulage, Stufe ${ZULAGE_ROEMISCH[zk.stufe - 1]}</div>`
+       + `<div style="margin-top:6px;">${zf.satz[zk.stufe - 1]}</div>`
+       + `<div class="aff">${zf.stapelbar ? 'Stapelt.' : 'Stapelt nicht.'}</div>`
+       + `<div class="hint">${hinweis}</div>`;
+}
+
+function renderZulagen(){
+  if(!zulagenOpen) return;   // geschlossen wird nichts geschrieben (Guards rufen das mit)
+
+  // --- Die Ziehung ---------------------------------------------------------
+  const zbox = document.getElementById('zulZiehung');
+  const ang = player.zulagenAngebot;
+  if(ang){
+    const rest = player.zulagenZiehungen > 0
+      ? `<div class="zulRest">Weitere Vorlagen warten: ${player.zulagenZiehungen}</div>` : '';
+    zbox.innerHTML = `<h4>ZIEHUNG</h4>`
+      + `<div class="zulSub">Drei liegen aus. Eine wird bewilligt. Die anderen beiden gelten als nicht beantragt.</div>`
+      + `<div class="zulReihe">${ang.map(a => zulageKarteHTML(ZULAGE[a.familie], a.stufe)).join('')}</div>${rest}`;
+    zbox.style.display = 'block';
+    [...zbox.querySelectorAll('.zulKarte')].forEach((k, i) => {
+      bindTooltip(k, ang[i], false, () => {}, () => zulageWaehlen(i), () => zulageTooltip(ang[i], 'Klick: bewilligen'));
+    });
+  } else {
+    zbox.innerHTML = ''; zbox.style.display = 'none';
+  }
+
+  // --- Die Dienstmappe -----------------------------------------------------
+  const slots = zulageSlots(player.level);
+  const eingelegt = player.zulagenKartei.map((zk, i) => ({zk, i})).filter(o => o.zk.angelegt);
+  const mbox = document.getElementById('zulMappe');
+  let mh = `<h4>DIENSTMAPPE <span>${ZULAGE_MAPPE_NAME[slots - 1]}</span></h4><div class="zulReihe">`;
+  for(let f = 0; f < 3; f++){
+    if(f < slots){
+      const o = eingelegt[f];
+      mh += o ? zulageKarteHTML(ZULAGE[o.zk.familie], o.zk.stufe, ' angelegt')
+              : `<div class="zulKarte leer"><div class="zSatz">Fach frei</div></div>`;
+    } else {
+      const ab = ZULAGE_FAECHER.find(x => x.n === f + 1).abStufe;
+      mh += `<div class="zulKarte zu"><div class="zSatz">Fach frei ab Stufe ${ab}</div></div>`;
+    }
+  }
+  mbox.innerHTML = mh + '</div>';
+  [...mbox.querySelectorAll('.zulKarte.angelegt')].forEach((k, n) => {
+    const o = eingelegt[n];
+    bindTooltip(k, o.zk, true, () => {}, () => zulageAblegen(o.i), () => zulageTooltip(o.zk, 'Klick: in die Kartei zurück'));
+  });
+
+  // --- Die Kartei ----------------------------------------------------------
+  const liegend = player.zulagenKartei.map((zk, i) => ({zk, i})).filter(o => !o.zk.angelegt);
+  const kbox = document.getElementById('zulKartei');
+  let kh = `<h4>KARTEI <span>${player.zulagenKartei.length} bewilligt</span></h4>`;
+  if(!player.zulagenKartei.length)
+    kh += `<div class="zulLeer">Noch keine Zulage bewilligt. Jeder Aufstieg legt drei vor.</div>`;
+  else if(!liegend.length)
+    kh += `<div class="zulLeer">Alles eingelegt. Die Kartei ist leer.</div>`;
+  else
+    kh += `<div class="zulReihe klein">`
+        + liegend.map(o => zulageKarteHTML(ZULAGE[o.zk.familie], o.zk.stufe)).join('') + `</div>`;
+  kbox.innerHTML = kh;
+  [...kbox.querySelectorAll('.zulKarte')].forEach((k, n) => {
+    const o = liegend[n];
+    bindTooltip(k, o.zk, false, () => {}, () => zulageAnlegen(o.i), () => zulageTooltip(o.zk, 'Klick: in die Dienstmappe'));
+  });
 }
 
 function enemyCast(m, wucht){
@@ -12241,6 +12695,8 @@ document.getElementById('spellBtn').onclick = castActiveSpell;
 document.getElementById('ultBtn').onclick = castUltimate;
 document.getElementById('spellsBtn').onclick = toggleSpellTree;
 document.getElementById('invBtn').onclick = toggleInventory;
+document.getElementById('zulagenBtn').onclick = toggleZulagen;
+document.getElementById('closeZulagenBtn').onclick = toggleZulagen;
 document.getElementById('musicBtn').onclick = toggleMusic;
 document.getElementById('musicVol').oninput = (e)=>{
   musicVolTarget = e.target.value/100;
@@ -13781,6 +14237,10 @@ function updateHUD(){
   if(player.skillPoints > 0) setTxt('freiTxt', '✚ ' + player.skillPoints + (touchMode ? ' Punkte' : ' Punkte [I]'));
   setStyle('skillBadge', 'display', player.skillPoints > 0 ? 'inline' : 'none');
   setStyle('spBadge', 'display', player.spellPoints > 0 && player.level >= ZAUBER_AB_STUFE ? 'inline' : 'none');
+  // K1: Das Sternchen brennt, solange eine Vorlage offen ist — ausliegend oder
+  // noch in der Schlange. Es ist die einzige dauerhafte Meldung der Ziehung,
+  // der Floater beim Aufstieg verweht.
+  setStyle('zulBadge', 'display', (player.zulagenAngebot || player.zulagenZiehungen > 0) ? 'inline' : 'none');
 
   // Aktiver Zauber. Z2: vor der Befugnisstufe zeigen beide Knoepfe das
   // Schloss samt Stufe — sichtbar bleiben sie mit Absicht, ein sichtbares
@@ -13818,7 +14278,11 @@ function updateHUD(){
   setStyle('aktionBtn', 'display', aktArt ? 'flex' : 'none');
   if(aktArt) setTxt('aktionTxt', aktTxt);
   setStyle('kamExitBtn', 'display', kammer ? 'flex' : 'none');
-  setStyle('xpFill', 'width', Math.min(100, (player.xp / (35 * Math.pow(player.level, 1.35))) * 100) + '%');
+  // Der Balken las bis K1 die Leiter aus der Zeit vor S1 ab (35 * Stufe^1,35)
+  // und war damit die letzte Abschrift im Haus: auf Stufe 10 stand er voll,
+  // wenn erst zwei Fuenftel des Weges lagen. Jetzt liest er dieselbe Funktion
+  // wie gainXP(), zulagenAssert() haelt das fest.
+  setStyle('xpFill', 'width', Math.min(100, (player.xp / xpFuerStufe(player.level)) * 100) + '%');
   if(touchMode) el('attackBtn').classList.toggle('locked', !!lockedTarget);
 }
 
@@ -13989,6 +14453,7 @@ function startShift(){
   if(fullmapOpen) toggleFullmap();
   if(invOpen) toggleInventory();
   if(spellTreeOpen) toggleSpellTree();
+  if(zulagenOpen) toggleZulagen();
   if(amtFensterOpen) amtFensterSchliessen();
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;
   attackTouch = null; lockedTarget = null;
@@ -14014,6 +14479,14 @@ function startShift(){
   player.skillPoints = amt.ausbauten.startLevel * 2;
   player.spellPoints = Math.max(0, amt.ausbauten.startLevel - (ZAUBER_AB_STUFE - 2));
   player.spellsKnown = {};
+  // K1: Kartei und Angebot fallen mit der Schicht, wie Stufe, Zauber und Gerät.
+  // Der Ausbau 'Höhere Anfangsstufe' zahlt je übersprungenem Aufstieg eine
+  // Vorlage — dieselbe Pauschale wie die Befähigungspunkte zwei Zeilen höher,
+  // aus demselben Grund. Die Wiedereinsetzung zahlt hier wie dort nichts: sie
+  // gibt den Dienststand zurück, keine Nachzahlung.
+  player.zulagenKartei = []; player.zulagenAngebot = null;
+  player.zulagenZiehungen = amt.ausbauten.startLevel;
+  zulagenAngebotSicherstellen();
   // Dasselbe Gesicht nur nach bewilligtem Antrag. Lisbeth fragt trotzdem weiter
   // nach dem Namen (ANREDE_LISBETH zykelt über amt.schichten, nicht über die
   // Person) — das ist ausdrücklich so gewollt und der bessere Gag.
@@ -14315,7 +14788,14 @@ function spielstandSchreiben(){
               skills: Object.assign({}, player.skills), skillPoints: player.skillPoints,
               spellPoints: player.spellPoints, spellsKnown: Object.assign({}, player.spellsKnown),
               hair: player.hair, haarTon: player.haarTon, x: player.x, y: player.y,
-              bag: player.bag, equip: player.equip, pouch: player.pouch},
+              bag: player.bag, equip: player.equip, pouch: player.pouch,
+              // K1: Die Zulagen sind Schichtzustand wie Stufe und Ausrüstung
+              // ("nichts davon geht nach localStorage", sagt ihr Kommentar — bis
+              // hierher stimmte das, und der Spielstand ist die Ausnahme, die
+              // ihn nicht bricht: er speichert die Schicht, nicht die Akte).
+              // Ein Fortsetzen ohne Dienstmappe wäre kein Fortsetzen.
+              zulagenKartei: player.zulagenKartei, zulagenZiehungen: player.zulagenZiehungen,
+              zulagenAngebot: player.zulagenAngebot},
     schicht: {shiftT, overtimeT, killsByType: shiftKillsByType, killsTotal: shiftKillsTotal,
               auftragStand, auftragVerletzt, auftragFertig, langSchicht},
   };
@@ -14380,7 +14860,36 @@ function spielstandEinloesen(){
   player.y = gueltig ? py : SPAWN.y;
   camSnap();
 
-  recalc();                          // erst die Ausrüstung, dann die abgeleiteten Werte
+  // K1: Die Zulagen zurück in die Kartei. Eingelegt wird ausdrücklich über
+  // zulageAnlegen() und nicht über ein gesetztes angelegt:true — Fachzahl
+  // (zulageSlots), Stapelgrenze und die Regel "eine je Sache" stehen dort, und
+  // sie hier abzuschreiben wäre die F1-Falle. Ein manipulierter Stand mit zehn
+  // eingelegten Karten bekommt damit genau so viele, wie die Mappe auf dieser
+  // Stufe fasst, ohne dass hier eine zweite Zahl gepflegt werden muss.
+  // Läuft nach player.level, weil zulageSlots() genau den liest.
+  const rohKarten = Array.isArray(p.zulagenKartei) ? p.zulagenKartei.slice(0, 99) : [];
+  const wollenAngelegt = [];
+  player.zulagenKartei = [];
+  for(const z of rohKarten){
+    if(!z || !ZULAGE[z.familie]) continue;                 // unbekannte Familie faellt raus
+    player.zulagenKartei.push({familie: z.familie, stufe: clamp(z.stufe | 0, 1, 3), angelegt: false});
+    wollenAngelegt.push(!!z.angelegt);
+  }
+  player.zulagenZiehungen = clamp(p.zulagenZiehungen | 0, 0, 99);
+  player.zulagenAngebot = Array.isArray(p.zulagenAngebot) && p.zulagenAngebot.length
+    ? p.zulagenAngebot.slice(0, 3).filter(z => z && ZULAGE[z.familie])
+        .map(z => ({familie: z.familie, stufe: clamp(z.stufe | 0, 1, 3)}))
+    : null;
+  if(player.zulagenAngebot && !player.zulagenAngebot.length) player.zulagenAngebot = null;
+  wollenAngelegt.forEach((w, i) => { if(w) zulageAnlegen(i, true); });
+  // Und die Vorlage nachziehen, falls der Stand offene Ziehungen ohne Angebot
+  // trägt. Im regulären Spiel gibt es diesen Zustand nicht (jede Bewilligung
+  // ruft die Funktion selbst wieder auf), ein von Hand gesetzter Stand könnte
+  // ihn aber tragen — dann verschluckte er sonst die Aufstiege. Die Funktion
+  // steigt von selbst aus, wenn nichts zu tun ist.
+  zulagenAngebotSicherstellen();
+
+  recalc();                          // erst Ausrüstung und Zulagen, dann die abgeleiteten Werte
   player.hp = clamp(p.hp | 0, 1, derived.maxHp);
   player.mana = clamp(p.mana | 0, 0, derived.maxMana);
   knCheckFluchEquipped();            // ein geladener Fluch muss wirken wie ein angelegter
@@ -17262,13 +17771,19 @@ function zauberAssert(){
   const fehler = (m, ...r) => { ok = false; console.error('Z2 Zauberbefugnis:', m, ...r); };
   const echt = {level: player.level, xp: player.xp, sp: player.spellPoints,
                 sk: player.skillPoints, hp: player.hp, mana: player.mana,
-                flZahl: floaters.length, lvUps: kn.counters.levelUps};
+                flZahl: floaters.length, lvUps: kn.counters.levelUps,
+                // K1: neun Probe-Aufstiege legen neun Vorlagen bereit. Ohne
+                // diese Spiegelung staende nach jedem Laden eine Geisterziehung
+                // im Guertel, die nie jemand ausgeloest hat.
+                zKartei: player.zulagenKartei, zZieh: player.zulagenZiehungen,
+                zAng: player.zulagenAngebot};
   // gainXP klingelt, wackelt und speichert. Fuer die Probe wird alles davon
   // stillgelegt und danach wiederhergestellt; floaters werden zurueckgestutzt.
   const eSfx = sfx.level, eShake = addShake, eSave = saveKn;
   try {
     sfx.level = function(){}; addShake = function(){}; saveKn = function(){};
     player.level = 1; player.xp = 0; player.spellPoints = 0; player.skillPoints = 0;
+    player.zulagenKartei = []; player.zulagenZiehungen = 0; player.zulagenAngebot = null;
     for(let ziel = 2; ziel <= 10; ziel++){
       gainXP(Math.ceil(xpFuerStufe(player.level)) + 1);   // S1: die Leiter, nicht ihre Abschrift
       if(player.level !== ziel){ fehler('Probe-Aufstieg klemmt', player.level, 'statt', ziel); break; }
@@ -17299,6 +17814,8 @@ function zauberAssert(){
     sfx.level = eSfx; addShake = eShake; saveKn = eSave;
     player.level = echt.level; player.xp = echt.xp; player.spellPoints = echt.sp;
     player.skillPoints = echt.sk;
+    player.zulagenKartei = echt.zKartei; player.zulagenZiehungen = echt.zZieh;
+    player.zulagenAngebot = echt.zAng;
     floaters.length = echt.flZahl;
     kn.counters.levelUps = echt.lvUps;
     recalc();
@@ -17336,10 +17853,19 @@ function befaehigungAssert(){
   const fehler = (m, ...r) => { ok = false; console.error('S1 Befaehigung:', m, ...r); };
   const echt = {level: player.level, xp: player.xp, skills: player.skills, equip: player.equip,
                 hp: player.hp, mana: player.mana, sk: player.skillPoints, sp: player.spellPoints,
-                flZahl: floaters.length, lvUps: kn.counters.levelUps};
+                flZahl: floaters.length, lvUps: kn.counters.levelUps,
+                zKartei: player.zulagenKartei, zZieh: player.zulagenZiehungen,
+                zAng: player.zulagenAngebot};
   const eSfx = sfx.level, eShake = addShake, eSave = saveKn;
   try {
     sfx.level = function(){}; addShake = function(){}; saveKn = function(){};
+    // K1: Die Dienstmappe wird fuer die Messung geleert, genau wie messe() die
+    // Ausruestung durch die Referenzklinge ersetzt. Die Zusage von S1 gilt dem
+    // punktlosen Spieler gegen den gesteigerten; eine Zulage traegt beide
+    // Seiten und wuerde die Spreizung rechnerisch zudruecken, ohne dass sich am
+    // Verhaeltnis von Punkt zu Stufe irgendetwas geaendert haette. Der Probe-
+    // Aufstieg unten legt ausserdem eine Vorlage an, die niemand bestellt hat.
+    player.zulagenKartei = []; player.zulagenZiehungen = 0; player.zulagenAngebot = null;
 
     // --- 1. Der Punkt schlaegt die Stufe -------------------------------------
     // Zuerst als reine Zahlenprobe an den Konstanten: geschenktes Wachstum je
@@ -17421,6 +17947,8 @@ function befaehigungAssert(){
     sfx.level = eSfx; addShake = eShake; saveKn = eSave;
     player.level = echt.level; player.xp = echt.xp; player.skills = echt.skills;
     player.equip = echt.equip; player.skillPoints = echt.sk; player.spellPoints = echt.sp;
+    player.zulagenKartei = echt.zKartei; player.zulagenZiehungen = echt.zZieh;
+    player.zulagenAngebot = echt.zAng;
     floaters.length = echt.flZahl;
     kn.counters.levelUps = echt.lvUps;
     recalc();
@@ -17430,6 +17958,192 @@ function befaehigungAssert(){
   return ok;
 }
 befaehigungAssert();
+
+// === K1: Guard fuer die Zulagen =============================================
+// Geprueft werden die Zusagen von K1, alle am echten Code, keine an einer
+// Abschrift:
+//   1. Der Katalog ist vollstaendig und haelt die Formregeln: drei Saetze je
+//      Familie, streng steigende Werte, ein Hook, den es in FX wirklich gibt,
+//      und kein Satz mit einer Zahl oder einem Gedankenstrich darin
+//      (Weltbibel Kapitel 13). Das ist die Regel, die beim Nachtragen einer
+//      Karte als erste faellt, und sie faellt lautlos.
+//   2. Die Faecherleiter ist die zugesagte: eines, ab Stufe 5 zwei, ab
+//      Stufe 15 drei, und dazwischen nie weniger.
+//   3. Die Ziehung legt drei verschiedene Familien aus, zieht den Zaehler ab
+//      und wuerfelt ein ausliegendes Angebot nicht neu.
+//   4. Mappe, Stapelregel und Kampfgatter sind Sperren, keine Warnungen.
+//   5. Eine eingelegte Karte schlaegt sich in derived nieder, und eine
+//      Gattungskarte NUR mit der passenden Waffe in der Hand.
+//   6. Die vier Fundstellen tragen den Hook wirklich, und der XP-Balken liest
+//      die Stufenleiter, statt sie abzuschreiben (der Fehler, den S1 an
+//      gainXP() schon verbietet und der im HUD bis K1 stehen geblieben war).
+//
+// Bauform wie befaehigungAssert: Spiegeln, pruefen, im finally alles zurueck.
+function zulagenAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('K1 Zulagen:', m, ...r); };
+  const echt = {level: player.level, skills: player.skills, equip: player.equip,
+                hp: player.hp, mana: player.mana, kampfT: player.kampfT,
+                flZahl: floaters.length,
+                zKartei: player.zulagenKartei, zZieh: player.zulagenZiehungen,
+                zAng: player.zulagenAngebot};
+  // --- 6. Die Fundstellen tragen den Hook -----------------------------------
+  // Steht VOR dem try: hier wird Quelltext gelesen, kein Zustand angefasst, und
+  // updateHUD ist gleich stillgelegt. Eine Textprobe auf die eigene Attrappe
+  // haette immer angeschlagen.
+  if(String(gainXP).indexOf('zulagenZiehungen') < 0)
+    fehler('gainXP() legt beim Aufstieg keine Vorlage bereit');
+  if(String(startShift).indexOf('zulagenKartei') < 0)
+    fehler('startShift() nimmt die Kartei nicht mit in die neue Schicht');
+  if(String(recalc).indexOf('FX.schwert') < 0)
+    fehler('recalc() liest den Gattungszuschlag nicht');
+  if(String(castSpell).indexOf('FX.frost') < 0)
+    fehler('castSpell() liest den Zweigzuschlag nicht');
+  if(String(updateHUD).indexOf('xpFuerStufe') < 0)
+    fehler('der Erfahrungsbalken schreibt die Stufenleiter wieder ab, statt sie zu lesen');
+
+  const eHud = updateHUD;
+  try {
+    updateHUD = function(){};   // zulageAnlegen() zieht das HUD nach, hier unnoetig
+
+    // --- 1. Der Katalog -----------------------------------------------------
+    const ids = Object.keys(ZULAGE);
+    if(ids.length < 12) fehler('zu wenige Familien, die Ziehung waere keine Wahl', ids.length);
+    const MODI = ['dagger', 'sword', 'doubleaxe'];
+    for(const id of ids){
+      const zf = ZULAGE[id];
+      if(!zf.name || !zf.icon) fehler('Familie ohne Namen oder Sinnbild', id);
+      if(!(zf.fx in FX)) fehler('Familie zeigt auf einen Hook, den FX nicht hat', id, zf.fx);
+      if(!Array.isArray(zf.wert) || zf.wert.length !== 3) fehler('Familie ohne drei Werte', id);
+      else if(!(zf.wert[0] < zf.wert[1] && zf.wert[1] < zf.wert[2]))
+        fehler('Werte steigen nicht streng', id, zf.wert.join('/'));
+      if(!Array.isArray(zf.satz) || zf.satz.length !== 3) fehler('Familie ohne drei Saetze', id);
+      else for(let s = 0; s < 3; s++){
+        if(/[0-9]/.test(zf.satz[s])) fehler('Zahl im Anzeigesatz', id, 'Stufe ' + (s+1), zf.satz[s]);
+        if(/[–—]/.test(zf.satz[s])) fehler('Gedankenstrich im Anzeigesatz', id, 'Stufe ' + (s+1));
+        if(!/[.!?]$/.test(zf.satz[s])) fehler('Anzeigesatz ohne Schlusszeichen', id, 'Stufe ' + (s+1));
+      }
+      if(!zf.unikat) fehler('Familie ohne Namen fuer die dritte Stufe', id);
+      if(zf.modus && MODI.indexOf(zf.modus) < 0) fehler('unbekannte Waffengattung', id, zf.modus);
+      if(zf.zweig !== undefined && !(zf.zweig >= 0 && zf.zweig < SPELL_BRANCHES.length))
+        fehler('Zweig ausserhalb der Zauberzweige', id, zf.zweig);
+      if(typeof zf.stapelbar !== 'boolean') fehler('Familie sagt nicht, ob sie stapelt', id);
+    }
+    if(!ids.some(id => ZULAGE[id].stapelbar) || !ids.some(id => !ZULAGE[id].stapelbar))
+      fehler('Stapelregel ist Theorie, es gibt nur eine Sorte Karte');
+    // Jede Waffengattung und jeder Zauberzweig braucht seine Karte, sonst ist
+    // eine Bauweise im Katalog nicht vertreten und niemandem faellt es auf.
+    for(const m of MODI)
+      if(!ids.some(id => ZULAGE[id].modus === m)) fehler('keine Karte fuer die Waffengattung', m);
+    for(let b = 0; b < SPELL_BRANCHES.length; b++)
+      if(!ids.some(id => ZULAGE[id].zweig === b)) fehler('keine Karte fuer den Zauberzweig', SPELL_BRANCHES[b]);
+
+    // --- 2. Die Faecherleiter ----------------------------------------------
+    for(let st = 1; st <= 4; st++) if(zulageSlots(st) !== 1) fehler('Faecher auf Stufe ' + st, zulageSlots(st), 'statt 1');
+    for(let st = 5; st <= 14; st++) if(zulageSlots(st) !== 2) fehler('Faecher auf Stufe ' + st, zulageSlots(st), 'statt 2');
+    for(const st of [15, 20, 60]) if(zulageSlots(st) !== 3) fehler('Faecher auf Stufe ' + st, zulageSlots(st), 'statt 3');
+    for(let st = 1; st < 60; st++)
+      if(zulageSlots(st + 1) < zulageSlots(st)){ fehler('Faecherzahl faellt bei Stufe', st); break; }
+    if(ZULAGE_MAPPE_NAME.length !== 3) fehler('die Mappe hat nicht fuer jede Faecherzahl einen Namen');
+
+    // --- 3. Die Ziehung -----------------------------------------------------
+    const gew = ZULAGE_STUFEN_GEWICHT;
+    for(let i = 1; i < gew.length; i++)
+      if(gew[i].abStufe >= gew[i-1].abStufe) fehler('Stufengewichte stehen nicht absteigend', gew[i].abStufe);
+    for(const g of gew)
+      if(g.w2 + g.w3 > 100) fehler('Stufengewichte ueber hundert Prozent', g.abStufe, g.w2 + g.w3);
+    if(gew[gew.length - 1].w3 !== 0) fehler('Unikate schon auf der untersten Stufe erreichbar');
+
+    const waffe = b => ({base: Object.assign({t:'weapon', tier:1}, b), rar:1, affixes:[], name:b.name});
+    const DOLCH = CRAFT_BASE.weapon[0], SCHWERT = CRAFT_BASE.weapon[1];
+    player.skills = {str:0, vit:0, agi:0, int:0}; player.kampfT = 0;
+    player.equip = {weapon: waffe(SCHWERT), armor:null, shield:null, boots:null};
+    player.level = 6; player.zulagenKartei = []; player.zulagenZiehungen = 1; player.zulagenAngebot = null;
+    recalc();
+    zulagenAngebotSicherstellen();
+    const ang = player.zulagenAngebot;
+    if(!ang || ang.length !== 3) fehler('Ziehung legt nicht genau drei aus', ang && ang.length);
+    else {
+      if(new Set(ang.map(a => a.familie)).size !== 3) fehler('Ziehung legt dieselbe Familie mehrfach aus');
+      for(const a of ang){
+        if(!ZULAGE[a.familie]) fehler('Ziehung nennt eine unbekannte Familie', a.familie);
+        if(!(a.stufe >= 1 && a.stufe <= 3)) fehler('Stufe ausserhalb der Leiter', a.stufe);
+      }
+    }
+    if(player.zulagenZiehungen !== 0) fehler('Ziehung zieht den Zaehler nicht ab', player.zulagenZiehungen);
+    // Ein ausliegendes Angebot bleibt liegen. Sonst waere Panel zu und wieder
+    // auf ein Wuerfelbecher, und die Wahl waere keine.
+    player.zulagenZiehungen = 1;
+    zulagenAngebotSicherstellen();
+    if(player.zulagenAngebot !== ang) fehler('ausliegendes Angebot wird neu gewuerfelt');
+    if(player.zulagenZiehungen !== 1) fehler('Zaehler sinkt, ohne dass etwas Neues ausliegt');
+
+    // --- 4. Mappe, Stapelregel, Kampfgatter ---------------------------------
+    player.zulagenAngebot = null; player.zulagenZiehungen = 0;
+    player.level = 1;
+    player.zulagenKartei = [{familie:'eilverfahren', stufe:1, angelegt:false},
+                            {familie:'eilverfahren', stufe:2, angelegt:false}];
+    zulageAnlegen(0);
+    if(!player.zulagenKartei[0].angelegt) fehler('die erste Karte laesst sich nicht einlegen');
+    zulageAnlegen(1);
+    if(player.zulagenKartei[1].angelegt) fehler('ein Fach traegt zwei Karten');
+    player.level = 5;                       // zweites Fach offen, Stapelsperre bleibt
+    zulageAnlegen(1);
+    if(player.zulagenKartei[1].angelegt) fehler('nicht stapelbare Familie liegt zweimal in der Mappe');
+    player.zulagenKartei = [{familie:'klingenzulage', stufe:1, angelegt:false},
+                            {familie:'klingenzulage', stufe:1, angelegt:false},
+                            {familie:'klingenzulage', stufe:1, angelegt:false}];
+    zulageAnlegen(0); zulageAnlegen(1);
+    if(!player.zulagenKartei[1].angelegt) fehler('stapelbare Familie laesst sich nicht doppeln');
+    player.level = 15;                      // drittes Fach offen, Stapeldeckel bleibt
+    zulageAnlegen(2);
+    if(player.zulagenKartei[2].angelegt) fehler('stapelbare Familie liegt dreimal in der Mappe', ZULAGE_STAPEL_MAX);
+    player.zulagenKartei = [{familie:'dienstweg', stufe:1, angelegt:false}];
+    player.kampfT = 3;
+    zulageAnlegen(0);
+    if(player.zulagenKartei[0].angelegt) fehler('im Gefecht laesst sich die Mappe umstecken');
+    player.kampfT = 0;
+
+    // --- 5. Die Karte wirkt, und die Gattungskarte nur passend --------------
+    const miss = (waffeBase, familie, stufe) => {
+      player.equip = {weapon: waffe(waffeBase), armor:null, shield:null, boots:null};
+      player.zulagenKartei = []; recalc();
+      const o = {hp: derived.maxHp, min: derived.dmgMin, max: derived.dmgMax};
+      player.zulagenKartei = [{familie, stufe, angelegt:true}]; recalc();
+      return {hp: derived.maxHp - o.hp, min: derived.dmgMin - o.min, max: derived.dmgMax - o.max};
+    };
+    player.level = 15;
+    const leben1 = miss(SCHWERT, 'erschwerniszulage', 1);
+    if(leben1.hp !== 18) fehler('Erschwerniszulage der ersten Stufe traegt nicht ihren Punkt', leben1.hp, 'statt 18');
+    const leben3 = miss(SCHWERT, 'erschwerniszulage', 3);
+    if(leben3.hp !== 18 * ZULAGE.erschwerniszulage.wert[2])
+      fehler('die dritte Stufe traegt nicht ihre vier Punkte', leben3.hp);
+    const dolchPasst = miss(DOLCH, 'stichprobe', 1);
+    if(dolchPasst.min !== 5 || dolchPasst.max !== 7)
+      fehler('Stichprobe traegt am Dolch nicht', dolchPasst.min, dolchPasst.max, 'statt 5 und 7');
+    const dolchFalsch = miss(SCHWERT, 'stichprobe', 1);
+    if(dolchFalsch.min !== 0 || dolchFalsch.max !== 0)
+      fehler('Stichprobe traegt auch am Schwert', dolchFalsch.min, dolchFalsch.max);
+    // Was in der Kartei liegt und nicht in der Mappe, wirkt nicht.
+    player.zulagenKartei = [{familie:'erschwerniszulage', stufe:3, angelegt:false}];
+    recalc();
+    const ruhend = derived.maxHp;
+    player.zulagenKartei = []; recalc();
+    if(ruhend !== derived.maxHp) fehler('eine Karte in der Kartei wirkt, ohne eingelegt zu sein');
+  } finally {
+    updateHUD = eHud;
+    player.level = echt.level; player.skills = echt.skills; player.equip = echt.equip;
+    player.kampfT = echt.kampfT;
+    player.zulagenKartei = echt.zKartei; player.zulagenZiehungen = echt.zZieh;
+    player.zulagenAngebot = echt.zAng;
+    floaters.length = echt.flZahl;
+    recalc();
+    player.hp = echt.hp; player.mana = echt.mana;
+  }
+  if(ok) console.log('K1 Zulagen: Katalog, Faecher, Ziehung, Stapelregel und Wirkung in Ordnung.');
+  return ok;
+}
+zulagenAssert();
 
 // ===========================================================================
 //  W4: Trichter. Acht bestehende Fundstellen melden, WAS passiert ist; was das
@@ -20327,6 +21041,7 @@ const PANEL_REGISTER = [
   {id:'gespraech',  offen:() => gespraechOffen, zu:() => gespraechSchliessen()},
   {id:'inv',        offen:() => invOpen,        zu:() => toggleInventory()},
   {id:'spellTree',  offen:() => spellTreeOpen,  zu:() => toggleSpellTree()},
+  {id:'zulagen',    offen:() => zulagenOpen,    zu:() => toggleZulagen()},
   {id:'kessel',     offen:() => kesselOpen,     zu:() => toggleKessel()},
   {id:'ausweis',    offen:() => ausweisOpen,    zu:() => toggleAusweis()},
   {id:'fullmap',    offen:() => fullmapOpen,    zu:() => toggleFullmap()},
@@ -20418,7 +21133,8 @@ window.addEventListener('keydown', e => {
   // Vollständige Belegung, damit sie nicht wieder nur in einer Plandatei steht
   // (ZUSAGEN-BILANZ-2026-08-04.md, Fund 14): w a s d Bewegung, Space Angriff,
   // q und 1 Trank, e Zauber, r Ultimate, i Inventar, t Zauberbaum, m Musik,
-  // k Kessel, l Vollbildkarte, f Kontextaktion, Esc schließt Panels der Reihe nach.
+  // k Kessel, l Vollbildkarte, z Zulagen (K1), f Kontextaktion, Esc schließt
+  // Panels der Reihe nach.
   // '1' ist die Zweitbelegung für den Trank. Sie ist bewusst dokumentiert: die
   // Ziffernreihe ist genau der Bereich, in den eine spätere Schnellwahl greifen
   // würde, und dann kollidiert sie stumm. 'l' (Landkarte) statt 'm': m ist schon
@@ -20427,6 +21143,7 @@ window.addEventListener('keydown', e => {
   if(k === 'e') castActiveSpell();
   if(k === 'r') castUltimate();
   if(k === 'i') toggleInventory(); if(k === 't') toggleSpellTree(); if(k === 'm') toggleMusic();
+  if(k === 'z') toggleZulagen();   // K1
   if(k === 'k') toggleKessel();
   if(k === 'l') toggleFullmap();
   if(k === 'f') fuehreAktion();
@@ -20434,6 +21151,7 @@ window.addEventListener('keydown', e => {
     if(gespraechOffen) gespraechSchliessen();   // U3: liegt oben, geht zuerst
     else if(invOpen) toggleInventory();
     else if(spellTreeOpen) toggleSpellTree();
+    else if(zulagenOpen) toggleZulagen();
     else if(kesselOpen) toggleKessel();
     else if(ausweisOpen) toggleAusweis();
     else if(fullmapOpen) toggleFullmap();
@@ -20959,7 +21677,7 @@ function bakeUiSkin(){
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
-  for(const sel of ['#inv', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap', '#gespraech']){
+  for(const sel of ['#inv', '#spellTree', '#zulagen', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap', '#gespraech']){
     const el = document.querySelector(sel); if(!el) continue;
     el.style.borderImageSource = `url("${frameUrl}")`;
     el.style.borderImageSlice = '2 2 5 2';

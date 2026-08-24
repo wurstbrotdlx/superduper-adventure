@@ -148,9 +148,20 @@ const gesetzt = await page.evaluate(() => {
   player.bag[0] = { base: { t: 'armor', name: 'Aktenweste', armor: 7, tier: 1 }, rar: 1,
                     affixes: [{ k: 'hp', v: 30, def: AFFIXES[2] }], name: 'Aktenweste' };
   player.x = SPAWN.x + 640; player.y = SPAWN.y - 320;
+  // K1: zwei Zulagen, eine davon eingelegt, plus eine offene Vorlage. Die
+  // Familien kommen aus der Tabelle statt aus dem Kopf, damit der Lauf nicht
+  // bricht, wenn K1 seine Namen aendert.
+  const fam = Object.keys(ZULAGE);
+  player.zulagenKartei = [{ familie: fam[0], stufe: 2, angelegt: false },
+                          { familie: fam[1], stufe: 1, angelegt: false }];
+  zulageAnlegen(0, true);
+  player.zulagenZiehungen = 1; player.zulagenAngebot = null;
+  zulagenAngebotSicherstellen();
   recalc(); player.hp = 42; player.mana = 11;
   shiftT = 813; shiftKillsTotal = 6; auftragStand = 3;
-  return { geschrieben: spielstandSchreiben(), x: Math.round(player.x), y: Math.round(player.y) };
+  return { geschrieben: spielstandSchreiben(), x: Math.round(player.x), y: Math.round(player.y),
+           kartei: player.zulagenKartei.length, mappe: zulageMappe().length,
+           angebot: player.zulagenAngebot ? player.zulagenAngebot.length : 0 };
 });
 pruef('SP3 eine laufende Schicht laesst sich sichern', gesetzt.geschrieben, true);
 
@@ -166,6 +177,9 @@ const sp3 = await page.evaluate(() => {
            x: Math.round(player.x), y: Math.round(player.y),
            hp: player.hp, mana: player.mana, uhr: Math.round(shiftT),
            kills: shiftKillsTotal, auftrag: auftragStand, zustand: state,
+           kartei: player.zulagenKartei.length, mappe: zulageMappe().length,
+           angebot: player.zulagenAngebot ? player.zulagenAngebot.length : 0,
+           ziehungen: player.zulagenZiehungen,
            verbraucht: localStorage.getItem('sda_spielstand_v1') === null };
 });
 pruef('SP3 der Spielstand ueberlebt den Neustart', sp3.vorhanden, true);
@@ -178,7 +192,30 @@ pruef('SP3 der Affix haengt wieder an seiner Tabelle', sp3.affixDef, true);
 pruef('SP3 die Position stimmt auf den Pixel', { x: sp3.x, y: sp3.y }, { x: gesetzt.x, y: gesetzt.y });
 pruef('SP3 Leben, Mana und Uhr stehen', { hp: sp3.hp, mana: sp3.mana, uhr: sp3.uhr }, { hp: 42, mana: 11, uhr: 813 });
 pruef('SP3 Auftrag und Kills stehen', { kills: sp3.kills, auftrag: sp3.auftrag }, { kills: 6, auftrag: 3 });
+pruef('SP3 die Dienstmappe faehrt mit (K1)',
+      { kartei: sp3.kartei, mappe: sp3.mappe, angebot: sp3.angebot },
+      { kartei: gesetzt.kartei, mappe: gesetzt.mappe, angebot: gesetzt.angebot });
 pruef('SP3 danach wird gespielt, nicht im Menue gestanden', sp3.zustand, 'play');
+
+// Eine manipulierte Kartei darf die Mappe nicht sprengen: die Fachzahl kommt aus
+// zulageSlots() und nicht aus dem Spielstand.
+pruef('SP3 zehn eingelegte Karten passen trotzdem nur ins Fach',
+      await page.evaluate(() => {
+        startShift(); player.level = 3;   // Stufe 3 heisst genau ein Fach
+        const fam = Object.keys(ZULAGE);
+        player.zulagenKartei = []; player.zulagenZiehungen = 0; player.zulagenAngebot = null;
+        const roh = { v: 1, schichten: amt.schichten, stufe: 3, restT: 500,
+                      spieler: { level: 3, hp: 10, mana: 5, x: SPAWN.x, y: SPAWN.y,
+                                 zulagenKartei: fam.slice(0, 10).map(f => ({ familie: f, stufe: 9, angelegt: true }))
+                                   .concat([{ familie: 'gibtsnicht', stufe: 1, angelegt: true }]) },
+                      schicht: { shiftT: 500 } };
+        localStorage.setItem('sda_spielstand_v1', JSON.stringify(roh));
+        spielstandEinloesen();
+        return { mappe: zulageMappe().length, faecher: zulageSlots(player.level),
+                 kartei: player.zulagenKartei.length,
+                 stufeGeklemmt: Math.max(...player.zulagenKartei.map(z => z.stufe)) };
+      }),
+      { mappe: 1, faecher: 1, kartei: 10, stufeGeklemmt: 3 });
 pruef('SP3 der eingeloeste Stand ist verbraucht', sp3.verbraucht, true);
 
 const frische = await page.evaluate(() => {

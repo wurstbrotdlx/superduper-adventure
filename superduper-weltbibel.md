@@ -159,6 +159,24 @@ Drei Regeln machen daraus eine Entscheidung statt einer Beigabe:
 
 Und weil auch das eine Personalakte ist, endet sie mit der Schicht. Persönliche Qualifikation ist nicht übertragbar. Steht so im Vorgang.
 
+### Die Zulagen (K1)
+
+*(Nachgetragen mit K1, 24.08.2026, siehe `phase-k1-zulagen.md`.)*
+
+Die Befähigung oben ist, was der Außendienst kann. Die Zulage ist, was ihm dafür bewilligt wird, und sie kommt aus einer anderen Tür: nicht aus seiner Personalakte, sondern aus der Personalstelle.
+
+**Mit jedem Aufstieg legt die Personalstelle drei Zulagen vor. Eine wird bewilligt. Die anderen beiden gelten als nicht beantragt.** Niemand erklärt, warum es drei sind. Es sind seit jeher drei.
+
+Zulagen sind laminiert. Das Amt laminiert, was es ernst meint.
+
+Getragen werden sie in der Dienstmappe, und die fasst wenig. Wer neu ist, bekommt die einfache Mappe mit einem Sichtfenster. Ab der fünften Stufe steht ihm die Doppelmappe zu. Ab der fünfzehnten der Ordner. Das ist der ganze Aufstieg, den dieses Haus kennt: erst eine Mappe, dann eine größere Mappe, dann ein Ordner. Die Form ist episch, der Inhalt ist Papier (Regel 10).
+
+Was nicht in der Mappe steckt, liegt in der Kartei. Umgesteckt wird zwischen zwei Vorgängen, nie während eines: eine Mappe im Gefecht neu zu sortieren ist keine Sachbearbeitung, sondern eine Ausrede.
+
+Und wie alles Persönliche endet auch die Zulage mit der Schicht. Sie ist tagesbefristet wie die Stelle, an der sie hängt. Ein Antrag auf Verlängerung wäre eine Neubewilligung, eine Neubewilligung erfordert eine Ausschreibung, und damit sind wir wieder am Anfang von Kapitel 5.
+
+Drei Wörter sind in diesem Haus schon vergeben und heißen deshalb nichts anderes: **Karte** ist die Karte der Welt, **Befugnis** ist die Zaubererlaubnis ab der vierten Stufe, **Vordruck** ist das Formular am ersten Tag.
+
 ---
 
 ## 6. Bestiarium: die 37 Vorgangsarten
@@ -1065,6 +1083,18 @@ Die Versuchung als Versammlung im Amtsflur, die Zustellung als Ausbau von `vorga
 
 **Abnahme:** Wer die Versuchung nie sieht, spielt das Spiel unverändert zu Ende. Die Mappen werden nie abgeholt, niemand nimmt etwas an und niemand lehnt etwas ab, und die Zustellung wird an keiner Stelle verweigert.
 
+### K1: Die Zulagen — ERLEDIGT (siehe `phase-k1-zulagen.md`)
+
+Kapitel 5, der neue Unterabschnitt. Auf Ansage des Projektinhabers: ein schlankes Kartensystem, eine Karte je Aufstieg, wachsende Mappe, Karten in Stärkegraden, teils stapelbar. Zwei Entscheidungen kamen auf Nachfrage dazu und stehen so im Bau: die Ziehung legt drei aus und der Spieler wählt eine, und das Loadout bleibt außerhalb des Gefechts jederzeit tauschbar.
+
+* **Fünfzehn Familien in je drei Stufen.** Drei Waffengattungen, drei Zauberzweige, neun allgemeine. Stufe I ist genau ein Wirkungsrang der Kesselausrüstung, Stufe III liegt einen Punkt über deren Unikat. Acht Familien stapeln (höchstens zweimal), sieben nicht, und beides ist begründet statt gewürfelt.
+* **Fast kein neues Rechenwerk.** Dreizehn der fünfzehn Familien hängen an Aggregatschlüsseln, die seit Phase 3 stehen, samt ihren Deckeln. Neu gebaut wurden genau zwei Hooks: die Waffengattung (`w.base.mode` war bis dahin reine Animationswahl) und der Zauberzweig (`castSpell()` kannte nur einen Multiplikator für alle elf Sprüche). Das Ultimate bleibt von beidem ausgenommen.
+* **Die Ziehung drängt nicht.** Kein Fenster öffnet sich von selbst, das Angebot bleibt liegen, bis gewählt wird, und Panel zu und wieder auf ist kein Würfelbecher. Gemeldet wird über einen Floater und ein Sternchen am Gürtel. Nichts läuft von selbst ab, auch hier nicht.
+* **Kein neues System.** Achtes Panel im bestehenden `PANEL_REGISTER`, mit demselben Grund, demselben Kopfband, demselben Schließknopf, demselben Schleier. Emoji statt Grafik, wie überall im Haus.
+* **Zwei bestehende Guards mussten mitgezogen werden.** `zauberAssert()` fährt bei jedem Laden neun echte Aufstiege, `befaehigungAssert()` misst die S1-Spreizung, und eine Karte trägt beide Seiten dieser Messung. Beide spiegeln die Kartei jetzt und stellen sie zurück. Die S1-Zusage wurde nicht aufgeweicht, sondern von einer dritten Quelle freigehalten, die es beim Schreiben von S1 noch nicht gab.
+
+**Abnahme:** Keine zweite Währung, kein Questmarker, kein neues `amt`-Feld, kein neuer Speicherschlüssel. Zulagen fallen mit der Schicht wie Stufe, Zauber und Gerät. Kein Gegner wurde angefasst. Nebenbei repariert: der Erfahrungsbalken im HUD rechnete seit S1 nach der alten Stufenleiter und stand auf Stufe 10 voll, wenn erst zwei Fünftel des Weges lagen.
+
 ### SP: Der Spielstand — ERLEDIGT (siehe `phase-sp-spielstand.md`)
 
 Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern der einzige Bauabschnitt, der ausdrücklich **außerhalb** der Welt steht: er betrifft das Gerät, auf dem die Welt läuft.
@@ -1074,6 +1104,7 @@ Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern der einzige 
 * **Der Spielstand hält den Menschen, nicht die Sekunde.** Stufe, Skillung, Ausrüstung, Beutel, Position, Uhr und Auftrag kommen zurück; Monster, Bodenbeute und Geschosse nicht. Sie einzufrieren hieße, den Kampfzustand zu konservieren, und dann wäre Speichern vor einer Truhe ein Werkzeug statt einer Unterbrechung. **Es gibt kein Save-Scumming**, und das ist der Grund, warum das Tor eng ist: keine Kammer, kein Schattenland, kein Tod, keine Überstunden.
 * **Eine Schicht wird einmal abgerechnet.** Der Spielstand trägt `amt.schichten` von seiner Entstehung; stimmt die Zahl nicht mehr, ist er verbraucht. Ohne diese Prüfung wäre Fortsetzen eine zweite Abrechnung desselben Tages, und Kapitel 5 kennt nur einen Dienstbericht je Schicht.
 * **Der Übertrag ist ein Aktenvorgang.** Was am Gürtel die Nacht übersteht, steht seither in `amt.uebertrag` statt in einer Laufzeitvariablen — dieselbe Begründung, mit der W10 den bewilligten Antrag persistiert hat: Aktenvorgänge überleben die Nacht.
+* **Die Zulagen fahren mit.** Was K1 an die Schicht gehängt hat (Kartei, offene Vorlagen, ausliegendes Angebot), steht im Spielstand — ein Fortsetzen ohne Dienstmappe wäre kein Fortsetzen. Eingelegt wird beim Einlösen über `zulageAnlegen()` und nicht über ein gesetztes Flag: Fachzahl, Stapelgrenze und Stufengatter stehen dort und werden nicht abgeschrieben.
 * **Eine Klemmstelle, nicht zwei.** Der Import prüft die Hülle und lädt die Seite neu; geprüft und geklemmt wird ausschließlich in den vorhandenen Loadern. Was nicht an `loadAmt()` vorbeikommt, kommt auch als Import nicht vorbei.
 
 **Abnahme:** Wer nie speichert, exportiert oder importiert, spielt das Spiel unverändert. Der Spielstand nimmt nichts weg und gibt keinen Vorteil: er gibt genau den Stand zurück, den die Unterbrechung genommen hat.
@@ -1138,6 +1169,10 @@ Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern der einzige 
 | Zur Klärung zurückgestellt | (kommt von oben) | liegt, und zwar auf unbestimmte Zeit |
 | Die Zeit ohne Nachweis | (nicht überliefert) | alles vor Jahr 0, gilt als anstrengend |
 | IM TERMIN | (ein Schild an einer Tür) | der Kaiser, seit 588, aktenkundig lebendig |
+| Zulage | die Karte | ein Aufschlag, laminiert, tagesbefristet |
+| Dienstmappe | (man sagt einfach Mappe) | ein bis drei Sichtfenster, mehr passt nicht hinein |
+| Kartei | (der Rest) | was bewilligt ist und gerade nicht getragen wird |
+| Ziehung | (drei liegen aus) | die Bewilligung einer von dreien, die anderen beiden gelten als nicht beantragt |
 
 ---
 

@@ -37,7 +37,7 @@ Die Folge war der Gegenspieler des Hauptvorgangs. Beide Wege in `vorblattFaellig
 
 Behoben mit zwei Ladezeilen und `stempelGeklemmt()`, beidseitig nach der GW3/W10-Lehre. `STEMPEL_DECKEL = 9999` ist wie `WIEDER_STAND_DECKEL` keine Balance-Zahl, sondern die Zusage des Kommentars: 0 heißt „nie", alles darüber ist eine Schichtnummer.
 
-**Warum es nie aufgefallen ist,** ist der eigentliche Fund: kein Prüfer des Hauses sieht diesen Weg. Alle zwanzig Guards prüfen Zusagen im laufenden Skript, und jede Prüfschleife lädt die Seite **einmal**. Ein Feld, das geschrieben und nie geladen wird, sieht in einem einzigen Lauf vollkommen gesund aus. Dieser Fehler braucht zwei Ladevorgänge, um sichtbar zu werden — deshalb ist `tools/speicher-pruef.mjs` das erste Werkzeug des Hauses, das neu lädt.
+**Warum es nie aufgefallen ist,** ist der eigentliche Fund: kein Prüfer des Hauses sieht diesen Weg. Jeder Guard vor diesem prüft Zusagen im laufenden Skript, und jede Prüfschleife lädt die Seite **einmal**. Ein Feld, das geschrieben und nie geladen wird, sieht in einem einzigen Lauf vollkommen gesund aus. Dieser Fehler braucht zwei Ladevorgänge, um sichtbar zu werden — deshalb ist `tools/speicher-pruef.mjs` das erste Werkzeug des Hauses, das neu lädt.
 
 #### Die Heilung der Bestände
 
@@ -62,6 +62,10 @@ Ersetzt durch `amt.uebertrag` — **eine** Wahrheit statt zweier, keine Laufzeit
 Neuer Schlüssel `sda_spielstand_v1`, der vierte des Spiels.
 
 **Was drinsteht:** Stufe, Erfahrung, Leben, Mana, Gold, Tränke, Skillung, Skill- und Zauberpunkte, gelernte Zauber, Frisur und Haarton, Position, Beutel, Tasche, Ausrüstung — dazu die Schicht: Uhr, Überstunden, Kills nach Typ, Auftragsstand samt seinen zwei Merkern und `langSchicht`.
+
+**Und die Zulagen aus K1.** Der Bauabschnitt ist während dieser Arbeit auf `main` gelandet und hängt drei Felder an die Schicht (`zulagenKartei`, `zulagenZiehungen`, `zulagenAngebot`). Sein Kommentar sagt „nichts davon geht nach localStorage", und das stimmte, bis es diesen Schlüssel gab — der Spielstand bricht die Zusage nicht, er speichert die **Schicht** und nicht die Akte, und für die gilt Kapitel 5 unverändert: mit dem Dienstschluss ist die Mappe weg. Ein Fortsetzen ohne Dienstmappe wäre kein Fortsetzen.
+
+Eingelegt wird beim Einlösen über **`zulageAnlegen()`** und nicht über ein gesetztes `angelegt:true`. Fachzahl (`zulageSlots`), Stapelgrenze (`ZULAGE_STAPEL_MAX`) und die Regel „eine je Sache" stehen dort, und sie hier abzuschreiben wäre die F1-Falle. Der Nebeneffekt ist die beste Klemme, die dieser Abschnitt hat, weil sie nichts kostet: ein manipulierter Stand mit zehn eingelegten Karten bekommt genau so viele, wie die Mappe auf dieser Stufe fasst — gemessen bei Stufe 3 genau eine. Ebenso zieht `zulagenAngebotSicherstellen()` eine Vorlage nach, falls ein Stand offene Ziehungen ohne Angebot trägt; im regulären Spiel gibt es diesen Zustand nicht, ein von Hand gesetzter Stand könnte ihn tragen, und er verschluckte sonst die Aufstiege.
 
 **Was ausdrücklich nicht drinsteht:** Monster, Beute am Boden, Geschosse, Leichen, Partikel. Die kommen bei `placeMonsters()` ohnehin neu, und sie einzufrieren hieße, den Kampfzustand zu konservieren — dann wäre Speichern vor einer Truhe ein Werkzeug statt einer Unterbrechung. Der Spielstand hält den Menschen, die Uhr und den Auftrag fest, nicht die Sekunde.
 
@@ -102,11 +106,15 @@ Er ist der erste Guard des Hauses, der nicht das laufende Skript prüft, sondern
 
 ### Prüfprotokoll
 
-`tools/speicher-pruef.mjs`, **32 Prüfungen, alle bestanden**, und als einziges Werkzeug des Hauses über zwei Ladevorgänge — genau daran war SP1 unsichtbar.
+`tools/speicher-pruef.mjs`, **34 Prüfungen, alle bestanden**, und als einziges Werkzeug des Hauses über zwei Ladevorgänge — genau daran war SP1 unsichtbar.
 
 Gemessen: Karte über Sitzungen identisch · beide Stempel überleben Neustart und den nächsten `saveAmt()` · `vorblattFaellig()` in Akt IV wieder `true` · Stempel klemmen beidseitig (999999 → 9999, −5 → 0) · Übertrag steht nach dem Dienstschluss in der Akte, überlebt das Schließen und wird genau einmal eingelöst · eine unterbrochene Schicht kommt vollständig zurück (Stufe 9, XP 55, Gold 777, Skillung, Beutel, Tasche samt Affix-Tabellenbezug, Position auf den Pixel, HP 42, Mana 11, Uhr 813 s, Kills 6, Auftragsstand 3) · unbekannte Zauber fallen raus · Tor in Kammer und Tod zu · Dienstschluss verbraucht den Stand · Export trägt die Kennung und alle vier Schlüssel · nach `localStorage.clear()` holt der Import alles zurück, inklusive der fortsetzbaren Schicht · Import lehnt drei Sorten Fremdes ab · Konsole still.
 
-Dazu: alle bestehenden Werkzeuge nachgezogen und grün — `stopfen-pruef` 43, `langvorgang-pruef` 58, `szene-pruef` 48, `versuchung-pruef` 67, `reich-pruef` 59, `ebene-pruef` 54, `menue-pruef` 39. Einundzwanzig Guard-Zeilen in der Konsole, keine Pageerrors. Einzeldatei-Build gebaut und per `file://` geladen: 21 Zeilen, still, und `localStorage` ist dort nutzbar.
+Dazu die Zulagen-Verzahnung: die Dienstmappe fährt mit (Kartei, eingelegte Karte, ausliegendes Angebot), und zehn eingelegte Karten auf Stufe 3 ergeben genau ein belegtes Fach, während Stufe 9 auf 3 klemmt und eine unbekannte Familie ganz herausfällt.
+
+Nach dem Merge von `main` (K1) noch einmal vollständig gefahren, mit ausgewerteten Exit-Codes: `speicher-pruef` 34, `zulagen-pruef` 45, `stopfen-pruef` 43, `langvorgang-pruef` 58, `szene-pruef` 48, `versuchung-pruef` 67, `reich-pruef` 59, `ebene-pruef` 54, `menue-pruef` 39, `gespraech-pruef` 89, `empfang-pruef` 59 — **595 Prüfungen, alle Exit-Codes 0**. Zweiundzwanzig Guard-Zeilen in der Konsole (nachgezählt, nicht geschätzt: K1 und SP bringen je eine dazu), keine Pageerrors. Einzeldatei-Build gebaut und per `file://` geladen: still, und `localStorage` ist dort nutzbar.
+
+*Notiert, weil es sonst als Tapete durchginge:* Im ersten Sammellauf meldete `ebene-pruef` 53 von 54. Fünf Einzelläufe danach ergaben 54 von 54, und SP fasst nichts an, was M4 prüft — der Fehlschlag kam aus der Ressourcenkonkurrenz von elf Browserstarts in Folge, nicht aus dem Code. Er steht hier statt zu verschwinden, weil die nächste Person ihn sonst für neu hält.
 
 ### Bewusst offen
 
