@@ -3719,6 +3719,15 @@ const DORF_FIGUREN = [
        {z1:'Die Praktikantin schreibt etwas auf.', z2:'Seite zwei. Sehr genau.'},
        {z1:'Ich habe es gelesen. Als Einziger.', z2:'Bisher jedenfalls.'},
      ]},
+     // LV4: was nach der Unterschrift von ihm stehen bleibt. Der Schalter liest
+     // den Langvorgang, nicht einen Merker (siehe ZUSATZ_SCHALTER.lang). Er
+     // erklärt den Präzedenzfall nicht und feiert ihn nicht, er stellt die
+     // Zuständigkeit fest. Das ist seine Sprachmarke und Regel 6 des
+     // Erledigens: es wird zugeklappt, nicht triumphiert.
+     {lang:'bericht', zeilen:[
+       {z1:'Ich habe für die Praktikantin gezeichnet.', z2:'Das war zulässig. Geprüft.'},
+       {z1:'Zeichnen darf, wer im Dienst ist.',         z2:'Auf Probe ist im Dienst.'},
+     ]},
      {abAkt:4, zeilen:[
        {z1:'Der Herr aus Oben hat mich angesprochen.', z2:'Er bietet mir die Entfristung.'},
        {z1:'Ich soll dafür etwas nicht tun.',          z2:'Vierzig Jahre. Und jetzt das.'},
@@ -8018,6 +8027,20 @@ const ZUSATZ_SCHALTER = {
               pruef: w => (w >= 1 && w <= 5) ? null : 'nennt einen Akt, den es nicht gibt: ' + w},
   merker:    {frei: w => !!kn.flags[w],
               pruef: w => (w in kn.flags) ? null : 'nennt einen Merker, den es nicht gibt: ' + w},
+  // LV4: der neunte Schalter. Er liest einen abgeschlossenen Langvorgang statt
+  // eines Merkers im Spielstand, und das ist keine Bequemlichkeit, sondern die
+  // W7-Doktrin: jede Belohnung eines Strangs ist ein abgeleiteter Lesevorgang
+  // von langFertig(key) an der Stelle, die sie betrifft. Ein zweiter Merker
+  // neben kladde.lang wäre eine zweite Wahrheitsquelle für denselben
+  // Fortschritt, also genau die Falle aus Fund F1 der W7-Phase.
+  //
+  // pruef prüft hier NUR die Form, und das ist begründet: LANGVORGAENGE ist eine
+  // const rund 6000 Zeilen weiter unten, knAssertCaps() läuft auf Skriptebene,
+  // ein Zugriff von hier liefe in die Temporal Dead Zone (F1-Fund 2, W7-Umzug
+  // der beiden Guard-Selbstaufrufe). Dass der Schlüssel wirklich einen Strang
+  // trifft, prüft langAssert() Punkt (11), und der läuft hinter der Tabelle.
+  lang:      {frei: w => langFertig(w),
+              pruef: w => (typeof w === 'string' && w) ? null : 'nennt keinen Langvorgang: ' + w},
   abSchicht: {frei: w => !CONFIG.schichtModus || amt.schichten >= w,
               pruef: w => (w >= 1 && w <= 50) ? null : 'nennt eine Schicht ausserhalb der fünfzig: ' + w},
   abStufe:   {frei: w => player.level >= w,
@@ -13460,8 +13483,16 @@ const VORGANG_PUZZLE = [
   {frei: () => kladde.crafts > 0,
    text: 'Er braucht es in dreifacher Ausfertigung. Der Kessel liefert sie, wortlos.',
    sonst: 'Er braucht es in dreifacher Ausfertigung. Bramsche hat Durchschläge mitgeschickt.'},
-  {frei: () => true,
-   text: 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“'},
+  // LV4: das vierte Teil hat seit dem sechsten Praktikumsbericht eine echte
+  // Bedingung, und es bleibt nach der Bauregel oben trotzdem nie blockierend.
+  // Wer den Präzedenzfall hat, hört, dass Sturz' Begründung in diesem Haus
+  // schon einmal getragen hat. Wer ihn nicht hat, bekommt genau den Satz, der
+  // hier seit W5 steht, Wort für Wort. Der Kanon von Kapitel 9 liegt also in
+  // der sonst-Fassung und nicht im Zusatz, damit ein fehlender Strang nichts
+  // wegnimmt, sondern der vorhandene etwas dazugibt.
+  {frei: () => langFertig('bericht'),
+   text: 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“ Dieselbe Begründung hat in diesem Haus schon einmal getragen, unter dem sechsten Praktikumsbericht, gezeichnet von einem Sachbearbeiter auf Probe. Der Fall ist aktenkundig. Es fragt niemand nach.',
+   sonst: 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“'},
 ];
 // GW10, dritte Bedingung. Das Dienstsiegel (JAHRES_BONI Index 3, siehe
 // showJahresgespraech()) fällt bei amt.schichten === 40 — exakt der Sprung von
@@ -14139,6 +14170,100 @@ const LANG_EREIGNISSE = ['kill','kammer','kessel','trank','zauber','ablage','zut
 //   bestand optional, st => Zeile im Kladde-Reiter, Panel-Text, kein Deckel
 const LANGVORGAENGE = {};
 
+// ---------------------------------------------------------------------------
+//  Weltbibel Kapitel 10, Nummer 4: DER SECHSTE PRAKTIKUMSBERICHT.
+//
+//  Lisbeth braucht eine weisungsbefugte Unterschrift. Es gibt keine. Am Ende
+//  unterschreibt Nörgel, weil er im Dienst ist. Belohnung ist kein Bonus,
+//  sondern ein PRÄZEDENZFALL: dass in diesem Haus schon einmal wirksam
+//  gezeichnet hat, wer nur deshalb im Dienst ist, weil ihn niemand entlassen
+//  hat. Akt V braucht diesen Fall, weil Sturz dort mit derselben Begründung
+//  gegenzeichnet.
+//
+//  DIE EINE AUSNAHME UND WIE SIE GEBAUT IST. Kapitel 10 sagt zwei Dinge, die
+//  sich zu widersprechen scheinen: kein Langvorgang darf für den Hauptvorgang
+//  notwendig sein, ausser Nummer 4, und die läuft nebenbei mit. Beides gilt,
+//  weil "notwendig" hier erzählerisch gemeint ist und nicht mechanisch: der
+//  Strang ist an keiner Stelle Bedingung. vorgangZustellbar() liest ihn nicht,
+//  das Finale wird nie verweigert, und langAssert() Punkt (4) beweist das
+//  weiterhin positiv. Was er ändert, ist das VIERTE Puzzleteil des Finales:
+//  mit Präzedenzfall ist Sturz' Satz ein Rückgriff, ohne ihn ein Zufall. Die
+//  Bauform dafür stand schon da, VORGANG_PUZZLE kennt frei/text/sonst seit W5.
+//
+//  Und "nebenbei" ist wörtlich gebaut: acht Beats an fünf Figuren, die im Dorf
+//  ohnehin stehen und ohnehin angesprochen werden. Kein Umweg, kein Ort, kein
+//  Gegenstand, keine Taste. Wer nie mit Lisbeth redet, verpasst ihn, und das
+//  Spiel läuft trotzdem bis zum Ende durch.
+//
+//  Warum der Strang GANZ VORN in der Tabelle steht: langAnsprechen() geht sie
+//  in Einfügereihenfolge durch und liefert den ersten Strang, der vorrückt.
+//  Zwirn trägt sonst elf Dorffest-Anläufe vor diesem hier, Bramsche drei Beats
+//  von Anlage 3. Das wäre dieselbe Schlange, die bei Zapf schon vermerkt ist,
+//  nur an dem einen Strang, den das Haus für Akt V braucht. Er kostet die
+//  beiden je genau einen Tastendruck, einmal im Spiel.
+//
+//  Knöterich fehlt in der Kette, obwohl das a. D. hinter seinem Titel die
+//  ganze Begründung wäre. Zwei Gründe, und beide sind der Grund: er erklärt
+//  Tasten und keine Zusammenhänge, und er erreicht npcCycle() gar nicht, wo
+//  langAnsprechen() sitzt (seine Tafel ist U6, nicht W3). Lisbeth berichtet
+//  deshalb, was er getan hat: er hat auf sein Schild gezeigt und nichts gesagt.
+//  Das ist er genauer als jede Zeile, die er selbst sprechen könnte.
+// ---------------------------------------------------------------------------
+const BERICHT_BEATS = [
+  {z1:'Der sechste Bericht ist fertig.',          z2:'Es fehlt nur eine Unterschrift.'},
+  {z1:'Unterschreiben? Da bin ich sofort dran.',  z2:'Ich bin nicht Ihr Vorgesetzter.'},
+  {z1:'Weisungsbefugt ist, wer im Dienst steht.', z2:'Nicht ich. Fragen Sie Oben.'},
+  {z1:'Eine Unterschrift für die Praktikantin.',  z2:'Das prüfen wir gern.'},
+  {z1:'Der Amtsrat hat auf sein Schild gezeigt.', z2:'a. D. Und sonst nichts.'},
+  {z1:'Wer im Dienst steht, ist befugt.',         z2:'Wer steht hier im Dienst?'},
+  {z1:'Auf Probe ist im Dienst. So steht es da.', z2:'Ich zeichne. Beschwerde folgt.'},
+  {z1:'Gezeichnet. Von einer Grünhaut.',          z2:'Wirksam. Ich habe nachgesehen.'},
+];
+// Wer an welcher Stufe dran ist. Tabelle statt Kaskade, aus demselben Grund wie
+// bei ANLAGE3_DRAN: über der letzten Stufe liefert sie undefined, und damit ist
+// schritt() auf dem Endzustand von selbst idempotent.
+// Zweimal Lisbeth hintereinander (Stufe 4 und 5) ist Absicht und kein Fehler:
+// langAnsprechen() rückt je Tastendruck genau einen Schritt vor, das sind also
+// zwei Sprechblasen bei ihr. Die erste bringt den Befund, die zweite die Frage,
+// die der Spieler beantworten muss, und zwar durch Hingehen und nicht durch
+// eine Antwortzeile.
+const BERICHT_DRAN = ['lisbeth', 'zwirn', 'bramsche', 'vorblatt', 'lisbeth', 'lisbeth', 'noergel', 'lisbeth'];
+// Was danach bei Lisbeth stehen bleibt. Keine Mechanik, kein Gold, keine
+// Erfahrung: die Belohnung dieses Strangs ist der Fall und nicht die Zahl. Dass
+// der siebte Bericht trotzdem anfängt, ist die Pointe und nicht ein Versehen.
+const BERICHT_NACH = [
+  {z1:'Der sechste Bericht ist abgeschlossen.', z2:'Der siebte fängt trotzdem an.'},
+  {z1:'Ein Sachbearbeiter durfte zeichnen.',    z2:'Das steht jetzt in einer Akte.'},
+];
+
+LANGVORGAENGE.bericht = {
+  figur:'lisbeth', titel:'Der sechste Praktikumsbericht', stufen:BERICHT_BEATS.length,
+  hoert:['ansprechen'],
+  // Akt I gehört Knöterichs Onboarding, wie bei anlage3 und AUFTRAG_TYPEN.reise.
+  // Vorblatt steht erst ab Akt III im Dorf (DORF_FIGUREN, abAkt:3), die Kette
+  // hält an Stufe 3 also von selbst an, bis Oben da ist. Das ist Pacing und
+  // keine Blockade: bis Akt V (Schicht 41) bleiben zwanzig Schichten Luft.
+  wenn: () => aktStand() >= 2,
+  schritt(was, info, roh){
+    if(was !== 'ansprechen' || !info) return roh;
+    if(info.key !== BERICHT_DRAN[roh]) return roh;
+    // Die erste Kette, die über eine Figur mit abAkt läuft. Im Spiel wäre die
+    // Frage keine: npcCycle() wird für eine Figur ohne Kachel nie gerufen, und
+    // Vorblatt hat vor Akt III keine. Der Strang verlässt sich trotzdem nicht
+    // darauf, dass die Reihenfolge von aussen eingehalten wird, denn genau das
+    // hat der erste Prüflauf gefunden: über langAnsprechen('vorblatt') lief die
+    // Kette in Akt II glatt bis zum Ende durch. figDa() ist dieselbe Prüfung,
+    // die DORF_FIGUREN.abAkt ohnehin trägt, also kein zweiter Wert und keine
+    // zweite Schwelle.
+    return figDa(DORF_FIGUREN.find(f => f.key === info.key)) ? roh + 1 : roh;
+  },
+  fortschritt: st => BERICHT_BEATS[st - 1],
+  zusatz: st => st >= BERICHT_BEATS.length ? BERICHT_NACH : [],
+  bestand: st => st >= BERICHT_BEATS.length
+    ? 'Der sechste Praktikumsbericht: gezeichnet. Der Fall ist aktenkundig.'
+    : 'Der sechste Praktikumsbericht: es fehlt eine Unterschrift. ' + st + ' von ' + BERICHT_BEATS.length + '.',
+};
+
 // Weltbibel Kapitel 10, Nummer 3. Läuft über das ganze Spiel: elf Anläufe, elf
 // Absagen, jede aus einem anderen Grund. Ein Anlauf je Schicht. Zahlt sich erst
 // im Abspann aus, deshalb kein Bonus und kein Zusatzzeilen-Feld.
@@ -14531,6 +14656,31 @@ function langAssert(){
     if(EMOJI.test(txt))  fehler('Emoji', feld, txt);
     for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk verletzt', feld, g, txt);
   };
+  // LV4: die Kurzform-Prüfung aus F1b, hier nachgezogen. knAssertCaps() führt sie
+  // über DORF_FIGUREN, KN_FIGUR und die Zettelkanäle, aber nie über die
+  // Langvorgänge: LANGVORGAENGE steht rund 6000 Zeilen unter ihm und läge von
+  // dort in der TDZ. Die Beats waren damit die einzigen Sprechblasen des Spiels
+  // ohne diese Prüfung, und LV4 setzt mit 'a. D.' als erstes ein Kürzel in einen
+  // Beat. Dieselben zwei Muster, dieselbe Tabelle.
+  //
+  // Eigener Helfer und NICHT in text() eingebaut, und das ist ein gemessener
+  // Befund: text() läuft auch über gestrippte Panel-Blöcke, und die tragen
+  // Überschriften und Knopfbeschriftungen in Versalien. Beim ersten Lauf hat die
+  // Prüfung von dort 'DAS' aus "DAS FINALE" und 'NEUEN' aus "NEUEN VORGANG
+  // ANLEGEN" gemeldet. Genau dieser Fall steht in ABK_AUSNAHME begründet, und
+  // knAssertCaps() hat ihn nie gehabt, weil es Tabellenzeilen prüft und kein
+  // gerendertes HTML. Also wird hier auch nur die Tabelle geprüft.
+  const abk = (txt, feld) => {
+    if(typeof txt !== 'string' || !txt) return;
+    for(const roh of (txt.match(ABK_PUNKT) || [])){
+      const k = abkNorm(roh);
+      if(!(k in ABKUERZUNGEN)) fehler('Abkürzung ohne Eintrag in ABKUERZUNGEN', feld, k, txt);
+    }
+    for(const k of (txt.match(ABK_GROSS) || [])){
+      if(ABK_ROEMISCH.test(k) || ABK_AUSNAHME.indexOf(k) >= 0) continue;
+      if(!(k in ABKUERZUNGEN)) fehler('Abkürzung ohne Eintrag in ABKUERZUNGEN', feld, k, txt);
+    }
+  };
 
   // Spiegel. Alles wird am Ende exakt zurückgesetzt, ohne saveAmt()/saveKladde().
   const langEcht = kladde.lang, schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
@@ -14554,7 +14704,7 @@ function langAssert(){
     if(!Array.isArray(d.hoert) || !d.hoert.length) fehler('hoert leer', k);
     else for(const e of d.hoert) if(LANG_EREIGNISSE.indexOf(e) < 0) fehler('unbekannte Ereignisart', k, e);
     if(d.figur !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === d.figur)) fehler('Figur existiert nicht', k, d.figur);
-    text(d.titel, 0, 'titel ' + k);
+    text(d.titel, 0, 'titel ' + k); abk(d.titel, 'titel ' + k);
   }
 
   // (2) Kein toter Strang: jeder muss über eine Ereignisfolge bis stufen
@@ -14613,13 +14763,13 @@ function langAssert(){
     for(let st = 1; st <= d.stufen; st++){
       const f = d.fortschritt(st);
       if(!f){ fehler('fortschritt() liefert nichts', k, st); continue; }
-      text(f.z1, 48, 'fortschritt z1 ' + k + ' st=' + st);
-      if(f.z2) text(f.z2, 32, 'fortschritt z2 ' + k + ' st=' + st);
+      text(f.z1, 48, 'fortschritt z1 ' + k + ' st=' + st); abk(f.z1, 'fortschritt z1 ' + k + ' st=' + st);
+      if(f.z2){ text(f.z2, 32, 'fortschritt z2 ' + k + ' st=' + st); abk(f.z2, 'fortschritt z2 ' + k + ' st=' + st); }
     }
     for(let st = 0; st <= d.stufen; st++){
       if(d.zusatz) for(const z of (d.zusatz(st) || [])){
-        text(z.z1, 48, 'zusatz z1 ' + k + ' st=' + st);
-        if(z.z2) text(z.z2, 32, 'zusatz z2 ' + k + ' st=' + st);
+        text(z.z1, 48, 'zusatz z1 ' + k + ' st=' + st); abk(z.z1, 'zusatz z1 ' + k + ' st=' + st);
+        if(z.z2){ text(z.z2, 32, 'zusatz z2 ' + k + ' st=' + st); abk(z.z2, 'zusatz z2 ' + k + ' st=' + st); }
       }
       // GW18: bestand() liest bei probezeit und gutachter den ROHWERT aus
       // kladde.lang, nicht die uebergebene Stufe. Mit leerem kladde.lang sah es
@@ -14630,8 +14780,10 @@ function langAssert(){
         const vorher = kladde.lang[k];
         kladde.lang[k] = rohEnde[k];
         text(d.bestand(st), 0, 'bestand ' + k + ' st=' + st + ' (Endrohwert)');
+        abk(d.bestand(st), 'bestand ' + k + ' st=' + st + ' (Endrohwert)');
         kladde.lang[k] = 0;
         text(d.bestand(st), 0, 'bestand ' + k + ' st=' + st + ' (Rohwert 0)');
+        abk(d.bestand(st), 'bestand ' + k + ' st=' + st + ' (Rohwert 0)');
         if(vorher === undefined) delete kladde.lang[k]; else kladde.lang[k] = vorher;
       }
     }
@@ -14699,11 +14851,29 @@ function langAssert(){
       if(blk) text(strip(blk), 0, 'Gießkanne-Block st=' + st);
     }
     kladde.lang = zustand === 'fertig' ? Object.assign({}, rohEnde) : {};
+    // LV4: das Finale gehört seit dem sechsten Praktikumsbericht dazu. Es liest
+    // langFertig('bericht') im vierten Puzzleteil, und die text-Fassung wäre
+    // sonst von keinem Guard je gerendert worden: vorgangAssert() rendert
+    // Schritt 2 zwar in zwei Zuständen, aber beide mit dem ECHTEN kladde.lang
+    // des Spielers, also mit ziemlicher Sicherheit zweimal derselben Fassung.
+    // Hier stehen beide Strangzustände ohnehin schon bereit.
+    text(strip(vorgangPanelHtml(2)), 0, 'Finale ' + zustand);
     const bb = langBestandBlock();
     if(zustand === 'leer' && bb !== '') fehler('langBestandBlock() ist bei leerem Bestand nicht leer');
     if(bb) text(strip(bb), 0, 'Bestandblock ' + zustand);
   }
   kladde.lang = {};
+
+  // (11) LV4: jeder lang-Schalter in DORF_FIGUREN nennt einen Strang, den es
+  // gibt. Diese Hälfte kann ZUSATZ_SCHALTER.lang.pruef nicht leisten, weil sie
+  // in knAssertCaps() auf Skriptebene läuft und LANGVORGAENGE dort noch in der
+  // TDZ liegt (Begründung steht an der Tabelle). Ohne die Prüfung wäre ein
+  // Tippfehler im Schlüssel eine Figur, deren Zeilen nie aufgehen, und genau
+  // diese Klasse stummer Fehler soll seit GW14 gemeldet werden.
+  for(const fig of DORF_FIGUREN) for(const z of (fig.zusatz || [])){
+    if(!('lang' in z)) continue;
+    if(!(z.lang in LANGVORGAENGE)) fehler('Figur nennt einen Langvorgang, den es nicht gibt', fig.key, z.lang);
+  }
 
   // (5) Inertheit: bei schichtModus=false schreibt kein Ereignis irgendetwas.
   CONFIG.schichtModus = false;
