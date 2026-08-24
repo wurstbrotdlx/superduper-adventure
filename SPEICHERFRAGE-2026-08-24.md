@@ -15,6 +15,33 @@ unten ist gelaufen.
 
 ---
 
+> ### Berichtigung vom selben Tag, nach dem Bau
+>
+> Dieser Bericht behauptet an zwei Stellen (Abschnitt 1.2 und 4.5), die Welt
+> werde **je Sitzung neu gewürfelt**, `genMap()` laufe ungeseedet, und leitet
+> daraus ab, eine Schichtkonserve sei ein Systembau. **Das ist falsch.**
+>
+> `genMap()` zieht nicht aus `Math.random()`, sondern aus
+> `rng = mulberry32(20260805)` — einem festen Seed — und läuft genau einmal beim
+> Skriptstart. Über zwei Ladevorgänge gemessen: derselbe Kartenhash (`cc065f3`),
+> dieselben 8019 Bäume, dieselben 2006 Deko-Stücke, dieselbe Koppel. **Die Welt
+> ist über Sitzungen hinweg identisch.**
+>
+> Damit ist der teuerste Posten der Wiedervorlage ersatzlos entfallen: eine
+> gespeicherte Position zeigt beim nächsten Start auf dieselbe Kachel. Aus dem
+> angekündigten Systembau wurde ein Anbau, und er ist gebaut — siehe
+> `phase-sp-spielstand.md`. Gebaut sind außerdem beide Funde (Abschnitt 2 und 3)
+> und die beglaubigte Abschrift (4.1), dort unter ihrem technischen Namen
+> Export/Import.
+>
+> Der Fehler ist die dritte Mitarbeitsregel, gegen den eigenen Bericht gewendet:
+> verifiziert wird im Browser, nicht im Kopf. Der Absatz war acht Stunden alt und
+> trotzdem falsch, weil niemand `rng()` nachgeschlagen hatte. Der Text darunter
+> bleibt unverändert stehen — ein datierter Bericht wird berichtigt, nicht
+> umgeschrieben.
+
+---
+
 ## Kurz vorweg
 
 | Vorschlag | Befund |
