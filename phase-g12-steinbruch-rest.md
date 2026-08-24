@@ -1,4 +1,4 @@
-## G12: Der Rest des Steinbruchs — die Vermessung und die Entscheidungen (24.08.2026)
+## G12: Der Rest des Steinbruchs — ERLEDIGT (24.08.2026)
 
 G11 hat den ersten Griff in den Deko-Steinbruch getan (Koppel, Schild, Boot) und
 am Ende aufgeschrieben, was liegen blieb: *„Punkt 7 des Bestands nennt außerdem
@@ -193,68 +193,265 @@ einmal dran.
 | **Krähen** | **gestrichen** | Gibt es im Pack nicht. Abschnitt 1. |
 | **`House_Decor`** (26 Dateien) | **bleibt liegen** | Der Bestand hängt es selbst an „wenn Innenräume kommen". Es gibt keine Innenräume. |
 
-## 7. Die Lieferliste
+## 7. Die Lieferung, und was am PNG anders aussah als im Manifest
 
-Die Rohbibliothek `Graphics/` liegt aus Lizenzgründen in keinem Repo (siehe
-`assets/cf/README.md`), und in einer frischen Websitzung ist sie nicht da. Der
-Bauteil dieser Runde braucht deshalb **dreiundzwanzig Dateien im privaten
-Assets-Repo**, Originalnamen behalten wie bei allen bisherigen (fünfzehn Rigs,
-acht Pflanzenblätter):
+Dreiundzwanzig Blätter liegen seit dem 24.08. im privaten Assets-Repo (Liste und
+Begründungen in `assets/cf/README.md`, Abschnitt „Von G12 gebraucht"). Jedes
+Raster ist mit `node tools/sheet-audit.mjs --rig` am PNG gemessen worden, keines
+aus `manifest.json` übernommen. Das war kein Ritual:
 
-**Nach `deco/Animals/`**, aus `Graphics/Cute_Fantasy/Animals/`:
+| Blatt | Manifest | gemessen |
+|---|---|---|
+| `Frog_01.png` | `fw8 fh32`, also 40 Spalten | **10x4 zu 32x32** |
+| `Mouse_01.png` | `fw8 fh32` | **10x4 zu 32x32** |
+| `Duck_01.png` | 8x20 zu 32x32, Konfidenz 0,07 | stimmt, Konfidenz hin oder her |
+| Wasserpflanzen | 8x1 zu 16x16, Konfidenz 1 | stimmt |
 
-| Quelle | Datei | Manifest-Raster | am PNG nachzumessen |
-|---|---|---|---|
-| `Duck/` | `Duck_01.png`, `Duck_02.png` | 256x640, 32x32, 8x20 | Zeilenzuordnung (20 Zeilen, davon die Hälfte gespiegelt), Fußlinie |
-| `Swan/` | `Swan_01.png` | 256x640, 32x32, 8x20 | dito |
-| `Goose/` | `Goose_01.png` | 384x512, 32x32, 12x16 | dito, andere Spaltenzahl |
-| `Frog/` | `Frog_01.png`, `Frog_02.png` | 320x128, angeblich 8x32 | **Raster zuerst**, 40 Spalten sind gescheiterte Heuristik |
-| `Mouse/` | `Mouse_01.png` | 320x128, angeblich 8x32 | dito |
-| `Butterfly/` | `Butterfly.png` | 16x64, 8x8, 2x8 | Anker (fliegt, kein Fußpunkt) |
-| `Bee/` | `Bee_Flying_Animation.png` | 64x32, 16x16, 4x2 | dito |
-| `Kapybara/` | `Kapybara_Idle.png`, `_Dive.png`, `_Emerge.png`, `_Bubbles.png`, `_LookAround.png`, `_LookAround_submerged.png` | je einzeln | Wasserlinie als Anker, wie beim Boot (y45 statt Blattunterkante) |
+Vierzig Frames für einen Frosch, der hüpft, ist keine Frameanzahl, sondern eine
+gescheiterte Messung — und sie hätte beim Einbau nicht gekracht, sondern nur ein
+Achtel Frosch gezeigt.
 
-**Nach `deco/Outdoor/`**, aus
-`Graphics/Cute_Fantasy/Outdoor decoration/Outdoor_Decor_Animations/Water_Decor_Animations/Water_Plants/`:
-`Cattail_1_Anim.png`, `Cattail_2_Anim.png`, `Cattail_3_Anim.png`,
-`Lillypad_Green_1_Anim.png`, `Lillypad_Green_2_Anim.png`,
-`Lillypad_Green_3_Anim.png`, `Water_Grass_1_Anim.png`, `Water_Grass_2_Anim.png`
-— alle 128x16, acht Frames à 16x16, Konfidenz 1. Das sind die einzigen Blätter
-dieser Runde, deren Raster das Manifest glaubwürdig kennt.
+**Zwei Funde stehen in gar keiner Zahl.** Sie kommen aus dem Kontaktbogen, also
+daher, dass jemand die Blätter angesehen hat:
 
-`Bridge_Wood.png` steht **nicht** auf der Liste. Siehe Abschnitt 4.
+* **Ente und Schwan tragen ihre Wasserzeilen selbst.** Zeile 7 ist die Ruhe im
+  Wasser, Zeile 8 das Schwimmen — beide mit gemalter Wasserlinie unter dem Tier,
+  die Zeilen 0 und 1 sind dieselben Vögel an Land ohne Linie. Das Spiel lädt
+  genau die zwei Wasserzeilen. Ohne diesen Blick wäre eine Ente auf dem Meer
+  gestanden wie auf einer Wiese.
+* **Die Gans hat keine.** Acht Zeilen je Blickrichtung, keine mit Wasserlinie.
+  Im Pack ist sie ein Landvogel, also wird sie im Spiel einer und watet am
+  Strand statt zu schwimmen.
+
+Dazu zwei kleinere: `Butterfly.png` ist kein Rig mit acht Posen, sondern
+**zwei Frames Flügelschlag in acht Farben**, eine je Zeile (drei sind verbaut).
+Und `Frog_01.png` hat vier Zeilen, von denen keine läuft — Blinzeln, Quaken,
+Zunge, Treffer. Deshalb sitzt der Frosch im Spiel und wandert nicht: ein
+wandernder Frosch wäre dieselbe Behauptung wie ein Zaun ohne Leine in G11.
+
+## 8. Das Kapybara bringt seinen eigenen Teich mit
+
+Die zwölf Kapybara-Dateien sind die einzigen im ganzen Pack, bei denen jede
+Zelle zu drei Vierteln ein **deckendes** Rechteck Wasser ist. Im Kontaktbogen
+leuchten sie blau, wo jedes andere Blatt durchsichtig ist.
+
+Gemessen: dieser Ton ist `rgb(0,149,233)` — und `Tiles/Water/Water_Middle.png`,
+aus dem das Spiel seine See baut, ist ein 16x16-Feld in genau demselben Wert.
+Der Zeichner hat das Tier auf seine eigene Wasserkachel gesetzt.
+
+Das klingt nach Glück und ist keins: `computeTile()` backt den Ozean nicht roh,
+sondern getönt (`TILE_TINT.tiefsee`, `#2f6ea8` zu 45 Prozent, seit W-Groß). Ein
+ungetöntes Blatt darauf wäre ein zwei Kacheln breites, deutlich helleres
+Rechteck — und im Schattenland (`shadowDeep`, `#1a0630` zu 72 Prozent) ein
+Leuchtkasten.
+
+Zwei Wege gab es. Das Blatt beim Zeichnen mitzutönen hätte dieselbe Tönung an
+zwei Stellen gebraucht und im Schattenland eine dritte. Oder den Grund
+wegzunehmen und das Tier über die wirkliche See zu zeichnen — dann stimmt es in
+jedem Band und auf jeder Tönung, ohne dass es irgendwo nachgezogen werden muss.
+
+`tools/kapybara-freistellen.mjs` geht den zweiten Weg. Es nimmt **genau diesen
+einen Ton** bei voller Deckung weg und lässt die Wellenringe (`0,109,168`)
+stehen: die sind Zeichnung, nicht Hintergrund. Auf der getönten See (rund
+`21,131,204`) lesen sie sich weiter als das, was sie sind. Der Lauf bricht ab,
+wenn kein Pixel im Grundton gefunden wird oder wenn weniger als 40 oder mehr als
+95 Prozent wegfallen — eine stillschweigend wirkungslose Ersetzung wäre
+schlimmer als keine. Gefallen sind 79 bis 88 Prozent je Blatt. `--pruef`
+schneidet nichts und rechnet nur nach, wie bei `tools/ui-zellen.mjs`.
+
+## 9. Was jetzt wo steht
+
+**Die Buchten werden gesucht, nicht gesetzt** — dieselbe Bauart wie die Koppel
+in G11, und aus demselben Grund: eine feste Kachel läge je nach Lauf im offenen
+Meer. Gesucht wird die Wasserkachel mit der höchsten Geborgenheit, die
+erreichbares Land in zwei Kacheln Umkreis hat; genommen werden sechs davon mit
+mindestens vierzig Kacheln Abstand (dieselbe Zahl wie bei den Kammertüren, aus
+demselben Grund: sonst liest man zwei Buchten als eine).
+
+**Ohne `rng()`.** Jeder Griff in den Zufallsstrom verschöbe alles, was danach
+kommt — die Wolken hängen daran — und machte aus derselben Startzahl eine andere
+Welt. Die Streuung kommt deshalb aus `tileHash()`, wie die Kachelwahl in
+`pickCfTile()`.
+
+Je Bucht: Schilf und Wassergras an den Kanten, Seerosen im Freien (eine Seerose
+am Strand sähe angeschwemmt aus), zwei bis drei Vögel mit Revier, ein Frosch auf
+der nächsten erreichbaren Uferkachel, an jeder dritten Bucht zwei Gänse an Land,
+und in den zwei geborgensten je ein Kapybara. Im Dorf zwölf Flieger und drei
+Mäuse an drei Gebäuden — die einzigen dieser Runde, die ein Spieler in der ersten
+Minute sieht, weil sie kein Wasser brauchen.
+
+Gesetzt sind damit auf der Standardkarte: **6 Buchten, 10 Schilf, 45 Seerosen,
+17 Tiere im Wasser, 6 am Ufer, 12 in der Luft**, dazu 7 neue an Land (4 Gänse,
+3 Mäuse) neben den 18 aus W-Groß.
+
+### `lebensraum`, das Feld, das vorher niemand brauchte
+
+Bis hierher kannte die Sammlung `critters` genau **eine** Bauart: begehbarer
+Grund, Abprallen an allem, zwei Zeilen `idle` und `walk`. Fünf Arten, fünfmal
+dasselbe. Der Bestand schreibt deshalb, `decos` und `critters` nähmen neue Arten
+„ohne Umbau" auf. Für Zaun, Schild und Boot stimmte das. Für alles, was schwimmt
+oder fliegt, stimmt es nicht:
+
+| `lebensraum` | Grundprüfung | wer |
+|---|---|---|
+| `land` | `walkPx()`, wie bisher | Huhn, Schaf, Kuh, Schwein, Gans, Maus |
+| `wasser` | `wasserPx()`, das **Gegenteil** | Ente, Schwan, Kapybara |
+| `ufer` | keine Bewegung | Frosch |
+| `luft` | gar keine | Falter, Biene |
+
+Dazu drei Kleinigkeiten, die daran hängen:
+
+* **`G_ICE` zählt nicht als Gewässer.** Die Eisteiche im Frostkamm und die
+  Tümpel der Nassablage sind begehbarer Boden. Eine Ente darauf wäre eine Ente
+  auf dem Eis, und das ist ein anderer Witz.
+* **Kein Bodenschatten für Wasser und Luft.** Eine Ente wirft keinen Schatten
+  aufs Wasser, und ein Falter schon gar keinen in seiner eigenen Flughöhe.
+* **Der Anker der Flieger liegt über der Zellmitte** (`ay` größer als `fh/2`).
+  Er ist die Stelle im Blatt, die auf der Standposition landet, und was fliegt,
+  steht nicht auf ihr. Zehn Blattpixel sind bei `WELT_SC` zwanzig Weltpixel
+  Flughöhe. Denselben Kniff nutzt das Boot aus G11 für seine Wasserlinie, nur in
+  die andere Richtung.
+
+**Der Falter bleibt trotzdem winzig**, und das ist Absicht: seine Kunst ist 8x8
+groß, bei `WELT_SC` also eine halbe Kachel. Ihn größer zu zeichnen hieße, den
+Weltmaßstab aus G7 für ein Insekt zu brechen. Die Biene daneben füllt eine ganze
+Kachel, weil ihr Blatt 16x16 misst — beide stehen im selben Maßstab, das Pack
+hält sie nur für verschieden groß.
+
+### Das Kapybara ist das einzige Tier mit einem Zustand
+
+Vier Zustände, im Kreis: oben treiben, abtauchen, unten blubbern, auftauchen.
+Die zwei Übergänge dauern genau so lange wie ihre Blätter (`animLen`), damit kein
+halber Tauchgang abgeschnitten wird, und laufen **einmal** statt in Schleife
+(`animFrame(..., loop=false)`) — sonst sähe man das Tier im Kreis tauchen, ohne
+je unten anzukommen. Bei jedem Wechsel wird `phase` auf `-gameT` gesetzt, sonst
+finge der Tauchgang bei einem beliebigen Frame an.
+
+## 10. Ein Fehler, den nur das Bild gezeigt hat
+
+Das erste gesetzte Kapybara saß **halb auf dem Strand**, mit seinen Wellenringen
+über dem Sand. Der Guard schwieg dazu, und zwar zu Recht: die Kachel unter dem
+Tier war Wasser. Sein Blatt ist aber 32 Pixel breit und deckt bei `WELT_SC` zwei
+Kacheln, und der Buchtmittelpunkt ist per Definition die **geborgenste** Kachel,
+also die mit dem meisten Land ringsum — fast immer eine Randkachel.
+
+Gesucht wird seither die dem Mittelpunkt nächste Kachel, deren **acht** Nachbarn
+alle Wasser sind. Und `steinbruchAssert()` prüft seither genau das, statt nur die
+Kachel darunter.
+
+Das ist dieselbe Sorte Fund wie die Koppel im Wald aus G11 und die fünf
+unsichtbaren Dorffiguren aus G6: eine Zusage, die auf dem Papier gehalten war und
+im Bild nicht.
+
+## 11. `steinbruchAssert()`
+
+Läuft wie `koppelAssert()` direkt hinter `genMap()` und aus demselben Grund: die
+Buchten werden gesucht, ihre Lage steht in keiner Tabelle. Er misst die gesetzte
+Welt. Was er zusagt:
+
+* Jede Bucht liegt im Wasser, ist mindestens zur Hälfte geborgen, und keine zwei
+  liegen näher als vierzig Kacheln beieinander.
+* Jede Wasserpflanze steht im Wasser, jedes Schilf an einer Kante, jede Seerose
+  frei.
+* Jedes Tier steht auf dem Grund, den sein Lebensraum verlangt — das ist die
+  Prüfung, die es vor G12 gar nicht geben konnte, weil es nur einen gab.
+* Wer eine Grenze hat, steht darin; und wer schwimmt oder fliegt, hat eine.
+  Ohne sie wäre eine Ente nach einer Viertelstunde auf offener See.
+* Das Kapybara steht mit allen acht Nachbarn im Wasser (Abschnitt 10).
+
+`tools/steinbruch-fehlversuch.mjs` prüft den Guard, wie `monster-fehlversuch.mjs`
+den Monsterkatalog prüft: acht Eingriffe in die laufende Welt, jeder einzeln
+gesetzt, gemeldet und zurückgenommen.
 
 ---
 
-## Prüfprotokoll dieser Runde
+## Prüfprotokoll
 
 Server auf Port 8378, `index.html` im Wurzelverzeichnis, Playwright-Chromium der
-Umgebung.
+Umgebung, `node --check` nach jedem Bauschritt.
 
 | Lauf | Ergebnis |
 |---|---|
-| `index.html` im Browser | **17** Guard-Zeilen, keine Warnung, keine Fehlermeldung, `frameNo` 154 |
-| `node --check` auf den neuen Messlauf | sauber |
-| `tools/wasser-messlauf.mjs`, drei Startwerte | läuft durch, Zahlen oben |
-| Startwert-Umschreibung gegengeprüft | Literal genau einmal getroffen; die drei Läufe liefern drei verschiedene Küsten (Meerkacheln 16576 / 17644 / 14936) |
+| `index.html` im Browser | **18** Guard-Zeilen, keine Warnung, keine Fehlermeldung, `frameNo` 154 |
+| Startzeile G12 | `6 Buchten, 10 Schilf und 45 Seerosen, 17 im Wasser, 6 am Ufer, 12 in der Luft, 25 an Land.` |
+| `node tools/build-single.mjs` | sauber, `dist/index.html` 2604 KB (vorher 2511) |
+| `dist/index.html` per `file://` | 18 Guard-Zeilen, keine Warnung, `frameNo` 152 |
+| `tools/wasser-messlauf.mjs`, drei Startwerte | läuft durch, Zahlen in Abschnitt 3 |
+| `tools/kapybara-freistellen.mjs --pruef` | vier Blätter, alle unverändert zum Schnitt |
+| `tools/steinbruch-fehlversuch.mjs` | acht Eingriffe, alle gemeldet, Welt danach grün |
+| `tools/figurenfarben-messlauf.mjs` | keine Abweichung |
+| `tools/spaziergang-messlauf.mjs` | läuft durch, Befund dazu unten |
 
-`index.html` ist in diesem Schritt **unverändert**. Diese Runde misst und
-entscheidet; gesetzt wird, sobald die dreiundzwanzig Blätter im Assets-Repo
-liegen.
+**Im Bild angesehen**, mit laufender Welt und echter Kamera: die Entenbucht
+nördlich der Aschewüste (Seerosen, Schilf am Saum, zwei Enten, eine Gans am
+Strand, ein Frosch am Ufer, das Kapybara zwischen den Seerosen), die
+Schwanenbucht am Nordrand, und der Dorfplatz mit Faltern, Biene und Mäusen. Das
+erste Bild der Entenbucht ist der Grund, warum das Kapybara jetzt anders gesetzt
+wird (Abschnitt 10).
+
+**Die Lebensräume über Zeit gemessen**, weil eine Zusage zum Startzeitpunkt hier
+nichts wert wäre — der Guard misst den Anfang, nicht den Verlauf. 300 Sekunden
+Spielzeit, 17 942 Bilder, 60 Tiere:
+
+| gemessen | Ergebnis |
+|---|---|
+| Wassertier auf Land | **0** |
+| Landtier im Wasser | **0** |
+| Ufertier gewandert | **0** |
+| Tier außerhalb seines Reviers oder seiner Koppel | **0** |
+| Zustände des Kapybaras | alle vier durchlaufen (oben, ab, unten, auf) |
+
+## Jede neue Prüfung einmal ausgelöst
+
+`node tools/steinbruch-fehlversuch.mjs`, acht Eingriffe in die laufende Welt:
+
+| Eingriff | gemeldet |
+|---|---|
+| Wasservogel an Land gesetzt | `Wassertier sitzt nicht im Wasser` |
+| Wasservogel ohne Revier | `wasser-Tier ohne Revier` |
+| Ufertier vom Wasser weggesetzt | `Ufertier sitzt nicht am Wasser` |
+| Kapybara an den Buchtrand gesetzt | `Kapybara sitzt am Rand statt im offenen Wasser` |
+| Seerose ans Ufer gelegt | `Seerose klebt am Ufer statt frei zu liegen` |
+| Schilf ins offene Wasser gestellt | `Schilf steht im offenen Wasser` |
+| Wasserpflanze an Land gestellt | `Wasserpflanze steht nicht im Wasser` |
+| zwei Buchten übereinandergeschoben | `zwei Buchten liegen näher als vierzig Kacheln beieinander` |
+
+Danach ist die unveränderte Welt grün.
+
+---
+
+## Befund am Rande: der Spaziergang stirbt, und zwar auch ohne G12
+
+`tools/spaziergang-messlauf.mjs` meldet in dieser Umgebung einen Tod nach 12 bis
+108 Sekunden bei 0 bis 2 Kills. Das Prüfprotokoll von G11 nennt für denselben
+Lauf „25 Kills, Stufe 5, überlebt".
+
+Nachgemessen, bevor daraus ein Rückschritt wird: **derselbe Lauf auf dem Stand
+vor G12** (`git stash` auf `index.html`) endet mit 74 und 23 Sekunden bei 1 und 0
+Kills. Die Streuung mit G12 (12, 23, 49, 108 Sekunden) enthält beide Werte. Der
+Lauf ist hier also nicht reproduzierbar, und der Unterschied kommt nicht aus
+dieser Runde — die Monsterbevölkerung entsteht über `Math.random()` und ist bei
+jedem Laden eine andere.
+
+Das ist ein Befund und keine Aufgabe für G12. Wer ihn angeht, braucht zuerst
+einen festen Startwert für die Bevölkerung, sonst misst das Werkzeug den Zufall.
 
 ## Bewusst offen
 
-* **Der Bauteil selbst.** Setzer, Rigs, Guard und Abnahme im Bild stehen aus und
-  hängen an der Lieferliste aus Abschnitt 7.
-* **`CRITTERS` kennt bis heute nur eine Bauart.** Fünf Arten, je zwei Zeilen
-  (`idle`, `walk`), alle laufen auf begehbarem Grund und prallen an allem ab.
-  Eine Ente braucht das Gegenteil von `walkPx()`, ein Schmetterling gar keine
-  Bodenprüfung, ein Kapybara einen Zustandswechsel. Die Tabelle, die das trägt,
-  entsteht mit dem Bauteil und nicht vorher — eine Tabelle ohne Einträge wäre
-  dieselbe Behauptung, die dieser Runde die Brücken gekostet hat.
+* **`House_Decor` bleibt liegen** (26 Dateien). Der Bestand hängt es selbst an
+  „wenn Innenräume kommen", und die gibt es nicht.
+* **Die Brücken bleiben gestrichen**, nicht vertagt. Die Zahlen stehen in
+  Abschnitt 4.
+* **Die Buchten haben keine Mechanik.** Man kann nichts angeln, nichts füttern,
+  nichts einsammeln. Sie sind Ausstattung, und der Bestand hat sie ausdrücklich
+  als solche vorgeschlagen. Wer daraus einen Vorgang machen will, baut einen
+  Langvorgang und keine Deko.
+* **Die zweite Entenfarbe, der zweite Frosch.** `Duck_02.png` und `Frog_02.png`
+  liegen im Assets-Repo und werden noch nicht geladen — sie sind der billigste
+  nächste Schritt, wenn die Buchten je bunter werden sollen.
+* **Kein Tier reagiert auf den Spieler.** Eine Ente, die auffliegt, wenn jemand
+  ans Ufer tritt, wäre die nächste Stufe. Sie wäre auch die erste, die eine
+  Regel bräuchte statt nur ein Blatt.
 * **Die Wüste bleibt unangetastet.** `Cute_Fantasy_Desert` steht seit G11 im
   Manifest und ist weiter unbenutzt. Ob die Aschewüste ein eigenes Set bekommt,
-  ist eine Frage an die Weltbibel.
-* **Die Schmetterlinge sind der einzige Posten, der ins Dorf reicht**, und damit
-  der einzige, den ein Spieler in der ersten Minute sieht. Wenn von dieser Runde
-  nur ein Stück gebaut würde, dann dieses.
+  ist eine Frage an die Weltbibel und nicht an die Dateien.

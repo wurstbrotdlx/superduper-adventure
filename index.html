@@ -1700,17 +1700,86 @@ addSheet('fire2', 'cf/deco/Campfire_Anim.png', 8, 'strip');
 // nötig (nur Idle/Lauf) — Zeilen aus
 // tools/sheet-audit.overrides.json _rigTable (cf_animal_*), Ankerhöhe an der
 // jeweiligen Idle-Seitenzeile gemessen (Regel wie bei CF_RIGS oben).
+// G12: acht Arten dazu, und mit ihnen ein Feld, das es vorher nicht brauchte.
+// Bis hierher lief jedes Ambiente-Tier auf begehbarem Grund und prallte an allem
+// ab — eine einzige Bauart, fuenfmal benutzt. Eine Ente braucht das Gegenteil von
+// walkPx(), ein Falter gar keine Bodenpruefung. `lebensraum` sagt, welche:
+//
+//   'land'   wie bisher: reachbar(), Abprallen an Baum, Fels und Wasser
+//   'wasser' nur G_OCEAN, und zwar genau umgekehrt geprueft
+//   'ufer'   steht auf Land am Wasser und geht nie weg (der Frosch hat gar
+//            keine Laufzeile, s. unten)
+//   'luft'   fliegt ueber allem, keine Bodenpruefung
+//
+// Alle Zeilen sind am PNG gemessen (node tools/sheet-audit.mjs --rig), nicht aus
+// assets/cf/manifest.json genommen: dessen Heuristik tippt bei Frog_01 auf 40
+// Spalten in 320 Pixeln — das waeren vierzig Frames fuer einen Frosch. Wahr sind
+// 10x4 zu 32x32.
 const CF_ANIMALS = {
-  chicken: {file:'Animals/Chicken_01.png', fw:32, fh:32, ax:16, ay:24, idle:[0,2], walk:[2,8]},
-  sheep:   {file:'Animals/Sheep_01.png',   fw:32, fh:32, ax:16, ay:24, idle:[1,2], walk:[4,8]},
-  cow:     {file:'Animals/Cow_01.png',     fw:32, fh:32, ax:16, ay:27, idle:[1,2], walk:[4,8]},
-  pig:     {file:'Animals/Pig_01.png',     fw:32, fh:32, ax:16, ay:24, idle:[1,2], walk:[4,8]},
+  chicken: {file:'Animals/Chicken_01.png', fw:32, fh:32, ax:16, ay:24, idle:[0,2], walk:[2,8], lebensraum:'land'},
+  sheep:   {file:'Animals/Sheep_01.png',   fw:32, fh:32, ax:16, ay:24, idle:[1,2], walk:[4,8], lebensraum:'land'},
+  cow:     {file:'Animals/Cow_01.png',     fw:32, fh:32, ax:16, ay:27, idle:[1,2], walk:[4,8], lebensraum:'land'},
+  pig:     {file:'Animals/Pig_01.png',     fw:32, fh:32, ax:16, ay:24, idle:[1,2], walk:[4,8], lebensraum:'land'},
+  // Ente und Schwan tragen ihre Wasserzeilen SELBST: Zeile 7 ist die Ruhe im
+  // Wasser, Zeile 8 das Schwimmen, beide mit gemalter Wasserlinie unter dem
+  // Tier. Zeile 0/1 waeren dieselben Voegel an Land, ohne Linie. Das steht in
+  // keiner Rasterzahl, das sieht man erst im Kontaktbogen.
+  duck:    {file:'Animals/Duck_01.png',    fw:32, fh:32, ax:16, ay:24, idle:[7,2], walk:[8,4], lebensraum:'wasser'},
+  swan:    {file:'Animals/Swan_01.png',    fw:32, fh:32, ax:16, ay:24, idle:[7,2], walk:[8,3], lebensraum:'wasser'},
+  // Die Gans hat KEINE Wasserzeilen — acht Zeilen je Blickrichtung, keine davon
+  // mit Wasserlinie. Sie ist im Pack ein Landvogel und wird hier einer.
+  goose:   {file:'Animals/Goose_01.png',   fw:32, fh:32, ax:16, ay:24, idle:[0,2], walk:[1,6], lebensraum:'land'},
+  mouse:   {file:'Animals/Mouse_01.png',   fw:32, fh:32, ax:16, ay:22, idle:[0,6], walk:[1,6], lebensraum:'land'},
+  // Der Frosch hat vier Zeilen und keine davon laeuft: Blinzeln (2), Quaken (8),
+  // Zunge (10), Treffer (4). Deshalb 'ufer' und beide Keys auf das Quaken —
+  // er sitzt und atmet, und das ist genau richtig fuer ein Tier am Ufer.
+  frog:    {file:'Animals/Frog_01.png',    fw:32, fh:32, ax:16, ay:22, idle:[1,8], walk:[1,8], lebensraum:'ufer'},
+  // Butterfly.png ist 16x64: zwei Frames Fluegelschlag in acht FARBEN, eine je
+  // Zeile. Drei davon werden gesetzt, damit nicht alle Falter dieselben sind.
+  // Der Anker liegt bei den Fliegern bewusst UEBER der Zellmitte (ay groesser als
+  // fh/2): er ist die Stelle im Blatt, die auf der Standposition landet, und was
+  // fliegt, steht nicht auf ihr. Zehn Blattpixel ueber der Mitte sind bei WELT_SC
+  // zwanzig Weltpixel Flughoehe — genug, dass ein Falter ueber dem Gras schwebt
+  // statt darin zu sitzen. Denselben Kniff nutzt das Boot aus G11 fuer seine
+  // Wasserlinie, nur in die andere Richtung.
+  falter1: {file:'Animals/Butterfly.png',  fw:8,  fh:8,  ax:4,  ay:14, idle:[0,2], walk:[0,2], lebensraum:'luft'},
+  falter2: {file:'Animals/Butterfly.png',  fw:8,  fh:8,  ax:4,  ay:14, idle:[2,2], walk:[2,2], lebensraum:'luft'},
+  falter3: {file:'Animals/Butterfly.png',  fw:8,  fh:8,  ax:4,  ay:14, idle:[4,2], walk:[4,2], lebensraum:'luft'},
+  biene:   {file:'Animals/Bee_Flying_Animation.png', fw:16, fh:16, ax:8, ay:22, idle:[0,4], walk:[1,4], lebensraum:'luft'},
 };
 for(const a in CF_ANIMALS){
   const ad = CF_ANIMALS[a];
   addSheet(`cf${a}_idle`, `cf/deco/${ad.file}`, ad.idle[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.idle[0]});
   addSheet(`cf${a}_walk`, `cf/deco/${ad.file}`, ad.walk[1], 'grid', {fw:ad.fw, fh:ad.fh, ax:ad.ax, ay:ad.ay, rowStart:ad.walk[0]});
 }
+
+// G12: Wasserpflanzen. Acht Blaetter, alle 128x16 mit acht Frames zu 16x16 —
+// die einzigen dieser Runde, deren Raster das Manifest glaubwuerdig kennt
+// (Konfidenz 1), und am PNG bestaetigt. ay:16 legt die Zellunterkante auf die
+// Kachelunterkante, wie beim Zaun aus G11; bei WELT_SC deckt eine Zelle damit
+// genau eine Kachel. Die Seerose sitzt mittig in ihrer Zelle (Alpha-Box x2-12,
+// y5-13) und braucht deshalb keinen eigenen Anker.
+const CF_WASSERPFLANZEN = {
+  schilf1: 'Cattail_1_Anim.png',      schilf2: 'Cattail_2_Anim.png',   schilf3: 'Cattail_3_Anim.png',
+  rose1:   'Lillypad_Green_1_Anim.png', rose2: 'Lillypad_Green_2_Anim.png', rose3: 'Lillypad_Green_3_Anim.png',
+  wgras1:  'Water_Grass_1_Anim.png',  wgras2:  'Water_Grass_2_Anim.png',
+};
+for(const k in CF_WASSERPFLANZEN)
+  addSheet(`cfwp_${k}`, `cf/deco/Outdoor/${CF_WASSERPFLANZEN[k]}`, 8, 'grid', {fw:16, fh:16, ax:8, ay:16});
+
+// G12: Das Kapybara, das einzige Ambiente-Tier mit einem Zustandswechsel — es
+// taucht ab, blubbert unten und kommt wieder hoch. Vier Blaetter statt Zeilen
+// eines Rigs, denn so liegt es im Pack.
+//
+// Klein geschrieben, weil veraendert: die Originale bringen einen DECKENDEN
+// Wasserhintergrund mit (rgb 0,149,233 — Pixel fuer Pixel der Ton aus
+// Water_Middle.png), und der Ozean wird getoent gebacken. Ungetoent darauf waere
+// das ein zwei Kacheln breites helles Rechteck. tools/kapybara-freistellen.mjs
+// nimmt genau diesen Ton weg und laesst die Wellenringe stehen; die Begruendung
+// steht im Kopf des Werkzeugs, der Schnitt ist mit --pruef nachrechenbar.
+for(const [k, datei, n] of [['idle','kapybara_idle.png',9], ['dive','kapybara_dive.png',9],
+                            ['bubbles','kapybara_bubbles.png',25], ['emerge','kapybara_emerge.png',10]])
+  addSheet(`cfkapy_${k}`, `cf/deco/Animals/${datei}`, n, 'grid', {fw:32, fh:32, ax:16, ay:24});
 // G5: glint/alert-Ersatz aus UI_Icons.png (Sunnyside-Abschied). 'grid' kennt keinen
 // Spaltenversatz (nur rowStart), deshalb wie in G1 bei crate/pot/cobweb: die
 // gebrauchten Zellen pixelgenau in eigene Dateien geschnitten (Quellkoordinaten
@@ -3108,6 +3177,19 @@ const inselMaske = new Uint8Array(MW*MH);
 const reachbar = (tx,ty)=> kammer ? walkT(tx,ty) : (walkT(tx,ty) && landmasse[tx+ty*MW] === 1);
 const reachbarPx = (x,y)=> reachbar(Math.floor(x/TS), Math.floor(y/TS));
 const walkPx = (x,y)=> walkT(Math.floor(x/TS), Math.floor(y/TS));
+// G12: das Gegenstück für alles, was schwimmt. Eine Ente prüft nicht, ob sie
+// gehen kann, sondern ob sie noch im Wasser ist — und G_ICE zählt bewusst nicht
+// mit: die Eisteiche im Frostkamm sind begehbarer Boden, kein Gewässer.
+const wasserT = (tx,ty)=> inB(tx,ty) && T(tx,ty) === G_OCEAN;
+const wasserPx = (x,y)=> wasserT(Math.floor(x/TS), Math.floor(y/TS));
+// Grenzrahmen in Weltpixeln {x0,y0,x1,y1} oder null. Als Funktion auf Modulebene
+// und nicht als Closure in der Schleife: die lief pro Tier und Bild einmal neu
+// (Regressionsregel 4, keine Allokation im heißen Pfad).
+const imRahmen = (k,x,y)=> !k || (x >= k.x0 && x <= k.x1 && y >= k.y0 && y <= k.y1);
+// Welcher Grund trägt dieses Tier? Der Lebensraum entscheidet, nicht der Ort.
+const critterGrund = (c,x,y)=> c.lebensraum === 'wasser' ? wasserPx(x,y)
+                             : c.lebensraum === 'luft'   ? true
+                             : walkPx(x,y);
 function circleWalkable(x,y,r){ return walkPx(x-r,y-r)&&walkPx(x+r,y-r)&&walkPx(x-r,y+r)&&walkPx(x+r,y+r); }
 
 // W-Groß: Das Dorf wandert in die Kartenmitte. Alle Tabellen unten bleiben im
@@ -4484,6 +4566,7 @@ let trees = [];
 const decos = [];      // Pilze, Windmühle, Dorf-Gebäude (big:true) — reine Optik, keine Kollision
 const critters = [];   // Hühner/Schafe/Kühe, wandern im Grasland
 let KOPPEL = null;     // G11: die eingezäunte Weide, in Kacheln {x0,y0,x1,y1,torX} — null, solange genMap() nicht lief
+const BUCHTEN = [];    // G12: die gesuchten Wasserstellen {tx,ty,g} — Mittelpunkt in Kacheln, g = Geborgenheit
 const npcs = [];        // G5: Dorf-Staffage, Wanderradius um einen Heimatanker (kein freies Abprallen wie critters)
 
 // G5: Wetter, rein optisch. Eigene Sub-Caps (keine particles[]-Producer, s. MAX_PARTICLES-
@@ -5260,6 +5343,72 @@ function genMap(){
     if(best) decos.push({x:best.tx*TS + TS/2, y:(best.ty+1)*TS, sheet:'cfboat', phase:0, scale:WELT_SC, big:true});
   }
 
+  // --- G12: Die Buchten und ihre Pflanzen -----------------------------------
+  // Der Wasser-Messlauf (tools/wasser-messlauf.mjs) hat die Setzregel geliefert.
+  // Ans Dorf binden ginge gar nicht: im Umkreis von sechzig Kacheln liegt auf
+  // keiner Karte eine einzige Wasserkachel, das nächste Uferwasser ist 105 bis
+  // 126 Kacheln entfernt. Über die ganze Küste streuen ginge, sähe aber nach
+  // nichts aus — 1300 Uferkacheln, ein Vogel alle fünfzig, und jeder wirkt wie
+  // ein Versehen. Also Gruppen an gesuchten Stellen, wie die Koppel in G11.
+  //
+  // Gesucht wird **ohne `rng()`**. Jeder Griff in den Strom verschöbe alles, was
+  // danach kommt (Viecher, Wolken), und machte aus derselben Startzahl eine
+  // andere Welt. Die Streuung kommt deshalb aus `tileHash()`, wie die Kachelwahl
+  // in `pickCfTile()`.
+  BUCHTEN.length = 0;
+  {
+    const meerT = (tx, ty) => inB(tx, ty) && T(tx, ty) === G_OCEAN;
+    // Geborgenheit: Landanteil im Quadrat mit Radius 4, dieselbe Rechnung wie im
+    // Messlauf. Eine Seerose gehört in eine Bucht und nicht in die offene Tilgung.
+    const geborgen = (tx, ty) => {
+      let land = 0, ges = 0;
+      for(let j=-4; j<=4; j++) for(let i=-4; i<=4; i++){
+        if(!inB(tx+i, ty+j)) continue;
+        ges++; if(T(tx+i, ty+j) !== G_OCEAN) land++;
+      }
+      return ges ? land/ges : 0;
+    };
+    const kand = [];
+    for(let ty=6; ty<MH-6; ty++) for(let tx=6; tx<MW-6; tx++){
+      if(T(tx, ty) !== G_OCEAN) continue;
+      // Von Land aus sichtbar, sonst ist es Deko für niemanden: mindestens eine
+      // ERREICHBARE Landkachel im Umkreis von zwei. Der Saum einer Deko-Insel
+      // zählt damit nicht mit — dorthin kommt niemand (s. genMap Schritt 3).
+      let nah = false;
+      for(let j=-2; j<=2 && !nah; j++) for(let i=-2; i<=2; i++) if(reachbar(tx+i, ty+j)){ nah = true; break; }
+      if(!nah) continue;
+      const g = geborgen(tx, ty);
+      if(g < 0.5) continue;
+      kand.push({tx, ty, g});
+    }
+    // Die geborgensten zuerst, bei Gleichstand die zeilenweise frühere — ein
+    // stabiles Kriterium, damit zwei Läufe dieselben Buchten finden.
+    kand.sort((a, b) => b.g - a.g || (a.tx + a.ty*MW) - (b.tx + b.ty*MW));
+    for(const k of kand){
+      if(BUCHTEN.length >= 6) break;
+      let zuNah = false;
+      for(const b of BUCHTEN) if(sqDist(k.tx, k.ty, b.tx, b.ty) < 1600) { zuNah = true; break; }   // 40 Kacheln, wie bei den Kammertüren
+      if(!zuNah) BUCHTEN.push(k);
+    }
+    // Pflanzen um jede Bucht. Schilf und Wassergras stehen am Ufer (Land als
+    // Nachbar), Seerosen liegen frei — eine Seerose am Strand sähe angeschwemmt
+    // aus. Die Kachel der Bucht selbst bleibt frei, dort sitzt das Kapybara.
+    const UFERART = ['schilf1', 'schilf2', 'schilf3', 'wgras1', 'wgras2'];
+    const FREIART = ['rose1', 'rose2', 'rose3'];
+    for(const b of BUCHTEN){
+      for(let j=-4; j<=4; j++) for(let i=-4; i<=4; i++){
+        const tx = b.tx+i, ty = b.ty+j;
+        if(!meerT(tx, ty) || (i === 0 && j === 0)) continue;
+        const h = fmix32(tileHash(tx, ty));
+        if((h & 255) > 88) continue;                       // gut ein Drittel der Kacheln, sparsam wie überall
+        const ufer = !meerT(tx+1, ty) || !meerT(tx-1, ty) || !meerT(tx, ty+1) || !meerT(tx, ty-1);
+        const liste = ufer ? UFERART : FREIART;
+        decos.push({x:tx*TS + TS/2, y:(ty+1)*TS, sheet:`cfwp_${liste[(h>>>8) % liste.length]}`,
+                    phase:(h>>>16) % 10, scale:WELT_SC});
+      }
+    }
+  }
+
   // Nach y sortiert halten — der Renderer sucht das sichtbare Band binär statt linear.
   trees.sort((a,b)=>a.y-b.y); decos.sort((a,b)=>a.y-b.y);
 
@@ -5302,6 +5451,118 @@ function genMap(){
       critters.push({x:tx*TS+16, y:ty*TS+16, sheetIdle:`cf${art}_idle`, sheetWalk:`cf${art}_walk`, flip:false,
                      vx:0, vy:0, restT:rr(0,3), phase:rr(0,10)});
       break;
+    }
+  }
+
+  // --- G12: Die Küstenbevölkerung, und was um das Dorf fliegt ---------------
+  // Auch hier kein `rng()`: die Plätze werden gesucht und per `tileHash()`
+  // gestreut, damit der Zufallsstrom für alles danach unverändert bleibt (die
+  // Wolken hängen daran). `rr()` für Ruhezeit und Phase ist etwas anderes — das
+  // ist `Math.random()` und stand schon vorher in jedem Ambiente-Tier.
+  {
+    const meerT = (tx, ty) => inB(tx, ty) && T(tx, ty) === G_OCEAN;
+    const amWasser = (tx, ty) => meerT(tx+1, ty) || meerT(tx-1, ty) || meerT(tx, ty+1) || meerT(tx, ty-1);
+    const setz = (art, tx, ty, revier) => {
+      const ad = CF_ANIMALS[art];
+      critters.push({x:tx*TS+16, y:ty*TS+16, sheetIdle:`cf${art}_idle`, sheetWalk:`cf${art}_walk`,
+                     lebensraum:ad.lebensraum, revier:revier || null, flip:false,
+                     vx:0, vy:0, restT:rr(0,3), phase:rr(0,10)});
+    };
+    for(let bi = 0; bi < BUCHTEN.length; bi++){
+      const b = BUCHTEN[bi];
+      // Revier: vier Kacheln um die Bucht. Ohne Leine schwimmt eine Ente in
+      // einer Viertelstunde aufs offene Meer und ist weg — dieselbe Lehre wie
+      // bei den sechs Tieren in der Koppel, nur ist diese Grenze unsichtbar:
+      // die Koppel muss zum Zaun passen, das Revier zu gar nichts.
+      const revier = {x0:(b.tx-4)*TS, y0:(b.ty-4)*TS, x1:(b.tx+5)*TS, y1:(b.ty+5)*TS};
+      const plaetze = [];
+      for(let j=-3; j<=3; j++) for(let i=-3; i<=3; i++)
+        if(meerT(b.tx+i, b.ty+j) && !(i === 0 && j === 0)) plaetze.push([b.tx+i, b.ty+j]);
+      // Zwei bis drei Vögel je Bucht, gleichmäßig aus der Liste gegriffen.
+      // Enten und Schwäne wechseln sich ab: zwei Arten nebeneinander in einer
+      // Bucht sähen nach Zoo aus, und der Bestand nennt sie einzeln.
+      const art = (bi % 2) ? 'swan' : 'duck';
+      const zahl = Math.min(plaetze.length, 2 + (bi % 2));
+      for(let n = 0; n < zahl; n++){
+        const [tx, ty] = plaetze[Math.floor(n * plaetze.length / zahl)];
+        setz(art, tx, ty, revier);
+      }
+      // Das Kapybara, nur in die zwei geborgensten Buchten: zwölf Dateien für
+      // ein Tier, das taucht, und trotzdem sparsam — das ist die Regel der
+      // Weltbibel und sie gilt auch für Viecher.
+      //
+      // NICHT auf die Buchtkachel selbst. Der Mittelpunkt ist die GEBORGENSTE
+      // Kachel, also die mit dem meisten Land ringsum, und damit fast immer eine
+      // Randkachel. Das erste Bild zeigte das Tier halb auf dem Strand, mit
+      // seinen Wellenringen über dem Sand — dieselbe Sorte Fehler wie die Koppel
+      // im Wald aus G11, und wieder nur im Bild zu sehen. Gesucht wird deshalb
+      // die dem Mittelpunkt nächste Kachel, deren ACHT Nachbarn alle Wasser
+      // sind: das Blatt ist 32 Pixel breit und deckt bei WELT_SC zwei Kacheln.
+      if(bi < 2){
+        let platz = null, pd = Infinity;
+        for(let j=-4; j<=4; j++) for(let i=-4; i<=4; i++){
+          const tx = b.tx+i, ty = b.ty+j;
+          if(!meerT(tx, ty)) continue;
+          let frei = true;
+          for(let dj=-1; dj<=1 && frei; dj++) for(let di=-1; di<=1; di++) if(!meerT(tx+di, ty+dj)){ frei = false; break; }
+          if(!frei) continue;
+          const d = i*i + j*j;
+          if(d < pd){ pd = d; platz = [tx, ty]; }
+        }
+        if(platz) critters.push({x:platz[0]*TS+16, y:platz[1]*TS+16, sheetIdle:'cfkapy_idle', sheetWalk:'cfkapy_idle',
+                                 lebensraum:'wasser', kapy:{zustand:'oben', t:rr(5,14)}, revier,
+                                 flip:false, vx:0, vy:0, restT:0, phase:rr(0,10)});
+      }
+      // Ein Frosch je Bucht, auf der nächstgelegenen erreichbaren Landkachel mit
+      // Wasser daneben. Er bewegt sich nie — sein Blatt hat gar keine Laufzeile.
+      let frosch = null, fd = Infinity;
+      for(let j=-6; j<=6; j++) for(let i=-6; i<=6; i++){
+        const tx = b.tx+i, ty = b.ty+j;
+        if(!reachbar(tx, ty) || !amWasser(tx, ty)) continue;
+        const d = i*i + j*j;
+        if(d < fd){ fd = d; frosch = [tx, ty]; }
+      }
+      if(frosch) setz('frog', frosch[0], frosch[1], null);
+      // Zwei Gänse an jeder dritten Bucht, an Land. Die Gans hat im Pack keine
+      // Wasserzeile, also watet sie hier auch nicht.
+      if(bi % 3 === 0){
+        let gesetzt = 0;
+        for(let j=-5; j<=5 && gesetzt < 2; j++) for(let i=-5; i<=5; i++){
+          const tx = b.tx+i, ty = b.ty+j;
+          if(!reachbar(tx, ty) || !amWasser(tx, ty)) continue;
+          if(frosch && tx === frosch[0] && ty === frosch[1]) continue;
+          if((fmix32(tileHash(tx, ty)) & 3) !== 0) continue;      // nicht die erstbeste, sonst stehen sie im Gänsemarsch
+          setz('goose', tx, ty, {x0:(tx-4)*TS, y0:(ty-4)*TS, x1:(tx+5)*TS, y1:(ty+5)*TS});
+          if(++gesetzt >= 2) break;
+        }
+      }
+    }
+    // Falter und Bienen brauchen kein Wasser und sind damit das Einzige aus
+    // dieser Runde, das ein Spieler in der ersten Minute sieht.
+    {
+      const kand = [];
+      for(let ty = VILLAGE.y0-8; ty <= VILLAGE.y1+8; ty++) for(let tx = VILLAGE.x0-8; tx <= VILLAGE.x1+8; tx++)
+        if(reachbar(tx, ty) && (fmix32(tileHash(tx, ty)) & 15) === 0) kand.push([tx, ty]);
+      const FALTER = ['falter1', 'falter2', 'falter3'];
+      for(let i = 0; i < 12 && kand.length; i++){
+        const [tx, ty] = kand[Math.floor(i * kand.length / 12)];
+        // Luft prallt an nichts ab, deshalb ist das Revier hier die einzige
+        // Grenze überhaupt — ohne sie wäre der Falter nach zehn Minuten im Meer.
+        setz(i < 9 ? FALTER[i % 3] : 'biene', tx, ty,
+             {x0:(tx-5)*TS, y0:(ty-5)*TS, x1:(tx+6)*TS, y1:(ty+6)*TS});
+      }
+    }
+    // Drei Mäuse an drei Gebäuden. Eine Maus an der Amtsfassade ist die
+    // billigste Pointe des ganzen Pakets, und sie kostet keine Zeile Text.
+    {
+      let gesetzt = 0;
+      for(const geb of VILLAGE_BUILDINGS){
+        if(gesetzt >= 3) break;
+        const tx = geb.x0 + 1, ty = geb.y0 + geb.h;
+        if(!reachbar(tx, ty)) continue;
+        setz('mouse', tx, ty, {x0:(tx-3)*TS, y0:(ty-3)*TS, x1:(tx+4)*TS, y1:(ty+4)*TS});
+        gesetzt++;
+      }
     }
   }
 
@@ -5400,6 +5661,89 @@ function koppelAssert(){
     + `${drin.length} Tiere an der Leine, ${schild.length} Schild, ${boot.length} Boot.`);
 }
 koppelAssert();
+
+// G12-Guard. Läuft wie koppelAssert() direkt hinter genMap() und aus demselben
+// Grund: die Buchten werden gesucht, ihre Lage steht in keiner Tabelle. Er misst
+// die gesetzte Welt und prüft die eine Zusage, die diese Runde überhaupt macht —
+// jedes Ding steht in seinem Lebensraum. Er wirft nie, er meldet.
+function steinbruchAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('G12 Steinbruch:', m, ...r); };
+  const tvon = (px, py) => [Math.floor(px / TS), Math.floor((py - 1) / TS)];
+
+  if(!BUCHTEN.length){
+    // Befund, kein Fehler — wie bei der Koppel: diese Karte hat keine Bucht
+    // hergegeben, dann steht dort auch nichts. Auf 320x320 mit Meer ringsum ist
+    // das unwahrscheinlich, ausgeschlossen ist es nicht.
+    console.log('G12 Steinbruch: keine Bucht gefunden, es steht keine Wasserdeko.');
+    return true;
+  }
+  // Die Buchten selbst: Wasser, geborgen, und weit genug auseinander, dass sie
+  // nicht als eine Gruppe gelesen werden.
+  for(const b of BUCHTEN){
+    if(T(b.tx, b.ty) !== G_OCEAN) fehler('Bucht liegt nicht im Wasser', b.tx, b.ty);
+    if(b.g < 0.5) fehler(`Bucht ist nur zu ${(b.g*100)|0}% geborgen`, b.tx, b.ty);
+    for(const a of BUCHTEN) if(a !== b && sqDist(a.tx, a.ty, b.tx, b.ty) < 1600)
+      fehler('zwei Buchten liegen näher als vierzig Kacheln beieinander', b.tx, b.ty);
+  }
+
+  // Die Pflanzen: jede im Wasser, und die Sorte passt zum Platz. Schilf und
+  // Wassergras brauchen eine Kante, Seerosen brauchen keine.
+  const pflanzen = decos.filter(d => d.sheet && d.sheet.startsWith('cfwp_'));
+  let rosen = 0, ufer = 0;
+  for(const p of pflanzen){
+    const [tx, ty] = tvon(p.x, p.y);
+    if(T(tx, ty) !== G_OCEAN){ fehler('Wasserpflanze steht nicht im Wasser', tx, ty); continue; }
+    const amRand = !wasserT(tx+1, ty) || !wasserT(tx-1, ty) || !wasserT(tx, ty+1) || !wasserT(tx, ty-1);
+    if(p.sheet.startsWith('cfwp_rose')){
+      rosen++;
+      if(amRand) fehler('Seerose klebt am Ufer statt frei zu liegen', tx, ty);
+    } else {
+      ufer++;
+      if(!amRand) fehler('Schilf steht im offenen Wasser', tx, ty);
+    }
+  }
+
+  // Die Tiere: jedes auf dem Grund, den sein Lebensraum verlangt. Das ist die
+  // Prüfung, die es vor G12 nicht geben konnte — bis dahin gab es nur einen.
+  const zaehl = {land:0, wasser:0, ufer:0, luft:0};
+  for(const c of critters){
+    const lr = c.lebensraum || 'land';
+    zaehl[lr]++;
+    const tx = Math.floor(c.x / TS), ty = Math.floor(c.y / TS);
+    if(lr === 'wasser' && T(tx, ty) !== G_OCEAN) fehler('Wassertier sitzt nicht im Wasser', tx, ty);
+    if(lr === 'land' && !walkT(tx, ty)) fehler('Landtier steht nicht auf begehbarem Grund', tx, ty);
+    if(lr === 'ufer'){
+      if(!walkT(tx, ty)) fehler('Ufertier steht nicht auf begehbarem Grund', tx, ty);
+      else if(!wasserT(tx+1, ty) && !wasserT(tx-1, ty) && !wasserT(tx, ty+1) && !wasserT(tx, ty-1))
+        fehler('Ufertier sitzt nicht am Wasser', tx, ty);
+    }
+    // Ein Revier, das seinen Bewohner nicht enthält, wäre eine Leine ohne Tier.
+    const k = c.koppel || c.revier;
+    if(k && !imRahmen(k, c.x, c.y)) fehler(`${lr}-Tier steht außerhalb seines Reviers`, tx, ty);
+    // Fliegen und Schwimmen ohne Grenze hieße: in zehn Minuten weg. Die
+    // Landtiere im Weidegürtel dürfen ohne, die prallen an der Küste ab.
+    if((lr === 'luft' || lr === 'wasser') && !k && !c.kapy) fehler(`${lr}-Tier ohne Revier`, tx, ty);
+  }
+  // Das Kapybara: höchstens eins je Bucht, und es steht mit ALLEN acht Nachbarn
+  // im Wasser. Sein Blatt ist zwei Kacheln breit und bringt gemalte Wellenringe
+  // mit; auf einer Randkachel lägen die über dem Strand. Genau so stand es im
+  // ersten Bild dieser Runde.
+  const kapys = critters.filter(c => c.kapy);
+  if(kapys.length > BUCHTEN.length) fehler(`${kapys.length} Kapybaras auf ${BUCHTEN.length} Buchten`);
+  for(const c of kapys){
+    const tx = Math.floor(c.x / TS), ty = Math.floor(c.y / TS);
+    for(let j=-1; j<=1; j++) for(let i=-1; i<=1; i++)
+      if(!wasserT(tx+i, ty+j)){ fehler('Kapybara sitzt am Rand statt im offenen Wasser', tx, ty); j = 2; break; }
+  }
+
+  if(ok) console.log(`G12 Steinbruch: ${BUCHTEN.length} Buchten, ${ufer} Schilf und ${rosen} Seerosen, `
+    + `${zaehl.wasser} im Wasser, ${zaehl.ufer} am Ufer, ${zaehl.luft} in der Luft, ${zaehl.land} an Land.`);
+  // Rueckgabewert, damit tools/steinbruch-fehlversuch.mjs den Guard pruefen
+  // kann: ein Guard, der immer schweigt, beweist nichts (M2-Lehre).
+  return ok;
+}
+steinbruchAssert();
 
 // W-Groß: ARENA ist das Sprungziel von loadLevel2() und wird dort UNGEPRÜFT
 // gesetzt (player.x = ARENA.x*TS). moveEnt() bewegt nur, wenn circleWalkable()
@@ -11718,20 +12062,49 @@ function update(dt){
 
   // Ambiente-Tiere: gemütlich wandern, keine Kollision mit Spielinhalten
   for(const c of critters){
+    // G12: Das Kapybara ist das einzige Ambiente-Tier mit einem Zustand. Es
+    // schwimmt nicht, es treibt und taucht: oben — ab — unten blubbern — auf.
+    // Die beiden Übergänge dauern genau so lange wie ihre Blätter (animLen),
+    // damit kein halber Tauchgang abgeschnitten wird, und laufen einmal statt in
+    // Schleife; phase wird auf -gameT gesetzt, sonst finge der Tauchgang bei
+    // einem beliebigen Frame an.
+    if(c.kapy){
+      const k = c.kapy;
+      k.t -= dt;
+      if(k.t <= 0){
+        if(k.zustand === 'oben'){        k.zustand = 'ab';    c.sheetIdle = 'cfkapy_dive';    k.einmal = true;  k.t = animLen('cfkapy_dive', 6); }
+        else if(k.zustand === 'ab'){     k.zustand = 'unten'; c.sheetIdle = 'cfkapy_bubbles'; k.einmal = false; k.t = rr(4, 9); }
+        else if(k.zustand === 'unten'){  k.zustand = 'auf';   c.sheetIdle = 'cfkapy_emerge';  k.einmal = true;  k.t = animLen('cfkapy_emerge', 6); }
+        else {                           k.zustand = 'oben';  c.sheetIdle = 'cfkapy_idle';    k.einmal = false; k.t = rr(6, 16); }
+        c.sheetWalk = c.sheetIdle;
+        c.phase = -gameT;
+      }
+      continue;
+    }
+    // Der Frosch sitzt am Ufer und quakt. Sein Blatt hat gar keine Laufzeile
+    // (Blinzeln, Quaken, Zunge, Treffer) — ein wandernder Frosch wäre hier
+    // dieselbe Behauptung wie ein Zaun ohne Leine in G11.
+    if(c.lebensraum === 'ufer') continue;
     c.restT -= dt;
     if(c.restT <= 0){
       c.restT = rr(1.5, 5);
       if(Math.random() < 0.45){ c.vx = 0; c.vy = 0; }
-      else { const a = rr(0, Math.PI*2); c.vx = Math.cos(a)*18; c.vy = Math.sin(a)*18; c.flip = c.vx < 0; }
+      else {
+        const a = rr(0, Math.PI*2);
+        // Ein Falter ist schneller als ein Schaf und ein Schwan langsamer.
+        const v = c.lebensraum === 'luft' ? 26 : c.lebensraum === 'wasser' ? 11 : 18;
+        c.vx = Math.cos(a)*v; c.vy = Math.sin(a)*v; c.flip = c.vx < 0;
+      }
     }
     if(c.vx || c.vy){
       const nx = c.x + c.vx*dt, ny = c.y + c.vy*dt;
       // G11: dieselbe Abpraller-Regel wie an einer Wand, nur an der Zaunlinie.
       // Ein Zaun, durch den das Schaf spaziert, wäre eine Behauptung.
-      const k = c.koppel;
-      const drin = (x, y) => !k || (x >= k.x0 && x <= k.x1 && y >= k.y0 && y <= k.y1);
-      if(walkPx(nx, c.y) && drin(nx, c.y)) c.x = nx; else c.vx = -c.vx;
-      if(walkPx(c.x, ny) && drin(c.x, ny)) c.y = ny; else c.vy = -c.vy;
+      // G12: derselbe Rahmen trägt jetzt zwei Bedeutungen — die Koppel MUSS zum
+      // sichtbaren Zaun passen, das Revier ist eine Leine, die niemand sieht.
+      const k = c.koppel || c.revier;
+      if(critterGrund(c, nx, c.y) && imRahmen(k, nx, c.y)) c.x = nx; else c.vx = -c.vx;
+      if(critterGrund(c, c.x, ny) && imRahmen(k, c.x, ny)) c.y = ny; else c.vy = -c.vy;
     }
   }
 
@@ -11994,7 +12367,19 @@ function render(){
                      (currentLevel === 2 && o.big) ? '#4a1866' : null, 0.72);
         }
         break;
-      case DRAW_CRITTER: { drawShadowEllipse(o.x, o.y+2, 13);   // G7: Schatten wächst mit dem Tier (8 -> 13)
+      case DRAW_CRITTER: {
+                         // G12: Das Kapybara hat statt Laufen einen Tauchgang.
+                         // Ab- und Auftauchen laufen EINMAL (loop=false) und
+                         // bleiben auf dem letzten Frame stehen, bis der Zustand
+                         // weiterschaltet — sonst sähe man das Tier im Kreis
+                         // tauchen, ohne je unten anzukommen.
+                         if(o.kapy){ drawSprite(o.sheetIdle, animFrame(o.sheetIdle, gameT + o.phase, 6, !o.kapy.einmal),
+                                                o.x, o.y+4, WELT_SC, o.flip); break; }
+                         // Schatten nur, wo es Boden gibt. Eine Ente wirft keinen
+                         // Schatten aufs Wasser, und ein Falter schon gar keinen
+                         // in seiner eigenen Flughöhe.
+                         if(o.lebensraum !== 'wasser' && o.lebensraum !== 'luft')
+                           drawShadowEllipse(o.x, o.y+2, 13);   // G7: Schatten wächst mit dem Tier (8 -> 13)
                          const moving = !!(o.vx||o.vy);
                          const ckey = moving ? o.sheetWalk : o.sheetIdle;
                          drawSprite(ckey, animFrame(ckey, gameT + o.phase, moving ? 7 : 3), o.x, o.y+4, WELT_SC, o.flip); break; }

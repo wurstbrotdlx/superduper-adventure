@@ -1006,7 +1006,7 @@ Der erste Griff in den Deko-Steinbruch aus `GRAFIK-BESTAND-2026-08-21.md`, Punkt
 * **Das Boot ist ausdrücklich ohne Funktion.** Die ausgelagerten Bestände gelten als „angeblich erreichbar, nie geprüft", und genau so sieht ein Boot aus, das niemand benutzt.
 * **Keine neue Kachelart, keine Kollision, kein Vorgang.** Wer nie hinsieht, spielt das Spiel unverändert weiter.
 
-### G12: Der Rest des Steinbruchs — VERMESSEN, Bauteil offen (siehe `phase-g12-steinbruch-rest.md`)
+### G12: Der Rest des Steinbruchs — ERLEDIGT (siehe `phase-g12-steinbruch-rest.md`)
 
 Was G11 liegen ließ: Brücken, Wasserpflanzen, Kapybaras und die Ambiente-Tiere. Die Runde fängt mit dem Messprotokoll an statt mit dem Setzer, und die Messung hat drei Zeilen des Bestands umgeworfen.
 
@@ -1015,6 +1015,11 @@ Was G11 liegen ließ: Brücken, Wasserpflanzen, Kapybaras und die Ambiente-Tiere
 * **Keine Brücken, und zwar begründet.** Vierzig bis fünfzig Engen bis sechs Kacheln Wasser gibt es, aber keine einzige ohne Landweg: der größte Umweg, den eine Brücke spart, beträgt siebzehn Kacheln, im Mittel sieben. Eine Brücke zur Deko-Insel wäre der Korridor, den `genMap()` Schritt 3 ausdrücklich verbietet, weil das Spiel keine Wegfindung hat.
 * **Krähen gibt es im Pack nicht.** Die Bestandszeile nennt sie, das Manifest kennt unter `Animals/` keinen einzigen Krähenvogel. Achtundzwanzig Dateien statt „rund dreißig".
 * **Das Boot bleibt liegen, wo es liegt** (103 bis 126 Kacheln vom Dorf). Es an eine Kammertür zu setzen wäre falsch: `decos` entstehen einmal in `genMap()` und bleiben, `kammerTueren` werden je Schicht neu gewürfelt. Ab der zweiten Schicht stünde es wieder im Nirgendwo, nur mit einer Begründung, die nicht mehr stimmt.
+* **Gebaut sind sechs gesuchte Buchten** statt einer Streuung über 1300 Uferkacheln: Schilf an den Kanten, Seerosen im Freien, zwei bis drei Vögel mit Revier, ein Frosch am Ufer, an jeder dritten Bucht Gänse an Land, in den zwei geborgensten ein Kapybara. Gesucht wie die Koppel in G11 und ohne `rng()`, damit der Zufallsstrom für alles Folgende unverändert bleibt.
+* **`lebensraum` ist die Bauart, die vorher fehlte.** Die Sammlung `critters` kannte genau eine: begehbarer Grund, Abprallen an allem. Jetzt vier — `land`, `wasser` (das Gegenteil von `walkPx()`), `ufer` (ortsfest, der Frosch hat gar keine Laufzeile) und `luft` (keine Bodenprüfung). Ohne Revier bliebe von einer Ente nach einer Viertelstunde nichts als offenes Meer.
+* **Ente und Schwan bringen ihre Wasserzeilen selbst mit**, die Gans nicht — sie ist im Pack ein Landvogel. Das steht in keiner Rasterzahl und war nur im Kontaktbogen zu sehen.
+* **Das Kapybara bringt seinen eigenen Teich mit**, in genau unserem Wasserton, und trotzdem musste er weg: die See wird getönt gebacken. Freigestellt von `tools/kapybara-freistellen.mjs`, damit das Tier auf der wirklichen See liegt statt auf einer gemalten.
+* **Der Falter bleibt winzig.** Seine Kunst ist 8x8, bei `WELT_SC` also eine halbe Kachel. Ihn größer zu zeichnen hieße, den Weltmaßstab aus G7 für ein Insekt zu brechen.
 
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 

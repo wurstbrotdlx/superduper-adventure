@@ -148,6 +148,65 @@ wahre Frame-Breite ist über die leeren Spalten gemessen (2–41, 50–90, 98–
 146–186) und beträgt 48. Der Anker liegt auf der Wasserlinie (y45), nicht an der
 Blattunterkante.
 
+### Von G12 gebraucht (`deco/Animals/`, `deco/Outdoor/`)
+
+Bauabschnitt G12 (der Rest des Deko-Steinbruchs): dreiundzwanzig Blätter, davon
+neunzehn unverändert und vier geschnitten.
+
+**Neunzehn im Original**, aus `Cute_Fantasy/`:
+
+| Zielordner | Dateien | Quelle |
+|---|---|---|
+| `deco/Animals/` | `Duck_01.png`, `Duck_02.png` | `Animals/Duck/` |
+| `deco/Animals/` | `Swan_01.png` | `Animals/Swan/` |
+| `deco/Animals/` | `Goose_01.png` | `Animals/Goose/` |
+| `deco/Animals/` | `Frog_01.png`, `Frog_02.png` | `Animals/Frog/` |
+| `deco/Animals/` | `Mouse_01.png` | `Animals/Mouse/` |
+| `deco/Animals/` | `Butterfly.png` | `Animals/Butterfly/` |
+| `deco/Animals/` | `Bee_Flying_Animation.png` | `Animals/Bee/` |
+| `deco/Outdoor/` | `Cattail_1..3_Anim.png`, `Lillypad_Green_1..3_Anim.png`, `Water_Grass_1..2_Anim.png` | `Outdoor decoration/Outdoor_Decor_Animations/Water_Decor_Animations/Water_Plants/` |
+
+Alle Raster am PNG gemessen (`node tools/sheet-audit.mjs --rig`), nicht aus
+`manifest.json` übernommen. Der Grund steht in der Zahl: für `Frog_01.png`
+(320x128) tippt die Heuristik auf `fw8`, also 40 Spalten — vierzig Frames für
+einen Frosch. Wahr sind **10x4 zu 32x32**. Dasselbe bei `Mouse_01.png`.
+
+Zwei Funde, die man nur im Kontaktbogen sieht und in keiner Rasterzahl:
+
+* **Ente und Schwan tragen Wasserzeilen.** Zeile 7 ist die Ruhe im Wasser,
+  Zeile 8 das Schwimmen, beide mit gemalter Wasserlinie; die Zeilen 10 bis 19
+  sind dieselben zehn spiegelverkehrt. Das Spiel lädt genau diese zwei Zeilen.
+* **Die Gans hat keine.** Acht Zeilen je Blickrichtung, keine mit Wasserlinie.
+  Sie ist im Pack ein Landvogel und wird im Spiel einer.
+
+Dazu: `Butterfly.png` ist 16x64 und enthält zwei Frames Flügelschlag in **acht
+Farben**, eine je Zeile (drei davon verbaut). `Frog_01.png` hat vier Zeilen und
+keine davon läuft: Blinzeln (2), Quaken (8), Zunge (10), Treffer (4) — deshalb
+sitzt der Frosch im Spiel und wandert nicht.
+
+**Vier geschnitten**, erzeugt von `tools/kapybara-freistellen.mjs` (mit `--pruef`
+nachrechenbar), klein geschrieben wie jede veränderte Datei hier:
+
+| Datei | Quelle | Zellen |
+|---|---|---|
+| `deco/Animals/kapybara_idle.png` | `Animals/Kapybara/Static/Kapybara_Idle.png` | 9 |
+| `deco/Animals/kapybara_dive.png` | `Animals/Kapybara/Static/Kapybara_Dive.png` | 9 |
+| `deco/Animals/kapybara_bubbles.png` | `Animals/Kapybara/Static/Kapybara_Bubbles.png` | 25 |
+| `deco/Animals/kapybara_emerge.png` | `Animals/Kapybara/Static/Kapybara_Emerge.png` | 10 |
+
+**Warum geschnitten:** die Kapybara-Blätter sind die einzigen im Pack, die ihren
+eigenen Teich mitbringen — drei Viertel jeder Zelle sind ein deckendes Rechteck
+Wasser. Der Ton ist rgb(0,149,233) und damit Pixel für Pixel derselbe wie
+`Tiles/Water/Water_Middle.png`. Trotzdem passt er nicht: `computeTile()` backt
+den Ozean **getönt** (`TILE_TINT.tiefsee`), im Schattenland noch dunkler. Das
+Werkzeug nimmt genau diesen einen Ton weg und lässt die Wellenringe (0,109,168)
+stehen — die sind Zeichnung, kein Hintergrund. Das Tier liegt seither auf der
+wirklichen See, in jedem Band und auf jeder Tönung.
+
+Die zwei übrigen Kapybara-Blätter (`LookAround`, `LookAround_submerged`) und das
+ganze Albino-Set bleiben draußen: das Spiel lädt sie nicht, und was das Spiel
+nicht lädt, gehört nach der Kopierkonvention unten nicht hierher.
+
 ### Von G3 gebraucht (`enemies/`, `deco/`)
 
 19 Monster-Rigs für alle 21 `MONDEF`-Typen (Templar/Swordman/Archer teilen sich je
