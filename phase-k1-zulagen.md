@@ -1,0 +1,365 @@
+# Bauabschnitt K1: Die Zulagen
+
+*Stand 24.08.2026. Karten nach dem Aufstieg, drei liegen aus, eine wird
+bewilligt. Getragen wird in der Dienstmappe, und die fasst wenig.*
+
+---
+
+## K1-0. Der Wunsch
+
+Der Projektinhaber wollte ein schlankes Kartensystem: nach jedem Aufstieg zieht
+der Spieler eine Karte, Karten geben Boni auf Waffengattungen, auf die
+Zauberelemente, auf Manaverbrauch, auf genommenen und ausgeteilten Schaden, in
+verschiedenen Stärken von schwachem Boost bis richtigem Kracher, teils
+stapelbar, teils nicht, mit passenden Namen und guter Erklärung. Die Zahl der
+gleichzeitig tragbaren Karten sollte mit der Stufe wachsen: eine bis Stufe 4,
+zwei bis Stufe 14, drei darüber. Ausdrücklich erwünscht war, sich bei
+bestehenden Systemen zu bedienen.
+
+Zwei Entscheidungen kamen auf Nachfrage dazu und stehen so im Bau: **die
+Ziehung legt drei aus und der Spieler wählt eine** (das Muster aus Slay the
+Spire, weil eine einzelne Zufallskarte eine Mitteilung ist und drei eine
+Entscheidung), und **das Loadout bleibt tauschbar**, außerhalb des Gefechts,
+jederzeit.
+
+---
+
+## K1-1. Der Befund: das Haus hatte den Bus schon
+
+Der Grund, warum dieser Bauabschnitt klein ausfällt, steht seit Phase 3 im
+Code. `recalc()` sammelt alles, was passiv wirkt, in ein einziges Objekt:
+
+```js
+const FX = {slow:0, crit:0, dmg:0, armor:0, speed:0, mana:0, regen:0, ...};
+```
+
+Vierundzwanzig Zähler, jeder mit genau einer Fundstelle, die ihn liest. Die
+Kessel-Ausrüstung zahlt dort ein (`FX[WIRKUNG[k].fx] += item.effect.stufe`),
+die Flüche haben ihr Gegenstück in `CFX`. Für dreizehn der fünfzehn gewünschten
+Kartenwirkungen war der Hook damit schon da, samt Deckel: `sparsam` senkt die
+Manakosten und ist bei fünfundfünfzig Prozent geklemmt, `bollwerk` senkt den
+genommenen Schaden und ist bei vierzig geklemmt, `crit` ist bei
+fünfundsiebzig geklemmt. **Es musste keine einzige Formel neu gebaut werden,
+und kein Deckel.**
+
+Gefehlt haben genau zwei Dinge, und beide sind der eigentliche Bau:
+
+* **Die Waffengattung trug keine Zahl.** `w.base.mode` kennt seit jeher
+  `dagger`, `sword` und `doubleaxe`, aber der Wert entschied nur, welche
+  Schwunganimation läuft. Eine Karte "Boni auf Schwert oder Axt" hatte nichts,
+  woran sie hängen konnte.
+* **Der Zauberzweig trug keine Zahl.** `castSpell()` hatte einen einzigen
+  Multiplikator, `FX.zauber`, und der galt für alle elf Sprüche gleich. Feuer,
+  Frost und Arkan waren rechnerisch dasselbe.
+
+Dazu ein Fund am Rand, siehe K1-6.
+
+---
+
+## K1-2. Die Fiktion: warum es Zulagen heißt
+
+Ein Kartensystem ist eine Beigabe, wenn es keine Geschichte hat. Die stand
+schon in Kapitel 5 der Weltbibel:
+
+> Die Stufe erlaubt, sie leistet nicht. Ein Aufstieg bringt zwei Punkte und
+> fast nichts sonst. Das Haus zahlt keine Erfahrung aus, es genehmigt sie nur.
+
+Genau da setzt K1 an. **Mit jedem Aufstieg legt die Personalstelle drei
+Zulagen vor, eine wird bewilligt, die anderen beiden gelten als nicht
+beantragt.** Die Zulage ist echtes Beamtendeutsch für den Aufschlag aufs
+Grundgehalt: Erschwerniszulage, Gefahrenzulage, Amtszulage. Sie kommt als
+laminierte Karte, weil das Amt laminiert, was es ernst meint.
+
+Getragen wird in der **Dienstmappe**, und deren Eskalation ist der Gag
+(Humor-Grundgesetz Regel 10, die Form ist episch, der Inhalt ist Papier):
+
+| Stufe | Fächer | Wie das Haus es nennt |
+|---|---|---|
+| 1 bis 4 | eines | Mappe |
+| 5 bis 14 | zwei | Doppelmappe |
+| ab 15 | drei | Ordner |
+
+Was nicht eingelegt ist, liegt in der **Kartei** und lässt sich außerhalb des
+Gefechts umstecken. Und weil auch das eine Personalakte ist, endet sie mit der
+Schicht: persönliche Qualifikation ist nicht übertragbar, steht so im Vorgang.
+
+**Drei Wörter waren vergeben und wurden deshalb nicht genommen.** „Karte" ist
+im Code die Weltkarte, und `FX.karte` ist seit Phase 3 die Wirkung
+„Aktenlage" — jeder Bezeichner heißt deshalb `zulage*`, im Anzeigetext darf
+„Karte" das Alltagswort bleiben. „Befugnis" ist seit Z2 die Zaubererlaubnis ab
+Stufe 4 („Befugniserteilung"), und ein zweiter Sinn hätte die erste Bedeutung
+mit verwaschen. „Vordruck" ist seit E1 das Antrittsformular.
+
+---
+
+## K1-3. Der Katalog: fünfzehn Familien, drei Stufen
+
+Der Schnitt ist absichtlich derselbe wie bei `WIRKUNG`: ein Name, ein
+Sinnbild, drei Sätze für die drei Stufen, ein eigener Name für die dritte.
+Dazu `wert`, die Zählerpunkte je Stufe.
+
+**Die Eichung der Stärke, in einem Satz:** Stufe I ist genau ein Wirkungsrang
+der Kessel-Ausrüstung, Stufe II ein verstärkter, und **Stufe III liegt einen
+Punkt über dem Unikat** — das ist der Kracher, und er braucht keine zweite
+Formel, weil alle Deckel `Math.min` an ihrer Fundstelle sind und jede Summe
+fangen.
+
+| Familie | Sinnbild | Hook | stapelt | Werte |
+|---|---|---|---|---|
+| Stichprobe (Dolch) | 🔪 | `dolch` *(neu)* | ja | 1/2/4 |
+| Klingenzulage (Schwert) | ⚔️ | `schwert` *(neu)* | ja | 1/2/4 |
+| Pauschalabfertigung (Axt) | 🪓 | `axt` *(neu)* | ja | 1/2/4 |
+| Brandschutzausnahme (Feuer) | 🔥 | `feuer` *(neu)* | ja | 1/2/4 |
+| Kaltverfügung (Frost) | ❄️ | `frost` *(neu)* | ja | 1/2/4 |
+| Blitzbeschluss (Arkan) | ⚡ | `arkan` *(neu)* | ja | 1/2/4 |
+| Vollzugszulage | 🔨 | `dmg` | ja | 1/2/4 |
+| Erschwerniszulage | ⛑️ | `leben` | ja | 1/2/4 |
+| Härtefallregelung | 🛡️ | `bollwerk` | nein | 1/2/4 |
+| Gebührenbefreiung | 🧾 | `sparsam` | nein | 1/2/4 |
+| Prüfvermerk | 🔍 | `crit` | nein | 1/2/4 |
+| Eilverfahren | ⏱️ | `tempo` | nein | 1/2/4 |
+| Dienstweg | 🥾 | `speed` | nein | 1/2/4 |
+| Laufender Bezug | ☕ | `mana` | nein | 1/2/**3** |
+| Dienstalterszulage | 🗓️ | `xp` | nein | 1/2/**3** |
+
+**Warum acht stapeln und sieben nicht.** Gestapelt wird, wo das Stapeln eine
+Bauweise baut: zwei Klingenzulagen sind ein Schwertkämpfer, zwei
+Brandschutzausnahmen ein Pyromant. Nicht gestapelt wird, wo es entweder nur
+einen Deckel schneller erreicht (Bollwerk, Sparsamkeit, Prüfvermerk) oder eine
+Ökonomie kippt. Das deutlichste Beispiel ist **Eilverfahren**: zwei mal Stufe
+III wären achtzig Prozent mehr Schlagzahl, und weil jeder Treffer über
+`MANA_JE_TREFFER` Mana einbringt, wäre das der Zauberspam aus der Zeit vor Z2
+über die Hintertür.
+
+**Und warum zwei Familien auf der dritten Stufe einen Punkt weniger tragen.**
+`mana` und `xp` wirken dauernd und verstärken sich selbst. Voller Kracher
+hieße bei `mana` acht Punkte Regeneration je Sekunde, also genau der Wert, den
+Z2 abgeschafft hat; bei `xp` eine Stufenleiter, die sich selbst überholt. Beide
+stehen deshalb auf 1/2/3, und der Guard prüft nur, dass die Werte *streng
+steigen*, nicht dass sie gleich hoch enden.
+
+**Die Textregel ist dieselbe wie überall im Haus:** ganze Sätze, keine Zahlen,
+keine Gedankenstriche. Gerechnet wird intern. Der Guard prüft alle drei
+Regeln bei jedem Laden, und die Zahlenprobe hat beim Schreiben dieses
+Abschnitts schon einmal zugeschlagen.
+
+---
+
+## K1-4. Die Eingriffe
+
+Zwanzig Stellen, alle in `index.html`.
+
+**Der Katalog** steht hinter `WIRKUNG`, also vor `FX`, vor `player` und vor dem
+`recalc()`-Aufruf auf Skriptebene. Das ist dieselbe TDZ-Disziplin, die über den
+S1-Konstanten steht, und in diesem Projekt der häufigste echte Fehler.
+
+**Drei Felder am Spieler**, alle je Schicht:
+
+```js
+zulagenKartei:[], zulagenZiehungen:0, zulagenAngebot:null,
+```
+
+Die Dienstmappe ist **kein zweites Array**, sondern die Sicht
+`kartei.filter(k => k.angelegt)`. Ein Feld weniger, das die Guards spiegeln
+müssen, und kein Zustand, der auseinanderlaufen kann.
+
+**Sechs neue FX-Schlüssel** (`dolch`, `schwert`, `axt`, `feuer`, `frost`,
+`arkan`) und die Kartenschleife in `recalc()`, direkt hinter der
+Ausrüstungsschleife. Die Karten sind damit eine dritte Quelle neben Gerät und
+Fluch, auf demselben Rechenweg.
+
+**Die zwei neuen Hooks:**
+
+```js
+// recalc(): die Gattung bekommt zum ersten Mal eine Zahl
+const gattung = {dagger:FX.dolch, sword:FX.schwert, doubleaxe:FX.axt}[player.attackMode] || 0;
+let dmgMin = ... + FX.dmg*4 + gattung*5;
+let dmgMax = ... + FX.dmg*6 + gattung*7;
+
+// castSpell(): der Zweig auch
+const zweigZu = sp.ultimate ? 0 : ([FX.feuer, FX.frost, FX.arkan][sp.branch] || 0);
+const sd = Math.round(sp.dmg * (1 + FX.zauber*0.12 + zweigZu*0.15));
+```
+
+Fünf und sieben je Punkt für die Gattung, etwas mehr als die vier und sechs
+des gattungsfreien `FX.dmg`, weil eine Gattungskarte mit der nächsten Klinge
+aus dem Kessel wertlos werden kann. Fünfzehn Prozent je Punkt für den Zweig
+gegen die zwölf des zweigfreien `FX.zauber`, aus demselben Grund. **Das
+Ultimate bleibt außen vor:** es kostet den ganzen Pool und trägt seinen Wert
+selbst (Z1), ein Zweigzuschlag darauf wäre wieder der Zauberspam.
+
+**Die Ziehung** hängt in `gainXP()`, eine Zeile hinter den Befähigungspunkten.
+Sie drängt nicht: das Panel öffnet sich nicht von selbst, weil Panels in diesem
+Spiel das Geschehen nicht anhalten (U1) und ein Fenster mitten im Gefecht eine
+Zumutung wäre. Gemeldet wird über einen Floater und ein Sternchen am Gürtel,
+gewählt wird, wann es passt. Ein ausliegendes Angebot **bleibt liegen**, bis
+gewählt wird; Panel zu und wieder auf ist kein Würfelbecher.
+
+Die Stufengewichte stehen in einer Tabelle: unter Stufe 5 gibt es kein Unikat,
+ab Stufe 15 kommt fast jede zweite Karte als Kracher. Familien, die im Moment
+nichts täten (die Gattung liegt nicht in der Hand, der Zweig hat keinen
+gelernten Spruch), ziehen mit **halbem Los**. Nie mit null: die Kartei behält
+jede Karte bis Schichtende, und die nächste Klinge kann die tote Karte zur
+besten machen. Abwerten, nicht sperren.
+
+**Das Umstecken** ist an `player.kampfT` gegattert, dasselbe Fenster wie das
+Nüchternheitsgebot. Eine Mappe im Gefecht neu zu sortieren wäre kein Spiel,
+sondern eine Pause.
+
+**Der Schichtantritt** leert Kartei und Angebot und zahlt
+`amt.ausbauten.startLevel` Vorlagen aus — dieselbe Pauschale, mit der zwei
+Zeilen höher `skillPoints = startLevel * 2` gezahlt wird, aus demselben Grund.
+Die Wiedereinsetzung aus W10 zahlt hier wie dort nichts: sie gibt den
+Dienststand zurück, keine Nachzahlung.
+
+**Das Panel** ist das achte im Haus und erbt alles: Grund, Kopfband,
+Schließknopf (über `.panelZu`), Rollbalken, Höhendeckel, den Pixelrahmen aus
+`bakeUiSkin()`, den Schleier und das Wegklicken über `PANEL_REGISTER`. Neu ist
+allein die Kartenoptik: Seitenverhältnis einer Karteikarte, römische Ziffer in
+der Ecke, Stufe II gold, Stufe III violett mit Schein — dieselbe Lesart wie
+`.rar2`/`.rar3`. Taste `Z`, die war frei.
+
+---
+
+## K1-5. Der Guard
+
+`zulagenAssert()` läuft bei jedem Laden und prüft sechs Dinge. Er wirft nie, er
+meldet.
+
+1. **Den Katalog.** Drei Sätze je Familie, streng steigende Werte, ein Hook,
+   den es in `FX` wirklich gibt, gültige Gattung, gültiger Zweig, ein Name für
+   die dritte Stufe. Dazu die Formregeln: keine Zahl, kein Gedankenstrich, ein
+   Schlusszeichen. Und dass jede Waffengattung und jeder Zauberzweig überhaupt
+   eine Karte hat, damit keine Bauweise still fehlt.
+2. **Die Fächerleiter**, an den Schwellen und auf Monotonie.
+3. **Die Ziehung.** Drei verschiedene Familien, Zähler sinkt, ausliegendes
+   Angebot wird nicht neu gewürfelt, kein Unikat auf der untersten Stufe.
+4. **Mappe, Stapelregel, Kampfgatter** als echte Sperren, nicht als Warnungen.
+5. **Die Wirkung an `recalc()` gemessen**, nicht nachgerechnet: eine
+   Erschwerniszulage I trägt genau achtzehn Leben, eine Stichprobe I am Dolch
+   fünf und sieben Schaden, dieselbe Karte am Schwert nichts, und was in der
+   Kartei liegt, wirkt nicht.
+6. **Vier Quelltext-Anker**, damit die Fundstellen den Hook wirklich tragen.
+
+**Zwei bestehende Guards mussten mitgezogen werden**, und das war der
+unangenehmste Fund dieses Bauabschnitts:
+
+* `zauberAssert()` fährt bei **jedem Seitenladen neun echte Aufstiege** durch
+  `gainXP()`. Ohne Spiegelung stünden nach jedem Laden neun Geistervorlagen im
+  Gürtel, die nie jemand ausgelöst hat.
+* `befaehigungAssert()` misst die S1-Spreizung zwischen gesteigertem und
+  ungesteigertem Spieler. Eine Karte trägt beide Seiten, und **nachgerechnet
+  hebt schon eine einzige Erschwerniszulage III die Lebensquote von
+  fünfundzwanzig auf über vierzig Prozent** — der Deckel `S1_SPREIZUNG_HP`
+  wäre gerissen. Die Dienstmappe wird für die Messung geleert, genauso wie
+  `messe()` die Ausrüstung längst durch die Referenzklinge ersetzt. Die Zusage
+  von S1 gilt dem punktlosen Spieler; sie wird nicht aufgeweicht, sondern von
+  einer dritten Quelle freigehalten, die es beim Schreiben von S1 noch nicht
+  gab.
+
+---
+
+## K1-6. Ein Fund am Rand: der Erfahrungsbalken
+
+Der Balken im HUD rechnete seit S1 falsch. Er trug die alte Leiter als
+Abschrift:
+
+```js
+Math.min(100, (player.xp / (35 * Math.pow(player.level, 1.35))) * 100)
+```
+
+S1 hat die Leiter auf `48 * Stufe^1,6` umgestellt und `gainXP()` umgebaut, aber
+diese eine Zeile blieb stehen. Auf Stufe 10 stand der Balken voll, wenn erst
+zwei Fünftel des Weges lagen. Es war der letzte abgeschriebene Wert dieser Art
+im Haus, und `befaehigungAssert()` verbietet genau diesen Fehlertyp seit S1 für
+`gainXP()`, hat ihn im HUD aber nie geprüft.
+
+Repariert, weil K1 `updateHUD()` ohnehin anfasst, und mit einem Quelltext-Anker
+in `zulagenAssert()` festgenagelt.
+
+---
+
+## K1-7. Was bewusst nicht gebaut wurde
+
+* **Keine Heilungskarte.** S1 hat die Gratisheilung des Aufstiegs gerade erst
+  abgeschafft, mit ausführlicher Begründung. Eine Karte auf `regen` arbeitete
+  dagegen. Der Hook liegt bereit, die Entscheidung gehört dem Projektinhaber.
+* **Keine Persistenz.** Zulagen fallen mit der Schicht wie Stufe, Zauber und
+  Gerät. Kein neues Feld in `amt`, keine Zeile in `loadAmt()`.
+* **Kein Knöterich-Zettel** zur ersten Ziehung. Das Panel erklärt sich über
+  seine Leerzustände selbst („Noch keine Zulage bewilligt. Jeder Aufstieg legt
+  drei vor."). Ein Zettel wäre ein guter Nachtrag, kein Teil des Kerns.
+* **Keine Grafik.** Sinnbilder sind Emoji, wie überall im Haus. Der
+  Kartenrahmen steht und wartet.
+
+---
+
+## K1-8. Prüfprotokoll
+
+**Syntax.** `node --check` über den extrahierten Skriptblock: sauber.
+
+**Konsole beim Laden.** Neunzehn Guards melden, `K1 Zulagen: Katalog,
+Faecher, Ziehung, Stapelregel und Wirkung in Ordnung.` steht dazwischen. Kein
+Fehler, keine Ausnahme; die 404er des gitignorierten Grafikpakets bleiben, was
+sie waren.
+
+**`tools/zulagen-pruef.mjs`**, im echten Browser: **45 von 45 bestanden.**
+Abgedeckt: Ziehung legt drei verschiedene aus und würfelt nicht nach · die
+bewilligte Karte legt sich selbst ein · Fächerleiter an sechs Stufen · nicht
+stapelbar bleibt einmal, stapelbar darf zweimal und nie dreimal · im Gefecht
+wird weder eingelegt noch abgelegt · Klingenzulage III trägt am Schwert
+zwanzig und achtundzwanzig und an der Axt nichts · Kaltverfügung III hebt die
+Frostnova von dreiundvierzig auf neunundsechzig und lässt den Feuerball in
+Ruhe · was in der Kartei liegt, wirkt nicht · Taste, Gürtelknopf, Esc-Reihen-
+folge, Schleier, Sternchen · kein Kartentext trägt eine Zahl · die Schicht
+leert die Kartei und zahlt dieselbe Pauschale wie die Befähigungspunkte.
+
+Der Lauf startet **keine Schicht und wartet auf keinen Frame**: ohne das
+lizenzierte Grafikpaket reißt `bakeUiSkin()` ab, und alles, was auf ein Bild
+wartet, wartet vergebens. Die Zulagen-Maschine steht lange vorher, der Lauf
+fährt sie unmittelbar an und läuft mit wie ohne Grafikpaket durch.
+
+**Gegenprobe.** Sieben absichtliche Beschädigungen (Zahl im Satz,
+Gedankenstrich, Hook ohne FX-Feld, fallende Werte, verbogene Fächerleiter,
+Unikat auf Stufe 1, aufgehobener Stapeldeckel): jede wird gemeldet, danach ist
+der Guard wieder still. Ein Guard, der immer schweigt, beweist nichts.
+
+**Kein Rückschritt anderswo.** `tools/menue-pruef.mjs` läuft mit dem achten
+Panel unverändert durch, 39 von 39.
+
+**Die Sichtprobe.** Das Panel wurde auf 1280 und auf 390 Pixel Breite
+angesehen, und sie hat zwei Dinge gefunden, die keine Prüfzeile gefunden
+hätte, weil beide erst im Bild entstehen:
+
+* **Auf dem Telefon lief die dritte Karte aus dem Panel heraus.**
+  Rasterfelder stehen von Haus aus auf `min-width:auto`, und
+  „Vollziehbarkeit" drückte seine Spalte breiter als ihren Anteil. `min-width:0`
+  hielt sie im Rahmen, machte aber das Nächste sichtbar: bei rund hundert
+  Pixel je Karte zerbricht jedes Wort dieses Hauses. `hyphens:auto` half nicht,
+  der Prüf-Chromium bringt kein deutsches Trennwörterbuch mit, und darauf ist
+  ohnehin kein Verlass. **Auf schmalen Geräten wird die Karte deshalb zur
+  Zeile**: Sinnbild links, Name und Satz rechts, eine je Reihe. Drei Zeilen
+  untereinander sind auf einem Telefon die Form, in der man wählt.
+* **Die Kartei stand auf vier Spalten** und teilte
+  „Großbrandverfügung" mitten im Wort. Jetzt drei, wie die Reihen darüber.
+
+Beide Male war die Ursache dieselbe und sie ist Programm: Amtsdeutsch baut
+lange Wörter, und die Spalte hat sich danach zu richten, nicht umgekehrt.
+
+---
+
+## K1-9. Was zu beobachten ist
+
+* **Die dritte Fachschwelle.** Stufe 15 kostet kumuliert 19.295 Erfahrung. Das
+  ist ohne den Ausbau „Höhere Anfangsstufe" ein seltener Spitzenlauf. Die
+  Schwelle steht so, weil sie so gewünscht war, und sie steht an genau einer
+  Stelle (`ZULAGE_FAECHER`). Wird das dritte Fach im Spielbericht nie gesehen,
+  wäre zwölf die kleinste sinnvolle Absenkung.
+* **Das Kampfgatter** hängt an `kampfT`, und der wird nur von einem Treffer
+  gesetzt. Wer neben einem Gegner steht, ohne getroffen zu werden, darf
+  umstecken. Eine Aggro-Prüfung wäre die härtere Fassung; sie wäre neuer Code
+  für einen Fall, den es vielleicht nicht gibt.
+* **Zwei gestapelte Kracher derselben Gattung** (vierzig und sechsundfünfzig
+  Schaden obendrauf) sind erst ab Stufe 15 und nur mit zwei passenden
+  Ziehungen erreichbar. Zum Vergleich: vier Ausrüstungsteile mit
+  Rang-3-Wirkung tragen heute schon achtundvierzig und zweiundsiebzig.
