@@ -168,6 +168,22 @@ Ohne neue Mechanik, reine Deko-Setzer wie schon bei Bäumen und Felsen:
 **Aufwand: je Posten klein.** Der Setzer steht, `decos` und `critters` nehmen neue Arten ohne
 Umbau auf. Das ist der Steinbruch für Abende, an denen kein Bauabschnitt ansteht.
 
+*(Berichtigt am 24.08.2026, nachgemessen in G12, s. `phase-g12-steinbruch-rest.md`. Drei Zeilen
+dieser Tabelle stimmen nicht. **Erstens: Krähen gibt es im Pack nicht.** Unter
+`Cute_Fantasy/Animals/` steht kein einziger Krähenvogel, das einzige Wort im ganzen Manifest, das
+auf `crow` passt, ist Scarecrow. Echt sind achtundzwanzig Dateien statt „~30": Frosch 6, Gans 6,
+Ente 5, Maus 4, Biene 3, Schwan 3, Schmetterling 1. **Zweitens: Teiche gibt es auch nicht.** Der
+Wasser-Messlauf über drei Startwerte findet im Umkreis von sechzig Kacheln um das Dorf keine
+einzige Wasserkachel; das nächste Uferwasser liegt 105 bis 126 Kacheln entfernt, und an einem Weg
+liegt gar keins. Wasserpflanzen gehören an den Küstensaum, und sonst nirgendwohin. **Drittens
+nehmen `critters` neue Arten sehr wohl nur mit Umbau auf.** Die Sammlung kennt genau eine Bauart:
+begehbarer Grund, Abprallen an allem, zwei Zeilen `idle`/`walk`. Eine Ente braucht das Gegenteil
+von `walkPx()`, ein Schmetterling gar keine Bodenprüfung, ein Kapybara einen Zustandswechsel. Der
+Satz gilt für Zäune, Schilder und Boot — für alles, was schwimmt oder fliegt, gilt er nicht.
+**Die Brücken sind seit G12 gestrichen**, nicht vertagt: der größte Umweg, den eine Brücke auf
+dieser Karte sparen würde, beträgt siebzehn Kacheln, und eine Brücke zur Deko-Insel wäre der
+Korridor, den `genMap()` Schritt 3 ausdrücklich verbietet.)*
+
 ### 8. Was liegen bleiben sollte
 
 - **`Cute_Fantasy_MilitaryCamp`** (16, komplett ungenutzt): Katapult, Kanone, Palisaden,
