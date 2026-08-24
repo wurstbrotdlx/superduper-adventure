@@ -9,8 +9,9 @@
 // Geprueft wird, was SZ1 zugesagt hat. tools/empfang-pruef.mjs prueft den
 // Anfang als Erzaehlung; dieser Lauf prueft die Maschine darunter:
 //
-//   Tabelle       jede eingetragene Szene hat Sprecher, Knoten und ein Ende,
-//                 und szeneAssert() meldet sie beim Laden als in Ordnung
+//   Tabelle       jede eingetragene Szene hat Sprecher und Knoten, und wenn sie
+//                 kein Gespraechsbaum aus F1 ist, zusaetzlich Ende und Sperre;
+//                 szeneAssert() meldet sie beim Laden als in Ordnung
 //   Erreichbarkeit jeder Knoten jeder Szene ist von ihrem Start aus zu
 //                 erreichen, und keiner ist eine Sackgasse
 //   Sprecher      ein Knoten mit wer: tauscht Portraet und Kopfzeile
@@ -57,6 +58,22 @@ async function frisch(opt){
 {
   const { page, ctx } = await frisch({ viewport: { width: 1100, height: 800 } });
 
+  // Pflicht sind sprecher und knoten, und zwar fuer jede Szene. ende und sperre
+  // sind es nicht: szeneAssert() nennt in (Pflichtfeld fehlt) genau diese zwei
+  // und liest die anderen beiden als (d.sperre || []) und ueber den Ausgang.
+  //
+  // Bis F1 fiel das nicht auf, weil alle vier Szenen alle vier Felder trugen.
+  // F1s dreizehn Gespraechsbaeume tragen zwei davon nicht, und aus gutem Grund:
+  // ein Baum endet an jedem seiner Blaetter ausdruecklich ueber szeneEnde(),
+  // faellt also nie durch, und ein ende: waere unerreichbarer Code. Die Sperre
+  // fehlt, weil ein Baum mitten im Spiel laeuft und die spaeteren Akte nennen
+  // darf, so wie es der Kopf des SZ2-Blocks fuer dessen Szenen aufschreibt.
+  //
+  // Dieser Lauf hat das bis zum 24.08.2026 als dreizehn Fehlschlaege gemeldet.
+  // Das war die Zusage aus SZ1, als es genau eine Szene gab, und nicht die
+  // Regel des Hauses. Geprueft wird jetzt die Regel: die zwei Pflichtfelder
+  // immer, die zwei anderen als Paar, das ein Baum weglaesst und jede andere
+  // Szene traegt.
   const form = await page.evaluate(() => {
     const raus = {};
     for(const k in SZENEN){
@@ -67,11 +84,17 @@ async function frisch(opt){
         ende:     typeof d.ende === 'function',
         sperre:   Array.isArray(d.sperre),
       };
+      raus[k].baum = !!d.baum;
     }
     return raus;
   });
-  for(const k in form) pruef(`${k}: Tabellenform vollstaendig`, form[k],
-                             {sprecher:true, knoten:true, ende:true, sperre:true});
+  for(const k in form){
+    const baum = form[k].baum, ist = {...form[k]};
+    delete ist.baum;   // steht im Namen der Zeile, nicht im Vergleich: ein Feld,
+                       // das nie fehlschlagen kann, gehoert nicht ins Soll.
+    pruef(`${k}${baum ? ' (Baum)' : ''}: Tabellenform vollstaendig`, ist,
+          {sprecher:true, knoten:true, ende: !baum, sperre: !baum});
+  }
 
   // Erreichbarkeit als Graph. Gerechnet wird auf der Tabelle, nicht gespielt:
   // gespielt wird der Empfang schon von empfang-pruef.mjs, und ein Graph findet
