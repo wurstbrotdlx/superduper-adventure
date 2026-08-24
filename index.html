@@ -242,7 +242,13 @@
   #musikRow #musicBtn{flex:0 0 auto;}
   #musicVol{flex:1;min-width:80px;accent-color:#c9a227;cursor:pointer;}
   /* Phase 5: Knöterich-Regler, gleiche Zeile-Logik wie der Rest von #musikBox */
-  #knToneRow, #schriftRow{margin-top:8px;display:flex;gap:6px;}
+  #knToneRow, #schriftRow, #speicherRow{margin-top:8px;display:flex;gap:6px;}
+  /* SP3: Meldezeile unter den Spielstand-Knöpfen. Sie trägt im Normalfall den
+     Hinweis auf das automatische Speichern und im Fehlerfall den Grund; .warn
+     färbt sie um, damit "ging nicht" nicht wie "erledigt" aussieht. */
+  #speicherInfo{margin-top:6px;font-size:calc(9px * var(--fs));color:#7a6a45;line-height:1.35;}
+  #speicherInfo.ok{color:#7ad6ff;}
+  #speicherInfo.warn{color:#ff9f4a;}
   .knToneBtn, .schriftBtn{flex:1;text-align:center;font-size:calc(10px * var(--fs));padding:6px 2px;border:2px solid #4c4030;
     border-radius:6px;background:#141009;color:#c9b98a;cursor:pointer;}
   .knToneBtn.on, .schriftBtn.on{border-color:#c9a227;background:#241c10;color:#f4d97a;}
@@ -1185,6 +1191,17 @@
       <div class="schriftBtn" data-v="1">Groß</div>
       <div class="schriftBtn" data-v="2">Größer</div>
     </div>
+    <!-- SP3: Der eine Kasten des Spiels, der Technik Technik nennt. Begründung
+         steht ausführlich am SP3-Block im Skript: eine Datensicherung, die
+         niemand als solche erkennt, ist keine. -->
+    <h4 style="margin-top:10px;">💾 SPIELSTAND</h4>
+    <div id="speicherRow">
+      <div class="schriftBtn" id="spSpeichern" title="Aktuelle Schicht auf diesem Gerät sichern">Speichern</div>
+      <div class="schriftBtn" id="spExport" title="Alles als Datei sichern, für den Gerätewechsel">Export</div>
+      <div class="schriftBtn" id="spImport" title="Spielstand-Datei einlesen und Seite neu laden">Import</div>
+    </div>
+    <div id="speicherInfo">Das Spiel speichert auf diesem Gerät und automatisch, sobald der Tab in den Hintergrund geht.</div>
+    <input type="file" id="spDatei" accept="application/json,.json" style="display:none">
   </div>
 </div>
 
@@ -6859,6 +6876,15 @@ let amt = {bankGold:0, schichten:0,
   // zwischen diesen beiden Zahlen. Echter Zustand, nicht ableitbar: welche
   // Schicht es war, weiss danach niemand mehr.
   stopfenSchicht:0, adressSchicht:0,
+  // SP2: Was am Gürtel die Nacht übersteht, {gold, zutaten:[{noun,adj,count}]}
+  // oder null. War bis hierher ein Paar Laufzeitvariablen (pendingCarryGold,
+  // pendingCarryPouch), die startGame() bei jedem Seitenaufruf genullt hat — wer
+  // im Dorf zwischen Dienstbericht und Antritt den Browser schloss, verlor
+  // beides, obwohl der Bericht "mitgenommen" druckte. W10 hat für den Antrag im
+  // selben Panel längst das Gegenteil begründet: ein Aktenvorgang überlebt die
+  // Nacht, und abgerechnetes Gold ist einer. endShift() schreibt, startShift()
+  // löst ein und leert im selben Zug, Bauform wie wiedereinsetzung.
+  uebertrag:null,
   // P1: Die eine Angabe, die der Einstellungsvordruck vom Spieler entgegennimmt
   // (Blatt 1, Feld "Anrede der Person"). 'm', 'w' oder 'egal'. Sie entscheidet,
   // aus welchen Frisuren der Schichtantritt die Gestalt des Tages zieht, und
@@ -6883,7 +6909,10 @@ const figDa = fig => !fig || !CONFIG.schichtModus
   || ((!fig.abAkt || aktStand() >= fig.abAkt) && (!fig.daWenn || fig.daWenn()));
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
 let shiftT=0, shiftEndPending=false, overtimeT=0,
-    shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[],
+    // SP2: pendingCarryGold/pendingCarryPouch sind hier ersatzlos entfallen. Der
+    // Übertrag ist kein Laufzeitzustand der Schicht, sondern das Ergebnis der
+    // vorigen, und steht seither als amt.uebertrag in der Akte.
+    shiftKillsByType={}, shiftKillsTotal=0,
     // W4: Fortschritt des laufenden Aushangs. Bedeutung typabhängig, siehe AUFTRAG_TYPEN[].stand.
     // Reset in startShift(), neben shiftKillsByType. auftragSoll/auftragOrtSoll sind die
     // Weltgarantie-Kontingente für placeMonsters(), ebenfalls dort gesetzt.
@@ -8933,6 +8962,23 @@ const WIEDER_STAND_DECKEL = 60, WIEDER_ZAHL_DECKEL = 999;
 // Deckel selbst; wiederAssert() prüft sie weiter unten direkt.
 function wiederStandGeklemmt(roh){ return clamp(roh | 0, 1, WIEDER_STAND_DECKEL); }
 
+// SP1: dasselbe für die beiden Schichtstempel aus SZ3. Sie standen bis hierher
+// in saveAmt() und in keiner einzigen Ladezeile — geschrieben, gespeichert,
+// beim nächsten Laden verworfen und vom nächsten saveAmt() mit 0 überschrieben.
+// Der Deckel ist wie WIEDER_STAND_DECKEL keine Balance-Zahl, sondern die Zusage
+// dieses Kommentars: 0 heißt "nie", jede andere Zahl ist eine Schichtnummer, und
+// so hoch zählt keine Laufbahn. Steht aus demselben TDZ-Grund hier oben.
+const STEMPEL_DECKEL = 9999;
+function stempelGeklemmt(roh){ return clamp(roh | 0, 0, STEMPEL_DECKEL); }
+
+// SP2: der Übertrag zwischen zwei Schichten. Deckel auf beiden Größen, damit
+// ein von Hand gesetzter Stand nicht am Loader vorbeikommt. Was er NICHT
+// verhindert, steht ausdrücklich dabei: er klemmt die Zahl, er beweist nicht
+// ihre Herkunft — wer den Stand von Hand schreibt, darf sich bis an den Deckel
+// beschenken. Das ist derselbe Stand wie bei amt.bankGold und hier zum ersten
+// Mal aufgeschrieben statt stillschweigend angenommen.
+const UEBERTRAG_GOLD_DECKEL = 999999, UEBERTRAG_STUECK_DECKEL = 99;
+
 const AMT_KEY = 'sda_amt_v1';
 (function loadAmt(){
   try{
@@ -8969,6 +9015,24 @@ const AMT_KEY = 'sda_amt_v1';
       amt.wiedereinsetzung = {stand: wiederStandGeklemmt(o.wiedereinsetzung.stand),
                               haar: typeof o.wiedereinsetzung.haar === 'string' ? o.wiedereinsetzung.haar : null,
                               ton:  typeof o.wiedereinsetzung.ton  === 'string' ? o.wiedereinsetzung.ton  : null};
+    // SP1: die beiden Zeitstempel aus SZ3, die es bis hierher nie zurück ins
+    // Spiel geschafft haben. Ohne diese zwei Zeilen sind nach jedem Neuladen
+    // BEIDE Wege in vorblattFaellig() tot, und weil beide Setzer verbrauchte
+    // Einmalpfade sind (stopfenGezogenEnde() läuft nach dem fertigen Strang nie
+    // wieder, findeAdresszeile(4) gibt nach dem Fund nie wieder true), kommt
+    // Vorblatt dann nie an: keine Szene 6, keine Versuchung, kein Gegenspieler.
+    // Gemessen und nachgestellt in SPEICHERFRAGE-2026-08-24.md.
+    if(typeof o.stopfenSchicht === 'number') amt.stopfenSchicht = stempelGeklemmt(o.stopfenSchicht);
+    if(typeof o.adressSchicht === 'number') amt.adressSchicht = stempelGeklemmt(o.adressSchicht);
+    // SP2: der Übertrag. Strukturell geprüft und beidseitig geklemmt wie der
+    // Antrag darüber; die Zutatenliste wird Stück für Stück gefiltert, weil ein
+    // einzelner kaputter Eintrag sonst den ganzen Übertrag mitnähme.
+    if(o.uebertrag && typeof o.uebertrag.gold === 'number' && Array.isArray(o.uebertrag.zutaten))
+      amt.uebertrag = {gold: clamp(o.uebertrag.gold | 0, 0, UEBERTRAG_GOLD_DECKEL),
+                       zutaten: o.uebertrag.zutaten
+                         .filter(z => z && typeof z.noun === 'string' && typeof z.adj === 'string' && (z.count | 0) > 0)
+                         .slice(0, UEBERTRAG_STUECK_DECKEL)
+                         .map(z => ({noun: z.noun, adj: z.adj, count: clamp(z.count | 0, 1, UEBERTRAG_STUECK_DECKEL)}))};
     // GW26b: die Ladezeile für auftraegeErfuellt ist hier ersatzlos entfallen.
     // loadAmt() ist eine Feld-Whitelist, ein alter Stand mit dem Feld wird also
     // schlicht nicht mehr gelesen; saveAmt() schreibt amt komplett neu und räumt
@@ -14232,6 +14296,9 @@ function showStartScreen(){
   state = 'menu';
   camSnap();   // hinter dem Startbild soll das Dorf stehen, nicht die Kartenecke
   const erst = !kn.seen.einstellung;
+  // SP3: Liegt eine unterbrochene Schicht in der Ablage, ist Fortsetzen der
+  // erste Knopf und nicht ein Untermenü. Wer sie nicht will, drückt daneben.
+  const sp = spielstandLesen();
   const stand = (CONFIG.schichtModus && amt.schichten > 0)
     ? `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse 💰 ${amt.bankGold}</p>` : '';
   document.getElementById('ovPanel').innerHTML = `
@@ -14241,7 +14308,11 @@ function showStartScreen(){
     <p>Vierhundert Jahre lang ist hier etwas liegen geblieben. Inzwischen läuft es draußen herum, und das Amt schickt jeden Tag jemanden hinterher. Heute sind Sie das.</p>
     ${stand}
     <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">W A S D gehen, Klick oder Leertaste schlagen. Auf dem Handy links gehen, rechts schlagen.</p>
-    <button onclick="startGame()">${erst ? 'Dienst antreten' : 'Dienst fortsetzen'}</button>
+    ${sp ? `
+    <button onclick="spielstandFortsetzen()">Schicht fortsetzen</button>
+    <p style="font-size:calc(11px * var(--fs));color:#7ad6ff;margin:6px 0 0;">Gespeicherter Spielstand: Stufe ${sp.stufe | 0}, noch ${Math.max(1, Math.round((sp.restT | 0) / 60))} Minuten Dienstzeit.</p>
+    <div><button onclick="spielstandVerwerfen()" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Neue Schicht beginnen</button></div>`
+    : `<button onclick="startGame()">${erst ? 'Dienst antreten' : 'Dienst fortsetzen'}</button>`}
     ${erst ? '' : `<div><button onclick="showDienstblatt(2,'menu')" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Dienstanweisung</button></div>`}
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -14307,7 +14378,8 @@ function winGame(){
 function startGame(){
   initAudio();
   if(CONFIG.schichtModus){
-    pendingCarryGold = 0; pendingCarryPouch = [];
+    // SP2: Hier stand die Nullung des Übertrags. Genau sie war der Verlust — sie
+    // lief bei jedem Seitenaufruf, also auch bei dem, der die Nacht beendete.
     // W8: Beim allerersten Dienstantritt wird erst eingestellt, dann gearbeitet.
     // Danach nie wieder (kn.seen.einstellung), nachlesbar bleibt es überall.
     // E1: Der erste Dienstantritt laeuft ueber den Empfang. Er endet auf
@@ -14436,8 +14508,13 @@ function startShift(){
                  : HAARTOENE[Math.floor(Math.random()*HAARTOENE.length)];
   player.bag = new Array(24).fill(null);
   player.potions = 2 + (amt.bonusPotions||0);
-  player.gold = pendingCarryGold + (amt.bonusStartGold||0); pendingCarryGold = 0;
-  player.pouch = pendingCarryPouch; pendingCarryPouch = [];
+  // SP2: Übertrag einlösen und im selben Zug leeren, Bauform wie der Antrag
+  // oben. saveAmt() genau dann, wenn wirklich einer vorlag — ein Schreibvorgang
+  // bei jedem Antritt wäre der Fehler, den GW26b schon einmal notiert hat.
+  const ueber = amt.uebertrag; amt.uebertrag = null;
+  if(ueber) saveAmt();
+  player.gold = (ueber ? ueber.gold : 0) + (amt.bonusStartGold||0);
+  player.pouch = ueber ? ueber.zutaten : [];
   player.equip = {weapon:null, armor:null, shield:null, boots:null}; knCurseWasOn = false;
   player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
   if(amt.ausbauten.startFluch) player.equip.weapon.fluch = amt.ausbauten.startFluch;
@@ -14460,6 +14537,10 @@ function startShift(){
   knCheckFluchEquipped();   // Startfluch-Ausbau kann ohne equipItemFromBag() einen Fluch anlegen
   refreshFloor(); placeMonsters();
 
+  // SP3: Ein frischer Antritt macht jeden Spielstand ungültig — er beschreibt
+  // eine Schicht, die es ab dieser Zeile nicht mehr gibt. spielstandEinloesen()
+  // ruft startShift() ausdrücklich VOR dem Anwenden und liest deshalb vorher.
+  spielstandLoeschen();
   shiftT = CONFIG.schichtDauer; shiftEndPending = false; overtimeT = 0;
   shiftKillsByType = {}; shiftKillsTotal = 0;
   auftragStand = 0; auftragVerletzt = false;                          // W4
@@ -14506,8 +14587,16 @@ function endShift(reason){
   // Übertrags. Seit dem 20.08.2026 sind es drei Empfänger statt zweier: der
   // Verwaltungskostenanteil verlässt das Spiel. Die Summe der drei ist weiterhin
   // exakt player.gold, das rechnet goldAufteilung() vor und goldAssert() nach.
-  pendingCarryGold = carryGold; pendingCarryPouch = carryPouch;
+  // SP2: in die Akte statt in eine Laufzeitvariable. Geschrieben wird der schon
+  // gekappte Übertrag, nicht die Bruttobeute — was hier steht, ist genau das,
+  // was der Dienstbericht zwei Zeilen weiter unten als "mitgenommen" druckt.
+  amt.uebertrag = {gold: carryGold, zutaten: carryPouch};
   amt.bankGold += abgabe; amt.schichten++;
+  // SP3: Die Schicht ist abgerechnet, ihr Spielstand ist damit verbraucht. Die
+  // Frischeprüfung in spielstandLesen() würde ihn wegen amt.schichten++ ohnehin
+  // verwerfen; gelöscht wird er trotzdem, damit in der Ablage nichts steht, was
+  // nicht mehr gilt.
+  spielstandLoeschen();
 
   // Phase 5: Dienstzettel 'feierabend1' latcht hier (Auslöser = #overlay öffnet sich,
   // seine eigene Sperrzone), erscheint deshalb erst in der Folgeschicht. maxKillsSchicht
@@ -14575,6 +14664,480 @@ function endShift(reason){
 function nachSchicht(){
   if(amt.schichten % 10 === 0) showJahresgespraech(); else showDorf();
 }
+
+// ===========================================================================
+//  SP3: DER SPIELSTAND — gerätebezogenes Speichern, und Export/Import daneben
+//
+//  Bis hierher überlebten drei Akten die Nacht (amt, kladde, kn), die laufende
+//  Schicht dagegen nie. Wer in Minute 20 von 25 den Browser schloss, hatte die
+//  Schicht nicht gespielt: kein Feierabend, kein Bericht, kein Bankzufluss. Auf
+//  dem Telefon entscheidet das nicht einmal der Spieler, sondern das
+//  Betriebssystem, das den Hintergrund-Tab wegräumt.
+//
+//  Möglich wird der Spielstand durch eine Eigenschaft, die dieses Projekt schon
+//  immer hatte und die bis zur Messung vom 24.08.2026 niemand aufgeschrieben
+//  hatte: DIE WELT IST ÜBER SITZUNGEN HINWEG IDENTISCH. genMap() zieht aus
+//  mulberry32(20260805), einem festen Seed, und läuft genau einmal beim
+//  Skriptstart. Zwei Ladevorgänge ergeben denselben Kartenhash, dieselben 8019
+//  Bäume, dieselbe Koppel — gemessen, siehe SPEICHERFRAGE-2026-08-24.md. Eine
+//  gespeicherte Position zeigt deshalb beim nächsten Start auf dieselbe Kachel
+//  und nicht in einen Felsen. Ohne diese Zusage wäre der ganze Block nicht
+//  baubar, und mit ihr ist er klein.
+//
+//  Was NICHT im Spielstand steht: Monster, Beute am Boden, Geschosse, Leichen,
+//  Partikel. Die kommen bei placeMonsters() ohnehin neu, und sie einzufrieren
+//  hieße, den Kampfzustand zu konservieren — dann wäre Speichern vor einer
+//  Truhe ein Werkzeug statt einer Unterbrechung. Der Spielstand hält den
+//  Menschen, die Uhr und den Auftrag fest, nicht die Sekunde.
+//
+//  SPRACHE: Dieser Block redet Technik, nicht Amtsdeutsch. "Spielstand",
+//  "Speichern", "Exportieren" heißen hier wörtlich so, im Code wie auf den
+//  Knöpfen. Das ist eine bewusste und die einzige Ausnahme vom Ton des Hauses,
+//  und sie ist eine Entscheidung, keine Nachlässigkeit: eine Datensicherung,
+//  die sich "Antrag auf Beglaubigung einer Aktenabschrift" nennt, findet im
+//  Zweifel niemand, und wer sie nicht findet, verliert seinen Fortschritt an
+//  einen Witz. Der Gag steht überall sonst im Spiel; hier steht die Funktion.
+// ===========================================================================
+const SPIEL_KEY = 'sda_spielstand_v1';
+const SPIEL_VERSION = 1;
+
+// Die Deckel für geladene Ausrüstung werden aus den Tabellen GERECHNET, nicht
+// gesetzt: was das Spiel selbst erzeugen kann, ist die Obergrenze. Wächst eine
+// Tabelle, wächst der Deckel mit, ohne dass hier eine zweite Zahl gepflegt
+// werden müsste — das ist die F1-Falle, und sie ist hier vermieden statt
+// beschrieben. P1-Lehre: gegen die Tabelle prüfen, nicht bloß auf Typ.
+const SPIEL_DECKEL = (() => {
+  let dmg = 0, armor = 0, kraft = 0;
+  const sieh = b => {
+    if(Array.isArray(b.dmg)) dmg = Math.max(dmg, b.dmg[1] || 0);
+    if(typeof b.armor === 'number') armor = Math.max(armor, b.armor);
+    if(typeof b.kraft === 'number') kraft = Math.max(kraft, b.kraft);
+  };
+  BASES.forEach(sieh);
+  for(const slot in CRAFT_BASE) CRAFT_BASE[slot].forEach(sieh);
+  const affix = {};
+  AFFIXES.forEach(a => { affix[a.k] = Math.max(affix[a.k] || 0, a.max); });
+  return {dmg, armor, kraft, affix};
+})();
+
+const SPIEL_SLOTS = ['weapon', 'armor', 'shield', 'boots'];
+const SPIEL_ZAUBER = new Set(SPELLS.map(s => s.id).concat([ULT_SPELL.id]));
+
+// Ein Ausrüstungsstück aus der Ablage. Gibt ein neu gebautes Objekt zurück oder
+// null — nie das gelesene Objekt selbst, damit kein Feld durchrutscht, das hier
+// nicht steht. Die Wirkungen und Flüche werden gegen ihre Tabellen geprüft, die
+// Zahlen gegen SPIEL_DECKEL geklemmt.
+function itemGeklemmt(o){
+  if(!o || typeof o !== 'object' || !o.base || typeof o.base !== 'object') return null;
+  const b = o.base;
+  if(SPIEL_SLOTS.indexOf(b.t) < 0) return null;
+  if(typeof b.name !== 'string' || !b.name || b.name.length > 60) return null;
+  const base = {t: b.t, name: b.name, tier: clamp(b.tier | 0, 0, 4)};
+  if(typeof b.icon === 'string' && b.icon.length <= 8) base.icon = b.icon;
+  if(typeof b.iconFrame === 'string' && b.iconFrame.length <= 24) base.iconFrame = b.iconFrame;
+  if(typeof b.mode === 'string' && b.mode.length <= 24) base.mode = b.mode;
+  if(Array.isArray(b.dmg) && b.dmg.length === 2){
+    const lo = clamp(+b.dmg[0] || 0, 0, SPIEL_DECKEL.dmg), hi = clamp(+b.dmg[1] || 0, 0, SPIEL_DECKEL.dmg);
+    base.dmg = [Math.min(lo, hi), Math.max(lo, hi)];
+  }
+  if(typeof b.aps === 'number') base.aps = clamp(b.aps, 0.1, 5);
+  if(typeof b.armor === 'number') base.armor = clamp(b.armor | 0, 0, SPIEL_DECKEL.armor);
+  if(typeof b.kraft === 'number') base.kraft = clamp(b.kraft | 0, 0, SPIEL_DECKEL.kraft);
+  const it = {base, rar: clamp(o.rar | 0, 0, 4), affixes: [], fluchRuht: false,
+              name: (typeof o.name === 'string' && o.name && o.name.length <= 60) ? o.name : base.name};
+  if(Array.isArray(o.affixes)) for(const a of o.affixes.slice(0, 4)){
+    if(!a || typeof a.k !== 'string') continue;
+    const def = AFFIXES.find(d => d.k === a.k);
+    if(!def) continue;
+    it.affixes.push({k: def.k, v: clamp(a.v | 0, 0, def.max), def});
+  }
+  if(o.effect && typeof o.effect.k === 'string' && WIRKUNG[o.effect.k])
+    it.effect = {k: o.effect.k, stufe: clamp(o.effect.stufe | 0, 1, 3)};
+  if(typeof o.fluch === 'string' && FLUCH[o.fluch]) it.fluch = o.fluch;
+  if(o.crafted) it.crafted = true;
+  return it;
+}
+
+// Zutaten, gleiche Bauform wie beim Übertrag in loadAmt(). Ein kaputter Eintrag
+// fällt raus, nicht die ganze Liste.
+function zutatenGeklemmt(arr){
+  if(!Array.isArray(arr)) return [];
+  return arr.filter(z => z && typeof z.noun === 'string' && typeof z.adj === 'string' && (z.count | 0) > 0)
+            .slice(0, UEBERTRAG_STUECK_DECKEL)
+            .map(z => ({noun: z.noun, adj: z.adj, count: clamp(z.count | 0, 1, UEBERTRAG_STUECK_DECKEL)}));
+}
+
+// Wann darf geschrieben werden? Bewusst eng, und jede Bedingung hat einen Grund:
+// nur im Dienst, nur im laufenden Spiel (das schließt Szenen aus, die setzen
+// state='szene'), nicht in einer Kammer und nicht im Schattenland (beide werden
+// eigens erzeugt und stehen nicht im Spielstand), nicht tot, und nicht in den
+// Überstunden — dort läuft die Schicht schon aus, und ein Spielstand mit
+// abgelaufener Uhr wäre ein Fortsetzen in den sofortigen Feierabend.
+function spielstandErlaubt(){
+  return CONFIG.schichtModus && state === 'play' && !kammer && currentLevel === 1
+      && !player.dead && !szeneAktiv && !shiftEndPending;
+}
+
+function spielstandSchreiben(){
+  if(!spielstandErlaubt()) return false;
+  const s = {
+    v: SPIEL_VERSION, schichten: amt.schichten, stufe: player.level,
+    restT: Math.max(0, Math.round(shiftT)),
+    spieler: {level: player.level, xp: player.xp, hp: player.hp, mana: player.mana,
+              gold: player.gold, potions: player.potions,
+              skills: Object.assign({}, player.skills), skillPoints: player.skillPoints,
+              spellPoints: player.spellPoints, spellsKnown: Object.assign({}, player.spellsKnown),
+              hair: player.hair, haarTon: player.haarTon, x: player.x, y: player.y,
+              bag: player.bag, equip: player.equip, pouch: player.pouch,
+              // K1: Die Zulagen sind Schichtzustand wie Stufe und Ausrüstung
+              // ("nichts davon geht nach localStorage", sagt ihr Kommentar — bis
+              // hierher stimmte das, und der Spielstand ist die Ausnahme, die
+              // ihn nicht bricht: er speichert die Schicht, nicht die Akte).
+              // Ein Fortsetzen ohne Dienstmappe wäre kein Fortsetzen.
+              zulagenKartei: player.zulagenKartei, zulagenZiehungen: player.zulagenZiehungen,
+              zulagenAngebot: player.zulagenAngebot},
+    schicht: {shiftT, overtimeT, killsByType: shiftKillsByType, killsTotal: shiftKillsTotal,
+              auftragStand, auftragVerletzt, auftragFertig, langSchicht},
+  };
+  try{ localStorage.setItem(SPIEL_KEY, JSON.stringify(s)); }catch(_){ return false; }
+  return true;
+}
+
+function spielstandLoeschen(){ try{ localStorage.removeItem(SPIEL_KEY); }catch(_){} }
+
+// Lesen heißt hier auch: prüfen, ob er überhaupt noch gilt. Die Frischeprüfung
+// ist der Kern — ein Spielstand gehört zu der Schichtzahl, bei der er entstand.
+// Stimmt sie nicht mehr, ist die Schicht inzwischen abgerechnet worden, und
+// Fortsetzen wäre eine zweite Abrechnung derselben Schicht.
+function spielstandLesen(){
+  let o = null;
+  try{
+    const raw = localStorage.getItem(SPIEL_KEY);
+    if(!raw) return null;
+    o = JSON.parse(raw);
+  }catch(_){ return null; }
+  if(!o || o.v !== SPIEL_VERSION || !o.spieler || !o.schicht) return null;
+  if((o.schichten | 0) !== amt.schichten) return null;
+  return o;
+}
+
+// Einlösen läuft ausdrücklich ÜBER startShift() und nicht daran vorbei: das ist
+// laut Gameplay-Prompt der einzige Reset-Pfad, "ein getesteter Pfad statt
+// zweier". Erst die Schicht regulär aufbauen (Welt, Monster, Kontingente,
+// Aushang), dann den Menschen und die Uhr darüberlegen.
+function spielstandEinloesen(){
+  const s = spielstandLesen();
+  if(!s) return false;
+  startShift();                     // löscht den Spielstand mit, deshalb oben gelesen
+  const p = s.spieler, k = s.schicht;
+
+  player.level = clamp(p.level | 0, 1, 99);
+  player.xp = Math.max(0, p.xp | 0);
+  for(const key in player.skills) player.skills[key] = clamp((p.skills && p.skills[key]) | 0, 0, 999);
+  player.skillPoints = clamp(p.skillPoints | 0, 0, 999);
+  player.spellPoints = clamp(p.spellPoints | 0, 0, 999);
+  player.spellsKnown = {};
+  if(p.spellsKnown) for(const id in p.spellsKnown) if(SPIEL_ZAUBER.has(id) && p.spellsKnown[id]) player.spellsKnown[id] = true;
+  if(HAIRS.indexOf(p.hair) >= 0) player.hair = p.hair;
+  if(HAARTOENE.indexOf(p.haarTon) >= 0) player.haarTon = p.haarTon;
+  player.gold = clamp(p.gold | 0, 0, UEBERTRAG_GOLD_DECKEL);
+  player.potions = clamp(p.potions | 0, 0, 99);
+  player.pouch = zutatenGeklemmt(p.pouch);
+  player.bag = new Array(24).fill(null);
+  if(Array.isArray(p.bag)) for(let i = 0; i < Math.min(24, p.bag.length); i++) player.bag[i] = itemGeklemmt(p.bag[i]);
+  player.equip = {weapon: null, armor: null, shield: null, boots: null};
+  if(p.equip) for(const slot of SPIEL_SLOTS){
+    const it = itemGeklemmt(p.equip[slot]);
+    if(it && it.base.t === slot) player.equip[slot] = it;   // ein Schild im Stiefelfach wäre kein Spielstand
+  }
+
+  // Position: die Karte ist dieselbe, also gilt sie. Ein von Hand gesetzter Wert
+  // könnte trotzdem in einem Felsen liegen — dann fällt sie auf den Dienstantritt
+  // zurück, statt den Spieler festzusetzen.
+  const px = clamp(+p.x || 0, TS, (MW - 1) * TS), py = clamp(+p.y || 0, TS, (MH - 1) * TS);
+  const gueltig = walkT(Math.floor(px / TS), Math.floor(py / TS));
+  player.x = gueltig ? px : SPAWN.x;
+  player.y = gueltig ? py : SPAWN.y;
+  camSnap();
+
+  // K1: Die Zulagen zurück in die Kartei. Eingelegt wird ausdrücklich über
+  // zulageAnlegen() und nicht über ein gesetztes angelegt:true — Fachzahl
+  // (zulageSlots), Stapelgrenze und die Regel "eine je Sache" stehen dort, und
+  // sie hier abzuschreiben wäre die F1-Falle. Ein manipulierter Stand mit zehn
+  // eingelegten Karten bekommt damit genau so viele, wie die Mappe auf dieser
+  // Stufe fasst, ohne dass hier eine zweite Zahl gepflegt werden muss.
+  // Läuft nach player.level, weil zulageSlots() genau den liest.
+  const rohKarten = Array.isArray(p.zulagenKartei) ? p.zulagenKartei.slice(0, 99) : [];
+  const wollenAngelegt = [];
+  player.zulagenKartei = [];
+  for(const z of rohKarten){
+    if(!z || !ZULAGE[z.familie]) continue;                 // unbekannte Familie faellt raus
+    player.zulagenKartei.push({familie: z.familie, stufe: clamp(z.stufe | 0, 1, 3), angelegt: false});
+    wollenAngelegt.push(!!z.angelegt);
+  }
+  player.zulagenZiehungen = clamp(p.zulagenZiehungen | 0, 0, 99);
+  player.zulagenAngebot = Array.isArray(p.zulagenAngebot) && p.zulagenAngebot.length
+    ? p.zulagenAngebot.slice(0, 3).filter(z => z && ZULAGE[z.familie])
+        .map(z => ({familie: z.familie, stufe: clamp(z.stufe | 0, 1, 3)}))
+    : null;
+  if(player.zulagenAngebot && !player.zulagenAngebot.length) player.zulagenAngebot = null;
+  wollenAngelegt.forEach((w, i) => { if(w) zulageAnlegen(i, true); });
+  // Und die Vorlage nachziehen, falls der Stand offene Ziehungen ohne Angebot
+  // trägt. Im regulären Spiel gibt es diesen Zustand nicht (jede Bewilligung
+  // ruft die Funktion selbst wieder auf), ein von Hand gesetzter Stand könnte
+  // ihn aber tragen — dann verschluckte er sonst die Aufstiege. Die Funktion
+  // steigt von selbst aus, wenn nichts zu tun ist.
+  zulagenAngebotSicherstellen();
+
+  recalc();                          // erst Ausrüstung und Zulagen, dann die abgeleiteten Werte
+  player.hp = clamp(p.hp | 0, 1, derived.maxHp);
+  player.mana = clamp(p.mana | 0, 0, derived.maxMana);
+  knCheckFluchEquipped();            // ein geladener Fluch muss wirken wie ein angelegter
+
+  shiftT = clamp(+k.shiftT || 0, 1, CONFIG.schichtDauer);
+  overtimeT = clamp(+k.overtimeT || 0, 0, 60);
+  shiftKillsTotal = clamp(k.killsTotal | 0, 0, 99999);
+  shiftKillsByType = {};
+  if(k.killsByType) for(const t in k.killsByType) if(MONDEF[t]) shiftKillsByType[t] = clamp(k.killsByType[t] | 0, 0, 99999);
+  auftragStand = clamp(k.auftragStand | 0, 0, 99999);
+  auftragVerletzt = !!k.auftragVerletzt;
+  auftragFertig = !!k.auftragFertig || !!(amt.auftrag && amt.auftrag.bezahlt);
+  langSchicht = {};
+  if(k.langSchicht && typeof k.langSchicht === 'object')
+    for(const key in k.langSchicht) if(k.langSchicht[key]) langSchicht[key] = true;
+
+  knBegruessungPending = null;       // die Begrüßung gehört dem Antritt, nicht der Fortsetzung
+  updateHUD();
+  return true;
+}
+
+// Die beiden Knöpfe des Startbilds.
+function spielstandFortsetzen(){ if(!spielstandEinloesen()) showStartScreen(); }
+function spielstandVerwerfen(){ spielstandLoeschen(); startGame(); }
+
+// Geschrieben wird, wenn der Bildschirm weggeht — nicht bei beforeunload, der
+// ist auf dem Telefon praktisch wertlos. visibilitychange und pagehide feuern
+// dort zuverlässig, und genau sie sind der Moment, den ein Anruf auslöst.
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') spielstandSchreiben(); });
+window.addEventListener('pagehide', () => { spielstandSchreiben(); });
+
+// --- Export und Import ------------------------------------------------------
+// Die Ablage ist kündbar: Browserdaten löschen nimmt alles mit, ein Gerätewechsel
+// nimmt nichts mit, und der Speicher hängt an der Origin — localhost und die
+// ausgelieferte Seite sind zwei verschiedene Ablagen. Dagegen hilft nur, dass
+// der Spieler seinen Stand in die Hand bekommt.
+//
+// Der Import prüft ausdrücklich NICHT die Inhalte. Er prüft die Hülle, schreibt
+// die bekannten Schlüssel und lädt die Seite neu — danach laufen loadAmt(),
+// loadKladde(), loadKn() und spielstandLesen() darüber, mit ihren Whitelists
+// und ihren Klemmen. Eine zweite Prüfung hier wäre eine zweite Wahrheit.
+const SPEICHER_SCHLUESSEL = [AMT_KEY, KLADDE_KEY, KN_KEY, SPIEL_KEY];
+const EXPORT_TYP = 'monstralministerium-spielstand';
+
+function exportDaten(){
+  const d = {typ: EXPORT_TYP, v: SPIEL_VERSION, datum: new Date().toISOString(), daten: {}};
+  for(const k of SPEICHER_SCHLUESSEL){
+    try{ const raw = localStorage.getItem(k); if(raw) d.daten[k] = raw; }catch(_){}
+  }
+  return JSON.stringify(d);
+}
+
+function exportDateiname(){
+  const d = new Date();
+  const zz = n => String(n).padStart(2, '0');
+  return `monstralministerium-${d.getFullYear()}-${zz(d.getMonth()+1)}-${zz(d.getDate())}-schicht${amt.schichten}.json`;
+}
+
+function exportDatei(){
+  try{
+    const blob = new Blob([exportDaten()], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = exportDateiname();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return true;
+  }catch(_){ return false; }
+}
+
+// Rückgabe ist eine Meldung für den Spieler, kein Wahrheitswert: der Import ist
+// die eine Stelle, an der jemand wissen muss, WARUM es nicht ging.
+function importText(txt){
+  let d = null;
+  try{ d = JSON.parse(txt); }catch(_){ return 'Das ist keine gültige Spielstand-Datei.'; }
+  if(!d || d.typ !== EXPORT_TYP || !d.daten || typeof d.daten !== 'object')
+    return 'Die Datei gehört nicht zu diesem Spiel.';
+  const geschrieben = [];
+  for(const k of SPEICHER_SCHLUESSEL){
+    const raw = d.daten[k];
+    if(typeof raw !== 'string') continue;
+    try{ JSON.parse(raw); }catch(_){ continue; }      // Hülle geprüft, Inhalt macht der Loader
+    try{ localStorage.setItem(k, raw); geschrieben.push(k); }catch(_){
+      return 'Der Speicher nimmt nichts an. Privates Fenster?';
+    }
+  }
+  if(!geschrieben.length) return 'In der Datei stand kein Spielstand.';
+  for(const k of SPEICHER_SCHLUESSEL) if(geschrieben.indexOf(k) < 0){
+    try{ localStorage.removeItem(k); }catch(_){}      // sonst mischt sich der alte Stand unter den neuen
+  }
+  return null;
+}
+
+// --- speicherAssert(): der einundzwanzigste Guard ---------------------------
+// Bauform wie goldAssert(): spiegelt alles, was er anfasst, stellt es im finally
+// zurück, wirft nie und meldet nur. Er prüft ausdrücklich den RUNDWEG durch die
+// Ablage — schreiben, lesen, klemmen — und nicht bloß die Form der Funktionen.
+// Genau diesen Rundweg hat im ganzen Haus bis SP1 kein Prüfer gemessen, und
+// genau deshalb konnten zwei Felder jahrelang geschrieben und nie geladen
+// werden. Ein Guard, der nur das laufende Skript ansieht, hätte SP1 nie
+// gefunden; dieser hier hätte es.
+function speicherAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('Spielstand:', m, ...r); };
+  const rohEcht = (() => { try{ return localStorage.getItem(SPIEL_KEY); }catch(_){ return null; } })();
+  const stateEcht = state, schichtenEcht = amt.schichten, deadEcht = player.dead;
+  const kammerEcht = kammer, levelEcht = currentLevel, endeEcht = shiftEndPending, szeneEcht = szeneAktiv;
+  try{
+    // (1) Das Tor. Jede Bedingung aus spielstandErlaubt() einzeln gesetzt und
+    // einzeln wieder gelöst — ein Tor, das immer offen ist, ist keins.
+    state = 'play'; player.dead = false; kammer = null; currentLevel = 1;
+    shiftEndPending = false; szeneAktiv = null;
+    const basis = CONFIG.schichtModus;
+    if(basis && !spielstandErlaubt()) fehler('Tor bleibt im Normalfall zu');
+    for(const [name, setzen, zurueck] of [
+      ['Kammer',        () => kammer = {},          () => kammer = null],
+      ['Schattenland',  () => currentLevel = 2,     () => currentLevel = 1],
+      ['Tod',           () => player.dead = true,   () => player.dead = false],
+      ['Überstunden',   () => shiftEndPending = true,() => shiftEndPending = false],
+      ['Szene',         () => szeneAktiv = {},      () => szeneAktiv = null],
+      ['Panelzustand',  () => state = 'feierabend', () => state = 'play'],
+    ]){
+      setzen();
+      if(spielstandErlaubt()) fehler('Tor öffnet, obwohl es nicht darf', name);
+      zurueck();
+    }
+    if(basis && !spielstandErlaubt()) fehler('Tor bleibt nach dem Zurücksetzen zu');
+
+    // (2) Der Rundweg. Ein von Hand gebauter Stand geht durch die Ablage und
+    // muss unverändert wieder herauskommen. Geprüft wird über spielstandLesen(),
+    // also inklusive Frischeprüfung.
+    const probe = {v: SPIEL_VERSION, schichten: amt.schichten, stufe: 7, restT: 600,
+                   spieler: {level: 7, gold: 123}, schicht: {shiftT: 600}};
+    try{ localStorage.setItem(SPIEL_KEY, JSON.stringify(probe)); }catch(_){}
+    const zurueckGelesen = spielstandLesen();
+    if(!zurueckGelesen) fehler('frisch geschriebener Stand kommt nicht zurück');
+    else if(zurueckGelesen.spieler.level !== 7 || zurueckGelesen.spieler.gold !== 123)
+      fehler('Rundweg verändert Werte', zurueckGelesen.spieler);
+
+    // (3) Die Frischeprüfung. Derselbe Stand, eine Schicht weiter, muss weg sein
+    // — sonst wäre Fortsetzen eine zweite Abrechnung derselben Schicht.
+    amt.schichten = schichtenEcht + 1;
+    if(spielstandLesen()) fehler('Stand einer abgerechneten Schicht gilt weiter');
+    amt.schichten = schichtenEcht;
+    // Und eine falsche Version darf ebenso wenig durchkommen.
+    try{ localStorage.setItem(SPIEL_KEY, JSON.stringify(Object.assign({}, probe, {v: SPIEL_VERSION + 1}))); }catch(_){}
+    if(spielstandLesen()) fehler('Stand mit fremder Versionsnummer gilt');
+
+    // (4) Die Klemmen auf der Ausrüstung, gegen die Tabellen statt gegen Zahlen
+    // aus der Luft. Ein von Hand aufgeblasenes Stück muss auf das zurückfallen,
+    // was das Spiel selbst erzeugen könnte.
+    const wild = itemGeklemmt({base: {t: 'weapon', name: 'Fälschung', dmg: [99999, 99999], armor: 5000, kraft: 400, aps: 99, tier: 77},
+                               rar: 99, affixes: [{k: 'dmg', v: 99999}, {k: 'gibtsnicht', v: 5}],
+                               effect: {k: 'gibtsnicht', stufe: 99}, fluch: 'gibtsnicht'});
+    if(!wild) fehler('gültige Hülle wurde ganz verworfen');
+    else{
+      if(wild.base.dmg[1] > SPIEL_DECKEL.dmg) fehler('Schaden nicht geklemmt', wild.base.dmg);
+      if(wild.base.armor > SPIEL_DECKEL.armor) fehler('Rüstung nicht geklemmt', wild.base.armor);
+      if(wild.base.kraft > SPIEL_DECKEL.kraft) fehler('Kraftbedarf nicht geklemmt', wild.base.kraft);
+      if(wild.rar > 4 || wild.base.tier > 4) fehler('Seltenheit nicht geklemmt', wild.rar, wild.base.tier);
+      if(wild.affixes.length !== 1) fehler('unbekannter Affix nicht verworfen', wild.affixes);
+      else if(wild.affixes[0].v > SPIEL_DECKEL.affix.dmg) fehler('Affixwert nicht geklemmt', wild.affixes[0]);
+      if(wild.effect) fehler('unbekannte Wirkung nicht verworfen', wild.effect);
+      if(wild.fluch) fehler('unbekannter Fluch nicht verworfen', wild.fluch);
+    }
+    for(const murks of [null, {}, {base: {}}, {base: {t: 'hut', name: 'Hut'}}, {base: {t: 'weapon'}}])
+      if(itemGeklemmt(murks)) fehler('Unsinn wurde zu einem Gegenstand', murks);
+
+    // (5) Export und Import. Die Hülle muss halten, und Fremdes muss abprallen —
+    // mit einem Grund, denn der Import ist die eine Stelle, an der jemand wissen
+    // muss, warum es nicht ging.
+    const roh = exportDaten();
+    let d = null;
+    try{ d = JSON.parse(roh); }catch(_){ fehler('Export ist kein gültiges JSON'); }
+    if(d && d.typ !== EXPORT_TYP) fehler('Export trägt die falsche Kennung', d.typ);
+    if(d && !d.daten) fehler('Export hat kein Datenfach');
+    for(const murks of ['', 'kein json', '{}', '{"typ":"etwas-anderes","daten":{}}', JSON.stringify({typ: EXPORT_TYP, daten: {}})])
+      if(!importText(murks)) fehler('Import nahm etwas an, das er ablehnen muss', murks);
+
+    // (6) Die Schlüsselliste. Jeder Schlüssel, den das Spiel beschreibt, muss im
+    // Export stehen — sonst wandert beim Gerätewechsel ein Teil nicht mit, und
+    // das merkt niemand, bis es zu spät ist.
+    for(const k of [AMT_KEY, KLADDE_KEY, KN_KEY, SPIEL_KEY])
+      if(SPEICHER_SCHLUESSEL.indexOf(k) < 0) fehler('Schlüssel fehlt im Export', k);
+  } finally {
+    state = stateEcht; amt.schichten = schichtenEcht; player.dead = deadEcht;
+    kammer = kammerEcht; currentLevel = levelEcht; shiftEndPending = endeEcht; szeneAktiv = szeneEcht;
+    try{
+      if(rohEcht === null) localStorage.removeItem(SPIEL_KEY);
+      else localStorage.setItem(SPIEL_KEY, rohEcht);
+    }catch(_){}
+  }
+  if(ok) console.log('Spielstand: Tor, Rundweg, Frische, Klemmen und Export in Ordnung.');
+  else console.error('Spielstand: Guard fehlgeschlagen, siehe obige Zeilen.');
+  return ok;
+}
+speicherAssert();
+
+// --- Die drei Knöpfe im Inventar --------------------------------------------
+const SPEICHER_HINWEIS = 'Das Spiel speichert auf diesem Gerät und automatisch, sobald der Tab in den Hintergrund geht.';
+function speicherMeldung(txt, art){
+  const e = el('speicherInfo');
+  if(!e) return;
+  e.textContent = txt;
+  e.className = art || '';
+  if(art) setTimeout(() => { if(e.textContent === txt){ e.textContent = SPEICHER_HINWEIS; e.className = ''; } }, 6000);
+}
+
+// Warum das Speichern gerade nicht geht, ist eine echte Auskunft und keine
+// Ausrede: die Gründe stehen in spielstandErlaubt(), und der Spieler hört den,
+// der auf ihn zutrifft. Eine Meldung "ging nicht" ohne Grund wäre die Tapete,
+// vor der G6 warnt.
+function speicherGrund(){
+  if(!CONFIG.schichtModus) return 'Im freien Spiel gibt es keine Schicht zum Speichern.';
+  if(state !== 'play') return 'Erst weiterspielen, dann speichern.';
+  if(kammer) return 'In einer Kammer wird nicht gespeichert. Erst hinaus.';
+  if(currentLevel !== 1) return 'Im Schattenland wird nicht gespeichert. Erst zurück.';
+  if(player.dead) return 'Nach dem Dienstende gibt es nichts mehr zu sichern.';
+  if(shiftEndPending) return 'Die Schicht läuft schon aus. Der Feierabend kommt von selbst.';
+  return 'Speichern ging nicht. Der Browser nimmt nichts an, vielleicht ein privates Fenster.';
+}
+
+if(el('spSpeichern')) el('spSpeichern').onclick = () => {
+  if(spielstandSchreiben()) speicherMeldung('Spielstand gesichert. Beim nächsten Start steht "Schicht fortsetzen" im Menü.', 'ok');
+  else speicherMeldung(speicherGrund(), 'warn');
+};
+if(el('spExport')) el('spExport').onclick = () => {
+  spielstandSchreiben();   // läuft gerade eine Schicht, kommt sie mit in die Datei; sonst tut die Zeile nichts
+  if(exportDatei()) speicherMeldung('Datei erzeugt. Sie enthält Amt, Kladde, Knöterich und den Spielstand.', 'ok');
+  else speicherMeldung('Der Export ging nicht. Blockiert der Browser den Download?', 'warn');
+};
+if(el('spImport')) el('spImport').onclick = () => { const d = el('spDatei'); if(d){ d.value = ''; d.click(); } };
+if(el('spDatei')) el('spDatei').onchange = ev => {
+  const f = ev.target.files && ev.target.files[0];
+  if(!f) return;
+  const leser = new FileReader();
+  leser.onerror = () => speicherMeldung('Die Datei ließ sich nicht lesen.', 'warn');
+  leser.onload = () => {
+    const fehler = importText(String(leser.result));
+    if(fehler) return speicherMeldung(fehler, 'warn');
+    // Neu laden ist hier kein Notbehelf, sondern der Entwurf: erst dadurch
+    // laufen die vorhandenen Loader über die frischen Daten, mit ihren
+    // Whitelists und Klemmen, statt dass ein zweiter Weg sie umgeht.
+    speicherMeldung('Übernommen. Die Seite lädt neu.', 'ok');
+    setTimeout(() => location.reload(), 700);
+  };
+  leser.readAsText(f);
+};
 
 // aktStand() ist nach oben gewandert, siehe amt-Literal weiter oben (W5-Falle:
 // setzeKammerTueren() lief sonst gegen die TDZ).
@@ -15966,6 +16529,11 @@ function auftragWuerfeln(){
   if(amt.brett && amt.brett.liste.some(a => !AUFTRAG_TYPEN[a.typ])) amt.brett = null;
 })();
 
+// SP1: Die Heilung der schon getroffenen Bestände steht NICHT hier, sondern
+// hinter langFertig() weiter unten. Sie las hier oben eine Konstante, die erst
+// 600 Zeilen später deklariert wird — die TDZ-Falle, vor der das README warnt,
+// und im ersten Prüflauf dieses Abschnitts prompt hineingelaufen.
+
 // --- W4: Aushang-Assertion, Bauform wie knAssertCaps() weiter oben. Beweist
 // beim Start zwei Dinge: (1) kein würfelbarer Aushang kann unerfüllbar sein,
 // (2) kein erzeugter Text sprengt Zeichendeckel, Formregeln oder Sperrvermerk.
@@ -16563,6 +17131,33 @@ const langStufe  = k => { const d = LANGVORGAENGE[k]; return d.stufe ? d.stufe(l
 // Zusatzzeilen und die Gießkannen-Wärme auch im alten Modus erscheinen.
 const langFertig = k => CONFIG.schichtModus && langStufe(k) >= LANGVORGAENGE[k].stufen;
 const langLaeuft = k => CONFIG.schichtModus && LANGVORGAENGE[k].wenn() && !langFertig(k);
+
+// SP1: Heilung für die Bestände, die der Fund schon getroffen hat. Wer den
+// Stopfen gezogen oder die vierte Adresszeile gefunden hat, bevor die Ladezeilen
+// in loadAmt() existierten, trägt die Tat in der Kladde (die hat sich immer
+// selbst gespeichert) und den Stempel auf 0 — für den wäre Vorblatt sonst auf
+// ewig unterwegs. Die Kladde ist hier die Wahrheitsquelle, der Stempel wird aus
+// ihr nachgezogen: nicht auf die Schicht von damals (die weiß niemand mehr,
+// genau das sagt der Kommentar am Feld), sondern auf die nächste. Der Wagen
+// kommt dadurch später als erzählt, aber er kommt.
+//
+// Steht hier unten und nicht bei der Aushang-Migration, weil sie langFertig()
+// liest und das eine Zeile weiter oben deklariert ist. Genau andersherum lief
+// der erste Prüflauf dieses Abschnitts in einen ReferenceError beim Laden.
+//
+// Läuft genau einmal je Bestand: danach ist der Stempel gesetzt, die Bedingung
+// greift nie wieder. Das saveAmt() steht hinter der Bedingung und ist deshalb
+// nicht der Schreibvorgang-bei-jedem-Seitenaufruf, den GW26b vermeidet.
+//
+// Nebenwirkung, benannt statt verschwiegen: postregenLaeuft() hängt am selben
+// Stempel, im Dorf fallen also drei Schichten lang noch einmal Blätter. Das ist
+// der Preis dafür, dass der Strang überhaupt wieder ankommt.
+(function stempelMigration(){
+  let nachgezogen = false;
+  if(!amt.stopfenSchicht && langFertig('stopfen')){ amt.stopfenSchicht = amt.schichten + 1; nachgezogen = true; }
+  if(!amt.adressSchicht && vorgangHat(4)){ amt.adressSchicht = amt.schichten + 1; nachgezogen = true; }
+  if(nachgezogen) saveAmt();
+})();
 
 // Der Trichter. Hängt an auftragEreignis(), deckt damit alle acht bestehenden
 // Fundstellen mit einer Zeile ab. Bewusst kein CFX.schweigen-Guard, gleiche
