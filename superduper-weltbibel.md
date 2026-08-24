@@ -1052,9 +1052,18 @@ Szenen 5 und 6, beide aus `weltgeschichte.md` Kapitel 8 übernommen, kein Satz e
 
 **Abnahme:** Wer nie ins Steinfeld geht, spielt das Spiel unverändert zu Ende. Der Strang ist für den Hauptvorgang nirgends Bedingung, die Ausfertigung hängt weiter allein an den vier Adresszeilen.
 
-### SZ4: Die übrigen drei Szenen — OFFEN
+### SZ4: Die übrigen drei Szenen — ERLEDIGT (siehe `phase-sz4-finale.md`)
 
-Die Versuchung als Versammlung im Amtsflur, die Zustellung als Ausbau von `vorgangPanel()`, der Abspann als Tafelstapel. Szene 8 und 9 existieren dort bereits in Kurzform. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.
+Die Versuchung als Versammlung im Amtsflur, die Zustellung als Ausbau von `vorgangPanel()`, der Abspann als Tafelstapel. Damit ist die Szenenmaschine abgearbeitet und das Ende gebaut.
+
+* **Die Versammlung, nicht die acht Einzelgespräche.** Die Weltgeschichte bietet die billigere Fassung selbst an; gebaut ist die teurere, weil `szeneKnoten()` den Sprecherwechsel seit SZ1 kann und der Kommentar dort genau diese Szene als Anlass nennt. Acht Sprecher, 46 Knoten, 98 Zeilen. Die Pointe der Szene ist, dass alle zuhören, während jeder Einzelne sein Angebot bekommt.
+* **Die vier Antwortzeilen sind drei Fragen und ein Ausgang.** Die vierte Zeile lautet in der Weltgeschichte „nichts sagen", und ein Ausgang ist genau das. Er beendet die Szene aber nicht, er führt auf Vorblatts vierte Antwort und von dort in die zweite Hälfte, und er ändert sich nicht mit der Zahl der gestellten Fragen: in dieser Szene wird nichts angenommen und nichts abgelehnt.
+* **Ein Merker, eine Wahrheit.** Der Zwischenbescheid auf der Ausfertigung liest `kn.flags.szeneVersuchung` und nichts sonst. Es gibt keinen Zustand, in dem ein Bescheid klebt, den niemand aufgedrückt hat. Wer die Versuchung nie spielt, stellt zu wie vor SZ4, ohne einen Satz weniger zu sehen: ein fehlender Strang nimmt nichts weg, ein vorhandener gibt etwas dazu (die Regel aus LV4).
+* **Der Stopfen kommt im Finale an.** Die Kapsel aus dem Rohr liegt nur auf dem Tisch, wenn SZ3 gespielt wurde, und nur dann verbeugt sich der Fürst vor dem Hausmeister.
+* **Der Tafelstapel weiß seit hier, wer spricht.** Eine gesprochene Zeile darf ein Paar aus Sprecher und Satz sein. Anlass war Bild 11, eine Wechselrede zwischen zweien, die sich ohne Namen davor als Selbstgespräch las. Gefunden im Bild, nicht im Guard.
+* **Der Urkundenrahmen hat eine gemessene Höhe.** Acht von dreizehn Bildern schoben ihren eigenen Knopf unter den Fensterrand. Der Text rollt jetzt innerhalb der Urkunde; Siegel, Kopfzeile, Blattzahl und Knopf bleiben stehen. Das widerspricht der E2-Entscheidung „blättern statt rollen" nicht: die galt dem Vordruck, und ein Standbild lässt sich nicht blättern.
+
+**Abnahme:** Wer die Versuchung nie sieht, spielt das Spiel unverändert zu Ende. Die Mappen werden nie abgeholt, niemand nimmt etwas an und niemand lehnt etwas ab, und die Zustellung wird an keiner Stelle verweigert.
 
 ### Was wir ausdrücklich nicht bauen
 

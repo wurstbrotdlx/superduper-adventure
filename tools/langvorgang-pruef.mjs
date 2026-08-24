@@ -156,15 +156,15 @@ const zeilen = await page.evaluate(() => {
   const teil = VORGANG_PUZZLE[3];
   kladde.lang = {};
   pruef('ohne Fall steht der Wortlaut aus Kapitel 9 da',
-        teil.frei() === false && vorgangPanelHtml(2).includes('Meine Entpflichtung wurde nie bearbeitet'), true);
+        teil.frei() === false && vorgangPanelHtml(5).includes('Meine Entpflichtung wurde nie bearbeitet'), true);
   pruef('ohne Fall nennt das Finale keinen Praezedenzfall',
-        vorgangPanelHtml(2).includes('aktenkundig'), false);
+        vorgangPanelHtml(5).includes('aktenkundig'), false);
   kladde.lang = {bericht: rohEnde};
-  pruef('mit Fall nennt es ihn', teil.frei() === true && vorgangPanelHtml(2).includes('Der Fall ist aktenkundig'), true);
+  pruef('mit Fall nennt es ihn', teil.frei() === true && vorgangPanelHtml(5).includes('Der Fall ist aktenkundig'), true);
   pruef('und der Wortlaut aus Kapitel 9 steht weiter da',
-        vorgangPanelHtml(2).includes('Meine Entpflichtung wurde nie bearbeitet'), true);
+        vorgangPanelHtml(5).includes('Meine Entpflichtung wurde nie bearbeitet'), true);
   pruef('der Zusatz nennt den Zeichnenden bei seiner Amtsbezeichnung',
-        vorgangPanelHtml(2).includes('Sachbearbeiter auf Probe'), true);
+        vorgangPanelHtml(5).includes('Sachbearbeiter auf Probe'), true);
 
   // --- Keine Sperre ---------------------------------------------------------
   // Dieselbe Aussage wie langAssert() Punkt (4), nur live und gezielt auf den
@@ -189,7 +189,7 @@ const zeilen = await page.evaluate(() => {
   pruef('ohne Schichtmodus zeigt der Reiter nichts', langBestandBlock(), '');
   pruef('ohne Schichtmodus gibt es keine Zusatzzeilen', langZusatz('lisbeth'), []);
   pruef('ohne Schichtmodus nennt das Finale keinen Fall',
-        vorgangPanelHtml(2).includes('aktenkundig'), false);
+        vorgangPanelHtml(5).includes('aktenkundig'), false);
 
   } finally { zurueck(); }
   pruef('der echte Spielstand ist unberuehrt',

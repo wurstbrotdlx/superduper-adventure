@@ -1309,6 +1309,17 @@ Den Nachklang tragen Lott und Pahl, mit zwei neuen Anlässen (`umlauf`, `hinterm
 
 **Die übrigen fünf Szenen sind entworfen und nicht gebaut.** SZ3 nimmt den Stopfen und Vorblatts Ankunft samt Serie I, SZ4 die Versuchung, die Zustellung und den Abspann.
 
+**Stand des Einbaus (Nachtrag, 24.08.2026, vierte Fassung).** Der Absatz darüber ist überholt, und zwar vollständig: **SZ3** hat die Szenen 5 und 6 gebaut (der Stopfen im Steinfeld, Vorblatts Entklammerung, Serie I und der Postregen), **SZ4** die Szenen 7, 8 und 9. Damit sind alle neun Szenen aus Kapitel 8 im Spiel und die Maschine ist abgearbeitet.
+
+Vier Dinge aus Kapitel 8 sind dabei anders geworden, als sie hier stehen, und das gehört hierher, damit es beim Weiterschreiben nicht zurückrutscht:
+
+* **Die vier Antwortzeilen der Versuchung sind drei Fragen und ein Ausgang.** Vier Zeilen sind der Deckel der Gesprächstafel, und die vierte Zeile lautet hier „nichts sagen": ein Ausgang ist genau das. Er beendet die Szene nicht, er führt auf Vorblatts vierte Antwort und von dort in die zweite Hälfte.
+* **Die fünfte Antwort für die einundvierzig Blätter gibt es nicht.** Das Osterei aus Kapitel 12 setzt einen Merker voraus, den es nicht gibt, und eine fünfte Zeile, die der Deckel nicht hergibt. Nicht entschieden, nur nicht gestellt.
+* **Es fällt kein Konfetti und es regnet nicht.** Beides steht als Satz da, wo es in Kapitel 8 als Effekt steht. Die Zustellung läuft im Panel, die Welt dahinter steht still, und ein Partikelregen auf einer angehaltenen Welt wäre eine eigene Runde.
+* **Der Abspann hat dreizehn Bilder und fünf davon haben eine Rede.** Der Tafelstapel weiß seit hier, wer spricht: Bild 11 ist eine Wechselrede zwischen Vorblatt und Sturz und las sich ohne Namen davor als Selbstgespräch.
+
+Einzelheiten in `phase-sz3-stopfen.md` und `phase-sz4-finale.md`.
+
 **Stand des Einbaus (Nachtrag, 22.08.2026).** Bauabschnitt W11 hat die Figurenebene dieser Datei ins Spiel gezogen: drei der vier neuen Figuren stehen im Dorf (Nieselbeck ab Akt I, Kordula Umlauf ab Akt II, Vorblatt ab Akt III), und die Zuwachs-Tabelle aus Kapitel 6 ist bei zehn bestehenden Figuren als je zwei Zusatzzeilen eingebaut. Konrad zu Händen Aufschub steht nicht im Dorf, weil er nur in Hochablage vorkommt. **Nicht gebaut sind bisher:** die neun Szenen aus Kapitel 8, die Blattserien G, H und I aus Kapitel 9 und die vier Langvorgänge aus Kapitel 10. Die Entscheidung aus dem Kopf dieser Datei, ob die Szenen als Szenen oder mit Bordmitteln kommen, ist damit weiterhin nicht gefallen. Einzelheiten in `phase-w11-reich-im-dorf.md`.
 
 **Was offen bleibt und offen bleiben soll.** Ob Kordula Umlauf ein Mensch oder ein Umlauf ist. Was hinter der Tür mit dem Schild ist. Was Konrad zu Händen Aufschub vortragen wollte. Ob Lott und Pahl Vorgänge sind. Und der genaue Wortlaut des Aktenzeichens von Vorgang 1, den jede Figur anders zitiert.
