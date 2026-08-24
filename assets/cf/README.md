@@ -70,6 +70,42 @@ Begründung, insbesondere die Ersatzregel für die fehlenden Kampfanimationen).
 **Bewusst nicht kopiert:** `Accessories/Farmer_Hat_1.png` (nur eine einzige Datei,
 keine sinnvolle Zufallsvielfalt) und alle weiteren Hair-Farben (6 Style-Slots
 reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `index.html`).
+*(Der Hut ist seit G9 überholt: er ist dort Trepps und Nieselbecks Dienstmütze
+und wird gebraucht. Siehe den G9-Abschnitt unten.)*
+
+### Von G9 gebraucht (`player/`) — fehlt derzeit im Paket
+
+Bauabschnitt G9 hat aus der Rüstungsstufe eine **Garderobe** gemacht
+(`CF_GARDEROBE` in `index.html`) und dabei vier Dateien in Dienst genommen, die
+diese Liste bis zum G9-Nachtrag nicht kannte. Sie liegen deshalb bis heute nicht
+im Assets-Repo, und was das anrichtet, stand in jeder Konsole: vier
+`Sprite fehlt`-Gruppen, und dahinter Wirt Fass und Herr Lott ohne Hemd.
+
+| Zielordner | Datei | Wofür |
+|---|---|---|
+| `player/Chest/Lumberjack_Shirt/` | `Lumberjack_Shirt_1_Green.png` | Garderobenform `hemd:'karo'`, das offene Arbeitshemd. Trägt Wirt Fass und Herr Lott |
+| `player/Accessories/` | `Farmer_Hat_1.png` | Garderobenform `hut:'muetze'`. Die einzige echte Kopfbedeckung des Packs, und auf den Porträts die Dienstmütze von Zusteller Trepp und Herrn Nieselbeck |
+| `player/Head/Plate_Helmet_1/` | `Plate_Helmet_1_Iron.png` | Garderobenform `hut:'helm'`. Trägt im Dorf niemand, steht der Vollständigkeit halber |
+| `player/Head/Plate_Helmet_2/` | `Heavy_Plate_Helmet_1_Iron.png` | Garderobenform `hut:'helmSchwer'`, dito |
+
+Alle vier liegen in der Rohbibliothek unter `Cute_Fantasy/Player/` und tragen
+dasselbe 9x56-Raster à 64x64 wie `Player_Base` — Drop-ins für
+`addCfHeroLayer()`, keine Codezeile nötig:
+
+```
+Cute_Fantasy/Player/Chest/Lumberjack_Shirt/Lumberjack_Shirt_1_Green.png
+Cute_Fantasy/Player/Accessories/Farmer_Hat_1.png
+Cute_Fantasy/Player/Head/Plate_Helmet_1/Plate_Helmet_1_Iron.png
+Cute_Fantasy/Player/Head/Plate_Helmet_2/Heavy_Plate_Helmet_1_Iron.png
+```
+
+**Solange sie fehlen, läuft das Spiel trotzdem angezogen.** Der G9-Nachtrag hat
+dafür `CF_GARDEROBE_ERSATZ` gebaut: das Karohemd fällt auf `hemd` zurück, die
+Mütze hat keinen Ersatz (das Pack hat genau eine Kopfbedeckung, und ein Helm auf
+dem Zusteller wäre eine andere Figur), die beiden Helme trägt ohnehin niemand.
+`garderobeAssert()` meldet beim Start in einer Zeile, was ersetzt wurde und wer
+deshalb ohne Kopfbedeckung im Dorf steht. Wer die vier Dateien hierher legt,
+sieht diese Zeile kürzer werden und Trepps Mütze erscheinen.
 
 ### Von G3 gebraucht (`enemies/`, `deco/`)
 

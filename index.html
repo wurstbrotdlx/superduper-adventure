@@ -1399,9 +1399,9 @@ const CF_HERO_ANIMS = [
   ['attack', 18, 8], ['cast', 24, 5], ['hurt', 15, 4],
 ];
 const CF_ANCHOR = {ax:32, ay:40};             // Fußlinie, per Bounding-Box gegen alle Anim-Reihen geprüft (botY≈40)
-function addCfHeroLayer(prefix, file){
+function addCfHeroLayer(prefix, file, optional){
   for(const [anim, row, n] of CF_HERO_ANIMS)
-    addSheet(`${prefix}_${anim}`, `cf/player/${file}`, n, 'grid', {fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:row});
+    addSheet(`${prefix}_${anim}`, `cf/player/${file}`, n, 'grid', {fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:row, optional});
 }
 addCfHeroLayer('cfbody', 'Player_Base/Player_Base_animations.png');
 addCfHeroLayer('cfhands', 'Hands/Hands_1_Bare.png');
@@ -1489,9 +1489,48 @@ const CF_GARDEROBE = {
     helmSchwer: 'Head/Plate_Helmet_2/Heavy_Plate_Helmet_1_Iron.png',
   },
 };
+// G9-Nachtrag: Was gezeichnet wird, wenn eine Form nicht im Grafikpaket liegt.
+//
+// Der Fund, der diesen Nachtrag erzwungen hat: G9 hat die Garderobe an vier
+// Dateien gehaengt, die nie nach assets/cf/player/ kopiert wurden — das
+// Karohemd, die Muetze und die beiden Helme. Sie standen seither als vier
+// `Sprite fehlt`-Gruppen in jeder Konsole, und dahinter steckte kein Rauschen,
+// sondern Wirt Fass und Herr Lott ohne Hemd: blitFarbFrame() kehrt bei einem
+// fehlenden Key still um, uebrig blieb der nackte Koerper aus hautBlatt().
+// Dieselbe Sorte Fund wie die fuenf unsichtbaren Dorffiguren aus G6, und
+// derselbe Weg heraus: eine erwartete Luecke ist keine Warnung, sie bekommt
+// einen Ersatz und eine Zeile, die sagt, was Sache ist.
+//
+// Ersetzt wird nur, wo der Ersatz die Figur nicht verfaelscht. Fuers Karohemd
+// ist das `hemd` (schlicht, offener Kragen): dieselbe Silhouette, und die Farbe
+// kommt ohnehin aus farbBlatt() und nicht aus der Datei. Fuer die Muetze gibt es
+// keinen — das Pack hat genau eine Kopfbedeckung, und ein Helm auf dem Zusteller
+// waere eine andere Figur. Wer die Muetze fehlt, steht mit Haar da, also so wie
+// vor G9. Die beiden Helme traegt niemand; sie stehen in der Garderobe, damit
+// sie niemand noch einmal sucht.
+const CF_GARDEROBE_ERSATZ = {
+  hemd: {karo: 'hemd'},
+  hose: {},
+  schuh: {},
+  hut:  {},
+};
+// optional:true, weil sie fehlen duerfen: garderobeBlatt() hat den Ersatzweg und
+// garderobeAssert() meldet gesammelt, was fehlt und wen es trifft.
 for(const slot in CF_GARDEROBE)
   for(const form in CF_GARDEROBE[slot])
-    addCfHeroLayer(`cf${slot}_${form}`, CF_GARDEROBE[slot][form]);
+    addCfHeroLayer(`cf${slot}_${form}`, CF_GARDEROBE[slot][form], true);
+
+// Welches Blatt eine Garderobenform wirklich bekommt: das eigene, sonst das des
+// Ersatzes, sonst keins. Rein und ohne Nebenwirkung — der Bericht darueber
+// entsteht in garderobeAssert() und nicht hier, damit ein Backlauf ihn nicht
+// vervielfacht.
+function garderobeBlatt(slot, form, anim){
+  const key = `cf${slot}_${form}_${anim}`;
+  if(SHEETS[key]) return key;
+  const e = (CF_GARDEROBE_ERSATZ[slot] || {})[form];
+  const eKey = e && `cf${slot}_${e}_${anim}`;
+  return eKey && SHEETS[eKey] ? eKey : null;
+}
 
 // Waffen-Slot: das Pack liefert kein eigenes Anim-Rig fürs Tools-Layer (Iron_Sword.png
 // ist ein eigenständiges 4x9-Sheet, inkompatibles Raster zum Player_Base-Blatt) —
@@ -2274,18 +2313,26 @@ function bakeNpcSheet(key, gestalt, anim){
   const canvas = document.createElement('canvas');
   canvas.width = n * 64; canvas.height = 64;
   const bctx = canvas.getContext('2d');
+  // G9-Nachtrag: nicht mehr der Formname direkt, sondern das Blatt, das es
+  // wirklich gibt. Ohne diesen Umweg blieb bei einer fehlenden Datei einfach
+  // eine Ebene weg, und die Figur stand ohne sie da (s. CF_GARDEROBE_ERSATZ).
+  // Einmal je Blatt und nicht je Frame: die Auswahl haengt am Anim, nicht am f.
+  const hoseB  = gestalt.hose  && garderobeBlatt('hose',  gestalt.hose,  anim);
+  const schuhB = gestalt.schuh && garderobeBlatt('schuh', gestalt.schuh, anim);
+  const hemdB  = gestalt.hemd  && garderobeBlatt('hemd',  gestalt.hemd,  anim);
+  const hutB   = gestalt.hut   && garderobeBlatt('hut',   gestalt.hut,   anim);
   for(let f = 0; f < n; f++){
     const dx = f * 64;
     // merken:false — diese Blätter werden genau einmal gebraucht, hier. Siehe
     // den Kommentar bei FARB_CACHE.
-    if(gestalt.hose)  blitFarbFrame(bctx, `cfhose_${gestalt.hose}_${anim}`,   hoseFarbe,           f, dx, 0, false);
-    if(gestalt.schuh) blitFarbFrame(bctx, `cfschuh_${gestalt.schuh}_${anim}`, gestalt.schuhFarbe,  f, dx, 0, false);
+    if(hoseB)  blitFarbFrame(bctx, hoseB,  hoseFarbe,          f, dx, 0, false);
+    if(schuhB) blitFarbFrame(bctx, schuhB, gestalt.schuhFarbe, f, dx, 0, false);
     // Körper und Hände sind beide Haut und bekommen denselben Ton — ein Kobold
     // mit grünem Gesicht und rosa Händen wäre ein neuer Fehler.
     blitHautFrame(bctx, `cfbody_${anim}`, gestalt.hautFarbe, f, dx, 0, false);
-    if(gestalt.hemd)  blitFarbFrame(bctx, `cfhemd_${gestalt.hemd}_${anim}`,   gestalt.hemdFarbe,   f, dx, 0, false);
+    if(hemdB) blitFarbFrame(bctx, hemdB, gestalt.hemdFarbe, f, dx, 0, false);
     blitFarbFrame(bctx, `cfhair_${gestalt.hair}_${anim}`, gestalt.haarFarbe, f, dx, 0, false);
-    if(gestalt.hut)   blitFarbFrame(bctx, `cfhut_${gestalt.hut}_${anim}`,     hutFarbe,            f, dx, 0, false);
+    if(hutB)  blitFarbFrame(bctx, hutB,  hutFarbe,           f, dx, 0, false);
     blitHautFrame(bctx, `cfhands_${anim}`, gestalt.hautFarbe, f, dx, 0, false);
   }
   SHEETS[key] = {img:canvas, cols:n, n, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
@@ -10077,6 +10124,51 @@ function figurenFarbenAssert(){
     + `${haut} mit eigenem Hautton, ${rigs} auf einem Monsterrig.`);
 }
 figurenFarbenAssert();
+
+// G9-Nachtrag-Guard. Laeuft nicht auf Skriptebene, sondern hinter loadAssets()
+// wie dorfSichtAssert() und portraetAssert(), weil er das Einzige misst, was
+// figurenFarbenAssert() nicht sehen kann: nicht ob die FORM in der Garderobe
+// steht, sondern ob es das BLATT dazu gibt.
+//
+// Genau diese Luecke hat drei Bauabschnitte lang gehalten. figurenFarbenAssert()
+// meldete "15 Figuren eingekleidet, 2 mit Kopfbedeckung" und hatte recht — die
+// Tabelle war vollstaendig. Im Bild stand derweil Wirt Fass ohne Hemd, weil
+// hinter hemd:'karo' keine Datei lag. Eine Zusage ueber eine Tabelle ist keine
+// Zusage ueber das Bild.
+function garderobeAssert(){
+  // Ohne Grafikpaket gibt es nichts zu messen: dann fehlt jedes Blatt, und die
+  // Meldung waere eine Liste statt eines Befundes.
+  if(!SHEETS['cfbody_idle']) return;
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('G9 Garderobe:', m, ...r); };
+  const ersetzt = [], fehlt = [];
+  for(const slot in CF_GARDEROBE)
+    for(const form in CF_GARDEROBE[slot]){
+      if(SHEETS[`cf${slot}_${form}_idle`]) continue;
+      const e = (CF_GARDEROBE_ERSATZ[slot] || {})[form];
+      if(e && SHEETS[`cf${slot}_${e}_idle`]) ersetzt.push(`${slot}:${form}\u2192${e}`);
+      else fehlt.push(`${slot}:${form}`);
+    }
+  // Der eigentliche Befund: wen trifft es, und woran ist es zu sehen. Hemd, Hose
+  // und Schuh sind Fehler — dort bleibt Haut uebrig. Die Kopfbedeckung ist
+  // keiner: ohne sie steht die Figur mit Haar da, also so wie vor G9.
+  const ohneHut = [];
+  for(const f of [KN_FIGUR, ...DORF_FIGUREN]){
+    const g = f.gestalt;
+    if(!g || f.rig) continue;                       // ein Rigblatt traegt keine Garderobe
+    for(const slot of ['hemd', 'hose', 'schuh'])
+      if(g[slot] != null && !garderobeBlatt(slot, g[slot], 'idle'))
+        fehler(`${f.key} traegt ${slot}:'${g[slot]}', dafuer liegt weder Blatt noch Ersatz —`
+             + ' die Figur steht ohne', slot);
+    if(g.hut != null && !garderobeBlatt('hut', g.hut, 'idle')) ohneHut.push(f.key);
+  }
+  if(!ok) return;
+  const teile = [`${Object.values(CF_GARDEROBE).reduce((n, o) => n + Object.keys(o).length, 0)} Formen`];
+  teile.push(ersetzt.length ? `${ersetzt.length} durch Ersatz gedeckt (${ersetzt.join(', ')})` : 'keine ersetzt');
+  if(fehlt.length) teile.push(`${fehlt.length} ohne Blatt und ohne Ersatz (${fehlt.join(', ')})`);
+  if(ohneHut.length) teile.push(`deshalb ohne Kopfbedeckung im Dorf: ${ohneHut.join(', ')}`);
+  console.log(`G9 Garderobe: ${teile.join(', ')}.`);
+}
 
 // --- G5: Amtsstube-Panel (Kontext-Taste F am Amt-Gebäude) -------------------
 // Reine Anzeige, kein Kauf (der bleibt showDorf()/dem Schichtende vorbehalten,
@@ -18525,6 +18617,7 @@ loadAssets().then(() => {
   npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
   dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst
   portraetAssert();           // U5: erst hier, vorher gibt es die Bilddateien nicht
+  garderobeAssert();          // G9-Nachtrag: misst die Blätter der Garderobe, nicht ihre Tabelle
   knZettelPortrait();         // U6: und aus demselben Grund einen Schritt danach
   refreshFloor();
   showStartScreen();

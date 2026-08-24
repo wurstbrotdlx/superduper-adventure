@@ -988,6 +988,15 @@ Der achte Strang in `LANGVORGAENGE` und der erste nach W7. Kapitel 10, Nummer 4:
 * **Warum eine Differenz Nörgel nicht isoliert.** `amt.schichten` treibt nicht nur den Akt, sondern über die Schichtabrechnung auch den Rang: beim Schritt von Akt III nach Akt IV gehen bei ihm `abAkt=4` und `abRang=5` gemeinsam auf. Ein einzelner Block ist über die Schichten grundsätzlich nicht als Differenz zu messen. Sauber messbar ist der Merker, weil er nichts außer sich selbst bewegt.
 * **Vier Eingriffe** haben die neuen Prüfungen einzeln ausgelöst und sind zurückgenommen.
 
+### G9-Nachtrag: Die vier Dateien der Garderobe — ERLEDIGT (siehe `phase-g9-nachtrag-garderobe.md`)
+
+G9 hat die Garderobe an vier Dateien gehängt, die nie ins Grafikpaket kopiert wurden. Seither standen vier `Sprite fehlt`-Gruppen in jeder Konsole, und dahinter stand Wirt Fass ohne Hemd, Herr Lott ohne Hemd und die Dienstmütze von Trepp und Nieselbeck weiterhin als Haarfarbe. `tools/figurenfarben-messlauf.mjs` hat es die ganze Zeit gemeldet.
+
+* **Eine Zusage über eine Tabelle ist keine Zusage über das Bild.** `figurenFarbenAssert()` prüft seit G9, dass jede Form in `CF_GARDEROBE` steht — und hatte in allem recht. Ob es zu einer Form ein Blatt gibt, hat niemand gefragt. Genau das fragt jetzt `garderobeAssert()`, hinter `loadAssets()` wie `dorfSichtAssert()`.
+* **`CF_GARDEROBE_ERSATZ`, und zwar knapp.** Das Karohemd fällt auf `hemd` zurück (dieselbe Silhouette, die Farbe kommt ohnehin aus `farbBlatt()`); die Mütze bekommt keinen Ersatz, weil das Pack genau eine Kopfbedeckung hat und ein Helm auf dem Zusteller eine andere Figur wäre. Wer ohne Mütze dasteht, steht da wie vor G9.
+* **Die Tabelle bleibt unangetastet.** Fass und Lott tragen weiter `hemd:'karo'`. Sie sagt, was gemeint ist; der Ersatz sagt, was daraus wird, solange die Datei fehlt.
+* **Die vier Pfade stehen jetzt in `assets/cf/README.md`.** Sie zu ergänzen kostet keine Codezeile, und die Startzeile des Guards wird dann von selbst kürzer.
+
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 
 SZ3 der Stopfen im Steinfeld samt Blattserie I und Postregen sowie Vorblatts Ankunft, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.

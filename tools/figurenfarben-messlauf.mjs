@@ -249,17 +249,39 @@ const figuren = await page.evaluate(() => {
     SHEETS[k] = SHEETS['cfbody_idle'];
     const b = npcBlaetter(f).idle;
     if(merk === undefined) delete SHEETS[k]; else SHEETS[k] = merk;
-    const soll = f.komposit ? `npc_baked_${f.key}` : k;
+    // G10 nachgezogen: seither schlaegt ein Monsterrig alles, auch das
+    // Paketblatt und auch das Komposit (npcBlaetter(), erster Zweig). Der
+    // Sollwert stammte aus G9 und kannte nur die beiden aelteren Wege; er hat
+    // Noergel seit G10 als Abweichung gemeldet, ohne dass eine Zusage gebrochen
+    // war. Dieselbe Sorte Nachzug wie im F1-Nachtrag.
+    const soll = f.rig ? `${f.rig}_idle` : (f.komposit ? `npc_baked_${f.key}` : k);
     if(b !== soll) falsch.push(`${f.key}: ${b} statt ${soll}`);
   }
   // G9: Traegt jede Ebene, die eine Figur bestellt hat, wirklich ein Blatt?
-  const ohneEbene = [];
+  //
+  // G9-Nachtrag: die Frage hat seither drei Antworten statt zwei. Diese Pruefung
+  // hat vier Eintraege gemeldet, seit G9 die Garderobe an vier Dateien gehaengt
+  // hat, die nie ins Paket kopiert wurden — und dahinter standen Wirt Fass und
+  // Herr Lott ohne Hemd. Getrennt wird jetzt danach, was das Fehlen anrichtet:
+  //
+  //   ohneEbene   weder Blatt noch Ersatz, und die Ebene ist Kleidung. Die Figur
+  //               steht ohne sie da, Haut bleibt uebrig. Das ist ein Fehler.
+  //   ersatzEbene durch CF_GARDEROBE_ERSATZ gedeckt. Die Figur ist angezogen,
+  //               nur nicht in der bestellten Form. Notiz, kein Fehler.
+  //   ohneHut     keine Kopfbedeckung, kein Ersatz (das Pack hat genau eine).
+  //               Die Figur steht mit Haar da, also wie vor G9. Notiz, und sie
+  //               verschwindet, sobald Farmer_Hat_1.png im Paket liegt.
+  const ohneEbene = [], ersatzEbene = [], ohneHut = [];
   for(const f of alle)
     for(const slot of ['hemd', 'hose', 'schuh', 'hut']){
       const form = f.gestalt[slot];
-      if(form && !SHEETS[`cf${slot}_${form}_idle`]) ohneEbene.push(`${f.key}.${slot}=${form}`);
+      if(!form || SHEETS[`cf${slot}_${form}_idle`]) continue;
+      const b = garderobeBlatt(slot, form, 'idle');
+      if(b) ersatzEbene.push(`${f.key}.${slot}=${form}\u2192${b.replace(/^cf\w+?_|_idle$/g, '')}`);
+      else if(slot === 'hut') ohneHut.push(`${f.key}.hut=${form}`);
+      else ohneEbene.push(`${f.key}.${slot}=${form}`);
     }
-  return {grafik:true, ohneBlatt, ohneHaar, ohneHemd, ohneHaut, ohneEbene, falsch, figuren:alle.length,
+  return {grafik:true, ohneBlatt, ohneHaar, ohneHemd, ohneHaut, ohneEbene, ersatzEbene, ohneHut, falsch, figuren:alle.length,
           huete:alle.filter(f => f.gestalt.hut).length,
           komposit:wander.filter(f => f.komposit).length, wander:wander.length};
 });
@@ -275,8 +297,14 @@ if(!figuren.grafik){
   pruef('die Haarfarbe des Portraets kommt im Sprite an', figuren.ohneHaar, []);
   pruef('die Hemdfarbe des Portraets kommt im Sprite an', figuren.ohneHemd, []);
   pruef('der Hautton kommt im Sprite an', figuren.ohneHaut, []);
-  pruef('jede bestellte Garderoben-Ebene hat ein Blatt', figuren.ohneEbene, []);
+  pruef('jede bestellte Garderoben-Ebene hat ein Blatt oder einen Ersatz', figuren.ohneEbene, []);
   pruef('komposit:true schlaegt ein vorhandenes Paketblatt', figuren.falsch, []);
+  // Kein pruef(): beides sind Luecken im Grafikpaket und keine Zusagen des
+  // Codes. Sie stehen hier, damit sie sichtbar bleiben statt still zu werden.
+  if(figuren.ersatzEbene.length)
+    console.log(`      durch Ersatz gedeckt: ${figuren.ersatzEbene.join(', ')}`);
+  if(figuren.ohneHut.length)
+    console.log(`      ohne Kopfbedeckung, weil die Datei nicht im Paket liegt: ${figuren.ohneHut.join(', ')}`);
 }
 
 pruef('keine Fehlermeldung in der Konsole', konsole.filter(z => !/404|Failed to load resource/.test(z)), []);
