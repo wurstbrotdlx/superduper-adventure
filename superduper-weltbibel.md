@@ -1020,6 +1020,7 @@ Was G11 liegen ließ: Brücken, Wasserpflanzen, Kapybaras und die Ambiente-Tiere
 * **Ente und Schwan bringen ihre Wasserzeilen selbst mit**, die Gans nicht — sie ist im Pack ein Landvogel. Das steht in keiner Rasterzahl und war nur im Kontaktbogen zu sehen.
 * **Das Kapybara bringt seinen eigenen Teich mit**, in genau unserem Wasserton, und trotzdem musste er weg: die See wird getönt gebacken. Freigestellt von `tools/kapybara-freistellen.mjs`, damit das Tier auf der wirklichen See liegt statt auf einer gemalten.
 * **Der Falter bleibt winzig.** Seine Kunst ist 8x8, bei `WELT_SC` also eine halbe Kachel. Ihn größer zu zeichnen hieße, den Weltmaßstab aus G7 für ein Insekt zu brechen.
+* **Nachtrag, nicht Teil des Steinbruchs: der Stein schwebte seit G4.** `addSheet`s Modus `'strip'` setzt den Anker auf die Fußmitte der ZELLE, und `Rock_1_Anim.png` hat vier leere Zeilen unter der Zeichnung — bei `WELT_SC` acht Weltpixel Luft zwischen Stein und Anker, und der Schatten wird auf den Anker gemalt. Berichtigt am Blatt (`ay:12`), nicht am Zeichenaufruf: der Anker gehört an die Stelle, mit der das Ding aufsteht. Der Baum hatte denselben Rand und seine Korrektur schon seit G7 (`BAUM_DY`), Gras und Pilze haben ihn auch, aber keinen Schatten, an dem man es sähe.
 
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 

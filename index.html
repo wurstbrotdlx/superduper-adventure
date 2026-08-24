@@ -1681,7 +1681,17 @@ addSheet('cftree_birch', 'cf/deco/Trees/Big_Birch_Tree.png', 3, 'strip');
 addSheet('cftree_spruce', 'cf/deco/Trees/Big_Spruce_tree.png', 3, 'strip');
 // G_CACTUS-Ersatz — kein Kaktus im Pack, thematisch passende Vulkanpflanze (Nutzerentscheidung).
 addSheet('cfvolcplant', 'cf/deco/Volcano_Plants.png', 4, 'grid', {fw:16, fh:16, ax:8, ay:15});
-addSheet('cfrock', 'cf/deco/Rock_1_Anim.png', 8, 'strip');
+// Der Anker liegt auf der Steinunterkante, NICHT auf der Zellunterkante.
+// 'strip' setzt ihn auf die Fussmitte der Zelle, und das stimmt nur, solange die
+// Zeichnung die Zelle auch ausfuellt — beim Zaun aus G11 tut sie das, hier nicht:
+// gemessen (sheet-audit --rig) sitzt der Stein in den Zeilen 5 bis 11 von 16, es
+// bleiben vier leere Zeilen darunter. Bei WELT_SC sind das acht Weltpixel Luft
+// zwischen Stein und Anker — und der Schatten wird auf den Anker gemalt. Ergebnis
+// war ein Stein, der ueber seinem eigenen Schatten schwebte, seit G4.
+// Dieselbe Korrektur wie beim Boot in G11 (Anker auf der Wasserlinie y45 statt
+// auf der Blattunterkante), nur faellt sie hier auf, weil ein Schatten darunter
+// liegt: Baeume haben denselben Rand und bekamen ihn in G7 als BAUM_DY verrechnet.
+addSheet('cfrock', 'cf/deco/Rock_1_Anim.png', 8, 'grid', {fw:16, fh:16, ax:8, ay:12});
 // Neu in G4: hohes Gras bekommt erstmals ein Sprite (Nutzerentscheidung, war bis G3 unsichtbar).
 addSheet('cftallgrass', 'cf/deco/Grass_1_Anim.png', 8, 'strip');
 addSheet('cfmush1', 'cf/deco/muschroom_1_Anim.png', 6, 'strip');

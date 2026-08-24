@@ -436,6 +436,56 @@ jedem Laden eine andere.
 Das ist ein Befund und keine Aufgabe für G12. Wer ihn angeht, braucht zuerst
 einen festen Startwert für die Bevölkerung, sonst misst das Werkzeug den Zufall.
 
+## Nachtrag: der Stein, der über seinem eigenen Schatten schwebte
+
+Nicht Teil des Steinbruchs, sondern ein Fund aus den Bildern dieser Runde — und
+zwar aus einem, das ich selbst gemacht und falsch gelesen habe: auf dem ersten
+Buchtbild stehen dutzende Felsen im Sand, und unter jedem sitzt eine Ellipse zu
+tief. Ich habe sie für Hintergrund gehalten. Der Hinweis kam vom Nutzer.
+
+Nachgemessen mit `sheet-audit --rig`:
+
+| Blatt | Zeichnung in der Zelle | leer darunter | Anker aus `'strip'` |
+|---|---|---|---|
+| `Rock_1_Anim.png` | Zeilen 5–11 von 16 | **4 Zeilen** | Zellunterkante (16) |
+| `Grass_1_Anim.png` | Zeilen 5–9 | 6 Zeilen | Zellunterkante |
+| `muschroom_1/2_Anim.png` | Zeilen 5–12 | 3 Zeilen | Zellunterkante |
+| `Big_Oak_Tree.png` | Zeilen 9–71 von 80 | 8 Zeilen | Zellunterkante |
+
+`addSheet`s Modus `'strip'` setzt den Anker auf die **Fußmitte der Zelle**. Das
+stimmt, solange die Zeichnung die Zelle ausfüllt — beim Zaun aus G11 tut sie das,
+beim Stein nicht. Vier leere Zeilen sind bei `WELT_SC` **acht Weltpixel Luft**
+zwischen Stein und Anker, und `drawProp()` malt den Schatten genau auf den Anker.
+Der Stein schwebte also seit G4 acht Pixel über seinem Schatten.
+
+Der Baum hat denselben Rand, und er hat ihn schon: G7 verrechnet ihn als
+`BAUM_DY = 14` („der Baum schwebte sonst eine halbe Kachel über seiner eigenen
+Kachel"). Der Stein hat diese Korrektur nie bekommen, weil bei ihm niemand
+nachgesehen hat — und er ist der einzige der vier, unter dem ein Schatten liegt.
+Bei Gras und Pilzen fällt derselbe Rand nicht auf: sie sitzen nur etwas hoch in
+ihrer Kachel, es fehlt der Schatten, an dem man es sähe.
+
+**Berichtigt am Blatt, nicht am Zeichenaufruf:**
+
+```js
+addSheet('cfrock', 'cf/deco/Rock_1_Anim.png', 8, 'grid', {fw:16, fh:16, ax:8, ay:12});
+```
+
+Das ist dieselbe Korrektur wie beim Boot in G11 (Anker auf der Wasserlinie y45
+statt auf der Blattunterkante): der Anker gehört an die Stelle, mit der das Ding
+aufsteht, und nicht an den Rand der Datei. Den Schatten stattdessen um acht Pixel
+hochzuziehen hätte dasselbe Bild ergeben und die Ursache stehen lassen — der
+nächste, der einen Felsen setzt, hätte denselben Fehler geerbt.
+
+**Gras und Pilze bleiben, wie sie sind.** Ihr Rand ist gemessen und steht oben;
+ohne Schatten gibt es nichts, was falsch aussieht, und beide um zwölf
+beziehungsweise sechs Weltpixel nach unten zu ziehen wäre eine Änderung am
+Aussehen der ganzen Karte ohne einen Befund dahinter.
+
+**Im Bild geprüft**, vorher und nachher, am selben Felsen bei (141,159) mit
+achtfacher Vergrößerung: vorher eine deutliche Lücke zwischen Steinunterkante und
+Ellipse, nachher sitzt der Stein auf seinem Schatten.
+
 ## Bewusst offen
 
 * **`House_Decor` bleibt liegen** (26 Dateien). Der Bestand hängt es selbst an
