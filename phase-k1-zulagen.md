@@ -290,7 +290,7 @@ in `zulagenAssert()` festgenagelt.
   seine Leerzustände selbst („Noch keine Zulage bewilligt. Jeder Aufstieg legt
   drei vor."). Ein Zettel wäre ein guter Nachtrag, kein Teil des Kerns.
 * **Keine Grafik.** Sinnbilder sind Emoji, wie überall im Haus. Der
-  Kartenrahmen steht und wartet.
+  Kartenrahmen steht und wartet. *(Überholt durch K1-10, siehe unten.)*
 
 ---
 
@@ -363,3 +363,105 @@ lange Wörter, und die Spalte hat sich danach zu richten, nicht umgekehrt.
   Schaden obendrauf) sind erst ab Stufe 15 und nur mit zwei passenden
   Ziehungen erreichbar. Zum Vergleich: vier Ausrüstungsteile mit
   Rang-3-Wirkung tragen heute schon achtundvierzig und zweiundsiebzig.
+
+---
+
+## K1-10. Nachtrag: die Sammelkarte
+
+*(24.08.2026, auf Ansage des Projektinhabers, am selben Tag wie der Kern.)*
+
+Die Rückmeldung auf die erste Fassung lautete: die Prompts sind gut, **aber das
+muss mehr nach Sammelkarte aussehen, a la Yu-Gi-Oh oder Magic, sehr episch,
+sehr drüber, es soll Bock machen die zu sammeln.**
+
+Der Befund dahinter stimmt und war hausgemacht. Die erste Fassung zeigte ein
+Sinnbild von sechsundzwanzig Pixeln links neben einer Textzeile. Das ist kein
+Sammelstück, das ist ein Listeneintrag. Und die Bildprompts standen passend
+dazu auf Inventarsymbolen: einzelner Gegenstand, mittig, dunkler Grund. Beides
+zusammen ergab eine korrekte, unbegehrliche Karte.
+
+**Das Gegenteil steht seit jeher in der Weltbibel**, Humor-Grundgesetz Regel 10:
+die Form ist episch, der Inhalt ist Papier, und nichts an diesem Haus darf
+bescheiden aussehen. Der Wunsch war also kein Fremdkörper, sondern die Regel,
+die dieser Bauabschnitt zuerst nicht eingelöst hat.
+
+### Zwei Eingriffe
+
+**Die Karte im Spiel ist jetzt eine Karte.** Aufbau wie bei Magic: Namensleiste
+mit der Stufe in der Ecke, Bildfenster im Verhältnis vier zu drei, Typenzeile,
+Textfeld. Die Namensleiste trägt dieselbe Rezeptur wie das Kopfband der Panels
+aus U1, damit die Karte aus demselben Haus stammt wie das Fenster um sie herum.
+Die Stufe trägt nicht mehr nur die Ziffer, sondern die ganze Karte: gedeckt,
+dann Gold, dann Violett mit Schein und einem laufenden Glanz über dem
+Bildfenster, der bei `prefers-reduced-motion` stillsteht. Das Panel ist von
+560 auf 680 Pixel gewachsen, damit drei Karten nebeneinander Platz haben.
+
+Neu ist die **Typenzeile**: wo die Karte hingehört (`Gattung Schwert`,
+`Zweig Frost`, `Allgemein`) und ob sie stapelt. Das stand vorher nur im
+Tooltip und ist genau die Angabe, nach der man eine Sammlung sortiert.
+
+**Das Bildfenster nimmt schon ein Bild.** Trägt eine Familie im Katalog ein
+Feld `bild`, schreibt `zulageKarteHTML()` ein `<img>` hinein statt des
+Sinnbilds; `object-fit:cover` und `image-rendering:pixelated` stehen bereit.
+Der Einbau der fünfzehn Bilder ist damit **eine Zeile je Karte** und keine
+Codeänderung. Das Sinnbild bleibt als Ersatz stehen und im Tooltip.
+
+**Die Prompts sind umgeschrieben** (`zulagen-bildprompts.md`). Aus fünfzehn
+Inventarsymbolen sind fünfzehn epische Szenen geworden: der Brieföffner steckt
+wie Excalibur im Berg aus Formularen, der Stempel fährt aus Gewitterwolken auf
+einen winzigen Schreibtisch, der Kaffeebecher steht auf einem Altar am Ende
+einer Halle. Der Gegenstand bleibt Büromaterial, die Inszenierung ist eine
+Kathedrale.
+
+Drei Änderungen an der Stilformel, jede begründet in der Prompt-Datei: der
+Ausschnitt wird zur Kartenkunst-Einstellung (`--ar 4:3`), die Karikatur fällt
+weg, weil der Anker vom Figurenporträt zum **Amiga-Titelbild** wandert, und die
+Palette darf beleuchtet werden statt eingefärbt. `--s 25` bleibt: höhere
+Stilisierung heißt bei Midjourney hübscher, weicher, moderner, und das ist der
+Weg aus der Pixelkunst heraus. Die Dramatik kommt aus den Wörtern.
+
+### Ein Fund, den erst das Layout hervorgeholt hat
+
+Eine Kartenspalte ist rund hundertzehn Pixel breit, und in diese Breite passt
+**kein einziges Kompositum dieses Hauses**. Der Browser bricht dann mitten im
+Wort: auf der Karte stand `Vollziehbarkei` und darunter ein einzelnes `t`.
+`hyphens:auto` half nicht, der Prüf-Chromium bringt kein deutsches
+Trennwörterbuch mit, und darauf ist ohnehin kein Verlass.
+
+Gemessen statt geraten: ein Lauf misst jeden der fünfzehn Namen auf Stufe III
+gegen die verfügbare Zeilenbreite, auf beiden Fensterbreiten. Er fand zwei
+harte Brüche, `Großbrandverfügung` und `Unerschöpflichkeitsklausel`, das
+zweite mit hundertachtundsechzig Pixeln in hundertvierzehn.
+
+Die Lösung sind **weiche Trennstellen an den Fugen der Komposita**, als `&shy;`
+im Katalog, weil das durch `innerHTML` geht und im Quelltext sichtbar bleibt.
+Neunzehn Namen haben sie bekommen. Danach: null harte Brüche auf beiden Breiten.
+
+Und weil ein Fund, der nur behoben ist, wiederkommt, prüft `zulagenAssert()`
+das jetzt mit: kein Stück eines Namens darf ohne Trennstelle länger sein als
+`ZULAGE_WORT_MAX`. Der Deckel steht auf sechzehn Zeichen, gemessen an der
+schmalsten Spalte bei der größten Schriftstufe; das längste im Katalog ist
+`Unanfechtbarer` mit vierzehn.
+
+### Prüfprotokoll des Nachtrags
+
+`node --check` sauber. `tools/zulagen-pruef.mjs` **45 von 45**,
+`tools/menue-pruef.mjs` unverändert **39 von 39**, beide ohne Anpassung, weil
+die Klassennamen der Karte geblieben sind.
+
+Gegenprobe der vier neuen Guard-Regeln, jede einzeln beschädigt: Name ohne
+Trennstelle, leeres Bildfeld, Bildfeld als Zahl, Zahl in der Typenzeile. Alle
+vier werden gemeldet, danach ist der Guard wieder still.
+
+Sichtprobe auf 1280 und 390 Pixel. Dabei aufgefallen und behoben: die
+Namensleiste stand je nach Namenslänge zwischen einer und drei Zeilen hoch und
+schob das Bildfenster mit, sodass die Bilder einer Reihe auf verschiedenen
+Höhen saßen. Ein Mindestmaß von zwei Zeilen (in em, damit es die Schriftstufen
+mitgeht) richtet die Reihe aus. Die wenigen dreizeiligen Ausfertigungen brechen
+die Linie weiterhin, und das ist der richtige Preis: der lange Name ist der
+Witz, nicht der Fehler.
+
+Auf dem Telefon stand die Karte vorher als Zeile, Sinnbild links, Text rechts.
+Das ist zurückgebaut: **zwei Spalten, und die Karte bleibt eine Karte.** Eine
+Sammelkarte, die zur Zeile flachgelegt wird, sammelt niemand. Die Ziehung liegt
+dort zwei zu eins statt nebeneinander, das ist der Preis und er ist es wert.

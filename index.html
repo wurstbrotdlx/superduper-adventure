@@ -120,40 +120,102 @@
      weiter unten. Seitenverhaeltnis wie eine Karteikarte, Stufe II gold,
      Stufe III violett mit Schein — dieselbe Lesart wie .rar2/.rar3 und
      .ultNode.known, damit ein Kracher aussieht wie ein Kracher. --- */
-  #zulagen{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 48px));max-height:88vh;overflow-y:auto;z-index:20;display:none;
+  #zulagen{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(680px,calc(100vw - 48px));max-height:88vh;overflow-y:auto;z-index:20;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
   #zulagen h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #zulagen h4{margin:12px 0 4px;font-size:calc(12px * var(--fs));color:#c9a227;display:flex;justify-content:space-between;align-items:baseline;}
   #zulagen h4 span{color:#9a8a5f;font-weight:normal;font-size:calc(10px * var(--fs));}
   .zulSub{font-size:calc(11px * var(--fs));color:#9a8a5f;margin-bottom:6px;line-height:1.4;}
-  .zulReihe{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-  /* Die Kartei traegt dieselben drei Spalten wie die Reihen darueber, nur
-     flachere Karten. Vier waren einmal drin und teilten 'Grossbrandverfuegung'
-     mitten im Wort: dieses Haus baut lange Woerter, und die Spalte hat sich
-     danach zu richten, nicht umgekehrt. */
-  .zulReihe.klein{grid-template-columns:repeat(3,1fr);}
-  /* min-width:0 und die Trennung sind kein Feinschliff: Rasterfelder stehen von
-     Haus aus auf min-width:auto, und ein langes Wort wie 'Vollziehbarkeit'
-     drueckt seine Spalte dann breiter als ihren Anteil. Auf 390px Breite lief
-     damit die dritte Karte aus dem Panel heraus. hyphens:auto trennt nach den
-     Regeln der Dokumentsprache (das <html> traegt lang="de"), break-word ist
-     nur der Notnagel darunter: 'Haerte-fallregelung' liest sich, 'Haertefallre'
-     mit hartem Bruch nicht. Amtsdeutsch baut lange Woerter, das ist hier
-     Programm und muss die Karte deshalb aushalten. */
-  .zulKarte{border:2px solid #4c4030;border-radius:8px;background:#141009;padding:7px 6px;text-align:center;cursor:pointer;
-       display:flex;flex-direction:column;gap:3px;min-height:132px;position:relative;
-       min-width:0;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word;}
-  .zulKarte .zStufe{position:absolute;top:3px;right:6px;font-size:calc(9px * var(--fs));color:#c9a227;letter-spacing:1px;}
-  .zulKarte .zText{display:flex;flex-direction:column;gap:3px;min-width:0;}
-  .zulKarte .zIcon{font-size:calc(24px * var(--fs));line-height:1.15;}
-  .zulKarte .zName{font-weight:bold;font-size:calc(11px * var(--fs));color:#e8d9a8;line-height:1.25;}
-  .zulKarte .zSatz{font-size:calc(9px * var(--fs));color:#9a8a5f;line-height:1.3;}
+  .zulReihe{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+  /* Die Kartei fliesst, statt drei feste Spalten zu tragen: eine Sammlung waechst
+     ueber die Schicht, und ein Raster, das sich an der Panelbreite bedient,
+     zeigt mehr davon auf einmal. */
+  .zulReihe.klein{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+
+  /* --- Die Sammelkarte -----------------------------------------------------
+     Aufbau wie eine Magic-Karte: Namensleiste, Bildfenster, Typenzeile,
+     Textfeld. Eine Karte, die gesammelt werden soll, muss wie eine Karte
+     aussehen; ein Sinnbild von sechsundzwanzig Pixeln neben einer Textzeile
+     ist ein Listeneintrag. Das ist Humor-Grundgesetz Regel 10 aufs Auge
+     angewandt: die Form ist episch, der Inhalt ist Papier, und nichts an
+     diesem Haus darf bescheiden aussehen.
+
+     min-width:0 und die Trennung sind dabei kein Feinschliff: Rasterfelder
+     stehen von Haus aus auf min-width:auto, und ein langes Wort wie
+     'Vollziehbarkeit' drueckt seine Spalte sonst breiter als ihren Anteil.
+     Amtsdeutsch baut lange Woerter, das ist hier Programm, und die Karte hat
+     das auszuhalten. --------------------------------------------------- */
+  .zulKarte{
+    display:flex;flex-direction:column;gap:4px;position:relative;cursor:pointer;
+    border:2px solid #4c4030;border-radius:7px;background:#100c07;padding:5px;
+    min-width:0;overflow:hidden;
+    hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word;
+  }
+  /* Die Namensleiste traegt dieselbe Rezeptur wie das Kopfband der Panels (U1),
+     damit die Karte aus demselben Haus stammt wie das Fenster um sie herum. */
+  .zulKarte .zKopf{
+    display:flex;align-items:flex-start;gap:5px;
+    background:linear-gradient(#3d2e19,#261c0f 65%,#1b1309);
+    border:1px solid #6b5426;border-radius:3px;padding:4px 6px;
+  }
+  /* Zwei Zeilen Mindestmass, in em statt Pixeln, damit es die Schriftstufen
+     mitgeht. Ohne das steht das Bildfenster bei jedem Namen woanders: die
+     Namen dieses Hauses gehen von 'Dienstweg' bis 'Kaltverfuegung mit
+     sofortiger Vollziehbarkeit', und eine Reihe Sammelkarten, deren Bilder
+     auf verschiedenen Hoehen sitzen, sieht nach Unfall aus statt nach Serie.
+     Die wenigen dreizeiligen Ausfertigungen brechen die Linie weiterhin, und
+     das ist der richtige Preis: der lange Name ist der Witz, nicht der Fehler. */
+  .zulKarte .zName{
+    flex:1 1 auto;min-width:0;font-weight:bold;font-size:calc(10px * var(--fs));
+    color:#f4d97a;line-height:1.22;text-shadow:0 1px 0 #241a09;
+    min-height:2.44em;
+  }
+  .zulKarte .zStufe{
+    flex:0 0 auto;font-size:calc(9px * var(--fs));letter-spacing:.5px;
+    color:#c9a227;padding-top:1px;
+  }
+  /* Bildfenster im Seitenverhaeltnis der Kartenkunst. Solange kein Bild
+     danebenliegt, steht hier das Sinnbild gross auf dunklem Grund; sobald der
+     Katalog ein 'bild' traegt, schreibt zulageKarteHTML() ein <img> hinein,
+     und sonst aendert sich nichts. */
+  .zulKarte .zBild{
+    aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+    border:1px solid #4c4030;border-radius:2px;overflow:hidden;position:relative;
+    background:radial-gradient(ellipse at 50% 38%, #2a2117 0%, #120d08 72%);
+  }
+  .zulKarte .zBild img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated;}
+  .zulKarte .zIcon{font-size:calc(40px * var(--fs));line-height:1;filter:drop-shadow(0 2px 5px rgba(0,0,0,.7));}
+  .zulKarte .zArt{
+    font-size:calc(8px * var(--fs));letter-spacing:.4px;color:#8a7c58;
+    border-bottom:1px solid #342c1e;padding-bottom:3px;
+  }
+  .zulKarte .zSatz{font-size:calc(9px * var(--fs));color:#c3b58c;line-height:1.32;}
+
+  /* Die Stufe traegt die ganze Karte, nicht nur die Ziffer: gedeckt, dann Gold,
+     dann Violett mit Schein und laufendem Glanz. Das ist die Seltenheitsstaffel,
+     ohne die eine Sammlung keine ist. */
   .zulKarte.s2{border-color:#c9a227;}
-  .zulKarte.s3{border-color:#c77dff;box-shadow:0 0 8px rgba(199,125,255,.5);}
-  .zulKarte.angelegt{border-color:#6aff8f;background:#132014;}
-  .zulKarte.leer, .zulKarte.zu{border-style:dashed;opacity:.5;cursor:default;justify-content:center;}
-  .zulReihe.klein .zulKarte{min-height:106px;}
-  .zulReihe.klein .zulKarte .zIcon{font-size:calc(19px * var(--fs));}
+  .zulKarte.s2 .zKopf{background:linear-gradient(#5a4415,#3a2b0d 65%,#241a08);border-color:#c9a227;}
+  .zulKarte.s3{border-color:#c77dff;box-shadow:0 0 11px rgba(199,125,255,.45);}
+  .zulKarte.s3 .zKopf{background:linear-gradient(#4a2f66,#2f1d42 65%,#1e1230);border-color:#c77dff;}
+  .zulKarte.s3 .zName{color:#e9cfff;}
+  .zulKarte.s3 .zStufe{color:#c77dff;}
+  .zulKarte.s3 .zBild::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(115deg, transparent 38%, rgba(199,125,255,.22) 47%,
+               rgba(255,240,255,.14) 51%, transparent 61%);
+    background-size:260% 100%;
+    animation:zulGlanz 4.5s linear infinite;
+  }
+  @keyframes zulGlanz{from{background-position:130% 0;}to{background-position:-30% 0;}}
+  @media (prefers-reduced-motion: reduce){ .zulKarte.s3 .zBild::after{animation:none;} }
+
+  .zulKarte.angelegt{border-color:#6aff8f;box-shadow:0 0 9px rgba(106,255,143,.30);}
+  .zulKarte.angelegt .zKopf{border-color:#6aff8f;}
+  .zulKarte.leer, .zulKarte.zu{
+    border-style:dashed;opacity:.45;cursor:default;
+    align-items:center;justify-content:center;min-height:150px;text-align:center;
+  }
   .zulLeer{font-size:calc(11px * var(--fs));color:#9a8a5f;line-height:1.5;}
   .zulRest{margin-top:7px;font-size:calc(10px * var(--fs));color:#c9a227;}
 
@@ -967,21 +1029,26 @@
       max-height:max(240px, calc(100dvh - 341px));
       background-color:rgba(20,14,24,.93);
     }
-    /* Auf 360 bis 390px Breite bleiben je Karte rund hundert Pixel, und darin
-       steht kein Wort dieses Hauses. 'Haertefallregelung' braucht auf Courier
-       das Anderthalbfache, hyphens:auto hilft nur, wo der Browser ein deutsches
-       Trennwoerterbuch mitbringt, und darauf ist kein Verlass. Statt die Schrift
-       zu schrumpfen, bis sie niemand mehr liest, wird die Karte zur Zeile:
-       Sinnbild links, Text rechts, eine je Reihe. Drei Zeilen untereinander sind
-       auf einem Telefon ohnehin die Form, in der man waehlt. */
-    .zulReihe, .zulReihe.klein{grid-template-columns:1fr;gap:6px;}
-    .zulKarte{flex-direction:row;align-items:center;text-align:left;gap:10px;min-height:0;padding:8px 10px;}
-    .zulReihe.klein .zulKarte{min-height:0;}
-    .zulKarte .zIcon, .zulReihe.klein .zulKarte .zIcon{font-size:calc(26px * var(--fs));flex:0 0 auto;}
-    .zulKarte .zText{min-width:0;}
-    .zulKarte .zStufe{position:static;margin-left:auto;flex:0 0 auto;align-self:flex-start;}
-    .zulKarte .zSatz{font-size:calc(11px * var(--fs));}
-    .zulKarte.leer, .zulKarte.zu{justify-content:center;text-align:center;padding:12px 10px;}
+    /* Zwei Spalten statt drei, und die Karte bleibt eine Karte. Bei drei
+       Spalten blieben auf 390px Breite rund hundert Pixel je Karte, und darin
+       steht kein Wort dieses Hauses: 'Haertefallregelung' braucht auf Courier
+       das Anderthalbfache. Bei zweien sind es rund hundertsiebzig, und damit
+       geht es. Die Ziehung liegt dann zwei zu eins statt nebeneinander, das ist
+       der Preis und er ist es wert: eine Sammelkarte, die zur Zeile flachgelegt
+       wird, sammelt niemand. */
+    .zulReihe, .zulReihe.klein{grid-template-columns:repeat(2,1fr);gap:8px;}
+    /* Die Karte ist hier schmaler als auf dem Schirm, also wird die Namens-
+       schrift KLEINER, nicht groesser. Andersherum stand es hier schon einmal,
+       und dann brach 'Vollziehbarkeit' mit einem einzelnen t auf der naechsten
+       Zeile. Die Ziffer rueckt gleich mit zusammen: sie steht als Flex-Nachbar
+       neben dem Namen und nimmt ihm ihre Breite auf JEDER Zeile weg, nicht nur
+       auf der ersten. Satz und Sinnbild duerfen dagegen zulegen, die haben
+       Platz. */
+    .zulKarte .zName{font-size:calc(9px * var(--fs));}
+    .zulKarte .zStufe{font-size:calc(8px * var(--fs));}
+    .zulKarte .zArt{font-size:calc(9px * var(--fs));}
+    .zulKarte .zSatz{font-size:calc(10px * var(--fs));}
+    .zulKarte .zIcon{font-size:calc(44px * var(--fs));}
     #schloss{
       top:56px; left:8px; transform:none; box-sizing:border-box;
       width:calc(100vw - 16px); background-color:rgba(20,14,24,.93);
@@ -6111,59 +6178,68 @@ const WIRKUNG = {
 //               Gedankenstriche (Weltbibel Kapitel 13). Gerechnet wird intern,
 //               zulagenAssert() prueft beides bei jedem Laden nach.
 //
+//  Zu den &shy; in den Namen: das sind weiche Trennstellen an den Fugen der
+//  Komposita. Sie gehen durch innerHTML und werden dort zum unsichtbaren
+//  U+00AD, das nur dann als Trennstrich erscheint, wenn die Zeile wirklich
+//  bricht. Sie stehen hier, weil eine Kartenspalte rund hundertzehn Pixel
+//  breit ist und 'Unerschoepflichkeitsklausel' in keine davon passt; ohne sie
+//  bricht der Browser mitten im Wort. hyphens:auto im CSS macht dasselbe,
+//  aber nur dort, wo ein deutsches Trennwoerterbuch mitgeliefert ist, und
+//  darauf ist kein Verlass. Wer einen Namen aendert, setzt die Fugen mit.
+//
 //  Diese Tabelle steht VOR recalc() (das noch auf Skriptebene laeuft) und vor
 //  player. Das ist dieselbe TDZ-Disziplin wie bei den S1-Konstanten weiter unten.
 // ===========================================================================
 const ZULAGE = {
   // --- Waffengattung. Bis K1 war w.base.mode reine Animationswahl. ----------
   stichprobe: {name:'Stichprobe', icon:'🔪', fx:'dolch', modus:'dagger',
-    wert:[1,2,4], stapelbar:true, unikat:'Stichprobe ohne Vorankündigung',
+    wert:[1,2,4], stapelbar:true, unikat:'Stichprobe ohne Vor&shy;ankündigung',
     satz:['Dein Dolch nimmt Stichproben.',
           'Deine Stichproben fallen gründlich aus.',
           'Jede Stichprobe gilt als vollständige Prüfung.']},
-  klingenzulage: {name:'Klingenzulage', icon:'⚔️', fx:'schwert', modus:'sword',
-    wert:[1,2,4], stapelbar:true, unikat:'Hoheitliche Klingenführung',
+  klingenzulage: {name:'Klingen&shy;zulage', icon:'⚔️', fx:'schwert', modus:'sword',
+    wert:[1,2,4], stapelbar:true, unikat:'Hoheitliche Klingen&shy;führung',
     satz:['Dein Schwert liegt besser in der Hand.',
           'Dein Schwert liegt deutlich besser in der Hand.',
           'Dein Schwert gilt amtlich als Argument.']},
-  pauschalabfertigung: {name:'Pauschalabfertigung', icon:'🪓', fx:'axt', modus:'doubleaxe',
+  pauschalabfertigung: {name:'Pauschal&shy;abfertigung', icon:'🪓', fx:'axt', modus:'doubleaxe',
     wert:[1,2,4], stapelbar:true, unikat:'Spaltung letzter Instanz',
     satz:['Deine Axt fertigt gründlicher ab.',
           'Deine Axt fertigt erheblich gründlicher ab.',
           'Was deine Axt trifft, ist abschließend geteilt.']},
   // --- Zauberzweig. Blitz ist im Haus kein eigenes Element, sondern Arkan. --
-  brandschutzausnahme: {name:'Brandschutzausnahme', icon:'🔥', fx:'feuer', zweig:0,
-    wert:[1,2,4], stapelbar:true, unikat:'Großbrandverfügung',
+  brandschutzausnahme: {name:'Brandschutz&shy;ausnahme', icon:'🔥', fx:'feuer', zweig:0,
+    wert:[1,2,4], stapelbar:true, unikat:'Groß&shy;brand&shy;verfügung',
     satz:['Deine Feuerzauber dürfen heißer brennen.',
           'Deine Feuerzauber dürfen deutlich heißer brennen.',
           'Deine Feuerzauber gelten als angeordnetes Großfeuer.']},
-  kaltverfuegung: {name:'Kaltverfügung', icon:'❄️', fx:'frost', zweig:1,
-    wert:[1,2,4], stapelbar:true, unikat:'Kaltverfügung mit sofortiger Vollziehbarkeit',
+  kaltverfuegung: {name:'Kalt&shy;verfügung', icon:'❄️', fx:'frost', zweig:1,
+    wert:[1,2,4], stapelbar:true, unikat:'Kalt&shy;verfügung mit sofortiger Voll&shy;ziehbarkeit',
     satz:['Deine Frostzauber beißen kälter.',
           'Deine Frostzauber beißen deutlich kälter.',
           'Wen deine Frostzauber treffen, der ist kaltgestellt.']},
-  blitzbeschluss: {name:'Blitzbeschluss', icon:'⚡', fx:'arkan', zweig:2,
-    wert:[1,2,4], stapelbar:true, unikat:'Unanfechtbarer Blitzbeschluss',
+  blitzbeschluss: {name:'Blitz&shy;beschluss', icon:'⚡', fx:'arkan', zweig:2,
+    wert:[1,2,4], stapelbar:true, unikat:'Unanfechtbarer Blitz&shy;beschluss',
     satz:['Deine Arkanzauber schlagen härter ein.',
           'Deine Arkanzauber schlagen deutlich härter ein.',
           'Gegen deine Arkanzauber gibt es keinen Widerspruch.']},
   // --- Allgemein. Erben die Hooks der Kessel-Wirkungen. ---------------------
-  vollzugszulage: {name:'Vollzugszulage', icon:'🔨', fx:'dmg',
-    wert:[1,2,4], stapelbar:true, unikat:'Sofortvollzug',
+  vollzugszulage: {name:'Vollzugs&shy;zulage', icon:'🔨', fx:'dmg',
+    wert:[1,2,4], stapelbar:true, unikat:'Sofort&shy;vollzug',
     satz:['Deine Angriffe tragen zusätzliche Härte.',
           'Deine Angriffe tragen erhebliche zusätzliche Härte.',
           'Deine Angriffe werden sofort vollzogen. Die Anhörung entfällt.']},
-  erschwerniszulage: {name:'Erschwerniszulage', icon:'⛑️', fx:'leben',
-    wert:[1,2,4], stapelbar:true, unikat:'Volle Belastungsstufe',
+  erschwerniszulage: {name:'Erschwernis&shy;zulage', icon:'⛑️', fx:'leben',
+    wert:[1,2,4], stapelbar:true, unikat:'Volle Belastungs&shy;stufe',
     satz:['Du bist für Erschwernisse eingestuft. Du hältst mehr aus.',
           'Deine Einstufung steigt. Du hältst deutlich mehr aus.',
           'Du bist für die höchste Belastung zugelassen.']},
-  haertefallregelung: {name:'Härtefallregelung', icon:'🛡️', fx:'bollwerk',
-    wert:[1,2,4], stapelbar:false, unikat:'Bestandsschutz',
+  haertefallregelung: {name:'Härtefall&shy;regelung', icon:'🛡️', fx:'bollwerk',
+    wert:[1,2,4], stapelbar:false, unikat:'Bestands&shy;schutz',
     satz:['Schläge treffen dich milder. Du giltst als Härtefall.',
           'Schläge treffen dich deutlich milder.',
           'Du genießt Bestandsschutz. Vieles prallt einfach ab.']},
-  gebuehrenbefreiung: {name:'Gebührenbefreiung', icon:'🧾', fx:'sparsam',
+  gebuehrenbefreiung: {name:'Gebühren&shy;befreiung', icon:'🧾', fx:'sparsam',
     wert:[1,2,4], stapelbar:false, unikat:'Schwarze Null',
     satz:['Deine Zauber sind teilweise von der Gebühr befreit.',
           'Deine Zauber sind weitgehend von der Gebühr befreit.',
@@ -6188,11 +6264,11 @@ const ZULAGE = {
   // selbst; der volle Kracher waere hier der Zauberspam aus der Zeit vor Z2
   // beziehungsweise eine Stufenleiter, die sich selbst ueberholt.
   laufender_bezug: {name:'Laufender Bezug', icon:'☕', fx:'mana',
-    wert:[1,2,3], stapelbar:false, unikat:'Unerschöpflichkeitsklausel',
+    wert:[1,2,3], stapelbar:false, unikat:'Unerschöpf&shy;lichkeits&shy;klausel',
     satz:['Dein Mana kommt als laufender Bezug.',
           'Dein laufender Bezug fällt üppiger aus.',
           'Dein Vorrat gilt als unerschöpflich. Fast.']},
-  dienstalterszulage: {name:'Dienstalterszulage', icon:'🗓️', fx:'xp',
+  dienstalterszulage: {name:'Dienstalters&shy;zulage', icon:'🗓️', fx:'xp',
     wert:[1,2,3], stapelbar:false, unikat:'Altgedient',
     satz:['Dein Dienstalter wächst schneller als der Kalender.',
           'Dein Dienstalter wächst deutlich schneller als der Kalender.',
@@ -6206,6 +6282,11 @@ const zulageSlots = st => ZULAGE_FAECHER.find(f => st >= f.abStufe).n;
 const ZULAGE_MAPPE_NAME = ['Mappe', 'Doppelmappe', 'Ordner'];
 const ZULAGE_STAPEL_MAX = 2;   // stapelbar heisst zweimal, nicht dreimal
 const ZULAGE_ROEMISCH = ['I', 'II', 'III'];
+// Laengstes Stueck ohne Trennstelle, das auf die Namensleiste passt. Gemessen
+// im Browser an der schmalsten Kartenspalte (Kartei, rund hundertzehn Pixel)
+// bei der groessten Schriftstufe. Das laengste im Katalog ist 'Unanfechtbarer'
+// mit vierzehn; der Deckel laesst zwei Zeichen Luft und faellt vorher auf.
+const ZULAGE_WORT_MAX = 16;
 
 // Stufengewichte der Ziehung in Prozent, absteigend nach abStufe. w2/w3 sind
 // die Chancen auf Stufe II und III, der Rest ist Stufe I. Vor Stufe 5 gibt es
@@ -8534,18 +8615,33 @@ function toggleZulagen(){
 
 function zulageName(zf, stufe){ return stufe >= 3 ? zf.unikat : zf.name; }
 
-// Die Stufenziffer steht ZULETZT im Markup, obwohl sie oben rechts sitzt: auf
-// dem Telefon wird die Karte zur Zeile, die Ziffer verliert ihre absolute Lage
-// und rueckt als letztes Feld mit margin-left:auto an den rechten Rand. Stuende
-// sie vorn, schoebe dasselbe margin alles andere vor sich her.
+// Die Typenzeile, wie sie auf einer Sammelkarte zwischen Bild und Text steht:
+// wo die Karte hingehoert und ob sie sich stapeln laesst. Keine Zahl, wie
+// ueberall im Haus; zulagenAssert() prueft auch das.
+const ZULAGE_MODUS_NAME = {dagger:'Dolch', sword:'Schwert', doubleaxe:'Axt'};
+const ZULAGE_ZWEIG_NAME = ['Feuer', 'Frost', 'Arkan'];
+function zulageArtZeile(zf){
+  const art = zf.modus !== undefined ? 'Gattung ' + ZULAGE_MODUS_NAME[zf.modus]
+            : zf.zweig !== undefined ? 'Zweig ' + ZULAGE_ZWEIG_NAME[zf.zweig]
+            : 'Allgemein';
+  return art + (zf.stapelbar ? ' · stapelt' : '');
+}
+
+// Die Karte in der Bauform einer Sammelkarte: Namensleiste, Bildfenster,
+// Typenzeile, Textfeld. Das Bildfenster nimmt ein <img>, sobald der Katalog
+// ein 'bild' traegt, und sonst das Sinnbild gross. Damit ist der Weg von
+// Emoji zu gemalter Kartenkunst eine Zeile im Katalog und keine Zeile hier.
 function zulageKarteHTML(zf, stufe, extra){
+  const bild = zf.bild ? `<img src="${zf.bild}" alt="">`
+                       : `<span class="zIcon">${zf.icon}</span>`;
   return `<div class="zulKarte s${stufe}${extra || ''}">
-    <div class="zIcon">${zf.icon}</div>
-    <div class="zText">
-      <div class="zName">${zulageName(zf, stufe)}</div>
-      <div class="zSatz">${zf.satz[stufe - 1]}</div>
+    <div class="zKopf">
+      <span class="zName">${zulageName(zf, stufe)}</span>
+      <span class="zStufe">${ZULAGE_ROEMISCH[stufe - 1]}</span>
     </div>
-    <div class="zStufe">${ZULAGE_ROEMISCH[stufe - 1]}</div>
+    <div class="zBild">${bild}</div>
+    <div class="zArt">${zulageArtZeile(zf)}</div>
+    <div class="zSatz">${zf.satz[stufe - 1]}</div>
   </div>`;
 }
 
@@ -17433,6 +17529,31 @@ function zulagenAssert(){
       if(zf.zweig !== undefined && !(zf.zweig >= 0 && zf.zweig < SPELL_BRANCHES.length))
         fehler('Zweig ausserhalb der Zauberzweige', id, zf.zweig);
       if(typeof zf.stapelbar !== 'boolean') fehler('Familie sagt nicht, ob sie stapelt', id);
+      // Das Bildfeld ist freiwillig, solange das Sinnbild ein Emoji ist. Steht
+      // eines da, muss es ein Pfad sein: ein leerer String liesse ein <img> mit
+      // leerem src im Kartenfenster stehen, und das ist im Bild ein Loch.
+      if('bild' in zf && (typeof zf.bild !== 'string' || !zf.bild.trim()))
+        fehler('Bildfeld ist kein Pfad', id, zf.bild);
+      // Die Typenzeile der Karte, an derselben Formregel wie die Anzeigesaetze.
+      const artZeile = zulageArtZeile(zf);
+      if(!artZeile || /undefined/.test(artZeile)) fehler('Typenzeile unvollstaendig', id, artZeile);
+      if(/[0-9]/.test(artZeile)) fehler('Zahl in der Typenzeile', id, artZeile);
+      // Kein Wortbruch auf der Namensleiste. Eine Kartenspalte ist rund
+      // hundertzehn Pixel breit; was in einem Stueck laenger ist als der
+      // Deckel unten, bricht der Browser mitten im Wort ab, und dann steht
+      // auf der Karte 'Vollziehbarkei' und darunter ein einzelnes t. Die
+      // Fugen der Komposita gehoeren als &shy; in den Namen, siehe den
+      // Kommentar am Katalog. Gemessen wird in Zeichen und nicht in Pixeln,
+      // weil der Guard ohne Layout laeuft; der Deckel ist an der breitesten
+      // Schriftstufe gegen die schmalste Spalte gemessen.
+      for(const feld of ['name', 'unikat']){
+        for(const stueck of String(zf[feld] || '').split(/[\s­]+|&shy;/)){
+          const blank = stueck.replace(/[.,]/g, '');
+          if(blank.length > ZULAGE_WORT_MAX)
+            fehler('Wort ohne Trennstelle auf der Namensleiste', id, feld, blank,
+                   blank.length + ' Zeichen, hoechstens ' + ZULAGE_WORT_MAX);
+        }
+      }
     }
     if(!ids.some(id => ZULAGE[id].stapelbar) || !ids.some(id => !ZULAGE[id].stapelbar))
       fehler('Stapelregel ist Theorie, es gibt nur eine Sorte Karte');
