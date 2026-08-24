@@ -6,8 +6,8 @@
 // Braucht Playwright und einen Chromium, wie die uebrigen Messlaeufe. Geprueft
 // wird das, was U1 versprochen hat, im echten Browser statt in einer Behauptung:
 //
-//   Klick daneben   jedes der sieben Panels geht zu, wenn neben es geklickt
-//                   oder getippt wird
+//   Klick daneben   jedes der hier geprueften sieben Panels geht zu, wenn
+//                   neben es geklickt oder getippt wird
 //   kein Angriff    derselbe Griff fuehrt keinen Schlag aus und startet keinen
 //                   Joystick. Das ist die eigentliche Falle: die Angriffe
 //                   haengen an canvas.mousedown/touchstart, ein Panel liegt nur
@@ -19,10 +19,12 @@
 //   Esc             schliesst weiterhin eine Ebene je Druck, nicht alles
 //   Kopfband        der Schliessknopf bleibt beim Scrollen im Bild
 //
-// Das achte Panel, das Gespraechsfenster aus U3, prueft tools/gespraech-pruef.mjs.
-// Es haengt seit U3 im selben PANEL_REGISTER und folgt denselben Regeln; die
-// Zeilen dafuer stehen dort, weil dort auch Namensschild, Tippen und Schriftstufe
-// geprueft werden und ein Lauf je Bauabschnitt leichter zu lesen ist.
+// PANEL_REGISTER haelt inzwischen neun Eintraege. Sieben davon stehen hier, die
+// beiden anderen werden in ihrem eigenen Lauf geprueft, weil dort auch der Rest
+// ihres Bauabschnitts steht und ein Lauf je Bauabschnitt leichter zu lesen ist:
+// das Gespraechsfenster aus U3 in tools/gespraech-pruef.mjs, die Zulagen aus K1
+// in tools/zulagen-pruef.mjs. Beide haengen im selben Register und folgen
+// denselben Regeln; wer hier eine Zeile ergaenzt, ergaenzt sie dort mit.
 //
 // Anders als monster-messlauf.mjs misst dieser Lauf nichts, er stellt fest:
 // jede Zeile ist ein Soll-Ist-Vergleich, der Exit-Code ist 1, sobald eine
