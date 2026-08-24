@@ -988,6 +988,24 @@ Der achte Strang in `LANGVORGAENGE` und der erste nach W7. Kapitel 10, Nummer 4:
 * **Warum eine Differenz Nörgel nicht isoliert.** `amt.schichten` treibt nicht nur den Akt, sondern über die Schichtabrechnung auch den Rang: beim Schritt von Akt III nach Akt IV gehen bei ihm `abAkt=4` und `abRang=5` gemeinsam auf. Ein einzelner Block ist über die Schichten grundsätzlich nicht als Differenz zu messen. Sauber messbar ist der Merker, weil er nichts außer sich selbst bewegt.
 * **Vier Eingriffe** haben die neuen Prüfungen einzeln ausgelöst und sind zurückgenommen.
 
+### G9-Nachtrag: Die vier Dateien der Garderobe — ERLEDIGT (siehe `phase-g9-nachtrag-garderobe.md`)
+
+G9 hat die Garderobe an vier Dateien gehängt, die nie ins Grafikpaket kopiert wurden. Seither standen vier `Sprite fehlt`-Gruppen in jeder Konsole, und dahinter stand Wirt Fass ohne Hemd, Herr Lott ohne Hemd und die Dienstmütze von Trepp und Nieselbeck weiterhin als Haarfarbe. `tools/figurenfarben-messlauf.mjs` hat es die ganze Zeit gemeldet.
+
+* **Eine Zusage über eine Tabelle ist keine Zusage über das Bild.** `figurenFarbenAssert()` prüft seit G9, dass jede Form in `CF_GARDEROBE` steht — und hatte in allem recht. Ob es zu einer Form ein Blatt gibt, hat niemand gefragt. Genau das fragt jetzt `garderobeAssert()`, hinter `loadAssets()` wie `dorfSichtAssert()`.
+* **`CF_GARDEROBE_ERSATZ`, und zwar knapp.** Das Karohemd fällt auf `hemd` zurück (dieselbe Silhouette, die Farbe kommt ohnehin aus `farbBlatt()`); die Mütze bekommt keinen Ersatz, weil das Pack genau eine Kopfbedeckung hat und ein Helm auf dem Zusteller eine andere Figur wäre. Wer ohne Mütze dasteht, steht da wie vor G9.
+* **Die Tabelle bleibt unangetastet.** Fass und Lott tragen weiter `hemd:'karo'`. Sie sagt, was gemeint ist; der Ersatz sagt, was daraus wird, solange die Datei fehlt.
+* **Die vier Pfade stehen jetzt in `assets/cf/README.md`.** Sie zu ergänzen kostet keine Codezeile, und die Startzeile des Guards wird dann von selbst kürzer.
+
+### G11: Die Koppel, das Schild und das Boot — ERLEDIGT (siehe `phase-g11-koppel-schild-boot.md`)
+
+Der erste Griff in den Deko-Steinbruch aus `GRAFIK-BESTAND-2026-08-21.md`, Punkt 7. Drei Setzer, und eine Mechanik, die nicht vorgesehen war.
+
+* **Der Zaun war nicht das Problem, die Tiere waren es.** Ambiente-Tiere kollidieren mit nichts; ein Zaun um sie herum wäre eine Behauptung gewesen, dieselbe Sorte, die M3 bei Schienen ohne Lore abgelehnt hat. Sechs der achtzehn Tiere tragen deshalb eine Grenze und prallen an ihr ab wie an einer Wand. Die Zahl bleibt achtzehn: die Dichte war eine Entscheidung aus W-Groß, und ein Zaun ist kein Grund für mehr Vieh.
+* **Der Platz wird gesucht, nicht gesetzt**, und ohne `rng()`. Über den Weidegürtel (82x67) sind 64 Prozent der Kacheln frei, das größte durchgehend freie Rechteck misst aber 28x2 — 1253 Kacheln sind Weg. Der **Rand** muss frei sein (ein Zaun über einer Straße sperrt sie), die **Fläche** darf einen Baum tragen (Schattenspender, und die Tiere prallen ohnehin ab). Genommen wird das dorfnächste Rechteck; das erste, das zeilenweise gefunden wurde, stand zwischen Frostgeistern.
+* **Das Boot ist ausdrücklich ohne Funktion.** Die ausgelagerten Bestände gelten als „angeblich erreichbar, nie geprüft", und genau so sieht ein Boot aus, das niemand benutzt.
+* **Keine neue Kachelart, keine Kollision, kein Vorgang.** Wer nie hinsieht, spielt das Spiel unverändert weiter.
+
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 
 SZ3 der Stopfen im Steinfeld samt Blattserie I und Postregen sowie Vorblatts Ankunft, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.

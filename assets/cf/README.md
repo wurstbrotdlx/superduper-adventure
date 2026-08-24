@@ -70,6 +70,83 @@ Begründung, insbesondere die Ersatzregel für die fehlenden Kampfanimationen).
 **Bewusst nicht kopiert:** `Accessories/Farmer_Hat_1.png` (nur eine einzige Datei,
 keine sinnvolle Zufallsvielfalt) und alle weiteren Hair-Farben (6 Style-Slots
 reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `index.html`).
+*(Der Hut ist seit G9 überholt: er ist dort Trepps und Nieselbecks Dienstmütze
+und wird gebraucht. Siehe den G9-Abschnitt unten.)*
+
+### Von G9 gebraucht (`player/`)
+
+Bauabschnitt G9 hat aus der Rüstungsstufe eine **Garderobe** gemacht
+(`CF_GARDEROBE` in `index.html`) und dabei vier Dateien in Dienst genommen, die
+diese Liste bis zum G9-Nachtrag nicht kannte. Sie lagen deshalb drei
+Bauabschnitte lang nicht im Assets-Repo, und was das anrichtete, stand in jeder
+Konsole: vier `Sprite fehlt`-Gruppen, und dahinter Wirt Fass und Herr Lott ohne
+Hemd. Seit dem G9-Nachtrag sind sie da.
+
+| Zielordner | Datei | Wofür |
+|---|---|---|
+| `player/Chest/Lumberjack_Shirt/` | `Lumberjack_Shirt_1_Green.png` | Garderobenform `hemd:'karo'`, das offene Arbeitshemd. Trägt Wirt Fass und Herr Lott |
+| `player/Accessories/` | `Farmer_Hat_1.png` | Garderobenform `hut:'muetze'`. Die einzige echte Kopfbedeckung des Packs, und auf den Porträts die Dienstmütze von Zusteller Trepp und Herrn Nieselbeck |
+| `player/Head/Plate_Helmet_1/` | `Plate_Helmet_1_Iron.png` | Garderobenform `hut:'helm'`. Trägt im Dorf niemand, steht der Vollständigkeit halber |
+| `player/Head/Plate_Helmet_2/` | `Heavy_Plate_Helmet_1_Iron.png` | Garderobenform `hut:'helmSchwer'`, dito |
+
+Alle vier liegen in der Rohbibliothek unter `Cute_Fantasy/Player/` und tragen
+dasselbe 9x56-Raster à 64x64 wie `Player_Base` — Drop-ins für
+`addCfHeroLayer()`, keine Codezeile nötig:
+
+```
+Cute_Fantasy/Player/Chest/Lumberjack_Shirt/Lumberjack_Shirt_1_Green.png
+Cute_Fantasy/Player/Accessories/Farmer_Hat_1.png
+Cute_Fantasy/Player/Head/Plate_Helmet_1/Plate_Helmet_1_Iron.png
+Cute_Fantasy/Player/Head/Plate_Helmet_2/Heavy_Plate_Helmet_1_Iron.png
+```
+
+**Fehlen sie, läuft das Spiel trotzdem angezogen.** Der G9-Nachtrag hat dafür
+`CF_GARDEROBE_ERSATZ` gebaut: das Karohemd fällt auf `hemd` zurück, die Mütze hat
+keinen Ersatz (das Pack hat genau eine Kopfbedeckung, und ein Helm auf dem
+Zusteller wäre eine andere Figur), die beiden Helme trägt ohnehin niemand. Der
+Ersatzweg bleibt stehen, auch jetzt, wo die Dateien da sind — er ist für den
+nächsten, der ohne vollständiges Paket klont, und er hat den Fund überhaupt erst
+sichtbar gemacht. `garderobeAssert()` meldet beim Start in einer Zeile, was
+ersetzt wurde und wer ohne Kopfbedeckung im Dorf steht; mit allen vier Dateien
+lautet sie `13 Formen, keine ersetzt.`
+
+**Zur Mütze**, damit es niemand noch einmal misst: `Farmer_Hat_1` ist über alle
+zehn Packs hinweg die einzige Kopfbedeckung auf dem Heldenraster, die kein Helm
+ist. Sie ist eine breitkrempige Krempe und nicht die flache Schirmmütze, die
+Trepps und Nieselbecks Porträts zeigen. Das ist gesehen, verglichen und
+entschieden: die Krempe bleibt. Eine Kopfbedeckung, die als solche erkennbar
+ist, schlägt eine Mützenfarbe auf einer Frisur.
+
+### Von G11 gebraucht (`deco/Outdoor/`)
+
+Bauabschnitt G11 (Koppel, Schild, Boot). Sechs **handgeschnittene Zellen** aus
+`Cute_Fantasy/Outdoor decoration/Fences.png`, ein Schild aus `Signs.png`, das
+Boot als fertiges Anim-Blatt.
+
+Geschnitten und nicht als Blatt registriert, weil ein Deko-Eintrag im Spiel
+immer `animFrame(sheet, …)` zeichnet und bei `n:1` das Frame 0 seiner Zeile: die
+**Spalte** ist so nicht adressierbar, und der Zaun braucht sechs Spalten aus zwei
+Zeilen. Dieselbe Lage wie bei `crate`/`pot`/`cobweb` aus G1, derselbe Weg.
+
+Welche Zelle was ist, steht nicht im Dateinamen, sondern in der Alpha-Bounding-Box
+je Zelle, von Hand gemessen (der Pfosten sitzt in allen Zellen bei x5–10, sie
+fluchten deshalb über Ecken und Kanten):
+
+| Datei | Quelle | Zelle | Bounding-Box | Rolle |
+|---|---|---|---|---|
+| `deco/Outdoor/fence_h.png` | `Fences.png` | (2,0) | x0–15, y3–13 | Riegel durch die ganze Zelle, kein Pfosten |
+| `deco/Outdoor/fence_v.png` | `Fences.png` | (0,1) | x5–10, y0–15 | Pfostenreihe durch die ganze Zelle |
+| `deco/Outdoor/fence_tl.png` | `Fences.png` | (1,1) | x5–15, y3–15 | Ecke oben links |
+| `deco/Outdoor/fence_tr.png` | `Fences.png` | (3,1) | x0–10, y3–15 | Ecke oben rechts |
+| `deco/Outdoor/fence_bl.png` | `Fences.png` | (1,3) | x5–15, y0–13 | Ecke unten links |
+| `deco/Outdoor/fence_br.png` | `Fences.png` | (3,3) | x0–10, y0–13 | Ecke unten rechts |
+| `deco/Outdoor/sign_post.png` | `Signs.png` | x0,y16, 16x32 | — | Das Schild am Amt |
+| `deco/Outdoor/Boat_Anim.png` | `Outdoor_Decor_Animations/Other_Animations/` | unverändert | — | Boot an der Tilgung, **vier Frames zu 48**, nicht 16 |
+
+**Zum Boot:** das Manifest tippt hier wie bei jedem Flächenblatt auf 16x16. Die
+wahre Frame-Breite ist über die leeren Spalten gemessen (2–41, 50–90, 98–138,
+146–186) und beträgt 48. Der Anker liegt auf der Wasserlinie (y45), nicht an der
+Blattunterkante.
 
 ### Von G3 gebraucht (`enemies/`, `deco/`)
 

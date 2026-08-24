@@ -1336,6 +1336,3664 @@
     "anims": null
   },
   {
+    "path": "Cute_Fantasy_Desert/Animals/Camel/Camel_1.png",
+    "w": 480,
+    "h": 288,
+    "fw": 48,
+    "fh": 32,
+    "cols": 10,
+    "rows": 9,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.127,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 16,
+        "score": 5.456
+      },
+      {
+        "fw": 24,
+        "fh": 32,
+        "score": 5.336
+      }
+    ],
+    "rowFrames": [
+      2,
+      6,
+      10,
+      6,
+      6,
+      6,
+      5,
+      8,
+      4
+    ],
+    "totalFrames": 53,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 31
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 1,
+      "w": 36,
+      "h": 30
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Camel/Camel_2.png",
+    "w": 480,
+    "h": 288,
+    "fw": 48,
+    "fh": 32,
+    "cols": 10,
+    "rows": 9,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.127,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 16,
+        "score": 5.456
+      },
+      {
+        "fw": 24,
+        "fh": 32,
+        "score": 5.336
+      }
+    ],
+    "rowFrames": [
+      2,
+      6,
+      10,
+      6,
+      6,
+      6,
+      5,
+      8,
+      4
+    ],
+    "totalFrames": 53,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 31
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 1,
+      "w": 36,
+      "h": 30
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Camel/Camel_3.png",
+    "w": 480,
+    "h": 288,
+    "fw": 48,
+    "fh": 32,
+    "cols": 10,
+    "rows": 9,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.127,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 16,
+        "score": 5.456
+      },
+      {
+        "fw": 24,
+        "fh": 32,
+        "score": 5.336
+      }
+    ],
+    "rowFrames": [
+      2,
+      6,
+      10,
+      6,
+      6,
+      6,
+      5,
+      8,
+      4
+    ],
+    "totalFrames": 53,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 31
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 1,
+      "w": 36,
+      "h": 30
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Scarab/Scarab_Black.png",
+    "w": 64,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 4,
+    "rows": 3,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.157,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.268
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.892
+      }
+    ],
+    "rowFrames": [
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 12,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 13
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 0,
+      "w": 14,
+      "h": 13
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Scarab/Scarab_Brown.png",
+    "w": 64,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 4,
+    "rows": 3,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.157,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.268
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.892
+      }
+    ],
+    "rowFrames": [
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 12,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 13
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 0,
+      "w": 14,
+      "h": 13
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Scarab/Scarab_Green.png",
+    "w": 64,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 4,
+    "rows": 3,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.157,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.268
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.892
+      }
+    ],
+    "rowFrames": [
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 12,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 13
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 0,
+      "w": 14,
+      "h": 13
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Scarab/Scarab_Yellow.png",
+    "w": 64,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 4,
+    "rows": 3,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.157,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.268
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.892
+      }
+    ],
+    "rowFrames": [
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 12,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 13
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 0,
+      "w": 14,
+      "h": 13
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Vulture/Vulture_1.png",
+    "w": 336,
+    "h": 336,
+    "fw": 48,
+    "fh": 48,
+    "cols": 7,
+    "rows": 7,
+    "gridSource": "inferred",
+    "score": 5.491,
+    "confidence": 0.05,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 21,
+        "score": 5.219
+      },
+      {
+        "fw": 48,
+        "fh": 24,
+        "score": 4.994
+      }
+    ],
+    "rowFrames": [
+      6,
+      4,
+      7,
+      7,
+      7,
+      6,
+      4
+    ],
+    "totalFrames": 41,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 35
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 3,
+      "w": 33,
+      "h": 32
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Vulture/Vulture_2.png",
+    "w": 336,
+    "h": 336,
+    "fw": 48,
+    "fh": 48,
+    "cols": 7,
+    "rows": 7,
+    "gridSource": "inferred",
+    "score": 5.491,
+    "confidence": 0.05,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 21,
+        "score": 5.219
+      },
+      {
+        "fw": 48,
+        "fh": 24,
+        "score": 4.994
+      }
+    ],
+    "rowFrames": [
+      6,
+      4,
+      7,
+      7,
+      7,
+      6,
+      4
+    ],
+    "totalFrames": 41,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 35
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 3,
+      "w": 33,
+      "h": 32
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Vulture/Vulture_3.png",
+    "w": 336,
+    "h": 336,
+    "fw": 48,
+    "fh": 48,
+    "cols": 7,
+    "rows": 7,
+    "gridSource": "inferred",
+    "score": 5.491,
+    "confidence": 0.05,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 21,
+        "score": 5.219
+      },
+      {
+        "fw": 48,
+        "fh": 24,
+        "score": 4.994
+      }
+    ],
+    "rowFrames": [
+      6,
+      4,
+      7,
+      7,
+      7,
+      6,
+      4
+    ],
+    "totalFrames": 41,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 35
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 3,
+      "w": 33,
+      "h": 32
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Animals/Vulture/Vulture_4.png",
+    "w": 336,
+    "h": 336,
+    "fw": 48,
+    "fh": 48,
+    "cols": 7,
+    "rows": 7,
+    "gridSource": "inferred",
+    "score": 5.491,
+    "confidence": 0.05,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 21,
+        "score": 5.219
+      },
+      {
+        "fw": 48,
+        "fh": 24,
+        "score": 4.994
+      }
+    ],
+    "rowFrames": [
+      6,
+      4,
+      7,
+      7,
+      7,
+      6,
+      4
+    ],
+    "totalFrames": 41,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 35
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 3,
+      "w": 33,
+      "h": 32
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/enemies/Desert_Warrior_Atgier_1.png",
+    "w": 384,
+    "h": 832,
+    "fw": 64,
+    "fh": 64,
+    "cols": 6,
+    "rows": 13,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.125,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 32,
+        "score": 5.47
+      },
+      {
+        "fw": 32,
+        "fh": 64,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 70,
+    "anchorSuggested": {
+      "ax": 32,
+      "ay": 55
+    },
+    "unionBBox": {
+      "x": 19,
+      "y": 9,
+      "w": 40,
+      "h": 46
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/enemies/Desert_Warrior_Atgier_2.png",
+    "w": 384,
+    "h": 832,
+    "fw": 64,
+    "fh": 64,
+    "cols": 6,
+    "rows": 13,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.125,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 32,
+        "score": 5.47
+      },
+      {
+        "fw": 32,
+        "fh": 64,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 70,
+    "anchorSuggested": {
+      "ax": 32,
+      "ay": 55
+    },
+    "unionBBox": {
+      "x": 19,
+      "y": 9,
+      "w": 40,
+      "h": 46
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/enemies/Desert_Warrior_Bow_1.png",
+    "w": 384,
+    "h": 832,
+    "fw": 64,
+    "fh": 64,
+    "cols": 6,
+    "rows": 13,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.063,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 16,
+        "score": 5.853
+      },
+      {
+        "fw": 48,
+        "fh": 64,
+        "score": 5.821
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 70,
+    "anchorSuggested": {
+      "ax": 32,
+      "ay": 48
+    },
+    "unionBBox": {
+      "x": 22,
+      "y": 17,
+      "w": 26,
+      "h": 31
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/enemies/Desert_Warrior_Bow_2.png",
+    "w": 384,
+    "h": 832,
+    "fw": 64,
+    "fh": 64,
+    "cols": 6,
+    "rows": 13,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.063,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 16,
+        "score": 5.853
+      },
+      {
+        "fw": 48,
+        "fh": 64,
+        "score": 5.821
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 70,
+    "anchorSuggested": {
+      "ax": 32,
+      "ay": 48
+    },
+    "unionBBox": {
+      "x": 22,
+      "y": 17,
+      "w": 26,
+      "h": 31
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/enemies/Mummy.png",
+    "w": 192,
+    "h": 416,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 13,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.125,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 5.47
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 70,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 2,
+      "w": 19,
+      "h": 23
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_1.1.png",
+    "w": 80,
+    "h": 80,
+    "fw": 80,
+    "fh": 80,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.25,
+    "alternatives": [
+      {
+        "fw": 40,
+        "fh": 80,
+        "score": 4.5
+      },
+      {
+        "fw": 80,
+        "fh": 40,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 40,
+      "ay": 77
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 3,
+      "w": 63,
+      "h": 74
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_1.2.png",
+    "w": 80,
+    "h": 80,
+    "fw": 80,
+    "fh": 80,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.25,
+    "alternatives": [
+      {
+        "fw": 40,
+        "fh": 80,
+        "score": 4.5
+      },
+      {
+        "fw": 80,
+        "fh": 40,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 40,
+      "ay": 77
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 3,
+      "w": 63,
+      "h": 74
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_1.3.png",
+    "w": 80,
+    "h": 80,
+    "fw": 80,
+    "fh": 80,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.25,
+    "alternatives": [
+      {
+        "fw": 40,
+        "fh": 80,
+        "score": 4.5
+      },
+      {
+        "fw": 80,
+        "fh": 40,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 40,
+      "ay": 77
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 3,
+      "w": 63,
+      "h": 74
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_1.4.png",
+    "w": 80,
+    "h": 80,
+    "fw": 80,
+    "fh": 80,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.25,
+    "alternatives": [
+      {
+        "fw": 40,
+        "fh": 80,
+        "score": 4.5
+      },
+      {
+        "fw": 80,
+        "fh": 40,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 40,
+      "ay": 77
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 3,
+      "w": 63,
+      "h": 74
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_2.1.png",
+    "w": 96,
+    "h": 128,
+    "fw": 96,
+    "fh": 128,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 4.625
+      },
+      {
+        "fw": 96,
+        "fh": 64,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 48,
+      "ay": 125
+    },
+    "unionBBox": {
+      "x": 7,
+      "y": 13,
+      "w": 87,
+      "h": 112
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_2.2.png",
+    "w": 96,
+    "h": 128,
+    "fw": 96,
+    "fh": 128,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 4.625
+      },
+      {
+        "fw": 96,
+        "fh": 64,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 48,
+      "ay": 125
+    },
+    "unionBBox": {
+      "x": 7,
+      "y": 13,
+      "w": 87,
+      "h": 112
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_2.3.png",
+    "w": 96,
+    "h": 128,
+    "fw": 96,
+    "fh": 128,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 4.625
+      },
+      {
+        "fw": 96,
+        "fh": 64,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 48,
+      "ay": 125
+    },
+    "unionBBox": {
+      "x": 7,
+      "y": 13,
+      "w": 87,
+      "h": 112
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_2.4.png",
+    "w": 96,
+    "h": 128,
+    "fw": 96,
+    "fh": 128,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 4.625
+      },
+      {
+        "fw": 96,
+        "fh": 64,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 48,
+      "ay": 125
+    },
+    "unionBBox": {
+      "x": 7,
+      "y": 13,
+      "w": 87,
+      "h": 112
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_3.1.png",
+    "w": 128,
+    "h": 112,
+    "fw": 128,
+    "fh": 112,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 112,
+        "score": 4.625
+      },
+      {
+        "fw": 128,
+        "fh": 56,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 64,
+      "ay": 109
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 13,
+      "w": 111,
+      "h": 96
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_3.2.png",
+    "w": 128,
+    "h": 112,
+    "fw": 128,
+    "fh": 112,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 112,
+        "score": 4.625
+      },
+      {
+        "fw": 128,
+        "fh": 56,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 64,
+      "ay": 109
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 13,
+      "w": 111,
+      "h": 96
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_3.3.png",
+    "w": 128,
+    "h": 112,
+    "fw": 128,
+    "fh": 112,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 112,
+        "score": 4.625
+      },
+      {
+        "fw": 128,
+        "fh": 56,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 64,
+      "ay": 109
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 13,
+      "w": 111,
+      "h": 96
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_3.4.png",
+    "w": 128,
+    "h": 112,
+    "fw": 128,
+    "fh": 112,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 112,
+        "score": 4.625
+      },
+      {
+        "fw": 128,
+        "fh": 56,
+        "score": 4.5
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 64,
+      "ay": 109
+    },
+    "unionBBox": {
+      "x": 11,
+      "y": 13,
+      "w": 111,
+      "h": 96
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_4.1.png",
+    "w": 144,
+    "h": 128,
+    "fw": 72,
+    "fh": 128,
+    "cols": 2,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.5,
+    "confidence": 0.12,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 3.958
+      },
+      {
+        "fw": 36,
+        "fh": 128,
+        "score": 3.5
+      }
+    ],
+    "rowFrames": [
+      2
+    ],
+    "totalFrames": 2,
+    "anchorSuggested": {
+      "ax": 36,
+      "ay": 118
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 13,
+      "w": 72,
+      "h": 105
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_4.2.png",
+    "w": 144,
+    "h": 128,
+    "fw": 72,
+    "fh": 128,
+    "cols": 2,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.5,
+    "confidence": 0.12,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 3.958
+      },
+      {
+        "fw": 36,
+        "fh": 128,
+        "score": 3.5
+      }
+    ],
+    "rowFrames": [
+      2
+    ],
+    "totalFrames": 2,
+    "anchorSuggested": {
+      "ax": 36,
+      "ay": 118
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 13,
+      "w": 72,
+      "h": 105
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_4.3.png",
+    "w": 144,
+    "h": 128,
+    "fw": 72,
+    "fh": 128,
+    "cols": 2,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.5,
+    "confidence": 0.12,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 3.958
+      },
+      {
+        "fw": 36,
+        "fh": 128,
+        "score": 3.5
+      }
+    ],
+    "rowFrames": [
+      2
+    ],
+    "totalFrames": 2,
+    "anchorSuggested": {
+      "ax": 36,
+      "ay": 118
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 13,
+      "w": 72,
+      "h": 105
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Desert_House_4.4.png",
+    "w": 144,
+    "h": 128,
+    "fw": 72,
+    "fh": 128,
+    "cols": 2,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.5,
+    "confidence": 0.12,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 128,
+        "score": 3.958
+      },
+      {
+        "fw": 36,
+        "fh": 128,
+        "score": 3.5
+      }
+    ],
+    "rowFrames": [
+      2
+    ],
+    "totalFrames": 2,
+    "anchorSuggested": {
+      "ax": 36,
+      "ay": 118
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 13,
+      "w": 72,
+      "h": 105
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Houses/Pergola.png",
+    "w": 32,
+    "h": 64,
+    "fw": 32,
+    "fh": 64,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.25,
+    "confidence": 0.118,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 3.75
+      },
+      {
+        "fw": 32,
+        "fh": 32,
+        "score": 3.75
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 57
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 6,
+      "w": 32,
+      "h": 51
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Desert_Person_1.png",
+    "w": 192,
+    "h": 320,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 10,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.126,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 5.461
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 52,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 2,
+      "w": 19,
+      "h": 23
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Desert_Person_2.png",
+    "w": 192,
+    "h": 320,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 10,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.126,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 5.461
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 52,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 2,
+      "w": 19,
+      "h": 23
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Desert_Person_3.png",
+    "w": 192,
+    "h": 320,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 10,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.126,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 5.461
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 52,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 2,
+      "w": 19,
+      "h": 23
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Desert_Person_4.png",
+    "w": 192,
+    "h": 320,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 10,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.126,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 5.461
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 52,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 2,
+      "w": 19,
+      "h": 23
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Pharaoh.png",
+    "w": 256,
+    "h": 320,
+    "fw": 32,
+    "fh": 32,
+    "cols": 8,
+    "rows": 10,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.096,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.65
+      },
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 5.461
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      4,
+      4,
+      4
+    ],
+    "totalFrames": 52,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 6,
+      "y": 1,
+      "w": 23,
+      "h": 24
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Traders/Desert_Trader_1.png",
+    "w": 192,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.089,
+    "alternatives": [
+      {
+        "fw": 24,
+        "fh": 32,
+        "score": 5.696
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6
+    ],
+    "totalFrames": 6,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 5,
+      "w": 15,
+      "h": 20
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Traders/Desert_Trader_2.png",
+    "w": 192,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.089,
+    "alternatives": [
+      {
+        "fw": 24,
+        "fh": 32,
+        "score": 5.696
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6
+    ],
+    "totalFrames": 6,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 5,
+      "w": 15,
+      "h": 20
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Traders/Desert_Trader_3.png",
+    "w": 192,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 6,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.089,
+    "alternatives": [
+      {
+        "fw": 24,
+        "fh": 32,
+        "score": 5.696
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.432
+      }
+    ],
+    "rowFrames": [
+      6
+    ],
+    "totalFrames": 6,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 25
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 5,
+      "w": 15,
+      "h": 20
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/NPC/Traders/Desert_Trader_Camp.png",
+    "w": 576,
+    "h": 64,
+    "fw": 96,
+    "fh": 64,
+    "cols": 6,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.125,
+    "confidence": 0.113,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 64,
+        "score": 5.432
+      },
+      {
+        "fw": 96,
+        "fh": 32,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      6
+    ],
+    "totalFrames": 6,
+    "anchorSuggested": {
+      "ax": 48,
+      "ay": 62
+    },
+    "unionBBox": {
+      "x": 2,
+      "y": 6,
+      "w": 76,
+      "h": 56
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Acacia_Tree.png",
+    "w": 240,
+    "h": 64,
+    "fw": 80,
+    "fh": 64,
+    "cols": 3,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.125,
+    "confidence": 0.147,
+    "alternatives": [
+      {
+        "fw": 40,
+        "fh": 64,
+        "score": 5.225
+      },
+      {
+        "fw": 80,
+        "fh": 32,
+        "score": 4.125
+      }
+    ],
+    "rowFrames": [
+      3
+    ],
+    "totalFrames": 3,
+    "anchorSuggested": {
+      "ax": 40,
+      "ay": 61
+    },
+    "unionBBox": {
+      "x": 8,
+      "y": 2,
+      "w": 65,
+      "h": 59
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Ambarakaman_Plant.png",
+    "w": 48,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 3,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.164,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.225
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      3
+    ],
+    "totalFrames": 3,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 15
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 1,
+      "w": 14,
+      "h": 14
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Cactus.png",
+    "w": 224,
+    "h": 256,
+    "fw": 32,
+    "fh": 32,
+    "cols": 7,
+    "rows": 8,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.128,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 5.45
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 5.442
+      }
+    ],
+    "rowFrames": [
+      6,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      5
+    ],
+    "totalFrames": 50,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 32
+    },
+    "unionBBox": {
+      "x": 2,
+      "y": 1,
+      "w": 28,
+      "h": 31
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Dead_bush.png",
+    "w": 32,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 2,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.18,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.125
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.125
+      }
+    ],
+    "rowFrames": [
+      2
+    ],
+    "totalFrames": 2,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 1,
+      "w": 13,
+      "h": 15
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Dead_tree.png",
+    "w": 48,
+    "h": 64,
+    "fw": 48,
+    "fh": 64,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 32,
+        "score": 4.75
+      },
+      {
+        "fw": 24,
+        "fh": 64,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 61
+    },
+    "unionBBox": {
+      "x": 9,
+      "y": 4,
+      "w": 36,
+      "h": 57
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Bones.png",
+    "w": 160,
+    "h": 128,
+    "fw": 16,
+    "fh": 32,
+    "cols": 10,
+    "rows": 4,
+    "gridSource": "inferred",
+    "score": 3.8,
+    "confidence": 0.099,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 32,
+        "score": 3.424
+      },
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 3.392
+      }
+    ],
+    "rowFrames": [
+      9,
+      7,
+      8,
+      6
+    ],
+    "totalFrames": 30,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 32
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 32
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Campfire.png",
+    "w": 96,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 6,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.151,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.307
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      6
+    ],
+    "totalFrames": 6,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 15
+    },
+    "unionBBox": {
+      "x": 2,
+      "y": 2,
+      "w": 12,
+      "h": 13
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Fencewall.png",
+    "w": 64,
+    "h": 64,
+    "fw": 16,
+    "fh": 64,
+    "cols": 4,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.75,
+    "confidence": 0.244,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 64,
+        "score": 3.589
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 2.75
+      }
+    ],
+    "rowFrames": [
+      4
+    ],
+    "totalFrames": 4,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 64
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 1,
+      "w": 16,
+      "h": 63
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Fern_Dead.png",
+    "w": 16,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.26,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.625
+      },
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 3.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 15
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 1,
+      "w": 15,
+      "h": 14
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Fern.png",
+    "w": 16,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.26,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 4.625
+      },
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 3.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 15
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 1,
+      "w": 15,
+      "h": 14
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Grass_Props.png",
+    "w": 48,
+    "h": 16,
+    "fw": 8,
+    "fh": 16,
+    "cols": 6,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 5,
+    "confidence": 0.279,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 8,
+        "score": 3.605
+      },
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 0.938
+      }
+    ],
+    "rowFrames": [
+      6
+    ],
+    "totalFrames": 6,
+    "anchorSuggested": {
+      "ax": 4,
+      "ay": 12
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 4,
+      "w": 8,
+      "h": 8
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Ladder.png",
+    "w": 16,
+    "h": 48,
+    "fw": 16,
+    "fh": 48,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.25,
+    "confidence": 0.353,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 2.75
+      },
+      {
+        "fw": 8,
+        "fh": 48,
+        "score": 2.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 48
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 48
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Pots-Sacks.png",
+    "w": 80,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 5,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 5.45,
+    "confidence": 0.139,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 4.692
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 3.425
+      }
+    ],
+    "rowFrames": [
+      5
+    ],
+    "totalFrames": 5,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 0,
+      "w": 14,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Rocks.png",
+    "w": 192,
+    "h": 32,
+    "fw": 16,
+    "fh": 32,
+    "cols": 12,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 5.674,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 32,
+        "score": 4.313
+      },
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 3.754
+      }
+    ],
+    "rowFrames": [
+      12
+    ],
+    "totalFrames": 12,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 31
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 3,
+      "w": 16,
+      "h": 28
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Desert_Rugs.png",
+    "w": 96,
+    "h": 96,
+    "fw": 48,
+    "fh": 96,
+    "cols": 2,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.125,
+    "confidence": 0.273,
+    "alternatives": [
+      {
+        "fw": 24,
+        "fh": 96,
+        "score": 3
+      },
+      {
+        "fw": 16,
+        "fh": 96,
+        "score": 2.925
+      }
+    ],
+    "rowFrames": [
+      2
+    ],
+    "totalFrames": 2,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 96
+    },
+    "unionBBox": {
+      "x": 4,
+      "y": 0,
+      "w": 41,
+      "h": 96
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Fallen_Palm_Leaves_Dead.png",
+    "w": 32,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 4.75
+      },
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 4.75
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 28
+    },
+    "unionBBox": {
+      "x": 7,
+      "y": 6,
+      "w": 19,
+      "h": 22
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Fallen_Palm_Leaves.png",
+    "w": 32,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 4.75
+      },
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 4.75
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 28
+    },
+    "unionBBox": {
+      "x": 7,
+      "y": 6,
+      "w": 19,
+      "h": 22
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Fire_Pit.png",
+    "w": 112,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 7,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 5.679,
+    "confidence": 0.139,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 4.889
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 3.339
+      }
+    ],
+    "rowFrames": [
+      7
+    ],
+    "totalFrames": 7,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 2,
+      "y": 0,
+      "w": 11,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Flies_anim.png",
+    "w": 576,
+    "h": 16,
+    "fw": 9,
+    "fh": 16,
+    "cols": 64,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 3.799,
+    "confidence": 0.068,
+    "alternatives": [
+      {
+        "fw": 12,
+        "fh": 16,
+        "score": 3.541
+      },
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 2.708
+      }
+    ],
+    "rowFrames": [
+      46
+    ],
+    "totalFrames": 46,
+    "anchorSuggested": {
+      "ax": 5,
+      "ay": 12
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 4,
+      "w": 9,
+      "h": 8
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Golden_Pots.png",
+    "w": 48,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 3,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.1,
+    "alternatives": [
+      {
+        "fw": 12,
+        "fh": 16,
+        "score": 5.625
+      },
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 5.225
+      }
+    ],
+    "rowFrames": [
+      3
+    ],
+    "totalFrames": 3,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 14
+    },
+    "unionBBox": {
+      "x": 2,
+      "y": 3,
+      "w": 13,
+      "h": 11
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/HalfDead_tree.png",
+    "w": 48,
+    "h": 64,
+    "fw": 48,
+    "fh": 64,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 48,
+        "fh": 32,
+        "score": 4.75
+      },
+      {
+        "fw": 48,
+        "fh": 16,
+        "score": 3.75
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 61
+    },
+    "unionBBox": {
+      "x": 9,
+      "y": 3,
+      "w": 39,
+      "h": 58
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/mummy.png",
+    "w": 16,
+    "h": 32,
+    "fw": 16,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 4.75
+      },
+      {
+        "fw": 8,
+        "fh": 32,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 28
+    },
+    "unionBBox": {
+      "x": 1,
+      "y": 4,
+      "w": 14,
+      "h": 24
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Outdoor_Decor_Animations/Desert_Grass_1_Anim.png",
+    "w": 128,
+    "h": 16,
+    "fw": 8,
+    "fh": 16,
+    "cols": 16,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 3.062,
+    "confidence": 0.305,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 8,
+        "score": 2.128
+      },
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 0.938
+      }
+    ],
+    "rowFrames": [
+      16
+    ],
+    "totalFrames": 16,
+    "anchorSuggested": {
+      "ax": 4,
+      "ay": 10
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 5,
+      "w": 8,
+      "h": 5
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Outdoor_Decor_Animations/Desert_Grass_2_Anim.png",
+    "w": 128,
+    "h": 16,
+    "fw": 8,
+    "fh": 16,
+    "cols": 16,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.125,
+    "confidence": 0.265,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 8,
+        "score": 4.5
+      },
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 0.938
+      }
+    ],
+    "rowFrames": [
+      16
+    ],
+    "totalFrames": 16,
+    "anchorSuggested": {
+      "ax": 4,
+      "ay": 10
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 4,
+      "w": 7,
+      "h": 6
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Outdoor_Decor_Animations/Desert_Grass_3_Anim.png",
+    "w": 128,
+    "h": 16,
+    "fw": 8,
+    "fh": 16,
+    "cols": 16,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.125,
+    "confidence": 0.265,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 8,
+        "score": 4.5
+      },
+      {
+        "fw": 16,
+        "fh": 16,
+        "score": 0.938
+      }
+    ],
+    "rowFrames": [
+      16
+    ],
+    "totalFrames": 16,
+    "anchorSuggested": {
+      "ax": 4,
+      "ay": 12
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 4,
+      "w": 7,
+      "h": 8
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Palm_Tree_1.png",
+    "w": 144,
+    "h": 64,
+    "fw": 48,
+    "fh": 64,
+    "cols": 3,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.276,
+    "alternatives": [
+      {
+        "fw": 24,
+        "fh": 64,
+        "score": 4.525
+      },
+      {
+        "fw": 48,
+        "fh": 32,
+        "score": 4.25
+      }
+    ],
+    "rowFrames": [
+      3
+    ],
+    "totalFrames": 3,
+    "anchorSuggested": {
+      "ax": 24,
+      "ay": 59
+    },
+    "unionBBox": {
+      "x": 4,
+      "y": 10,
+      "w": 39,
+      "h": 49
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Palm_Tree_2.png",
+    "w": 96,
+    "h": 48,
+    "fw": 32,
+    "fh": 48,
+    "cols": 3,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.144,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 48,
+        "score": 5.35
+      },
+      {
+        "fw": 32,
+        "fh": 24,
+        "score": 4.125
+      }
+    ],
+    "rowFrames": [
+      3
+    ],
+    "totalFrames": 3,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 45
+    },
+    "unionBBox": {
+      "x": 2,
+      "y": 2,
+      "w": 29,
+      "h": 43
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Sleeping_Mat.png",
+    "w": 32,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.1,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 8,
+        "score": 5.625
+      },
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 4.75
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 23
+    },
+    "unionBBox": {
+      "x": 6,
+      "y": 11,
+      "w": 20,
+      "h": 12
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Props/Water_Sack_On_Stick.png",
+    "w": 16,
+    "h": 16,
+    "fw": 16,
+    "fh": 16,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 4.25,
+    "confidence": 0.382,
+    "alternatives": [
+      {
+        "fw": 8,
+        "fh": 16,
+        "score": 2.625
+      },
+      {
+        "fw": 16,
+        "fh": 8,
+        "score": 2.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Temple/Desert_Obelisk_1.png",
+    "w": 32,
+    "h": 80,
+    "fw": 32,
+    "fh": 80,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.125,
+    "confidence": 0.245,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 80,
+        "score": 4.625
+      },
+      {
+        "fw": 32,
+        "fh": 40,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 78
+    },
+    "unionBBox": {
+      "x": 6,
+      "y": 12,
+      "w": 21,
+      "h": 66
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Temple/Desert_Obelisk_2.png",
+    "w": 32,
+    "h": 80,
+    "fw": 32,
+    "fh": 80,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.125,
+    "confidence": 0.245,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 80,
+        "score": 4.625
+      },
+      {
+        "fw": 32,
+        "fh": 40,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 78
+    },
+    "unionBBox": {
+      "x": 6,
+      "y": 12,
+      "w": 21,
+      "h": 66
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Temple/Desert_Obelisk_Small_1.png",
+    "w": 32,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 4.75
+      },
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 4.75
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 29
+    },
+    "unionBBox": {
+      "x": 9,
+      "y": 3,
+      "w": 15,
+      "h": 26
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Temple/Desert_Obelisk_Small_2.png",
+    "w": 32,
+    "h": 32,
+    "fw": 32,
+    "fh": 32,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6.25,
+    "confidence": 0.24,
+    "alternatives": [
+      {
+        "fw": 16,
+        "fh": 32,
+        "score": 4.75
+      },
+      {
+        "fw": 32,
+        "fh": 16,
+        "score": 4.75
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 16,
+      "ay": 29
+    },
+    "unionBBox": {
+      "x": 9,
+      "y": 3,
+      "w": 15,
+      "h": 26
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Temple/Desert_Temple.png",
+    "w": 128,
+    "h": 128,
+    "fw": 128,
+    "fh": 128,
+    "cols": 1,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 6,
+    "confidence": 0.229,
+    "alternatives": [
+      {
+        "fw": 64,
+        "fh": 128,
+        "score": 4.625
+      },
+      {
+        "fw": 128,
+        "fh": 64,
+        "score": 4.625
+      }
+    ],
+    "rowFrames": [
+      1
+    ],
+    "totalFrames": 1,
+    "anchorSuggested": {
+      "ax": 64,
+      "ay": 126
+    },
+    "unionBBox": {
+      "x": 7,
+      "y": 2,
+      "w": 115,
+      "h": 124
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Temple/Temple-House_Interior.png",
+    "w": 160,
+    "h": 128,
+    "fw": 16,
+    "fh": 128,
+    "cols": 10,
+    "rows": 1,
+    "gridSource": "inferred",
+    "score": 2.625,
+    "confidence": 0,
+    "alternatives": [
+      {
+        "fw": 32,
+        "fh": 128,
+        "score": 2.625
+      },
+      {
+        "fw": 8,
+        "fh": 128,
+        "score": 2.5
+      }
+    ],
+    "rowFrames": [
+      10
+    ],
+    "totalFrames": 10,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 128
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 11,
+      "w": 16,
+      "h": 117
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Beach_Tiles_1.png",
+    "w": 80,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 5,
+    "rows": 3,
+    "gridSource": "rule",
+    "score": 1.25,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      5,
+      5,
+      3
+    ],
+    "totalFrames": 13,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Beach_Tiles_2.png",
+    "w": 80,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 5,
+    "rows": 3,
+    "gridSource": "rule",
+    "score": 1.25,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      5,
+      5,
+      3
+    ],
+    "totalFrames": 13,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Beach_Tiles_3.png",
+    "w": 80,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 5,
+    "rows": 3,
+    "gridSource": "rule",
+    "score": 1.25,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      5,
+      5,
+      3
+    ],
+    "totalFrames": 13,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Bridge.png",
+    "w": 144,
+    "h": 64,
+    "fw": 16,
+    "fh": 16,
+    "cols": 9,
+    "rows": 4,
+    "gridSource": "rule",
+    "score": 1.454,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      9,
+      9,
+      9,
+      3
+    ],
+    "totalFrames": 30,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Cliff_Tiles_1.png",
+    "w": 208,
+    "h": 176,
+    "fw": 16,
+    "fh": 16,
+    "cols": 13,
+    "rows": 11,
+    "gridSource": "rule",
+    "score": 0.931,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      0,
+      7,
+      8,
+      9,
+      5,
+      11,
+      7,
+      10,
+      11,
+      5,
+      4
+    ],
+    "totalFrames": 77,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Cliff_Tiles_2.png",
+    "w": 208,
+    "h": 176,
+    "fw": 16,
+    "fh": 16,
+    "cols": 13,
+    "rows": 11,
+    "gridSource": "rule",
+    "score": 0.935,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      0,
+      7,
+      8,
+      9,
+      3,
+      11,
+      7,
+      10,
+      11,
+      5,
+      4
+    ],
+    "totalFrames": 75,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Cliff_Tiles_3.png",
+    "w": 208,
+    "h": 176,
+    "fw": 16,
+    "fh": 16,
+    "cols": 13,
+    "rows": 11,
+    "gridSource": "rule",
+    "score": 0.935,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      0,
+      7,
+      8,
+      9,
+      3,
+      11,
+      7,
+      10,
+      11,
+      5,
+      4
+    ],
+    "totalFrames": 75,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Cliff_Waterfall_1.png",
+    "w": 288,
+    "h": 96,
+    "fw": 16,
+    "fh": 16,
+    "cols": 18,
+    "rows": 6,
+    "gridSource": "rule",
+    "score": 1.25,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      18,
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "totalFrames": 108,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Cliff_Waterfall_2.png",
+    "w": 288,
+    "h": 80,
+    "fw": 16,
+    "fh": 16,
+    "cols": 18,
+    "rows": 5,
+    "gridSource": "rule",
+    "score": 1.25,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "totalFrames": 90,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Cliff_Waterfall_3.png",
+    "w": 288,
+    "h": 80,
+    "fw": 16,
+    "fh": 16,
+    "cols": 18,
+    "rows": 5,
+    "gridSource": "rule",
+    "score": 1.25,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "totalFrames": 90,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Grass.png",
+    "w": 48,
+    "h": 80,
+    "fw": 16,
+    "fh": 16,
+    "cols": 3,
+    "rows": 5,
+    "gridSource": "rule",
+    "score": 1.665,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      3,
+      2,
+      3,
+      3,
+      2
+    ],
+    "totalFrames": 13,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Water_Foam_Animation.png",
+    "w": 320,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 20,
+    "rows": 3,
+    "gridSource": "rule",
+    "score": 0.917,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      20,
+      20,
+      12
+    ],
+    "totalFrames": 52,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Water_Tiles_1.png",
+    "w": 96,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 6,
+    "rows": 3,
+    "gridSource": "rule",
+    "score": 0.917,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      6,
+      5,
+      6
+    ],
+    "totalFrames": 17,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Water_Tiles_2.png",
+    "w": 96,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 6,
+    "rows": 3,
+    "gridSource": "rule",
+    "score": 0.917,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      6,
+      5,
+      6
+    ],
+    "totalFrames": 17,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
+    "path": "Cute_Fantasy_Desert/Tiles/Desert_Water_Tiles_3.png",
+    "w": 96,
+    "h": 48,
+    "fw": 16,
+    "fh": 16,
+    "cols": 6,
+    "rows": 3,
+    "gridSource": "rule",
+    "score": 0.917,
+    "confidence": 1,
+    "alternatives": [],
+    "rowFrames": [
+      6,
+      5,
+      6
+    ],
+    "totalFrames": 17,
+    "anchorSuggested": {
+      "ax": 8,
+      "ay": 16
+    },
+    "unionBBox": {
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "anims": null
+  },
+  {
     "path": "Cute_Fantasy_Dungeons/Dungeon_1/Dungeon_1_Arch_Open.png",
     "w": 32,
     "h": 32,
