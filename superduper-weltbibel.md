@@ -1065,6 +1065,19 @@ Die Versuchung als Versammlung im Amtsflur, die Zustellung als Ausbau von `vorga
 
 **Abnahme:** Wer die Versuchung nie sieht, spielt das Spiel unverändert zu Ende. Die Mappen werden nie abgeholt, niemand nimmt etwas an und niemand lehnt etwas ab, und die Zustellung wird an keiner Stelle verweigert.
 
+### SP: Der Spielstand — ERLEDIGT (siehe `phase-sp-spielstand.md`)
+
+Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern der einzige Bauabschnitt, der ausdrücklich **außerhalb** der Welt steht: er betrifft das Gerät, auf dem die Welt läuft.
+
+* **Dieser eine Kasten redet Technik.** „Spielstand", „Speichern", „Export", „Import" heißen im Code wie auf den Knöpfen wörtlich so. Das ist die einzige bewusste Ausnahme von Kapitel 1 und eine Nutzerentscheidung: eine Datensicherung, die sich „Antrag auf Beglaubigung einer Aktenabschrift" nennt, findet im Zweifel niemand, und wer sie nicht findet, verliert seinen Fortschritt an einen Witz. Der Gag steht überall sonst. Wer hier künftig etwas ergänzt, hält sich an dieselbe Regel — ein Witz in dieser Ecke ist ein Fehler, kein Zuwachs.
+* **Die Welt ist über Sitzungen hinweg identisch.** `genMap()` zieht aus einem festen Seed und läuft einmal beim Skriptstart; zwei Ladevorgänge ergeben dieselbe Karte. Das stand nirgends geschrieben und trägt trotzdem den ganzen Abschnitt: erst dadurch zeigt eine gespeicherte Position auf dieselbe Kachel. Eine Notiz, die das Gegenteil annahm, ist berichtigt.
+* **Der Spielstand hält den Menschen, nicht die Sekunde.** Stufe, Skillung, Ausrüstung, Beutel, Position, Uhr und Auftrag kommen zurück; Monster, Bodenbeute und Geschosse nicht. Sie einzufrieren hieße, den Kampfzustand zu konservieren, und dann wäre Speichern vor einer Truhe ein Werkzeug statt einer Unterbrechung. **Es gibt kein Save-Scumming**, und das ist der Grund, warum das Tor eng ist: keine Kammer, kein Schattenland, kein Tod, keine Überstunden.
+* **Eine Schicht wird einmal abgerechnet.** Der Spielstand trägt `amt.schichten` von seiner Entstehung; stimmt die Zahl nicht mehr, ist er verbraucht. Ohne diese Prüfung wäre Fortsetzen eine zweite Abrechnung desselben Tages, und Kapitel 5 kennt nur einen Dienstbericht je Schicht.
+* **Der Übertrag ist ein Aktenvorgang.** Was am Gürtel die Nacht übersteht, steht seither in `amt.uebertrag` statt in einer Laufzeitvariablen — dieselbe Begründung, mit der W10 den bewilligten Antrag persistiert hat: Aktenvorgänge überleben die Nacht.
+* **Eine Klemmstelle, nicht zwei.** Der Import prüft die Hülle und lädt die Seite neu; geprüft und geklemmt wird ausschließlich in den vorhandenen Loadern. Was nicht an `loadAmt()` vorbeikommt, kommt auch als Import nicht vorbei.
+
+**Abnahme:** Wer nie speichert, exportiert oder importiert, spielt das Spiel unverändert. Der Spielstand nimmt nichts weg und gibt keinen Vorteil: er gibt genau den Stand zurück, den die Unterbrechung genommen hat.
+
 ### Was wir ausdrücklich nicht bauen
 
 * ~~Kein Dialogbaum. Keine Antwortauswahl. Kein Gesprächssystem.~~ **Überholt durch U3** (Nutzerentscheidung, `phase-u3-gespraech.md`): das Gesprächsfenster mit vier Antworten ist gebaut und trägt seit E1 auch den Anfang. Was bleibt: kein *verzweigender* Dialog mit Folgen für den Spielstand. Die Antworten wählen, was gesagt wird, nie was gilt. Einzige Ausnahme ist die Anrede im Empfang, und die war schon vor E1 eine Angabe des Spielers (P1).

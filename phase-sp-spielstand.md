@@ -2,7 +2,7 @@
 
 Bauabschnitt zu `SPEICHERFRAGE-2026-08-24.md`. Er beantwortet zwei Wünsche in einem Zug: **gerätebezogenes Speichern, wie es Spiele tun**, und **Export/Import für den Gerätewechsel**. Dazu räumt er die zwei Funde ab, die der Bericht vor allen Möglichkeiten gefunden hatte.
 
-Kapitel 14 der Weltbibel kennt diesen Bauabschnitt nicht; er wird dort als SP hinter SZ4 ergänzt. Alle Bezeichner sind gegen den Stand nach `c4030bc` geprüft.
+Kapitel 14 der Weltbibel kannte diesen Bauabschnitt nicht; er ist dort als SP hinter SZ4 ergänzt. Alle Bezeichner sind gegen den Stand nach `c4030bc` geprüft.
 
 ### Grundsatz: dieser eine Kasten redet Technik
 
