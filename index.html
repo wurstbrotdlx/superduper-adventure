@@ -591,6 +591,16 @@
   .amtStimme, #overlay .amtStimme{
     font-size:calc(clamp(16px, 2.6vw, 25px) * var(--fs));
     line-height:1.45;color:#f0dfb4;margin:10px 0 0;}
+  /* SZ4: wer spricht. Das Intro brauchte das nicht, es hat eine Stimme; der
+     Abspann hat fuenf Bilder mit Rede und eines davon ist eine Wechselrede
+     zwischen zwei Leuten. Ohne Namen davor liest sich Bild 11 als fuenf Zeilen
+     derselben Person, und der Witz daran ist, dass es zwei sind. Gefunden im
+     Bild, nicht im Guard.
+     Die Form ist die der Kopfzeile (gesperrte Versalien, gedaempft) und nicht
+     die eines Drehbuchs: dieses Haus schreibt Namen so. */
+  .amtWer, #overlay .amtWer{
+    font-size:calc(11px * var(--fs));letter-spacing:.18em;color:#a89158;
+    display:block;margin-bottom:1px;}
   .amtSiegel{display:block;margin:0 auto 10px;opacity:.9;}
   .amtTitel, #overlay .amtTitel{
     font-size:calc(clamp(19px, 3.2vw, 27px) * var(--fs));margin:0 0 6px;}
@@ -8629,6 +8639,11 @@ const kn = {
          // ein Merker — figDa() liest ihn, und damit entscheidet er, ob der
          // Gegenspieler im Dorf steht.
          szeneStopfen:false, szeneVorblatt:false,
+         // SZ4: die Versuchung. Er ist mehr als ein Merker, genau wie
+         // szeneVorblatt einer ist: vorgangAnhaengig() liest ihn, und damit
+         // entscheidet er, ob auf der Ausfertigung ein Zwischenbescheid klebt.
+         // Ein Merker, eine Wahrheit, kein zweites Feld daneben.
+         szeneVersuchung:false,
          // F1d: was ein Gesprächsbaum sich merken muss. Drei Stück, und jeder
          // öffnet bei einer ANDEREN Figur zwei Zeilen: das ist die Belohnung,
          // die ein Baum geben darf. Gold und Erfahrung darf er nicht geben,
@@ -11317,6 +11332,7 @@ function renderAmtFenster(){
     ${auftragFensterBlock()}
     ${langGiesskanneBlock()}
     ${schubladeBlock()}
+    ${mappenBlock()}
     <button onclick="amtFeierabendNehmen()" style="width:100%;margin-top:12px;">FEIERABEND NEHMEN</button>
   `;
 }
@@ -14741,7 +14757,14 @@ function vorgangBestandBlock(){
   const voll = !vorgangAusfertigung() ? ''
     : `<div class="kl" style="color:#f4d97a;">Die Ausfertigung ist vollständig. ${VORGANG_ANSCHRIFT}`
       + `${vorgangZustellbar() ? '' : ' Zugestellt wird im fünften Akt.'}</div>`;
-  return `<div class="klHead">DIE ANSCHRIFT</div>${zeilen}${voll}`;
+  // SZ4: der Zwischenbescheid. Dieselbe Bauform wie der halbe Satz darüber, aus
+  // demselben Grund: der Bestand soll nicht vollständig aussehen, wenn oben
+  // etwas klebt, das die Zustellung aufhält. Er nennt den Zustand und nicht die
+  // Bedingung, und er ist keine Warnung: aufgehalten wird nichts, die drei
+  // Schritte in Ablage V lösen ihn auf.
+  const anhaengig = vorgangAusfertigung() && vorgangAnhaengig()
+    ? '<div class="kl" style="color:#c77dff;">Oben rechts klebt ein Zwischenbescheid. Ihr Anliegen wird bearbeitet.</div>' : '';
+  return `<div class="klHead">DIE ANSCHRIFT</div>${zeilen}${voll}${anhaengig}`;
 }
 
 // Akt V, die vier Finale-Puzzleteile (Kapitel 9). Teil 1 und 3 haben eine
@@ -14814,42 +14837,178 @@ const vorgangVertagt = () => CONFIG.schichtModus && vorgangAusfertigung() && !vo
 // Text dieser Phase. Reihenfolge ist die Anzeigereihenfolge von oben nach unten.
 const VERTAGT_ZEILEN = ['VERTAGT', 'Der Sachverhalt ist erledigt.', 'Der Vorgang nicht.'];
 
-// Eine Schreibstelle, drei Schritte. #ovPanel-Schreibstellen steigen dadurch
-// von sieben auf acht.
+// SZ4, Szene 8: Vorblatts letzter Zug. Auf der Ausfertigung klebt ein
+// Zwischenbescheid, und zwar genau dann, wenn Szene 7 gelaufen ist. Ein
+// Merker, eine Wahrheit, kein zweites Feld daneben: den Bescheid hat Vorblatt
+// selbst aufgedrückt, im Amtsflur, vor Zeugen. Wer die Versuchung nie gespielt
+// hat, hat auch keinen Bescheid auf dem Umschlag und stellt zu wie vor SZ4.
+//
+// Das ist dieselbe Bauregel, mit der LV4 an das vierte Puzzleteil gegangen ist:
+// ein fehlender Strang nimmt nichts weg, ein vorhandener gibt etwas dazu. Hier
+// gibt er drei Panelschritte und die Figur, die vierzig Jahre zu spaet kommt.
+const vorgangAnhaengig = () => CONFIG.schichtModus && kn.flags.szeneVersuchung;
+
+// Der Abspann, dreizehn Bilder, aus weltgeschichte.md, Kapitel 8, Szene 9.
+// Kein neues Bauteil: das ist der Tafelstapel aus SZ1, und der Kommentar dort
+// hat diesen Stapel beim Namen genannt, lange bevor es ihn gab ("dieselbe
+// Optik blaettert das Intro und spaeter den Abspann"). Neun Blaetter am Anfang,
+// dreizehn am Ende, dazwischen liegt das ganze Spiel.
+//
+// Eine Funktion und keine Tabelle, weil Bild 7 den Strangzustand liest, genau
+// wie der Abspanntext es seit W5 tat. Die Bildfolge selbst ist fest; was sich
+// aendert, ist eine Zeile darin.
+//
+// Zwei Lesarten, gemischt, und die Mischung ist die Aussage: was zu sehen ist,
+// steht als gross/klein da (Standbild, zwei Zeilen darunter, wie es die
+// Weltgeschichte verlangt); wo jemand spricht, steht blatt/stimme, weil dann
+// nicht das Bild die Hauptsache ist, sondern der Satz. Fuenf Bilder haben
+// einen Satz, acht haben keinen. Das ist ungefaehr das Verhaeltnis, in dem
+// dieses Haus redet, und die Zahlen stehen hier nachgezaehlt und nicht
+// geschaetzt: der erste Anlauf schrieb sechs und sieben, und der Prueflauf hat
+// es gemeldet, bevor es jemand gelesen hat.
+//
+// Bild 10, 12 und 13 sind nach der Weltgeschichte nicht verhandelbar und
+// stehen deshalb woertlich: der Regen, der vierte Takt, Vorgang 2.
+function abspannBlaetter(){
+  return [
+    {z1:'Hochablage, am selben Nachmittag.',
+     z2:'In vierzehn Türmen klappen Aktendeckel zu, von allein, Stockwerk für Stockwerk, wie Applaus. Niemand fällt um. Es wird nur sehr viel leichter im Raum.'},
+
+    {z1:'Turm I, oberstes Geschoss.',
+     z2:'Die Lagen fallen ab, Jahrzehnt für Jahrzehnt. Der Erzhalter des Hauses Randbemerkung kann sich umdrehen, zum ersten Mal seit Generationen. Er sieht aus dem Fenster. Er hat da noch nie hinausgesehen.'},
+
+    {blatt:'Die Tür mit dem Schild IM TERMIN geht auf. Von allein. Der Stapel Post davor rutscht hinein.',
+     stimme:[{wer:'Aufschub', z:'Ich bin Erster.'},
+             {wer:'Aufschub', z:'Ich weiß gar nicht mehr, was ich sagen wollte.'}],
+     regie:'Konrad zu Händen Aufschub sieht sich um. Es steht niemand mehr hinter ihm. Er macht die Tür leise zu, damit er niemanden stört.'},
+
+    {z1:'Vierhundert Jahre Post in einem Nachmittag.',
+     z2:'Jeder bekommt alles, worauf er gewartet hat. Was ankommt, ist erledigt und wird zu Konfetti. Das Reich versinkt bis zu den Knien in einer Feier.'},
+
+    {z1:'Vordermühl. Das Pappschild wird abgehängt.',
+     z2:'Das Ministerium für Monsterangelegenheiten löst sich auf, weil sein Auftrag erfüllt ist. Darunter, an der Wand, ist die Farbe heller.'},
+
+    {blatt:'Knöterichs Entpflichtung wird als vorletzte Amtshandlung bearbeitet. Er darf gehen. Er steht sehr lange auf. An der Tür dreht er sich um.',
+     stimme:[{wer:'Knöterich', z:'Ich hätte gern gewusst, wie Sie alle heißen.'}],
+     regie:'Es ist der einzige Satz, den er in diesem Haus gesagt hat, ohne ihn danach zu notieren.'},
+
+    {z1:'Sturz genehmigt das Dorffest.',
+     z2:'Ihre letzte Amtshandlung. Sie unterschreibt die alte Bewilligung von tausendundvier mit dem Zusatz zugegangen.'
+        + (langFertig('dorffest') ? ' Zwirns elf Absagen liegen bei, mitgeheftet, nicht widerrufen.' : '')},
+
+    {z1:'Nörgel wird entfristet.',
+     z2:'Er beschwert sich sehr lange und sehr genau über die Feierlichkeit und lässt sich dabei die Krawatte richten.'},
+
+    {z1:'Das Fest. Vordermühl, abends.',
+     z2:'Lott und Pahl finden die Musik zu laut. Fass räumt nicht ab, weil zum ersten Mal alle bis zum Ende bleiben. Das Gasthaus heißt Zum Letzten Stempel und hat vierhundert Jahre darauf gewartet.'},
+
+    {blatt:'Und dann regnet es. Zum ersten Mal seit hundertfünfzehn Jahren, mitten auf ein Dorffest.',
+     stimme:[{wer:'Nieselbeck', z:'Gemeldet wird: Niederschlag.'}],
+     regie:'Die Veranlassung lag im Frostkamm und war ein zurückgestellter Vorgang. Alle bleiben stehen und werden nass und finden es großartig.'},
+
+    {blatt:'Vorblatt steht am Rand, in Hemdsärmeln, ohne Rang, den Stempel in der Hand. Er weiß nicht, wohin damit.',
+     // Die einzige Wechselrede des Abspanns, und der Grund, warum der
+     // Tafelstapel seit SZ4 weiß, wer spricht. Fünf Zeilen, zwei Leute, und
+     // ohne die Namen davor liest es sich als Selbstgespräch.
+     stimme:[{wer:'Vorblatt', z:'Ich habe einundvierzig Jahre lang nichts entschieden. Ich würde gern einmal etwas entscheiden. Etwas Kleines.'},
+             {wer:'Sturz',    z:'Setzen Sie sich. Nehmen Sie einen Teller.'},
+             {wer:'Vorblatt', z:'Welchen?'},
+             {wer:'Sturz',    z:'Das entscheiden Sie.'}],
+     regie:'Er sieht die Teller sehr lange an. Dann nimmt er einen, ganz normal.'},
+
+    {z1:'Die Amtshymne. Vier Takte, Fagott, F-Dur.',
+     z2:'Sie wird nach dem dritten unterbrochen, weil immer jemand dazwischenruft. Diesmal ruft niemand dazwischen. Der vierte Takt läuft einmal durch.'},
+
+    {blatt:'Das leere Amtsgebäude, morgens. Eine junge Frau in Zustelleruniform kommt herein, sieht sich um und findet niemanden. Sie legt einen Umschlag auf den Tresen.',
+     stimme:[{wer:'Auf dem Umschlag', z:'Vorgang 2.'}],
+     regie:'Sie bräuchte eine Empfangsbestätigung. Es ist niemand da. Sie unterschreibt das Empfangsbekenntnis selbst, mit ihrem eigenen Namen, und geht.'},
+  ];
+}
+
+// Der Stapel laeuft im selben #overlay, in dem gerade das Finale stand, und
+// uebergibt am Ende an den letzten Panelschritt. Die Liste wird EINMAL gebaut
+// und in der Schliessung gehalten: abspannBlaetter() liest kladde.lang, und ein
+// zweiter Aufruf fuer den Sprungknopf koennte eine andere Laenge liefern, wenn
+// dazwischen etwas am Strangstand haengt. Dieselbe Vorsicht wie in
+// schubladeOeffnen(), aus demselben Grund.
+function abspannStarten(){
+  MUS.goto('office'); MUS.muffle(false);
+  const liste = abspannBlaetter();
+  szeneTafelLauf = null;
+  szeneTafeln(liste, {letzterKnopf:'ZUM SCHLUSS', ende: () => vorgangPanel(6),
+                      zweiter:{t:'ZUM LETZTEN BILD', tun: () => szeneTafel(liste.length - 1)}});
+}
+
+// Eine Schreibstelle, sechs Schritte. Drei davon sind mit SZ4 dazugekommen und
+// laufen nur, wenn der Zwischenbescheid klebt: der Gruss des Fuersten, die
+// Taste, die nichts tut, und die Frau mit der Teetasse. #ovPanel-Schreibstellen
+// bleiben acht, es ist dieselbe Stelle.
+//
+// Warum die drei vorne stehen und nicht als 7 bis 9 hinten angehaengt sind,
+// obwohl das die Guards billiger umgestellt haette: die Schrittnummer IST die
+// Reihenfolge, in der der Spieler das Panel sieht. Eine Kette, die bei 7
+// anfaengt und bei 4 weitergeht, waere beim naechsten Weiterschreiben eine
+// Falle. Die Guards sind mitgezogen, das ist die ehrlichere Seite der Rechnung.
 function vorgangPanelHtml(schritt){
+  // Schritt 1 bis 3: Vorblatts letzter Zug. Der Fuerst ist hoeflich, sogar
+  // jetzt, und sagt den Satz, den er seit vierhundert Jahren sagt.
   if(schritt === 1) return `
+    <h1>ABLAGE V</h1>
+    <p>Der Fürst steht. Er ist höflich, sogar jetzt.</p>
+    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Ich nehme an, Sie sind wieder nicht in dieser Sache hier.“</p>
+    <button onclick="vorgangPanel(2)">ZUSTELLEN</button>`;
+  if(schritt === 2) return `
+    <h1>ANHÄNGIG</h1>
+    <p>Auf dem Umschlag klebt der Zwischenbescheid. Nichts geschieht.</p>
+    <p style="color:#c77dff;">Anhängig. Wird bearbeitet.</p>
+    <button onclick="vorgangPanel(3)">NOCH EINMAL</button>`;
+  if(schritt === 3) return `
+    <h1>DIE TEETASSE</h1>
+    <div style="text-align:left;">
+      <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Ah. Das kenne ich.“</p>
+      <p>Eine Tür geht auf. Eine Frau kommt herein, mit einer Teetasse. Sie ist nicht überrascht. Sie ist seit vierzig Jahren nicht mehr überrascht.</p>
+      <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet. Und dieses Haus führt den ältesten offenen Vorgang des Reiches. Damit bin ich weisungsbefugt. Und zwar über jeden hier.“</p>
+      <p>Sie nimmt den Umschlag. Sie zieht den Zwischenbescheid ab. Es macht ein kleines Geräusch.</p>
+      <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Aufgehoben. Ich hätte das vor vierzig Jahren tun sollen. Ich hatte den Brief nicht dabei. Das ist mein Fehler und er hat gedauert.“</p>
+      <p>Sie gibt den Umschlag zurück. Sie gibt ihn Ihnen, nicht dem Fürsten.</p>
+      <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Sie stellen zu. Sie sind der Außendienst. Ich habe keine Zuständigkeit für Zustellungen.“</p>
+    </div>
+    <button onclick="vorgangPanel(4)">ZUSTELLEN</button>`;
+  if(schritt === 4) return `
     <h1>ZUSTELLUNG</h1>
-    <p>Er nimmt den Umschlag. Er liest. Er liest lange.</p>
+    <p>Er dreht den Umschlag um. Er liest die Anschrift, bevor er den Inhalt liest, weil man das so macht.</p>
+    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Da steht mein Name. Da steht er die ganze Zeit.“</p>
+    <p>Er öffnet. Er liest. Er liest lange. Der Kampf ist längst vorbei und niemand hat es angesagt.</p>
     <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Vierhundert Jahre. Und Sie kommen einfach vorbei.“</p>
-    <button onclick="vorgangPanel(2)">WEITER</button>`;
-  if(schritt === 2){
+    <button onclick="vorgangPanel(5)">WEITER</button>`;
+  if(schritt === 5){
     const teile = VORGANG_PUZZLE.map(p => `<p>${p.frei() ? p.text : (p.sonst || p.text)}</p>`).join('');
+    // Die Kapsel. Sie liegt nur auf dem Tisch, wenn der Spieler den Stopfen
+    // gezogen hat, und sie ist der einzige Lohn dieses Strangs, der im Finale
+    // ankommt. Gelesen wird amt.stopfenSchicht, dieselbe Groesse, an der SZ3
+    // alles aufgehaengt hat.
+    const kapsel = amt.stopfenSchicht ? `
+      <p style="border-top:1px solid #5a4a2d;margin-top:10px;padding-top:8px;">Ganz zum Schluss legt jemand noch ein Blatt auf den Tisch. Es ist die Kapsel aus dem Rohr, zwei Zeilen, sehr alt: „Wer räumt das Papier aus dem Fluss?“ Der Fürst hat diese Frage gestellt. Er war damals sehr jung. Darunter steht seit heute eine Antwort, vier Wörter, langsam geschrieben, gezeichnet Zapf, Hausmeister. Der Fürst verbeugt sich vor dem Hausmeister. Vollständig, wie vor einem Haus des Reiches.</p>` : '';
     return `
     <h1>DAS FINALE</h1>
-    <div style="text-align:left;">${teile}</div>
+    <div style="max-height:38vh;overflow-y:auto;text-align:left;">${teile}${kapsel}</div>
     <p style="color:#f4d97a;">Der Vorgang 1 wird geschlossen.</p>
-    <button onclick="vorgangPanel(3)">WEITER</button>`;
+    <button onclick="abspannStarten()">WEITER</button>`;
   }
+  // Schritt 6: was nach dreizehn Bildern noch zu sagen ist, und das ist wenig.
+  // Der Abspann hat es erzaehlt; hier steht nur noch, was oben auf dem Blatt
+  // steht, und der Knopf, der ein neues anlegt.
   return `
     <h1>VORGANG 1: GESCHLOSSEN</h1>
-    <div style="max-height:38vh;overflow-y:auto;text-align:left;background:rgba(0,0,0,.4);
-                padding:10px;border-radius:8px;margin:10px 0;font-size:calc(12px * var(--fs));">
-      <p>Das Ministerium löst sich auf. Sein Auftrag ist erfüllt.</p>
-      <p>Knöterichs Entpflichtung wird als vorletzte Amtshandlung bearbeitet. Er darf gehen. Er steht sehr lange auf.</p>
-      <p>Sturz genehmigt, als letzte Amtshandlung, das Dorffest.</p>
-      ${langFertig('dorffest') ? '<p>Zwirns elf Absagen liegen bei. Sie werden mitgeheftet, nicht widerrufen. Der elfte Anlauf war der letzte nötige.</p>' : ''}
-      <p>Nörgel wird entfristet. Er beschwert sich über die Feierlichkeit.</p>
-      <p>Dorffest in Vordermühl. Lott und Pahl finden die Musik zu laut.</p>
-      <p>Der Amtsmarsch läuft heute einmal ganz durch. Niemand ruft dazwischen.</p>
-      <p>Ganz zuletzt bringt Trepps Nachfolgerin einen Umschlag ins leere Amt. Aufschrift: Vorgang 2.</p>
-    </div>
+    <p>Der älteste offene Vorgang des Reiches ist bearbeitet.</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">Bearbeitungsdauer: vierhundert Jahre. Zugestellt am Nachmittag. Kein Widerspruch eingelegt.</p>
     <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>`;
 }
 function vorgangPanel(schritt){
-  if(schritt === 3){ MUS.goto('office'); MUS.muffle(false); }
+  if(schritt === 6){ MUS.goto('office'); MUS.muffle(false); }
   document.getElementById('ovPanel').innerHTML = vorgangPanelHtml(schritt);
   document.getElementById('overlay').style.display = 'flex';
-  if(schritt !== 3) MUS.muffle(true);
+  if(schritt !== 6) MUS.muffle(true);
 }
 // Ein einziger Zustandswechsel friert den kompletten Simulationspfad ein
 // (update(dt) beginnt mit if(state !== 'play') return;). Horde-Spawner und
@@ -14862,7 +15021,10 @@ function zustellen(){
   aktArt = 0; aktSperre = 1; updateHUD();
   el('bossbar').style.display = 'none';
   MUS.swell();
-  vorgangPanel(1);
+  // SZ4: Wer die Versuchung gespielt hat, faengt bei Vorblatts Zwischenbescheid
+  // an und nicht bei der Zustellung. Der Einstieg ist die einzige Stelle, an
+  // der die drei neuen Schritte haengen; alles andere daran ist unveraendert.
+  vorgangPanel(vorgangAnhaengig() ? 1 : 4);
 }
 
 // --- Guard, Bauform wie rangAssert()/auftragAssertBrett() oben. TDZ-sicher:
@@ -14881,8 +15043,12 @@ function vorgangAssert(){
     for(const g of GEHEIM) if(txt.indexOf(g) >= 0) fehler('Sperrvermerk: Kesselgrammatik im Text', g, feld, txt);
   };
   const schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
-        vorgangEcht = kladde.vorgang, bonusEcht = amt.bonusNachwachsen, craftsEcht = kladde.crafts;
-  try {   // GW26i: fünf Spiegel, alle im finally
+        vorgangEcht = kladde.vorgang, bonusEcht = amt.bonusNachwachsen, craftsEcht = kladde.crafts,
+        // SZ4: der sechste. Die Kapsel im Finale hängt an amt.stopfenSchicht,
+        // und ein Guard, der sie in beiden Zuständen rendert, muss den echten
+        // Stand danach wiederhaben, auch wenn dazwischen etwas wirft.
+        stopfenEcht = amt.stopfenSchicht;
+  try {   // GW26i: sechs Spiegel, alle im finally
 
   // (1) Tabellenform: vier Zeilen, Zeilen 1-3 mit je einem der drei Biome,
   // Zeile 4 ohne Biom. Ankerprüfung auf den zusammengesetzten Wortlaut.
@@ -15044,10 +15210,15 @@ function vorgangAssert(){
   const strip = html => html.replace(/<[^>]+>/g, ' ');
   for(let s = 10; s <= 100; s += 10){ amt.schichten = s; text(strip(vorgangJahresBlock()), 'Jahresblock s='+s); }
   amt.schichten = schichtenEcht;
-  text(strip(vorgangPanelHtml(1)), 'Schlusspanel 1');
-  text(strip(vorgangPanelHtml(3)), 'Schlusspanel 3');
-  amt.bonusNachwachsen = 0; kladde.crafts = 0; text(strip(vorgangPanelHtml(2)), 'Schlusspanel 2, leer');
-  amt.bonusNachwachsen = 20; kladde.crafts = 1; text(strip(vorgangPanelHtml(2)), 'Schlusspanel 2, voll');
+  // SZ4: aus drei Schritten sind sechs geworden, und die drei neuen laufen
+  // nur mit Zwischenbescheid. Geprueft wird jeder einzeln, weil jeder eigenen
+  // Text traegt und keiner von einem anderen gerendert wird.
+  for(const st of [1, 2, 3, 4, 6]) text(strip(vorgangPanelHtml(st)), 'Schlusspanel ' + st);
+  amt.bonusNachwachsen = 0; kladde.crafts = 0; amt.stopfenSchicht = 0;
+  text(strip(vorgangPanelHtml(5)), 'Schlusspanel 5, leer');
+  amt.bonusNachwachsen = 20; kladde.crafts = 1; amt.stopfenSchicht = 30;
+  text(strip(vorgangPanelHtml(5)), 'Schlusspanel 5, voll mit Kapsel');
+  amt.stopfenSchicht = stopfenEcht;
   amt.bonusNachwachsen = bonusEcht; kladde.crafts = craftsEcht;
   kladde.vorgang = {};
   if(vorgangBestandBlock() !== '') fehler('vorgangBestandBlock() bei leerem Bestand nicht leer');
@@ -15101,14 +15272,14 @@ function vorgangAssert(){
   } finally {
     amt.schichten = schichtenEcht; CONFIG.schichtModus = modusEcht;
     kladde.vorgang = vorgangEcht; amt.bonusNachwachsen = bonusEcht;
-    kladde.crafts = craftsEcht;
+    kladde.crafts = craftsEcht; amt.stopfenSchicht = stopfenEcht;
   }
 
   console.assert(ok, 'W5 Vorgang: Assertion fehlgeschlagen, siehe Konsole.');
   return ok;
 }
 // Der Selbstaufruf steht seit W7 unten hinter langAssert(), nicht hier:
-// vorgangAssert() rendert vorgangPanelHtml(3), und dessen Abspann liest seither
+// vorgangAssert() rendert vorgangPanelHtml(5), und dessen Finale liest seither
 // langFertig('dorffest'). Von hier aus wäre das ein ReferenceError durch
 // Temporal Dead Zone, den node --check nicht findet. Die Funktion selbst bleibt
 // stehen, nur der Aufruf ist gewandert — gleiche Bauform wie der Umzug von
@@ -16210,7 +16381,23 @@ function langAssert(){
     // Bitmaske) ist der Rohwert nicht die Stufe, und ein naives kladde.lang[k]
     // = stufen läge daneben.
     if(zustand === 'fertig') for(const k in LANGVORGAENGE) kladde.lang[k] = rohEnde[k];
-    text(strip(vorgangPanelHtml(3)), 0, 'Abspann ' + zustand);
+    // SZ4: der Abspann ist kein Panelschritt mehr, sondern ein Tafelstapel.
+    // Geprueft wird deshalb, was jetzt den Text traegt: die dreizehn Bilder,
+    // beide Lesarten, in beiden Strangzustaenden. Bild 7 ist das eine, das
+    // sich mit dem Strang aendert, und genau dafuer laeuft diese Schleife.
+    abspannBlaetter().forEach((b, i) => {
+      const wo = 'Abspann ' + zustand + ' Bild ' + (i + 1);
+      if(b.z1 !== undefined){ text(b.z1, 0, wo + ' gross'); text(b.z2, 0, wo + ' klein'); }
+      else {
+        text(b.blatt, 0, wo + ' Regieangabe');
+        b.stimme.forEach((z, j) => {
+          const istPaar = z !== null && typeof z === 'object';
+          if(istPaar) text(z.wer, 0, wo + ' Stimme ' + (j + 1) + ' Sprecher');
+          text(istPaar ? z.z : z, 0, wo + ' Stimme ' + (j + 1));
+        });
+        if(b.regie) text(b.regie, 0, wo + ' Nachbemerkung');
+      }
+    });
     for(let st = 0; st <= LANGVORGAENGE.giesskanne.stufen; st++){
       kladde.lang.giesskanne = st;
       const blk = langGiesskanneBlock();
@@ -16223,7 +16410,7 @@ function langAssert(){
     // Schritt 2 zwar in zwei Zuständen, aber beide mit dem ECHTEN kladde.lang
     // des Spielers, also mit ziemlicher Sicherheit zweimal derselben Fassung.
     // Hier stehen beide Strangzustände ohnehin schon bereit.
-    text(strip(vorgangPanelHtml(2)), 0, 'Finale ' + zustand);
+    text(strip(vorgangPanelHtml(5)), 0, 'Finale ' + zustand);
     const bb = langBestandBlock();
     if(zustand === 'leer' && bb !== '') fehler('langBestandBlock() ist bei leerem Bestand nicht leer');
     if(bb) text(strip(bb), 0, 'Bestandblock ' + zustand);
@@ -17775,6 +17962,216 @@ function vorblattAngekommen(){
   letzterAnlass = 'vorblatt';
 }
 
+// --- Szene 7: "Die Versuchung" ----------------------------------------------
+// Akt IV, im Amtsflur, sobald Vorblatt da ist. Die wichtigste Szene des Spiels
+// (weltgeschichte.md, Kapitel 8), und die einzige, in der acht Figuren
+// nacheinander sprechen. Sie haengt an Vorblatt und faellt beim ersten
+// Ansprechen nach seiner Ankunft, also auf demselben Weg wie die drei Szenen
+// aus SZ2: gespraechOeffnen() fragt szeneFaellig(), bevor der Baum drankommt.
+//
+// Gebaut ist die Versammlung und nicht die acht Einzelgespraeche, die die
+// Weltgeschichte als billigere Fassung anbietet. Der Grund steht seit SZ1 im
+// Code: szeneKnoten() kennt wer:, und der Kommentar dort nennt genau diese
+// Szene als Anlass ("dort geht Vorblatt durch acht Leute hindurch"). Acht
+// Einzelgespraeche waeren acht Tafeln ohne Publikum; die Pointe der Szene ist,
+// dass alle zuhoeren, waehrend jeder Einzelne sein Angebot bekommt.
+//
+// Knoeterich wechselt als Funktion und nicht als Schluessel: er steht nicht in
+// DORF_FIGUREN (siehe SZENEN.knoeterich), und szeneSprecherSetzen() nimmt
+// beides.
+//
+// Die vier Antwortzeilen der Weltgeschichte sind hier drei Fragen und der
+// Ausgang. Das ist keine Kuerzung: die vierte Zeile lautet dort "(nichts
+// sagen)", und ein Ausgang IST das Nichtssagen. Die Bauform ist die der
+// Gespraechsbaeume aus F1d, mit sicht 3 und hubAusgang, und damit bleibt die
+// Liste vierzeilig, wie ANTWORT_DECKEL und szeneAssert() es verlangen.
+SZENEN.versuchung = {
+  figur:  'vorblatt',
+  wenn:   () => CONFIG.schichtModus && kn.flags.szeneVorblatt && !kn.flags.szeneVersuchung,
+  haeltDieWelt: true,
+  sicht:  3,
+  sprecher: () => szeneSprecherAusDorf('vorblatt'),
+  start:  'w1',
+  sperre: [],
+  ende:   () => versuchungEnde(),
+  fragen: [
+    {key:'lassen', t:'Was muss ich lassen?',
+     z1:'Zustellen. Weiter nichts.', z2:'Der Vorgang bleibt, wo er ist.'},
+    {key:'wert', t:'Warum ist Ihnen das wert?',
+     z1:'Einundvierzigtausend Menschen.', z2:'Sie wären morgen früh niemand mehr.'},
+    {key:'zustell', t:'Und wenn ich zustelle?',
+     z1:'Dann ist der Krieg vorbei.', z2:'Und wir sind es auch. Am selben Nachmittag.'},
+  ],
+  knoten: {
+    w1: {z1:'Ich bin nicht gekommen, um etwas wegzunehmen.', z2:'Ich bin gekommen, um Ihnen etwas zu geben.',
+         opts: () => [{t:'Wem?', zu:'w2'}]},
+    w2: {z1:'Allen. Ich bitte um einen Moment.', z2:'Es sind mehrere Mappen.',
+         opts: () => [{t:'Zusehen.', zu:'mz1'}]},
+
+    // Zwirn. Die Bewilligung, die er seit elf Anläufen nicht bekommt, auf
+    // seinen Namen, und zugegangen in dem Moment, in dem er sie anfasst.
+    mz1: {z1:'Herr Bürgermeister. Die Bewilligung für Ihr Fest.', z2:'Nicht die alte. Eine neue. Auf Ihren Namen.',
+          opts: () => [{t:'Und die Zustellung?', zu:'mz2'}]},
+    mz2: {z1:'Zugegangen ist sie, sobald Sie sie anfassen.', z2:'Das ist die ganze Bedingung.',
+          opts: () => [{t:'Zwirn?', zu:'mz3'}]},
+    mz3: {wer:'zwirn', z1:'Zwirn sagt nichts.', z2:'Es ist das erste Mal.',
+          opts: () => [{t:'Weiter.', zu:'ml1'}]},
+
+    // Lisbeth. Der sechste Praktikumsbericht, unterschrieben, und zwar von
+    // jemandem, der wirklich weisungsbefugt ist. LV4 hat denselben Bericht mit
+    // einer Monster-Unterschrift geschlossen; hier liegt die andere Fassung
+    // auf dem Tisch, und sie ist die schlechtere.
+    ml1: {wer:'vorblatt', z1:'Fräulein Fuhr. Ihr sechster Praktikumsbericht.', z2:'Unterschrieben. Von einer weisungsbefugten Person.',
+          opts: () => [{t:'Von wem?', zu:'ml2'}]},
+    ml2: {z1:'Ich bin weisungsbefugt.', z2:'Ich bin es sogar sehr.',
+          opts: () => [{t:'Lisbeth?', zu:'ml3'}]},
+    ml3: {wer:'lisbeth', z1:'Sechs Jahre.', z2:'Sie sagt es sehr leise.',
+          opts: () => [{t:'Weiter.', zu:'ml4'}]},
+    ml4: {wer:'vorblatt', z1:'Sechs Jahre. Ja.', z2:'Das steht auch drin.',
+          opts: () => [{t:'Weiter.', zu:'mn1'}]},
+
+    // Nörgel. Vierzig Jahre auf Probe, und die Stelle, die er sich wünscht,
+    // hat Vorblatt vorher erfragt. Das ist der Satz, an dem die Szene kippt:
+    // er lügt nicht, er hat sich erkundigt.
+    mn1: {z1:'Und Sie sind Nörgel.', z2:'Sachbearbeiter auf Probe, seit vierzig Jahren.',
+          opts: () => [{t:'Was liegt da?', zu:'mn2'}]},
+    mn2: {z1:'Ihre Entfristung. Sowie Ihre Ernennung.', z2:'Monsterangelegenheitenaußendienstüberwachungsamtmann.',
+          opts: () => [{t:'Woher wissen Sie das?', zu:'mn3'}]},
+    mn3: {z1:'Ich habe mich erkundigt.', z2:'Welche Stelle Sie sich wünschen.',
+          opts: () => [{t:'Nörgel?', zu:'mn4'}]},
+    mn4: {wer:'noergel', z1:'Nörgel sagt nichts.', z2:'Er rückt seine Krawatte gerade. Zweimal.',
+          opts: () => [{t:'Weiter.', zu:'mb1'}]},
+
+    // Bramsche. Die Entlastung für den Brandabschnitt, und der einzige
+    // Wortwechsel der Szene, in dem jemand zurückfragt. Ihre Grundregel seit
+    // Schicht 1 lautet, dass es ohne Antrag nichts gibt; hier schenkt ihr
+    // jemand etwas ohne Antrag, und genau das macht es unheimlich.
+    mb1: {wer:'vorblatt', z1:'Frau Registratorin. Eine Entlastung.', z2:'Der Brandabschnitt ist von einer Stelle veranlasst worden.',
+          opts: () => [{t:'Von welcher?', zu:'mb2'}]},
+    mb2: {z1:'Nicht von Ihnen. Sie tragen keine Schuld.', z2:'Das steht hier. Mit Siegel.',
+          opts: () => [{t:'Bramsche?', zu:'mb3'}]},
+    mb3: {wer:'bramsche', z1:'In welcher Sache haben Sie das ausgestellt?', z2:'Ich habe keinen Antrag gestellt.',
+          opts: () => [{t:'Und?', zu:'mb4'}]},
+    mb4: {wer:'vorblatt', z1:'In Ihrer. Nein, haben Sie nicht.', z2:'Das ist das Angenehme daran.',
+          opts: () => [{t:'Weiter.', zu:'mk1'}]},
+
+    // Knöterich. Die Entpflichtung, auf die vierzig Jahre lang niemand
+    // gekommen ist, und der einzige Einwand, den er hat, ist sein Buch.
+    mk1: {z1:'Amtsrat. Ihre Entpflichtung.', z2:'Vierzig Jahre unbearbeitet. Das ist selbst für uns lang.',
+          opts: () => [{t:'Und dann?', zu:'mk2'}]},
+    mk2: {z1:'Sie dürfen nach Hause gehen.', z2:'Heute noch.',
+          opts: () => [{t:'Knöterich?', zu:'mk3'}]},
+    mk3: {wer: () => szeneSprecherKnoeterich(), z1:'Ich führe Buch.', z2:'Mehr sagt er nicht.',
+          opts: () => [{t:'Weiter.', zu:'mk4'}]},
+    mk4: {wer:'vorblatt', z1:'Ab morgen führt es jemand anderes.', z2:'Das ist geregelt.',
+          opts: () => [{t:'Knöterich?', zu:'mk5'}]},
+    mk5: {wer: () => szeneSprecherKnoeterich(), z1:'Knöterich sagt sehr lange nichts.', z2:'Niemand hilft ihm dabei.',
+          opts: () => [{t:'Weiter.', zu:'mt1'}]},
+
+    // Trepp. Der Sack, sieben Generationen, und die einzige Zeile der Szene,
+    // in der jemand nicht nachgibt. Er tut es in seiner Form: mit einer
+    // Entschuldigung davor.
+    mt1: {wer:'vorblatt', z1:'Herr Trepp. Ich nehme Ihnen den Sack ab.', z2:'Sieben Generationen. Es reicht doch nun wirklich.',
+          opts: () => [{t:'Trepp?', zu:'mt2'}]},
+    mt2: {wer:'trepp', z1:'Wenn ich kurz stören darf.', z2:'Er ist meiner.',
+          opts: () => [{t:'Weiter.', zu:'mp1'}]},
+
+    // Zapf. Die Mappe, die es nicht gibt, weil er nichts will. Vorblatt
+    // blättert zweimal, und die Pause danach ist die längste der Szene.
+    mp1: {wer:'vorblatt', z1:'Und für Sie habe ich, Herr Zapf...', z2:'Er blättert. Er blättert noch einmal.',
+          opts: () => [{t:'Nichts dabei?', zu:'mp2'}]},
+    mp2: {z1:'Was möchten Sie denn?', z2:'Jeder möchte etwas.',
+          opts: () => [{t:'Zapf?', zu:'mp3'}]},
+    mp3: {wer:'zapf', z1:'Nichts.', z2:'Ich hab Werkzeug.',
+          opts: () => [{t:'Weiter.', zu:'mp4'}]},
+    mp4: {wer:'vorblatt', z1:'Vorblatt sieht ihn an und sagt nichts.', z2:'Es ist eine sehr lange Sekunde.',
+          opts: () => [{t:'Weiter.', zu:'sp1'}]},
+
+    // Und zuletzt der Spieler. Er tritt näher und wird leiser, weil das hier
+    // das eigentliche Angebot ist: kein Amt, kein Geld, ein Name an der Tür.
+    sp1: {z1:'Sie haben keinen Namen im Haus.', z2:'Sie haben eine Stelle für einen Tag.',
+          opts: () => [{t:'Und Sie?', zu:'sp2'}]},
+    sp2: {z1:'Ich habe hier eine Planstelle. Unbefristet.', z2:'Mit Ihrem Namen an der Tür. Gedruckt.',
+          opts: () => [{t:'Was kostet das?', zu:'hub'}]},
+    // Der hub. Ohne opts, damit szeneOptionen() die offenen Fragen plus den
+    // Ausgang zeigt. Wer alle drei stellt, bekommt am Ende trotzdem denselben
+    // Ausgang: es gibt in dieser Szene nichts anzunehmen und nichts abzulehnen.
+    hub: {z1:'Sie kämen morgen wieder. Und übermorgen.', z2:'Sie müssten nichts tun. Nur etwas lassen.', hub:true},
+    // Vorblatts vierte Antwort, die auf das Schweigen. Sie steht als eigener
+    // Knoten und nicht am Ausgang, weil sie in der Weltgeschichte eine Antwort
+    // ist und keine Regieangabe.
+    w4: {z1:'Sie überlegen. Das ist gut.', z2:'Überlegen ist auch eine Form von Bearbeitung.',
+         opts: () => [{t:'Stille.', zu:'ls1'}]},
+
+    // Lisbeths Zeile. Sie sagt sie nicht laut, und sie ist die Zeile, die die
+    // Szene entscheidet. Kein Zufall, dass sie dieselbe Frage stellt wie in
+    // Akt I: sie fragt seit Akt I dasselbe.
+    ls1: {wer:'lisbeth', z1:'Und wenn er einfach nur wartet?', z2:'Sie sagt es in die Stille hinein, wie immer.',
+          opts: () => [{t:'Vorblatt?', zu:'ls2'}]},
+    ls2: {wer:'vorblatt', z1:'Dann wartet er sehr gut, Fräulein Fuhr.', z2:'Vierhundert Jahre sind eine beachtliche Leistung.',
+          opts: () => [{t:'Lisbeth?', zu:'ls3'}]},
+    ls3: {wer:'lisbeth', z1:'Ich habe nicht gefragt, wie gut er wartet.', z2:'Danach sagt eine Weile niemand etwas.',
+          opts: () => [{t:'Weiter.', zu:'nv1'}]},
+
+    // Nörgel liest die Anschrift vor. Er ist der Einzige im Raum, der die
+    // Schrift lesen kann (Akt IV), und der Einzige, der weiß, was der
+    // Höflichkeitspartikel wirklich ist. Vierzig Jahre Dienstberichte, und
+    // dieser eine Satz ist ihr Ertrag.
+    nv1: {wer:'noergel', z1:'Nörgel geht zum Tisch und nimmt den Umschlag.', z2:'Er dreht ihn zum Licht.',
+          opts: () => [{t:'Vorblatt?', zu:'nv2'}]},
+    nv2: {wer:'vorblatt', z1:'Herr Amtmann.', z2:'Das ist nicht Ihre Zuständigkeit.',
+          opts: () => [{t:'Nörgel?', zu:'nv3'}]},
+    nv3: {wer:'noergel', z1:'Nein. Ist es nicht.', z2:'Ich mache es trotzdem.',
+          opts: () => [{t:'Zuhören.', zu:'nv4'}]},
+    nv4: {z1:'An Fürst Nachtrag. Zu Händen. Persönlich.', z2:'Er liest langsam. Es ist eine alte Schrift.',
+          opts: () => [{t:'Und?', zu:'nv5'}]},
+    nv5: {z1:'Zu Händen ist kein höfliches Wort.', z2:'Das ist ein Rang.',
+          opts: () => [{t:'Also?', zu:'nv6'}]},
+    nv6: {z1:'Wir haben vierhundert Jahre eingeschlagen.', z2:'Auf einen, der auf Post gewartet hat.',
+          opts: () => [{t:'Vorblatt?', zu:'st1'}]},
+
+    // Der Stempel. Er ist nicht wütend, er ist müde, und er tut das Übliche.
+    // Das ist der einzige laute Ton der Szene und zugleich Vorblatts letzter
+    // Zug: ab hier klebt ein Zwischenbescheid auf der Ausfertigung.
+    st1: {wer:'vorblatt', z1:'Das war zu erwarten.', z2:'Nicht so früh, aber zu erwarten.',
+          opts: () => [{t:'Was tun Sie da?', zu:'st2'}]},
+    st2: {z1:'Dann werde ich das Übliche tun.', z2:'Er nimmt seinen Stempel heraus.',
+          opts: () => [{t:'Zusehen.', zu:'st3'}]},
+    st3: {z1:'IHR ANLIEGEN WIRD BEARBEITET.', z2:'Es ist der einzige laute Ton der Szene.',
+          opts: () => [{t:'Und jetzt?', zu:'st4'}]},
+    st4: {z1:'So. Nun ist es anhängig.', z2:'Ein anhängiges Schriftstück wird bearbeitet.',
+          opts: () => [{t:'Nicht zugestellt?', zu:'st5'}]},
+    st5: {z1:'Nicht zugestellt. Bearbeitet.', z2:'Ich wünsche Ihnen einen angenehmen Feierabend.',
+          opts: () => [{t:'Er geht.', tun: () => versuchungEnde()}]},
+  },
+  // Der Ausgang aus dem hub ist die vierte Antwortzeile der Weltgeschichte.
+  // Er steht immer und ändert sich nicht mit der Zahl der gestellten Fragen:
+  // in dieser Szene wird nichts angenommen und nichts abgelehnt, und ein
+  // Ausgang, der sich nach drei Fragen anders liest, wäre eine Entscheidung.
+  hubAusgang: () => ({t:'Nichts sagen.', zu:'w4'}),
+};
+
+// Das Ende der Szene ist der Anfang von Vorblatts letztem Zug. Ein Merker,
+// keine zweite Wahrheit: vorgangAnhaengig() liest ihn, das Amtspanel liest ihn,
+// und die Zustellung liest ihn. Kein Feld daneben, das dasselbe noch einmal
+// sagt (die Bauform von stopfenGezogenEnde(), SZ3).
+function versuchungEnde(){
+  szeneEnde('versuchung', 'szeneVersuchung');
+  floaters.push({x: player.x, y: player.y - 46, txt: 'ANHÄNGIG', col:'#c77dff', t: 3.4, big: true});
+}
+
+// Die sieben Mappen bleiben liegen. Das ist die eine Regel der Szene, die die
+// Weltgeschichte ausdrücklich als nicht verhandelbar führt: niemand nimmt
+// etwas an, niemand lehnt etwas ab, und der Spieler geht in den nächsten
+// Schichten mehrfach daran vorbei. Gebaut ist sie als Zeile im Amtspanel,
+// neben der Gießkanne und der Schublade, und nicht als Weltobjekt: ein
+// Mappenstapel im Flur wäre ein Blatt und ein Anker, die Zeile ist der
+// Vorgang. Sie verschwindet nie, weil die Mappen nie abgeholt werden.
+function mappenBlock(){
+  if(!CONFIG.schichtModus || !kn.flags.szeneVersuchung) return '';
+  return `<p style="font-size:calc(11px * var(--fs));color:#9a8a5f;margin:8px 0 0;">Im Flur liegen sieben Mappen. Es hat keine angefasst.</p>`;
+}
+
 // ===========================================================================
 //  F1d: Die Gespraechsbaeume
 //
@@ -18596,16 +18993,34 @@ function szeneTafel(i){
   // ist das Dokument aus SZ1: eine Regieangabe, was auf dem Tisch liegt, und
   // darunter, was vorgelesen wird. Beide tragen dieselbe Urkundenoptik, weil es
   // dieselbe Behoerde ist, die sie aufmacht (Humor-Grundgesetz 10).
+  //
+  // SZ4: eine gesprochene Zeile darf sagen, wer sie sagt. Das Intro braucht es
+  // nicht (eine Stimme, neun Blaetter), der Abspann schon: Bild 11 ist eine
+  // Wechselrede, und ohne Namen davor gehoerten alle fuenf Zeilen derselben
+  // Person. Der String bleibt die einfache Form, das Paar ist die Ausnahme.
+  // SZ4: der Inhalt rollt, der Rahmen nicht. Bis hierher wuchs das Blatt mit
+  // seinem Text, und ein zu langes Blatt schob seinen eigenen Knopf unter den
+  // Fensterrand — auf 360x640 bei groesster Schrift war Bild 11 des Abspanns
+  // nicht mehr zu Ende zu klicken. Gemessen, nicht vermutet: acht von dreizehn
+  // Bildern lagen auf mindestens einer Fenstergroesse darueber, das Intro auf
+  // keiner. E2 hat fuer den Vordruck "blaettern statt rollen" entschieden, und
+  // das gilt weiter; ein Standbild laesst sich aber nicht blaettern. Also rollt
+  // hier der Text INNERHALB der Urkunde, und Siegel, Kopfzeile, Blattzahl und
+  // Knopf bleiben stehen, wo sie sind. Dieselbe Bauform benutzt das Finale seit
+  // W5 (max-height 38vh am Puzzleteil-Kasten).
   const inhalt = t.stimme
     ? `<p class="amtLead" style="font-style:italic;">${gEsc(t.blatt)}</p>`
-      + t.stimme.map(z => `<p class="amtStimme">${gEsc(z)}</p>`).join('')
+      + t.stimme.map(z => typeof z === 'string'
+          ? `<p class="amtStimme">${gEsc(z)}</p>`
+          : `<p class="amtStimme"><span class="amtWer">${gEsc(z.wer)}</span>${gEsc(z.z)}</p>`).join('')
       + (t.regie ? `<p class="amtLead" style="font-style:italic;margin-top:10px;">${gEsc(t.regie)}</p>` : '')
     : `<p class="amtGross">${gEsc(t.z1)}</p><p class="amtKlein">${gEsc(t.z2)}</p>`;
   el('ovPanel').innerHTML = `
     ${siegelSvg(66)}
     <p class="amtKopf">${gEsc(AMT_KOPFZEILE)}</p>
     <hr class="amtRegel">
-    <div style="min-height:30vh;display:flex;flex-direction:column;justify-content:center;">
+    <div style="min-height:30vh;max-height:56vh;overflow-y:auto;display:flex;
+                flex-direction:column;justify-content:center;">
       ${inhalt}
     </div>
     <hr class="amtRegel unten">
@@ -18703,7 +19118,13 @@ function szeneAssert(){
 
   // (6) Die Tafelstapel. Jeder Eintrag traegt entweder gross/klein oder
   // blatt/stimme, nie beides und nie keins von beiden.
-  const stapel = [{name:'Intro', liste:INTRO_BLAETTER, sperre:AKTE_SPERRE_NAMEN}];
+  // SZ4: der zweite Stapel. Er traegt keine Sperre, und das ist der ganze
+  // Unterschied zum Intro: das Intro darf die Namen nicht nennen, der Abspann
+  // besteht aus ihnen. Geprueft wird bei beiden dasselbe, naemlich dass jedes
+  // Blatt genau eine der beiden Lesarten traegt und dass die Blattzahl
+  // darstellbar bleibt (dreizehn liegt ueber ROEMISCH, zaehlt also arabisch).
+  const stapel = [{name:'Intro', liste:INTRO_BLAETTER, sperre:AKTE_SPERRE_NAMEN},
+                  {name:'Abspann', liste:abspannBlaetter(), sperre:[]}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);
     if(!szeneBlattZahl(st.liste.length, st.liste.length)) fehler('Tafelstapel ohne darstellbare Blattzahl', st.name, st.liste.length);
@@ -18715,7 +19136,15 @@ function szeneAssert(){
       else {
         text(t.blatt, wo + ' Regieangabe', st.sperre);
         if(!t.stimme.length) fehler('Blatt ohne gesprochene Zeile', wo);
-        t.stimme.forEach((z, j) => text(z, `${wo} Stimme ${j+1}`, st.sperre));
+        // SZ4: eine gesprochene Zeile ist ein String oder ein Paar aus Sprecher
+        // und Satz. Beides laeuft durch dieselben Formregeln, und ein Paar ohne
+        // Namen waere ein Namensschild, das leer bleibt.
+        t.stimme.forEach((z, j) => {
+          const istPaar = z !== null && typeof z === 'object';
+          if(istPaar && !z.wer) fehler('gesprochene Zeile mit leerem Sprecher', `${wo} Stimme ${j+1}`);
+          if(istPaar) text(z.wer, `${wo} Stimme ${j+1} Sprecher`, st.sperre);
+          text(istPaar ? z.z : z, `${wo} Stimme ${j+1}`, st.sperre);
+        });
         if(t.regie) text(t.regie, wo + ' Nachbemerkung', st.sperre);
       }
     });
