@@ -251,6 +251,11 @@ Das sechste Biom, eine Ebene unter der Unteren Registratur, und nur hinter der t
 Kammertür. Alle drei gehören zum Goblin-Rig: es ist Inhalt, der seine Form verloren hat,
 und zwar dreimal auf dieselbe Art. Einbau und Begründung in `phase-m3-stollen.md`.
 
+Seit M4 ist die „Ebene unter der Registratur" keine Ortsangabe mehr, sondern ein Raum:
+die Schatzkammer einer Stollen-Kammer hat ein Loch im Boden, und darunter liegt ein
+zweiter, kürzerer Korridor mit denselben drei Wächtern, dichter gestellt. Er zahlt kein
+Gold, sondern Material — siehe `phase-m4-zweite-ebene.md`.
+
 | Monster | Vorgangsart | Warum es sich so verhält |
 |---|---|---|
 | Die Teilabhilfe | Die Teilabhilfe | Man hilft ihr teilweise ab, und was übrig bleibt, läuft als eigener Vorgang weiter. Zweimal. |
@@ -1021,6 +1026,19 @@ Was G11 liegen ließ: Brücken, Wasserpflanzen, Kapybaras und die Ambiente-Tiere
 * **Das Kapybara bringt seinen eigenen Teich mit**, in genau unserem Wasserton, und trotzdem musste er weg: die See wird getönt gebacken. Freigestellt von `tools/kapybara-freistellen.mjs`, damit das Tier auf der wirklichen See liegt statt auf einer gemalten.
 * **Der Falter bleibt winzig.** Seine Kunst ist 8x8, bei `WELT_SC` also eine halbe Kachel. Ihn größer zu zeichnen hieße, den Weltmaßstab aus G7 für ein Insekt zu brechen.
 * **Nachtrag, nicht Teil des Steinbruchs: der Stein schwebte seit G4.** `addSheet`s Modus `'strip'` setzt den Anker auf die Fußmitte der ZELLE, und `Rock_1_Anim.png` hat vier leere Zeilen unter der Zeichnung — bei `WELT_SC` acht Weltpixel Luft zwischen Stein und Anker, und der Schatten wird auf den Anker gemalt. Berichtigt am Blatt (`ay:12`), nicht am Zeichenaufruf: der Anker gehört an die Stelle, mit der das Ding aufsteht. Der Baum hatte denselben Rand und seine Korrektur schon seit G7 (`BAUM_DY`), Gras und Pilze haben ihn auch, aber keinen Schatten, an dem man es sähe.
+
+### M4: Die zweite Ebene — ERLEDIGT (siehe `phase-m4-zweite-ebene.md`)
+
+Der erste Schritt aus `WELT-ERWEITERUNG-2026-08-24.md`: nicht größer, sondern tiefer. Die Leiter, die M3 ausdrücklich liegen gelassen hat („eine Leiter ohne zweite Ebene wäre eine Behauptung"), bekommt ihr Untergeschoss.
+
+* **Nur die Sperrablage hat eines, und zwar wörtlich.** Ihre Signatur aus M1 lautet „Eine Ebene unter der Registratur liegt, was niemand mehr anfassen sollte". Die Untere Registratur hat kanonisch nichts unter sich, sie **ist** das Untergeschoss des Hauses. Die Ebenenzahl hängt deshalb am Kammersatz und nicht am Gebührenbescheid, und `stollenAssert()` rechnet beide Stellen gegeneinander.
+* **Erst der Vorgang, dann die Neugier.** Das Loch im Boden der Schatzkammer ist von Anfang an sichtbar und nimmt niemanden auf, solange die Truhe zu ist. Wer die obere Ebene stehen lässt, holt sich die untere nicht als Abkürzung.
+* **Unten liegt kein Gold.** Zwei Zutaten mehr und eine Seltenheitsstufe höher, sonst nichts. Die Kammern sind laut `KAMMER-MESSUNG-2026-08-20` ohnehin der schnelle Geldkanal; eine zweite Truhe mit Goldwurf hätte den Vollausbau beschleunigt, ohne dass jemand das beschlossen hätte. Die Signatur nennt Rüstung und Waffe und kein Wort von Gold. Gemessen: eine Kammer mit Abstieg kostet rund die anderthalbfache Zeit und zahlt keinen Taler mehr.
+* **Material heißt Zutaten, nicht Ausrüstung.** Phase 1 bleibt unangetastet: der Kessel ist weiter der einzige Ort, an dem ein Ausrüstungsteil entsteht. Die Sperrablage zahlt in Rüstung und Waffe, indem ihre Substantive in diese Slots fallen — und das ist seit M4 eine geprüfte Zusicherung statt eines Satzes im Klappentext.
+* **Berichtigt, ein Fund aus dem Bau:** die Stollen-Truhe zahlte seit M3 aus dem Roster der Unteren Registratur. Fledermausflügel aus einer Kammer ohne Fledermäuse, und die drei Substantive der Sperrablage konnten aus ihrer eigenen Truhe nicht fallen. `rollKammerZutat()` nimmt jetzt `kamWaechter(diff)`, die Funktion, die M3 dafür schon angelegt hatte.
+* **Was einmal je Kammer gilt, läuft einmal je Kammer.** Auftragszählung, Türcooldown und Knöterichs erste Truhe hängen an Ebene 0. Eine Kammer mit zwei Truhen ist trotzdem eine Kammer.
+
+**Abnahme:** Kein Auftrag, kein Langvorgang, kein Aktenfund und keine Adresszeile hängt an der unteren Ebene. Wer nie hinabsteigt, spielt das Spiel unverändert weiter.
 
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 

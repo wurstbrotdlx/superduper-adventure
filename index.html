@@ -1955,6 +1955,12 @@ for(const n of [1, 2]){
 // und Treppe die von Dungeon_2 bleiben. Der Cave-Satz hat keine solchen Objekte.
 addSheet('dun3_walls', 'cf/dungeon/Dungeon_3/Cave_Walls.png', 1, 'raw');
 addSheet('dun3_floor', 'cf/dungeon/Dungeon_3/Cave_Floor_1.png', 1, 'raw');
+// M4: die Leiter, die M3 ausdruecklich liegen gelassen hat ("eine Leiter ohne
+// zweite Ebene waere eine Behauptung, keine Mechanik"). Sie ist kein Sprite mit
+// Rand, sondern eine volle 16x16-Bodenkachel: ein Loch im Hoehlenboden samt
+// Sprossen, im Braunton von Cave_Floor_1. Deshalb Mittelanker wie die Treppen
+// und Zeichnung mit Faktor 2 — sie deckt genau ihre Kachel und keinen Pixel mehr.
+addSheet('dun3_ladder', 'cf/dungeon/Dungeon_3/Cave_Floor_Ladder.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun1_stairsDown', 'cf/dungeon/Dungeon_1/Stairs_Down_SingleFrame.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun2_stairsDown', 'cf/dungeon/Dungeon_2/Dungeon_2_Stairs_Down.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun_chest', 'cf/dungeon/Objects/Chest_anim.png', 8, 'grid', {fw:32, fh:32, ax:16, ay:30});
@@ -9254,6 +9260,18 @@ const KAM_WAECHTER_STUFE = {bat:1, spider:1, sammelmahnung:3, mage:3, golem:4};
 const KAM_STOLLEN = ['teilbescheid','dienstweg','teilabhilfe'];
 const kamWaechter = diff => diff >= 5 ? KAM_STOLLEN
                                       : KAM_WAECHTER.filter(t => KAM_WAECHTER_STUFE[t] <= diff);
+// M4: die zweite Ebene. Nur die Sperrablage hat eine, und das ist keine
+// Baulaune, sondern ihre Signatur aus M1: "Eine Ebene unter der Registratur
+// liegt, was niemand mehr anfassen sollte, und zahlt es in Ruestung und Waffe."
+// Die Untere Registratur (Bescheid 1 bis 4) hat kanonisch nichts unter sich —
+// sie IST das Untergeschoss des Hauses. Wer die Zahl hier hochsetzt, baut
+// Stockwerke ohne Weltgrund; deshalb steht sie am Satz und nicht am Bescheid.
+const KAM_EBENEN = [1, 1, 2];          // je Kammersatz: Dungeon_1, Dungeon_2, Stollen
+// Die untere Ebene ist kurz und dicht: ein Raetselraum, dann die Kammer. Ein
+// zweiter voller Korridor waere dieselbe Kammer noch einmal, und die Schichtuhr
+// ist das Spannungsmittel dieses Spiels (KAMMER-MESSUNG-2026-08-20, Abschnitt 4).
+const KAM_EBENE2_BUDGET = 3;
+const KAM_EBENE2_WAECHTER = 2;         // Aufschlag je Raum gegenueber der oberen Ebene
 const kamWaechterZufall = diff => { const p = kamWaechter(diff); return p[Math.floor(Math.random()*p.length)]; };
 
 const kammerTueren = [];           // Türen in der Oberwelt
@@ -9365,11 +9383,14 @@ function kenntZweig(b){
   return false;
 }
 
-function waehleModule(diff){
-  let budget = [1, 2, 4, 6, 8][diff-1];
+function waehleModule(diff){ return waehleModuleBudget([1, 2, 4, 6, 8][diff-1], 4); }
+// M4: Budget und Raumzahl sind seit der zweiten Ebene zwei Angaben statt einer.
+// waehleModule() bleibt der Weg fuer die obere Ebene und rechnet sie weiterhin
+// aus der Schwierigkeit; die untere setzt beide selbst.
+function waehleModuleBudget(budget, maxN){
   const alle = Object.keys(KAM_MOD).filter(k => !KAM_MOD[k].moeglich || KAM_MOD[k].moeglich());
   const out = [];
-  while(out.length < 4 && budget > 0){
+  while(out.length < maxN && budget > 0){
     // Jede Rätselart höchstens einmal je Kammer: zwei gleiche Räume hintereinander
     // sind kein Korridor, sondern eine Wiederholung.
     const passt = alle.filter(k => KAM_MOD[k].kosten <= budget && out.indexOf(k) < 0);
@@ -9390,13 +9411,17 @@ function betreteKammer(tuer){
             npcs: npcs.slice(), monsters: monsters.slice(), drops: drops.slice(), boss, portal,
             level: currentLevel, px: player.x, py: player.y};
 
-  const kinds = waehleModule(tuer.diff);
   // M3: drei Saetze. 1-2 Dungeon_1, 3-4 Dungeon_2, 5 der Stollen. Der Stollen erbt
   // seine Moebel von Dungeon_2, weil der Cave-Satz keine hat (s. addSheet oben) —
   // deshalb ist der Moebelindex nicht set+1, sondern bei Satz 2 wieder die 2.
   const set = tuer.diff <= 2 ? 0 : (tuer.diff <= 4 ? 1 : 2);
   const moebel = set === 2 ? 2 : set + 1;
   const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome, set,
+             // M4: die Ebene, auf der man steht, und wie viele es hier gibt. Beide
+             // Zahlen liegen an der Kammer und nicht global, weil verlasseKammer()
+             // sie mitsamt der Kammer wegwirft — eine Ebene ueberlebt den Ausgang
+             // so wenig wie ein geoeffnetes Tor.
+             ebene: 0, ebenen: KAM_EBENEN[set], abstieg: null,
              mods: [], raeume: [], tore: [], props: [], idx: 0, geleert: false, truhe: null,
              // R6/F31: Sheet-Keys des Sets einmal beim Kammeraufbau, statt sie in
              // drawKammerObj()/drawProp() pro sichtbarem Objekt pro Frame neu zu bauen.
@@ -9405,8 +9430,22 @@ function betreteKammer(tuer){
              dkPillar: `dun${moebel}_pillar`};
   kammer = k;
   currentLevel = 3;
-  // Muss vor dem Modulbau passieren: der ruft makeMon, und die Oberwelt-Mobs
-  // säßen sonst mit ihren alten Koordinaten in den frischen Kammerwänden fest.
+  baueEbene(k, waehleModule(tuer.diff));
+  sfx.warp(); addShake(12, 0.5);
+  floaters.push({x: player.x, y: player.y - 46, txt: 'KAMMER · SCHWIERIGKEIT ' + k.diff, col:'#f4d97a', t: 3.0, big: true});
+}
+
+// M4: der Korridorbau, aus betreteKammer() herausgeloest. Er lief dort als
+// gerader Block und war damit genau einmal aufrufbar; die zweite Ebene braucht
+// ihn ein zweites Mal an derselben Kammer. Alles, was eine Ebene ausmacht,
+// wird hier zurueckgesetzt und neu gebaut — was die Kammer ausmacht (Tuer,
+// Schwierigkeit, Biom, Satz, Blattschluessel), fasst er nicht an.
+function baueEbene(k, kinds){
+  const tief = k.ebene > 0;
+  k.mods.length = 0; k.raeume.length = 0; k.tore.length = 0; k.props.length = 0;
+  k.idx = 0; k.truhe = null; k.geleert = false; k.abstieg = null;
+  // Muss vor dem Modulbau passieren: der ruft makeMon, und die Mobs der oberen
+  // Ebene saessen sonst mit ihren alten Koordinaten in den frischen Waenden fest.
   monsters.length = 0; boss = null; lockedTarget = null;
 
   map.fill(G_WALL);
@@ -9428,7 +9467,7 @@ function betreteKammer(tuer){
     const mod = {kind: kinds[i], raum: k.raeume[i+1], nr: i, fertig: false, begonnen: false, hinweis: ''};
     KAM_MOD[kinds[i]].bau(mod, k.raeume[i+1], k);
     k.mods.push(mod);
-    if(!mod.keineWaechter) setzeWaechter(k.raeume[i+1], 1 + (k.diff >> 1), k);
+    if(!mod.keineWaechter) setzeWaechter(k.raeume[i+1], 1 + (k.diff >> 1) + (tief ? KAM_EBENE2_WAECHTER : 0), k);
   }
 
   // Schatzkammer: Truhe in der Mitte, ab Schwierigkeit 5 bewacht der Alte Schrecken sie
@@ -9437,11 +9476,25 @@ function betreteKammer(tuer){
   k.props.push(k.truhe);
   if(k.diff >= 5) makeMon('bossgeneric', tileMid(sk.x0+9), tileMid(sk.y0+7));
 
+  // M4: der Abstieg liegt in der Schatzkammer, drei Kacheln neben der Truhe.
+  // Nicht auf ihr: aktBiete() nimmt den naechsten Kandidaten, und ein Loch im
+  // Boden direkt unter der Truhe haette den Ausgang verschluckt, den die
+  // geoeffnete Truhe selbst anbietet. Er entsteht schon beim Bau und ist
+  // trotzdem erst nach der Truhe nutzbar — sichtbar ist er von Anfang an,
+  // denn ein Loch im Boden versteckt sich nicht.
+  if(k.ebene + 1 < k.ebenen){
+    k.abstieg = {kt:'abstieg', x: tileMid(sk.x0+3), y: tileMid(sk.y0+7)};
+    k.props.push(k.abstieg);
+  }
+
   // Ausgangsrune im Vorraum: der Weg zurück steht von Anfang an offen
   k.ausgang = {kt:'rune', x: tileMid(KAM_X0+2), y: tileMid(KAM_TY)};
   k.props.push(k.ausgang);
   k.start = {x: tileMid(KAM_X0+5), y: tileMid(KAM_TY)};   // Abstand zur Rune, sonst reist man beim ersten F zurück
-  k.props.push({kt:'treppe', x: k.start.x, y: k.start.y});   // reine Bodendecke, kein Kontaktpunkt
+  // Reine Bodendecke, kein Kontaktpunkt: der Einstieg zeigt, womit man
+  // hereingekommen ist. Oben ist das die Treppe des Satzes, unten die Leiter,
+  // die man in der Schatzkammer darueber genommen hat.
+  k.props.push({kt:'treppe', x: k.start.x, y: k.start.y, leiter: tief});
 
   // Wandfelsen nur auf den Wänden, die an begehbaren Boden grenzen — das ist der
   // sichtbare Innenring. Der Rest der Karte bleibt gebackene Dunkelheit.
@@ -9455,8 +9508,32 @@ function betreteKammer(tuer){
   cam.x = player.x - canvas.width/2; cam.y = player.y - canvas.height/2;
   refreshFloor();
   aktSperre = 0.5;                          // Tastenwiederholung soll nicht sofort zurückreisen
-  sfx.warp(); addShake(12, 0.5);
-  floaters.push({x: player.x, y: player.y - 46, txt: 'KAMMER · SCHWIERIGKEIT ' + k.diff, col:'#f4d97a', t: 3.0, big: true});
+}
+
+// M4: hinunter. Die Bedingung steht als eigene Funktion da, weil sie an zwei
+// Stellen gebraucht wird — scanAktion() bietet den Abstieg an, steigeAb() fuehrt
+// ihn aus, und eine Kontextaktion, die etwas anderes prueft als die Ausfuehrung,
+// ist ein Fehler, der sich erst im Spiel zeigt.
+// Die Truhe muss offen sein: erst der Vorgang, dann die Neugier. Wer die obere
+// Ebene stehen laesst, holt sich die untere nicht als Abkuerzung.
+function kannAbsteigen(){
+  const k = kammer;
+  return !!k && !!k.abstieg && !!k.truhe && k.truhe.auf && k.ebene + 1 < k.ebenen;
+}
+function steigeAb(){
+  const k = kammer;
+  if(!kannAbsteigen()) return;
+  k.ebene++;
+  // Eigenes Budget statt waehleModule(k.diff): unten steht ein Raetselraum und
+  // nicht der halbe Korridor noch einmal. Das ist die Stellschraube, an der die
+  // Schichtuhr haengt (s. phase-m4-zweite-ebene.md, Abschnitt Messung).
+  const kinds = waehleModuleBudget(KAM_EBENE2_BUDGET, 1);
+  baueEbene(k, kinds);
+  sfx.warp(); addShake(14, 0.6);
+  floaters.push({x: player.x, y: player.y - 46, txt: 'DIE SPERRABLAGE · EBENE ' + (k.ebene + 1),
+                 col:'#c77dff', t: 3.0, big: true});
+  floaters.push({x: player.x, y: player.y - 26, txt: 'Hier wird nichts mehr bearbeitet, hier wird verwahrt.',
+                 col:'#c9b98a', t: 4.0});
 }
 
 // Requisiten am sichtbaren Innenring: Pillars und vereinzelte Objekte stehen auf
@@ -9534,8 +9611,17 @@ function verlasseKammer(){
 }
 
 // --- Belohnung: hängt ausschließlich am Tier des Schildes --------------------
-function rollKammerZutat(tier, biome){
-  const pool = BIOME_MOBS[biome].concat(KAM_WAECHTER);   // Band plus Untere Registratur
+// M4-Befund: der dritte Parameter fehlte, und deshalb zahlte die Sperrablage in
+// Substantiven von Gegnern, die in ihr gar nicht stehen. `KAM_WAECHTER` ist das
+// Roster der Unteren Registratur; seit M3 teilen sich die beiden Roster die
+// Staffel, statt sich zu ueberlagern (Bescheid 1-4 Registratur, 5 Sperrablage).
+// Die Truhe hat diese Teilung nie mitbekommen: bei Bescheid 5 fielen Fledermaus-
+// fluegel und Golem-Splitter aus einer Kammer, in der weder Fledermaus noch
+// Golem vorkommt, und die drei Substantive der Sperrablage konnten aus ihrer
+// eigenen Truhe ueberhaupt nicht fallen. `kamWaechter(diff)` ist genau die
+// Funktion, die M3 dafuer schon angelegt hat — sie stand nur nicht hier.
+function rollKammerZutat(tier, biome, diff){
+  const pool = BIOME_MOBS[biome].concat(kamWaechter(diff));   // Band plus das Roster DIESER Kammer
   if(tier >= 4) pool.push('bossgeneric');
   for(let i = 0; i < 40; i++){
     // Substantiv aus dem örtlichen Pool, Adjektiv aus der Unteren Registratur:
@@ -9557,17 +9643,38 @@ function rollKammerZutat(tier, biome){
 function truheOeffnen(){
   const k = kammer; if(!k || k.truhe.auf) return;
   k.truhe.auf = true; k.geleert = true;
-  auftragEreignis('kammer', k);   // W4
-  k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen);
-  const gold = rri(40, 80) * (1 + k.diff);
-  player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
-  if(gold >= 60) knRandnotiz('goldfund');
-  if(!kn.pending.kammer1 && !kn.seen.kammer1){ kn.pending.kammer1 = true; saveKn(); }
+  // M4: was einmal je KAMMER gilt, darf nicht einmal je EBENE laufen. Eine
+  // Kammer mit zwei Truhen ist trotzdem eine Kammer: der Auftrag zaehlt sie
+  // einmal, die Tuer wachst einmal nach, und Knoeterichs erste Truhe ist die
+  // erste Truhe. Wer diese drei Zeilen mitnimmt, macht aus jedem Abstieg einen
+  // zweiten Kammerabschluss — das faellt in keinem Bild auf und in jeder
+  // Auftragszaehlung.
+  if(k.ebene === 0){
+    auftragEreignis('kammer', k);   // W4
+    k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen);
+  }
+  // M4: die untere Ebene zahlt kein Gold, und das ist eine Entscheidung ueber
+  // die Schichtuhr, keine Sparsamkeit. Die Kammern sind laut KAMMER-MESSUNG-
+  // 2026-08-20 ohnehin der schnelle Geldkanal (rund 1190 Gold je Schicht gegen
+  // 170 aus der Oberwelt); eine zweite Truhe mit Goldwurf haette den Vollausbau
+  // von drei Schichten auf zwei gedrueckt, ohne dass jemand das beschlossen
+  // haette. Unten liegt Material. "Was niemand mehr anfassen sollte, zahlt es
+  // in Ruestung und Waffe" — die Signatur der Sperrablage sagt Ruestung und
+  // Waffe und kein Wort von Gold.
+  const gold = k.ebene > 0 ? 0 : rri(40, 80) * (1 + k.diff);
+  if(gold){
+    player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
+    if(gold >= 60) knRandnotiz('goldfund');
+  }
+  if(k.ebene === 0 && !kn.pending.kammer1 && !kn.seen.kammer1){ kn.pending.kammer1 = true; saveKn(); }
   sfx.gold(); addShake(10, 0.5);
-  floaters.push({x: k.truhe.x, y: k.truhe.y - 40, txt: '+ ' + gold + ' Gold', col:'#f4d97a', t: 2.2, big: true});
-  const n = 2 + k.diff;
+  if(gold) floaters.push({x: k.truhe.x, y: k.truhe.y - 40, txt: '+ ' + gold + ' Gold', col:'#f4d97a', t: 2.2, big: true});
+  // Zwei Zutaten mehr und eine Stufe seltener: der ganze Lohn der unteren Ebene
+  // steckt hier und nirgends sonst.
+  const n = 2 + k.diff + (k.ebene > 0 ? 2 : 0);
+  const tier = k.ebene > 0 ? Math.min(4, k.tier + 1) : k.tier;
   for(let i = 0; i < n; i++){
-    const z = rollKammerZutat(k.tier, k.biome);
+    const z = rollKammerZutat(tier, k.biome, k.diff);
     addZutat(z.noun, z.adj, 1);
     floaters.push({x: k.truhe.x + rr(-30,30), y: k.truhe.y - 56 - i*16, txt: '+ ' + zutatName(z),
                    col: RARITY[zutatRar(z)].col, t: 2.6});
@@ -9596,6 +9703,77 @@ function truheOeffnen(){
   if(invOpen) renderInventory();
   if(kesselOpen) renderKesselPane();
   updateHUD();
+}
+
+// M4: der Guard zur zweiten Ebene. Er prueft, was ohne Spielzug wahr sein muss;
+// was sich erst im Betreten zeigt (Angebot, Abstieg, Rueckweg, doppelte
+// Auftragszaehlung), prueft `tools/ebene-pruef.mjs` im echten Browser.
+//
+// Die vierte Zeile ist die eigentliche: Die Signatur der Sperrablage steht seit
+// M1 als Satz im Katalog ("zahlt es in Ruestung und Waffe") und war bis heute
+// nirgends nachpruefbar. Jetzt ist sie eine Zusicherung an der Tabelle. Wer ein
+// viertes Substantiv in die Sperrablage haengt und ihm Stiefel gibt, hoert es
+// beim naechsten Start.
+function stollenAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('M4 Sperrablage:', m, ...r); };
+  const satzVon = diff => diff <= 2 ? 0 : (diff <= 4 ? 1 : 2);
+
+  // 1) Genau die Kammer mit zwei Ebenen ist die, die es kanonisch sein darf.
+  // Gegen die Schwierigkeitszuordnung geprueft, nicht gegen sich selbst: die
+  // Zuordnung steht in betreteKammer(), die Ebenenzahl hier, und die beiden
+  // duerfen nicht auseinanderlaufen.
+  for(let diff = 1; diff <= 5; diff++){
+    const tief = KAM_EBENEN[satzVon(diff)] > 1;
+    if(tief !== (diff === 5)) fehler(`Gebuehrenbescheid ${diff} fuehrt ${tief ? '' : 'nicht '}in eine zweite Ebene`);
+  }
+  if(KAM_EBENEN.length !== 3) fehler('KAM_EBENEN kennt nicht genau die drei Kammersaetze', KAM_EBENEN.length);
+
+  // 2) Die beiden Roster teilen sich die Staffel, statt sich zu ueberlagern (M3).
+  for(const t of KAM_STOLLEN) if(KAM_WAECHTER.indexOf(t) >= 0)
+    fehler(`${t} steht in beiden Rostern — dann stuenden bei Bescheid 5 acht Typen in einem Biom`);
+
+  // 3) Jedes Roster ist ueberhaupt eines.
+  if(!KAM_STOLLEN.length) fehler('die Sperrablage hat kein Roster');
+  for(const t of KAM_STOLLEN) if(!ZUTAT_NOUNS[t]) fehler(`${t} hat kein Substantiv`);
+
+  // 4) Die Signatur, im Code statt im Klappentext: Ruestung und Waffe, beides,
+  // und nichts anderes.
+  const slots = {};
+  for(const t of KAM_STOLLEN) if(ZUTAT_NOUNS[t]){
+    const s = ZUTAT_NOUNS[t].slot; slots[s] = (slots[s]||0) + 1;
+    if(s !== 'armor' && s !== 'weapon')
+      fehler(`${t} zahlt in ${SLOT_DE[s]} — die Signatur der Sperrablage nennt Ruestung und Waffe`);
+  }
+  if(!slots.armor) fehler('kein Substantiv der Sperrablage zahlt in Ruestung');
+  if(!slots.weapon) fehler('kein Substantiv der Sperrablage zahlt in Waffe');
+
+  // 5) Die Truhe zahlt aus dem Roster DIESER Kammer. Gezogen statt gelesen,
+  // weil der Fund von M4 genau darin bestand, dass die Ziehung ein anderes
+  // Roster benutzte als der Kammerbau.
+  const biome = Object.keys(BIOME_MOBS)[0];
+  let ausStollen = 0;
+  for(let i = 0; i < 400; i++){
+    const z = rollKammerZutat(2, biome, 5);
+    if(KAM_STOLLEN.indexOf(z.noun) >= 0) ausStollen++;
+    else if(KAM_WAECHTER.indexOf(z.noun) >= 0)
+      fehler(`die Truhe der Sperrablage zahlt in ${ZUTAT_NOUNS[z.noun].n} — der Gegner steht in dieser Kammer nicht`);
+  }
+  if(!ausStollen) fehler('in 400 Ziehungen kein einziges Substantiv der Sperrablage aus ihrer eigenen Truhe');
+  for(let i = 0; i < 200; i++){
+    const z = rollKammerZutat(2, biome, 4);
+    if(KAM_STOLLEN.indexOf(z.noun) >= 0)
+      fehler(`die Untere Registratur zahlt in ${ZUTAT_NOUNS[z.noun].n} — der Gegner steht dort nicht`);
+  }
+
+  // 6) Die untere Ebene ergibt einen Raetselraum. Ohne Modul stuende dort ein
+  // Tor ohne Aufgabe, und der Korridor waere nicht zu Ende zu gehen.
+  const unten = waehleModuleBudget(KAM_EBENE2_BUDGET, 1);
+  if(unten.length !== 1) fehler('die untere Ebene bekommt keinen Raetselraum', unten.length);
+
+  if(ok) console.log(`M4 Sperrablage: eine zweite Ebene an Satz ${KAM_EBENEN.indexOf(2)}, `
+    + `${KAM_STOLLEN.length} eigene Waechter, Signatur Rüstung und Waffe, Truhe zahlt aus dem eigenen Roster.`);
+  return ok;
 }
 
 // ===========================================================================
@@ -9929,7 +10107,7 @@ let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
 // AKT_NPC angesprochen wie jede andere Figur; das Nachschlagen ist eine Antwort
 // in seiner Tafel geworden. Die 9 bleibt frei und wird nicht nachbesetzt: die
 // Zahlen sind Sprungmarken in einem switch und stehen in keinem Spielstand.
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12, AKT_ABSTIEG=13;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -9984,6 +10162,10 @@ function scanAktion(dt){
   aktBiete(k.ausgang.x, k.ausgang.y, AKT_AUSGANG, null, 'Verlassen');
   if(k.truhe) aktBiete(k.truhe.x, k.truhe.y, k.truhe.auf ? AKT_AUSGANG : AKT_TRUHE, null,
                        k.truhe.auf ? 'Verlassen' : 'Öffnen');
+  // M4: das Loch im Boden steht sichtbar da, sobald die Kammer gebaut ist, aber
+  // es nimmt niemanden auf, solange die Truhe zu ist. Deshalb haengt das Angebot
+  // an kannAbsteigen() und nicht an k.abstieg allein.
+  if(kannAbsteigen()) aktBiete(k.abstieg.x, k.abstieg.y, AKT_ABSTIEG, null, 'Hinabsteigen');
   const mod = k.mods[k.idx];
   if(!mod || mod.fertig) return;
   if(mod.kind === 'spiegel') for(const s of mod.spiegel) aktBiete(s.x, s.y, AKT_SPIEGEL, s, 'Drehen');
@@ -10000,6 +10182,7 @@ function fuehreAktion(){
     case AKT_SCHLOSS: schlossAuf(aktObj); break;
     case AKT_TRUHE:   truheOeffnen(); break;
     case AKT_AUSGANG: verlasseKammer(); break;
+    case AKT_ABSTIEG: steigeAb(); break;
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
     // U3: F oeffnet die Tafel; ein zweiter Druck redet darin weiter.
@@ -10935,7 +11118,19 @@ function drawKammerObj(o){
       drawSprite(kammer.dkStairs, 0, o.x, o.y, 2);
       break;
     case 'treppe':                                        // Einstieg: reine Bodendecke, kein Kontaktpunkt
-      drawSprite(kammer.dkStairs, 0, o.x, o.y, 2);
+      drawSprite(o.leiter ? 'dun3_ladder' : kammer.dkStairs, 0, o.x, o.y, 2);
+      break;
+    // M4: der Abstieg. Dieselbe Kachel wie der Einstieg unten, nur mit einem
+    // Ring darum, solange er begehbar ist — ohne den ist ein Loch im Boden auf
+    // einem Hoehlenboden aus zwei Kacheln Entfernung nicht als Ziel zu erkennen.
+    // Ist die Truhe noch zu, bleibt der Ring aus: das Loch ist da, es nimmt nur
+    // niemanden auf.
+    case 'abstieg':
+      drawSprite('dun3_ladder', 0, o.x, o.y, 2);
+      if(kannAbsteigen()){
+        ctx.strokeStyle = '#c77dff'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(o.x, o.y, 15 + Math.sin(gameT*2.4)*2, 0, Math.PI*2); ctx.stroke();
+      }
       break;
     case 'tafel':
       ctx.fillStyle = '#2b2338'; ctx.fillRect(o.x - 26, o.y - 20, 52, 34);
@@ -11682,7 +11877,10 @@ function update(dt){
 
   if(kammer){
     updateKammer(dt);
-    setTxt('zone', `📍 Kammer · Schwierigkeit ${kammer.diff} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}${schichtHudSuffix()}`);
+    // M4: der Ort steht vor der Zahl. Wer unten ist, liest "Sperrablage" und
+    // nicht "Kammer, Ebene 2" — der Name ist die Auskunft, die Ebene der Zusatz.
+    const ort = kammer.ebene > 0 ? `📍 Sperrablage · Ebene ${kammer.ebene + 1}` : `📍 Kammer · Schwierigkeit ${kammer.diff}`;
+    setTxt('zone', `${ort} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}${schichtHudSuffix()}`);
   } else {
     // 6 Türen, also billig genug für den Frame: Cooldown und die reine Optik
     // des Torgitters (fährt hoch, wenn der Spieler in Aktionsreichweite kommt).
@@ -19225,6 +19423,7 @@ loadAssets().then(() => {
   dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst
   portraetAssert();           // U5: erst hier, vorher gibt es die Bilddateien nicht
   garderobeAssert();          // G9-Nachtrag: misst die Blätter der Garderobe, nicht ihre Tabelle
+  stollenAssert();            // M4: die zweite Ebene, ihr Roster und ihre Signatur
   knZettelPortrait();         // U6: und aus demselben Grund einen Schritt danach
   refreshFloor();
   showStartScreen();

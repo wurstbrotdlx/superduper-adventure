@@ -271,6 +271,7 @@ nichts, das bleibt die G4-Lektion.
 | `enemies/Slime/` | `Slime_Big_Blue.png`, `Slime_Medium_Blue.png` (aus `Cute_Fantasy/Enemies/Slime/`) | Die Teilabhilfe und Der Teilbescheid. Beide teilen das 8×4-Raster des schon verbauten `Slime_Small`, nur fw/fh und Fußlinie wachsen mit |
 | `enemies/Snails/` | `Snail_1.png` (aus `Cute_Fantasy_ShroomLands/Snails/`) | Der Dienstweg. Bricht das Down/Side/Up-Schema: Zeile 0 ist die Seitenansicht (21px), die Zeilen 1/2 sind Front und Rück (10px) |
 | `dungeon/Dungeon_3/` | `Cave_Walls.png`, `Cave_Floor_1.png` (aus `Cute_Fantasy/Tiles/Cave/`) | Boden und sichtbarer Wandring des dritten Kammersatzes |
+| `dungeon/Dungeon_3/` | `Cave_Floor_Ladder.png` (dieselbe Quelle, **seit M4**) | der Abstieg in die zweite Ebene und der Einstieg unten. Keine Requisite, sondern eine volle Bodenkachel: Loch samt Sprossen im Braunton von `Cave_Floor_1`, Mittelanker, Faktor 2, deckt genau ihre Kachel |
 
 **Warum Dungeon_3 ein Hybrid ist:** `Cute_Fantasy_Dungeons/Dungeon_3/` ist im Pack ein
 **leerer Ordner** — Kenmi liefert kein drittes Set aus. Der Cave-Satz hat Boden, Wände,
@@ -280,9 +281,15 @@ Dungeon_2. Der dunkle Ring in `Cave_Walls` bei (64,0) hat exakt dasselbe 3×3-La
 die beiden Dungeon-Blätter, die UV-Tabelle konnte unverändert übernommen werden.
 
 **Bewusst nicht verwendet:** `Cave_Water`/`Cave_Water_Animation`, `Rails.png`,
-`Cave_Support_1/2`, `Cave_Floor_Ladder` (Requisiten ohne Mechanik, die sie trägt —
-Schienen ohne Lore und eine Leiter ohne zweite Ebene wären Behauptungen),
-`Cave_Floor_2` (ein zweiter Bodenton bringt bei fünf gestreuten UVs nichts).
+`Cave_Support_1/2`, `Cave_Floor_2` (ein zweiter Bodenton bringt bei fünf
+gestreuten UVs nichts).
+
+`Cave_Floor_Ladder` stand bis M3 aus demselben Grund in dieser Zeile wie die
+Schienen: eine Leiter ohne zweite Ebene wäre eine Behauptung. **Seit M4 gibt es
+die zweite Ebene**, und damit ist die Leiter keine Behauptung mehr, sondern ihr
+Eingang (`phase-m4-zweite-ebene.md`). Für `Rails.png` und `Mine_Cart` gilt der
+Satz unverändert weiter: eine Lore ist eine Bewegung mit einem Weg, und die ist
+noch nicht gebaut.
 
 ### Von G4 gebraucht (`tiles/`, `deco/`)
 
