@@ -18,6 +18,12 @@ Dann `http://localhost:8378/adventure/` aufrufen.
 
 **Nicht `dist/index.html` öffnen.** Die Datei entsteht nur im Pages-Build, liegt lokal oft veraltet herum und lässt funktionierende Features kaputt aussehen. Immer `index.html` im Wurzelverzeichnis.
 
+## Spielen
+
+Die ausgelieferte Fassung steht unter **<https://wurstbrotdlx.github.io/superduper-adventure/>**.
+
+Sie entsteht nicht von Hand: `.github/workflows/pages.yml` läuft bei jedem Push auf `main`, holt die lizenzierte Grafik per Deploy Key aus dem privaten Repo `wurstbrotdlx/superduper-adventure-assets`, backt sie mit `tools/build-single.mjs` als Data-URIs in eine einzige `dist/index.html` und deployt die über die Actions-Pipeline. Im Repo selbst liegt deshalb kein eingebackenes Bild und kein `docs/`-Ordner mehr.
+
 ## Steuerung
 
 `W A S D` Bewegung · `Leertaste` oder Klick Angriff · `Q` oder `1` Trank · `E` Zauber · `R` Ultimate · `T` Zauberbaum · `I` Inventar und Befähigung · `K` Kessel · `M` Musik · `F` Kontextaktion · `Esc` schließt Panels der Reihe nach. Ein Klick oder Tipp **neben** ein offenes Panel schließt es ebenfalls, ohne dabei anzugreifen (seit U1).
