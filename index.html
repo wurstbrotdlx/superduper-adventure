@@ -6631,6 +6631,15 @@ let amt = {bankGold:0, schichten:0,
   // zwischen diesen beiden Zahlen. Echter Zustand, nicht ableitbar: welche
   // Schicht es war, weiss danach niemand mehr.
   stopfenSchicht:0, adressSchicht:0,
+  // SP2: Was am Gürtel die Nacht übersteht, {gold, zutaten:[{noun,adj,count}]}
+  // oder null. War bis hierher ein Paar Laufzeitvariablen (pendingCarryGold,
+  // pendingCarryPouch), die startGame() bei jedem Seitenaufruf genullt hat — wer
+  // im Dorf zwischen Dienstbericht und Antritt den Browser schloss, verlor
+  // beides, obwohl der Bericht "mitgenommen" druckte. W10 hat für den Antrag im
+  // selben Panel längst das Gegenteil begründet: ein Aktenvorgang überlebt die
+  // Nacht, und abgerechnetes Gold ist einer. endShift() schreibt, startShift()
+  // löst ein und leert im selben Zug, Bauform wie wiedereinsetzung.
+  uebertrag:null,
   // P1: Die eine Angabe, die der Einstellungsvordruck vom Spieler entgegennimmt
   // (Blatt 1, Feld "Anrede der Person"). 'm', 'w' oder 'egal'. Sie entscheidet,
   // aus welchen Frisuren der Schichtantritt die Gestalt des Tages zieht, und
@@ -6655,7 +6664,10 @@ const figDa = fig => !fig || !CONFIG.schichtModus
   || ((!fig.abAkt || aktStand() >= fig.abAkt) && (!fig.daWenn || fig.daWenn()));
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
 let shiftT=0, shiftEndPending=false, overtimeT=0,
-    shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[],
+    // SP2: pendingCarryGold/pendingCarryPouch sind hier ersatzlos entfallen. Der
+    // Übertrag ist kein Laufzeitzustand der Schicht, sondern das Ergebnis der
+    // vorigen, und steht seither als amt.uebertrag in der Akte.
+    shiftKillsByType={}, shiftKillsTotal=0,
     // W4: Fortschritt des laufenden Aushangs. Bedeutung typabhängig, siehe AUFTRAG_TYPEN[].stand.
     // Reset in startShift(), neben shiftKillsByType. auftragSoll/auftragOrtSoll sind die
     // Weltgarantie-Kontingente für placeMonsters(), ebenfalls dort gesetzt.
@@ -8479,6 +8491,23 @@ const WIEDER_STAND_DECKEL = 60, WIEDER_ZAHL_DECKEL = 999;
 // Deckel selbst; wiederAssert() prüft sie weiter unten direkt.
 function wiederStandGeklemmt(roh){ return clamp(roh | 0, 1, WIEDER_STAND_DECKEL); }
 
+// SP1: dasselbe für die beiden Schichtstempel aus SZ3. Sie standen bis hierher
+// in saveAmt() und in keiner einzigen Ladezeile — geschrieben, gespeichert,
+// beim nächsten Laden verworfen und vom nächsten saveAmt() mit 0 überschrieben.
+// Der Deckel ist wie WIEDER_STAND_DECKEL keine Balance-Zahl, sondern die Zusage
+// dieses Kommentars: 0 heißt "nie", jede andere Zahl ist eine Schichtnummer, und
+// so hoch zählt keine Laufbahn. Steht aus demselben TDZ-Grund hier oben.
+const STEMPEL_DECKEL = 9999;
+function stempelGeklemmt(roh){ return clamp(roh | 0, 0, STEMPEL_DECKEL); }
+
+// SP2: der Übertrag zwischen zwei Schichten. Deckel auf beiden Größen, damit
+// ein von Hand gesetzter Stand nicht am Loader vorbeikommt. Was er NICHT
+// verhindert, steht ausdrücklich dabei: er klemmt die Zahl, er beweist nicht
+// ihre Herkunft — wer den Stand von Hand schreibt, darf sich bis an den Deckel
+// beschenken. Das ist derselbe Stand wie bei amt.bankGold und hier zum ersten
+// Mal aufgeschrieben statt stillschweigend angenommen.
+const UEBERTRAG_GOLD_DECKEL = 999999, UEBERTRAG_STUECK_DECKEL = 99;
+
 const AMT_KEY = 'sda_amt_v1';
 (function loadAmt(){
   try{
@@ -8515,6 +8544,24 @@ const AMT_KEY = 'sda_amt_v1';
       amt.wiedereinsetzung = {stand: wiederStandGeklemmt(o.wiedereinsetzung.stand),
                               haar: typeof o.wiedereinsetzung.haar === 'string' ? o.wiedereinsetzung.haar : null,
                               ton:  typeof o.wiedereinsetzung.ton  === 'string' ? o.wiedereinsetzung.ton  : null};
+    // SP1: die beiden Zeitstempel aus SZ3, die es bis hierher nie zurück ins
+    // Spiel geschafft haben. Ohne diese zwei Zeilen sind nach jedem Neuladen
+    // BEIDE Wege in vorblattFaellig() tot, und weil beide Setzer verbrauchte
+    // Einmalpfade sind (stopfenGezogenEnde() läuft nach dem fertigen Strang nie
+    // wieder, findeAdresszeile(4) gibt nach dem Fund nie wieder true), kommt
+    // Vorblatt dann nie an: keine Szene 6, keine Versuchung, kein Gegenspieler.
+    // Gemessen und nachgestellt in SPEICHERFRAGE-2026-08-24.md.
+    if(typeof o.stopfenSchicht === 'number') amt.stopfenSchicht = stempelGeklemmt(o.stopfenSchicht);
+    if(typeof o.adressSchicht === 'number') amt.adressSchicht = stempelGeklemmt(o.adressSchicht);
+    // SP2: der Übertrag. Strukturell geprüft und beidseitig geklemmt wie der
+    // Antrag darüber; die Zutatenliste wird Stück für Stück gefiltert, weil ein
+    // einzelner kaputter Eintrag sonst den ganzen Übertrag mitnähme.
+    if(o.uebertrag && typeof o.uebertrag.gold === 'number' && Array.isArray(o.uebertrag.zutaten))
+      amt.uebertrag = {gold: clamp(o.uebertrag.gold | 0, 0, UEBERTRAG_GOLD_DECKEL),
+                       zutaten: o.uebertrag.zutaten
+                         .filter(z => z && typeof z.noun === 'string' && typeof z.adj === 'string' && (z.count | 0) > 0)
+                         .slice(0, UEBERTRAG_STUECK_DECKEL)
+                         .map(z => ({noun: z.noun, adj: z.adj, count: clamp(z.count | 0, 1, UEBERTRAG_STUECK_DECKEL)}))};
     // GW26b: die Ladezeile für auftraegeErfuellt ist hier ersatzlos entfallen.
     // loadAmt() ist eine Feld-Whitelist, ein alter Stand mit dem Feld wird also
     // schlicht nicht mehr gelesen; saveAmt() schreibt amt komplett neu und räumt
@@ -13843,7 +13890,8 @@ function winGame(){
 function startGame(){
   initAudio();
   if(CONFIG.schichtModus){
-    pendingCarryGold = 0; pendingCarryPouch = [];
+    // SP2: Hier stand die Nullung des Übertrags. Genau sie war der Verlust — sie
+    // lief bei jedem Seitenaufruf, also auch bei dem, der die Nacht beendete.
     // W8: Beim allerersten Dienstantritt wird erst eingestellt, dann gearbeitet.
     // Danach nie wieder (kn.seen.einstellung), nachlesbar bleibt es überall.
     // E1: Der erste Dienstantritt laeuft ueber den Empfang. Er endet auf
@@ -13963,8 +14011,13 @@ function startShift(){
                  : HAARTOENE[Math.floor(Math.random()*HAARTOENE.length)];
   player.bag = new Array(24).fill(null);
   player.potions = 2 + (amt.bonusPotions||0);
-  player.gold = pendingCarryGold + (amt.bonusStartGold||0); pendingCarryGold = 0;
-  player.pouch = pendingCarryPouch; pendingCarryPouch = [];
+  // SP2: Übertrag einlösen und im selben Zug leeren, Bauform wie der Antrag
+  // oben. saveAmt() genau dann, wenn wirklich einer vorlag — ein Schreibvorgang
+  // bei jedem Antritt wäre der Fehler, den GW26b schon einmal notiert hat.
+  const ueber = amt.uebertrag; amt.uebertrag = null;
+  if(ueber) saveAmt();
+  player.gold = (ueber ? ueber.gold : 0) + (amt.bonusStartGold||0);
+  player.pouch = ueber ? ueber.zutaten : [];
   player.equip = {weapon:null, armor:null, shield:null, boots:null}; knCurseWasOn = false;
   player.equip.weapon = {base:BASES[1], rar:1, affixes:[{k:'dmg',v:2,def:AFFIXES[0]}], name:'Magisches Kurzschwert'};
   if(amt.ausbauten.startFluch) player.equip.weapon.fluch = amt.ausbauten.startFluch;
@@ -14033,7 +14086,10 @@ function endShift(reason){
   // Übertrags. Seit dem 20.08.2026 sind es drei Empfänger statt zweier: der
   // Verwaltungskostenanteil verlässt das Spiel. Die Summe der drei ist weiterhin
   // exakt player.gold, das rechnet goldAufteilung() vor und goldAssert() nach.
-  pendingCarryGold = carryGold; pendingCarryPouch = carryPouch;
+  // SP2: in die Akte statt in eine Laufzeitvariable. Geschrieben wird der schon
+  // gekappte Übertrag, nicht die Bruttobeute — was hier steht, ist genau das,
+  // was der Dienstbericht zwei Zeilen weiter unten als "mitgenommen" druckt.
+  amt.uebertrag = {gold: carryGold, zutaten: carryPouch};
   amt.bankGold += abgabe; amt.schichten++;
 
   // Phase 5: Dienstzettel 'feierabend1' latcht hier (Auslöser = #overlay öffnet sich,
@@ -15493,6 +15549,11 @@ function auftragWuerfeln(){
   if(amt.brett && amt.brett.liste.some(a => !AUFTRAG_TYPEN[a.typ])) amt.brett = null;
 })();
 
+// SP1: Die Heilung der schon getroffenen Bestände steht NICHT hier, sondern
+// hinter langFertig() weiter unten. Sie las hier oben eine Konstante, die erst
+// 600 Zeilen später deklariert wird — die TDZ-Falle, vor der das README warnt,
+// und im ersten Prüflauf dieses Abschnitts prompt hineingelaufen.
+
 // --- W4: Aushang-Assertion, Bauform wie knAssertCaps() weiter oben. Beweist
 // beim Start zwei Dinge: (1) kein würfelbarer Aushang kann unerfüllbar sein,
 // (2) kein erzeugter Text sprengt Zeichendeckel, Formregeln oder Sperrvermerk.
@@ -16090,6 +16151,33 @@ const langStufe  = k => { const d = LANGVORGAENGE[k]; return d.stufe ? d.stufe(l
 // Zusatzzeilen und die Gießkannen-Wärme auch im alten Modus erscheinen.
 const langFertig = k => CONFIG.schichtModus && langStufe(k) >= LANGVORGAENGE[k].stufen;
 const langLaeuft = k => CONFIG.schichtModus && LANGVORGAENGE[k].wenn() && !langFertig(k);
+
+// SP1: Heilung für die Bestände, die der Fund schon getroffen hat. Wer den
+// Stopfen gezogen oder die vierte Adresszeile gefunden hat, bevor die Ladezeilen
+// in loadAmt() existierten, trägt die Tat in der Kladde (die hat sich immer
+// selbst gespeichert) und den Stempel auf 0 — für den wäre Vorblatt sonst auf
+// ewig unterwegs. Die Kladde ist hier die Wahrheitsquelle, der Stempel wird aus
+// ihr nachgezogen: nicht auf die Schicht von damals (die weiß niemand mehr,
+// genau das sagt der Kommentar am Feld), sondern auf die nächste. Der Wagen
+// kommt dadurch später als erzählt, aber er kommt.
+//
+// Steht hier unten und nicht bei der Aushang-Migration, weil sie langFertig()
+// liest und das eine Zeile weiter oben deklariert ist. Genau andersherum lief
+// der erste Prüflauf dieses Abschnitts in einen ReferenceError beim Laden.
+//
+// Läuft genau einmal je Bestand: danach ist der Stempel gesetzt, die Bedingung
+// greift nie wieder. Das saveAmt() steht hinter der Bedingung und ist deshalb
+// nicht der Schreibvorgang-bei-jedem-Seitenaufruf, den GW26b vermeidet.
+//
+// Nebenwirkung, benannt statt verschwiegen: postregenLaeuft() hängt am selben
+// Stempel, im Dorf fallen also drei Schichten lang noch einmal Blätter. Das ist
+// der Preis dafür, dass der Strang überhaupt wieder ankommt.
+(function stempelMigration(){
+  let nachgezogen = false;
+  if(!amt.stopfenSchicht && langFertig('stopfen')){ amt.stopfenSchicht = amt.schichten + 1; nachgezogen = true; }
+  if(!amt.adressSchicht && vorgangHat(4)){ amt.adressSchicht = amt.schichten + 1; nachgezogen = true; }
+  if(nachgezogen) saveAmt();
+})();
 
 // Der Trichter. Hängt an auftragEreignis(), deckt damit alle acht bestehenden
 // Fundstellen mit einer Zeile ab. Bewusst kein CFX.schweigen-Guard, gleiche
