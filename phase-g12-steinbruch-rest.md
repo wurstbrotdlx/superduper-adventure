@@ -197,8 +197,9 @@ einmal dran.
 
 Die Rohbibliothek `Graphics/` liegt aus Lizenzgründen in keinem Repo (siehe
 `assets/cf/README.md`), und in einer frischen Websitzung ist sie nicht da. Der
-Bauteil dieser Runde braucht deshalb **vierundzwanzig Dateien im privaten
-Assets-Repo**, Originalnamen behalten wie bei allen bisherigen:
+Bauteil dieser Runde braucht deshalb **dreiundzwanzig Dateien im privaten
+Assets-Repo**, Originalnamen behalten wie bei allen bisherigen (fünfzehn Rigs,
+acht Pflanzenblätter):
 
 **Nach `deco/Animals/`**, aus `Graphics/Cute_Fantasy/Animals/`:
 
@@ -238,7 +239,7 @@ Umgebung.
 | Startwert-Umschreibung gegengeprüft | Literal genau einmal getroffen; die drei Läufe liefern drei verschiedene Küsten (Meerkacheln 16576 / 17644 / 14936) |
 
 `index.html` ist in diesem Schritt **unverändert**. Diese Runde misst und
-entscheidet; gesetzt wird, sobald die vierundzwanzig Blätter im Assets-Repo
+entscheidet; gesetzt wird, sobald die dreiundzwanzig Blätter im Assets-Repo
 liegen.
 
 ## Bewusst offen
