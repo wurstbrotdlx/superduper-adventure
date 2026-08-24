@@ -251,6 +251,11 @@ Das sechste Biom, eine Ebene unter der Unteren Registratur, und nur hinter der t
 Kammertür. Alle drei gehören zum Goblin-Rig: es ist Inhalt, der seine Form verloren hat,
 und zwar dreimal auf dieselbe Art. Einbau und Begründung in `phase-m3-stollen.md`.
 
+Seit M4 ist die „Ebene unter der Registratur" keine Ortsangabe mehr, sondern ein Raum:
+die Schatzkammer einer Stollen-Kammer hat ein Loch im Boden, und darunter liegt ein
+zweiter, kürzerer Korridor mit denselben drei Wächtern, dichter gestellt. Er zahlt kein
+Gold, sondern Material — siehe `phase-m4-zweite-ebene.md`.
+
 | Monster | Vorgangsart | Warum es sich so verhält |
 |---|---|---|
 | Die Teilabhilfe | Die Teilabhilfe | Man hilft ihr teilweise ab, und was übrig bleibt, läuft als eigener Vorgang weiter. Zweimal. |
@@ -1022,9 +1027,34 @@ Was G11 liegen ließ: Brücken, Wasserpflanzen, Kapybaras und die Ambiente-Tiere
 * **Der Falter bleibt winzig.** Seine Kunst ist 8x8, bei `WELT_SC` also eine halbe Kachel. Ihn größer zu zeichnen hieße, den Weltmaßstab aus G7 für ein Insekt zu brechen.
 * **Nachtrag, nicht Teil des Steinbruchs: der Stein schwebte seit G4.** `addSheet`s Modus `'strip'` setzt den Anker auf die Fußmitte der ZELLE, und `Rock_1_Anim.png` hat vier leere Zeilen unter der Zeichnung — bei `WELT_SC` acht Weltpixel Luft zwischen Stein und Anker, und der Schatten wird auf den Anker gemalt. Berichtigt am Blatt (`ay:12`), nicht am Zeichenaufruf: der Anker gehört an die Stelle, mit der das Ding aufsteht. Der Baum hatte denselben Rand und seine Korrektur schon seit G7 (`BAUM_DY`), Gras und Pilze haben ihn auch, aber keinen Schatten, an dem man es sähe.
 
-### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
+### M4: Die zweite Ebene — ERLEDIGT (siehe `phase-m4-zweite-ebene.md`)
 
-SZ3 der Stopfen im Steinfeld samt Blattserie I und Postregen sowie Vorblatts Ankunft, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.
+Der erste Schritt aus `WELT-ERWEITERUNG-2026-08-24.md`: nicht größer, sondern tiefer. Die Leiter, die M3 ausdrücklich liegen gelassen hat („eine Leiter ohne zweite Ebene wäre eine Behauptung"), bekommt ihr Untergeschoss.
+
+* **Nur die Sperrablage hat eines, und zwar wörtlich.** Ihre Signatur aus M1 lautet „Eine Ebene unter der Registratur liegt, was niemand mehr anfassen sollte". Die Untere Registratur hat kanonisch nichts unter sich, sie **ist** das Untergeschoss des Hauses. Die Ebenenzahl hängt deshalb am Kammersatz und nicht am Gebührenbescheid, und `stollenAssert()` rechnet beide Stellen gegeneinander.
+* **Erst der Vorgang, dann die Neugier.** Das Loch im Boden der Schatzkammer ist von Anfang an sichtbar und nimmt niemanden auf, solange die Truhe zu ist. Wer die obere Ebene stehen lässt, holt sich die untere nicht als Abkürzung.
+* **Unten liegt kein Gold.** Zwei Zutaten mehr und eine Seltenheitsstufe höher, sonst nichts. Die Kammern sind laut `KAMMER-MESSUNG-2026-08-20` ohnehin der schnelle Geldkanal; eine zweite Truhe mit Goldwurf hätte den Vollausbau beschleunigt, ohne dass jemand das beschlossen hätte. Die Signatur nennt Rüstung und Waffe und kein Wort von Gold. Gemessen: eine Kammer mit Abstieg kostet rund die anderthalbfache Zeit und zahlt keinen Taler mehr.
+* **Material heißt Zutaten, nicht Ausrüstung.** Phase 1 bleibt unangetastet: der Kessel ist weiter der einzige Ort, an dem ein Ausrüstungsteil entsteht. Die Sperrablage zahlt in Rüstung und Waffe, indem ihre Substantive in diese Slots fallen — und das ist seit M4 eine geprüfte Zusicherung statt eines Satzes im Klappentext.
+* **Berichtigt, ein Fund aus dem Bau:** die Stollen-Truhe zahlte seit M3 aus dem Roster der Unteren Registratur. Fledermausflügel aus einer Kammer ohne Fledermäuse, und die drei Substantive der Sperrablage konnten aus ihrer eigenen Truhe nicht fallen. `rollKammerZutat()` nimmt jetzt `kamWaechter(diff)`, die Funktion, die M3 dafür schon angelegt hatte.
+* **Was einmal je Kammer gilt, läuft einmal je Kammer.** Auftragszählung, Türcooldown und Knöterichs erste Truhe hängen an Ebene 0. Eine Kammer mit zwei Truhen ist trotzdem eine Kammer.
+
+**Abnahme:** Kein Auftrag, kein Langvorgang, kein Aktenfund und keine Adresszeile hängt an der unteren Ebene. Wer nie hinabsteigt, spielt das Spiel unverändert weiter.
+
+### SZ3: Der Stopfen und die Entklammerung — ERLEDIGT (siehe `phase-sz3-stopfen.md`)
+
+Szenen 5 und 6, beide aus `weltgeschichte.md` Kapitel 8 übernommen, kein Satz erfunden. Der zweite Schritt aus `WELT-ERWEITERUNG-2026-08-24.md`.
+
+* **Die brummende Stelle ist kein Ziel, sondern eine Wahrnehmung.** Kein Marker, kein Pfeil, kein Eintrag im Brett — wer näher als 150 Pixel steht, liest „Der Boden brummt", und mehr gibt es nicht. Sie brummt ausdrücklich schon vor Akt IV, weil sie seit 741 brummt; nur das Angebot hängt am Akt. Gesucht statt gewürfelt, wie die Koppel in G11 und die Buchten in G12, und einmal je Welt statt einmal je Schicht.
+* **Langvorgang 10, der erste Strang mit Ortsschritten.** Nachsehen, freilegen, Zapf holen, öffnen. Bei Stufe 2 bietet die Stelle nichts an, weil dort Zapf fehlt und der im Dorf steht.
+* **Serie I ist der dritte Fundweg** und der einzige, der an einem Ereignis hängt statt an einem Ort: sechs Blätter, überall, aber erst nach dem Stopfen. Der Bestand geht von 48 auf 54 in sieben Serien.
+* **Der Postregen ist die Ankündigung, nicht das Finale.** Drei Schichten Papier im Dorf, aus dem vorhandenen Konfetti. Der Postregen des Endes bleibt dem Ende vorbehalten.
+* **Vorblatt kommt an, statt dazustehen.** W11 hat ihn auf Akt III gesetzt und seinen Auftritt selbst als offen geführt. Seit SZ3 ist der Auftritt gebaut, also gilt er: `abAkt` 4 plus `daWenn`, und Szene 6 ist die Ankunft. Sie fällt zwei Schichten nach dem Stopfen oder zwei Schichten nach der vierten Adresszeile, der frühere Weg gewinnt. Damit hat der Stopfen den Preis, den die Weltgeschichte ihm gibt: nicht dass der Gegenspieler kommt, sondern wann.
+
+**Abnahme:** Wer nie ins Steinfeld geht, spielt das Spiel unverändert zu Ende. Der Strang ist für den Hauptvorgang nirgends Bedingung, die Ausfertigung hängt weiter allein an den vier Adresszeilen.
+
+### SZ4: Die übrigen drei Szenen — OFFEN
+
+Die Versuchung als Versammlung im Amtsflur, die Zustellung als Ausbau von `vorgangPanel()`, der Abspann als Tafelstapel. Szene 8 und 9 existieren dort bereits in Kurzform. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.
 
 ### Was wir ausdrücklich nicht bauen
 

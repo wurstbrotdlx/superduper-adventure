@@ -50,16 +50,35 @@ const zeilen = await page.evaluate(() => {
   const raus = [];
   const pruef = (name, ist, soll) => raus.push({name, ist, soll, ok: JSON.stringify(ist) === JSON.stringify(soll)});
   const fig = k => DORF_FIGUREN.find(f => f.key === k);
-  const sicherung = {schichtModus: CONFIG.schichtModus, schichten: amt.schichten, lager: kn.flags.hatLagerGesehen};
+  const sicherung = {schichtModus: CONFIG.schichtModus, schichten: amt.schichten, lager: kn.flags.hatLagerGesehen,
+                     vorblatt: kn.flags.szeneVorblatt};
   CONFIG.schichtModus = true;
 
   // --- Torschaltung ---------------------------------------------------------
-  const AB = {nieselbeck: 1, umlauf: 2, vorblatt: 3};
+  // SZ3: Vorblatt ist aus dieser Tabelle heraus. Er haengt seit der Entklammerung
+  // (Szene 6) nicht mehr an einem Akt, sondern an seiner ANKUNFT — der Akt ist
+  // bei ihm nur noch die Untergrenze. Er wird deshalb gleich darunter eigens
+  // geprueft, mit beiden Zustaenden.
+  const AB = {nieselbeck: 1, umlauf: 2};
   for(const sch of [0, 10, 20, 30, 40]){
     amt.schichten = sch;
     const akt = aktStand();
     for(const k in AB) pruef(`${k} steht in Akt ${akt} im Dorf`, figDa(fig(k)), akt >= AB[k]);
   }
+
+  // Vorblatt: nicht vor Akt IV, und in Akt IV auch nur, wenn er angekommen ist.
+  kn.flags.szeneVorblatt = false;
+  for(const sch of [0, 10, 20, 30, 40]){
+    amt.schichten = sch;
+    pruef(`vorblatt steht in Akt ${aktStand()} nicht im Dorf, solange er nicht da ist`, figDa(fig('vorblatt')), false);
+  }
+  kn.flags.szeneVorblatt = true;
+  for(const sch of [0, 10, 20, 30, 40]){
+    amt.schichten = sch;
+    const akt = aktStand();
+    pruef(`vorblatt steht in Akt ${akt} im Dorf, nachdem er angekommen ist`, figDa(fig('vorblatt')), akt >= 4);
+  }
+  kn.flags.szeneVorblatt = false;
   CONFIG.schichtModus = false; amt.schichten = 0;
   for(const k in AB) pruef(`${k} steht im freien Spiel im Dorf`, figDa(fig(k)), true);
   CONFIG.schichtModus = true;
@@ -148,6 +167,7 @@ const zeilen = await page.evaluate(() => {
   CONFIG.schichtModus = sicherung.schichtModus;
   amt.schichten = sicherung.schichten;
   kn.flags.hatLagerGesehen = sicherung.lager;
+  kn.flags.szeneVorblatt = sicherung.vorblatt;
   return raus;
 });
 

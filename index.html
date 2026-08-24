@@ -1955,6 +1955,12 @@ for(const n of [1, 2]){
 // und Treppe die von Dungeon_2 bleiben. Der Cave-Satz hat keine solchen Objekte.
 addSheet('dun3_walls', 'cf/dungeon/Dungeon_3/Cave_Walls.png', 1, 'raw');
 addSheet('dun3_floor', 'cf/dungeon/Dungeon_3/Cave_Floor_1.png', 1, 'raw');
+// M4: die Leiter, die M3 ausdruecklich liegen gelassen hat ("eine Leiter ohne
+// zweite Ebene waere eine Behauptung, keine Mechanik"). Sie ist kein Sprite mit
+// Rand, sondern eine volle 16x16-Bodenkachel: ein Loch im Hoehlenboden samt
+// Sprossen, im Braunton von Cave_Floor_1. Deshalb Mittelanker wie die Treppen
+// und Zeichnung mit Faktor 2 — sie deckt genau ihre Kachel und keinen Pixel mehr.
+addSheet('dun3_ladder', 'cf/dungeon/Dungeon_3/Cave_Floor_Ladder.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun1_stairsDown', 'cf/dungeon/Dungeon_1/Stairs_Down_SingleFrame.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun2_stairsDown', 'cf/dungeon/Dungeon_2/Dungeon_2_Stairs_Down.png', 1, 'grid', {fw:16, fh:16, ax:8, ay:8});
 addSheet('dun_chest', 'cf/dungeon/Objects/Chest_anim.png', 8, 'grid', {fw:32, fh:32, ax:16, ay:30});
@@ -3471,6 +3477,15 @@ const DORF_FIGUREN = [
      {z1:'Ich habe damals eine Anfrage geschickt.', z2:'Nach Oben. Vor acht Jahren.'},
      {z1:'Vielleicht ist die Antwort unterwegs.',   z2:'Post braucht eben ihre Zeit.'},
    ]},
+   // SZ3: Die Bewilligung ist mit dem Postregen gekommen. Er hat seit acht
+   // Jahren recht gehabt, und die Bewilligung ist an die Amtsleitung gerichtet,
+   // und die Amtsleitung ist N. N. Ein Schriftstueck, das niemanden erreicht,
+   // ist nicht zugegangen. Er beschwert sich nicht. Er hebt sie auf.
+   {lang:'stopfen', zeilen:[
+     {z1:'Sie ist da. Die Bewilligung.',        z2:'Aus dem Jahr tausendundvier.'},
+     {z1:'Sie ist nur an niemanden.',           z2:'Zur Kenntnis: die Amtsleitung.'},
+     {z1:'Ich hebe sie auf.',                   z2:'Ordentlich. Wie sich das gehört.'},
+   ]},
    {abSchicht:6, zeilen:[
      {z1:'Sie sind noch da. Das ist ungewöhnlich.', z2:'Die meisten bleiben einen Tag.'},
      {z1:'Ich merke mir Gesichter. Ihres jetzt auch.', z2:'Bei mir ist das ein Verfahren.'},
@@ -3531,6 +3546,13 @@ const DORF_FIGUREN = [
      'Ein Sack ohne lesbare Anschrift. Seltsam.',
      'Ablage V ist offen. Ich lege nichts mehr ab.',
    ],
+   // SZ3: Bramsche sortiert, und man sieht sie zum einzigen Mal im Spiel
+   // gluecklich. Sie sagt es nicht, sie sagt Saetze ueber Ablage — das ist bei
+   // ihr dasselbe.
+   zusatz:[{lang:'stopfen', zeilen:[
+     {z1:'Zweihunderteinundsiebzig Jahre Post.', z2:'Ich sortiere seit gestern.'},
+     {z1:'Alles hat eine Anschrift. Alles.',     z2:'Sie ahnen nicht, wie das ist.'},
+   ]}],
    antworten:[
      {frage:'Was war der Vorgang 1?', z1:'Vorgang 1 ist der Friedensvertrag.', z2:'Nie geschlossen, nur ausgesetzt.'},
      {frage:'Wo ist die Amtsleitung?', z1:'N.N. heißt nicht genannt.', z2:'Der Posten ist unbesetzt.'},
@@ -4259,6 +4281,14 @@ const DORF_FIGUREN = [
        {z1:'Er hat es gesagt.', z2:'Nach vierzig Jahren.'},
        {z1:'Da war ein Wort. Ein einziges.', z2:'Pahl hat es auch gehört.'},
      ],
+     // SZ3: der Nachklang der Entklammerung. Vier Zeilen der Weltgeschichte,
+     // aufgeteilt auf die beiden, die sie dort sprechen. Lott stellt fest, was
+     // er sieht, Pahl das, was daruntersteckt — dieselbe Rollenteilung wie
+     // ueberall bei den beiden.
+     vorblatt:[
+       {z1:'Der hat ganz schön was an.', z2:'Pahl sagt: was auf.'},
+       {z1:'Ist das ein Unterschied?', z2:'Bei dem schon, sagt Pahl.'},
+     ],
    }},
 
   {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', kurz:'Herr Pahl', tx:8, ty:54, opt:'fest',
@@ -4359,10 +4389,16 @@ const DORF_FIGUREN = [
        {z1:'Wir haben ja gewartet.', z2:'Wir warten gut.'},
        {z1:'Vierzig Jahre für ein Wort.', z2:'Lott sagt gar nichts mehr.'},
      ],
+     // SZ3: dieselbe Szene von der anderen Seite der Bank aus.
+     vorblatt:[
+       {z1:'Der hat ganz schön was auf.', z2:'Lott sieht nur den Mantel.'},
+       {z1:'Sie haben ihn aufgemacht.', z2:'Darunter war ein Herr.'},
+     ],
    }},
 
   // --- W11: drei Figuren aus der Weltgeschichte -----------------------------
-  // Nieselbeck steht von Anfang an da, Umlauf ab Akt II, Vorblatt ab Akt III.
+  // Nieselbeck steht von Anfang an da, Umlauf ab Akt II, Vorblatt seit SZ3 erst,
+  // wenn er wirklich angekommen ist (Szene 6, daWenn).
   // Alle drei sind opt:'fest', also Held-Komposite: die acht Blaetter aus
   // CF_NPCS sind an die elf Figuren von W3 vergeben, und zwei Figuren mit
   // demselben Gesicht war schon in G6 der Fehler, den wir nicht wollten.
@@ -4505,7 +4541,13 @@ const DORF_FIGUREN = [
   // werden, also ab Akt III. Anker vor der Amtstuer, weil er nicht hindurchpasst;
   // zwei Kacheln suedlich davon, damit er die Kontextaktion der Tuer nicht
   // ueberstimmt (derselbe Grund, aus dem Zwirn in G6 gewandert ist).
-  {key:'vorblatt', name:'Reichsministerialdirektor zu Händen Vorblatt', kurz:'zu Händen Vorblatt', tx:11, ty:37, opt:'fest', abAkt:3,
+  // SZ3: abAkt 3 -> 4, und dazu daWenn. W11 hat ihn auf Akt III gesetzt, weil die
+  // Weltgeschichte ihm ab dort Aktzeilen gibt; seine ANKUNFT war damals nicht
+  // gebaut und stand in W11 selbst als offener Punkt ("sein Auftritt ist damit
+  // nicht erzaehlt"). Seit SZ3 ist sie gebaut, also gilt sie: er steht im Dorf,
+  // wenn er angekommen ist, und nicht, wenn eine Schichtzahl es erlaubt.
+  {key:'vorblatt', name:'Reichsministerialdirektor zu Händen Vorblatt', kurz:'zu Händen Vorblatt', tx:11, ty:37, opt:'fest', abAkt:4,
+   daWenn: () => kn.flags.szeneVorblatt,
    // glattes schwarzes Haar, dunkler Mantel mit stumpfer Goldbordüre. Das
    // Hofhemd ist die Form mit hohem Kragen und Borte; G8 hatte hier noch einen
    // goldenen Plattenpanzer, weil das Vokabular nur Rüstungsstufen kannte, und
@@ -4521,10 +4563,13 @@ const DORF_FIGUREN = [
      {z1:'Sie führen keinen Vorgang.', z2:'Das macht Sie sehr frei.'},
      {z1:'Ich habe Ihnen etwas mitgebracht.', z2:'Alle bekommen etwas.'},
    ],
+   // SZ3: die Akt-III-Zeile ist weg, weil er in Akt III nicht mehr im Dorf steht.
+   // Eine Aktzeile fuer einen Akt, in dem die Figur nicht ansprechbar ist, ist
+   // tote Tabelle — knAssertCaps() meldet sie, und er hat recht.
    akt:[
      '',
      '',
-     'Man hört wenig aus Ihrem Haus. Sehr gut.',
+     '',
      'Ein Umschlag. Reizend. Geben Sie ihn mir.',
      'Ich war zuständig. Nun bin ich hier.',
    ],
@@ -6108,12 +6153,16 @@ function takeZutat(noun, adj){
 //  Neustart (localStorage): in Phase 4 ist Wissen der eigentliche Fortschritt.
 // ===========================================================================
 // ===========================================================================
-//  AKTENFUNDE (Phase W2, erweitert um Serie C-F)
-//  48 Blätter, sechs Serien. Fundwege sind zweigeteilt: A/B/C/D fallen aus
+//  AKTENFUNDE (Phase W2, erweitert um Serie C-F, seit SZ3 um Serie I)
+//  54 Blätter, sieben Serien. Fundwege sind dreigeteilt: A/B/C/D fallen aus
 //  Kammertruhen (truheOeffnen(), Filter unten prüft minDiff bzw. biome).
 //  E/F gibt es nur im Schattenland, wo es keine Kammern gibt — eigener
 //  Dropkanal in killMon() (currentLevel === 2). Siehe phase-w-blaetter-cf.md
 //  für die Begründung, warum E/F kein biome-Feld bekommen haben.
+//  Serie I ist der dritte Weg und der einzige, der an einem EREIGNIS haengt
+//  statt an einem Ort: sie faellt ueberall, aber erst nachdem der Stopfen
+//  gezogen ist (SZ3, blattFaelltAusRohr()). Vorher gibt es sie nicht, weil
+//  vorher nichts durchkommt.
 //  Kein Blatt verrät Kesselgrammatik oder eine Fluch-Ableitung, siehe
 //  Sperrvermerk. Reihenfolge beim Fund ist absichtlich egal.
 //  Zusagen-Bilanz 2026-08-04: a1/a5 verorteten den Vorgang fälschlich in
@@ -6327,6 +6376,35 @@ const BLAETTER = {
         'Ich habe den Tisch gedeckt. Für den Fall, dass diesmal jemand kommt.',
         'Bislang kam niemand. Das rechne ich niemandem an.',
         'Mit vorzüglicher Hochachtung, und aufrichtiger Geduld, der Empfänger.']},
+  // SZ3: Serie I, aus der Röhre. Der einzige Fundweg, der nicht an einem Ort
+  // hängt, sondern an einem Ereignis: sie fällt überall und erst, nachdem der
+  // Stopfen gezogen ist. Vorher gibt es sie nicht, weil vorher nichts durchkommt.
+  //
+  // Alle sechs sind an jemanden gerichtet, den es im Haus gibt, und keines ist
+  // beantwortet worden. Das ist der ganze Inhalt der Serie: nicht dass Post
+  // liegen blieb, sondern an wen sie gerichtet war.
+  i1:  {serie:'I', n:1, lines:['An die Amtsleitung, Zuständigkeitsbereich VII. Im Jahr 863.',
+        'Ist dort noch jemand?',
+        'Um Nachricht wird gebeten.']},
+  i2:  {serie:'I', n:2, lines:['An die Amtsleitung, Zuständigkeitsbereich VII. Im Jahr 901.',
+        'Wir haben lange nichts von Ihnen gehört.',
+        'Sollte der Bereich abgeschlossen sein, teilen Sie es uns bitte mit.']},
+  i3:  {serie:'I', n:3, lines:['An das Ministerium für Monsterangelegenheiten. Im Jahr 934.',
+        'Betrifft: Niederschlag im Zuständigkeitsbereich VII.',
+        'Die Zurückstellung aus dem Jahr achthundertsiebenundneunzig wäre zu überprüfen.',
+        'Wir bitten um Sachstand.',
+        'Am Rand: „Vierter Versuch."']},
+  i4:  {serie:'I', n:4, lines:['An den Wetterbeauftragten des Bereichs VII, persönlich. Im Jahr 969.',
+        'Sehr geehrter Herr Vorgänger.',
+        'Wir wissen, dass Sie warten.',
+        'Wir wissen nicht, wie wir helfen sollen.']},
+  i5:  {serie:'I', n:5, lines:['Bewilligung. Im Jahr 1004.',
+        'Das Dorffest zu Vordermühl an der Ablage wird bewilligt.',
+        'Zur Kenntnis: die Amtsleitung.']},
+  i6:  {serie:'I', n:6, lines:['Beileidsschreiben. Im Jahr 612.',
+        'Zum Ableben Seiner Majestät sprechen wir unser tiefes Beileid aus.',
+        'Anschrift: An Seine Majestät den Kaiser, persönlich.',
+        'Rückvermerk: Empfänger im Termin.']},
 };
 const BLAETTER_KEYS = Object.keys(BLAETTER);
 
@@ -6347,7 +6425,7 @@ const PRUEF_GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'd
 
 // Guard, Bauform wie knAssertCaps()/auftragAssertBrett() weiter unten. Beweist
 // beim Start, dass keine Serie "still vorhanden" ist, d.h. in BLAETTER_KEYS
-// mitgezählt wird (Zählzeile "N von 48"), aber über keinen Fundweg erreichbar
+// mitgezählt wird (Zählzeile "N von 54"), aber über keinen Fundweg erreichbar
 // ist. TRUHE_SERIEN fällt in truheOeffnen() (Kammer, biome bzw. minDiff),
 // SCHATTEN_SERIEN fällt in killMon() (Schattenland, kein biome-Feld). Biome-
 // Liste hier bewusst als Literal, nicht aus BIOME_MOBS/BIOM_AMT gelesen: beide
@@ -6361,8 +6439,14 @@ const PRUEF_GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'd
 function blaetterAssert(){
   const TRUHE_SERIEN = ['A', 'B', 'C', 'D'];
   const SCHATTEN_SERIEN = ['E', 'F'];
+  // SZ3: der dritte Fundweg. Serie I faellt nicht an einem Ort, sondern nach
+  // einem Ereignis — ueberall, und erst wenn der Stopfen gezogen ist. Deshalb
+  // ein eigener Eintrag und kein Anhaengen an eine der beiden Listen: die
+  // Pruefungen darunter fragen nach Ort (biome, minDiff), und die hat Serie I
+  // zu Recht nicht.
+  const ROHR_SERIEN = ['I'];
   const TRUHE_BIOME = BIOME_BANDS.map(b => b.key);
-  const SOLL = {A:12, B:6, C:8, D:8, E:10, F:4};
+  const SOLL = {A:12, B:6, C:8, D:8, E:10, F:4, I:6};
   const EMOJI = PRUEF_EMOJI;
   const GEHEIM = PRUEF_GEHEIM;
   let ok = true;
@@ -6372,9 +6456,14 @@ function blaetterAssert(){
   for(const id of BLAETTER_KEYS){
     const b = BLAETTER[id];
     if(!SOLL[b.serie]) { fehler('Serie ohne Sollzahl', id, b.serie); continue; }
-    if(TRUHE_SERIEN.indexOf(b.serie) < 0 && SCHATTEN_SERIEN.indexOf(b.serie) < 0){
-      fehler('Serie ohne bekannten Fundweg (weder Truhe noch Schattenland)', id, b.serie);
+    if(TRUHE_SERIEN.indexOf(b.serie) < 0 && SCHATTEN_SERIEN.indexOf(b.serie) < 0
+       && ROHR_SERIEN.indexOf(b.serie) < 0){
+      fehler('Serie ohne bekannten Fundweg (weder Truhe noch Schattenland noch Roehre)', id, b.serie);
     }
+    // SZ3: Serie I traegt weder biome noch minDiff, und das ist die Zusicherung.
+    // Ein Ortsfeld an ihr waere eine Behauptung, die kein Fundweg einloest.
+    if(ROHR_SERIEN.indexOf(b.serie) >= 0 && (b.biome || typeof b.minDiff === 'number'))
+      fehler('Serie aus der Roehre traegt ein Ortsfeld, faellt aber ueberall', id);
     if(b.serie === 'A' && typeof b.minDiff !== 'number') fehler('Serie A ohne minDiff', id);
     if((b.serie === 'B' || b.serie === 'C' || b.serie === 'D')){
       if(!b.biome) fehler('Kammer-Serie ohne biome-Feld', id);
@@ -6391,7 +6480,7 @@ function blaetterAssert(){
     gesehen[b.serie] = (gesehen[b.serie] || 0) + 1;
   }
   for(const s in SOLL) if(gesehen[s] !== SOLL[s]) fehler('Serie hat falsche Blattzahl', s, 'ist', gesehen[s] || 0, 'soll', SOLL[s]);
-  if(BLAETTER_KEYS.length !== 48) fehler('Gesamtzahl ist nicht 48', BLAETTER_KEYS.length);
+  if(BLAETTER_KEYS.length !== 54) fehler('Gesamtzahl ist nicht 54', BLAETTER_KEYS.length);
   if(!ok) console.error('Aktenfunde: Guard fehlgeschlagen, siehe obige Zeilen.');
   return ok;
 }
@@ -6433,8 +6522,8 @@ function findeBlatt(id){
 
 // ===========================================================================
 //  W5: DER VORGANGS-BESTAND — Weltbibel Kapitel 9, Akt IV. Vier Adresszeilen,
-//  bewusst getrennt von BLAETTER: blaetterAssert()s Sollzahl 48 und die
-//  Zählzeile "N von 48" (renderBlaetter()) bleiben dadurch unberührt. Drei
+//  bewusst getrennt von BLAETTER: blaetterAssert()s Sollzahl 54 und die
+//  Zählzeile "N von 54" (renderBlaetter()) bleiben dadurch unberührt. Drei
 //  Zeilen liegen in Sonderkammern (ein Biom je Zeile, siehe setzeKammerTueren()
 //  und drawKammerTuer()), die vierte fällt in Ablage V (killMon()), weil es
 //  dort keine Kammern gibt, siehe A. Genau wie findeBlatt(): kein
@@ -6525,6 +6614,13 @@ let amt = {bankGold:0, schichten:0,
   // löst ihn ein und leert ihn im selben Zug. Beides ist echter Zustand und
   // nicht ableitbar, anders als Rang und Aktstand.
   wiederZahl:0, wiedereinsetzung:null,
+  // SZ3: Wann der Stopfen gezogen wurde und wann die vierte Adresszeile kam,
+  // beide als Schichtnummer und beide 1-basiert, damit 0 "nie" heisst und kein
+  // zweites Feld dafuer noetig ist. Aus ihnen leitet vorblattFaellig() ab, wann
+  // der Wagen auf dem Dorfplatz steht — der Preis des Stopfens ist der Abstand
+  // zwischen diesen beiden Zahlen. Echter Zustand, nicht ableitbar: welche
+  // Schicht es war, weiss danach niemand mehr.
+  stopfenSchicht:0, adressSchicht:0,
   // P1: Die eine Angabe, die der Einstellungsvordruck vom Spieler entgegennimmt
   // (Blatt 1, Feld "Anrede der Person"). 'm', 'w' oder 'egal'. Sie entscheidet,
   // aus welchen Frisuren der Schichtantritt die Gestalt des Tages zieht, und
@@ -6541,7 +6637,12 @@ const aktStand = () => Math.min(5, Math.floor(amt.schichten / 10) + 1);
 // W11: Steht diese Dorffigur schon im Dorf? Ohne abAkt immer. Die Klammer um
 // CONFIG.schichtModus ist dieselbe wie in serieFrei() weiter unten: im freien
 // Spiel gibt es keine Akte, und was an einen Akt geknüpft ist, ist dort offen.
-const figDa = fig => !fig || !fig.abAkt || !CONFIG.schichtModus || aktStand() >= fig.abAkt;
+// SZ3: dazu die zweite Bedingung. Vorblatt steht nicht deshalb im Dorf, weil ein
+// Akt angebrochen ist, sondern weil er angekommen IST — Szene 6 ist seine
+// Ankunft. Ein Gegenspieler, der schon dasteht, wenn seine Ankunft erzaehlt
+// wird, waere derselbe Fehler wie eine Leiter ohne zweite Ebene.
+const figDa = fig => !fig || !CONFIG.schichtModus
+  || ((!fig.abAkt || aktStand() >= fig.abAkt) && (!fig.daWenn || fig.daWenn()));
 // Laufzeitzustand der aktuellen Schicht (nur relevant bei CONFIG.schichtModus).
 let shiftT=0, shiftEndPending=false, overtimeT=0,
     shiftKillsByType={}, shiftKillsTotal=0, pendingCarryGold=0, pendingCarryPouch=[],
@@ -7595,7 +7696,23 @@ function killMon(m){
     // ersten Kill in Ablage V, sobald die drei Kammerzeilen im Bestand sind.
     if(vorgangAdressAkt() && vorgangDreiZeilen() && findeAdresszeile(4)){
       floaters.push({x:m.x, y:m.y-40, txt:'+ Adresszeile', col:'#f4d97a', t:3.2, big:true});
+      // SZ3: der zweite Weg zu Vorblatt. Kordula Umlauf erzaehlt Oben, dass hier
+      // etwas in Bewegung kommt, und zwei Schichten spaeter steht der Wagen da.
+      // Nur der erste Fund zaehlt, deshalb die Klammer.
+      if(!amt.adressSchicht){ amt.adressSchicht = amt.schichten + 1; saveAmt(); }
     }
+  }
+  // SZ3: Serie I, aus der Roehre. Der dritte Fundweg, und der einzige, der weder
+  // an einem Ort noch an einer Kammer haengt: er faellt ueberall, sobald der
+  // Stopfen gezogen ist. Das ist woertlich die Weltgeschichte ("ueberall, aber
+  // erst nach dem Stopfen") und mechanisch der Grund, warum der Strang sich
+  // lohnt: sechs Blaetter, die es vorher nicht gab.
+  //
+  // Die Chance liegt zwischen E (0,04) und F (0,006): die Post ist nicht selten,
+  // sie war nur unzustellbar. Wer den Stopfen zieht, findet die Serie im Lauf
+  // weniger Schichten.
+  if(blattFaelltAusRohr() && findeBlatt(blattAusRohr())){
+    floaters.push({x:m.x, y:m.y-40, txt:'+ Aktenfund aus der Röhre', col:'#7ad6ff', t:3.0, big:true});
   }
   // M3: Teilabhilfe. Der Zerfall haengt an der Tabelle, nicht am Typnamen, damit
   // eine zweite zerfallende Vorgangsart keine zweite Codestelle braucht. Er
@@ -8401,7 +8518,11 @@ function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }ca
 // (truheOeffnen(), killMon()) und für vorgangAssert(). Der !CONFIG.schichtModus-
 // Kurzschluss ist wörtliche Abnahme: bei schichtModus=false steigt
 // amt.schichten nie, ein Gatter wäre dort ein Dauerschloss.
-const SERIE_AKT = {A:1, B:1, C:2, D:3, E:4, F:5};
+// SZ3: Serie I steht auf Akt IV, aber der Akt ist bei ihr nur die Untergrenze.
+// Ihr eigentliches Tor ist der Stopfen, und das steht in blattFaelltAusRohr()
+// weiter unten. Der Akt hier verhindert nur, dass ein spaeter eingebauter
+// zweiter Fundweg sie versehentlich vorzieht.
+const SERIE_AKT = {A:1, B:1, C:2, D:3, E:4, F:5, I:4};
 const serieFrei = s => !CONFIG.schichtModus || aktStand() >= SERIE_AKT[s];
 const vorgangAdressAkt = () => CONFIG.schichtModus && aktStand() >= 4;
 
@@ -8504,6 +8625,10 @@ const kn = {
   // prueft. Eine Szene, die zweimal laeuft, waere schlimmer als eine, die fehlt.
   flags:{hatGezaubert:false, hatGekocht:false, hatKammerBetreten:false, hatGesteigert:false, hatLagerGesehen:false,
          szeneUmlauf:false, szeneSchublade:false, szeneKnoeterich:false,
+         // SZ3: die beiden Szenen dieses Abschnitts. szeneVorblatt ist mehr als
+         // ein Merker — figDa() liest ihn, und damit entscheidet er, ob der
+         // Gegenspieler im Dorf steht.
+         szeneStopfen:false, szeneVorblatt:false,
          // F1d: was ein Gesprächsbaum sich merken muss. Drei Stück, und jeder
          // öffnet bei einer ANDEREN Figur zwei Zeilen: das ist die Belohnung,
          // die ein Baum geben darf. Gold und Erfahrung darf er nicht geben,
@@ -8678,7 +8803,7 @@ const ZUSATZ_SCHALTER = {
 // Grundzeilen gefunden hat. RANDNOTIZ liefert die Schlüssel aus Knöterichs
 // Kanälen, SZENE_ANLASS die aus den Szenen; weil letzteres erst weit unten steht,
 // stehen seine beiden Werte hier als Liste und werden dort gegengeprüft.
-const ANLASS_QUELLEN = ['umlauf', 'hintermuehl'];
+const ANLASS_QUELLEN = ['umlauf', 'hintermuehl', 'vorblatt'];   // SZ3: der Nachklang der Entklammerung
 
 // ---------------------------------------------------------------------------
 //  Die Kurzform. Behörden kürzen ab, und diese hier tut es, seit es sie gibt.
@@ -9254,6 +9379,18 @@ const KAM_WAECHTER_STUFE = {bat:1, spider:1, sammelmahnung:3, mage:3, golem:4};
 const KAM_STOLLEN = ['teilbescheid','dienstweg','teilabhilfe'];
 const kamWaechter = diff => diff >= 5 ? KAM_STOLLEN
                                       : KAM_WAECHTER.filter(t => KAM_WAECHTER_STUFE[t] <= diff);
+// M4: die zweite Ebene. Nur die Sperrablage hat eine, und das ist keine
+// Baulaune, sondern ihre Signatur aus M1: "Eine Ebene unter der Registratur
+// liegt, was niemand mehr anfassen sollte, und zahlt es in Ruestung und Waffe."
+// Die Untere Registratur (Bescheid 1 bis 4) hat kanonisch nichts unter sich —
+// sie IST das Untergeschoss des Hauses. Wer die Zahl hier hochsetzt, baut
+// Stockwerke ohne Weltgrund; deshalb steht sie am Satz und nicht am Bescheid.
+const KAM_EBENEN = [1, 1, 2];          // je Kammersatz: Dungeon_1, Dungeon_2, Stollen
+// Die untere Ebene ist kurz und dicht: ein Raetselraum, dann die Kammer. Ein
+// zweiter voller Korridor waere dieselbe Kammer noch einmal, und die Schichtuhr
+// ist das Spannungsmittel dieses Spiels (KAMMER-MESSUNG-2026-08-20, Abschnitt 4).
+const KAM_EBENE2_BUDGET = 3;
+const KAM_EBENE2_WAECHTER = 2;         // Aufschlag je Raum gegenueber der oberen Ebene
 const kamWaechterZufall = diff => { const p = kamWaechter(diff); return p[Math.floor(Math.random()*p.length)]; };
 
 const kammerTueren = [];           // Türen in der Oberwelt
@@ -9365,11 +9502,14 @@ function kenntZweig(b){
   return false;
 }
 
-function waehleModule(diff){
-  let budget = [1, 2, 4, 6, 8][diff-1];
+function waehleModule(diff){ return waehleModuleBudget([1, 2, 4, 6, 8][diff-1], 4); }
+// M4: Budget und Raumzahl sind seit der zweiten Ebene zwei Angaben statt einer.
+// waehleModule() bleibt der Weg fuer die obere Ebene und rechnet sie weiterhin
+// aus der Schwierigkeit; die untere setzt beide selbst.
+function waehleModuleBudget(budget, maxN){
   const alle = Object.keys(KAM_MOD).filter(k => !KAM_MOD[k].moeglich || KAM_MOD[k].moeglich());
   const out = [];
-  while(out.length < 4 && budget > 0){
+  while(out.length < maxN && budget > 0){
     // Jede Rätselart höchstens einmal je Kammer: zwei gleiche Räume hintereinander
     // sind kein Korridor, sondern eine Wiederholung.
     const passt = alle.filter(k => KAM_MOD[k].kosten <= budget && out.indexOf(k) < 0);
@@ -9381,6 +9521,200 @@ function waehleModule(diff){
   return out;
 }
 
+// ===========================================================================
+//  SZ3: DIE BRUMMENDE STELLE IM STEINFELD
+//
+//  Die Weltgeschichte hat sie lange vor diesem Bauabschnitt gesaet, und zwar
+//  als Wahrnehmung und nicht als Ziel:
+//
+//    "Es gibt im Steinfeld eine Stelle, an der der Boden brummt. Wer dort
+//     stehen bleibt, hoert es. Lott und Pahl sagen, das sei schon immer so
+//     gewesen."
+//
+//  Genau so ist sie gebaut. Es gibt keinen Marker auf der Karte, keinen Pfeil
+//  und keinen Eintrag im Brett (Weltbibel, "Keine Questmarker"): der Ort meldet
+//  sich nur, wenn jemand danebensteht, und er meldet sich mit einem Satz, der
+//  nichts erklaert. Wer nie ins Steinfeld geht, erfaehrt nie, dass es ihn gibt,
+//  und spielt das Spiel unveraendert zu Ende.
+//
+//  Der Ort wird GESUCHT und nicht gewuerfelt, aus demselben Grund wie die
+//  Koppel in G11 und die Buchten in G12: `rng()` haette den Zufallsstrom fuer
+//  alles Folgende verschoben. Er liegt einmal je Welt und bleibt liegen, wie
+//  `decos`; die Kammertueren werden je Schicht neu gewuerfelt, dieser Ort nicht.
+//  Eine Roehre, die jede Schicht woanders liegt, waere keine Roehre.
+// ===========================================================================
+const STOPFEN = {tx:0, ty:0, x:0, y:0, da:false};
+// Wie nah man stehen muss, damit der Boden hoerbar wird. Grosszuegiger als die
+// Kontaktaktion (58px), weil man das Brummen findet, indem man daran
+// vorbeilaeuft, und nicht, indem man es sucht.
+const STOPFEN_HOER_Q = 150*150;
+let stopfenBrummT = 0;
+
+function setzeStopfen(){
+  STOPFEN.da = false;
+  // Das Steinfeld ist das Ruinenband, also die oberen zwanzig Prozent der Karte.
+  // Gesucht wird von seiner Unterkante nach oben und von der Mitte nach aussen:
+  // die Unterkante ist die Seite, an der man ankommt, und was am Rand der Welt
+  // liegt, findet niemand.
+  const mitte = MW >> 1;
+  for(let ty = RUIN_Y1 - 2; ty >= 6; ty--){
+    for(let d = 0; d < mitte - 6; d++){
+      for(const tx of (d === 0 ? [mitte] : [mitte - d, mitte + d])){
+        if(tx < 6 || tx > MW - 7) continue;
+        if(!reachbar(tx, ty)) continue;
+        if(T(tx, ty) === G_PATH) continue;          // nicht auf den Weg: dort waere sie ausgetreten
+        // Freie Nachbarschaft, damit man wirklich danebenstehen kann und die
+        // Stelle nicht in einer Felsspalte klemmt.
+        let frei = true;
+        for(let dy = -1; dy <= 1 && frei; dy++) for(let dx = -1; dx <= 1; dx++)
+          if(!reachbar(tx+dx, ty+dy)){ frei = false; break; }
+        if(!frei) continue;
+        STOPFEN.tx = tx; STOPFEN.ty = ty;
+        STOPFEN.x = tileMid(tx); STOPFEN.y = tileMid(ty);
+        STOPFEN.da = true;
+        return;
+      }
+    }
+  }
+  // Kein Fehler, sondern ein Befund, wie bei den Buchten in G12: auf einer
+  // Karte ohne begehbares Ruinenband gibt es die Stelle eben nicht. Der
+  // Langvorgang bleibt dann unerreichbar, und das Spiel laeuft weiter.
+  console.log('SZ3 Stopfen: im Steinfeld liegt keine freie Stelle, die Roehre fehlt auf dieser Karte.');
+}
+
+// Der Stand des Strangs als eine Zahl, damit Zeichnung, Kontaktaktion und Szene
+// dieselbe Quelle lesen. 0 nichts, 1 nachgesehen, 2 freigelegt, 3 Zapf geholt,
+// 4 erledigt (die Szene ist gelaufen).
+const stopfenStand = () => langStufe('stopfen');
+const stopfenGezogen = () => langFertig('stopfen');
+
+// Serie I. Zwei Funktionen statt einer, damit killMon() im Normalfall nach der
+// ersten Zeile wieder draussen ist: der Hot Path fragt eine Flagge, die Liste
+// wird nur gebaut, wenn wirklich gewuerfelt wird.
+let rohrKandidaten = [];
+function blattFaelltAusRohr(){
+  if(!stopfenGezogen() || !serieFrei('I')) return false;
+  if(Math.random() >= 0.02) return false;
+  rohrKandidaten = BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'I' && !kladde.blaetter[id]);
+  return rohrKandidaten.length > 0;
+}
+const blattAusRohr = () => rohrKandidaten[Math.floor(Math.random() * rohrKandidaten.length)];
+
+// Der Postregen. Drei Schichten lang faellt im Dorf Papier, und zwar aus dem
+// Bauteil, das dafuer seit Phase 1 da ist: splatConfetti() malt Aktenkonfetti
+// als Bodendekal. Kein neuer Partikel, kein neues Blatt, keine neue Schleife —
+// die Weltgeschichte hat es selbst so vorgeschlagen ("ein Partikeleffekt aus dem
+// vorhandenen Konfetti").
+//
+// Ausdruecklich NICHT der Postregen des Finales. Der gehoert laut Weltgeschichte
+// ins Ende (vierhundert Jahre Post in einem Nachmittag, das Reich knietief in
+// Konfetti) und faellt hier nicht: drei Schichten Papier im Dorf sind die
+// Ankuendigung, nicht die Einloesung.
+const POSTREGEN_SCHICHTEN = 3;
+let postregenT = 0;
+const postregenLaeuft = () => CONFIG.schichtModus && !!amt.stopfenSchicht
+  && amt.schichten < (amt.stopfenSchicht - 1) + POSTREGEN_SCHICHTEN;
+function postregen(dt){
+  if(!postregenLaeuft() || kammer || currentLevel !== 1 || state !== 'play') return;
+  if(!inVillagePx(player.x, player.y)) return;
+  postregenT -= dt;
+  if(postregenT > 0) return;
+  postregenT = 0.35;
+  splatConfetti(player.x + rr(-260, 260), player.y + rr(-200, 200), false);
+}
+
+// Steht der Spieler nah genug, dass der Boden sich meldet? Nur in der Oberwelt,
+// nur im Dienst, und nur solange niemand nachgesehen hat.
+// Das Brummen haengt AUSDRUECKLICH nicht am Akt, anders als das Angebot. Die
+// Weltgeschichte fuehrt die Stelle als Saat und nicht als Aufgabe: "Es gibt im
+// Steinfeld eine Stelle, an der der Boden brummt. Wer dort stehen bleibt, hoert
+// es. Lott und Pahl sagen, das sei schon immer so gewesen." Wer in Akt I
+// hinaufsteigt, hoert sie also und kann nichts damit anfangen — genau das ist
+// gemeint. Der erste Prueflauf hat hier eine Sperre erwartet und keine
+// gefunden; die Sperre waere der Fehler gewesen, nicht ihr Fehlen.
+function stopfenBrummen(dt){
+  if(!STOPFEN.da || kammer || currentLevel !== 1 || state !== 'play') return;
+  if(stopfenStand() > 0) return;
+  if(sqDist(player.x, player.y, STOPFEN.x, STOPFEN.y) > STOPFEN_HOER_Q){ stopfenBrummT = 0; return; }
+  stopfenBrummT -= dt;
+  if(stopfenBrummT > 0) return;
+  stopfenBrummT = 6;
+  floaters.push({x: STOPFEN.x, y: STOPFEN.y - 20, txt: 'Der Boden brummt.', col:'#9a8a5f', t: 3.0});
+}
+
+// Was die Kontextaktion an der Stelle gerade anbietet, oder '' fuer nichts.
+// Eine Funktion und kein Feld, damit Angebot und Ausfuehrung dieselbe Quelle
+// lesen — derselbe Grund wie bei kannAbsteigen() in M4.
+function stopfenAktionText(){
+  if(!STOPFEN.da || kammer || currentLevel !== 1) return '';
+  if(!CONFIG.schichtModus || !LANGVORGAENGE.stopfen.wenn()) return '';
+  const st = stopfenStand();
+  if(st === 0) return 'Nachsehen';
+  if(st === 1) return 'Freilegen';
+  if(st === 3) return 'Die Röhre öffnen';
+  return '';   // Stufe 2: hier fehlt Zapf, und der steht im Dorf
+}
+
+// Der Griff an der Stelle. Die beiden ersten Stufen sind Ortsschritte des
+// Strangs, die vierte ist die Szene. Geschrieben wird auch hier nur ueber
+// langEreignis(), nie an kladde.lang vorbei.
+function stopfenGriff(){
+  if(!stopfenAktionText()) return;
+  const st = stopfenStand();
+  if(st === 3){ szeneOeffnen('stopfen', SZENEN.stopfen.start); return; }
+  const vorher = st;
+  langEreignis('stopfenort', null);
+  const neu = stopfenStand();
+  if(neu <= vorher) return;
+  const z = STOPFEN_BEATS[neu - 1];
+  // Nachsehen und Freilegen sind zwei Griffe an derselben Stelle, und wer sie
+  // hintereinander tut, hatte bis hierher vier Zeilen uebereinander stehen —
+  // unlesbar, und im Bild gefunden statt im Guard. Die Zeilen des vorigen
+  // Schritts weichen deshalb, sobald der naechste spricht.
+  for(let i = floaters.length - 1; i >= 0; i--)
+    if(STOPFEN_BEATS.some(b => b.z1 === floaters[i].txt || b.z2 === floaters[i].txt)) floaters.splice(i, 1);
+  floaters.push({x: player.x, y: player.y - 44, txt: z.z1, col:'#c9b98a', t: 3.4});
+  floaters.push({x: player.x, y: player.y - 26, txt: z.z2, col:'#9a8a5f', t: 3.4});
+  sfx.level(); addShake(6, 0.3);
+}
+
+// Gezeichnet wird erst, was aufgedeckt ist. Vor dem ersten Nachsehen steht dort
+// nichts: das Brummen ist die einzige Auskunft, und ein sichtbarer Huegel waere
+// bereits der Questmarker, den die Weltbibel ausschliesst.
+function drawStopfen(){
+  if(!STOPFEN.da || kammer || currentLevel !== 1) return;
+  const st = stopfenStand();
+  if(st <= 0 || !vis(STOPFEN.x, STOPFEN.y)) return;
+  const x = STOPFEN.x, y = STOPFEN.y;
+  ctx.save();
+  // Die aufgegrabene Stelle, in beiden Faellen dieselbe: dunkle Erde mit Rand.
+  ctx.fillStyle = '#2b2119';
+  ctx.beginPath(); ctx.ellipse(x, y + 4, 17, 10, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#57422e'; ctx.lineWidth = 2; ctx.stroke();
+  if(st >= 2){
+    // Die Roehre: gebrannter Ton, armdick, quer in der Grube. Zwei Ringe, damit
+    // sie als Rohr lesbar ist und nicht als Balken.
+    ctx.fillStyle = '#8a5a3c';
+    ctx.fillRect(x - 15, y - 2, 30, 9);
+    ctx.fillStyle = '#a9704b';
+    ctx.fillRect(x - 15, y - 2, 30, 3);
+    ctx.strokeStyle = '#5d3b26'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x - 6, y - 2); ctx.lineTo(x - 6, y + 7);
+    ctx.moveTo(x + 6, y - 2); ctx.lineTo(x + 6, y + 7); ctx.stroke();
+  }
+  if(st >= 4){
+    // Gezogen: die Kapsel steckt wieder drin, und zwar andersherum. Ein heller
+    // Strich am Rohrende ist alles, was man davon sieht.
+    ctx.fillStyle = '#f4d97a';
+    ctx.fillRect(x + 13, y - 1, 4, 7);
+  } else if(stopfenAktionText()){
+    // Solange hier etwas zu tun ist, atmet ein Ring. Er sagt "hier", nicht "was".
+    ctx.strokeStyle = '#7ad6ff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(x, y, 20 + Math.sin(gameT*2.2)*2, 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
 // --- Kammer bauen -----------------------------------------------------------
 function betreteKammer(tuer){
   if(kammer || currentLevel !== 1 || tuer.cd > 0) return;
@@ -9390,13 +9724,17 @@ function betreteKammer(tuer){
             npcs: npcs.slice(), monsters: monsters.slice(), drops: drops.slice(), boss, portal,
             level: currentLevel, px: player.x, py: player.y};
 
-  const kinds = waehleModule(tuer.diff);
   // M3: drei Saetze. 1-2 Dungeon_1, 3-4 Dungeon_2, 5 der Stollen. Der Stollen erbt
   // seine Moebel von Dungeon_2, weil der Cave-Satz keine hat (s. addSheet oben) —
   // deshalb ist der Moebelindex nicht set+1, sondern bei Satz 2 wieder die 2.
   const set = tuer.diff <= 2 ? 0 : (tuer.diff <= 4 ? 1 : 2);
   const moebel = set === 2 ? 2 : set + 1;
   const k = {tuer, diff: tuer.diff, tier: tuer.tier, biome: tuer.biome, set,
+             // M4: die Ebene, auf der man steht, und wie viele es hier gibt. Beide
+             // Zahlen liegen an der Kammer und nicht global, weil verlasseKammer()
+             // sie mitsamt der Kammer wegwirft — eine Ebene ueberlebt den Ausgang
+             // so wenig wie ein geoeffnetes Tor.
+             ebene: 0, ebenen: KAM_EBENEN[set], abstieg: null,
              mods: [], raeume: [], tore: [], props: [], idx: 0, geleert: false, truhe: null,
              // R6/F31: Sheet-Keys des Sets einmal beim Kammeraufbau, statt sie in
              // drawKammerObj()/drawProp() pro sichtbarem Objekt pro Frame neu zu bauen.
@@ -9405,8 +9743,22 @@ function betreteKammer(tuer){
              dkPillar: `dun${moebel}_pillar`};
   kammer = k;
   currentLevel = 3;
-  // Muss vor dem Modulbau passieren: der ruft makeMon, und die Oberwelt-Mobs
-  // säßen sonst mit ihren alten Koordinaten in den frischen Kammerwänden fest.
+  baueEbene(k, waehleModule(tuer.diff));
+  sfx.warp(); addShake(12, 0.5);
+  floaters.push({x: player.x, y: player.y - 46, txt: 'KAMMER · SCHWIERIGKEIT ' + k.diff, col:'#f4d97a', t: 3.0, big: true});
+}
+
+// M4: der Korridorbau, aus betreteKammer() herausgeloest. Er lief dort als
+// gerader Block und war damit genau einmal aufrufbar; die zweite Ebene braucht
+// ihn ein zweites Mal an derselben Kammer. Alles, was eine Ebene ausmacht,
+// wird hier zurueckgesetzt und neu gebaut — was die Kammer ausmacht (Tuer,
+// Schwierigkeit, Biom, Satz, Blattschluessel), fasst er nicht an.
+function baueEbene(k, kinds){
+  const tief = k.ebene > 0;
+  k.mods.length = 0; k.raeume.length = 0; k.tore.length = 0; k.props.length = 0;
+  k.idx = 0; k.truhe = null; k.geleert = false; k.abstieg = null;
+  // Muss vor dem Modulbau passieren: der ruft makeMon, und die Mobs der oberen
+  // Ebene saessen sonst mit ihren alten Koordinaten in den frischen Waenden fest.
   monsters.length = 0; boss = null; lockedTarget = null;
 
   map.fill(G_WALL);
@@ -9428,7 +9780,7 @@ function betreteKammer(tuer){
     const mod = {kind: kinds[i], raum: k.raeume[i+1], nr: i, fertig: false, begonnen: false, hinweis: ''};
     KAM_MOD[kinds[i]].bau(mod, k.raeume[i+1], k);
     k.mods.push(mod);
-    if(!mod.keineWaechter) setzeWaechter(k.raeume[i+1], 1 + (k.diff >> 1), k);
+    if(!mod.keineWaechter) setzeWaechter(k.raeume[i+1], 1 + (k.diff >> 1) + (tief ? KAM_EBENE2_WAECHTER : 0), k);
   }
 
   // Schatzkammer: Truhe in der Mitte, ab Schwierigkeit 5 bewacht der Alte Schrecken sie
@@ -9437,11 +9789,25 @@ function betreteKammer(tuer){
   k.props.push(k.truhe);
   if(k.diff >= 5) makeMon('bossgeneric', tileMid(sk.x0+9), tileMid(sk.y0+7));
 
+  // M4: der Abstieg liegt in der Schatzkammer, drei Kacheln neben der Truhe.
+  // Nicht auf ihr: aktBiete() nimmt den naechsten Kandidaten, und ein Loch im
+  // Boden direkt unter der Truhe haette den Ausgang verschluckt, den die
+  // geoeffnete Truhe selbst anbietet. Er entsteht schon beim Bau und ist
+  // trotzdem erst nach der Truhe nutzbar — sichtbar ist er von Anfang an,
+  // denn ein Loch im Boden versteckt sich nicht.
+  if(k.ebene + 1 < k.ebenen){
+    k.abstieg = {kt:'abstieg', x: tileMid(sk.x0+3), y: tileMid(sk.y0+7)};
+    k.props.push(k.abstieg);
+  }
+
   // Ausgangsrune im Vorraum: der Weg zurück steht von Anfang an offen
   k.ausgang = {kt:'rune', x: tileMid(KAM_X0+2), y: tileMid(KAM_TY)};
   k.props.push(k.ausgang);
   k.start = {x: tileMid(KAM_X0+5), y: tileMid(KAM_TY)};   // Abstand zur Rune, sonst reist man beim ersten F zurück
-  k.props.push({kt:'treppe', x: k.start.x, y: k.start.y});   // reine Bodendecke, kein Kontaktpunkt
+  // Reine Bodendecke, kein Kontaktpunkt: der Einstieg zeigt, womit man
+  // hereingekommen ist. Oben ist das die Treppe des Satzes, unten die Leiter,
+  // die man in der Schatzkammer darueber genommen hat.
+  k.props.push({kt:'treppe', x: k.start.x, y: k.start.y, leiter: tief});
 
   // Wandfelsen nur auf den Wänden, die an begehbaren Boden grenzen — das ist der
   // sichtbare Innenring. Der Rest der Karte bleibt gebackene Dunkelheit.
@@ -9455,8 +9821,32 @@ function betreteKammer(tuer){
   cam.x = player.x - canvas.width/2; cam.y = player.y - canvas.height/2;
   refreshFloor();
   aktSperre = 0.5;                          // Tastenwiederholung soll nicht sofort zurückreisen
-  sfx.warp(); addShake(12, 0.5);
-  floaters.push({x: player.x, y: player.y - 46, txt: 'KAMMER · SCHWIERIGKEIT ' + k.diff, col:'#f4d97a', t: 3.0, big: true});
+}
+
+// M4: hinunter. Die Bedingung steht als eigene Funktion da, weil sie an zwei
+// Stellen gebraucht wird — scanAktion() bietet den Abstieg an, steigeAb() fuehrt
+// ihn aus, und eine Kontextaktion, die etwas anderes prueft als die Ausfuehrung,
+// ist ein Fehler, der sich erst im Spiel zeigt.
+// Die Truhe muss offen sein: erst der Vorgang, dann die Neugier. Wer die obere
+// Ebene stehen laesst, holt sich die untere nicht als Abkuerzung.
+function kannAbsteigen(){
+  const k = kammer;
+  return !!k && !!k.abstieg && !!k.truhe && k.truhe.auf && k.ebene + 1 < k.ebenen;
+}
+function steigeAb(){
+  const k = kammer;
+  if(!kannAbsteigen()) return;
+  k.ebene++;
+  // Eigenes Budget statt waehleModule(k.diff): unten steht ein Raetselraum und
+  // nicht der halbe Korridor noch einmal. Das ist die Stellschraube, an der die
+  // Schichtuhr haengt (s. phase-m4-zweite-ebene.md, Abschnitt Messung).
+  const kinds = waehleModuleBudget(KAM_EBENE2_BUDGET, 1);
+  baueEbene(k, kinds);
+  sfx.warp(); addShake(14, 0.6);
+  floaters.push({x: player.x, y: player.y - 46, txt: 'DIE SPERRABLAGE · EBENE ' + (k.ebene + 1),
+                 col:'#c77dff', t: 3.0, big: true});
+  floaters.push({x: player.x, y: player.y - 26, txt: 'Hier wird nichts mehr bearbeitet, hier wird verwahrt.',
+                 col:'#c9b98a', t: 4.0});
 }
 
 // Requisiten am sichtbaren Innenring: Pillars und vereinzelte Objekte stehen auf
@@ -9534,8 +9924,17 @@ function verlasseKammer(){
 }
 
 // --- Belohnung: hängt ausschließlich am Tier des Schildes --------------------
-function rollKammerZutat(tier, biome){
-  const pool = BIOME_MOBS[biome].concat(KAM_WAECHTER);   // Band plus Untere Registratur
+// M4-Befund: der dritte Parameter fehlte, und deshalb zahlte die Sperrablage in
+// Substantiven von Gegnern, die in ihr gar nicht stehen. `KAM_WAECHTER` ist das
+// Roster der Unteren Registratur; seit M3 teilen sich die beiden Roster die
+// Staffel, statt sich zu ueberlagern (Bescheid 1-4 Registratur, 5 Sperrablage).
+// Die Truhe hat diese Teilung nie mitbekommen: bei Bescheid 5 fielen Fledermaus-
+// fluegel und Golem-Splitter aus einer Kammer, in der weder Fledermaus noch
+// Golem vorkommt, und die drei Substantive der Sperrablage konnten aus ihrer
+// eigenen Truhe ueberhaupt nicht fallen. `kamWaechter(diff)` ist genau die
+// Funktion, die M3 dafuer schon angelegt hat — sie stand nur nicht hier.
+function rollKammerZutat(tier, biome, diff){
+  const pool = BIOME_MOBS[biome].concat(kamWaechter(diff));   // Band plus das Roster DIESER Kammer
   if(tier >= 4) pool.push('bossgeneric');
   for(let i = 0; i < 40; i++){
     // Substantiv aus dem örtlichen Pool, Adjektiv aus der Unteren Registratur:
@@ -9557,17 +9956,38 @@ function rollKammerZutat(tier, biome){
 function truheOeffnen(){
   const k = kammer; if(!k || k.truhe.auf) return;
   k.truhe.auf = true; k.geleert = true;
-  auftragEreignis('kammer', k);   // W4
-  k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen);
-  const gold = rri(40, 80) * (1 + k.diff);
-  player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
-  if(gold >= 60) knRandnotiz('goldfund');
-  if(!kn.pending.kammer1 && !kn.seen.kammer1){ kn.pending.kammer1 = true; saveKn(); }
+  // M4: was einmal je KAMMER gilt, darf nicht einmal je EBENE laufen. Eine
+  // Kammer mit zwei Truhen ist trotzdem eine Kammer: der Auftrag zaehlt sie
+  // einmal, die Tuer wachst einmal nach, und Knoeterichs erste Truhe ist die
+  // erste Truhe. Wer diese drei Zeilen mitnimmt, macht aus jedem Abstieg einen
+  // zweiten Kammerabschluss — das faellt in keinem Bild auf und in jeder
+  // Auftragszaehlung.
+  if(k.ebene === 0){
+    auftragEreignis('kammer', k);   // W4
+    k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen);
+  }
+  // M4: die untere Ebene zahlt kein Gold, und das ist eine Entscheidung ueber
+  // die Schichtuhr, keine Sparsamkeit. Die Kammern sind laut KAMMER-MESSUNG-
+  // 2026-08-20 ohnehin der schnelle Geldkanal (rund 1190 Gold je Schicht gegen
+  // 170 aus der Oberwelt); eine zweite Truhe mit Goldwurf haette den Vollausbau
+  // von drei Schichten auf zwei gedrueckt, ohne dass jemand das beschlossen
+  // haette. Unten liegt Material. "Was niemand mehr anfassen sollte, zahlt es
+  // in Ruestung und Waffe" — die Signatur der Sperrablage sagt Ruestung und
+  // Waffe und kein Wort von Gold.
+  const gold = k.ebene > 0 ? 0 : rri(40, 80) * (1 + k.diff);
+  if(gold){
+    player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
+    if(gold >= 60) knRandnotiz('goldfund');
+  }
+  if(k.ebene === 0 && !kn.pending.kammer1 && !kn.seen.kammer1){ kn.pending.kammer1 = true; saveKn(); }
   sfx.gold(); addShake(10, 0.5);
-  floaters.push({x: k.truhe.x, y: k.truhe.y - 40, txt: '+ ' + gold + ' Gold', col:'#f4d97a', t: 2.2, big: true});
-  const n = 2 + k.diff;
+  if(gold) floaters.push({x: k.truhe.x, y: k.truhe.y - 40, txt: '+ ' + gold + ' Gold', col:'#f4d97a', t: 2.2, big: true});
+  // Zwei Zutaten mehr und eine Stufe seltener: der ganze Lohn der unteren Ebene
+  // steckt hier und nirgends sonst.
+  const n = 2 + k.diff + (k.ebene > 0 ? 2 : 0);
+  const tier = k.ebene > 0 ? Math.min(4, k.tier + 1) : k.tier;
   for(let i = 0; i < n; i++){
-    const z = rollKammerZutat(k.tier, k.biome);
+    const z = rollKammerZutat(tier, k.biome, k.diff);
     addZutat(z.noun, z.adj, 1);
     floaters.push({x: k.truhe.x + rr(-30,30), y: k.truhe.y - 56 - i*16, txt: '+ ' + zutatName(z),
                    col: RARITY[zutatRar(z)].col, t: 2.6});
@@ -9596,6 +10016,131 @@ function truheOeffnen(){
   if(invOpen) renderInventory();
   if(kesselOpen) renderKesselPane();
   updateHUD();
+}
+
+// SZ3: der Guard zum Stopfen. Er prueft, was ohne Spielzug wahr sein muss; was
+// sich erst im Spielen zeigt (Brummen, Reihenfolge, Szene, Postregen, Vorblatts
+// Ankunft), prueft `tools/stopfen-pruef.mjs` im echten Browser.
+function stopfenAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('SZ3 Stopfen:', m, ...r); };
+
+  // 1) Der Ort. Ohne ihn ist der Strang unerfuellbar statt optional, und das
+  // waere ein Unterschied, den nur ein Guard bemerkt.
+  if(!STOPFEN.da){
+    console.log('SZ3 Stopfen: diese Karte hat keine freie Stelle im Steinfeld, die Roehre fehlt.');
+  } else {
+    if(STOPFEN.ty > RUIN_Y1) fehler('die Stelle liegt nicht im Steinfeld', STOPFEN.tx, STOPFEN.ty);
+    if(!reachbar(STOPFEN.tx, STOPFEN.ty)) fehler('die Stelle ist nicht erreichbar', STOPFEN.tx, STOPFEN.ty);
+    if(T(STOPFEN.tx, STOPFEN.ty) === G_PATH) fehler('die Stelle liegt auf dem Weg', STOPFEN.tx, STOPFEN.ty);
+    for(let dy = -1; dy <= 1; dy++) for(let dx = -1; dx <= 1; dx++)
+      if(!reachbar(STOPFEN.tx+dx, STOPFEN.ty+dy)) fehler('die Stelle klemmt, Nachbarkachel gesperrt', dx, dy);
+  }
+
+  // 2) Serie I haengt am Ereignis und nicht am Ort. Beides zu tragen waere eine
+  // Zusicherung, die kein Fundweg einloest — blaetterAssert() prueft die
+  // Tabellenseite, hier steht die Fundwegseite.
+  const serieI = BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'I');
+  if(serieI.length !== 6) fehler('Serie I hat nicht sechs Blaetter', serieI.length);
+  if(!stopfenGezogen() && blattFaelltAusRohr())
+    fehler('Serie I faellt, obwohl der Stopfen nicht gezogen ist');
+
+  // 3) Die beiden Wege zu Vorblatt. Der Stopfen muss der schnellere sein
+  // koennen, sonst kostet er nichts und die Weltgeschichte haette unrecht.
+  const fig = DORF_FIGUREN.find(f => f.key === 'vorblatt');
+  if(!fig) fehler('Vorblatt steht nicht in DORF_FIGUREN');
+  else {
+    if(fig.abAkt !== 4) fehler('Vorblatt steht nicht auf Akt IV', fig.abAkt);
+    if(typeof fig.daWenn !== 'function') fehler('Vorblatt haengt an keiner Ankunft');
+    if(fig.akt && fig.akt[2]) fehler('Vorblatt hat eine Aktzeile fuer einen Akt, in dem er nicht dasteht');
+  }
+  if(SZENE6_ABSTAND < 1) fehler('die Entklammerung kaeme ohne Abstand', SZENE6_ABSTAND);
+
+  // 4) Der Strang selbst: vier Stufen, an Zapf gehaengt, und er hoert auf den
+  // Ortsschritt. Ein Strang, der nur auf 'ansprechen' hoerte, waere ein
+  // Gespraech und kein Ort.
+  const d = LANGVORGAENGE.stopfen;
+  if(!d) fehler('der Strang fehlt in LANGVORGAENGE');
+  else {
+    if(d.figur !== 'zapf') fehler('der Strang haengt an der falschen Figur', d.figur);
+    if(d.stufen !== 4) fehler('der Strang hat nicht vier Stufen', d.stufen);
+    if(d.hoert.indexOf('stopfenort') < 0) fehler('der Strang hoert nicht auf den Ortsschritt');
+  }
+
+  if(ok) console.log(`SZ3 Stopfen: die Stelle liegt bei (${STOPFEN.tx}, ${STOPFEN.ty}) im Steinfeld, `
+    + `Serie I mit ${serieI.length} Blättern hängt am Ereignis, Vorblatt an seiner Ankunft.`);
+  return ok;
+}
+
+// M4: der Guard zur zweiten Ebene. Er prueft, was ohne Spielzug wahr sein muss;
+// was sich erst im Betreten zeigt (Angebot, Abstieg, Rueckweg, doppelte
+// Auftragszaehlung), prueft `tools/ebene-pruef.mjs` im echten Browser.
+//
+// Die vierte Zeile ist die eigentliche: Die Signatur der Sperrablage steht seit
+// M1 als Satz im Katalog ("zahlt es in Ruestung und Waffe") und war bis heute
+// nirgends nachpruefbar. Jetzt ist sie eine Zusicherung an der Tabelle. Wer ein
+// viertes Substantiv in die Sperrablage haengt und ihm Stiefel gibt, hoert es
+// beim naechsten Start.
+function stollenAssert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('M4 Sperrablage:', m, ...r); };
+  const satzVon = diff => diff <= 2 ? 0 : (diff <= 4 ? 1 : 2);
+
+  // 1) Genau die Kammer mit zwei Ebenen ist die, die es kanonisch sein darf.
+  // Gegen die Schwierigkeitszuordnung geprueft, nicht gegen sich selbst: die
+  // Zuordnung steht in betreteKammer(), die Ebenenzahl hier, und die beiden
+  // duerfen nicht auseinanderlaufen.
+  for(let diff = 1; diff <= 5; diff++){
+    const tief = KAM_EBENEN[satzVon(diff)] > 1;
+    if(tief !== (diff === 5)) fehler(`Gebuehrenbescheid ${diff} fuehrt ${tief ? '' : 'nicht '}in eine zweite Ebene`);
+  }
+  if(KAM_EBENEN.length !== 3) fehler('KAM_EBENEN kennt nicht genau die drei Kammersaetze', KAM_EBENEN.length);
+
+  // 2) Die beiden Roster teilen sich die Staffel, statt sich zu ueberlagern (M3).
+  for(const t of KAM_STOLLEN) if(KAM_WAECHTER.indexOf(t) >= 0)
+    fehler(`${t} steht in beiden Rostern — dann stuenden bei Bescheid 5 acht Typen in einem Biom`);
+
+  // 3) Jedes Roster ist ueberhaupt eines.
+  if(!KAM_STOLLEN.length) fehler('die Sperrablage hat kein Roster');
+  for(const t of KAM_STOLLEN) if(!ZUTAT_NOUNS[t]) fehler(`${t} hat kein Substantiv`);
+
+  // 4) Die Signatur, im Code statt im Klappentext: Ruestung und Waffe, beides,
+  // und nichts anderes.
+  const slots = {};
+  for(const t of KAM_STOLLEN) if(ZUTAT_NOUNS[t]){
+    const s = ZUTAT_NOUNS[t].slot; slots[s] = (slots[s]||0) + 1;
+    if(s !== 'armor' && s !== 'weapon')
+      fehler(`${t} zahlt in ${SLOT_DE[s]} — die Signatur der Sperrablage nennt Ruestung und Waffe`);
+  }
+  if(!slots.armor) fehler('kein Substantiv der Sperrablage zahlt in Ruestung');
+  if(!slots.weapon) fehler('kein Substantiv der Sperrablage zahlt in Waffe');
+
+  // 5) Die Truhe zahlt aus dem Roster DIESER Kammer. Gezogen statt gelesen,
+  // weil der Fund von M4 genau darin bestand, dass die Ziehung ein anderes
+  // Roster benutzte als der Kammerbau.
+  const biome = Object.keys(BIOME_MOBS)[0];
+  let ausStollen = 0;
+  for(let i = 0; i < 400; i++){
+    const z = rollKammerZutat(2, biome, 5);
+    if(KAM_STOLLEN.indexOf(z.noun) >= 0) ausStollen++;
+    else if(KAM_WAECHTER.indexOf(z.noun) >= 0)
+      fehler(`die Truhe der Sperrablage zahlt in ${ZUTAT_NOUNS[z.noun].n} — der Gegner steht in dieser Kammer nicht`);
+  }
+  if(!ausStollen) fehler('in 400 Ziehungen kein einziges Substantiv der Sperrablage aus ihrer eigenen Truhe');
+  for(let i = 0; i < 200; i++){
+    const z = rollKammerZutat(2, biome, 4);
+    if(KAM_STOLLEN.indexOf(z.noun) >= 0)
+      fehler(`die Untere Registratur zahlt in ${ZUTAT_NOUNS[z.noun].n} — der Gegner steht dort nicht`);
+  }
+
+  // 6) Die untere Ebene ergibt einen Raetselraum. Ohne Modul stuende dort ein
+  // Tor ohne Aufgabe, und der Korridor waere nicht zu Ende zu gehen.
+  const unten = waehleModuleBudget(KAM_EBENE2_BUDGET, 1);
+  if(unten.length !== 1) fehler('die untere Ebene bekommt keinen Raetselraum', unten.length);
+
+  if(ok) console.log(`M4 Sperrablage: eine zweite Ebene an Satz ${KAM_EBENEN.indexOf(2)}, `
+    + `${KAM_STOLLEN.length} eigene Waechter, Signatur Rüstung und Waffe, Truhe zahlt aus dem eigenen Roster.`);
+  return ok;
 }
 
 // ===========================================================================
@@ -9929,7 +10474,7 @@ let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
 // AKT_NPC angesprochen wie jede andere Figur; das Nachschlagen ist eine Antwort
 // in seiner Tafel geworden. Die 9 bleibt frei und wird nicht nachbesetzt: die
 // Zahlen sind Sprungmarken in einem switch und stehen in keinem Spielstand.
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12, AKT_ABSTIEG=13, AKT_STOPFEN=14;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -9972,6 +10517,11 @@ function scanAktion(dt){
     // Dorf steht, ist vorher auch nicht ansprechbar.
     for(const n of npcs) if(figDa(n.figur)) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
+  // SZ3: die brummende Stelle. Sie bietet nur an, was gerade dran ist, und bei
+  // Stufe 2 gar nichts — dort fehlt Zapf, und der steht im Dorf. Eine Aktion,
+  // die anbietet, was sie nicht kann, ist schlimmer als keine.
+  { const t = stopfenAktionText();
+    if(t) aktBiete(STOPFEN.x, STOPFEN.y, AKT_STOPFEN, null, t); }
     if(CONFIG.schichtModus) aktBiete(AMT_TUER.x, AMT_TUER.y, AKT_AMT, null, 'Amtsstube');   // G5: Dorf-Gebäude
     return;
   }
@@ -9984,6 +10534,10 @@ function scanAktion(dt){
   aktBiete(k.ausgang.x, k.ausgang.y, AKT_AUSGANG, null, 'Verlassen');
   if(k.truhe) aktBiete(k.truhe.x, k.truhe.y, k.truhe.auf ? AKT_AUSGANG : AKT_TRUHE, null,
                        k.truhe.auf ? 'Verlassen' : 'Öffnen');
+  // M4: das Loch im Boden steht sichtbar da, sobald die Kammer gebaut ist, aber
+  // es nimmt niemanden auf, solange die Truhe zu ist. Deshalb haengt das Angebot
+  // an kannAbsteigen() und nicht an k.abstieg allein.
+  if(kannAbsteigen()) aktBiete(k.abstieg.x, k.abstieg.y, AKT_ABSTIEG, null, 'Hinabsteigen');
   const mod = k.mods[k.idx];
   if(!mod || mod.fertig) return;
   if(mod.kind === 'spiegel') for(const s of mod.spiegel) aktBiete(s.x, s.y, AKT_SPIEGEL, s, 'Drehen');
@@ -10000,6 +10554,8 @@ function fuehreAktion(){
     case AKT_SCHLOSS: schlossAuf(aktObj); break;
     case AKT_TRUHE:   truheOeffnen(); break;
     case AKT_AUSGANG: verlasseKammer(); break;
+    case AKT_ABSTIEG: steigeAb(); break;
+    case AKT_STOPFEN: stopfenGriff(); break;
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
     // U3: F oeffnet die Tafel; ein zweiter Druck redet darin weiter.
@@ -10935,7 +11491,19 @@ function drawKammerObj(o){
       drawSprite(kammer.dkStairs, 0, o.x, o.y, 2);
       break;
     case 'treppe':                                        // Einstieg: reine Bodendecke, kein Kontaktpunkt
-      drawSprite(kammer.dkStairs, 0, o.x, o.y, 2);
+      drawSprite(o.leiter ? 'dun3_ladder' : kammer.dkStairs, 0, o.x, o.y, 2);
+      break;
+    // M4: der Abstieg. Dieselbe Kachel wie der Einstieg unten, nur mit einem
+    // Ring darum, solange er begehbar ist — ohne den ist ein Loch im Boden auf
+    // einem Hoehlenboden aus zwei Kacheln Entfernung nicht als Ziel zu erkennen.
+    // Ist die Truhe noch zu, bleibt der Ring aus: das Loch ist da, es nimmt nur
+    // niemanden auf.
+    case 'abstieg':
+      drawSprite('dun3_ladder', 0, o.x, o.y, 2);
+      if(kannAbsteigen()){
+        ctx.strokeStyle = '#c77dff'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(o.x, o.y, 15 + Math.sin(gameT*2.4)*2, 0, Math.PI*2); ctx.stroke();
+      }
       break;
     case 'tafel':
       ctx.fillStyle = '#2b2338'; ctx.fillRect(o.x - 26, o.y - 20, 52, 34);
@@ -11009,6 +11577,7 @@ function drawKammerTuer(t){
 }
 
 setzeKammerTueren();
+setzeStopfen();   // SZ3: einmal je Welt, nicht je Schicht — eine Roehre wandert nicht
 
 // --- QoL INVENTORY SYSTEM ---
 function buildTooltip(item, isEquipped){
@@ -11422,7 +11991,7 @@ let blaetterOffen = null;   // welche Blatt-ID gerade aufgeklappt ist, kein neue
 function renderBlaetter(){
   // W5: vorgangBestandBlock() (Definition bei vorgangAssert()) liefert '', solange
   // keine Adresszeile gefunden ist — vor Akt IV sieht der Reiter aus wie zuvor.
-  // Getrennt von BLAETTER_KEYS/gefunden: die Zählzeile "N von 48" bleibt unberührt.
+  // Getrennt von BLAETTER_KEYS/gefunden: die Zählzeile "N von 54" bleibt unberührt.
   const gefunden = BLAETTER_KEYS.filter(id => kladde.blaetter[id]);
   const bestand = vorgangBestandBlock() + langBestandBlock();
   if(!gefunden.length){
@@ -11682,7 +12251,10 @@ function update(dt){
 
   if(kammer){
     updateKammer(dt);
-    setTxt('zone', `📍 Kammer · Schwierigkeit ${kammer.diff} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}${schichtHudSuffix()}`);
+    // M4: der Ort steht vor der Zahl. Wer unten ist, liest "Sperrablage" und
+    // nicht "Kammer, Ebene 2" — der Name ist die Auskunft, die Ebene der Zusatz.
+    const ort = kammer.ebene > 0 ? `📍 Sperrablage · Ebene ${kammer.ebene + 1}` : `📍 Kammer · Schwierigkeit ${kammer.diff}`;
+    setTxt('zone', `${ort} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}${schichtHudSuffix()}`);
   } else {
     // 6 Türen, also billig genug für den Frame: Cooldown und die reine Optik
     // des Torgitters (fährt hoch, wenn der Spieler in Aktionsreichweite kommt).
@@ -11692,6 +12264,9 @@ function update(dt){
       t.gateT = clamp((t.gateT || 0) + (zu ? -dt*2.2 : dt*2.2), 0, 1);
     }
   }
+  stopfenBrummen(dt);   // SZ3: der Boden meldet sich, wenn jemand danebensteht
+  postregen(dt);        // SZ3: drei Schichten Papier im Dorf, nachdem der Stopfen weg ist
+  szene6Faellig();      // SZ3: die Entklammerung kommt zum Spieler, nicht er zu ihr
   scanAktion(dt);
   knTick(dt);
 
@@ -12344,6 +12919,11 @@ function render(){
     const p = d.big ? BIG_PAD : 0;   // Pilze/Gras behalten bit-identisch die alten Ränder
     if(d.y < cullB + p && d.x > cullL - p && d.x < cullR + p) pushDraw(d.y, DRAW_DECO, d);
   }
+  // SZ3: die aufgegrabene Stelle im Steinfeld. Sie liegt flach auf dem Boden und
+  // geht deshalb NICHT in die y-Sortierung: ein Loch, ueber dem der Spieler
+  // steht, ist richtig herum, und ein sortiertes Loch waere ein Sortierfehler,
+  // der nur bei einer bestimmten Blickrichtung auffiele.
+  drawStopfen();
   if(currentLevel === 1){                               // Hoftiere, Dorf-Staffage, Kessel, Knöterich und Kammertüren, alle nur hier
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
     for(const n of npcs) if(figDa(n.figur) && vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
@@ -14854,7 +15434,12 @@ auftragAssertBrett();
 //  ansprechen, jahresbonus, amtstube. 'schichtende' ist W4-Bestand und wird
 //  aus auftragSchichtende() gefeuert, nicht neu.
 const LANG_EREIGNISSE = ['kill','kammer','kessel','trank','zauber','ablage','zutat',
-                         'ansprechen','schichtende','jahresbonus','amtstube'];
+                         'ansprechen','schichtende','jahresbonus','amtstube',
+                         // SZ3: der erste Ortsschritt des Spiels. Er kommt nicht aus
+                         // auftragEreignis(), sondern aus der Kontextaktion an der
+                         // brummenden Stelle — deshalb eine eigene Art und kein
+                         // Zweckentfremden von 'ablage'.
+                         'stopfenort'];
 
 // Feldform je Strang:
 //   figur   DORF_FIGUREN-Key oder 'knoeterich' — wer den Strang trägt
@@ -14939,9 +15524,14 @@ LANGVORGAENGE.bericht = {
   figur:'lisbeth', titel:'Der sechste Praktikumsbericht', stufen:BERICHT_BEATS.length,
   hoert:['ansprechen'],
   // Akt I gehört Knöterichs Onboarding, wie bei anlage3 und AUFTRAG_TYPEN.reise.
-  // Vorblatt steht erst ab Akt III im Dorf (DORF_FIGUREN, abAkt:3), die Kette
-  // hält an Stufe 3 also von selbst an, bis Oben da ist. Das ist Pacing und
-  // keine Blockade: bis Akt V (Schicht 41) bleiben zwanzig Schichten Luft.
+  // Die Kette hält an Stufe 3 von selbst an, bis Oben da ist, und "da" heisst
+  // seit SZ3 nicht mehr "ein Akt ist angebrochen", sondern "Vorblatt ist
+  // angekommen" (Szene 6, DORF_FIGUREN.daWenn). Das ist weiterhin Pacing und
+  // keine Blockade, nur ein knapperes: er kommt frueherstens zwei Schichten nach
+  // dem Stopfen und spaetestens zwei Schichten nach der vierten Adresszeile,
+  // beides in Akt IV, und bis Akt V (Schicht 41) bleiben danach rund acht
+  // Schichten statt der zwanzig von vorher. Wer den Stopfen zieht, kauft sich
+  // hier also nebenbei Luft fuer Lisbeths Unterschrift.
   wenn: () => aktStand() >= 2,
   schritt(was, info, roh){
     if(was !== 'ansprechen' || !info) return roh;
@@ -14961,6 +15551,75 @@ LANGVORGAENGE.bericht = {
   bestand: st => st >= BERICHT_BEATS.length
     ? 'Der sechste Praktikumsbericht: gezeichnet. Der Fall ist aktenkundig.'
     : 'Der sechste Praktikumsbericht: es fehlt eine Unterschrift. ' + st + ' von ' + BERICHT_BEATS.length + '.',
+};
+
+// SZ3-Befund: dieser Strang steht als ZWEITER in der Tabelle, direkt hinter
+// bericht, und das ist kein Geschmack. langAnsprechen() geht die Tabelle in
+// Einfuegereihenfolge durch und liefert den ersten Strang, der vorrueckt — Zapf
+// traegt aber drei (Giesskanne, Anlage 3, Stopfen). Stand der Stopfen hinten,
+// verschluckte die Giesskanne seinen einen Satz, und der Prueflauf bekam
+// "Giessen ist nicht mein Ressort." statt "Ich hole das Werkzeug." Genau die
+// Schlange, die der Kommentar bei bericht schon vermerkt hat.
+//
+// Er kostet die beiden anderen dabei fast nichts: sein Ansprechschritt feuert
+// nur bei roh === 2, also in dem einen Moment, in dem die Roehre freiliegt und
+// noch niemand das Werkzeug geholt hat. Ein einziger Tastendruck, einmal im
+// Spiel.
+// ---------------------------------------------------------------------------
+//  Weltgeschichte Kapitel 10, Nummer 10: DER STOPFEN.  (SZ3)
+//
+//  Vier Schritte, und drei davon sind Ortsschritte statt Ansprechschritte —
+//  der einzige Strang im Spiel, der jemanden irgendwohin schickt. Das ist
+//  begruendet: die Roehre liegt unter dem Steinfeld, und ein Ort, den man nur
+//  bespricht, ist keiner.
+//
+//    1  nachgesehen   an der brummenden Stelle, blosse Neugier
+//    2  freigelegt    dieselbe Stelle, zweiter Griff. Jetzt liegt die Roehre da
+//    3  Zapf geholt   im Dorf, er holt das Werkzeug (seine W11-Zeile, woertlich)
+//    4  gezogen       zurueck an der Roehre, und dann laeuft Szene 5
+//
+//  Der Preis steht in der Weltgeschichte und ist der Grund, warum dieser Strang
+//  als einziger etwas KOSTET: "Wer den Stopfen zieht, holt sich damit den
+//  Gegenspieler ins Dorf, und das ist keine Strafe, sondern die ehrlichste
+//  Ursachenkette des Spiels." Vorblatt liest den Dienstbericht, weil die Post
+//  wieder laeuft, und dann laesst er anspannen. Ohne Stopfen kommt er trotzdem,
+//  nur spaeter und ueber Kordula Umlauf.
+//
+//  Die W7-Doktrin bleibt unangetastet: der Strang blockiert nichts, ist fuer
+//  den Hauptvorgang nirgends Bedingung, belegt keine Kachel des Dorfes und
+//  keine Kontextaktion, die es vorher schon gab. Wer nie ins Steinfeld geht,
+//  spielt das Spiel unveraendert zu Ende.
+// ---------------------------------------------------------------------------
+const STOPFEN_BEATS = [
+  {z1:'Der Boden brummt hier wirklich.',    z2:'Darunter liegt etwas Hohles.'},
+  {z1:'Eine Röhre. Gebrannter Ton, armdick.', z2:'Sie ist voll. Sie geht nicht.'},
+  {z1:'Im Steinfeld brummt der Boden.',     z2:'Ich hole das Werkzeug.'},
+  {z1:'Ein Rohr. Verstopft. Sehr alt.',     z2:'Kriegen wir auf.'},
+];
+
+LANGVORGAENGE.stopfen = {
+  figur:'zapf', titel:'Der Stopfen', stufen:STOPFEN_BEATS.length,
+  hoert:['ansprechen','stopfenort'],
+  // Akt IV, wie die Weltgeschichte es setzt, und die Stelle muss auf dieser
+  // Karte ueberhaupt liegen. Ohne Ruinenband gibt es sie nicht (setzeStopfen()),
+  // und ein Strang ohne Ort waere unerfuellbar statt optional.
+  wenn: () => aktStand() >= 4 && STOPFEN.da,
+  schritt(was, info, roh){
+    // Die beiden Ortsschritte. Sie kommen von der Kontextaktion an der Stelle
+    // und von nirgends sonst.
+    if(was === 'stopfenort' && (roh === 0 || roh === 1)) return roh + 1;
+    // Zapf holen. Erst wenn die Roehre freiliegt: vorher haette er nichts, wozu
+    // er sein Werkzeug holen koennte, und seine Zeile waere eine Behauptung.
+    if(was === 'ansprechen' && info && info.key === 'zapf' && roh === 2) return 3;
+    // Der vierte Schritt gehoert der Szene und wird von szeneEnde() gesetzt,
+    // nicht von hier: die Kapsel ist erst draussen, wenn sie draussen ist.
+    if(was === 'stopfenort' && roh === 3 && info && info.gezogen) return 4;
+    return roh;
+  },
+  fortschritt: st => STOPFEN_BEATS[st - 1],
+  bestand: st => st >= STOPFEN_BEATS.length
+    ? 'Der Stopfen: gezogen. Die Rohrpost läuft seit siebenhunderteinundvierzig Jahren zum ersten Mal.'
+    : 'Der Stopfen: ' + st + ' von ' + STOPFEN_BEATS.length + ' Schritten. Im Steinfeld brummt der Boden.',
 };
 
 // Weltbibel Kapitel 10, Nummer 3. Läuft über das ganze Spiel: elf Anläufe, elf
@@ -15243,6 +15902,7 @@ LANGVORGAENGE.gutachter = {
   },
 };
 
+
 // Was das Kammerschild anzeigt. Milb liegt immer NACH UNTEN daneben: jede Kammer
 // liefert mehr als angekündigt, ein W4-Aushang "ab Aufwand N" wird dadurch nie
 // schwerer. t.diff und t.tier selbst bleiben unangetastet — Beute, die
@@ -15383,7 +16043,14 @@ function langAssert(){
 
   // Spiegel. Alles wird am Ende exakt zurückgesetzt, ohne saveAmt()/saveKladde().
   const langEcht = kladde.lang, schichtenEcht = amt.schichten, modusEcht = CONFIG.schichtModus,
-        flagsEcht = langSchicht, manaEcht = amt.bonusManaRegen, vorgangEcht = kladde.vorgang;
+        flagsEcht = langSchicht, manaEcht = amt.bonusManaRegen, vorgangEcht = kladde.vorgang,
+        // SZ3: der siebte Spiegel. Punkt (2) fragt, ob ein Strang JEMALS
+        // abschliessbar ist, und seit SZ3 laeuft Nummer 4 ueber eine Figur, die
+        // nicht mehr an einem Akt haengt, sondern an ihrer Ankunft (figDa/daWenn).
+        // Ohne diesen Spiegel meldete der Guard den Strang als tot, obwohl er
+        // erreichbar ist — er kannte nur den Zustand VOR Szene 6.
+        vorblattEcht = kn.flags.szeneVorblatt;
+  kn.flags.szeneVorblatt = true;
   // GW6: alle Punkte außer (5) prüfen die schichtModus=true-Semantik. Seit
   // langFertig()/langLaeuft() den Modus mitlesen, muss er dafür gesetzt sein,
   // sonst liefe der Bramsche-Punkt (7) bei schichtModus=false grundlos rot.
@@ -15583,6 +16250,7 @@ function langAssert(){
   CONFIG.schichtModus = modusEcht; amt.schichten = schichtenEcht;
   kladde.lang = langEcht; kladde.vorgang = vorgangEcht;
   amt.bonusManaRegen = manaEcht; langSchicht = flagsEcht;
+  kn.flags.szeneVorblatt = vorblattEcht;
   }
 
   console.assert(ok, 'W7 Langvorgang: Assertion fehlgeschlagen, siehe Konsole.');
@@ -15595,6 +16263,10 @@ function langAssert(){
 const LANG_PROBEN = {
   schichtende: [{bm:0},{bm:1},{bm:2},{bm:3},{bm:4},{bm:5}],
   ansprechen:  DORF_FIGUREN.map(f => ({key:f.key})),
+  // SZ3: die beiden Formen des Ortsschritts. Ohne die zweite waere Stufe 4 des
+  // Stopfens unerreichbar, und Punkt (2) meldete zu Recht einen toten Eintrag —
+  // genau das hat er beim ersten Lauf getan.
+  stopfenort:  [null, {gezogen:true}],
 };
 // Die drei Guards, die W7-Zustand lesen, laufen erst hier — alle drei tragen an
 // ihrer Definition den Grund. Reihenfolge egal, es sind reine Prüfungen.
@@ -16983,6 +17655,125 @@ SZENEN.knoeterich = {
          opts: () => [{t:'Hintermühl?', tun: () => szeneEnde('knoeterich', 'szeneKnoeterich')}]},
   },
 };
+
+// --- Szene 5: "Der Stopfen" -------------------------------------------------
+// Akt IV, optional, im Steinfeld an der freigelegten Roehre. Die einzige Szene
+// des Spiels, die an einem ORT spielt und nicht an einer Figur: sie wird von
+// der Kontextaktion an der Stelle geoeffnet (stopfenGriff()), nicht von
+// szeneFaellig(). Deshalb traegt sie kein figur-Feld — genau wie SZENEN.schublade,
+// die aus dem Amtspanel kommt.
+//
+// Zapf spricht, obwohl er im Dorf steht und nicht hier. Das ist kein Trick:
+// szeneSprecherAusDorf() faellt auf den Tabelleneintrag zurueck, wenn die Figur
+// nicht in der Welt steht, und erzaehlerisch ist er mitgekommen — Stufe 3 des
+// Strangs IST "Zapf geholt". Ihn wirklich hierher laufen zu lassen waere ein
+// Wegfindungsproblem in einem Spiel, das keine Wegfindung hat (genMap Schritt 3).
+//
+// Kein Satz ist neu. Die Szene steht in weltgeschichte.md, Kapitel 8, und wird
+// woertlich uebernommen, bis auf die Antwortbeschriftungen, die dort als
+// "(Antwortauswahl)" markiert sind und hier ihren Text bekommen.
+SZENEN.stopfen = {
+  haeltDieWelt: true,
+  sprecher: () => szeneSprecherAusDorf('zapf'),
+  start:  'p1',
+  sperre: [],
+  ende:   () => stopfenGezogenEnde(),
+  knoten: {
+    p1: {z1:'Rohrpost. Reichseigen.', z2:'Da steckt was fest.',
+         opts: () => [{t:'Sie geht nicht.', zu:'p2'}]},
+    p2: {z1:'Seit siebenhunderteinundvierzig.', z2:'Ich hol es raus.',
+         opts: () => [{t:'Einfach so?', zu:'p3'}]},
+    // Die Kapsel. Der Aktenauszug steht als eigener Knoten und nicht als Tafel:
+    // eine Tafel haette die Szene angehalten, und dieser Satz ist der Kern.
+    p3: {z1:'Wer räumt das Papier aus dem Fluss?', z2:'Um Nachricht wird gebeten.',
+         opts: () => [{t:'Die Frage von damals.', zu:'p4'}]},
+    p4: {z1:'Das ist eine Frage.', z2:'Steht ja da.',
+         opts: () => [{t:'Daran hing der Krieg.', zu:'p5'}]},
+    p5: {z1:'Sie steckt in einem Rohr.', z2:'Ich mach das. Ist ja Papier.',
+         opts: () => [{t:'Zusehen.', zu:'p6'}]},
+    p6: {z1:'Ich räume es raus.', z2:'Vier Wörter. Er schreibt langsam.',
+         opts: () => [{t:'Und jetzt?', zu:'p7'}]},
+    p7: {z1:'So. Läuft wieder.', z2:'Ist ja nur ein Rohr.',
+         opts: () => [{t:'Zurücktreten.', tun: () => stopfenGezogenEnde()}]},
+  },
+};
+
+// Das Ende der Szene ist der Anfang von allem, was der Stopfen kostet: der
+// Strang geht auf seine letzte Stufe, die Post faengt an zu fallen, Serie I
+// wird auffindbar, und Vorblatt sitzt zwei Schichten spaeter auf dem Wagen.
+// Alles davon haengt an EINER geschriebenen Groesse (dem Strang) und einem
+// Zeitstempel; kein zweiter Merker, keine zweite Wahrheit.
+function stopfenGezogenEnde(){
+  langEreignis('stopfenort', {gezogen:true});
+  if(!amt.stopfenSchicht) amt.stopfenSchicht = amt.schichten + 1;   // 1-basiert, damit 0 "nie" heisst
+  saveAmt();
+  szeneEnde('stopfen', 'szeneStopfen');
+  floaters.push({x: player.x, y: player.y - 46, txt: 'DIE ROHRPOST LÄUFT', col:'#7ad6ff', t: 3.4, big: true});
+}
+
+// --- Szene 6: "Die Entklammerung" -------------------------------------------
+// Akt IV, mittags auf dem Dorfplatz. Zwei Schichten nach dem Stopfen, oder,
+// wenn der Spieler ihn nicht gezogen hat, zwei Schichten nach der vierten
+// Adresszeile. Genau so steht es in der Weltgeschichte, und genau das ist der
+// Preis des Stopfens: nicht dass Vorblatt kommt, sondern WANN.
+//
+// Die Weltgeschichte bietet ausdruecklich an, die Entklammerung hinter der
+// Amtstuer stattfinden zu lassen und Lott und Pahl davon erzaehlen zu lassen
+// ("Das ist sogar besser"). Gebaut ist trotzdem die Fassung auf dem Dorfplatz,
+// und zwar aus einem mechanischen Grund: Vorblatt steht seit dieser Szene im
+// Dorf, und der Spieler muss gesehen haben, wie er hereinkam. Lott und Pahl
+// bekommen ihre vier Zeilen trotzdem, direkt danach, als Nachklang.
+const SZENE6_ABSTAND = 2;   // Schichten
+function szene6Faellig(){
+  if(szeneAktiv || !CONFIG.schichtModus || kn.flags.szeneVorblatt) return;
+  if(kammer || currentLevel !== 1 || state !== 'play') return;
+  if(!inVillagePx(player.x, player.y)) return;          // "auf dem Dorfplatz", woertlich
+  if(!vorblattFaellig()) return;
+  szeneOeffnen('vorblatt', SZENEN.vorblatt.start);
+}
+// Wann der Wagen kommt. Zwei Wege, der frueheste gewinnt, und der Stopfen ist
+// der frueheste, den es gibt.
+function vorblattFaellig(){
+  if(aktStand() < 4) return false;
+  if(amt.stopfenSchicht && amt.schichten >= (amt.stopfenSchicht - 1) + SZENE6_ABSTAND) return true;
+  if(amt.adressSchicht && amt.schichten >= (amt.adressSchicht - 1) + SZENE6_ABSTAND) return true;
+  return false;
+}
+
+SZENEN.vorblatt = {
+  haeltDieWelt: true,
+  sprecher: () => szeneSprecherAusDorf('vorblatt'),
+  start:  'v1',
+  sperre: [],
+  ende:   () => vorblattAngekommen(),
+  knoten: {
+    v1: {z1:'Guten Tag. Ich habe leider ein Formatproblem.', z2:'Ich bin breiter als Ihre Amtstür.',
+         opts: () => [{t:'Was tun die beiden da?', zu:'v2'}]},
+    v2: {z1:'Sie entklammern mich. Lage für Lage.', z2:'Es ist keine Peinlichkeit, es ist ein Verfahren.',
+         opts: () => [{t:'Bitte sehr.', zu:'v3'}]},
+    v3: {z1:'Sie sind der Außendienst.', z2:'Man hat mir geschrieben.',
+         opts: () => [{t:'Wer schreibt Ihnen?', zu:'v4'}]},
+    v4: {z1:'Sie führen keinen Vorgang.', z2:'Das macht Sie sehr frei.',
+         opts: () => [{t:'Da fällt eine Lage.', zu:'v5'}]},
+    v5: {z1:'Diese hier ist aus dem Jahr 987.', z2:'Eine Uferfrage. Ich hänge an ihr.',
+         opts: () => [{t:'Eine Uferfrage?', zu:'v6'}]},
+    v6: {z1:'Sie hat mir den Grafen gebracht.', z2:'Man behält so etwas.',
+         opts: () => [{t:'Warten.', zu:'v7'}]},
+    // Die Entklammerung ist fertig. Er ist plötzlich ein schmaler, älterer Herr
+    // in Hemdsärmeln, und er sieht aus wie jemand, der friert.
+    v7: {z1:'So. Nun passe ich.', z2:'Es zieht ein wenig.',
+         opts: () => [{t:'Er geht ins Amt.', tun: () => vorblattAngekommen()}]},
+  },
+};
+
+// Der Nachklang: Lott und Pahl, sofort danach. Sie stehen als Chor im Dorf und
+// haben dafuer den Kanal, den SZ2 gebaut hat (letzterAnlass) — kein neuer
+// Mechanismus, nur ein neuer Anlass.
+function vorblattAngekommen(){
+  if(!kn.flags.szeneVorblatt){ kn.flags.szeneVorblatt = true; saveKn(); }
+  szeneAus();
+  letzterAnlass = 'vorblatt';
+}
 
 // ===========================================================================
 //  F1d: Die Gespraechsbaeume
@@ -19225,6 +20016,8 @@ loadAssets().then(() => {
   dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst
   portraetAssert();           // U5: erst hier, vorher gibt es die Bilddateien nicht
   garderobeAssert();          // G9-Nachtrag: misst die Blätter der Garderobe, nicht ihre Tabelle
+  stollenAssert();            // M4: die zweite Ebene, ihr Roster und ihre Signatur
+  stopfenAssert();            // SZ3: die Stelle im Steinfeld, Serie I und Vorblatts Ankunft
   knZettelPortrait();         // U6: und aus demselben Grund einen Schritt danach
   refreshFloor();
   showStartScreen();
