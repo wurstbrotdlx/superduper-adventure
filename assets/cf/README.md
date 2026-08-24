@@ -117,6 +117,37 @@ Trepps und Nieselbecks Porträts zeigen. Das ist gesehen, verglichen und
 entschieden: die Krempe bleibt. Eine Kopfbedeckung, die als solche erkennbar
 ist, schlägt eine Mützenfarbe auf einer Frisur.
 
+### Von G11 gebraucht (`deco/Outdoor/`)
+
+Bauabschnitt G11 (Koppel, Schild, Boot). Sechs **handgeschnittene Zellen** aus
+`Cute_Fantasy/Outdoor decoration/Fences.png`, ein Schild aus `Signs.png`, das
+Boot als fertiges Anim-Blatt.
+
+Geschnitten und nicht als Blatt registriert, weil ein Deko-Eintrag im Spiel
+immer `animFrame(sheet, …)` zeichnet und bei `n:1` das Frame 0 seiner Zeile: die
+**Spalte** ist so nicht adressierbar, und der Zaun braucht sechs Spalten aus zwei
+Zeilen. Dieselbe Lage wie bei `crate`/`pot`/`cobweb` aus G1, derselbe Weg.
+
+Welche Zelle was ist, steht nicht im Dateinamen, sondern in der Alpha-Bounding-Box
+je Zelle, von Hand gemessen (der Pfosten sitzt in allen Zellen bei x5–10, sie
+fluchten deshalb über Ecken und Kanten):
+
+| Datei | Quelle | Zelle | Bounding-Box | Rolle |
+|---|---|---|---|---|
+| `deco/Outdoor/fence_h.png` | `Fences.png` | (2,0) | x0–15, y3–13 | Riegel durch die ganze Zelle, kein Pfosten |
+| `deco/Outdoor/fence_v.png` | `Fences.png` | (0,1) | x5–10, y0–15 | Pfostenreihe durch die ganze Zelle |
+| `deco/Outdoor/fence_tl.png` | `Fences.png` | (1,1) | x5–15, y3–15 | Ecke oben links |
+| `deco/Outdoor/fence_tr.png` | `Fences.png` | (3,1) | x0–10, y3–15 | Ecke oben rechts |
+| `deco/Outdoor/fence_bl.png` | `Fences.png` | (1,3) | x5–15, y0–13 | Ecke unten links |
+| `deco/Outdoor/fence_br.png` | `Fences.png` | (3,3) | x0–10, y0–13 | Ecke unten rechts |
+| `deco/Outdoor/sign_post.png` | `Signs.png` | x0,y16, 16x32 | — | Das Schild am Amt |
+| `deco/Outdoor/Boat_Anim.png` | `Outdoor_Decor_Animations/Other_Animations/` | unverändert | — | Boot an der Tilgung, **vier Frames zu 48**, nicht 16 |
+
+**Zum Boot:** das Manifest tippt hier wie bei jedem Flächenblatt auf 16x16. Die
+wahre Frame-Breite ist über die leeren Spalten gemessen (2–41, 50–90, 98–138,
+146–186) und beträgt 48. Der Anker liegt auf der Wasserlinie (y45), nicht an der
+Blattunterkante.
+
 ### Von G3 gebraucht (`enemies/`, `deco/`)
 
 19 Monster-Rigs für alle 21 `MONDEF`-Typen (Templar/Swordman/Archer teilen sich je
