@@ -1006,6 +1006,16 @@ Der erste Griff in den Deko-Steinbruch aus `GRAFIK-BESTAND-2026-08-21.md`, Punkt
 * **Das Boot ist ausdrücklich ohne Funktion.** Die ausgelagerten Bestände gelten als „angeblich erreichbar, nie geprüft", und genau so sieht ein Boot aus, das niemand benutzt.
 * **Keine neue Kachelart, keine Kollision, kein Vorgang.** Wer nie hinsieht, spielt das Spiel unverändert weiter.
 
+### G12: Der Rest des Steinbruchs — VERMESSEN, Bauteil offen (siehe `phase-g12-steinbruch-rest.md`)
+
+Was G11 liegen ließ: Brücken, Wasserpflanzen, Kapybaras und die Ambiente-Tiere. Die Runde fängt mit dem Messprotokoll an statt mit dem Setzer, und die Messung hat drei Zeilen des Bestands umgeworfen.
+
+* **Es gibt keinen Dorfteich, und es gibt keinen Teich.** Über drei Startwerte liegt im Umkreis von sechzig Kacheln um das Dorf keine einzige Wasserkachel; das nächste Uferwasser ist 105 bis 126 Kacheln entfernt, an einem Weg liegt gar keins. Wasserdeko gehört an den Küstensaum und wird nicht ans Dorf gebunden.
+* **Die Küste ist trotzdem Vorgangsgebiet.** Was hinausführt, sind nicht die Wege, sondern die Kammertüren: 25 je Schicht, die nächste steht ein bis vier Kacheln vom Uferwasser, und über die Hälfte des sichtbaren Uferwassers liegt innerhalb von vierzig Kacheln um eine Tür.
+* **Keine Brücken, und zwar begründet.** Vierzig bis fünfzig Engen bis sechs Kacheln Wasser gibt es, aber keine einzige ohne Landweg: der größte Umweg, den eine Brücke spart, beträgt siebzehn Kacheln, im Mittel sieben. Eine Brücke zur Deko-Insel wäre der Korridor, den `genMap()` Schritt 3 ausdrücklich verbietet, weil das Spiel keine Wegfindung hat.
+* **Krähen gibt es im Pack nicht.** Die Bestandszeile nennt sie, das Manifest kennt unter `Animals/` keinen einzigen Krähenvogel. Achtundzwanzig Dateien statt „rund dreißig".
+* **Das Boot bleibt liegen, wo es liegt** (103 bis 126 Kacheln vom Dorf). Es an eine Kammertür zu setzen wäre falsch: `decos` entstehen einmal in `genMap()` und bleiben, `kammerTueren` werden je Schicht neu gewürfelt. Ab der zweiten Schicht stünde es wieder im Nirgendwo, nur mit einer Begründung, die nicht mehr stimmt.
+
 ### SZ3 und SZ4: Die übrigen fünf Szenen — OFFEN
 
 SZ3 der Stopfen im Steinfeld samt Blattserie I und Postregen sowie Vorblatts Ankunft, SZ4 die Versuchung, die Zustellung und der Abspann. Einzelheiten in `phase-sz2-gespraechsszenen.md`, letzter Abschnitt.
