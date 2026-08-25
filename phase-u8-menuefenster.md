@@ -444,7 +444,7 @@ auf dem Schirm. Jetzt prüft er dort **das Gegenteil, und zwar genauso streng**:
 | die Knopfspalte liegt neben dem Fenster | der Schadenspuls leuchtet auf, liegt über dem Fenster, fängt keinen Griff ab und ist danach wieder weg |
 
 Der Desktop-Abschnitt ist **unverändert** — dort gelten die drei Zusagen weiter, und dort werden sie
-weiter gemessen. Der Lauf steht damit auf **69 Prüfungen** (von 68).
+weiter gemessen. Der Lauf steht damit auf **78 Prüfungen** (von 68).
 
 Ohne Regression gelaufen: `zulagen-pruef` 50/50, `speicher-pruef` 34/34, `steuerung-pruef` alles in
 Ordnung, `gespraech-pruef` 87/89 wie auf dem Branch-Punkt.
