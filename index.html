@@ -123,10 +123,18 @@
        padding:6px 14px 6px 6px;border-radius:44px;
        background:linear-gradient(100deg,rgba(14,10,20,.94),rgba(14,10,20,.62));
        border:2px solid rgba(107,90,58,.9);box-shadow:0 3px 14px rgba(0,0,0,.7);}
-  /* image-rendering: bakeUiSkin() legt round_brown.png (16x16) als background-image
-     mit background-size:100% 100% unter Lichtbild und Touch-Rundknöpfe, das ist
-     3,5- bis 5-fach hochskalierte Pixelkunst. Ohne pixelated glättet der Browser
-     sie weich, Regressionsregel 14 verlangt das Gegenteil (R6/F34). */
+  /* image-rendering: bakeUiSkin() legt round_brown.png als background-image unter
+     das Lichtbild, das ist hochskalierte Pixelkunst. Ohne pixelated glättet der
+     Browser sie weich, Regressionsregel 14 verlangt das Gegenteil (R6/F34).
+     U10-BERICHTIGUNG: hier stand bis U10 "(16x16)" und "3,5- bis 5-fach". Beides
+     war falsch und hat die ganze Zeit in die falsche Richtung gezeigt. 16x16 ist
+     die ZELLE in UI_Buttons.png; die DATEI ist auf ihre Bounding-Box beschnitten
+     und misst 14x14 (assets/cf/README.md nennt sie richtig: Quelle 96,0 16x16,
+     Bounding-Box 1,1-15,15). Gerechnet wird mit 14, und damit steht der Faktor
+     woanders: der Daumenfächer trifft mit 56 genau das Vierfache, Lichtbild (52),
+     Schlagknopf (82) und Zielwahl (44) treffen gar nichts. Was die Touch-Rundknöpfe
+     daraus machen, steht im U10-Abschnitt weiter unten; das Lichtbild behält seinen
+     krummen Faktor, weil sein Kreis eine Bildmaske ist und keine Knopfform. */
   #portraitRing{position:relative;width:62px;height:62px;flex:0 0 auto;border-radius:50%;
        border:3px solid #6b5a3a;background:#17130d;overflow:hidden;image-rendering:pixelated;
        box-shadow:0 0 10px rgba(0,0,0,.85) inset;}
@@ -1732,6 +1740,122 @@
   body.touch #spellBtn.cancelHot{border-color:#ff5a5a;background:#2a0d0d;}
   body.touch #spellBtn.cancelHot #spellBtnTxt::after{content:' ✖';color:#ff5a5a;}
 
+  /* =====================================================================
+     U10 — DAS ACHTECK IST DER KNOPF
+
+     round_brown.png ist ein ACHTECK von 14x14, mit durchsichtigen Ecken und
+     einem gezeichneten dunklen Rand. Bis U10 lagen darauf drei weitere
+     Formen: ein dunkler Kasten (der background aus .beltSlot bzw. .tBtn),
+     ein Kreis (border-radius:50%) und ein zweiter, flacher Rand (border:3px
+     solid #6b5a3a). Der Kreis schnitt dem Achteck die vier Schraegen ab, der
+     Kasten schien in den durchsichtigen Ecken durch, und der flache Rand lag
+     auf dem gezeichneten. Drei Formen, die einander widersprechen, auf einem
+     Knopf von 56 Pixeln.
+
+     Am Schirm faellt davon nichts auf, und das ist kein Zufall: dort steht
+     ueberhaupt kein Rundknopf. Der Guertel ist am Schirm eine Reihe Rechtecke
+     mit dem 9-Slice-Rahmen aus frame_brown.png (bakeUiSkin), und ein 9-Slice
+     dehnt nur die Kanten, nie die Ecken. Die Rundknoepfe gibt es nur unter
+     body.touch — deshalb war das ein reiner Mobilfehler, und deshalb hat ihn
+     drei Bauabschnitte lang niemand gesehen.
+
+     DIE REGEL DIESES ABSCHNITTS: DIE GRAFIK IST DIE FORM. Kein Rand, keine
+     Rundung, kein Grund — was der Knopf ist, steht im Alphakanal. Alles
+     Zierende, das bisher der Form des KASTENS folgte (Schlagschatten,
+     Zustandsschein), folgt jetzt der Form des BILDES: filter:drop-shadow()
+     liest den Alphakanal, box-shadow kennt nur den Kasten. Ein roter Schein
+     um einen gesperrten Schlagknopf ist damit achteckig wie der Knopf.
+
+     UND DIE GROESSE. 14 Quellpixel muessen auf ein GANZZAHLIGES Vielfaches
+     hochgerechnet werden, sonst wird eine Quellspalte 5 Bildpixel breit und
+     die naechste 6 — bei image-rendering:pixelated ist das kein Verlauf,
+     sondern eine sichtbar krumme Kante. Der Faecher trifft es seit U7
+     zufaellig genau (56 = 4x14). Schlagknopf (82) und Zielwahl (44) nicht,
+     und beide duerfen ihren Kasten trotzdem NICHT aendern:
+
+       44  ist das Daumenmass, das tools/steuerung-pruef.mjs verlangt
+           (Apple HIG 44, Material 48dp — 44 ist die verbindliche Zahl).
+           42 waere ganzzahlig und wuerde den Lauf rot machen.
+       82  haelt den Abstand zum Ultimate. Bei 84 stossen die beiden Kaesten
+           auf NULL Pixel zusammen (390x844: Ultimate endet bei y=665, der
+           Schlagknopf begaenne bei y=665) — nachgemessen, nicht geschaetzt.
+           Es ist derselbe Engpass, der den Ultimate schon in U7 von Radius
+           96 auf 99 geschoben hat.
+
+     Also bleibt der Kasten, und das Bild zieht in ein ::before um, das mittig
+     darin sitzt und dessen Kante ein Vielfaches von 14 ist. TASTFLAECHE UND
+     SICHTFLAECHE SIND DAMIT ZWEI VERSCHIEDENE ZAHLEN — am Finger ohnehin die
+     bessere Bauart: der Schlagknopf misst sichtbar 84 und faengt auf 82,
+     die Zielwahl sieht mit 42 kleiner aus als die Kampfknoepfe und bleibt
+     mit 44 im Daumenmass. Genau das wollte U7, und jetzt stimmt es auch.
+
+     Alles hier haengt an body.cfuiRund, gesetzt von bakeUiSkin(), wenn die
+     Zelle wirklich geladen ist. Ohne Grafikpaket bleibt der CSS-Kreis aus U7
+     stehen: ein Kreis ohne Bild ist besser als ein Achteck ohne Bild.
+     ===================================================================== */
+  body.cfuiRund{--knopfSchatten:drop-shadow(0 3px 4px rgba(0,0,0,.7));}
+
+  /* Der Kasten gibt alles ab, was Form behauptet. background-image:none nimmt
+     die gedehnte Fassung aus den U7-Regeln weg; die gebackene Inline-Fassung
+     auf .tBtn/#attackBtn schreibt bakeUiSkin() seit U10 gar nicht mehr (dort
+     steht der Grund). */
+  body.cfuiRund.touch #potionBtn, body.cfuiRund.touch #spellBtn,
+  body.cfuiRund.touch #ultBtn,    body.cfuiRund.touch #prioBtn,
+  body.cfuiRund.touch #spellsBtn, body.cfuiRund.touch #charBtn,
+  body.cfuiRund.touch #invBtn,    body.cfuiRund.touch #kamExitBtn,
+  body.cfuiRund #touchCluster .tBtn{
+    border:0;border-radius:0;background-color:transparent;background-image:none;
+    box-shadow:none;filter:var(--knopfSchatten);}
+
+  /* z-index:-1 legt das Bild hinter den Inhalt des Knopfes (Sinnbild, Zahl,
+     Sternchen) und bleibt trotzdem im Stapel von #beltRow bzw. #touchCluster:
+     beide sind positioniert und tragen z-index:11, also faellt hier nichts
+     hinter die Weltkarte. left/top 50% samt negativem margin zentriert
+     unabhaengig von der Kastengroesse — der ganze Zweck der Uebung. */
+  body.cfuiRund.touch #potionBtn::before, body.cfuiRund.touch #spellBtn::before,
+  body.cfuiRund.touch #ultBtn::before,    body.cfuiRund.touch #prioBtn::before,
+  body.cfuiRund.touch #spellsBtn::before, body.cfuiRund.touch #charBtn::before,
+  body.cfuiRund.touch #invBtn::before,    body.cfuiRund.touch #kamExitBtn::before,
+  body.cfuiRund #touchCluster .tBtn::before{
+    content:'';position:absolute;left:50%;top:50%;z-index:-1;
+    width:56px;height:56px;margin:-28px 0 0 -28px;   /* 4x14, der Regelfall */
+    background-image:var(--cfui-round);background-size:100% 100%;
+    background-repeat:no-repeat;image-rendering:pixelated;}
+  /* Die zwei Ausnahmen. #touchCluster steht in der ersten Zeile mit, obwohl
+     #attackBtn allein eindeutig waere: die Regel darueber nennt
+     "#touchCluster .tBtn::before" und wiegt damit eine Klasse mehr als
+     "#attackBtn::before". Ohne den zweiten Bezeichner gewinnt sie, und der
+     Schlagknopf behaelt die 56 des Regelfalls — genau so beim ersten Anlauf
+     passiert und von tools/steuerung-kontaktbogen.mjs samt getComputedStyle
+     gefunden. */
+  body.cfuiRund #touchCluster #attackBtn::before{
+    width:84px;height:84px;margin:-42px 0 0 -42px;}  /* 6x14 in einem Kasten von 82 */
+  body.cfuiRund.touch #prioBtn::before{
+    width:42px;height:42px;margin:-21px 0 0 -21px;}  /* 3x14 in einem Kasten von 44 */
+
+  /* Die vier Zustaende. Sie setzen bis U10 border-color, und einen Rand gibt
+     es hier nicht mehr — also derselbe Schein zweimal aufgetragen: eng und
+     deckend fuer die Kante, weit und durchsichtig fuer das Leuchten. Beide
+     folgen dem Achteck, weil drop-shadow den Alphakanal liest. */
+  body.cfuiRund #attackBtn.locked{
+    filter:var(--knopfSchatten) drop-shadow(0 0 2px #ff5a5a) drop-shadow(0 0 7px rgba(255,90,90,.75));}
+  body.cfuiRund.touch #prioBtn.schwach{
+    filter:var(--knopfSchatten) drop-shadow(0 0 2px #ff9f4a) drop-shadow(0 0 6px rgba(255,159,74,.7));}
+  body.cfuiRund.touch #spellBtn.aiming{
+    filter:var(--knopfSchatten) drop-shadow(0 0 2px #f4d97a) drop-shadow(0 0 6px rgba(244,217,122,.85));}
+  body.cfuiRund.touch #spellBtn.cancelHot{
+    filter:var(--knopfSchatten) drop-shadow(0 0 2px #ff5a5a) drop-shadow(0 0 6px rgba(255,90,90,.85));}
+
+  /* Gesperrt heisst nicht farblos. .beltSlot.disabled entfaerbt mit
+     filter:grayscale(1) — am Schirm einen einfarbigen Kasten, am Finger eine
+     Zeichnung, und aus dem warmen Ton des Packs wird ein grauer Fleck. Hier
+     stattdessen zurueckgenommene Saettigung und Helligkeit: der Knopf liest
+     sich als aus und bleibt aus derselben Welt. Die Deckkraft steigt dabei
+     von .4 auf .9, weil das Abdunkeln die Arbeit schon tut und ein fast
+     durchsichtiger Knopf am Finger nur schwer zu finden ist. */
+  body.cfuiRund.touch .beltSlot.disabled{
+    opacity:.9;filter:var(--knopfSchatten) saturate(.3) brightness(.58);}
+
   /* Auf Touch rueckt der Dienstzettel unter die Statuskarte und den
      Bossbalken — oben in der Mitte ist seit U7 kein freies Band mehr. */
   body.touch #knZettel, body.touch #knRandnotiz{top:126px;max-width:min(420px,calc(100vw - 160px));}
@@ -2076,7 +2200,7 @@
     <div id="beltRow">
       <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)">🧪 <span id="potCount">0</span></div>
       <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:calc(11px * var(--fs));">· (E)</span></div>
-      <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:calc(11px * var(--fs));">🔒 Ult (R)</span></div>
+      <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:calc(11px * var(--fs));">🔒 <span class="bl">Ult (R)</span></span></div>
       <!-- U8: Drei Menuezugaenge in der Reihenfolge des Reiterbands. Aus dem
            Kartei-Knopf ist der Charakter-Knopf geworden: die Mappe liegt jetzt
            dort, und ein eigener Knopf fuer eines von zwei Blaettern waere ein
@@ -15685,7 +15809,7 @@ const ULT_SPELL = SPELLS.find(s => s.ultimate);
 const spellTitel = sp => sp._titel || (sp._titel = `${sp.name} (E) · ${sp.mana} Mana`);
 const ULT_TITEL = `${ULT_SPELL.name} (R) · ${ULT_SPELL.mana} Mana`;
 // Z2: Schloss-Texte einmal gebaut, updateHUD() vergleicht per Dirty-Check.
-const ZAUBER_SCHLOSS = `🔒 <span style="font-size:calc(9px * var(--fs))">ab St. ${ZAUBER_AB_STUFE}</span>`;
+const ZAUBER_SCHLOSS = `🔒 <span class="bl" style="font-size:calc(9px * var(--fs))">ab St. ${ZAUBER_AB_STUFE}</span>`;
 const ZAUBER_SCHLOSS_TITEL = `Zauberbefugnis ab Stufe ${ZAUBER_AB_STUFE}`;
 
 // Segmente der Leisten: eins zu Beginn, ab jeder vollen Stufenschwelle eins
@@ -15738,7 +15862,7 @@ function updateHUD(){
     setHTML('spellBtnTxt', ZAUBER_SCHLOSS);
     setAttr('spellBtn', 'title', ZAUBER_SCHLOSS_TITEL);
     el('ultBtn').classList.add('disabled');
-    setHTML('ultBtnTxt', '🔒 Ult (R)');
+    setHTML('ultBtnTxt', '🔒 <span class="bl">Ult (R)</span>');
     setAttr('ultBtn', 'title', ZAUBER_SCHLOSS_TITEL);
   } else {
   if(as && player.spellsKnown[as.id]){
@@ -15753,11 +15877,11 @@ function updateHUD(){
   // Ultimate
   if(player.spellsKnown[ULT_SPELL.id]){
     el('ultBtn').classList.remove('disabled');
-    setHTML('ultBtnTxt', `${ULT_SPELL.icon} Ult (R)`);
+    setHTML('ultBtnTxt', `${ULT_SPELL.icon} <span class="bl">Ult (R)</span>`);
     setAttr('ultBtn', 'title', ULT_TITEL);
   } else {
     el('ultBtn').classList.add('disabled');
-    setHTML('ultBtnTxt', '🔒 Ult (R)');
+    setHTML('ultBtnTxt', '🔒 <span class="bl">Ult (R)</span>');
     setAttr('ultBtn', 'title', '');
   }
   }
@@ -15831,8 +15955,20 @@ const NEUERUNGEN = {
       was: 'Namensleiste mit der Stufe, Bildfenster, Typenzeile, Textfeld — und fünfundvierzig gemalte Motive, eines je Familie und Stufe.',
       wo: 'Charakterfenster, zweites Blatt „Kartenmappe" — oder Taste Z.',
     },
+    {
+      titel: 'Am Telefon sind die Knöpfe Knöpfe geworden',
+      was: 'Angriffsfächer und Knopfspalte tragen jetzt die Achteckform, die in der Grafik gezeichnet steht, statt sie unter einem Kreisrand zu verstecken. Ein gesperrter Knopf zeigt nur noch sein Schloss, wo bis eben ein Text aus dem Knopf herauslief.',
+      wo: 'Nur am Finger: Fächer unten rechts, Knopfspalte am linken Rand.',
+    },
   ],
 };
+
+// Die Zahl wird ausgeschrieben, wie jede Zahl in diesem Haus. Bis U10 stand
+// hier eine Bedingung auf genau drei Punkte und sonst eine Ziffer — beim
+// vierten Punkt haette dort "4 Stellen" gestanden.
+const NEUERUNGEN_ZAHLWORT = ['Keine', 'Eine', 'Zwei', 'Drei', 'Vier', 'Fünf', 'Sechs', 'Sieben', 'Acht'];
+const neuerungenStellen = n =>
+  n === 1 ? 'Eine Stelle' : `${NEUERUNGEN_ZAHLWORT[n] ?? n} Stellen`;
 
 function neuerungenStandLesen(){ try{ return localStorage.getItem(NEUERUNGEN_KEY); }catch(_){ return null; } }
 function neuerungenStempeln(){ try{ localStorage.setItem(NEUERUNGEN_KEY, NEUERUNGEN.stand); }catch(_){} }
@@ -15860,7 +15996,7 @@ function showNeuerungen(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>HAUSMITTEILUNG</h1>
     <h3>Umlauf vom ${NEUERUNGEN.datum} · zur Kenntnis</h3>
-    <p style="font-size:calc(13px * var(--fs));color:#c9b98a;margin:0;">${NEUERUNGEN.punkte.length === 3 ? 'Drei Stellen' : `${NEUERUNGEN.punkte.length} Stellen`}, an denen seit Ihrer letzten Schicht umgeräumt wurde. Kurz, was und wo.</p>
+    <p style="font-size:calc(13px * var(--fs));color:#c9b98a;margin:0;">${neuerungenStellen(NEUERUNGEN.punkte.length)}, an denen seit Ihrer letzten Schicht umgeräumt wurde. Kurz, was und wo.</p>
     <div class="neuListe">${punkte}</div>
     <button onclick="neuerungenWeg()">Zur Kenntnis genommen</button>
     <p class="neuFuss">Steht ab jetzt auch im Startbild unter „Was ist neu".</p>
@@ -23349,6 +23485,12 @@ function bakeUiSkin(){
   // beim Backen (einmalig, nach dem Laden) ist body.touch noch gar nicht gesetzt
   // (enterTouchMode() kommt erst beim ersten Touch), deshalb nur die Variable (F18).
   document.documentElement.style.setProperty('--cfui-round', `url("${roundUrl}")`);
+  // U10: dieselbe Bauart wie body.cfuiX eine Zeile weiter oben, und aus demselben
+  // Grund. Der U10-Abschnitt im <style> nimmt den Rundknöpfen Rand, Rundung und
+  // Grund und überlässt die Form dem Alphakanal des Achtecks — das darf nur
+  // gelten, wenn das Achteck auch wirklich da ist. Ohne Zelle bleibt der Kreis
+  // aus U7 stehen.
+  document.body.classList.add('cfuiRund');
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
@@ -23371,7 +23513,13 @@ function bakeUiSkin(){
   // unverändert — das Rundknopf-Sprite scheint nur im ungefüllten Teil durch,
   // was optisch wie ein leeres Glas/Sockel wirkt (kein neuer Schreibpfad pro Frame,
   // updateHUD() ändert weiterhin nur height/background-size der Kinder).
-  document.querySelectorAll('#portraitRing, .tBtn, #attackBtn').forEach(el => {
+  // U10: .tBtn und #attackBtn stehen hier nicht mehr. Sie zeichnen ihr Achteck
+  // seither in einem ::before, dessen Kante ein Vielfaches von 14 ist (Begründung
+  // im U10-Abschnitt des <style>), und eine zusätzlich INLINE auf den Kasten
+  // gebackene, auf 82 gedehnte Fassung läge unverrückbar darunter: Inline schlägt
+  // jede Regel im Stylesheet, background-image:none könnte sie nicht abräumen.
+  // Das Lichtbild bleibt, sein Kreis ist eine Bildmaske und keine Knopfform.
+  document.querySelectorAll('#portraitRing').forEach(el => {
     el.style.backgroundImage = `url("${roundUrl}")`;
     el.style.backgroundSize = '100% 100%';
   });
