@@ -19,12 +19,37 @@
 //   Esc             schliesst weiterhin eine Ebene je Druck, nicht alles
 //   Kopfband        der Schliessknopf bleibt beim Scrollen im Bild
 //
+// U8 — WAS SICH FUER DIESEN LAUF GEAENDERT HAT
+//
+// Die vier Menuefenster (Charakter, Rucksack, Kochen, Zauber) sind seit U8
+// Grossfenster: sie stehen nicht mehr neben dem Spiel, sondern fuellen den
+// Schirm bis auf die Streifen, in denen die Bedienschicht liegt. Drei Dinge
+// folgen daraus fuer diesen Lauf, und alle drei sind hier nachgezogen:
+//
+//   1. "daneben" liegt woanders. Auf 1280x800 laeuft das Fenster von x=144
+//      bis x=1136 und von y=136 bis y=722. Die alten Klickpunkte (300/400,
+//      660/400, 160/300) liegen seither MITTEN im Fenster. Geklickt wird
+//      jetzt links davon.
+//   2. Zwei Grossfenster koennen nicht mehr gleichzeitig offen stehen. Sie
+//      liegen an derselben Stelle; ein Stapel waere kein Stapel, sondern ein
+//      Fenster, das aussieht wie ein anderes. Der Guertelknopf WECHSELT
+//      seither, statt ein zweites danebenzustellen — und genau das wird hier
+//      geprueft, mit derselben Strenge wie vorher das Nebeneinander.
+//   3. Gerollt wird das Rollfeld (.gfBody), nicht das Fenster. Der
+//      Schliessknopf sitzt im Kopf darueber und kann gar nicht mehr
+//      wegscrollen; geprueft wird trotzdem beides, weil "kann nicht" eine
+//      Behauptung ueber CSS ist und dieser Lauf Behauptungen misst.
+//
+// Neu dazu kommt das Reiterband: vier Reiter in jedem Fenster, ein Griff
+// darauf wechselt das Fenster.
+//
 // PANEL_REGISTER haelt inzwischen neun Eintraege. Sieben davon stehen hier, die
 // beiden anderen werden in ihrem eigenen Lauf geprueft, weil dort auch der Rest
 // ihres Bauabschnitts steht und ein Lauf je Bauabschnitt leichter zu lesen ist:
-// das Gespraechsfenster aus U3 in tools/gespraech-pruef.mjs, die Zulagen aus K1
-// in tools/zulagen-pruef.mjs. Beide haengen im selben Register und folgen
-// denselben Regeln; wer hier eine Zeile ergaenzt, ergaenzt sie dort mit.
+// das Gespraechsfenster aus U3 in tools/gespraech-pruef.mjs, die Kartenmappe
+// aus K1 in tools/zulagen-pruef.mjs (seit U8 das zweite Blatt des
+// Charakterfensters). Beide haengen im selben Register und folgen denselben
+// Regeln; wer hier eine Zeile ergaenzt, ergaenzt sie dort mit.
 //
 // Anders als monster-messlauf.mjs misst dieser Lauf nichts, er stellt fest:
 // jede Zeile ist ein Soll-Ist-Vergleich, der Exit-Code ist 1, sobald eine
@@ -96,9 +121,18 @@ async function spiel(ctxOpt){
 const stand = p => p.evaluate(() => ({
   inv: invOpen, zauber: spellTreeOpen, kessel: kesselOpen, ausweis: ausweisOpen,
   karte: fullmapOpen, schloss: schlossOpen, amt: amtFensterOpen,
+  charakter: charakterOpen,
   schleier: document.body.classList.contains('panelOffen'),
   schlaege: window.__schlaege,
 }));
+
+// U8: Ein Punkt, der garantiert NEBEN jedem Grossfenster liegt. Er wird nicht
+// geraten, sondern aus der linken Fensterkante gelesen — sonst wandert er beim
+// naechsten Mass mit und niemand merkt es.
+const danebenPunkt = async p => p.evaluate(() => {
+  const r = document.getElementById('inv').getBoundingClientRect();
+  return { x: Math.max(6, Math.round(r.left / 2)), y: Math.round(innerHeight / 2) };
+});
 
 // ---------------------------------------------------------------- Desktop
 {
@@ -106,29 +140,43 @@ const stand = p => p.evaluate(() => ({
 
   await page.evaluate(() => toggleInventory());
   pruef('Inventar offen -> Schleier an', (await stand(page)).schleier, true);
-  await page.mouse.click(300, 400);
+  const dn = await danebenPunkt(page);
+  await page.mouse.click(dn.x, dn.y);
   let z = await stand(page);
   pruef('Klick auf die Welt schliesst das Inventar', z.inv, false);
   pruef('und fuehrt dabei keinen Angriff', z.schlaege, 0);
   pruef('Schleier wieder aus', z.schleier, false);
 
-  await page.mouse.click(300, 400);
+  await page.mouse.click(dn.x, dn.y);
   pruef('Klick ohne offenes Panel schlaegt weiter zu', (await stand(page)).schlaege, 1);
 
   await page.evaluate(() => { window.__schlaege = 0; toggleInventory(); });
-  await page.locator('#statBox').click({ force: true });
+  await page.locator('#bagGrid').click({ force: true });
   z = await stand(page);
   pruef('Klick INS Panel laesst es offen', z.inv, true);
   pruef('Klick ins Panel schlaegt nicht zu', z.schlaege, 0);
 
+  // U8: Der Guertelknopf wechselt das Fenster, statt ein zweites danebenzu-
+  // stellen. Beides zugleich waere seit U8 ein Stapel an derselben Stelle.
   await page.locator('#spellsBtn').click();
   z = await stand(page);
   pruef('Guertelknopf oeffnet den Zauberbaum', z.zauber, true);
-  pruef('Guertelknopf laesst das Inventar offen', z.inv, true);
+  pruef('und raeumt dabei den Rucksack weg', z.inv, false);
 
-  await page.mouse.click(660, 400);
+  // U8: Das Reiterband. Vier Reiter in jedem Fenster, ein Griff wechselt.
+  pruef('vier Reiter im Band', await page.locator('#spellTree .gfReiter').count(), 4);
+  await page.locator('#spellTree .gfReiter[data-ziel="charakter"]').click();
   z = await stand(page);
-  pruef('Klick zwischen zwei Panels raeumt beide', [z.inv, z.zauber], [false, false]);
+  pruef('Reiter fuehrt ins Charakterfenster', [z.charakter, z.zauber], [true, false]);
+  await page.locator('#charakter .gfReiter[data-ziel="kessel"]').click();
+  z = await stand(page);
+  pruef('und von dort in den Kessel', [z.kessel, z.charakter], [true, false]);
+  pruef('immer nur ein Grossfenster', [z.inv, z.zauber, z.charakter].filter(Boolean).length, 0);
+  pruef('das Band wechselt ohne Schlag', z.schlaege, 0);
+
+  await page.mouse.click(dn.x, dn.y);
+  z = await stand(page);
+  pruef('Klick daneben raeumt das gewechselte Fenster', [z.kessel, z.charakter], [false, false]);
   pruef('und schlaegt dabei nicht zu', z.schlaege, 0);
 
   for(const [name, feld, auf] of [
@@ -140,31 +188,50 @@ const stand = p => p.evaluate(() => ({
   ]){
     await page.evaluate(q => { window.__schlaege = 0; eval(q); }, auf);
     pruef(`${name} offen`, (await stand(page))[feld], true);
-    await page.mouse.click(160, 300);
+    await page.mouse.click(dn.x, dn.y);
     z = await stand(page);
     pruef(`Klick neben ${name} schliesst`, z[feld], false);
     pruef(`Klick neben ${name} ohne Angriff`, z.schlaege, 0);
   }
 
-  await page.evaluate(() => { toggleInventory(); toggleSpellTree(); });
+  // U8: Zwei Grossfenster gehen nicht mehr uebereinander, ein Grossfenster und
+  // ein kleines Panel schon — und dafuer gilt die Esc-Regel unveraendert: eine
+  // Ebene je Druck, in der Reihenfolge des Registers (Rucksack vor Schloss).
+  await page.evaluate(() => { toggleInventory(); schlossAuf({code:['a','b','c'], fertig:false}); });
   await page.keyboard.press('Escape');
   z = await stand(page);
-  pruef('Esc schliesst weiterhin nur eine Ebene', [z.inv, z.zauber], [false, true]);
+  pruef('Esc schliesst weiterhin nur eine Ebene', [z.inv, z.schloss], [false, true]);
   await page.keyboard.press('Escape');
-  pruef('Esc schliesst dann die zweite', (await stand(page)).zauber, false);
+  pruef('Esc schliesst dann die zweite', (await stand(page)).schloss, false);
 
-  await page.evaluate(() => toggleInventory());
+  // U8: Gerollt wird das Rollfeld. Geprueft wird, dass es das ueberhaupt kann
+  // (sonst ist der Inhalt abgeschnitten statt erreichbar) und dass Kopf und
+  // Reiterband dabei stehenbleiben.
+  await page.evaluate(() => {
+    toggleInventory();
+    // Genug Inhalt, damit ueberhaupt etwas zu rollen da ist. Die Paare kommen
+    // aus den echten Tabellen, damit der Lauf nicht an einem erfundenen
+    // Zutatennamen scheitert statt an dem, was er misst.
+    player.pouch = [];
+    Object.keys(ZUTAT_NOUNS).forEach((n, i) => addZutat(n, ZUTAT_ADJ[i % ZUTAT_ADJ.length].a, 1));
+    renderInventory();
+  });
   await page.waitForTimeout(150);
   const kopf = await page.evaluate(() => {
-    const p = document.getElementById('inv');
-    p.scrollTop = p.scrollHeight;
-    const b = document.getElementById('closeInvBtn').getBoundingClientRect();
-    const r = p.getBoundingClientRect();
-    return { scrollbar: p.scrollHeight > p.clientHeight + 4,
-             drin: b.top >= r.top - 1 && b.bottom <= r.bottom + 1 };
+    const f = document.getElementById('inv');
+    const b = f.querySelector('.gfBody');
+    b.scrollTop = b.scrollHeight;
+    const x = document.getElementById('closeInvBtn').getBoundingClientRect();
+    const r = f.getBoundingClientRect();
+    return { rollt: b.scrollHeight > b.clientHeight + 4,
+             fensterRolltNicht: f.scrollTop === 0 && f.scrollHeight <= f.clientHeight + 1,
+             drin: x.top >= r.top - 1 && x.bottom <= r.bottom + 1,
+             band: f.querySelectorAll('.gfReiter').length };
   });
-  pruef('Inventar ist ueberhaupt scrollbar', kopf.scrollbar, true);
+  pruef('das Rollfeld des Rucksacks rollt', kopf.rollt, true);
+  pruef('das Fenster selbst rollt nicht', kopf.fensterRolltNicht, true);
   pruef('Schliessknopf bleibt beim Scrollen im Bild', kopf.drin, true);
+  pruef('das Reiterband bleibt beim Scrollen stehen', kopf.band, 4);
   await page.evaluate(() => toggleInventory());
 
   pruef('Konsole still (Desktop)', laut, []);
@@ -191,13 +258,88 @@ const stand = p => p.evaluate(() => ({
   pruef('Angriffsknopf schliesst das Panel nicht', z.inv, true);
 
   await page.locator('#spellsBtn').tap();
-  pruef('Guertelknopf oeffnet den Zauberbaum', (await stand(page)).zauber, true);
+  z = await stand(page);
+  pruef('Guertelknopf oeffnet den Zauberbaum', z.zauber, true);
+  pruef('und raeumt dabei den Rucksack weg', z.inv, false);
+
+  // U8: Die Knopfspalte liegt links neben dem Fenster und bleibt erreichbar —
+  // das ist dieselbe Zusage wie in U7, nur mit einem Fenster, das jetzt so
+  // gross ist, dass sie leicht haette fallen koennen.
+  pruef('die Knopfspalte liegt neben dem Fenster', await page.evaluate(() => {
+    const s = document.getElementById('spellsBtn').getBoundingClientRect();
+    const f = document.getElementById('spellTree').getBoundingClientRect();
+    return s.right <= f.left + 1;
+  }), true);
 
   await page.touchscreen.tap(195, 780);
   z = await stand(page);
-  pruef('Tipp daneben raeumt beide', [z.inv, z.zauber], [false, false]);
+  pruef('Tipp daneben raeumt das Fenster', [z.inv, z.zauber], [false, false]);
 
   pruef('Konsole still (Touch)', laut, []);
+  await ctx.close();
+}
+
+// ------------------------------------------------------- U8: kein Querlauf
+//
+// Ein Grossfenster ist so breit wie sein Platz und keinen Pixel breiter. Das
+// ist keine Selbstverstaendlichkeit, sondern eine Zusage, die CSS zweimal
+// gebrochen hat:
+//
+//   1. Ein Rasterfeld steht von Haus aus auf min-width:auto. Eine Kachel mit
+//      einem Raster darin (Zauberbaum, Beutel) wird damit so breit, wie ihr
+//      Inhalt MINDESTENS braucht — auf 390 Pixeln stand der Zauberbaum 376
+//      Pixel breit in einem 294 Pixel breiten Rollfeld.
+//   2. Eine Medienregel weiss nichts ueber die Breite eines FENSTERS. Auf
+//      einem liegenden Telefon ist der Schirm 844 Pixel breit und das Fenster
+//      318; jede Regel, die auf max-width hoert, geht dort daneben.
+//
+// Beides sah auf dem Entwicklungsschirm richtig aus. Deshalb wird es hier
+// gemessen und nicht begutachtet: in vier Formaten, mit gefuellten Fenstern
+// (leere Raster laufen nirgends ueber), fuer jedes der vier Grossfenster und
+// fuer beide Blaetter des Charakterfensters.
+for(const vp of [
+  { name: 'Telefon stehend', w: 390, h: 844, touch: true },
+  { name: 'Telefon klein',   w: 360, h: 640, touch: true },
+  { name: 'Telefon liegend', w: 844, h: 390, touch: true },
+  { name: 'Schirm',          w: 1440, h: 900, touch: false },
+]){
+  const { page, ctx } = await spiel({ viewport: { width: vp.w, height: vp.h },
+                                      ...(vp.touch ? { deviceScaleFactor: 2, hasTouch: true, isMobile: true } : {}) });
+  if(vp.touch) await page.evaluate(() => document.body.classList.add('touch'));
+  // Volle Fenster: ein leeres Raster laeuft nirgends ueber, ein volles schon.
+  await page.evaluate(() => {
+    player.level = 15; player.skillPoints = 3; player.spellPoints = 2;
+    player.zulagenZiehungen = 1; zulagenAngebotSicherstellen();
+    player.zulagenKartei = Object.keys(ZULAGE).slice(0, 8)
+      .map((f, i) => ({ familie: f, stufe: (i % 3) + 1, angelegt: i < 2 }));
+    player.pouch = [];
+    Object.keys(ZUTAT_NOUNS).forEach((n, i) => addZutat(n, ZUTAT_ADJ[i % ZUTAT_ADJ.length].a, 1));
+    recalc(); updateHUD();
+  });
+  for(const [was, auf] of [
+    ['Charakter, Werte',  'toggleCharakter("werte")'],
+    ['Charakter, Mappe',  'toggleCharakter("mappe")'],
+    ['Rucksack',          'toggleInventory()'],
+    ['Kessel',            'toggleKessel()'],
+    ['Zauberbaum',        'toggleSpellTree()'],
+  ]){
+    await page.evaluate(q => eval(q), auf);
+    await page.waitForTimeout(120);
+    const m = await page.evaluate(() => {
+      const f = [...document.querySelectorAll('.grossFenster')].find(e => getComputedStyle(e).display !== 'none');
+      if(!f) return { offen: false };
+      const b = f.querySelector('.gfBody'), r = f.getBoundingClientRect();
+      return {
+        offen: true,
+        quer: b.scrollWidth > b.clientWidth + 1,
+        ueberRand: [...b.querySelectorAll('*')].filter(e => e.getBoundingClientRect().right > r.right + 1).length,
+        imBild: r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1,
+        seite: document.documentElement.scrollWidth <= innerWidth + 1,
+      };
+    });
+    pruef(`${vp.name}: ${was} laeuft nicht quer`, [m.offen, m.quer, m.ueberRand, m.imBild, m.seite],
+                                                  [true,    false,  0,           true,     true]);
+  }
   await ctx.close();
 }
 

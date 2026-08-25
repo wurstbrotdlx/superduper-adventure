@@ -61,7 +61,7 @@ const FLAECHEN = [
   { sel: '#spellBtn',    tap: true  },
   { sel: '#ultBtn',      tap: true  },
   { sel: '#spellsBtn',   tap: true  },
-  { sel: '#zulagenBtn',  tap: true  },
+  { sel: '#charBtn',     tap: true  },
   { sel: '#invBtn',      tap: true  },
   { sel: '#prioBtn',     tap: true,  nurTouch: true },
   { sel: '#aktionBtn',   tap: true  },
