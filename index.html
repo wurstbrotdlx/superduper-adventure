@@ -5896,20 +5896,30 @@ const DORF_FIGUREN = [
    // Schläfenprobe trifft Mützenschatten. Jacke bis oben zugeknöpft, dasselbe Grün.
    gestalt:{hair:'h1', haarFarbe:'#71825f', hut:'muetze',
             hemd:'kittel', hemdFarbe:'#586833', hose:'latz', schuh:'schuh'},
+   // T1: Er meldet in Spalten. Seine Tabelle hat vier davon (Menge, Dauer,
+   // Bodenart, Anmerkungen, siehe figuren-leben.md), dazu die Veranlassung, auf
+   // die er wartet, und er kuerzt sie alle ab. Das ist der Telegrammstil, den
+   // Kapitel 13 seit T1 als seine Sprachmarke fuehrt: er ist der kuerzeste
+   // Sprecher des Spiels, und der einzige, der auf Nachfrage ausfuehrlich wird.
+   // Die Aufloesung steht in seinem Baum, Spalte fuer Spalte, eine Frage
+   // entfernt; szeneAssert() rechnet nach, dass jede Langform dort woertlich
+   // faellt. Die Meldekuerzel selbst laufen an ABK_GROSS und ABK_PUNKT vorbei
+   // (zwei Buchstaben vor dem Punkt, kein Versalienlauf) und erzeugen deshalb
+   // keine Fehlmeldung im alten Abkuerzungs-Guard.
    grund:[
-     {z1:'Gemeldet wird: keine Niederschläge.', z2:'Wie gestern. Wie immer.'},
-     {z1:'Ich habe einen Eimer. Für den Fall.', z2:'Der Eimer ist bereit.'},
-     {z1:'Der Hut ist neu. Also fast neu.', z2:'Er wartet mit mir.'},
-     {z1:'Wolken sind da. Sie dürfen nur nicht.', z2:'Es fehlt die Veranlassung.'},
-     {z1:'Meine Stelle war nie unbesetzt.', z2:'Das sagt sonst niemand.'},
-     {z1:'Sie waren im Frostkamm? Kalt dort.', z2:'Dort liegt etwas von mir.'},
+     {z1:'Gemeldet wird: TNM negativ.', z2:'Wie gestern. Wie immer.'},
+     {z1:'Mg. null. Da. entfällt. Ba. trocken.', z2:'Anm.: keine. Alles bereit.'},
+     {z1:'Eimer: vorhanden. Messstab: vorhanden.', z2:'Für den Fall. Seit immer.'},
+     {z1:'Stelle: nie unbesetzt. Dreiundvierzig Jahre.', z2:'Das sagt sonst niemand.'},
+     {z1:'Wolken: vorhanden. Vlg.: fehlt.', z2:'Deshalb dürfen sie nicht.'},
+     {z1:'Sie waren im Frostkamm? Dort liegt etwas.', z2:'Von mir. Auf Eis.'},
    ],
    akt:[
-     'Willkommen. Es bleibt schön. Wie immer.',
+     'Willkommen. Wetterlage: unverändert schön.',
      'Man fragt nach der Leitung. Ich melde nur.',
      'Dreiundvierzig Jahre. Der Eimer hält.',
-     'Wenn Sie hinauf müssen: Es wird schön.',
-     'Ich stehe bereit. Man weiß ja nie.',
+     'Wenn Sie hinauf müssen: bleibt schön.',
+     'Bereitschaft: hergestellt. Man weiß nie.',
    ],
    zusatz:[
    {abSchicht:11, zeilen:[
@@ -5917,23 +5927,23 @@ const DORF_FIGUREN = [
      {z1:'Elf Tage. Ich zähle mit.', z2:'Zählen gehört zur Stelle.'},
    ]},
    {abStufe:9, zeilen:[
-     {z1:'Gemeldet wird: Sie sind gewachsen.', z2:'Wetter bleibt unverändert.'},
+     {z1:'Gemeldet wird: Sie sind gewachsen.', z2:'Wetter: unverändert.'},
      {z1:'Sie ändern sich. Das Wetter nicht.', z2:'Einer von uns beiden reicht.'},
    ]},
    {zweig:1, zeilen:[
      {z1:'Sie machen Eis. Das ist Niederschlag.', z2:'Fast. Nicht ganz. Leider.'},
-     {z1:'Gemeldet wird: örtliches Eis.', z2:'Nicht amtlich. Aber schön.'},
+     {z1:'Gemeldet wird: örtliches Eis. Mg.: gering.', z2:'Nicht amtlich. Aber schön.'},
    ]},
    {abRang:4, zeilen:[
      {z1:'Sie steigen. Meine Stelle bleibt.', z2:'Sie war nie unbesetzt.'},
      {z1:'Gemeldet wird: ein Aufstieg im Haus.', z2:'Das melde ich gern mit.'},
    ]},
    {phase:'antritt', zeilen:[
-     {z1:'Gemeldet wird: keine Niederschläge.', z2:'Vorbereitungen abgeschlossen.'},
+     {z1:'Gemeldet wird: TNM negativ.', z2:'Vorbereitungen: abgeschlossen.'},
      {z1:'Guten Morgen. Der Eimer steht.', z2:'Wie gestern. Wie immer.'},
    ]},
    {abAkt:3, zeilen:[
-     {z1:'Ich führe zwei Tabellen.', z2:'Eine davon ist leer.'},
+     {z1:'Ich führe zwei Tabellen. Eine ist leer.', z2:'Die leere ist die wichtige.'},
      {z1:'Die Kopfzeile ziehe ich nach.', z2:'Jedes Jahr. Tinte verblasst.'},
    ]}
    ],
@@ -5943,12 +5953,12 @@ const DORF_FIGUREN = [
        {z1:'Stehen ist keine Verzögerung.', z2:'Es ist Bereitschaft.'},
      ],
      levelup:[
-       {z1:'Gemeldet wird: ein Aufstieg.', z2:'Vorbereitungen unverändert.'},
+       {z1:'Gemeldet wird: ein Aufstieg.', z2:'Vorbereitungen: unverändert.'},
        {z1:'Sie kommen voran. Schön.', z2:'Ich stehe weiter bereit.'},
      ],
      kammerAbbruch:[
        {z1:'Zurückgekommen. Auch gut.', z2:'Man kann nicht immer los.'},
-       {z1:'Gemeldet wird: eine Rückkehr.', z2:'Trocken zurück. Wie immer.'},
+       {z1:'Gemeldet wird: eine Rückkehr.', z2:'Ba.: trocken. Wie immer.'},
      ]
    }},
 
@@ -10879,6 +10889,15 @@ const ABKUERZUNGEN = {
   'a. D.':     {lang: 'außer Dienst',                         wo: 'knoeterich'},
   'n. O.':     {lang: 'nach der Ordnung',                     wo: 'bramsche'},
   'TNM':       {lang: 'Tägliche Niederschlagsmeldung',        wo: 'nieselbeck'},
+  // T1: die Familie der Meldekuerzel. Sie zaehlt gegen die Zwoelf aus Kapitel 13
+  // als EINE Position, und die Bedingung dafuer steht im Guard am Ende von
+  // szeneAssert(): jede Langform faellt woertlich in Nieselbecks eigenem Baum,
+  // eine Nachfrage entfernt. Sie stehen nur in seinen Zeilen und nirgends sonst.
+  'Mg.':       {lang: 'Menge',                                wo: 'nieselbeck'},
+  'Da.':       {lang: 'Dauer',                                wo: 'nieselbeck'},
+  'Ba.':       {lang: 'Bodenart',                             wo: 'nieselbeck'},
+  'Anm.':      {lang: 'Anmerkungen',                          wo: 'nieselbeck'},
+  'Vlg.':      {lang: 'Veranlassung',                         wo: 'nieselbeck'},
   'MfM':       {lang: 'Ministerium für Monsterangelegenheiten', wo: 'bramsche'},
   'T.':        {lang: 'die TNM, noch einmal gekürzt',         wo: 'bramsche'},
   'GA':        {lang: 'Gutachterliche Ansetzung',             wo: 'milb'},
@@ -21422,11 +21441,22 @@ SZENEN.baumNieselbeck = {
      z1:'Tägliche Niederschlagsmeldung.', z2:'Den langen Namen sagt keiner.'},
     {key:'tnm2', frei:'tnm', t:'Und warum täglich?',
      z1:'Die Meldung ist täglich.', z2:'Das Wetter nicht.'},
+    // T1: die Aufloesung der Meldekuerzel, und die einzige Stelle im Spiel, an
+    // der Nieselbeck ins Erzaehlen kommt. Kapitel 13 laesst die Familie nur
+    // deshalb als eine Position gegen die Zwoelf zaehlen: er loest sie selbst
+    // auf, eine Nachfrage entfernt, und die Kaskade macht aus der Auskunft
+    // einen kleinen Vortrag ueber vier Spalten, von denen drei immer leer sind.
+    {key:'spalten', frei:'meldung', t:'Was heißt das alles?',
+     z1:'Die Spalten. Mg. ist die Menge.', z2:'Da. ist die Dauer.',
+     weiter:'spalten2', wt:'Und die anderen?'},
     {key:'frostkamm', nach:3, t:'Was liegt im Frostkamm?',
      z1:'Mein Antrag auf Verwendung.', z2:'Auf Eis. Ordnungsgemäß.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Ich bin noch beim Anfang.', z2:'Fragen Sie ruhig.', hub:true},
+    spalten2:{z1:'Ba. ist die Bodenart, Anm. sind die Anmerkungen.', z2:'Vlg. ist die Veranlassung.',
+              opts: () => [{t:'Welche ist Ihre liebste?', zu:'spalten3'}]},
+    spalten3:{z1:'Anmerkungen. Da darf das Wetter erzählen.', z2:'Die Spalte ist noch leer.'},
     angebot: {z1:'Sie könnten ihn anfordern.', z2:'Wenn Sie mögen. Ohne Eile.',
               opts: () => [
                 {t:'Ich fordere ihn an.', tun: () => { kn.flags.baumEimer = true; saveKn(); szeneKnoten('dank'); }},

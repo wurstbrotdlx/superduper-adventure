@@ -578,6 +578,26 @@ seinen ersten Arbeitstag.
 
 #### Grundzeilen (Kreislauf)
 
+*Neu gefasst mit T1: er meldet in Spalten. Die Fassung bis zum 25.08.2026 steht darunter.*
+
+1. „Gemeldet wird: TNM negativ.“ (27) / „Wie gestern. Wie immer.“ (23)
+2. „Mg. null. Da. entfällt. Ba. trocken.“ (36) / „Anm.: keine. Alles bereit.“ (26)
+3. „Eimer: vorhanden. Messstab: vorhanden.“ (38) / „Für den Fall. Seit immer.“ (25)
+4. „Stelle: nie unbesetzt. Dreiundvierzig Jahre.“ (44) / „Das sagt sonst niemand.“ (23)
+5. „Wolken: vorhanden. Vlg.: fehlt.“ (31) / „Deshalb dürfen sie nicht.“ (25)
+6. „Sie waren im Frostkamm? Dort liegt etwas.“ (41) / „Von mir. Auf Eis.“ (17)
+
+#### Aktzeilen
+
+I. „Willkommen. Wetterlage: unverändert schön.“ (42)
+II. „Man fragt nach der Leitung. Ich melde nur.“ (42)
+III. „Dreiundvierzig Jahre. Der Eimer hält.“ (37)
+IV. „Wenn Sie hinauf müssen: bleibt schön.“ (37)
+V. „Bereitschaft: hergestellt. Man weiß nie.“ (40)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Gemeldet wird: keine Niederschläge.“ (35) / „Wie gestern. Wie immer.“ (23)
 2. „Ich habe einen Eimer. Für den Fall.“ (35) / „Der Eimer ist bereit.“ (21)
 3. „Der Hut ist neu. Also fast neu.“ (31) / „Er wartet mit mir.“ (18)
@@ -585,13 +605,20 @@ seinen ersten Arbeitstag.
 5. „Meine Stelle war nie unbesetzt.“ (31) / „Das sagt sonst niemand.“ (23)
 6. „Sie waren im Frostkamm? Kalt dort.“ (34) / „Dort liegt etwas von mir.“ (25)
 
-#### Aktzeilen
+I. „Willkommen. Es bleibt schön. Wie immer.“ (39) · II. „Man fragt nach der Leitung. Ich melde nur.“ (42) · III. „Dreiundvierzig Jahre. Der Eimer hält.“ (37) · IV. „Wenn Sie hinauf müssen: Es wird schön.“ (38) · V. „Ich stehe bereit. Man weiß ja nie.“ (34)
 
-I. „Willkommen. Es bleibt schön. Wie immer.“ (39)
-II. „Man fragt nach der Leitung. Ich melde nur.“ (42)
-III. „Dreiundvierzig Jahre. Der Eimer hält.“ (37)
-IV. „Wenn Sie hinauf müssen: Es wird schön.“ (38)
-V. „Ich stehe bereit. Man weiß ja nie.“ (34)
+</details>
+
+#### Die Meldekürzel (T1)
+
+Seine Tabelle hat vier Spalten, und er kürzt sie alle ab: `Mg.` Menge, `Da.` Dauer, `Ba.` Bodenart,
+`Anm.` Anmerkungen, dazu `Vlg.` für die Veranlassung, auf die er wartet. Sie zählen gegen die zwölf
+Kürzel aus Weltbibel Kapitel 13 als **eine** Position, und die Bedingung dafür steht im Code:
+`szeneAssert()` prüft, dass jede Langform wörtlich in seinem eigenen Gesprächsbaum fällt, eine
+Nachfrage entfernt. Die Auflösung ist die einzige Stelle im Spiel, an der Nieselbeck ins Erzählen
+kommt, und sie läuft als Kaskade über drei Züge: „Die Spalten. Mg. ist die Menge. / Da. ist die
+Dauer.“ → „Ba. ist die Bodenart, Anm. sind die Anmerkungen. / Vlg. ist die Veranlassung.“ →
+„Anmerkungen. Da darf das Wetter erzählen. / Die Spalte ist noch leer.“
 
 #### Anredeform (18.5)
 
