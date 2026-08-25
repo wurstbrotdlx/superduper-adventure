@@ -362,8 +362,8 @@ Bildpunkte je Quellpixel statt fünf, beides ganzzahlig, also bleibt es scharf),
 auf 9.
 
 **Ergebnis, gemessen auf 393 × 852:** das Blatt „Werte & Ausrüstung" braucht **2 Pixel** mehr als
-das Rollfeld hoch ist. Es passt also auf einen Blick, und genau das war der Auftrag („Ich will doch
-nicht ewig scrollen"). Was danach noch rollt, rollt, weil es eine Liste ist: 37 Zutaten, 45
+das Rollfeld hoch ist (nach Eingriff 4 unten: gar nichts mehr). Es passt also auf einen Blick, und
+genau das war der Auftrag („Ich will doch nicht ewig scrollen"). Was danach noch rollt, rollt, weil es eine Liste ist: 37 Zutaten, 45
 Sammelkarten. Eine Sammlung ohne Rollfeld gibt es nicht.
 
 ### Eingriff 3: der Schadenspuls
@@ -395,6 +395,42 @@ steht und angegriffen wird, hätte gar keine Anzeige mehr.
 Er gilt auf **beiden** Formaten. Auf dem Schirm ist er Zugabe, am Finger ist er der Ersatz — aber
 zwei Entwürfe wären wieder der Fehler, den U7 abgestellt hat.
 
+### Eingriff 4: die Knöpfe wiegen weniger
+
+Zweiter Befund vom Telefon, nach dem Vollbild: „Viel zu große Buttons und Menüführung." Gemessen
+auf 393 × 852 stimmte das, und zwar nicht in der Höhe, sondern im **Gewicht**:
+
+| | vorher | jetzt |
+|---|---|---|
+| Dienstausweis | 347 × 44 — ein Balken über die ganze Kachel | 148 × 40, ein Chip |
+| Befähigung, „+" | 48 × 40 mit einem Zeichen von 18 px neben einer Zeile von 13 | 44 × 38, Zeichen 15 |
+| Ausrüstungsplatz | 82 × 70 | 80 × 66 |
+| Blattreiter | 40 hoch | 38 |
+
+Ein Knopf soll so groß sein, wie er wichtig ist. Das Daumenmaß (44) ist die Untergrenze für das, was
+**im Gefecht** getroffen werden muss — es ist keine Vorgabe, jeden Nebenweg als Balken zu setzen.
+Deshalb ist das kein Schrumpfen auf Verdacht: die **Reiter im Band bleiben bei 44**, sie sind am
+Finger die Navigation und damit das Letzte, woran gespart wird; der Schließknopf ebenso. Leichter
+wird, was daneben zu laut stand. Der Kesselknopf behält seine volle Breite, weil er *die* Handlung
+seiner Kachel ist, und wird nur flacher.
+
+Dabei kam ein zweiter Fund heraus, der nichts mit Größe zu tun hat: die Ausrüstungskachel sagte am
+Finger „**rechte Maustaste** wirft weg". Ein Satz, der auf dem Gerät nicht stimmt, ist keine Hilfe,
+sondern eine falsche Auskunft. Er fällt dort weg (`body.touch .nurMaus`) statt umformuliert zu
+werden — auf dem Schirm ist er richtig, und zwei Fassungen desselben Satzes wären zwei Stellen zum
+Vergessen.
+
+**Warum die neuen Maße zuerst wirkungslos blieben** — und das ist die eigentliche Lehre dieses
+Eingriffs: sie standen im Vollbild-Block (`max-width: 620px`), der alte `@media (max-width: 480px)`
+steht in der Datei **weiter unten** und hat bei gleicher Spezifität gewonnen. Der 480er trug noch
+die Zahlen aus der Panel-Zeit (`.skillBtn` 48 × 40 mit 15 px Zeichen, „>=40px Tap-Target"), also
+haben die 44 × 38 aus dem Nachtrag nichts geändert. Behoben, indem die doppelten Zahlen dort
+gelöscht wurden statt sie zu überbieten: eine Zahl, zwei Stellen, ist der Fehler; nicht die falsche
+Reihenfolge.
+
+**Ergebnis:** das Blatt „Werte & Ausrüstung" rollt auf 393 × 852 jetzt **gar nicht mehr**
+(`scrollHeight === clientHeight`) statt um zwei Pixel überzustehen.
+
 ### Der Prüflauf hat die Seiten getauscht
 
 `tools/menue-pruef.mjs` hat im Touch-Abschnitt bis zum Nachtrag dieselben drei Zusagen geprüft wie
@@ -425,7 +461,7 @@ Ordnung, `gespraech-pruef` 87/89 wie auf dem Branch-Punkt.
 - **Das Charakterfenster füllt auf dem Schirm seine Höhe nicht.** Vier Kacheln auf einem 586 Pixel
   hohen Blatt lassen unten Luft. Das ist der ehrliche Zustand: mehr Werte hat die Figur nicht, und
   ein Fenster, das je Blatt seine Größe ändert, wäre schlechter als eines mit Luft. Am Finger ist
-  das seit dem Nachtrag kein Thema mehr, dort füllt dasselbe Blatt den Schirm auf zwei Pixel genau.
+  das seit dem Nachtrag kein Thema mehr, dort füllt dasselbe Blatt den Schirm ohne einen Pixel Rest.
 - **Der Zutatenbeutel rollt am Finger weiterhin lang.** 37 Stapel mit dreizeiligen Namen
   („amtlich beglaubigte Fürstenkrone") sind keine Übersicht. Das gehört in die angekündigte
   Überarbeitung des Rucksacks und nicht in einen Nachtrag zur Geometrie.

@@ -1079,6 +1079,11 @@
      Amtsdeutsch, kein Tutorial — dieselbe Rolle wie #kesselSub. */
   .gfSatz{font-size:calc(10px * var(--fs)); color:#9a8a5f; font-style:italic;
     line-height:1.5; margin:0 0 9px;}
+  /* Ein Satz, der am Finger nicht stimmt, ist keine Hilfe, sondern eine
+     falsche Auskunft: eine rechte Maustaste gibt es dort nicht. Er faellt
+     weg statt umformuliert zu werden — auf dem Schirm ist er richtig, und
+     zwei Fassungen desselben Satzes waeren zwei Stellen zum Vergessen. */
+  body.touch .nurMaus{display:none;}
 
   /* --- Das Charakterfenster ---------------------------------------------
      Lichtbild und Amtsbezeichnung stehen im selben Kasten wie der Knopf zum
@@ -1202,6 +1207,43 @@
     #equipGrid{grid-template-columns:repeat(4,minmax(0,1fr)); max-width:none;}
     #musikBox h4{margin-top:8px;}
     #speicherInfo{font-size:calc(8px * var(--fs));}
+
+    /* --- Die Knoepfe -------------------------------------------------
+       Zweiter Befund vom Telefon, nach dem Vollbild: "Viel zu grosse Buttons
+       und Menuefuehrung." Gemessen auf 393x852 stimmte das, und zwar nicht
+       in der Hoehe, sondern im GEWICHT:
+
+         Dienstausweis   347 x 44, ein Balken ueber die ganze Kachel — fuer
+                         einen Nebenweg, den man einmal je Schicht geht
+         Befaehigung     vier Goldbloecke zu 48 x 40 mit einem Pluszeichen
+                         von 18 Pixeln darauf, neben einer Zeile von 13
+         Ausruestung     vier Felder zu 82 x 70
+
+       Ein Knopf soll so gross sein, wie er wichtig ist. Das Daumenmass (44)
+       ist die Untergrenze fuer das, was im Gefecht getroffen werden muss —
+       es ist keine Vorgabe, jeden Nebenweg als Balken zu setzen.
+
+       Was hier passiert, ist deshalb kein Schrumpfen auf Verdacht: die
+       Reiter im Band bleiben bei 44, sie sind am Finger die Navigation. Was
+       leichter wird, ist alles, was daneben zu laut stand. */
+
+    /* Der Ausweis ist ein Nebenweg, kein Balken: Chip statt voller Breite. */
+    #ausweisBtn{
+      display:inline-flex; width:auto; height:36px; padding:0 14px;
+      font-size:calc(10px * var(--fs)); gap:5px;}
+    /* Der Kessel dagegen IST die Handlung seiner Kachel und behaelt die
+       volle Breite, er wird nur flacher. */
+    #kesselBtn{height:42px; font-size:calc(11px * var(--fs));}
+    /* Das Pluszeichen war groesser gesetzt als die Zeile, an der es haengt.
+       Der Griff bleibt bequem (44 breit, 38 hoch), das Zeichen wird leise. */
+    .skillBtn{min-width:44px; min-height:38px; padding:0 10px;
+      font-size:calc(13px * var(--fs)); border-radius:6px;}
+    .eqSlot{height:62px;}
+    /* Das Sinnbild im Reiter: 17 statt 19. Die Kastenhoehe bleibt bei 44 —
+       das Band ist am Finger der Weg von Fenster zu Fenster und damit das
+       Letzte, woran gespart wird. */
+    .gfReiter .gfSinn{font-size:calc(17px * var(--fs));}
+    .gfBlatt{min-height:34px;}
 
     /* Die Kartenmappe zurueck auf zwei Spalten. Die Regel aus dem
        Grossfenster-Block (auto-fill, hoechstens 230 breit) haelt die Karte
@@ -1903,8 +1945,10 @@
     #zutGrid, #invZutGrid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));}
     #bagGrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;}
     .bagSlot{height:48px;}
-    #equipGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
-    .eqSlot{height:66px;}
+    /* Ausruestungsraster und Platzhoehe stehen im Vollbild-Block weiter oben
+       und gelten dort fuer schmal UND flach. Zwei Fassungen derselben Zahl
+       waren der Grund, warum die 62 aus dem Nachtrag hier zunaechst wirkungslos
+       blieben: dieser Block steht spaeter in der Datei und hat gewonnen. */
     .zutTile{min-height:66px;}
     .zutTile .zn{font-size:calc(9px * var(--fs));}
     .zutTile .zi{font-size:calc(21px * var(--fs));}
@@ -1942,9 +1986,16 @@
     .spellNode .sMana{grid-column:3; grid-row:1; justify-self:end; white-space:nowrap;}
     .spellNode .sDesc{grid-column:2 / span 2; grid-row:2;}
 
-    /* --- Skill-Buttons: >=40px Tap-Target --- */
-    .skillBtn{min-width:48px; min-height:40px; padding:2px 12px; font-size:calc(15px * var(--fs)); border-radius:6px;}
-    .skillRow{min-height:40px;}
+    /* --- Skill-Buttons ---
+       Das Mass stand hier bei 48x40 mit einem Pluszeichen von 15 Pixeln (mal
+       1,2 aus dem Regler, also 18) — richtig gedacht, als die Befaehigung in
+       einem Panel von 300 Pixeln stand und jeder Griff eng war. Im
+       Vollbildfenster standen daneben vier Goldbloecke, die lauter waren als
+       die Werte, an denen sie haengen. Die Zahlen stehen jetzt einmal im
+       Vollbild-Block weiter oben (44 breit, 38 hoch, Zeichen 13); hier bleibt
+       nur die Zeilenhoehe, damit der Griff nicht kleiner wird als seine
+       Zeile. */
+    .skillRow{min-height:38px;}
   }
   @media (max-width: 380px){
     /* U7: Frueher fiel hier die ganze rechte Spalte weg (Stufe, Beute, freie
@@ -2163,7 +2214,7 @@
         </div>
         <div class="gfKachel">
           <h4>🛡️ AUSRÜSTUNG</h4>
-          <div class="gfSatz">Antippen legt ab, rechte Maustaste wirft weg. Was zu schwer ist, bleibt in der Tasche.</div>
+          <div class="gfSatz">Antippen legt ab<span class="nurMaus">, rechte Maustaste wirft weg</span>. Was zu schwer ist, bleibt in der Tasche.</div>
           <div id="equipGrid">
             <div class="eqSlot" id="eqWeapon"><span class="lbl">Waffe</span></div>
             <div class="eqSlot" id="eqArmor"><span class="lbl">Rüstung</span></div>
