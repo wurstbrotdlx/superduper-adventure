@@ -1856,6 +1856,66 @@
   body.cfuiRund.touch .beltSlot.disabled{
     opacity:.9;filter:var(--knopfSchatten) saturate(.3) brightness(.58);}
 
+  /* =====================================================================
+     U11 — DIE SINNBILDER
+
+     Bis U11 trugen die Bedienknoepfe System-Emoji. Sie waren die einzige
+     Grafik des ganzen Spiels, die nicht aus dem Pack stammte, und am Finger
+     bei 22 bis 31 Pixeln war das nicht zu uebersehen: glaenzende, runde,
+     farbverlaufende Apple-Zeichnung auf Pixelkunst. U10 hat die Knopfform in
+     Ordnung gebracht und den Bruch dadurch nur deutlicher gemacht — auf einem
+     sauberen Achteck faellt ein fremdes Sinnbild mehr auf als auf einem
+     verkorksten.
+
+     ACHT ZELLEN, EIN SCHALTER. Das Emoji bleibt als Text im Knopf stehen und
+     ist der Ersatzwert; liegt der ganze Satz vor, setzt bakeUiSkin()
+     body.cfuiIco, und dann faellt die Schrift auf 0 und das Bild tritt an ihre
+     Stelle. Das ist dieselbe Bauart wie body.cfuiX beim Schliessknopf (U2) und
+     hat denselben Grund: ohne Grafiklizenz soll dort ein Zeichen stehen und
+     kein leeres Feld. Alles oder nichts, weil vier gezeichnete und vier
+     fremde Sinnbilder nebeneinander schlechter waeren als acht fremde.
+
+     DIE GROESSEN sind wieder ganzzahlige Vielfache, diesmal von 16:
+
+       16   am Schirm — der Guertel ist dort eine Zeile mit Beschriftung,
+            das Sinnbild steht daneben und nicht anstelle von ihr.
+       32   am Finger im Rundknopf von 56.
+       48   auf dem Schlagknopf, dessen Bild 84 misst.
+
+     Was NICHT ersetzt ist: das Sinnbild des aktiven Zaubers und das des
+     Ultimates. Die stehen in SPELLS[].icon, wechseln mit der Skillung und
+     gehoeren zum Zauber, nicht zum Knopf — Feuer, Eis, Blitz, Arkan, Zeit und
+     Konfetti haben im Pack keine Entsprechung. Sie sind Inhalt und nicht
+     Knopfmoebel, und sie stehen im Zauberbaum ohnehin neben ihrem Namen.
+     ===================================================================== */
+  .ico{display:inline-block;line-height:1;}
+  body.cfuiIco .ico{
+    /* font-size:0 raeumt das Ersatz-Emoji weg. Es steht als Text IM Element,
+       nicht daneben — sonst muesste jede Fundstelle zweimal gepflegt werden. */
+    font-size:0;width:16px;height:16px;vertical-align:-3px;
+    background-size:100% 100%;background-repeat:no-repeat;
+    image-rendering:pixelated;}
+  body.cfuiIco.touch .ico{width:32px;height:32px;vertical-align:middle;}
+  body.cfuiIco.touch #attackBtn .ico{width:48px;height:48px;}   /* 3x16 im Bild von 84 */
+  /* Der Kontextknopf ist eine Pille mit Text, kein Rundknopf. Seine Hand bleibt
+     bei 16 (Schirm) bzw. 32 waere zu gross neben der Schrift — 24 ist hier das
+     Vielfache, das in die Zeile passt (1,5x16 geht nicht auf, deshalb bleibt es
+     bei 16 und die Pille traegt ihre Groesse ueber die Schrift). */
+  body.cfuiIco.touch #aktionBtn .ico{width:16px;height:16px;}
+  body.cfuiIco .ico-schlag   {background-image:var(--ico-schlag);}
+  body.cfuiIco .ico-trank    {background-image:var(--ico-trank);}
+  body.cfuiIco .ico-zauber   {background-image:var(--ico-zauber);}
+  body.cfuiIco .ico-rucksack {background-image:var(--ico-rucksack);}
+  body.cfuiIco .ico-charakter{background-image:var(--ico-charakter);}
+  body.cfuiIco .ico-ziel     {background-image:var(--ico-ziel);}
+  body.cfuiIco .ico-sperre   {background-image:var(--ico-sperre);}
+  body.cfuiIco .ico-abbruch  {background-image:var(--ico-abbruch);}
+  body.cfuiIco .ico-hand     {background-image:var(--ico-hand);}
+  /* Das Verbotsschild sitzt in einem Knopf, dessen Text am Finger weg ist
+     (.bl aus U10) und am Schirm daneben steht. In beiden Faellen soll es die
+     Zeile nicht auseinanderziehen. */
+  body.cfuiIco .ico-sperre{vertical-align:-4px;}
+
   /* Auf Touch rueckt der Dienstzettel unter die Statuskarte und den
      Bossbalken — oben in der Mitte ist seit U7 kein freies Band mehr. */
   body.touch #knZettel, body.touch #knRandnotiz{top:126px;max-width:min(420px,calc(100vw - 160px));}
@@ -2198,9 +2258,9 @@
 <div id="bossbar"><span id="bossname">Schattenfürst · Fürst Nachtrag</span><div id="bossback"><div id="bossfill"></div></div></div>
 <div id="hud">
     <div id="beltRow">
-      <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)">🧪 <span id="potCount">0</span></div>
+      <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)"><i class="ico ico-trank">🧪</i> <span id="potCount">0</span></div>
       <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:calc(11px * var(--fs));">· (E)</span></div>
-      <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:calc(11px * var(--fs));">🔒 <span class="bl">Ult (R)</span></span></div>
+      <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:calc(11px * var(--fs));"><i class="ico ico-sperre">🔒</i> <span class="bl">Ult (R)</span></span></div>
       <!-- U8: Drei Menuezugaenge in der Reihenfolge des Reiterbands. Aus dem
            Kartei-Knopf ist der Charakter-Knopf geworden: die Mappe liegt jetzt
            dort, und ein eigener Knopf fuer eines von zwei Blaettern waere ein
@@ -2208,15 +2268,15 @@
            auf die Mappe, der Knopf auf die Werte. Beide Sternchen sitzen jetzt
            an diesem Knopf: freie Befaehigungspunkte (gold) und eine offene
            Vorlage (blau) warten beide im Charakterfenster. -->
-      <div class="beltSlot" id="charBtn" title="Charakter (C)">🧍<span class="bl">Charakter</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span><span id="zulBadge" style="color:#5ac8ff;display:none;">★</span></div>
-      <div class="beltSlot" id="invBtn" title="Rucksack (I)">🎒<span class="bl">Rucksack</span></div>
-      <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨<span class="bl">Zauber</span><span id="spBadge" style="color:#c77dff;display:none;">★</span></div>
-      <div class="beltSlot" id="aktionBtn" title="Benutzen (F)" style="display:none;">🖐️ <span id="aktionTxt">Benutzen</span></div>
-      <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;">🏳️<span class="bl">Abbruch</span></div>
-      <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯<span class="bl" id="prioTxt">Nah</span></div>
+      <div class="beltSlot" id="charBtn" title="Charakter (C)"><i class="ico ico-charakter">🧍</i><span class="bl">Charakter</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span><span id="zulBadge" style="color:#5ac8ff;display:none;">★</span></div>
+      <div class="beltSlot" id="invBtn" title="Rucksack (I)"><i class="ico ico-rucksack">🎒</i><span class="bl">Rucksack</span></div>
+      <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)"><i class="ico ico-zauber">✨</i><span class="bl">Zauber</span><span id="spBadge" style="color:#c77dff;display:none;">★</span></div>
+      <div class="beltSlot" id="aktionBtn" title="Benutzen (F)" style="display:none;"><i class="ico ico-hand">🖐️</i> <span id="aktionTxt">Benutzen</span></div>
+      <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;"><i class="ico ico-abbruch">🏳️</i><span class="bl">Abbruch</span></div>
+      <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster"><i class="ico ico-ziel">🎯</i><span class="bl" id="prioTxt">Nah</span></div>
     </div>
 </div>
-<div id="touchCluster"><div class="tBtn" id="attackBtn">⚔️</div></div>
+<div id="touchCluster"><div class="tBtn" id="attackBtn"><i class="ico ico-schlag">⚔️</i></div></div>
 
 <!-- U1: Schleier hinter offenen Menues. Rein optisch (pointer-events:none),
      die Klick-daneben-Logik haengt am Zeigerziel, nicht an diesem Element. -->
@@ -3247,6 +3307,23 @@ addSheet('cfui_slot',  'cf/ui/slot_dark.png',  1, 'raw', {optional:true});  // U
 addSheet('cfui_x',     'cf/ui/btn_close.png',  1, 'raw', {optional:true});  // UI_Buttons.png  (721,33) 14x14
 addSheet('cfui_pill',  'cf/ui/btn_pill.png',   1, 'raw', {optional:true});  // UI_Buttons.png  (1,17)   30x14
 addSheet('cfui_sel',   'cf/ui/sel_white.png',  1, 'raw', {optional:true});  // UI_Selectors.png (11,10) 26x28
+
+// U11: die Sinnbilder der Bedienknoepfe, acht Zellen zu 16x16. Sie ersetzen die
+// System-Emoji, die bis dahin als einzige Grafik des Spiels nicht aus dem Pack
+// stammten. Dieselbe Zellentabelle wie die vier darueber (tools/ui-zellen.mjs,
+// --pruef rechnet nach), dieselbe Begruendung fuer optional:true — und hier
+// wiegt sie schwerer, weil der Ersatzwert diesmal kein CSS-Anstrich ist,
+// sondern das Emoji selbst: ohne Zelle bleibt es im Knopf stehen (s. .ico im
+// <style> und body.cfuiIco in bakeUiSkin).
+addSheet('ico_schlag',    'cf/ui/ico_schlag.png',    1, 'raw', {optional:true});  // UI_Icons.png      (112,16)
+addSheet('ico_trank',     'cf/ui/ico_trank.png',     1, 'raw', {optional:true});  // Food_Icons (o. Outline) (112,128)
+addSheet('ico_zauber',    'cf/ui/ico_zauber.png',    1, 'raw', {optional:true});  // UI_Icons.png      (144,48)
+addSheet('ico_rucksack',  'cf/ui/ico_rucksack.png',  1, 'raw', {optional:true});  // UI_Icons.png      (144,32)
+addSheet('ico_charakter', 'cf/ui/ico_charakter.png', 1, 'raw', {optional:true});  // UI_Icons.png      (192,16)
+addSheet('ico_ziel',      'cf/ui/ico_ziel.png',      1, 'raw', {optional:true});  // UI_Crosshairs.png (0,128)
+addSheet('ico_sperre',    'cf/ui/ico_sperre.png',    1, 'raw', {optional:true});  // UI_Icons.png      (208,80)
+addSheet('ico_abbruch',   'cf/ui/ico_abbruch.png',   1, 'raw', {optional:true});  // UI_Icons.png      (176,80)
+addSheet('ico_hand',      'cf/ui/ico_hand.png',      1, 'raw', {optional:true});  // UI_Icons.png      (48,224)
 
 // ===========================================================================
 //  Kammer-Interieur — Cute Fantasy Dungeons (Kenmi, itch.io), Phase G1.
@@ -14246,7 +14323,7 @@ document.getElementById('btnStr').onclick = () => addSkill('str');
 document.getElementById('btnVit').onclick = () => addSkill('vit');
 document.getElementById('btnAgi').onclick = () => addSkill('agi');
 document.getElementById('btnInt').onclick = () => addSkill('int');
-document.getElementById('potionBtn').innerHTML = `<span style="font-size:calc(19px * var(--fs));line-height:1;">🧪</span> <span id="potCount">0</span>`;
+document.getElementById('potionBtn').innerHTML = `<i class="ico ico-trank" style="font-size:calc(19px * var(--fs));line-height:1;">🧪</i> <span id="potCount">0</span>`;
 document.getElementById('potionBtn').onclick = drinkPotion;
 document.getElementById('spellBtn').onclick = castActiveSpell;
 document.getElementById('ultBtn').onclick = castUltimate;
@@ -15809,7 +15886,7 @@ const ULT_SPELL = SPELLS.find(s => s.ultimate);
 const spellTitel = sp => sp._titel || (sp._titel = `${sp.name} (E) · ${sp.mana} Mana`);
 const ULT_TITEL = `${ULT_SPELL.name} (R) · ${ULT_SPELL.mana} Mana`;
 // Z2: Schloss-Texte einmal gebaut, updateHUD() vergleicht per Dirty-Check.
-const ZAUBER_SCHLOSS = `🔒 <span class="bl" style="font-size:calc(9px * var(--fs))">ab St. ${ZAUBER_AB_STUFE}</span>`;
+const ZAUBER_SCHLOSS = `<i class="ico ico-sperre">🔒</i> <span class="bl" style="font-size:calc(9px * var(--fs))">ab St. ${ZAUBER_AB_STUFE}</span>`;
 const ZAUBER_SCHLOSS_TITEL = `Zauberbefugnis ab Stufe ${ZAUBER_AB_STUFE}`;
 
 // Segmente der Leisten: eins zu Beginn, ab jeder vollen Stufenschwelle eins
@@ -15862,7 +15939,7 @@ function updateHUD(){
     setHTML('spellBtnTxt', ZAUBER_SCHLOSS);
     setAttr('spellBtn', 'title', ZAUBER_SCHLOSS_TITEL);
     el('ultBtn').classList.add('disabled');
-    setHTML('ultBtnTxt', '🔒 <span class="bl">Ult (R)</span>');
+    setHTML('ultBtnTxt', '<i class="ico ico-sperre">🔒</i> <span class="bl">Ult (R)</span>');
     setAttr('ultBtn', 'title', ZAUBER_SCHLOSS_TITEL);
   } else {
   if(as && player.spellsKnown[as.id]){
@@ -15881,7 +15958,7 @@ function updateHUD(){
     setAttr('ultBtn', 'title', ULT_TITEL);
   } else {
     el('ultBtn').classList.add('disabled');
-    setHTML('ultBtnTxt', '🔒 <span class="bl">Ult (R)</span>');
+    setHTML('ultBtnTxt', '<i class="ico ico-sperre">🔒</i> <span class="bl">Ult (R)</span>');
     setAttr('ultBtn', 'title', '');
   }
   }
@@ -15954,6 +16031,11 @@ const NEUERUNGEN = {
       titel: 'Die Zulagen sind Sammelkarten geworden',
       was: 'Namensleiste mit der Stufe, Bildfenster, Typenzeile, Textfeld — und fünfundvierzig gemalte Motive, eines je Familie und Stufe.',
       wo: 'Charakterfenster, zweites Blatt „Kartenmappe" — oder Taste Z.',
+    },
+    {
+      titel: 'Die Knöpfe tragen gezeichnete Sinnbilder',
+      was: 'Schwert, Trank, Rucksack, Zauberstern, Personalakte und Zielkreuz sind nicht mehr die Zeichen Ihres Telefons, sondern die des Spiels. Ein gesperrter Zauber trägt jetzt das Verbotsschild, das er verdient.',
+      wo: 'Überall am Gürtel, am Schirm wie am Finger.',
     },
     {
       titel: 'Am Telefon sind die Knöpfe Knöpfe geworden',
@@ -23491,6 +23573,25 @@ function bakeUiSkin(){
   // gelten, wenn das Achteck auch wirklich da ist. Ohne Zelle bleibt der Kreis
   // aus U7 stehen.
   document.body.classList.add('cfuiRund');
+
+  // U11: die acht Sinnbilder. Anders als bei den Zellen oben ist hier ALLES
+  // oder NICHTS die richtige Bauart: acht Knoepfe, von denen die Haelfte ein
+  // gezeichnetes Bild traegt und die andere ein Emoji, saehen schlechter aus
+  // als acht Emoji. Deshalb eine Klasse fuer den ganzen Satz, gesetzt nur wenn
+  // jede der acht Zellen wirklich da ist — und die Variablen werden gar nicht
+  // erst geschrieben, wenn eine fehlt.
+  const ICONS = ['schlag', 'trank', 'zauber', 'rucksack', 'charakter', 'ziel', 'sperre', 'abbruch', 'hand'];
+  const iconUrls = ICONS.map(n => [n, url(`ico_${n}`)]);
+  const vollstaendig = iconUrls.every(([, u]) => !!u);
+  if(vollstaendig){
+    for(const [n, u] of iconUrls){
+      document.documentElement.style.setProperty(`--ico-${n}`, `url("${u}")`);
+    }
+  } else {
+    const fehlend = iconUrls.filter(([, u]) => !u).map(([n]) => n);
+    console.warn(`UI-Sinnbilder: ${fehlend.join(', ')} fehlen, die Knoepfe bleiben bei den Emoji.`);
+  }
+  document.body.classList.toggle('cfuiIco', vollstaendig);
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
