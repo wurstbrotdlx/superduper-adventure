@@ -465,3 +465,114 @@ Auf dem Telefon stand die Karte vorher als Zeile, Sinnbild links, Text rechts.
 Das ist zurückgebaut: **zwei Spalten, und die Karte bleibt eine Karte.** Eine
 Sammelkarte, die zur Zeile flachgelegt wird, sammelt niemand. Die Ziehung liegt
 dort zwei zu eins statt nebeneinander, das ist der Preis und er ist es wert.
+
+---
+
+## K1-11. Nachtrag: die Bildrichtung
+
+*(24.08.2026, nach fünf Referenzbildern des Projektinhabers.)*
+
+Der Nachtrag K1-10 hat die Karte gebaut, aber die Bilder darin waren weiter
+falsch. Die Rückmeldung: **zu unepisch, es sieht nicht aus, als wollte man sie
+alle haben, die Grafiken müssen mehr knallen**, gern Szenen, die die
+Eigenschaften der Karte verdeutlichen.
+
+### Die Messung sagt, warum
+
+Die Prompts standen auf der Amiga-Formel der Figurenporträts. An den
+Referenzbildern nachgemessen war das quantitativ das Gegenteil:
+
+| | Farben | Sättigung (0 bis 255) |
+|---|---|---|
+| Referenzbilder | 10.000 bis 238.000 | 143 bis 200 |
+| Figurenporträts des Spiels | 32 | 56 bis 63 |
+
+**Drei- bis viermal so gesättigt.** Die Formel schrieb `32 colour palette, muted
+desaturated colours` vor und war damit nicht knapp daneben, sondern am anderen
+Ende. Sie gilt für die Porträts weiter und für die Karten nicht mehr.
+
+Neu ist der Anker: modernes hoch aufgelöstes Pixel-Art mit harten Kanten,
+kräftige gesättigte Farben, Rim-Light und Innenglühen, Bloom um jede
+Lichtquelle, dunkle Silhouette gegen brennenden Grund. Der Regler steht auf
+`--s 250` statt `--s 25`.
+
+**Dass die Karten dadurch anders aussehen als das Spiel, ist kein Bruch,
+sondern Regel 10.** Ein Haus, das seine eigenen Zulagen laminiert und
+vergoldet, während draußen alles grau ist, ist die Pointe.
+
+### Zwei Bildarten, aus den Referenzen abgelesen
+
+Drei der fünf Referenzen zeigen gar keine Szene, sondern den Gegenstand
+freigestellt auf reinem Verlauf mit Glühen und Funkeln. Nur zwei sind Szenen
+mit Umgebung. Die Aufteilung folgt dem:
+
+* **Zehn Wirkungsszenen** für die Karten, bei denen etwas passiert. Sie zeigen,
+  was die Karte tut, an einem Opfer aus dem eigenen Bestiarium.
+* **Fünf Item-Showcases** für die stillen. Helm, Beleg, Stiefel, Becher und
+  Dienstbuch stehen isoliert auf einem Verlauf, und die Eskalation läuft über
+  den Gegenstand selbst, der Stufe für Stufe prunkvoller wird.
+
+**Der größte Hebel war ein Fehler in der ersten Fassung.** Dort stand in jedem
+`--no` die Zeile `people, faces`. Damit war dem Modell verboten, ein Opfer ins
+Bild zu setzen, also genau das, was eine Kartenwirkung ausmacht. Eine
+Kaltverfügung, die jemanden einfriert, konnte gar nicht entstehen.
+
+Die Opfer kommen aus dem Bestiarium, und **der Wandelnde Ablagestapel ist der
+Glücksfall für die Axt**: ein Gegner, der aus Akten besteht. Die Axt spaltet
+damit keinen Papierstapel, sondern jemanden, der einer ist.
+
+### Der Ton, und warum die Korrektur die Bilder besser macht
+
+Die erste Fassung der neuen Prompts war zu brutal. Der schlimmste Ausrutscher
+war die Stichprobe: aufgespießte Gestalten, auf Stufe III eine Wand voller
+Schaukästen. Der Befund des Projektinhabers lautete, die Zielgruppe sei neun bis
+neunundneunzig, und das war für keine der beiden Hälften richtig.
+
+Der Kanon sagt es schärfer als jede Altersfreigabe. Regel 8: kein Blut, kein
+Sterben, kein Zynismus. Und die Folge daraus, wörtlich: **es stirbt nie jemand,
+es wird abgeschlossen.**
+
+Die Überarbeitung ist deshalb keine Weichspülung, sondern eine Korrektur zum
+Kanon hin, und sie macht die Bilder eigenständiger. Monster werden bearbeitet
+statt getötet:
+
+| statt | jetzt |
+|---|---|
+| aufgespießt und aufgereiht | der Öffner schnippt ein Musterblatt heraus, der Rest platzt zu Konfetti |
+| in zwei Hälften geschnitten | fällt zu einem ordentlichen Stapel zusammen, Aktendeckel obenauf |
+| brennt bei lebendigem Leibe | ein heller Wusch, dann eine Säule aus Funken und Konfetti |
+| eingefroren mitten im Schrei | eingefroren mitten im Widerspruch, den Zeigefinger noch erhoben |
+| zuckend vom Blitz getroffen | leuchtet kurz wie ein Röntgenbild und steht qualmend da |
+
+Die Kaltverfügung ist der Beleg, dass hier der zahmere Einfall der komischere
+ist, und sie trifft die Aktenbedeutung des Frostes genau: eine Rückfrage hemmt
+die Frist.
+
+Zwei Sperren stehen dafür in jedem der fünfundvierzig Prompts, der Ton im Text
+und die Gewaltwörter ganz vorn im `--no`.
+
+### Was der Code dafür bekommen hat
+
+`bild` im Katalog ist ein Feld aus bis zu drei Pfaden, eines je Stufe;
+`zulageBildPfad()` löst auf. **Lücken sind ausdrücklich erlaubt** und fallen
+aufs Sinnbild zurück, denn fünfundvierzig Bilder entstehen nicht an einem Tag
+und ein halb gefüllter Katalog darf das Panel nicht mit leeren Rahmen
+zupflastern. Der Einbau je Bild ist damit eine Zeile.
+
+### Prüfprotokoll des Nachtrags
+
+`node --check` sauber, `tools/zulagen-pruef.mjs` 45 von 45,
+`tools/menue-pruef.mjs` 39 von 39.
+
+Gegenprobe der neuen Bildfeld-Regel mit sechs kaputten Formen (vier Bilder,
+leeres Feld, leerer Pfad, Zahl statt Pfad, weder Pfad noch Feld, leerer
+Einzelpfad): alle gemeldet, danach Guard still. Dazu drei gültige Formen, die
+nicht anschlagen dürfen, und eine Sichtprobe mit drei Platzhaltern, die zeigt,
+dass jede Stufe ihr eigenes Bild zieht und Lücken auf das Sinnbild fallen.
+
+Ein Skript sucht in allen fünfundvierzig Szenentexten in beiden Sprachen nach
+Gewaltvokabular und findet keins. Prompt-Datei und Klickfassung stammen aus
+einer Quelle und werden Zeichen für Zeichen gegeneinander geprüft.
+
+**Was von hier aus nicht prüfbar ist:** Midjourney selbst. Ob ein Prompt
+knallt, zeigt erst der Lauf.
