@@ -845,3 +845,39 @@ relativer Pfad, keines kaputt.
 **Was von hier aus nicht prüfbar ist:** wieder die ausgelieferte Seite, aus
 demselben Grund wie oben. Der Nachweis läuft über die gebaute Datei, und die ist
 diesmal bytegleich das, was der Deploy-Job hochlädt.
+
+### Ausgeliefert
+
+Gemergt als `3df3c32` (Sammelcommit zu #54). Der Deploy-Lauf Nr. 75 lief
+unmittelbar danach, beide Jobs grün, vom Anstoß bis zur fertigen Seite
+einundvierzig Sekunden.
+
+Der Build auf dem Läufer meldet:
+
+```
+eingebettet : 215 Dateien, 2505 KB roh -> 3355 KB als data:-URI
+Quelle      : 1309 KB
+Ergebnis    : dist/index.html  4664 KB
+```
+
+Hochgeladen wurde **eine** Datei, `index.html`, gepackt 2 779 008 Byte,
+SHA256 `a94dada6…`. Die 215 gegen die 59 eines Baus von Hand sind kein
+Widerspruch, sondern das lizenzierte Cute-Fantasy-Paket, das nur der Läufer
+per Deploy Key bekommt; die fünfundvierzig Kartenbilder liegen in beiden.
+
+Dass der Läufer denselben Stand gebaut hat, der oben durch die Gegenproben
+gegangen ist, steht nicht als Behauptung da, sondern als Baumkennung: der
+Commit auf `main` und der geprüfte Zweigkopf tragen beide
+`9d89082…`. Gleicher Baum, gleicher Build, gleiche Datei.
+
+**Was von hier aus weiterhin nicht prüfbar ist:** die ausgelieferte Seite mit
+eigenen Augen. Der Proxy dieser Sitzung beantwortet `CONNECT` sowohl auf
+`wurstbrotdlx.github.io` als auch auf den Blob-Speicher, an dem das
+Deploy-Artefakt liegt, mit 403 — die fertige Datei ist von hier aus weder
+aufrufbar noch herunterladbar. Die Kette reicht deshalb bis an die Auslieferung
+heran und nicht darüber hinaus: geprüfter Baum, identischer Baum im Deploy,
+grüner Lauf, eine hochgeladene Datei bekannter Größe.
+
+Der letzte Schritt gehört dem Gerät, von dem die Meldung kam. Die Mappe dort
+aufschlagen, notfalls einmal hart neu laden, weil die alte Fassung im
+Browsercache liegen kann.
