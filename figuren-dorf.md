@@ -574,26 +574,26 @@ V. „Der Neue zieht los. Kein Kommentar heut.“ (40)
 
 ### Anlass-Zeilen (kommentiert das jeweils letzte Ereignis, z2 spielt auf Pahl an)
 
-**crit:** „Direkt ins Aktenzeichen.“ / „Pahl schweigt. Wie erwartet.“ — „Das war kein Zufall. Glaub ich.“ / „Pahl, klatsch doch mal mit.“ — „Ein Treffer für die Geschichtsbücher.“ / „Pahl nickt. Immerhin das.“
+**crit:** „Direkt ins Aktenzeichen.“ / „Pahl schweigt. Wie erwartet.“ — „Kein Zufall. Glaub ich.“ / „Pahl, klatsch doch mal mit.“ — „Ein Treffer fürs Buch.“ / „Pahl nickt. Immerhin das.“
 
-**levelup:** „Der Neue wird befördert. Von wem?“ / „Pahl weiß es auch nicht.“ — „Höher, weiter, immer noch sitzend hier.“ / „Pahl klatscht. Ich nicke.“ — „Stufe hoch. Bank bleibt gleich.“ / „Pahl, freu dich für ihn.“
+**levelup:** „Befördert. Von wem?“ / „Pahl weiß es auch nicht.“ — „Höher, weiter. Ich sitze.“ / „Pahl klatscht. Ich nicke.“ — „Stufe hoch. Bank bleibt.“ / „Pahl, freu dich für ihn.“
 
-**ultimate:** „Na sowas. Ganz schön viel Zauber.“ / „Pahl duckt sich schon mal.“ — „Das hat sicher eine Genehmigung. Oder?“ / „Pahl fragt nicht nach. Klug.“ — „So viel Licht. Meine Augen, meine Akte.“ / „Pahl blinzelt. Sonst nichts.“
+**ultimate:** „Viel Zauber. Na sowas.“ / „Pahl duckt sich schon mal.“ — „Genehmigt? Bestimmt. Oder?“ / „Pahl fragt nicht nach. Klug.“ — „So viel Licht. Meine Augen.“ / „Pahl blinzelt. Sonst nichts.“
 
-**fluch:** „Neuer Fluch. Kleingedrucktes, wie immer.“ / „Pahl liest es. Ich nie.“ — „Jede Gabe hat einen Haken. Amtlich.“ / „Pahl nennt das gerecht.“ — „Noch ein Fluch. Passt zur Sammlung.“ / „Pahl seufzt fürs Protokoll.“
+**fluch:** „Neuer Fluch. Kleingedrucktes.“ / „Pahl liest es. Ich nie.“ — „Jede Gabe hat einen Haken.“ / „Pahl nennt das gerecht.“ — „Noch einer. Für die Sammlung.“ / „Pahl seufzt fürs Protokoll.“
 
-**goldfund:** „So viel Gold. Ich brauch keins.“ / „Pahl rechnet schon mit.“ — „Klingt nach Feierabend. Für dich.“ / „Pahl fragt: für wen sonst?“ — „Viel Gold. Wenig Aussicht auf Rente.“ / „Pahl lacht. Ich nicht.“
+**goldfund:** „So viel Gold. Brauch keins.“ / „Pahl rechnet schon mit.“ — „Klingt nach Feierabend.“ / „Pahl fragt: für wen sonst?“ — „Viel Gold. Keine Rente.“ / „Pahl lacht. Ich nicht.“
 
-**kammerAbbruch:** „Nichts gefunden. Passiert den Besten.“ / „Pahl zählt trotzdem mit.“ — „Leere Kammer. Voller Rückweg.“ / „Pahl seufzt lauter als ich.“ — „Manchmal ist leer auch eine Antwort.“ / „Pahl widerspricht. Natürlich.“
+**kammerAbbruch:** „Nichts gefunden. Passiert.“ / „Pahl zählt trotzdem mit.“ — „Leere Kammer. Voller Rückweg.“ / „Pahl seufzt lauter als ich.“ — „Leer ist auch eine Antwort.“ / „Pahl widerspricht. Natürlich.“
 
-**untaetigkeit:** „Der Neue steht. Wie ich. Interessant.“ / „Pahl findet das gruselig.“ — „Willkommen im Klub. Bank ist frei.“ / „Pahl rückt trotzdem nicht.“ — „Steh nicht so rum. Das ist mein Job.“ / „Pahl übernimmt notfalls.“
+**untaetigkeit:** „Der Neue steht. Wie ich.“ / „Pahl findet das gruselig.“ — „Bank ist frei. Willkommen.“ / „Pahl rückt trotzdem nicht.“ — „Rumstehen ist mein Job.“ / „Pahl übernimmt notfalls.“
 
 ### Zusatzzeilen (W11), ab Akt III
 
 Vordermühl steht in keinem Bestand (Weltgeschichte, Kapitel 5, und Serie G, Blatt 6). Wer nie geführt wurde, kann auch nicht abgeschlossen werden. Das ist der Grund, aus dem die beiden noch da sind, und es ist die freundlichste Zeile dieses Spiels.
 
-* „Wir zwei standen nie in einem Bestand.“ (38) / „Pahl sagt, das sei ein Glück.“ (29)
-* „Wer nicht geführt wird, bleibt da.“ (34) / „Pahl nickt. Ausnahmsweise.“ (26)
+* „Wir standen nie in einem Bestand.“ (33) / „Pahl sagt, das sei ein Glück.“ (29)
+* „Nicht geführt, also noch da.“ (28) / „Pahl nickt. Ausnahmsweise.“ (26)
 
 ### Anlass-Zeilen (SZ2): der Nachklang der Szenen
 
@@ -601,9 +601,9 @@ Zwei neue Anlässe, gebaut wie die sieben darüber. `umlauf` fällt, nachdem der
 
 **umlauf:** „Die kommt alle achtzig Jahre.“ (29) / „Pahl merkt sich so etwas.“ (25) — „Eine Botin. Die hat es eilig.“ (29) / „Pahl hätte gern die Liste.“ (26)
 
-**hintermuehl:** „Er hat es gesagt.“ (17) / „Nach vierzig Jahren.“ (20) — „Da war ein Wort. Ein einziges.“ (30) / „Pahl hat es auch gehört.“ (24)
+**hintermuehl:** „Er hat es gesagt.“ (17) / „Nach vierzig Jahren.“ (20) — „Ein Wort. Ein einziges.“ (23) / „Pahl hat es auch gehört.“ (24)
 
-**Prüfnotiz:** kein Fund. Besonders geprüft: „Direkt ins Aktenzeichen“ (kein Bezug zu Alter/Seltenheit), „Jede Gabe hat einen Haken. Amtlich.“ (sagt nur DASS, nie WARUM/WIE, kein Bescheid-Bezug).
+**Prüfnotiz:** kein Fund. Besonders geprüft: „Direkt ins Aktenzeichen“ (kein Bezug zu Alter/Seltenheit), „Jede Gabe hat einen Haken.“ (sagt nur DASS, nie WARUM/WIE, kein Bescheid-Bezug).
 
 ---
 
@@ -650,34 +650,34 @@ V. „Es wird still. Auffällig still hier.“ (36)
 
 ### Anlass-Zeilen (z2 spielt auf Lott an)
 
-**crit:** „Ein Treffer. Sauber getroffen.“ / „Lott hat sowas noch nie gesehen.“ — „Das saß. Sogar ich hab's gemerkt.“ / „Lott schläft schon wieder.“ — „Kritisch. Sehr kritisch sogar.“ / „Notieren Sie das, Lott.“
+**crit:** „Ein Treffer, und sauber getroffen dazu.“ / „Lott hat sowas noch nie gesehen.“ — „Das saß, und sogar ich habe es gemerkt.“ / „Lott schläft schon wieder.“ — „Kritisch, und zwar sehr kritisch sogar.“ / „Notieren Sie das, Lott.“
 
-**levelup:** „Eine Stufe höher. Wie fein.“ / „Lott zählt bestimmt falsch.“ — „Sie wachsen. Ich sitze weiter.“ / „Lott klatscht schon wieder.“ — „Stufenaufstieg. Herzlichen Glückwunsch.“ / „Lott, klatschen Sie leiser.“
+**levelup:** „Eine Stufe höher, und das ist zu Recht.“ / „Lott zählt bestimmt falsch.“ — „Sie wachsen, und ich sitze weiter hier.“ / „Lott klatscht schon wieder.“ — „Stufenaufstieg. Herzlichen Glückwunsch.“ / „Lott, klatschen Sie leiser.“
 
-**ultimate:** „Das war groß. Richtig groß.“ / „Lott hat die Augen zugemacht.“ — „Ein großer Zauber. Beeindruckend.“ / „Lott, aufwachen. Das war gut.“ — „So viel Kraft für so wenig Feind.“ / „Lott findet das übertrieben.“
+**ultimate:** „Das war groß, und ich sage das selten.“ / „Lott hat die Augen zugemacht.“ — „Ein großer Zauber, wirklich beeindruckend.“ / „Lott, aufwachen. Das war gut.“ — „So viel Kraft für so wenig Feind, finde ich.“ / „Lott findet das übertrieben.“
 
-**fluch:** „Ein Fluch mehr. Passt zu Ihnen.“ / „Lott nennt das nur konsequent.“ — „Schon wieder ein Haken dabei.“ / „Lott freut sich klammheimlich.“ — „Ein Fluch. Man gewöhnt sich daran.“ / „Lott gewöhnt sich nie.“
+**fluch:** „Ein Fluch mehr, und er passt zu Ihnen.“ / „Lott nennt das nur konsequent.“ — „Schon wieder ein Haken, und keiner liest ihn.“ / „Lott freut sich klammheimlich.“ — „Ein Fluch, an den man sich gewöhnen kann.“ / „Lott gewöhnt sich nie.“
 
-**goldfund:** „So viel Gold. Alles echt?“ / „Lott zählt es heimlich mit.“ — „Ein Sack voll Glück. Kommt kaum vor.“ / „Lott will die Hälfte haben.“ — „Reich geworden. Vorübergehend.“ / „Lott nennt das Statistik.“
+**goldfund:** „So viel Gold, und alles davon echt?“ / „Lott zählt es heimlich mit.“ — „Ein Sack voll Glück, das kommt kaum vor.“ / „Lott will die Hälfte haben.“ — „Reich geworden, wenn auch vorübergehend.“ / „Lott nennt das Statistik.“
 
-**kammerAbbruch:** „Nichts gefunden. Auch eine Leistung.“ / „Lott sieht das anders.“ — „Leer rausgekommen. Ehrlich immerhin.“ / „Lott nennt das Verschwendung.“ — „Keine Beute. Kommt öfter vor.“ / „Lott führt da eine Liste.“
+**kammerAbbruch:** „Nichts gefunden, und auch das ist etwas.“ / „Lott sieht das anders.“ — „Leer herausgekommen, aber ehrlich immerhin.“ / „Lott nennt das Verschwendung.“ — „Keine Beute, und das kommt öfter vor.“ / „Lott führt da eine Liste.“
 
-**untaetigkeit:** „Der Neue steht. Ich sitze auch.“ / „Lott findet das gemütlich.“ — „Nichts passiert. Endlich Ruhe.“ / „Lott redet trotzdem weiter.“ — „Sie stehen nur. Ich auch.“ / „Lott hält das für Faulheit.“
+**untaetigkeit:** „Der Neue steht, und ich sitze dabei.“ / „Lott findet das gemütlich.“ — „Nichts passiert, und das ist endlich Ruhe.“ / „Lott redet trotzdem weiter.“ — „Sie stehen einfach nur da, und ich sitze.“ / „Lott hält das für Faulheit.“
 
 ### Zusatzzeilen (W11), ab Akt III
 
 Hintermühl von der anderen Seite der Bank (Weltgeschichte, Kapitel 5). Das Dorf ist nicht niedergebrannt worden, es ist zugeklappt worden, und das ist das Stillste, was in dieser Welt passieren kann. Ob die beiden selbst Vorgänge sind, bleibt offen (Weltbibel, Kapitel 16).
 
-* „Man hat unser Dorf zugeklappt.“ (30) / „Lott spricht nicht darüber.“ (27)
-* „Kein Feuer. Ein Aktendeckel.“ (28) / „Lott war auch dabei.“ (20)
+* „Man hat unser Dorf zugeklappt, einfach so.“ (42) / „Lott spricht nicht darüber.“ (27)
+* „Kein Feuer, nur ein Aktendeckel.“ (32) / „Lott war auch dabei.“ (20)
 
 ### Anlass-Zeilen (SZ2): die andere Seite der Bank
 
 Dieselben zwei Anlässe wie bei Lott, mit den beiden übrigen Zeilen der Quelle. Pahl nennt in `hintermuehl` das Wort nicht, das Knöterich gesagt hat; er sagt nur, wie lange sie darauf gewartet haben. Ausgesprochen wird *Hintermühl* in Szene 4 genau einmal, und dabei bleibt es.
 
-**umlauf:** „Sie sagt jedes Mal, es war nett.“ (32) / „Lott glaubt ihr das sogar.“ (26) — „Vierzehn Türme. Und sie läuft.“ (30) / „Lott würde den Aufzug nehmen.“ (29)
+**umlauf:** „Sie sagt jedes Mal, es war nett hier.“ (37) / „Lott glaubt ihr das sogar.“ (26) — „Vierzehn Türme, und sie läuft sie alle.“ (39) / „Lott würde den Aufzug nehmen.“ (29)
 
-**hintermuehl:** „Wir haben ja gewartet.“ (22) / „Wir warten gut.“ (15) — „Vierzig Jahre für ein Wort.“ (27) / „Lott sagt gar nichts mehr.“ (26)
+**hintermuehl:** „Wir haben ja gewartet, all die Jahre.“ (37) / „Wir warten gut.“ (15) — „Vierzig Jahre für ein einziges Wort.“ (36) / „Lott sagt gar nichts mehr.“ (26)
 
 **Prüfnotiz:** kein Fund. „Ob ich ein Vorgang bin? Unhöflich.“ bleibt reine Abwehr der Frage (Kapitel 16: „wird nie geklärt“), ohne jede Erklärung.
 

@@ -273,4 +273,42 @@ Der Bestand, gegen den T1 gearbeitet hat, gemessen im laufenden Spiel:
 
 Angefasst wurden davon **62 Sprechblasenpaare in `index.html`** (48 ersetzt, 14 neu hinzugekommen), dazu die Eingangskette, sechs Kaskaden, die Abkürzungstabelle und die Formregel in fünfzehn Dateien. Jede geänderte Zeile ist gegen den Zeichendeckel gezählt, gegen den Sperrvermerk geprüft und gegen das Humor-Grundgesetz gelesen worden.
 
+### Die Nachlese, und der Fund, der wehtut
+
+Nach der ersten Lieferung ist der Bestand, den T1 stehen lassen wollte, noch einmal gegen die neue Regel gelesen worden. Der schwerste Fund lag nicht in den Szenen, sondern **in T1 selbst**.
+
+Die Bank war umgeschrieben worden, aber nur in zwei ihrer drei Kanäle. `grund` und `akt` zeigten den neuen Kontrast, `anlass` und `zusatz` nicht. Gemessen:
+
+| Kanal | Lott vorher | Pahl vorher | Lott nachher | Pahl nachher |
+|---|---|---|---|---|
+| `grund` | 36,8 → **26,7** | 30,5 → **40,7** | 26,7 | 40,7 |
+| `anlass` (27 Zeilen je Figur) | 32,6 | 30,3 | **24,9** | **38,9** |
+| `zusatz` (14 Zeilen je Figur) | 29,0 | 28,5 | **24,6** | **37,1** |
+
+`anlass` ist der Kanal, den der Spieler **am häufigsten** sieht: der Chor kommentiert jede Spielhandlung. Die Lieferung hatte also die Dauervorführung ausgerechnet dort nicht umgestellt, wo sie stattfindet, und der Kommentar im Code versprach das Gegenteil. Alle einundvierzig Zeilen sind nachgezogen.
+
+Zwei Nebenfunde dabei, beide älter als T1: Lott **duzte** den Spieler an zwei Stellen („Klingt nach Feierabend. Für dich.", „Steh nicht so rum."), obwohl Kapitel 8 die Du-Form als Fass' alleiniges Merkmal führt. Beide Zeilen wurden ohnehin gekürzt, die Anrede ist damit mit repariert.
+
+### Die übrigen acht Funde
+
+| Ort | Was | Was daraus wurde |
+|---|---|---|
+| `SZENEN.schublade`, `s1` | Knöterich stand vor seinem eigenen Porträt und fragte „Wer ist Vorblatt?", worauf der Spieler „Knöterich fragen." antwortete | Der Spieler stellt die Frage, Knöterich verweigert die Antwort. Grundgesetz 11 wiederhergestellt |
+| `HINWEISE`, `ult1` | „Alles gelernt. Jetzt wird es albern." — das Spiel benennt seinen eigenen Witz (Grundgesetz 1) und kommentiert den größten Moment des Spielers | „Sie dürfen jetzt alles. Amtlich alles." Der Witz steht im Namen des Spruchs und braucht keinen Kommentar |
+| `abspannBlaetter()`, das Fest | Zwirn fehlte im ganzen Abspann bis auf einen Nebensatz, obwohl Szene 7 ihn zum ersten Mal überhaupt verstummen lässt | „Zwirn hält eine Rede. Sie ist sehr lang, und alle hören zu." Die Auszahlung der neuen Formregel |
+| `baumBank`, `wiese` | Pahls größter Moment stand in Lotts Register, drei Fragmente statt eines Satzes | Ganzer Satz. Das gepinnte Bild „kein Feuer, ein Aktendeckel" bleibt wörtlich |
+| `SZENEN.umlauf`, `u9` | Umlauf sagte „Komisch eigentlich.", der Spieler antwortete „Sehr komisch." Der Witz wurde zweimal angezeigt und starb dabei | „Vierzig Jahre. Kein Name." und „Könnte ich mich melden?" Aus dem Abgang wird eine Pointe |
+| `SZENEN.vorblatt`, `v3` | Die Frage „Wer schreibt Ihnen?" bekam eine Antwort zu einem anderen Thema, unmarkiert | „Über mich?" Vorblatts Zeilen bleiben unangetastet und landen jetzt |
+| `HINWEISE`, `feierabend1` | Zwei Sachsätze ohne Boden, am wärmsten Moment des Tutorials | „Erste Schicht. Sie sind wiedergekommen." Der Hinweis feuert in der Folgeschicht, der Satz ist buchstäblich wahr |
+| `DIENSTBLATT`, zwei `lead`-Zeilen | Inhaltsverzeichnis-Prosa ohne doppelten Boden | „In der Reihenfolge des Hauses." und „Der Posten steigt mit." |
+| `baumTrepp`, `starren` | „Man gewöhnt sich Strichen an." ist in keiner Lesart korrektes Deutsch | „Man gewöhnt sich an Striche." |
+
+### Zwei Zusagen ohne Deckung, geschlossen
+
+**Der Kaiser-Guard erfasste die Szenen nicht.** Reichsregel 1 sagt „von jeder Figur, in jedem Blatt, auf jeder Urkunde", geprüft wurde sie aber nur in `knAssertCaps()`, also in den Sprechblasen und auf Knöterichs Zetteln. Sieben Story-Szenen, dreizehn Bäume, das Intro und der Abspann liefen ungeprüft. Es gab **keine Verletzung** darin, nachgemessen, null Treffer; die Regel stand dort nur zufällig nicht auf dem Spiel. Ein Aufruf in `text()` deckt jetzt alle vier Bereiche ab, weil jede Zeile jeder Szene durch diese eine Funktion läuft.
+
+**Der Zeichendeckel galt für Szenen nie.** `szeneAssert()` misst bei Szenen nur die Antwortzeilen, nie `z1`/`z2`; faktisch tragen die Story-Szenen seit jeher längere Zeilen als 48/32, die schwersten Fälle stehen in Szene 7. Das war eine ungeschriebene Ausnahme. Sie ist jetzt geschrieben: der Deckel gilt für **Sprechblasen**, nicht für Tafelzüge, und der Grund ist die Bauform. Die Gesprächstafel aus U4 ist zweigeteilt und hat zwei feste Zeilen, eine Szenentafel ist eine Urkunde mit rollendem Textkörper.
+
+---
+
 **Der Rest ist absichtlich unangetastet.** Das ist das eigentliche Ergebnis dieses Bauabschnitts: die Regel war falsch, die Texte, die unter ihr entstanden sind, überwiegend nicht. Wo die Regel wirklich Schaden angerichtet hat, war der Schaden messbar, und zwar am deutlichsten an der Bank. Dort standen zwei Figuren, von denen die eine seit F1 als die Kürzere und die andere als die Ausführlichere im Kanon steht, und im Spiel war es **genau umgekehrt**: Lott lag im Schnitt bei 36,8 Zeichen in der ersten Zeile, Pahl bei 30,5. Eine Hausregel, die allen dasselbe Maß vorschreibt, macht aus zwei Figuren eine, und dann ist es Zufall, welche von beiden die längeren Sätze bekommt.
