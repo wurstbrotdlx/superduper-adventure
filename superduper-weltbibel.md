@@ -869,7 +869,7 @@ Reine Textarbeit an bestehenden Strings, kein Systemeingriff.
 * Amtsbezeichnung, Laufbahngruppe und Dienstverhältnis (Kapitel 17) sind aus `amt.schichten` **abgeleitet**, genau wie der bestehende Aktstand — kein neues `amt`-Feld, keine `loadAmt()`-Ladezeile, keine zweite Wahrheitsquelle.
 * Beförderung alle 5 Schichten, 19 benannte Ränge bis Schicht 90, danach römische Ziffern im Kreis (18.4).
 * Jede zweite Beförderung fällt auf das bestehende Jahresgespräch (`amt.schichten % 10 === 0`) und läuft dort als Zeremonie: Urkunde, Aushändigung, „Auf die Form!", Amtsmarsch bricht nach dem dritten Takt ab, ein Knöterich-Satz, der von Mal zu Mal wärmer wird.
-* Dienstausweis als neuer Bildschirm aus dem Inventar, Bauform wie der Kessel-Knopf. Lichtbild ist ein Ausschnitt aus dem bestehenden Held-Bake, kein neues Grafiksystem.
+* Dienstausweis als neuer Bildschirm, ~~aufrufbar aus dem Inventar~~, Bauform wie der Kessel-Knopf. Lichtbild ist ein Ausschnitt aus dem bestehenden Held-Bake, kein neues Grafiksystem. *(U8, `phase-u8-menuefenster.md`: der Knopf sitzt seither im **Charakterfenster** und nicht mehr im Rucksack — was am Träger hängt, steht beim Träger. Der Ausweis selbst ist unverändert ein kleines Panel geblieben; ein Dokument ist kein Arbeitsfenster. Dasselbe Lichtbild zeigt seit U8 auch das Charakterfenster, aus demselben Bake und über dasselbe `renderAusweisFoto()`.)*
 * Zwei Insignien wirken echt (18.7): Zeichnungsbefugnis ab gehobenem Dienst (Voraussetzung für W5), zweiter Registraturschlüssel ab höherem Dienst (Bramsches Abweisung entfällt).
 * Die Anrede der Figuren (18.5) blieb in W6 ausdrücklich offen und ist seither nachgezogen, siehe den eigenen Abschnitt unten.
 
@@ -1089,8 +1089,8 @@ Kapitel 5, der neue Unterabschnitt. Auf Ansage des Projektinhabers: ein schlanke
 
 * **Fünfzehn Familien in je drei Stufen.** Drei Waffengattungen, drei Zauberzweige, neun allgemeine. Stufe I ist genau ein Wirkungsrang der Kesselausrüstung, Stufe III liegt einen Punkt über deren Unikat. Acht Familien stapeln (höchstens zweimal), sieben nicht, und beides ist begründet statt gewürfelt.
 * **Fast kein neues Rechenwerk.** Dreizehn der fünfzehn Familien hängen an Aggregatschlüsseln, die seit Phase 3 stehen, samt ihren Deckeln. Neu gebaut wurden genau zwei Hooks: die Waffengattung (`w.base.mode` war bis dahin reine Animationswahl) und der Zauberzweig (`castSpell()` kannte nur einen Multiplikator für alle elf Sprüche). Das Ultimate bleibt von beidem ausgenommen.
-* **Die Ziehung drängt nicht.** Kein Fenster öffnet sich von selbst, das Angebot bleibt liegen, bis gewählt wird, und Panel zu und wieder auf ist kein Würfelbecher. Gemeldet wird über einen Floater und ein Sternchen am Gürtel. Nichts läuft von selbst ab, auch hier nicht.
-* **Kein neues System.** Achtes Panel im bestehenden `PANEL_REGISTER`, mit demselben Grund, demselben Kopfband, demselben Schließknopf, demselben Schleier.
+* **Die Ziehung drängt nicht.** Kein Fenster öffnet sich von selbst, das Angebot bleibt liegen, bis gewählt wird, und Panel zu und wieder auf ist kein Würfelbecher. Gemeldet wird über einen Floater und ein Sternchen am Gürtel. Nichts läuft von selbst ab, auch hier nicht. *(U8: das Sternchen sitzt seither am **Charakter**-Knopf, weil die Mappe dort liegt, und steht zusätzlich am Reiter im Band jedes offenen Fensters. Am Gürtel ist es geblieben, die Zusage also auch.)*
+* **Kein neues System.** ~~Achtes Panel im bestehenden `PANEL_REGISTER`, mit demselben Grund, demselben Kopfband, demselben Schließknopf, demselben Schleier.~~ **Überholt durch U8** (`phase-u8-menuefenster.md`, auf Ansage des Projektinhabers: „ein Charakterfenster für stats und Ausrüstung und dort findet man auch die spielKarten Mappe"). Die Mappe ist kein Fenster mehr, sondern das **zweite Blatt des Charakterfensters**. Der Satz gilt in seinem Kern weiterhin und sogar strenger als vorher: kein neues System, kein zweiter Zustand. `zulagenOpen` ist ersatzlos weg, `zulagenOffen()` liest die Frage aus `charakterOpen` und `charBlatt`; `renderZulagen()` schreibt unverändert in `#zulZiehung`, `#zulMappe` und `#zulKartei`. Der Registereintrag ist geblieben, er heißt jetzt `charakter`.
 * **Und die Karte sieht seit dem Nachtrag aus wie eine Karte** (K1-10, auf Ansage des Projektinhabers): Namensleiste, Bildfenster, Typenzeile, Textfeld, und die Stufe trägt nicht nur die Ziffer, sondern den ganzen Rahmen. Das ist Regel 10 aufs Auge angewandt und war beim ersten Wurf nicht eingelöst: ein Sinnbild von sechsundzwanzig Pixeln neben einer Textzeile ist kein Sammelstück, sondern ein Listeneintrag. Die Bildprompts stehen entsprechend auf epischer Kartenkunst statt auf Inventarsymbolen, ein Stempel ausgeleuchtet wie Excalibur; der Gegenstand bleibt Büromaterial, die Inszenierung ist eine Kathedrale.
 * **Zwei bestehende Guards mussten mitgezogen werden.** `zauberAssert()` fährt bei jedem Laden neun echte Aufstiege, `befaehigungAssert()` misst die S1-Spreizung, und eine Karte trägt beide Seiten dieser Messung. Beide spiegeln die Kartei jetzt und stellen sie zurück. Die S1-Zusage wurde nicht aufgeweicht, sondern von einer dritten Quelle freigehalten, die es beim Schreiben von S1 noch nicht gab.
 
@@ -1315,7 +1315,7 @@ Statussymbole des Amtes, aufsteigend. Taugen als Ausbau, als Jahresbonus, als Qu
 
 ### 18.8 Der Dienstausweis
 
-Ein Bildschirm, aufrufbar aus dem Inventar. Zeigt:
+Ein Bildschirm, aufrufbar aus dem ~~Inventar~~ **Charakterfenster** (seit U8, `phase-u8-menuefenster.md`; bis dahin aus dem Inventar). Zeigt:
 
 * Lichtbild. Es ist das Gesicht der heutigen Schicht. Es ist jeden Tag ein anderes.
 * Amtsbezeichnung, vollständig.

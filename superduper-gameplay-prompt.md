@@ -311,7 +311,7 @@ Der Anreißersatz muss die **Angriffseingabe** mitnehmen, weil sie sonst nirgend
 
 Wird Beat 1 als Blase nicht zugestellt, weil der Spieler sofort wegläuft, gilt er nach 2 Sekunden sichtbarer Blase als zugestellt, sonst wandert er als Zettel hinterher.
 
-**Beat 3 achtet auf `player.spellPoints`, nicht auf `player.skillPoints`.** Ein Level-Up vergibt beides (`player.skillPoints += 2; player.spellPoints += 1;`, ~1644). `T` öffnet den Zauberbaum, der die Zauberpunkte verbraucht; die Skillpunkte sitzen im Inventar.
+**Beat 3 achtet auf `player.spellPoints`, nicht auf `player.skillPoints`.** Ein Level-Up vergibt beides (`player.skillPoints += 2; player.spellPoints += 1;`, ~1644). `T` öffnet den Zauberbaum, der die Zauberpunkte verbraucht; die Skillpunkte sitzen im Inventar. **Seit U8 überholt:** die Befähigung steht im **Charakterfenster** (Taste `C`), nicht mehr im Rucksack — was am Träger hängt, steht beim Träger (`phase-u8-menuefenster.md`). Der Zauberbaum bleibt sein eigenes Fenster auf `T`.
 
 ### Dienstzettel-Katalog
 
@@ -402,7 +402,7 @@ Neu anzulegen in `sda_knoeterich_v1`, alle über die Lebenszeit: `traenke`, `kam
 
 **Taktung:** höchstens eine Randnotiz pro 40 Sekunden, nie gleichzeitig mit einem Dienstzettel, nie im Rätselmodul. Im Kampf und im Bosskampf ausdrücklich erlaubt, dort sind sie am komischsten.
 
-**Regler.** Im Inventar unter „Ton" (dort stehen seit Phase 2 schon Musik und Lautstärke) ein Dreifach-Schalter **Knöterich: Gesprächig / Dienstlich / Schweigt**, Standard Gesprächig, Stellung überlebt den Reload.
+**Regler.** Im Inventar unter „Ton" (dort stehen seit Phase 2 schon Musik und Lautstärke; seit U8 heißt das Fenster **Rucksack** und „Ton" ist dort eine eigene Kachel, die DOM-Ids sind dieselben geblieben) ein Dreifach-Schalter **Knöterich: Gesprächig / Dienstlich / Schweigt**, Standard Gesprächig, Stellung überlebt den Reload.
 
 * Gesprächig: alles.
 * Dienstlich: alle Randnotizen aus, **außer** der Schichtbegrüßung.
@@ -572,7 +572,7 @@ Alle sechs Zonen hörbar unterscheidbar und trotzdem als ein Thema erkennbar. Zo
 * Notenraster ist `[startStep, note, oct, lengthSteps]` auf 16tel-Basis, kein Notenereignis für Pausen (die entstehen einfach als Lücke zwischen zwei Einträgen). Akkorde/Perkussion sind reine Flags in `perc`, `prepareZone()` expandiert sie einmalig zu absoluten Step-Listen (`everyN()`, `perBar()`), keine Berechnung pro Tick.
 * Gain-Stellschrauben, falls Balance nicht passt: `musicVolTarget` (Default 0.45, deckt sich mit dem HTML-Slider), `sfxBus.gain` (0.22), `master.gain` (0.85, vor dem Compressor). Musik- und SFX-Pfad sind seit dieser Phase unabhängige Busse, vorher liefen beide durch dieselbe `masterGain`.
 * `MUS.setOvertime(f)` koppelt an die Schichtuhr (`shiftEndPending`, `overtimeT`, `shiftT`): Tempo sinkt bis 14 % in der Überstunde, Lowpass-Cutoff sinkt parallel. Quantisiert auf 50 Stufen (`Math.round(f*50)/50`) gegen unnötige Automation-Events, da `update(dt)` das jeden Frame mit einem kontinuierlich wandernden Wert aufruft.
-* Musik-Button und -Regler bleiben an denselben DOM-Ids (`#musicBtn`, `#musicVol`) im Inventar unter "Ton" (siehe Phase 2). Verhalten unverändert erhalten: Regler ziehen entmutet automatisch.
+* Musik-Button und -Regler bleiben an denselben DOM-Ids (`#musicBtn`, `#musicVol`) im Inventar unter "Ton" (siehe Phase 2; seit U8 im Rucksack, eigene Kachel, IDs unverändert). Verhalten unverändert erhalten: Regler ziehen entmutet automatisch.
 * Getestet live über `.claude/launch.json`-Testeintrag (temporär, wieder entfernt): alle sechs Zonen einzeln erzwungen (jedes Instrument dabei mindestens einmal ausgelöst), Boss-Auto-Wahl über Fake-Aggro bestätigt, alle drei Stinger, `swell()`, `muffle()` an/aus, Mute-Toggle, Lautstärkeregler, jeweils ohne Konsolenfehler. Zusätzlich der komplette Skriptinhalt einmal über `new Function(...)` geprüft (Syntaxcheck über die ganze Datei).
 
 ## Reihenfolge und Disziplin
