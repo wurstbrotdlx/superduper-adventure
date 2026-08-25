@@ -1108,7 +1108,7 @@ Kapitel 5, der neue Unterabschnitt. Auf Ansage des Projektinhabers: ein schlanke
 
 ### SP: Der Spielstand — ERLEDIGT (siehe `phase-sp-spielstand.md`)
 
-Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern der einzige Bauabschnitt, der ausdrücklich **außerhalb** der Welt steht: er betrifft das Gerät, auf dem die Welt läuft.
+Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern ~~der einzige~~ **der erste** Bauabschnitt, der ausdrücklich **außerhalb** der Welt steht: er betrifft das Gerät, auf dem die Welt läuft. *(Seit U9 gibt es einen zweiten, siehe unten. Er löst dieselbe Frage anders herum, und der Unterschied ist begründet.)*
 
 * **Dieser eine Kasten redet Technik.** „Spielstand", „Speichern", „Export", „Import" heißen im Code wie auf den Knöpfen wörtlich so. Das ist die einzige bewusste Ausnahme von Kapitel 1 und eine Nutzerentscheidung: eine Datensicherung, die sich „Antrag auf Beglaubigung einer Aktenabschrift" nennt, findet im Zweifel niemand, und wer sie nicht findet, verliert seinen Fortschritt an einen Witz. Der Gag steht überall sonst. Wer hier künftig etwas ergänzt, hält sich an dieselbe Regel — ein Witz in dieser Ecke ist ein Fehler, kein Zuwachs.
 * **Die Welt ist über Sitzungen hinweg identisch.** `genMap()` zieht aus einem festen Seed und läuft einmal beim Skriptstart; zwei Ladevorgänge ergeben dieselbe Karte. Das stand nirgends geschrieben und trägt trotzdem den ganzen Abschnitt: erst dadurch zeigt eine gespeicherte Position auf dieselbe Kachel. Eine Notiz, die das Gegenteil annahm, ist berichtigt.
@@ -1119,6 +1119,17 @@ Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern der einzige 
 * **Eine Klemmstelle, nicht zwei.** Der Import prüft die Hülle und lädt die Seite neu; geprüft und geklemmt wird ausschließlich in den vorhandenen Loadern. Was nicht an `loadAmt()` vorbeikommt, kommt auch als Import nicht vorbei.
 
 **Abnahme:** Wer nie speichert, exportiert oder importiert, spielt das Spiel unverändert. Der Spielstand nimmt nichts weg und gibt keinen Vorteil: er gibt genau den Stand zurück, den die Unterbrechung genommen hat.
+
+### U9: Die Hausmitteilung — ERLEDIGT (siehe `phase-u9-hausmitteilung.md`)
+
+Ein Blatt vor dem Startbild, das sagt, was sich seit der letzten Schicht geändert hat und wo es zu sehen ist. Der zweite Bauabschnitt außerhalb der Welt: er spricht nicht über das Amt, sondern über das Spiel.
+
+* **Und trotzdem redet er Amtsdeutsch.** Anders als der Speicherkasten aus SP. Das ist kein Widerspruch, sondern dieselbe Frage mit anderer Antwort, weil die Sache eine andere ist: „Spielstand" muss wörtlich dastehen, weil man ihn im Notfall suchen und finden muss. Einen Änderungshinweis sucht niemand — er wird vorgelegt. Was vorgelegt wird, kann das Haus in seiner eigenen Form vorlegen, und das Haus hat dafür eine: die Mitteilung, die umläuft und zur Kenntnis genommen wird. Die SP-Ausnahme bleibt damit die einzige.
+* **Nichts läuft von selbst ab, auch hier nicht.** Kein Timer, kein Selbstschließen. Das Blatt steht, bis jemand drückt — dieselbe Regel, die für jede Tafel und jede Szene gilt.
+* **Wer zum ersten Mal hier ist, sieht es nicht.** „Neu" ist eine Aussage über ein Vorher. Ein leeres Gerät hat keines und geht durch.
+* **Die Wo-Zeile ist eine Wegbeschreibung und veraltet wie jede.** Wer einen Bauabschnitt ändert, der in einem Punkt genannt ist, ändert den Punkt mit. Am Auslieferungstag zeigte eine Zeile auf einen Gürtelknopf, den U8 zwei Stunden vorher abgeschafft hatte, und kein Guard konnte etwas sagen: ein Fließtext ist für jeden Prüfer im Haus nur ein Fließtext. Der Prüflauf drückt seither, was die Zeilen nennen.
+
+**Abnahme:** Wer die Mitteilung wegklickt, spielt das Spiel unverändert. Kein Speicherschlüssel im Spielstand (der Stempel gehört dem Gerät), kein neues Panel, keine Wirkung auf irgendeinen Wert.
 
 ### Was wir ausdrücklich nicht bauen
 

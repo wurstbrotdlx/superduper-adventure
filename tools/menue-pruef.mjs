@@ -121,7 +121,7 @@ async function spiel(ctxOpt){
 const stand = p => p.evaluate(() => ({
   inv: invOpen, zauber: spellTreeOpen, kessel: kesselOpen, ausweis: ausweisOpen,
   karte: fullmapOpen, schloss: schlossOpen, amt: amtFensterOpen,
-  charakter: charakterOpen,
+  charakter: charakterOpen, optionen: optionenOpen,
   schleier: document.body.classList.contains('panelOffen'),
   schlaege: window.__schlaege,
 }));
@@ -163,15 +163,33 @@ const danebenPunkt = async p => p.evaluate(() => {
   pruef('Guertelknopf oeffnet den Zauberbaum', z.zauber, true);
   pruef('und raeumt dabei den Rucksack weg', z.inv, false);
 
-  // U8: Das Reiterband. Vier Reiter in jedem Fenster, ein Griff wechselt.
-  pruef('vier Reiter im Band', await page.locator('#spellTree .gfReiter').count(), 4);
+  // U8: Das Reiterband. Ein Griff wechselt das Fenster. Seit dem dritten
+  // Nachtrag sind es fuenf Reiter — die Optionen sind dazugekommen und haben
+  // als einziges Fenster keinen Guertelknopf, das Band ist ihr Weg.
+  pruef('fuenf Reiter im Band', await page.locator('#spellTree .gfReiter').count(), 5);
   await page.locator('#spellTree .gfReiter[data-ziel="charakter"]').click();
   z = await stand(page);
   pruef('Reiter fuehrt ins Charakterfenster', [z.charakter, z.zauber], [true, false]);
   await page.locator('#charakter .gfReiter[data-ziel="kessel"]').click();
   z = await stand(page);
   pruef('und von dort in den Kessel', [z.kessel, z.charakter], [true, false]);
-  pruef('immer nur ein Grossfenster', [z.inv, z.zauber, z.charakter].filter(Boolean).length, 0);
+  // Die Optionen sind ueber das Band UND ueber die Taste erreichbar, sonst
+  // gaebe es am Finger keinen Weg zu ihnen: sie haben keinen Guertelknopf.
+  await page.locator('#kessel .gfReiter[data-ziel="optionen"]').click();
+  z = await stand(page);
+  pruef('und weiter in die Optionen', [z.optionen, z.kessel], [true, false]);
+  pruef('Lautstaerke und Spielstand stehen dort', await page.evaluate(() =>
+    !!document.querySelector('#optionen #musicVol') && !!document.querySelector('#optionen #spSpeichern')), true);
+  pruef('und nicht mehr im Rucksack', await page.evaluate(() =>
+    !document.querySelector('#inv #musicVol') && !document.querySelector('#inv #spSpeichern')), true);
+  await page.keyboard.press('o');
+  pruef('Taste O schliesst sie wieder', (await stand(page)).optionen, false);
+  await page.keyboard.press('o');
+  pruef('und macht sie wieder auf', (await stand(page)).optionen, true);
+  // Genau EINES, nicht keines: die Zeile zaehlt alle fuenf und haelt damit
+  // beide Haelften der Zusage fest — kein Stapel, und auch kein Fenster, das
+  // beim Wechsel verlorengeht.
+  pruef('immer nur ein Grossfenster', [z.inv, z.zauber, z.charakter, z.kessel, z.optionen].filter(Boolean).length, 1);
   pruef('das Band wechselt ohne Schlag', z.schlaege, 0);
 
   await page.mouse.click(dn.x, dn.y);
@@ -231,7 +249,7 @@ const danebenPunkt = async p => p.evaluate(() => {
   pruef('das Rollfeld des Rucksacks rollt', kopf.rollt, true);
   pruef('das Fenster selbst rollt nicht', kopf.fensterRolltNicht, true);
   pruef('Schliessknopf bleibt beim Scrollen im Bild', kopf.drin, true);
-  pruef('das Reiterband bleibt beim Scrollen stehen', kopf.band, 4);
+  pruef('das Reiterband bleibt beim Scrollen stehen', kopf.band, 5);
   await page.evaluate(() => toggleInventory());
 
   pruef('Konsole still (Desktop)', laut, []);
@@ -365,6 +383,7 @@ for(const vp of [
     ['Rucksack',          'toggleInventory()'],
     ['Kessel',            'toggleKessel()'],
     ['Zauberbaum',        'toggleSpellTree()'],
+    ['Optionen',          'toggleOptionen()'],
   ]){
     await page.evaluate(q => eval(q), auf);
     await page.waitForTimeout(120);
