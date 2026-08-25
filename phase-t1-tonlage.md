@@ -179,6 +179,39 @@ Die Vorstellung verliert zwei Züge, weil drei ihrer fünf denselben Gedanken tr
 
 ---
 
-## 8. Prüfung
+## 8. Die Maschine: eine Frage darf eine Fortsetzung tragen
 
-Wird beim Abschluss dieses Bauabschnitts ausgefüllt: die Meldungen der neuen Guards im ausgelösten Zustand, die Ergebnisse der Prüfläufe und die Zählbilanz über alle Sprechblasenpaare.
+Bis T1 zeigte eine Frage im Gesprächsbaum genau ein Sprechblasenpaar und fiel danach auf den Hub zurück. Mehrstufige Antworten gab es nur als `frei:`-Treppe, also dann, wenn der Spieler von sich aus die nächste Frage stellt. Für eine Kaskade fehlte der Fall "die Figur ist noch nicht fertig".
+
+Die Erweiterung ist ein Feldpaar und sechs Zeilen in `szeneOptionen()`:
+
+```js
+{key:'gutachten', t:'Machen Sie ein Gutachten?', z1:'…', z2:'…',
+ weiter:'g2', wt:'Und zweitens?'}
+```
+
+`weiter:` nennt den Knoten, in dem die Figur weiterredet, `wt:` die Zeile, mit der der Spieler sie weiterreden lässt. Es ist **genau eine** Option, denn eine Kaskade ist ein Monolog mit Einverständnis und keine Verzweigung. Der letzte Knoten der Kette hat kein `opts` und fällt damit von selbst auf den Hub zurück, wo die übrigen Fragen warten.
+
+Drei Dinge fallen dadurch nicht an: kein neues Panel, kein zweiter Zeichenweg, kein Eingriff in den Zeichendeckel. Die Kaskade ist mechanisch dasselbe wie eine Antwortliste mit einer einzigen Zeile, und genau deshalb ist sie billig.
+
+**Warum das Ziel ein Knoten sein muss und keine Frage.** Eine Frage als Ziel wäre eine zweite Hub-Tür: sie würde sich beim Betreten selbst aus der Liste der offenen Fragen streichen, und der Spieler verlöre sie, ohne sie gestellt zu haben. Der Guard verbietet es.
+
+### Die drei neuen Guards, einmal absichtlich ausgelöst
+
+Repo-Brauch: ein Guard, den man nie hat melden sehen, ist eine Behauptung. Alle drei sind an einer Probefassung ausgelöst worden, die danach gelöscht wurde.
+
+| Fall | Meldung |
+|---|---|
+| Fortsetzung ohne `wt:` | `Szenen: Fortsetzung ohne Spielerzeile baumNieselbeck: eimer gibtsnicht2` |
+| `weiter:` auf einen Knoten, den es nicht gibt | `Szenen: Fortsetzung zeigt auf einen Knoten, den es nicht gibt baumNieselbeck: eimer gibtsnicht2` |
+| Meldekürzel, dessen Langform im Baum nirgends fällt | `Szenen: Meldekürzel ohne Auflösung im Baum Zz. Zwischenzeugnis der Bodenart` |
+
+Der erste Fall meldet dreifach, und das ist richtig so: eine Fortsetzung ohne Spielerzeile ist zugleich eine leere Antwortzeile, und die beiden älteren Prüfungen aus SZ1 sehen sie ebenfalls.
+
+**Was der neue Kürzel-Guard kann, was `knAssertCaps()` nicht kann.** Der ältere prüft, **dass** ein Kürzel einen Eintrag in `ABKUERZUNGEN` hat. Der neue prüft, dass die Langform im Spiel auch wirklich **fällt**, wörtlich, in Nieselbecks eigenem Baum. Das ist die Bedingung, unter der Kapitel 13 die Familie als eine Position zählt, und ohne die Prüfung wäre die Ausnahme ein Versprechen ohne Deckung.
+
+---
+
+## 9. Abnahme
+
+Wird beim Abschluss dieses Bauabschnitts ausgefüllt: die Ergebnisse der Prüfläufe und die Zählbilanz über alle Sprechblasenpaare.

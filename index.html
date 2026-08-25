@@ -21903,6 +21903,20 @@ function szeneOptionen(){
   if(!d) return [];
   const k = d.knoten[szene.knoten];
   if(k && k.opts) return k.opts().filter(o => !o.wenn || o.wenn()).map(szeneOpt);
+  // T1, die zweite echte Erweiterung der Maschine: eine Frage darf eine
+  // Fortsetzung tragen. weiter: nennt den Knoten, in dem die Figur weiterredet,
+  // wt: die Zeile, mit der der Spieler sie weiterreden laesst. Genau eine
+  // Option, denn eine Kaskade ist ein Monolog mit Einverstaendnis und keine
+  // Verzweigung; der letzte Knoten der Kette hat keine opts und faellt damit
+  // von selbst auf den Hub zurueck.
+  //
+  // Das ist der Kanal fuer die Laenge, die Kapitel 13 seit T1 verlangt: eine
+  // ausfuehrliche Figur redet nicht in laengeren Zeilen, sondern in mehr
+  // Zeilenpaaren hintereinander. Der Zeichendeckel bleibt dadurch unangetastet,
+  // und der Spieler bleibt der Gerade (Humor-Grundgesetz 11): er klickt jeden
+  // Zug einzeln weiter und darf jederzeit gehen.
+  const fr = szeneFrage(szene.knoten);
+  if(fr && fr.weiter) return [szeneOpt({t: fr.wt, zu: fr.weiter})];
   // Ein hub-Knoten zeigt die offenen Fragen plus den Ausgang der Szene. Ohne
   // Fragenliste gibt es keine hubs, dann ist das hier unerreichbar und
   // szeneAssert() meldet den Knoten ohne Ausgang.
@@ -22424,6 +22438,20 @@ function szeneAssert(){
       }
       if(f.nach && f.nach > fragen.length - 1)
         fehler('Wartefrage wartet auf mehr Fragen, als es gibt', wo(f.key), f.nach);
+      // (2b) T1: Fortsetzungen. Eine Kaskade braucht die Zeile, mit der der
+      // Spieler sie weiterlaufen laesst, und ein Ziel, das es gibt. Als Ziel
+      // ist nur ein Knoten zulaessig: eine Frage waere eine zweite Hub-Tuer
+      // und wuerde sich selbst aus der Liste der offenen Fragen streichen.
+      if(f.weiter){
+        if(!f.wt) fehler('Fortsetzung ohne Spielerzeile', wo(f.key), f.weiter);
+        else {
+          text(f.wt, wo(`Frage ${f.key} Fortsetzung`), d.sperre);
+          if(f.wt.length > ANTWORT_DECKEL)
+            fehler('Fortsetzung zu lang für die Zeile', wo(f.key), f.wt.length);
+        }
+        if(!d.knoten[f.weiter])
+          fehler('Fortsetzung zeigt auf einen Knoten, den es nicht gibt', wo(f.key), f.weiter);
+      }
     }
     if(fragen.length){
       const sicht = d.sicht || 3;
@@ -22484,6 +22512,29 @@ function szeneAssert(){
     for(const treffer of m){
       const merker = treffer.match(/'([a-zA-Z]+)'\)$/)[1];
       if(!(merker in kn.flags)) fehler('Szene setzt einen Merker, den der Spielstand nicht kennt', key, merker);
+    }
+  }
+
+  // (10) T1: Nieselbecks Meldekuerzel. Weltbibel Kapitel 13 laesst die Familie
+  // Mg./Da./Ba./Anm./Vlg. nur unter einer Bedingung als EINE Position gegen die
+  // Zwoelf zaehlen: er loest jede selbst auf, im eigenen Baum, eine Nachfrage
+  // entfernt. Geprueft wird woertlich auf die Langform, denn genau die ist die
+  // Zusage. Der allgemeine Abkuerzungs-Guard in knAssertCaps() sieht das nicht:
+  // er prueft, DASS ein Kuerzel einen Eintrag hat, nicht, dass die Langform im
+  // Spiel auch faellt.
+  {
+    const b = SZENEN.baumNieselbeck;
+    if(!b) fehler('baumNieselbeck fehlt, die Meldekürzel hätten keine Auflösestelle');
+    else {
+      const korpus = [];
+      for(const f of (b.fragen || [])) korpus.push(f.z1, f.z2);
+      for(const k in b.knoten) korpus.push(b.knoten[k].z1, b.knoten[k].z2);
+      const alles = korpus.filter(Boolean).join(' ');
+      for(const k in ABKUERZUNGEN){
+        if(ABKUERZUNGEN[k].wo !== 'nieselbeck') continue;
+        if(alles.indexOf(ABKUERZUNGEN[k].lang) < 0)
+          fehler('Meldekürzel ohne Auflösung im Baum', k, ABKUERZUNGEN[k].lang);
+      }
     }
   }
 
