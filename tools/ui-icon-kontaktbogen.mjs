@@ -56,45 +56,48 @@ const ICON  = +wert('--icon', 32);
 
 // [Beschriftung, Blatt (relativ zu Graphics/), x, y]  — alle Zellen 16x16.
 const KANDIDATEN = [
-  // U11 — die Bedienknoepfe, samt der zwei Kandidaten, die durchgefallen sind:
-  // ein Bogen, der nur die Gewinner zeigt, belegt nichts.
-  ['Schlag: Klingen',    `${UI}/UI_Icons.png`,      112,  16],
-  ['Trank: Rundkolben',  'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png', 112, 128],
-  ['Zauber: Stern blau', `${UI}/UI_Icons.png`,      144,  48],
-  ['Zauber: Stern gold', `${UI}/UI_Icons.png`,       48,   0],
-  ['Rucksack (genommen)',`${UI}/UI_Icons.png`,      144,  32],
-  ['Rucksack: flach',    `${UI}/UI_Icons.png`,      160,  32],
-  ['Charakter: Buch rot',`${UI}/UI_Icons.png`,      192,  16],
-  ['Ziel: geschlossen',  `${UI}/UI_Crosshairs.png`,   0, 128],
-  ['Ziel: Punkte (weg)', `${UI}/UI_Crosshairs.png`,   0,   0],
-  ['Sperre: Verbot',     `${UI}/UI_Icons.png`,      208,  80],
-  ['Abbruch: rotes X',   `${UI}/UI_Icons.png`,      176,  80],
-  ['Hand (Kontext)',     `${UI}/UI_Icons.png`,       48, 224],
+  // U11/U12 — die Sinnbilder der Bedienoberflaeche, samt der Kandidaten, die
+  // durchgefallen sind: ein Bogen, der nur die Gewinner zeigt, belegt nichts.
+  ['Schlag: Klingen',     `${UI}/UI_Icons.png`,      112,  16],
+  ['Trank: Rundkolben',   'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png', 112, 128],
+  ['Zauber: Stern blau',  `${UI}/UI_Icons.png`,      144,  48],
+  ['Zauber: Stern gold',  `${UI}/UI_Icons.png`,       48,   0],
+  ['Rucksack (genommen)', `${UI}/UI_Icons.png`,      144,  32],
+  ['Rucksack: flach',     `${UI}/UI_Icons.png`,      160,  32],
+  ['Charakter: Buch rot', `${UI}/UI_Icons.png`,      192,  16],
+  ['Ziel: geschlossen',   `${UI}/UI_Crosshairs.png`,   0, 128],
+  ['Ziel: Punkte (weg)',  `${UI}/UI_Crosshairs.png`,   0,   0],
+  ['Sperre: Verbot',      `${UI}/UI_Icons.png`,      208,  80],
+  ['Abbruch: rotes X',    `${UI}/UI_Icons.png`,      176,  80],
+  ['Hand (Kontext)',      `${UI}/UI_Icons.png`,       48, 224],
+  ['Gold/Beute',          `${UI}/UI_Icons.png`,       96,   0],
+  ['Optionen: Zahnrad',   `${UI}/UI_Icons.png`,       32,  16],
+  ['Ton: Lautsprecher',   `${UI}/UI_Icons.png`,      160,  64],
+  ['Ton: Umriss (weg)',   `${UI}/UI_Icons.png`,      144,  64],
+  ['Schrift: grosses A',  `${UI}/UI_Button_Icons.png`, 160, 32],
+  ['Spielstand: Disk',    `${UI}/UI_Icons.png`,      144,  16],
+  ['Kladde: Buch gruen',  `${UI}/UI_Icons.png`,      176,  16],
+  ['Akten: Buch orange',  `${UI}/UI_Icons.png`,      208,  16],
+  ['Amtskunde: Buch bl.', `${UI}/UI_Icons.png`,      160,  16],
+  ['Ausruestung: Schild', `${UI}/UI_Icons.png`,      192,   0],
+  ['Schloss: Schluessel', `${UI}/UI_Icons.png`,      208,  48],
+  ['Aktenfund: Brief',    `${UI}/UI_Icons.png`,      224,  16],
+  ['Kraft: Schwert',      `${UI}/UI_Icons.png`,       16,  16],
+  ['Zaehigkeit: Herz',    `${UI}/UI_Icons.png`,        0,   0],
+  ['Behaendigk.: Blitz',  `${UI}/UI_Icons.png`,      144,   0],
+  ['Im Dienst: Krone',    `${UI}/UI_Icons.png`,       64,  16],
+  ['Zettel: Sprechblase', `${UI}/UI_Icons.png`,        0,  16],
+  ['Kessel: Einmachglas', 'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png', 16, 64],
 
-  // U12 — Panelkoepfe, Reiterband, Befaehigung und die Fundstuecke in der Welt.
-  // Diese stehen groesstenteils auf DUNKLEM Grund, also entscheidet die rechte
-  // Haelfte des Bogens.
-  ['Gold/Beute',         `${UI}/UI_Icons.png`,       96,   0],
-  ['Optionen: Zahnrad',  `${UI}/UI_Icons.png`,       32,  16],
-  ['Ton: Lautsprecher',  `${UI}/UI_Icons.png`,      144,  64],
-  ['Ton: Welle',         `${UI}/UI_Icons.png`,      160,  64],
-  ['Spielstand: Disk',   `${UI}/UI_Icons.png`,      144,  16],
-  ['Kladde: Buch gruen', `${UI}/UI_Icons.png`,      176,  16],
-  ['Akten: Buch orange', `${UI}/UI_Icons.png`,      208,  16],
-  ['Ausruestung: Schild',`${UI}/UI_Icons.png`,      192,   0],
-  ['Schloss: Schluessel',`${UI}/UI_Icons.png`,      208,  48],
-  ['Aktenfund: Brief',   `${UI}/UI_Icons.png`,      224,  16],
-  ['Kraft: Schwert',     `${UI}/UI_Icons.png`,       16,  16],
-  ['Zaehigkeit: Herz',   `${UI}/UI_Icons.png`,        0,   0],
-  ['Behaendigk.: Blitz', `${UI}/UI_Icons.png`,      144,   0],
-  ['Amtskunde: Buch bl.',`${UI}/UI_Icons.png`,      160,  16],
-  ['Werte: Schraubensl.',`${UI}/UI_Icons.png`,       48,  16],
-  ['Rang: Krone',        `${UI}/UI_Icons.png`,       64,  16],
-  ['Mitteilung: Sprech', `${UI}/UI_Icons.png`,        0,  16],
-  ['Kessel: Glas rot',   'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png',  16,  64],
-  ['Kessel: Glas gruen', 'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png',  16,  80],
-  ['Kessel: Glas gelb',  'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png',  16, 128],
-  ['Zutaten: Blume',     'Cute_Fantasy/Icons/No Outline/Other_Icons_NO_Outline.png',  0,  0],
+  // Der Nachtrag zu U12. Der Schraubenschluessel war die schwaechste Zuordnung
+  // des Satzes, und der Fehler dahinter war, nur UI_Icons.png abzusuchen:
+  // UI_Bars.png traegt den Balkenstapel, mit dem dieses Spiel Leben, Mana und
+  // Erfahrung anzeigt. Gegen ein Blatt, das gar nicht aufgeschlagen wird, hilft
+  // auch der beste Bogen nicht — deshalb stehen die Balken jetzt hier.
+  ['WERTE: Balken (jetzt)',   `${UI}/UI_Bars.png`,   0,  0],
+  ['WERTE: Schraubenschl.',   `${UI}/UI_Icons.png`, 48, 16],
+  ['WERTE: Balken weiss',     `${UI}/UI_Bars.png`,   0, 96],
+  ['WERTE: Pokal (weg)',      `${UI}/UI_Icons.png`, 80, 16],
 ];
 
 if(!existsSync(QUELLE)){

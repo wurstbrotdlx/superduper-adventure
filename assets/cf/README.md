@@ -393,7 +393,7 @@ Begruendung je Posten in `phase-u2-menuegrafik.md`.
 
 ### Von U11 und U12 gebraucht (`ui/ico_*.png`)
 
-Achtundzwanzig Sinnbilder, geschnitten aus derselben Tabelle in `tools/ui-zellen.mjs`
+Achtundzwanzig Sinnbilder aus **vier** Blaettern (`UI_Icons`, `UI_Crosshairs`, `UI_Button_Icons`, `UI_Bars` und den Speise-Icons des Hauptpacks), geschnitten aus derselben Tabelle in `tools/ui-zellen.mjs`
 und mit `--pruef` nachrechenbar. Sie ersetzen die System-Emoji der Bedienoberflaeche:
 U11 die neun Bedienknoepfe, U12 Kopfband, Reiterband, Panelkoepfe, Befaehigung und die
 vier Dinge, die als Emoji ins Bild gemalt wurden. Zusammen rund 8,7 KB.
@@ -424,7 +424,7 @@ vier Dinge, die als Emoji ins Bild gemalt wurden. Zusammen rund 8,7 KB.
 | `ico_kraft.png` | `UI_Icons.png` | (16,16) | Befaehigung: Kraft |
 | `ico_herz.png` | `UI_Icons.png` | (0,0) | Befaehigung: Zaehigkeit |
 | `ico_blitz.png` | `UI_Icons.png` | (144,0) | Befaehigung: Behaendigkeit |
-| `ico_werte.png` | `UI_Icons.png` | (48,16) | Werte-Abschnitt |
+| `ico_werte.png` | `UI_Bars.png` | (0,0) | Werte-Abschnitt (Balkenstapel) |
 | `ico_dienst.png` | `UI_Icons.png` | (64,16) | Im Dienst, Dienstausweis |
 | `ico_zettel.png` | `UI_Icons.png` | (0,16) | Dienstzettel, Dienstbericht |
 | `ico_kessel.png` | `Food_Icons_NO_Outline.png` | (16,64) | Kessel, Kochen, Verarbeitung, Reiter |
