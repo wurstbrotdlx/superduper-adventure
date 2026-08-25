@@ -91,12 +91,14 @@ Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (17, 37), vor dem 
 
 ### Grundzeilen (Kreislauf bei wiederholtem Ansprechen)
 
-1. „Das Dorffest kommt. Seit elf Jahren.“ (36) / „Vordermühl hatte noch nie eins.“ (31)
-2. „Eine Genehmigung fehlt uns noch.“ (32) / „Da bin ich dran.“ (16)
-3. „Wir werden das angehen.“ (23) / „Noch dieses Jahr, vielleicht.“ (29)
-4. „Schön, dass Sie da sind! Wirklich.“ (34) / „Ihr Jahresgespräch führe ich.“ (29)
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Schön, dass Sie da sind! Wirklich schön.“ (40) / „Ihr Jahresgespräch führe ich.“ (29)
+2. „Zum Rückblick: elf Jahre Dorffest.“ (34) / „Vordermühl hatte noch nie eins.“ (31)
+3. „Zum Ausblick: wir werden das angehen.“ (37) / „Noch dieses Jahr, vielleicht.“ (29)
+4. „Zum Dank: Konfetti ist längst bestellt.“ (39) / „Nur die Genehmigung fehlt noch.“ (31)
 5. „Zuständig wäre die Amtsleitung.“ (31) / „Nur weiß ich nicht, wer sie ist.“ (32)
-6. „Konfetti habe ich schon bestellt.“ (33) / „Nur die Genehmigung fehlt noch.“ (31)
+6. „Da bin ich dran. Seit elf Jahren dran.“ (38) / „Man darf nicht lockerlassen.“ (28)
 
 ### Aktzeilen
 
@@ -105,6 +107,24 @@ II. „Wer zuständig ist? Klären wir noch.“ (35)
 III. „Der Schreibtisch ist leer. Ich weiß warum.“ (42)
 IV. „Ich habe gestanden. Das Fest steht noch aus.“ (44)
 V. „Wir werden das Fest feiern. Irgendwann.“ (39)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Das Dorffest kommt. Seit elf Jahren.“ (36) / „Vordermühl hatte noch nie eins.“ (31)
+2. „Eine Genehmigung fehlt uns noch.“ (32) / „Da bin ich dran.“ (16)
+3. „Wir werden das angehen.“ (23) / „Noch dieses Jahr, vielleicht.“ (29)
+4. „Schön, dass Sie da sind! Wirklich.“ (34) / „Ihr Jahresgespräch führe ich.“ (29)
+5. „Zuständig wäre die Amtsleitung.“ (31) / „Nur weiß ich nicht, wer sie ist.“ (32)
+6. „Konfetti habe ich schon bestellt.“ (33) / „Nur die Genehmigung fehlt noch.“ (31)
+
+I. „Elf Jahre Vorfreude, noch mehr Händedruck.“ (42)
+II. „Wer zuständig ist? Klären wir noch.“ (35)
+III. „Der Schreibtisch ist leer. Ich weiß warum.“ (42)
+IV. „Ich habe gestanden. Das Fest steht noch aus.“ (44)
+V. „Wir werden das Fest feiern. Irgendwann.“ (39)
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt II
 
@@ -332,10 +352,12 @@ Optik: `cfnpc_buba` (Farmer_Buba, wandert, neutral/ungetönt). Heimatanker: Kach
 
 ### Grundzeilen (Kreislauf)
 
-1. „Das würde ich mit Drei ansetzen.“ (32) / „Höchstens.“ (10)
-2. „Diese Kammer würde ich einstufen.“ (33) / „Ungefragt, versteht sich.“ (25)
-3. „Manche Kammern fühlen sich falsch an.“ (37) / „Das beunruhigt mich.“ (20)
-4. „Meine Zahlen stimmen immer. Fast.“ (33) / „Nur wo, weiß ich nicht.“ (23)
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Erstens der Gegenstand. Diese Kammer.“ (37) / „Ungefragt, versteht sich.“ (25)
+2. „Zweitens der Maßstab. Der Vordruck.“ (35) / „Sechs Zeilen. Genügt seit je.“ (29)
+3. „Das würde ich mit Drei ansetzen.“ (32) / „Höchstens. Das ist drittens.“ (28)
+4. „Viertens der Vorbehalt. Meine Zahlen stimmen.“ (45) / „Nur wo, weiß ich nicht.“ (23)
 5. „Ein Gutachten ist nie fertig.“ (29) / „Nur eingestellt.“ (16)
 6. „Andere raten. Ich stufe ein.“ (28) / „Das ist ein Unterschied.“ (24)
 
@@ -346,6 +368,24 @@ II. „Ohne Freigabe stufe ich das niedrig ein.“ (40)
 III. „Ein leerer Stuhl lässt sich nicht bewerten.“ (43)
 IV. „Diese Schrift verweigert sich der Note.“ (39)
 V. „Diesmal setze ich keine Note mehr an.“ (37)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Das würde ich mit Drei ansetzen.“ (32) / „Höchstens.“ (10)
+2. „Diese Kammer würde ich einstufen.“ (33) / „Ungefragt, versteht sich.“ (25)
+3. „Manche Kammern fühlen sich falsch an.“ (37) / „Das beunruhigt mich.“ (20)
+4. „Meine Zahlen stimmen immer. Fast.“ (33) / „Nur wo, weiß ich nicht.“ (23)
+5. „Ein Gutachten ist nie fertig.“ (29) / „Nur eingestellt.“ (16)
+6. „Andere raten. Ich stufe ein.“ (28) / „Das ist ein Unterschied.“ (24)
+
+I. „Die neue Kraft schätze ich auf Zwei.“ (36)
+II. „Ohne Freigabe stufe ich das niedrig ein.“ (40)
+III. „Ein leerer Stuhl lässt sich nicht bewerten.“ (43)
+IV. „Diese Schrift verweigert sich der Note.“ (39)
+V. „Diesmal setze ich keine Note mehr an.“ (37)
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt II
 

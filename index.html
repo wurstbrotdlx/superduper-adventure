@@ -4934,13 +4934,18 @@ const DORF_FIGUREN = [
   {key:'zwirn', name:'Bürgermeister Alfons Zwirn', kurz:'Bürgermeister Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob', komposit:true,
    // schüttere sandige Haare über blanker Kopfhaut, ockerbraune Weste
    gestalt:{hair:'h1', haarFarbe:'#9f704b', hemd:'hof', hemdFarbe:'#765937', hose:'hof', schuh:'schuh'},
+   // T1: Aus jeder Auskunft wird bei ihm eine kleine Festrede. Der Kreislauf
+   // traegt sie in der Reihenfolge, in der eine Rede laeuft: Begruessung,
+   // Rueckblick, Ausblick, Dank, und danach zweimal die Sache selbst. Er meint
+   // jede Silbe, und deshalb hoert man ihm zu (Humor-Grundgesetz 12). Die beiden
+   // Saetze aus seiner Sprachmarke in Kapitel 8 stehen woertlich drin.
    grund:[
-     {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
-     {z1:'Eine Genehmigung fehlt uns noch.', z2:'Da bin ich dran.'},
-     {z1:'Wir werden das angehen.', z2:'Noch dieses Jahr, vielleicht.'},
-     {z1:'Schön, dass Sie da sind! Wirklich.', z2:'Ihr Jahresgespräch führe ich.'},
+     {z1:'Schön, dass Sie da sind! Wirklich schön.', z2:'Ihr Jahresgespräch führe ich.'},
+     {z1:'Zum Rückblick: elf Jahre Dorffest.', z2:'Vordermühl hatte noch nie eins.'},
+     {z1:'Zum Ausblick: wir werden das angehen.', z2:'Noch dieses Jahr, vielleicht.'},
+     {z1:'Zum Dank: Konfetti ist längst bestellt.', z2:'Nur die Genehmigung fehlt noch.'},
      {z1:'Zuständig wäre die Amtsleitung.', z2:'Nur weiß ich nicht, wer sie ist.'},
-     {z1:'Konfetti habe ich schon bestellt.', z2:'Nur die Genehmigung fehlt noch.'},
+     {z1:'Da bin ich dran. Seit elf Jahren dran.', z2:'Man darf nicht lockerlassen.'},
    ],
    akt:[
      'Elf Jahre Vorfreude, noch mehr Händedruck.',
@@ -5448,11 +5453,18 @@ const DORF_FIGUREN = [
    // komposit:true fehlte hier seit G8 — Milb lief die ganze Zeit als
    // Farmer_Buba durchs Dorf, mit dessen Strohhut. Ein Gutachter mit Strohhut.
    gestalt:{hair:'h5', haarFarbe:'#68624d', hemd:'hof', hemdFarbe:'#314f62', hose:'hof', schuh:'schuh'},
+   // T1: Er ist der Ausfuehrlichste im Haus, und seine Form ist das Gutachten in
+   // vier Teilen: Gegenstand, Massstab, Ansetzung, Vorbehalt. Der Kreislauf der
+   // Grundzeilen traegt sie in dieser Reihenfolge, wer ihn also zweimal
+   // anspricht, hoert ein vollstaendiges Gutachten und merkt es nicht. Die
+   // Signatur aus Kapitel 8 bleibt woertlich stehen, sie ist Teil drei.
+   // Der vierte Teil ist die gesperrte Tatsache aus LV7 von innen: er hat
+   // keinen Vorbehalt, und genau deshalb liegt er immer eine Stufe daneben.
    grund:[
-     {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
-     {z1:'Diese Kammer würde ich einstufen.', z2:'Ungefragt, versteht sich.'},
-     {z1:'Manche Kammern fühlen sich falsch an.', z2:'Das beunruhigt mich.'},
-     {z1:'Meine Zahlen stimmen immer. Fast.', z2:'Nur wo, weiß ich nicht.'},
+     {z1:'Erstens der Gegenstand. Diese Kammer.', z2:'Ungefragt, versteht sich.'},
+     {z1:'Zweitens der Maßstab. Der Vordruck.', z2:'Sechs Zeilen. Genügt seit je.'},
+     {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens. Das ist drittens.'},
+     {z1:'Viertens der Vorbehalt. Meine Zahlen stimmen.', z2:'Nur wo, weiß ich nicht.'},
      {z1:'Ein Gutachten ist nie fertig.', z2:'Nur eingestellt.'},
      {z1:'Andere raten. Ich stufe ein.', z2:'Das ist ein Unterschied.'},
    ],
@@ -21477,8 +21489,13 @@ SZENEN.baumZwirn = {
   wenn: () => !CONFIG.schichtModus || amt.schichten >= 4,
   sprecher: () => szeneSprecherAusDorf('zwirn'),
   fragen:[
+    // T1: die Festrede, in ganzer Form. Drei Dinge, ordentlich aufgezaehlt,
+    // und die ersten beiden hat er seit elf Jahren beisammen. Der Witz ist der
+    // volle Einsatz fuer die falsche Sache (Grundgesetz 2), die Waerme ist,
+    // dass er das Konfetti privat bezahlt und es nicht erwaehnt.
     {key:'fest', t:'Warum kein Fest?',
-     z1:'Es fehlt die Genehmigung. Nur die.', z2:'Sonst steht alles bereit.'},
+     z1:'Eine gute Frage. Zuerst: danke dafür.', z2:'Ein Fest braucht drei Dinge.',
+     weiter:'fest2', wt:'Nämlich?'},
     {key:'amt', t:'Sind Sie mein Vorgesetzter?',
      z1:'Nein. Ich führe nur das Gespräch.', z2:'Weil sonst niemand darf.'},
     {key:'dorf', t:'Wie lange sind Sie hier?',
@@ -21492,6 +21509,9 @@ SZENEN.baumZwirn = {
   ],
   knoten:{
     hub:     {z1:'Von früher? Da fange ich gern an.', z2:'Setzen Sie sich ruhig nicht.', hub:true},
+    fest2:   {z1:'Erstens Menschen. Die sind da.', z2:'Zweitens Konfetti. Bestellt.',
+              opts: () => [{t:'Und drittens?', zu:'fest3'}]},
+    fest3:   {z1:'Drittens die Genehmigung.', z2:'Da bin ich dran. Seit elf Jahren.'},
     angebot: {z1:'Sie könnten sich das ansehen.', z2:'Der Keller ist offen. Immer.',
               opts: () => [
                 {t:'Ich sehe es mir an.', tun: () => { szeneKnoten('dank'); }},
@@ -21522,11 +21542,20 @@ SZENEN.baumBramsche = {
      z1:'Ein Herr aus Hochablage. Sehr höflich.', z2:'Höflichkeit ist kein Antrag.'},
     {key:'griff', frei:'herr', t:'Sie haben danebengegriffen?',
      z1:'Ich habe das Falsche hinausgetragen.', z2:'In die Sonne. Drei Tage.'},
+    // T1: Bramsche ist zweistufig, und hier sieht man beide Stufen in einem Zug.
+    // Ohne Antrag drei Woerter. Auf korrekt gestellten Antrag die Auskunft in
+    // ganzer Form: Fundstelle, Gang, Regalseite, Langform, Vorbehalt. Die Wand
+    // ist ihre Sprachmarke, die Auskunft ist die Belohnung, und die Belohnung
+    // ist ueppig. Wer sie einmal richtig anspricht, merkt sich das.
     {key:'heft', nach:3, t:'Führen Sie noch etwas?',
-     z1:'Ein Heft. Nicht das Eingangsbuch.', z2:'In welcher Sache fragen Sie?'},
+     z1:'Ein Heft. Nicht das Eingangsbuch.', z2:'In welcher Sache fragen Sie?',
+     weiter:'auskunft', wt:'In der Sache des Hefts.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Das ist ein weites Feld.', z2:'Fragen Sie genau.', hub:true},
+    auskunft: {z1:'Antrag angenommen. Dann in ganzer Form.', z2:'Fundstelle: Gang zwei, links.',
+               opts: () => [{t:'Und was steht darin?', zu:'auskunft2'}]},
+    auskunft2:{z1:'Langform: Verzeichnis nicht gestellter Anträge.', z2:'Vorbehalt: es ist nicht amtlich.'},
     angebot: {z1:'Es steht darin, wer nichts beantragt hat.', z2:'Ich zeige es ungern her.',
               opts: () => [
                 {t:'Zeigen Sie es mir.', tun: () => { kn.flags.baumHeft = true; saveKn(); szeneKnoten('dank'); }},
@@ -21697,11 +21726,24 @@ SZENEN.baumMilb = {
      z1:'Gutachterliche Ansetzung. Mein Wort.', z2:'Ich habe es selbst gebildet.'},
     {key:'kurz', frei:'ga', t:'Warum kürzen Sie das ab?',
      z1:'Weil ich es oft schreibe.', z2:'Was oft kommt, wird kürzer.'},
+    // T1: das Gutachten in ganzer Form, die Kaskade dieser Figur. Vier Teile,
+    // maximal gruendlich vorgetragen, und der vierte ist der Fehler: ein
+    // Gutachten ohne Vorbehalt ist der Grund, warum er seit vierzig Jahren
+    // systematisch eine Stufe zu hoch liegt (LV7). Er sagt es selbst und stolz.
+    // Die gesperrte Tatsache bleibt gesperrt: er weiss nicht, was er da sagt.
+    {key:'gutachten', frei:'note', t:'Machen Sie eins über mich?',
+     z1:'Gern. Ein Gutachten hat vier Teile.', z2:'Erstens der Gegenstand: Sie.',
+     weiter:'g2', wt:'Und zweitens?'},
     {key:'vordruck', nach:3, t:'Und der Vordruck selbst?',
      z1:'Sechs Zeilen. Ich kenne ihn genau.', z2:'Seit vierzig Jahren derselbe.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Das setze ich mit Vier an.', z2:'Fragen Sie ruhig weiter.', hub:true},
+    g2:      {z1:'Zweitens der Maßstab. Der Vordruck.', z2:'Sechs Zeilen. Er genügt seit je.',
+              opts: () => [{t:'Und drittens?', zu:'g3'}]},
+    g3:      {z1:'Drittens die Ansetzung. Ich sage Drei.', z2:'Höchstens. Sie sind neu.',
+              opts: () => [{t:'Und viertens?', zu:'g4'}]},
+    g4:      {z1:'Viertens der Vorbehalt. Ich habe keinen.', z2:'Das ist die eigentliche Güte.'},
     angebot: {z1:'Ich könnte ihn Ihnen zeigen.', z2:'Er liegt hier. Natürlich.',
               opts: () => [
                 {t:'Zeigen Sie ihn mir.', tun: () => { szeneKnoten('dank'); }},
