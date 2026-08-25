@@ -595,7 +595,7 @@
   #overlay button:hover{filter:brightness(1.1);}
 
   /* =====================================================================
-     U8 — Die Hausmitteilung. Der einzige Text im Haus, der von aussen auf
+     U9 — Die Hausmitteilung. Der einzige Text im Haus, der von aussen auf
      das Spiel zeigt: linksbuendig, weil er gelesen und nicht bewundert
      wird, und mit einer Marke am Rand, damit drei Punkte drei Punkte
      bleiben. #overlay .panel zentriert alles, deshalb steht das
@@ -1780,7 +1780,7 @@
     #overlay h3{font-size:calc(14px * var(--fs));}
     #overlay p{font-size:calc(12px * var(--fs));line-height:1.6;}
     #overlay button{font-size:calc(16px * var(--fs));padding:12px 26px;}
-    /* U8: dieselbe Rechnung wie eine Zeile darueber — auf dem Telefon muss die
+    /* U9: dieselbe Rechnung wie eine Zeile darueber — auf dem Telefon muss die
        Mitteilung samt Knopf in eine Bildhoehe passen, sonst steht der Weg ins
        Spiel unter dem Bildrand (der Fund aus menue-pruef, s. Kommentar bei
        #overlay .panel oben). */
@@ -15651,13 +15651,14 @@ function updateHUD(){
 }
 
 // ===========================================================================
-//  U8 — Die Hausmitteilung. Was seit dem letzten Mal neu ist, und wo es steht.
+//  U9 — Die Hausmitteilung. Was seit dem letzten Mal neu ist, und wo es steht.
 //
-//  Das Haus baut schneller, als jemand hinsieht. Die Statuskarte aus U7 sitzt
-//  seit heute oben links, und die fuenfundvierzig Kartenbilder liegen hinter
-//  einem Knopf, den man druecken muesste, um zu merken, dass es sie gibt. Also
-//  ein Blatt davor — vor dem Startbild und nicht darin, weil das Startbild
-//  bereits eine Aufgabe hat und die heisst: Dienst antreten.
+//  Das Haus baut schneller, als jemand hinsieht. Die acht Menuekaesten sind
+//  seit heute vier Grossfenster, die Statuskarte aus U7 sitzt oben links, und
+//  die fuenfundvierzig Kartenbilder liegen hinter einem Griff, den man tun
+//  muesste, um zu merken, dass es sie gibt. Also ein Blatt davor — vor dem
+//  Startbild und nicht darin, weil das Startbild bereits eine Aufgabe hat und
+//  die heisst: Dienst antreten.
 //
 //  Jeder Punkt sagt zwei Dinge und hoert dann auf: WAS sich geaendert hat und
 //  WO es zu sehen ist. Der Baubericht steht in den Phasendokumenten, hier
@@ -15679,6 +15680,13 @@ function updateHUD(){
 //
 //  Wer hier eine Runde eintraegt: NEUERUNGEN.punkte neu fuellen, stand und
 //  datum auf den Tag setzen. Alles andere bleibt.
+//
+//  Und wer einen Bauabschnitt aendert, der in einem Punkt genannt ist, aendert
+//  den Punkt mit. Die wo-Zeile ist eine Wegbeschreibung ins laufende Spiel und
+//  veraltet wie jede: U8 hat den Zulagen ihr eigenes Fenster genommen, und der
+//  Satz "Guertel 🗂️ Zulagen" zeigte am Tag der Auslieferung auf einen Knopf,
+//  den es nicht mehr gab. Kein Guard kann das sehen — ein Fliesstext ist fuer
+//  ihn nur ein Fliesstext.
 // ===========================================================================
 const NEUERUNGEN_KEY = 'sda_neuerungen';
 const NEUERUNGEN = {
@@ -15686,19 +15694,19 @@ const NEUERUNGEN = {
   datum: '25. August',
   punkte: [
     {
-      titel: 'Die Bedienschicht hat sich sortiert',
-      was: 'Leben, Mana und Erfahrung liegen nicht mehr verstreut, sondern als eine Karte beieinander, mit Lichtbild und Dienststufe. Die Dienstuhr wandert nicht mehr mit der Länge des Ortsnamens.',
-      wo: 'Im Dienst: Statuskarte oben links, Übersichtskarte oben rechts, Uhr und Beute darunter.',
+      titel: 'Vier große Fenster statt acht Kästen',
+      was: 'Charakter, Rucksack, Kochen und Zauber füllen jetzt den Schirm, ein Reiterband im Kopf führt in einem Griff von einem zum nächsten. Befähigung, Ausrüstung und Ausweis stehen im Charakterfenster statt im Rucksack.',
+      wo: 'Taste C oder der Knopf 🧍 am Gürtel, dann das Reiterband oben.',
     },
     {
-      titel: 'Auf dem Telefon sind die Daumen frei',
-      was: 'Der Gehring ist jetzt auch dann zu sehen, wenn ihn niemand hält. Der Gürtel liegt nicht mehr quer über der unteren Bildkante, und die Zielwahl ist kein Menüpunkt mehr.',
-      wo: 'Ruhering unten links, Knopfspalte am linken Rand, Zielwahl 🎯 am Angriffsfächer unten rechts.',
+      titel: 'Die Bedienschicht hat sich sortiert',
+      was: 'Leben, Mana und Erfahrung liegen als eine Karte beieinander, mit Lichtbild und Dienststufe. Die Dienstuhr wandert nicht mehr mit dem Ortsnamen, und auf dem Telefon sind die Daumen frei.',
+      wo: 'Statuskarte oben links, Karte oben rechts, Uhr darunter. Am Telefon: Ruhering unten links, Knopfspalte links, Zielwahl 🎯 am Angriffsfächer.',
     },
     {
       titel: 'Die Zulagen sind Sammelkarten geworden',
-      was: 'Namensleiste mit der Stufe, Bildfenster, Typenzeile, Textfeld — und fünfundvierzig gemalte Motive, eines für jede Familie auf jeder Stufe.',
-      wo: 'Gürtel 🗂️ Zulagen, auf der Tastatur Taste Z.',
+      was: 'Namensleiste mit der Stufe, Bildfenster, Typenzeile, Textfeld — und fünfundvierzig gemalte Motive, eines je Familie und Stufe.',
+      wo: 'Charakterfenster, zweites Blatt „Kartenmappe" — oder Taste Z.',
     },
   ],
 };
@@ -15729,7 +15737,7 @@ function showNeuerungen(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>HAUSMITTEILUNG</h1>
     <h3>Umlauf vom ${NEUERUNGEN.datum} · zur Kenntnis</h3>
-    <p style="font-size:calc(13px * var(--fs));color:#c9b98a;margin:0;">Seit Ihrer letzten Schicht hat das Haus ${NEUERUNGEN.punkte.length === 3 ? 'an drei Stellen' : `an ${NEUERUNGEN.punkte.length} Stellen`} umgeräumt. Kurz, was und wo.</p>
+    <p style="font-size:calc(13px * var(--fs));color:#c9b98a;margin:0;">${NEUERUNGEN.punkte.length === 3 ? 'Drei Stellen' : `${NEUERUNGEN.punkte.length} Stellen`}, an denen seit Ihrer letzten Schicht umgeräumt wurde. Kurz, was und wo.</p>
     <div class="neuListe">${punkte}</div>
     <button onclick="neuerungenWeg()">Zur Kenntnis genommen</button>
     <p class="neuFuss">Steht ab jetzt auch im Startbild unter „Was ist neu".</p>
@@ -23257,7 +23265,7 @@ loadAssets().then(() => {
   stopfenAssert();            // SZ3: die Stelle im Steinfeld, Serie I und Vorblatts Ankunft
   knZettelPortrait();         // U6: und aus demselben Grund einen Schritt danach
   refreshFloor();
-  // U8: Die Hausmitteilung steht VOR dem Startbild, nicht darin. Faellig ist sie
+  // U9: Die Hausmitteilung steht VOR dem Startbild, nicht darin. Faellig ist sie
   // nur fuer ein Geraet, das ein Vorher hat und diesen Stand noch nicht gesehen
   // hat (s. neuerungenFaellig); ihr Knopf fuehrt auf showStartScreen().
   if(neuerungenFaellig()) showNeuerungen(); else showStartScreen();

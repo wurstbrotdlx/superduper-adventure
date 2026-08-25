@@ -1,27 +1,38 @@
-## U8: Die Hausmitteilung — ERLEDIGT
+## U9: Die Hausmitteilung — ERLEDIGT
 
 Der Wunsch war ein Satz: ein Popup mit den Updates von heute vorschalten, das kurz sagt, was
 es gibt und wo es ist.
 
-Das ist keine Oberflächenphase im Sinn von U1 bis U7. Die haben das Spiel umgeräumt; diese
+Das ist keine Oberflächenphase im Sinn von U1 bis U8. Die haben das Spiel umgeräumt; diese
 hier sagt, dass umgeräumt wurde. Sie fasst nichts an, was im Dienst passiert: keine
 Kampfwerte, keinen Katalog, keine Weltdatei, kein Panel aus `PANEL_REGISTER`, keinen
 Speicherschlüssel des Spielstands. Sie fasst genau drei Dinge an — sechs CSS-Regeln unter
 `#overlay`, einen Block im Skript vor `showStartScreen()`, und die eine Zeile am Ende der
 Ladekette, die bisher `showStartScreen()` hieß.
 
+**Zur Nummer.** Dieser Abschnitt hieß bis zur Auslieferung U8 und heißt seither U9. U8 ist die
+zweite Schicht der Oberfläche (`phase-u8-menuefenster.md`); beide sind am 25.08.2026 gebaut
+worden, ohne voneinander zu wissen, und trafen sich erst auf `main`. Textlich ging das ohne
+Konflikt zusammen und alle Prüfläufe blieben grün — aber zwei Bauabschnitte mit derselben
+Nummer sind kein Schaden, den ein Guard meldet, sondern einer, der erst in einem halben Jahr
+weh tut, wenn jemand „siehe U8" liest. Die Nummer der später gemergten Arbeit weicht, nicht
+die der früheren.
+
 ---
 
 ### Der Anlass: das Haus baut schneller, als jemand hinsieht
 
-Am 25.08.2026 sind drei Dinge ausgeliefert worden, die man alle drei übersehen kann:
+Am 25.08.2026 sind vier Dinge ausgeliefert worden, die man alle vier übersehen kann:
 
+* **U8** hat aus acht Kästen neben dem Spiel vier Großfenster gemacht, mit einem Reiterband im
+  Kopf. Der Rucksack trägt nur noch, was in ihm liegt; Befähigung, Ausrüstung und Ausweis
+  stehen im neuen Charakterfenster.
 * **U7** hat die Bedienschicht neu sortiert. Wer das Spiel kennt, sucht Leben und Mana dort,
   wo sie gestern lagen — unten in der Mitte, auf dem Telefon als zwei senkrechte Röhren an
   den Bildrändern. Sie liegen jetzt oben links.
 * **K1-13** hat fünfundvierzig Kartenbilder an die Zulagen gehängt. Sie liegen hinter einem
-  Knopf, den man drücken müsste, um zu merken, dass es sie gibt.
-* **K1-10** hat die Karte in eine Sammelkarte verwandelt. Dasselbe Problem, derselbe Knopf.
+  Griff, den man tun müsste, um zu merken, dass es sie gibt.
+* **K1-10** hat die Karte in eine Sammelkarte verwandelt. Dasselbe Problem, derselbe Griff.
 
 Das Haus hat für so etwas eine Form, und sie steht in der Welt schon da: eine Mitteilung, die
 umläuft und zur Kenntnis genommen wird. Also heißt der Bildschirm **HAUSMITTEILUNG** und
@@ -48,9 +59,10 @@ und davon gibt es hier nichts.
 ### Entscheidung 2: zwei Zeilen je Punkt, und dann ist Schluss
 
 Jeder Punkt der Mitteilung sagt **was** sich geändert hat und **wo** es zu sehen ist, und die
-zweite Zeile ist die eigentliche. „Die Zulagen haben Bilder" ist eine Nachricht; „Gürtel 🗂️
-Zulagen, auf der Tastatur Taste Z" ist die Fundstelle, und ohne sie bleibt die Nachricht
-folgenlos. Die Wo-Zeile trägt deshalb eine eigene Farbe und ein 📍 und steht in jedem Punkt.
+zweite Zeile ist die eigentliche. „Die Zulagen haben Bilder" ist eine Nachricht;
+„Charakterfenster, zweites Blatt Kartenmappe — oder Taste Z" ist die Fundstelle, und ohne sie
+bleibt die Nachricht folgenlos. Die Wo-Zeile trägt deshalb eine eigene Farbe und ein 📍 und
+steht in jedem Punkt.
 
 Der Baubericht steht in den Phasendokumenten. Hier steht nur, wohin man sieht.
 
@@ -89,9 +101,9 @@ nicht aufhalten. Dazu kommt, dass sie in frischen Browser-Kontexten laufen: leer
 also greift Regel 1 und die Mitteilung erscheint erst gar nicht.
 
 Beides zusammen ist der Grund, warum diese Phase keine einzige Zeile in einem bestehenden
-Prüflauf ändert. Verlassen wird sich darauf trotzdem nicht — `menue-pruef` (39), `zulagen-pruef`
-(45), `speicher-pruef` (34), `empfang-pruef` (59) und `steuerung-pruef` sind nach dem Umbau
-gelaufen und stehen unverändert.
+Prüflauf ändert. Verlassen wird sich darauf trotzdem nicht — `menue-pruef` (69),
+`zulagen-pruef` (50), `speicher-pruef` (34) und `steuerung-pruef` sind nach dem Umbau gelaufen
+und stehen unverändert.
 
 Eine Stelle war nah dran: `speicher-pruef` löscht den Speicher, liest eine Exportdatei ein
 und lädt neu. Danach hat das Gerät ein Vorher und wäre fällig. Es ist trotzdem still,
@@ -105,7 +117,36 @@ Acht Prüfläufe klicken sich durch Blätterstrecken, indem sie den **letzten** 
 Overlay drücken, bis das Overlay weg ist. Stünde „Was ist neu" hinter der Dienstanweisung,
 wäre das für einen solchen Lauf ein Pendel: Startbild → Mitteilung → Startbild, sechzig
 Runden lang. Kein Lauf gerät heute dorthin (Fund 2), aber die Reihenfolge kostet nichts, und
-so bleibt der letzte Knopf des Startbilds derselbe wie vor U8.
+so bleibt der letzte Knopf des Startbilds derselbe wie vor U9.
+
+### Fund 4: eine Wegbeschreibung veraltet, und kein Guard sieht es
+
+Der Fund des Auslieferungstags, und er ist der eigentliche Grund für den Nachtrag. Die erste
+Fassung nannte als Fundstelle der Sammelkarten „Gürtel 🗂️ Zulagen, auf der Tastatur Taste Z".
+Das stimmte, als es geschrieben wurde. Zwischen dem Schreiben und dem Ausliefern ging U8 auf
+den Hauptzweig und nahm den Zulagen ihr eigenes Fenster: aus `#zulagenBtn` wurde `#charBtn`,
+aus dem Fenster das zweite Blatt des Charakterfensters. Der Satz zeigte damit auf einen Knopf,
+den es nicht mehr gab — auf dem Bildschirm, dessen einzige Aufgabe es ist, den Weg zu zeigen.
+
+Kein Guard hat etwas gesagt, und keiner konnte: die Guards auf Skriptebene lesen Tabellen,
+Zeichenzahlen und Erreichbarkeit; ein Fließtext ist für sie ein Fließtext. Die Prüfläufe lasen
+den Bildschirm, zählten drei Punkte und drei Wo-Zeilen und fanden alles in Ordnung. Gezählt
+wurde, dass eine Zeile **da** ist, nie, dass sie **hinführt**.
+
+**Eingriff.** `mitteilung-pruef` drückt seither, was die Wo-Zeilen nennen: `C` muss das
+Charakterfenster öffnen, `Z` muss auf der Kartenmappe landen, den Knopf 🧍 muss es am Gürtel
+geben, das Reiterband muss vier Reiter haben, und die vier Ecken der Bedienschicht müssen
+stehen. Dazu die Gegenprobe, weil ein Wächter, der immer schweigt, nichts beweist: mit
+entferntem `#charBtn`, entferntem Reiterband und der alten Zulagen-Zeile schlägt jede der drei
+Prüfungen an (`false`, `0`, `[false, true, true]`).
+
+Das ist keine vollständige Absicherung und wird als solche nicht behauptet — ein Satz kann
+weiter falsch sein, während die Taste stimmt. Es sichert die eine Sorte Fehler, die hier
+wirklich passiert ist: eine Fundstelle, die ein anderer Bauabschnitt umgeräumt hat.
+
+**Die Regel dahinter** steht seither im Kopf von `NEUERUNGEN`: wer einen Bauabschnitt ändert,
+der in einem Punkt genannt ist, ändert den Punkt mit. Ein Änderungshinweis ist die einzige
+Textstelle des Spiels, die schneller altert als der Code, den sie beschreibt.
 
 ---
 
@@ -118,6 +159,7 @@ so bleibt der letzte Knopf des Startbilds derselbe wie vor U8.
 | Skript, vor `showStartScreen()` | `NEUERUNGEN` (Stand, Datum, Punkte), `NEUERUNGEN_KEY`, `neuerungenStandLesen/Stempeln/Faellig`, `showNeuerungen`, `neuerungenWeg` |
 | Skript, in `showStartScreen()` | der Knopf „Was ist neu", vor der Dienstanweisung |
 | Skript, Ende der Ladekette | `if(neuerungenFaellig()) showNeuerungen(); else showStartScreen();` |
+| `tools/mitteilung-pruef.mjs` | der Lauf, 32 Zeilen, darunter seit Fund 4 die sechs, die die Wo-Zeilen wirklich drücken |
 
 **Eine Runde eintragen** heißt: `NEUERUNGEN.punkte` neu füllen, `stand` und `datum` auf den
 Tag setzen. Alles andere bleibt stehen. Wer die Punkte leert, schaltet die Mitteilung ab —
@@ -127,8 +169,8 @@ auch den Knopf im Startbild.
 
 ### Prüfprotokoll
 
-`tools/mitteilung-pruef.mjs`, im echten Browser, Bauform wie `menue-pruef`. **26 von 26**
-am 25.08.2026:
+`tools/mitteilung-pruef.mjs`, im echten Browser, Bauform wie `menue-pruef`. **32 von 32**
+am 25.08.2026 (26 zur Auslieferung, sechs kamen mit Fund 4 dazu):
 
 * **Das frische Gerät** sieht das Startbild, bekommt den Stand still gestempelt und trägt
   keinen „Was ist neu"-Knopf.
@@ -140,12 +182,22 @@ am 25.08.2026:
 * **Nach dem Stempel** bleibt sie beim Neuladen weg; ein alter Stempel (`2026-08-01`) lässt
   sie wiederkommen.
 * **`startGame()`** kommt an ihr vorbei, der Dienst läuft (Fund 2, gemessen statt behauptet).
+* **Die Wegbeschreibung führt hin** (Fund 4): die Wo-Zeilen nennen `C`, `Z` und den Fächer,
+  den Knopf 🧍 gibt es, `C` öffnet das Charakterfenster, `Z` landet auf der Kartenmappe, das
+  Reiterband hat vier Reiter, und die vier Ecken der Bedienschicht stehen.
 * **Auf 390x844 und 360x640** steht sie, der Knopf ist erreichbar, nichts läuft seitlich
   hinaus, und er führt ins Startbild.
 * **Konsole still** in allen drei Formaten.
 
-Ohne Regression, nach dem Umbau gelaufen: `menue-pruef` 39/39, `zulagen-pruef` 45/45,
-`speicher-pruef` 34/34, `empfang-pruef` 59/59, `steuerung-pruef` „Alles in Ordnung".
+Dazu die Gegenprobe zu Fund 4 (kein Wächter, der nicht anschlagen kann): mit entferntem
+`#charBtn`, entferntem Reiterband und der alten Zulagen-Zeile meldet jede der drei Prüfungen
+den Fehlstand.
+
+Ohne Regression, auf dem zusammengeführten Stand mit U8 und dem U8-Nachtrag gelaufen:
+`menue-pruef` 69/69, `zulagen-pruef` 50/50, `speicher-pruef` 34/34, `steuerung-pruef` „Alles in
+Ordnung". Dazu die Probe am Auslieferungsweg: `tools/build-single.mjs` gebaut und die
+entstandene `dist/index.html` per `file://` geladen — Mitteilung, drei Punkte, Stempel,
+Konsole still.
 
 **Abnahme:** Wer die Mitteilung wegklickt, spielt das Spiel unverändert. Sie greift in nichts
 ein, sie hält nichts auf, sie läuft nicht von selbst ab und sie verschwindet nicht von selbst.

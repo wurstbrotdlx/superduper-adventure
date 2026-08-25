@@ -1,4 +1,4 @@
-// Pruefprotokoll zu Bauabschnitt U8 (phase-u8-hausmitteilung.md).
+// Pruefprotokoll zu Bauabschnitt U9 (phase-u9-hausmitteilung.md).
 //
 //   python3 serve.py &
 //   node tools/mitteilung-pruef.mjs [URL]
@@ -22,6 +22,15 @@
 //                         nichts laeuft seitlich hinaus. Das ist derselbe
 //                         Fund, den menue-pruef am WEITER-Knopf des
 //                         Einstellungsvordrucks gemacht hat
+//   die Wegbeschreibung   was eine wo-Zeile nennt, gibt es auch. Nachtrag nach
+//                         dem Fund am Auslieferungstag: U8 hat den Zulagen ihr
+//                         eigenes Fenster genommen, und "Guertel 🗂️ Zulagen"
+//                         zeigte auf einen Knopf, den es nicht mehr gab. Ein
+//                         Fliesstext ist fuer jeden Guard nur ein Fliesstext —
+//                         also wird hier nicht der Satz geprueft, sondern die
+//                         Stelle, auf die er zeigt: die genannten Tasten und
+//                         Knoepfe werden gedrueckt und muessen oeffnen, was
+//                         dort steht
 //
 // Der Lauf misst nichts, er stellt fest: jede Zeile ist ein Soll-Ist-Vergleich,
 // der Exit-Code ist 1, sobald eine Zeile nicht stimmt.
@@ -121,6 +130,30 @@ for(let i = 0; i < 60; i++){
 }
 await page.waitForTimeout(400);
 pruef('startGame() kommt an der Mitteilung vorbei', await page.evaluate(() => state), 'play');
+
+// --- 3b. Die Wegbeschreibung zeigt auf etwas, das es gibt -------------------
+// Der Fund vom Auslieferungstag, s. Kopf. Geprueft wird nicht der Satz, sondern
+// die Stelle: jede Taste und jeder Knopf, den eine wo-Zeile nennt, wird hier
+// wirklich gedrueckt. Wer einen Punkt umschreibt, zieht diese Liste mit.
+const genannt = await page.evaluate(() => NEUERUNGEN.punkte.map(p => p.wo).join(' '));
+pruef('die Zeilen nennen Taste C, Taste Z und den Fächer',
+      [genannt.includes('Taste C'), genannt.includes('Taste Z'), genannt.includes('Angriffsfächer')],
+      [true, true, true]);
+pruef('den Knopf 🧍 am Guertel gibt es',
+      await page.evaluate(() => !!document.getElementById('charBtn')
+                              && document.getElementById('charBtn').textContent.includes('🧍')), true);
+await page.keyboard.press('c');
+pruef('Taste C oeffnet das Charakterfenster',
+      await page.evaluate(() => charakterOpen), true);
+await page.keyboard.press('z');
+pruef('Taste Z fuehrt direkt auf die Kartenmappe',
+      await page.evaluate(() => [charakterOpen, charBlatt]), [true, 'mappe']);
+pruef('das Reiterband steht im Kopf des Fensters',
+      await page.evaluate(() => document.querySelectorAll('#charakter .gfReiter').length), 4);
+await page.keyboard.press('Escape');
+pruef('die vier Ecken der Bedienschicht stehen',
+      await page.evaluate(() => ['statusKarte', 'minimap', 'uhrTxt', 'prioBtn']
+        .filter(id => !!document.getElementById(id)).length), 4);
 await ctx.close();
 
 // --- 4. Auf dem Telefon: der Knopf steht im Bild ----------------------------
