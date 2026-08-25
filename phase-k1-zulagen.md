@@ -736,3 +736,112 @@ kein seitlicher Überlauf, Konsole still.
 **Was von hier aus nicht prüfbar ist:** die ausgelieferte Seite. Der Proxy
 dieser Sitzung blockt `github.io`; der Stand wird über den Deploy-Job und den
 lokalen Build belegt.
+
+---
+
+## Nachtrag: die Kartenbilder kamen im Browser nicht an
+
+Gemeldet aus dem laufenden Betrieb, mit einem Bildschirmfoto der Mappe auf
+`wurstbrotdlx.github.io`: in der Ziehung standen statt der Kartenkunst drei
+kaputte Bildsymbole. Firefox, Chrome und Safari gleichermaßen, also kein
+Browserfehler, sondern die ausgelieferte Datei.
+
+### Der Fund
+
+`zulageKarteHTML()` schrieb den Katalogpfad unverändert ins Markup:
+
+```js
+// vorher
+const bild = pfad ? `<img src="${pfad}" alt="">`
+                  : `<span class="zIcon">${zf.icon}</span>`;
+
+// nachher
+const quelle = zulageBildQuelle(zf, stufe);
+const bild = quelle ? `<img src="${quelle}" alt="">`
+                    : `<span class="zIcon">${zf.icon}</span>`;
+```
+
+Das stimmt im Quellbaum, wo `assets/zulagen/` neben der `index.html` liegt. Auf
+Pages liegt es nicht daneben: der Deploy-Job lädt ausschließlich
+`dist/index.html` hoch, und in dieser Datei ist der Pfad kein Pfad mehr, sondern
+ein Schlüssel in `ASSET_BLOBS`. Fünfundvierzig sichere 404.
+
+Das ist genau die zweite Ladestelle, vor der der Kommentar bei
+`knZettelPortrait()` seit U6 warnt, und die einzige Stelle im ganzen Haus, die
+sie hatte. Jede andere Grafik geht durch `loadAssets()` und wird dort
+umgeschlüsselt, weshalb im Bildschirmfoto der Menürahmen und der Gürtelknopf
+korrekt stehen und nur die Karten fehlen.
+
+### Warum die Prüfung von damals das durchgelassen hat
+
+Der Abschnitt „Prüfprotokoll" oben hält fest: „in `dist/index.html` stehen
+fünfundvierzig Kartenbilder als `data:`-URI". Das war wahr und war nicht die
+Frage. Nachgewiesen war, dass der Build die Bilder **einbackt**; nicht
+nachgewiesen war, dass die Karte sie **liest**. Zwischen beidem lag der Fehler.
+Ein Guard über dem Katalog kann das nicht sehen, weil der Katalog stimmt.
+
+### Die Reparatur
+
+`zulageBildQuelle()` steht jetzt zwischen Katalog und Markup und löst den Pfad
+so auf, wie `loadAssets()` es tut: im Quellbaum bleibt er der Pfad, im Build
+wird er zur `data:`-URI. Fehlt der Schlüssel, gibt es das Bild nicht, und die
+Karte fällt auf das Sinnbild zurück statt auf ein kaputtes Bildsymbol.
+
+Dazu eine Zeile in `zulagenAssert()`, die dort fragt, wo es zu sehen ist: liegt
+der Pfad im Build, wenn es einen Build gibt. Im Quellbaum ist sie still, in
+einer ausgelieferten Datei mit fehlendem Bild meldet sie sich in der Konsole.
+
+### Der Effekt in Zahlen
+
+Kurz gesagt: die ausgelieferte Datei trug die Kartenkunst die ganze Zeit mit
+sich, sie kam nur nie auf den Bildschirm. Mehr als die Hälfte der Bytes, die
+ein Spieler herunterlud, war Bild, das kein Frame je zeigen konnte.
+
+| | vorher | nachher |
+|---|---:|---:|
+| Kartenbilder im Katalog | 45 | 45 |
+| davon auf der ausgelieferten Seite sichtbar | **0** | **45** |
+| 404 beim Zeichnen aller Karten | **45** | 0 |
+| kaputte Symbole gleichzeitig im Panel | bis zu 6 | 0 |
+| Kartenkunst in `dist/index.html` | 1819 KB | 1819 KB |
+| Anteil an der ausgelieferten Datei | 56 % | 56 % |
+| davon je auf dem Bildschirm angekommen | **0 Byte** | **1819 KB** |
+
+Die zwei Zeilen, die sich nicht ändern, sind der Punkt: eingebacken war alles,
+gelesen war nichts. Die Datei wog vorher wie nachher, sie zeigte nur nichts
+dafür.
+
+Die sechs gleichzeitig sichtbaren Symbole sind der Blick des Spielers, nicht
+der des Prüfers: drei Vorlagen in der Ziehung und ab Stufe 15 drei belegte
+Fächer darunter. Auf dem gemeldeten Bildschirmfoto sind drei davon zu sehen,
+weil die Mappe dort noch leer war.
+
+Die Reparatur selbst kostet 1624 Byte in der ausgelieferten Datei, also 0,05
+Prozent, und besteht aus zehn Zeilen Wirkcode. Kein Assetbyte bewegt, kein
+Katalogpfad geändert, kein CSS angefasst.
+
+### Prüfprotokoll
+
+Gegenprobe im echten Chromium, an der gebauten Einzeldatei über `file://`, also
+ohne jedes `assets/` daneben. Gemessen wird `naturalWidth`, nicht das Vorkommen
+im Quelltext: ein kaputtes Bild ist genau eines, das der Browser nicht dekodiert
+hat.
+
+| Stand | Karten | Bilder | davon `data:` | kaputt |
+|---|---|---|---|---|
+| vorher | 45 | 45 | 0 | **45** |
+| nachher | 45 | 45 | 45 | 0 |
+
+Die 404 sind separat über HTTP gezählt, nicht über `file://` geschlossen: die
+alte Fassung hinter einem Server aufgerufen, alle fünfundvierzig Karten
+gezeichnet, Antwortcodes mitgeschrieben. Fünfundvierzig 404, alle
+`assets/zulagen/`, sonst keiner.
+
+Der Quellbaum bleibt unberührt: über `serve.py` fünfundvierzig Bilder, alle als
+relativer Pfad, keines kaputt.
+
+`zulagen-pruef.mjs` fünfzig von fünfzig, Konsole still.
+
+**Was von hier aus nicht prüfbar ist:** wieder die ausgelieferte Seite, aus
+demselben Grund wie oben. Der Nachweis läuft über die gebaute Datei, und die ist
+diesmal bytegleich das, was der Deploy-Job hochlädt.
