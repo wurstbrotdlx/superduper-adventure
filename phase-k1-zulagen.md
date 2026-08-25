@@ -290,7 +290,7 @@ in `zulagenAssert()` festgenagelt.
   seine Leerzustände selbst („Noch keine Zulage bewilligt. Jeder Aufstieg legt
   drei vor."). Ein Zettel wäre ein guter Nachtrag, kein Teil des Kerns.
 * **Keine Grafik.** Sinnbilder sind Emoji, wie überall im Haus. Der
-  Kartenrahmen steht und wartet.
+  Kartenrahmen steht und wartet. *(Überholt durch K1-10, siehe unten.)*
 
 ---
 
@@ -363,3 +363,255 @@ lange Wörter, und die Spalte hat sich danach zu richten, nicht umgekehrt.
   Schaden obendrauf) sind erst ab Stufe 15 und nur mit zwei passenden
   Ziehungen erreichbar. Zum Vergleich: vier Ausrüstungsteile mit
   Rang-3-Wirkung tragen heute schon achtundvierzig und zweiundsiebzig.
+
+---
+
+## K1-10. Nachtrag: die Sammelkarte
+
+*(24.08.2026, auf Ansage des Projektinhabers, am selben Tag wie der Kern.)*
+
+Die Rückmeldung auf die erste Fassung lautete: die Prompts sind gut, **aber das
+muss mehr nach Sammelkarte aussehen, a la Yu-Gi-Oh oder Magic, sehr episch,
+sehr drüber, es soll Bock machen die zu sammeln.**
+
+Der Befund dahinter stimmt und war hausgemacht. Die erste Fassung zeigte ein
+Sinnbild von sechsundzwanzig Pixeln links neben einer Textzeile. Das ist kein
+Sammelstück, das ist ein Listeneintrag. Und die Bildprompts standen passend
+dazu auf Inventarsymbolen: einzelner Gegenstand, mittig, dunkler Grund. Beides
+zusammen ergab eine korrekte, unbegehrliche Karte.
+
+**Das Gegenteil steht seit jeher in der Weltbibel**, Humor-Grundgesetz Regel 10:
+die Form ist episch, der Inhalt ist Papier, und nichts an diesem Haus darf
+bescheiden aussehen. Der Wunsch war also kein Fremdkörper, sondern die Regel,
+die dieser Bauabschnitt zuerst nicht eingelöst hat.
+
+### Zwei Eingriffe
+
+**Die Karte im Spiel ist jetzt eine Karte.** Aufbau wie bei Magic: Namensleiste
+mit der Stufe in der Ecke, Bildfenster im Verhältnis vier zu drei, Typenzeile,
+Textfeld. Die Namensleiste trägt dieselbe Rezeptur wie das Kopfband der Panels
+aus U1, damit die Karte aus demselben Haus stammt wie das Fenster um sie herum.
+Die Stufe trägt nicht mehr nur die Ziffer, sondern die ganze Karte: gedeckt,
+dann Gold, dann Violett mit Schein und einem laufenden Glanz über dem
+Bildfenster, der bei `prefers-reduced-motion` stillsteht. Das Panel ist von
+560 auf 680 Pixel gewachsen, damit drei Karten nebeneinander Platz haben.
+
+Neu ist die **Typenzeile**: wo die Karte hingehört (`Gattung Schwert`,
+`Zweig Frost`, `Allgemein`) und ob sie stapelt. Das stand vorher nur im
+Tooltip und ist genau die Angabe, nach der man eine Sammlung sortiert.
+
+**Das Bildfenster nimmt schon ein Bild.** Trägt eine Familie im Katalog ein
+Feld `bild`, schreibt `zulageKarteHTML()` ein `<img>` hinein statt des
+Sinnbilds; `object-fit:cover` und `image-rendering:pixelated` stehen bereit.
+Der Einbau der fünfzehn Bilder ist damit **eine Zeile je Karte** und keine
+Codeänderung. Das Sinnbild bleibt als Ersatz stehen und im Tooltip.
+
+**Die Prompts sind umgeschrieben** (`zulagen-bildprompts.md`). Aus fünfzehn
+Inventarsymbolen sind fünfzehn epische Szenen geworden: der Brieföffner steckt
+wie Excalibur im Berg aus Formularen, der Stempel fährt aus Gewitterwolken auf
+einen winzigen Schreibtisch, der Kaffeebecher steht auf einem Altar am Ende
+einer Halle. Der Gegenstand bleibt Büromaterial, die Inszenierung ist eine
+Kathedrale.
+
+Drei Änderungen an der Stilformel, jede begründet in der Prompt-Datei: der
+Ausschnitt wird zur Kartenkunst-Einstellung (`--ar 4:3`), die Karikatur fällt
+weg, weil der Anker vom Figurenporträt zum **Amiga-Titelbild** wandert, und die
+Palette darf beleuchtet werden statt eingefärbt. `--s 25` bleibt: höhere
+Stilisierung heißt bei Midjourney hübscher, weicher, moderner, und das ist der
+Weg aus der Pixelkunst heraus. Die Dramatik kommt aus den Wörtern.
+
+### Ein Fund, den erst das Layout hervorgeholt hat
+
+Eine Kartenspalte ist rund hundertzehn Pixel breit, und in diese Breite passt
+**kein einziges Kompositum dieses Hauses**. Der Browser bricht dann mitten im
+Wort: auf der Karte stand `Vollziehbarkei` und darunter ein einzelnes `t`.
+`hyphens:auto` half nicht, der Prüf-Chromium bringt kein deutsches
+Trennwörterbuch mit, und darauf ist ohnehin kein Verlass.
+
+Gemessen statt geraten: ein Lauf misst jeden der fünfzehn Namen auf Stufe III
+gegen die verfügbare Zeilenbreite, auf beiden Fensterbreiten. Er fand zwei
+harte Brüche, `Großbrandverfügung` und `Unerschöpflichkeitsklausel`, das
+zweite mit hundertachtundsechzig Pixeln in hundertvierzehn.
+
+Die Lösung sind **weiche Trennstellen an den Fugen der Komposita**, als `&shy;`
+im Katalog, weil das durch `innerHTML` geht und im Quelltext sichtbar bleibt.
+Neunzehn Namen haben sie bekommen. Danach: null harte Brüche auf beiden Breiten.
+
+Und weil ein Fund, der nur behoben ist, wiederkommt, prüft `zulagenAssert()`
+das jetzt mit: kein Stück eines Namens darf ohne Trennstelle länger sein als
+`ZULAGE_WORT_MAX`. Der Deckel steht auf sechzehn Zeichen, gemessen an der
+schmalsten Spalte bei der größten Schriftstufe; das längste im Katalog ist
+`Unanfechtbarer` mit vierzehn.
+
+### Prüfprotokoll des Nachtrags
+
+`node --check` sauber. `tools/zulagen-pruef.mjs` **45 von 45**,
+`tools/menue-pruef.mjs` unverändert **39 von 39**, beide ohne Anpassung, weil
+die Klassennamen der Karte geblieben sind.
+
+Gegenprobe der vier neuen Guard-Regeln, jede einzeln beschädigt: Name ohne
+Trennstelle, leeres Bildfeld, Bildfeld als Zahl, Zahl in der Typenzeile. Alle
+vier werden gemeldet, danach ist der Guard wieder still.
+
+Sichtprobe auf 1280 und 390 Pixel. Dabei aufgefallen und behoben: die
+Namensleiste stand je nach Namenslänge zwischen einer und drei Zeilen hoch und
+schob das Bildfenster mit, sodass die Bilder einer Reihe auf verschiedenen
+Höhen saßen. Ein Mindestmaß von zwei Zeilen (in em, damit es die Schriftstufen
+mitgeht) richtet die Reihe aus. Die wenigen dreizeiligen Ausfertigungen brechen
+die Linie weiterhin, und das ist der richtige Preis: der lange Name ist der
+Witz, nicht der Fehler.
+
+Auf dem Telefon stand die Karte vorher als Zeile, Sinnbild links, Text rechts.
+Das ist zurückgebaut: **zwei Spalten, und die Karte bleibt eine Karte.** Eine
+Sammelkarte, die zur Zeile flachgelegt wird, sammelt niemand. Die Ziehung liegt
+dort zwei zu eins statt nebeneinander, das ist der Preis und er ist es wert.
+
+---
+
+## K1-11. Nachtrag: die Bildrichtung
+
+*(24.08.2026, nach fünf Referenzbildern des Projektinhabers.)*
+
+Der Nachtrag K1-10 hat die Karte gebaut, aber die Bilder darin waren weiter
+falsch. Die Rückmeldung: **zu unepisch, es sieht nicht aus, als wollte man sie
+alle haben, die Grafiken müssen mehr knallen**, gern Szenen, die die
+Eigenschaften der Karte verdeutlichen.
+
+### Die Messung sagt, warum
+
+Die Prompts standen auf der Amiga-Formel der Figurenporträts. An den
+Referenzbildern nachgemessen war das quantitativ das Gegenteil:
+
+| | Farben | Sättigung (0 bis 255) |
+|---|---|---|
+| Referenzbilder | 10.000 bis 238.000 | 143 bis 200 |
+| Figurenporträts des Spiels | 32 | 56 bis 63 |
+
+**Drei- bis viermal so gesättigt.** Die Formel schrieb `32 colour palette, muted
+desaturated colours` vor und war damit nicht knapp daneben, sondern am anderen
+Ende. Sie gilt für die Porträts weiter und für die Karten nicht mehr.
+
+Neu ist der Anker: modernes hoch aufgelöstes Pixel-Art mit harten Kanten,
+kräftige gesättigte Farben, Rim-Light und Innenglühen, Bloom um jede
+Lichtquelle, dunkle Silhouette gegen brennenden Grund. Der Regler steht auf
+`--s 250` statt `--s 25`.
+
+**Dass die Karten dadurch anders aussehen als das Spiel, ist kein Bruch,
+sondern Regel 10.** Ein Haus, das seine eigenen Zulagen laminiert und
+vergoldet, während draußen alles grau ist, ist die Pointe.
+
+### Zwei Bildarten, aus den Referenzen abgelesen
+
+Drei der fünf Referenzen zeigen gar keine Szene, sondern den Gegenstand
+freigestellt auf reinem Verlauf mit Glühen und Funkeln. Nur zwei sind Szenen
+mit Umgebung. Die Aufteilung folgt dem:
+
+* **Zehn Wirkungsszenen** für die Karten, bei denen etwas passiert. Sie zeigen,
+  was die Karte tut, an einem Opfer aus dem eigenen Bestiarium.
+* **Fünf Item-Showcases** für die stillen. Helm, Beleg, Stiefel, Becher und
+  Dienstbuch stehen isoliert auf einem Verlauf, und die Eskalation läuft über
+  den Gegenstand selbst, der Stufe für Stufe prunkvoller wird.
+
+**Der größte Hebel war ein Fehler in der ersten Fassung.** Dort stand in jedem
+`--no` die Zeile `people, faces`. Damit war dem Modell verboten, ein Opfer ins
+Bild zu setzen, also genau das, was eine Kartenwirkung ausmacht. Eine
+Kaltverfügung, die jemanden einfriert, konnte gar nicht entstehen.
+
+Die Opfer kommen aus dem Bestiarium, und **der Wandelnde Ablagestapel ist der
+Glücksfall für die Axt**: ein Gegner, der aus Akten besteht. Die Axt spaltet
+damit keinen Papierstapel, sondern jemanden, der einer ist.
+
+### Der Ton, und warum die Korrektur die Bilder besser macht
+
+Die erste Fassung der neuen Prompts war zu brutal. Der schlimmste Ausrutscher
+war die Stichprobe: aufgespießte Gestalten, auf Stufe III eine Wand voller
+Schaukästen. Der Befund des Projektinhabers lautete, die Zielgruppe sei neun bis
+neunundneunzig, und das war für keine der beiden Hälften richtig.
+
+Der Kanon sagt es schärfer als jede Altersfreigabe. Regel 8: kein Blut, kein
+Sterben, kein Zynismus. Und die Folge daraus, wörtlich: **es stirbt nie jemand,
+es wird abgeschlossen.**
+
+Die Überarbeitung ist deshalb keine Weichspülung, sondern eine Korrektur zum
+Kanon hin, und sie macht die Bilder eigenständiger. Monster werden bearbeitet
+statt getötet:
+
+| statt | jetzt |
+|---|---|
+| aufgespießt und aufgereiht | der Öffner schnippt ein Musterblatt heraus, der Rest platzt zu Konfetti |
+| in zwei Hälften geschnitten | fällt zu einem ordentlichen Stapel zusammen, Aktendeckel obenauf |
+| brennt bei lebendigem Leibe | ein heller Wusch, dann eine Säule aus Funken und Konfetti |
+| eingefroren mitten im Schrei | eingefroren mitten im Widerspruch, den Zeigefinger noch erhoben |
+| zuckend vom Blitz getroffen | leuchtet kurz wie ein Röntgenbild und steht qualmend da |
+
+Die Kaltverfügung ist der Beleg, dass hier der zahmere Einfall der komischere
+ist, und sie trifft die Aktenbedeutung des Frostes genau: eine Rückfrage hemmt
+die Frist.
+
+Zwei Sperren stehen dafür in jedem der fünfundvierzig Prompts, der Ton im Text
+und die Gewaltwörter ganz vorn im `--no`.
+
+### Was der Code dafür bekommen hat
+
+`bild` im Katalog ist ein Feld aus bis zu drei Pfaden, eines je Stufe;
+`zulageBildPfad()` löst auf. **Lücken sind ausdrücklich erlaubt** und fallen
+aufs Sinnbild zurück, denn fünfundvierzig Bilder entstehen nicht an einem Tag
+und ein halb gefüllter Katalog darf das Panel nicht mit leeren Rahmen
+zupflastern. Der Einbau je Bild ist damit eine Zeile.
+
+### Prüfprotokoll des Nachtrags
+
+`node --check` sauber, `tools/zulagen-pruef.mjs` 45 von 45,
+`tools/menue-pruef.mjs` 39 von 39.
+
+Gegenprobe der neuen Bildfeld-Regel mit sechs kaputten Formen (vier Bilder,
+leeres Feld, leerer Pfad, Zahl statt Pfad, weder Pfad noch Feld, leerer
+Einzelpfad): alle gemeldet, danach Guard still. Dazu drei gültige Formen, die
+nicht anschlagen dürfen, und eine Sichtprobe mit drei Platzhaltern, die zeigt,
+dass jede Stufe ihr eigenes Bild zieht und Lücken auf das Sinnbild fallen.
+
+Ein Skript sucht in allen fünfundvierzig Szenentexten in beiden Sprachen nach
+Gewaltvokabular und findet keins. Prompt-Datei und Klickfassung stammen aus
+einer Quelle und werden Zeichen für Zeichen gegeneinander geprüft.
+
+**Was von hier aus nicht prüfbar ist:** Midjourney selbst. Ob ein Prompt
+knallt, zeigt erst der Lauf.
+
+## K1-12. Nachtrag: der Spielstand kam dazwischen
+
+Während der Nachtrag lief, ist SP (`phase-sp-spielstand.md`) auf den Hauptzweig
+gegangen und hat `index.html` an über sechshundert Zeilen angefasst. Der Zweig
+hat die Basis geholt, bevor er selbst gemergt wurde. Textlich ging das ohne
+Konflikt zusammen, was aber nichts über die Sache aussagt: zwei Bauabschnitte
+können sauber ineinanderfallen und trotzdem einander widersprechen.
+
+Die eine Stelle, an der sie sich berühren, ist die Dienstmappe. SP schreibt sie
+ausdrücklich mit in den Spielstand, mit einer Begründung im Quelltext, die den
+alten Satz „nichts davon geht nach localStorage" nicht bricht, sondern einordnet:
+gespeichert wird die Schicht, nicht die Akte, und eine fortgesetzte Schicht ohne
+Dienstmappe wäre keine Fortsetzung. Das war schon vorgesehen, bevor dieser
+Nachtrag begann.
+
+Geprüft wurde trotzdem, und zwar an der Naht, die dieser Nachtrag neu gemacht
+hat: SP prüft, **dass** die Mappe mitfährt, über Anzahl und Fachbelegung. Was SP
+nicht prüfen konnte, weil es die Kartenform noch nicht gab, ist ob eine
+**wiederhergestellte** Karte sich auch zeichnen lässt. Ein eigener Lauf legt
+dafür zwei Karten an, sichert, lädt die Seite neu, liest zurück und baut die
+Karten aus dem gelesenen Stand statt aus der Prüfdatei: Namensleiste,
+Bildfenster, Typenzeile und Textfeld stehen, die Stufe kommt als römische
+Ziffer, die eingelegte Karte ist noch eingelegt. Dreizehn von dreizehn.
+
+**Ein Fehler im eigenen Prüfskript, der erwähnt gehört**, weil er die Lehre des
+Hauses noch einmal bestätigt: der erste Wurf baute die Karten mit dem Schlüssel
+`art`, während das Feld `familie` heißt. Der Lauf meldete elf von elf. Er hatte
+nur bewiesen, dass JSON durch JSON kommt, denn die Rundprobe vergleicht ein
+Objekt mit sich selbst, und die Zeichenprüfung ging am Katalog vorbei statt an
+der gelesenen Mappe. Ein grüner Haken ist kein Beweis, solange nicht feststeht,
+woran er hängt. Die berichtigte Fassung zieht Familie und Stufe aus dem
+gelesenen Stand und prüft zusätzlich, dass beide Familien überhaupt im Katalog
+stehen.
+
+Die drei Prüfläufe des Hauses auf dem zusammengeführten Stand:
+`tools/zulagen-pruef.mjs` fünfundvierzig von fünfundvierzig,
+`tools/menue-pruef.mjs` neununddreißig von neununddreißig,
+`tools/speicher-pruef.mjs` vierunddreißig von vierunddreißig.
