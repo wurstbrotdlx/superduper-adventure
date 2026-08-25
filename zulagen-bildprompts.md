@@ -1,226 +1,545 @@
 # Zulagen-Bildprompts für Midjourney
 
-Fünfzehn kopierfertige Prompts, einer je Zulagenfamilie. **Kartenkunst, keine
-Inventarsymbole:** jedes Motiv ist eine epische Szene im Bildfenster einer
-Sammelkarte, gerendert in derselben Amiga-Fassung wie die Figurenporträts.
+Fünfundvierzig kopierfertige Prompts: **drei je Zulagenfamilie, eines je Stufe.**
 Block kopieren, in Midjourney einfügen, fertig.
 
-Grundlage ist der Katalog `ZULAGE` in `index.html` und der Baubericht
-`phase-k1-zulagen.md`. Die Stilformel stammt aus `figuren-bildprompts.md`.
+Grundlage ist der Katalog `ZULAGE` in `index.html`, der Baubericht
+`phase-k1-zulagen.md` und das Bestiarium der Weltbibel, Kapitel 6.
 
-## Wofür das ist, und wofür nicht
+## Wofür das ist
 
-Das ist **die Kartenkunst im Bildfenster**, also der Ersatz für die Emoji, die
-in `ZULAGE[...].icon` stehen. Seit dem Kartenumbau hat jede Zulage ein
-Bildfenster im Seitenverhältnis vier zu drei, darüber die Namensleiste, darunter
-Typenzeile und Text. Genau dieses Fenster wird hier gefüllt, deshalb `--ar 4:3`.
+Das ist **die Kartenkunst im Bildfenster**. Jede Karte hat seit dem Kartenumbau
+ein Bildfenster im Verhältnis vier zu drei, darüber die Namensleiste, darunter
+Typenzeile und Text. Genau dieses Fenster wird gefüllt, deshalb `--ar 4:3`.
 
-**Fünfzehn Bilder, nicht fünfundvierzig.** Die drei Stufen einer Familie teilen
-sich ein Bild. Die Stufe trägt der Rahmen: Stufe I gedeckt, Stufe II Gold,
-Stufe III Violett mit Schein und laufendem Glanz. Wer für jede Stufe malt,
-verdreifacht die Arbeit und nimmt dem Rahmen seine Aufgabe.
+Der Katalog nimmt die drei Bilder bereits an: `bild` ist ein Feld mit einem
+Pfad je Stufe, Lücken fallen aufs Sinnbild zurück. Der Einbau ist eine Zeile.
 
-## Warum episch, und warum das kein Bruch ist
+## Der Stil kommt aus den Referenzbildern, nicht aus der Vergangenheit
 
-Der Wunsch lautete: das muss nach Sammelkarte aussehen, nach Magic oder
-Yu-Gi-Oh, sehr episch, sehr drüber, es soll Bock machen die zu sammeln.
+Die erste Fassung stand auf der Amiga-Formel der Figurenporträts: zweiunddreißig
+Farben, gedeckt, entsättigt. Sie ist durchgefallen, und die Messung sagt, warum:
 
-Das ist kein Fremdkörper in dieser Welt, das ist **Humor-Grundgesetz Regel 10**,
-wörtlich:
+| | Farben | Sättigung (0 bis 255) |
+|---|---|---|
+| Referenzbilder | 10.000 bis 238.000 | 143 bis 200 |
+| Figurenporträts des Spiels | 32 | 56 bis 63 |
 
-> Die Form ist episch, der Inhalt ist Papier. Fanfare für einen Aktenvorgang.
-> Episch wird die **Form**, nie der Gegenstand. Nichts an diesem Haus darf
-> bescheiden aussehen.
+**Die Referenzen sind drei- bis viermal so gesättigt.** Die alte Formel schrieb
+das Gegenteil vor. Sie gilt für die Porträts weiter und für die Karten nicht
+mehr.
 
-Also: **ein Stempel, ausgeleuchtet wie Excalibur.** Ein Kaffeebecher auf einem
-Altar. Kurierstiefel, die über ein Gebirge steigen. Der Gegenstand bleibt
-Büromaterial, die Inszenierung ist eine Kathedrale. Das ist der Witz, und er
-funktioniert nur, solange beide Hälften stehen. Die Gegenprobe steht in derselben
-Regel:
+Was aus den Referenzen abgelesen und in die Formel übernommen ist: modernes,
+hoch aufgelöstes Pixel-Art mit harten Kanten; kräftige, gesättigte Farben;
+Rim-Light und Innenglühen; Bloom um jede Lichtquelle; dunkle Silhouette gegen
+brennenden Hintergrund; kräftige Konturen; Dithering in den Verläufen;
+zentrierte, ikonische Komposition.
 
-> Der ganze Prunk hängt an einer Sache, die seit vierhundert Jahren nicht
-> erledigt ist. Die Form ist maximal, der Ertrag ist null. Wo das eine ohne das
-> andere steht, ist es kein Gag mehr, sondern nur noch Dekoration.
+**Dass die Karten dadurch anders aussehen als das Spiel, ist kein Fehler.** Es
+ist Humor-Grundgesetz Regel 10: die Form ist episch, der Inhalt ist Papier. Ein
+Haus, das seine eigenen Zulagen laminiert und vergoldet, während draußen alles
+grau ist, ist die Pointe und nicht ihr Bruch.
 
-Deshalb ist **kein Motiv eine Waffe mit Amtsdekor**. Jedes ist Verwaltung, die
-ernst macht: eine Axt, die einen Aktenstapel abfertigt. Ein Stempel, der aus
-Gewitterwolken auf einen Schreibtisch fährt. Ein Beleg, der als Wasserfall vom
-Himmel kommt.
+## Wirkung statt Gegenstand
 
-## Was gegenüber der Porträtformel anders ist
+Zehn Familien zeigen, **was die Karte tut**, an einem Opfer aus dem eigenen
+Bestiarium. Fünf stille zeigen weiter den Gegenstand: Leben, Manakosten,
+Lauftempo, Manaregeneration und Erfahrung haben kein Opfer.
 
-Drei Eingriffe, jeder mit Grund.
+**Der größte Hebel war ein Fehler in der ersten Fassung.** Dort stand in jedem
+`--no` die Zeile `people, faces`. Damit war dem Modell verboten, ein Opfer ins
+Bild zu setzen, also genau das, was eine Kartenwirkung ausmacht. Bei den zehn
+Wirkungsszenen ist die Sperre gefallen; bei den fünf Gegenstandsszenen steht
+sie weiter, dort stört Publikum nur.
 
-**Der Ausschnitt.** Die Porträts stehen auf `head and shoulders portrait, tight
-crop`. Eine Zulage ist keine Person, also trägt sie diesen Satz nicht, genau wie
-die beiden Motive, die ihn schon vorher nicht trugen: der Kater Anlage 3 und die
-Tür des Kaisers. An seine Stelle tritt die Kartenkunst-Einstellung:
-`epic fantasy trading card illustration, dramatic low angle hero shot,
-monumental scale, shafts of light, atmospheric depth with a distant background`.
+**Konfetti statt Blut**, und das ist Kanon (Weltbibel Kapitel 1): wer ein
+Monster erledigt, sieht Aktenkonfetti. Es stirbt nie jemand, es wird
+abgeschlossen. Jede Wirkungsszene trägt das im Bild.
 
-**Die Karikatur fällt weg.** In den Porträts steht `Peter Chan caricature,
-exaggerated cartoon proportions, oversized features, expressive comic face`. Das
-gehört zum Gesicht und zum Register des Figurenporträts. Kartenkunst ist ein
-anderes Register, und der Amiga hatte es auch: die gemalten Titelbilder und
-Packungsvorderseiten waren episch, nicht komisch, und stets eine Nummer größer
-als das Spiel dahinter. Genau da liegt der Anker jetzt:
-`1991 Amiga game box art rendered in chunky pixels, painted title screen
-grandeur`. **Der Witz kommt nicht mehr aus der Zeichnung, sondern aus dem
-Missverhältnis** zwischen Inszenierung und Gegenstand.
+**Es sind die Monster dieses Spiels.** Grünhaut, Knochenritter, Mumie,
+Waldschamane, Sandskorpion, Schattenling und der Wandelnde Ablagestapel stehen
+alle im Bestiarium. Letzterer ist der Glücksfall für die Axt: ein Gegner, der
+aus Akten besteht. Die Axt spaltet damit keinen Papierstapel, sondern jemanden,
+der einer ist.
 
-**Die Palette darf Licht bekommen.** In den Porträts steht sie flach gedeckt,
-sonst streut Midjourney ins Bunte. Für Kartenkunst wäre flach gedeckt tot. Der
-Grundton bleibt deshalb derselbe (`earthy base of dusty ochre, faded olive,
-slate blue and warm grey`), aber er wird **beleuchtet** statt eingefärbt:
-`lifted by dramatic rim light and glowing highlights against deep shadow`. Die
-vier Motive mit eigenem Element (Feuer, Frost, Arkan, und der Beleg mit seinem
-warmen Gegenlicht) tragen zusätzlich genau einen gedämpften Farbakzent und im
-`--no` ausdrücklich das Verbot der Neonfassung davon.
+## Die Eskalationsleiter
 
-`--s 25` bleibt unverändert. Die Versuchung war groß, für „episch" höher zu
-gehen; höhere Stilisierung heißt bei Midjourney aber hübscher, weicher, moderner,
-und das ist genau der Weg zurück aus der Pixelkunst heraus. **Die Dramatik kommt
-aus den Wörtern, nicht aus dem Regler.**
+| Stufe | Was das Bild zeigt |
+|---|---|
+| **I** | Die Wirkung setzt ein. Ein Ziel, kleine Reichweite, erste Spur. |
+| **II** | Volle Kraft. Das Ziel ist erledigt, die Umgebung merkt es. |
+| **III** | Katastrophe. Ganze Kammer, absurdes Übermaß, der Kracher. |
 
-## Die Sperrliste ist länger als bei den Porträts
+Das ist der Sammelanreiz: die dritte Stufe ist ein eigener Fund, kein Rahmen um
+dasselbe Bild.
 
-Neun der fünfzehn Motive sind Papier, und Midjourney schreibt auf Papier. Was
-dabei herauskommt, ist Buchstabensuppe. Im `--no` stehen deshalb
-`text, lettering, writing, letters, numbers` statt nur `text`.
+## Der Axt-Fehler, und was daraus zu lernen ist
 
-Die Zeile mit den Zahlen ist kein Zufall: **auf einer Zulage steht nie eine
-Zahl.** Das ist dieselbe Regel, die `zulagenAssert()` bei jedem Laden an den
-Anzeigesätzen, am Namen und an der Typenzeile prüft, und sie gilt für das Bild
-genauso.
+In der ersten Fassung stand `a titanic double headed axe caught mid swing`, und
+Midjourney legte in jedem Lauf **den Stiel** durch den Aktenstapel statt des
+Kopfes. Vier Ursachen, alle behoben:
 
-`hands, people, faces` steht ebenfalls im `--no`. Ohne diese drei stellt das
-Modell zu jedem monumentalen Gegenstand jemanden davor, der ihn bestaunt, und
-der Maßstab lebt hier von Architektur und Landschaft, nicht von Publikum.
+1. **`double headed axe` ist zweideutig.** Der Fachbegriff für zwei Schneiden an
+   einem Kopf ist *double bitted*. „Double headed" lädt zur Lesart „je ein Kopf
+   an beiden Enden" ein, und dann liegt der Stiel zwangsläufig in der Mitte.
+2. **`caught mid swing`** beschreibt einen Bogen, und das Modell legt die Axt
+   diagonal durchs Bild.
+3. **`as it cleaves`** hat die Axt als Ganzes zum Subjekt. Welcher Teil
+   schneidet, stand nirgends.
+4. **Der Verbleib des Stiels war nicht gesagt.**
 
-## Drei Hinweise
+Die Regel, die daraus folgt und für jedes Werkzeug gilt: **wo etwas trifft, muss
+dastehen, welcher Teil trifft und wo der Rest bleibt.** Deshalb heißt es jetzt
+`the broad curved cutting edge of a huge double bitted axe head` und
+`the long haft sweeping up out of the top of the frame`. Aus demselben Grund
+trägt der Stempel jetzt `with its broad inked face turned flat downward`.
 
-**Ein `--sref` für alle fünfzehn.** Die Palette im Text bringt die Farben
-zusammen, nicht aber Pinselführung und Rasterhärte. Einen Lauf mit
-`--sref random` starten, die gemeldete Nummer notieren und `--sref <NUMMER>` an
-alle fünfzehn hängen. Bei Kartenkunst wiegt das schwerer als bei den Porträts:
-eine Serie, deren Bilder verschieden aussehen, sammelt niemand.
+## Vier Hinweise
 
-**Kein Seed.** Wie bei den Figuren: der zwingt allen Motiven dieselbe Lage auf.
+**Deine Referenzbilder als `--sref`.** Das ist der stärkste Hebel überhaupt und
+schlägt jede Textbeschreibung. Die Bilder irgendwo hochladen, die URL an jeden
+Prompt hängen: `--sref <url1> <url2>`. Dann sitzt die Serie.
 
-**Nachbearbeiten gehört dazu.** Midjourney gibt ein hochauflösendes Bild aus,
-das grobe Pixel nur imitiert. Auf 128 mal 96 herunterrechnen (Nearest Neighbor,
-nicht bikubisch), dann wieder hoch. Für das Kartenfenster reicht das reichlich,
-es steht je nach Fenster bei 150 bis 210 Pixel Breite.
+**Kein Rahmen im Bild.** Im `--no` stehen `frame, border, ui, hud`. Die Karte
+bringt ihren Rahmen selbst mit, ein zweiter im Bild wäre ein Rahmen im Rahmen.
+
+**`watermark, logo, signature` stehen im `--no`**, weil zwei der Referenzbilder
+Wasserzeichen tragen. Wer sie als `--sref` verwendet, bekommt sonst
+wasserzeichenartige Flecken mitgeliefert.
+
+**Der Regler ist `--s 250`.** Kommt es zu weich oder zu gemalt heraus, `--style
+raw` anhängen und auf `--s 100` senken. Kommt es zu flach und leblos heraus,
+`--s` weiter hoch. Bei der alten Amiga-Formel stand er auf 25, das war für
+gedeckte Flachheit richtig und ist es hier nicht mehr.
 
 ---
 
-## 1. Stichprobe · Dolch
+## 1. Stichprobe · Dolchschaden
+*Wirkungsszene.*
+
+### 1.1 Stufe I
+
+Ein **Sandskorpion** mitten im Zustoßen, im Flug an ein Blatt geheftet wie ein Insekt in einer Sammlung.
 
 ```
-epic pixel art scene of a colossal tarnished brass letter opener driven like a sword into the summit of a mountain of official forms, loose pages drifting through the air like snow, a windswept plateau at dawn, the blade catching the first light, a tiny torn paper tag snapping in the wind on its handle, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+a giant glowing brass letter opener pinning a leaping sand scorpion in mid air against a sheet of parchment like a specimen in a collection, the blade driven clean through, paper confetti beginning to burst from the wound, dark cave wall behind lit only by the blade, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 2. Klingenzulage · Schwert
+### 1.2 Stufe II
+
+**Drei Schattenlinge** an dieselbe Wand geheftet, jeder mit eigenem Blatt und eigenem Öffner.
 
 ```
-epic pixel art scene of an official sword rising point upward out of a still black lake of ink, dark liquid streaming from the blade, an enormous dark red wax seal swinging from its pommel on a ribbon, dawn light bursting behind it over drowned filing cabinets at the shoreline, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+three shadow imps pinned side by side to a stone wall, each impaled on its own glowing brass letter opener through its own sheet of parchment, a neat row, paper confetti drifting from the oldest one, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 3. Pauschalabfertigung · Axt
+### 1.3 Stufe III
+
+Eine **Wand wie ein Insektenkasten**: Dutzende aufgespießte Gestalten in Reih und Glied, Konfetti rieselt aus den älteren Fächern.
 
 ```
-epic pixel art scene of a titanic double headed axe caught mid swing as it cleaves a mountain of bound ledgers clean in half, paper and splintered covers exploding outward in a shockwave, a storm sky churning behind, ruined archive shelves toppling in the distance, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+a towering wall of specimen cases filled with dozens of impaled shadow creatures in neat rows, each pinned by a glowing brass letter opener through a document, paper confetti raining from the upper rows, an archive turned into an insect collection, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 4. Brandschutzausnahme · Feuer
+## 2. Klingenzulage · Schwertschaden
+*Wirkungsszene.*
+
+### 2.1 Stufe I
+
+Einem **Knochenritter** schlägt die Klinge die Vorschriftenrolle aus der Hand. Erster Funke, er sieht ihr nach.
 
 ```
-epic pixel art scene of a single official certificate standing upright and towering like a monument in the middle of a burning archive hall, its upper half consumed by rolling flame, embers streaming upward into the dark, an enormous dark wax seal at its base glowing white hot and completely untouched, collapsed burning shelves receding into the distance, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, one accent of dull ember orange, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render, neon orange, bright saturated fire
+a glowing official sword striking a rulebook scroll out of a skeleton knight's gauntlet in a burst of sparks, the skeleton turning its skull to look after it, torchlit stone hall, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 5. Kaltverfügung · Frost
+### 2.2 Stufe II
+
+Derselbe fällt in zwei saubere Hälften, dazwischen der Schnitt und ein Aktendeckel. Konfetti quillt aus der Naht.
 
 ```
-epic pixel art scene of a monumental wooden handled rubber stamp entombed upright inside a towering glacier of clear pale ice, only its handle knob breaking the surface, the ice standing in the nave of a frozen archive hall with frost creeping across the shelves, cold light falling through the ice in long shafts, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, one accent of pale frost blue, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render, cyan, neon blue
+a skeleton knight falling apart in two clean halves along one diagonal cut, a file folder split with him, paper confetti bursting from the seam, the blade still glowing at the end of its arc, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 6. Blitzbeschluss · Arkan
+### 2.3 Stufe III
+
+Eine **Reihe Knochenritter**, alle im selben Hieb zerteilt, der Schnitt läuft durch die Halle und teilt hinten eine Säule.
 
 ```
-epic pixel art scene of a rolled official decree hanging suspended in the eye of a storm, a colossal jagged bolt of pale violet lightning striking straight down through it, arcs of energy crawling outward across the roofs of a ruined ministry tower far below, torn seals falling through the air, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, one accent of dusty violet, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render, neon purple, magenta glow
+a row of skeleton knights all cut through by one single sweeping stroke, the cut carrying on across the whole hall and splitting a stone pillar at the back, a curtain of paper confetti falling through the light, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+## 3. Pauschalabfertigung · Axtschaden
+*Wirkungsszene.*
+
+### 3.1 Stufe I
+
+Die Axt hackt einem **Wandelnden Ablagestapel** die oberste Lage ab. Blätter stieben, der Rest wankt weiter.
+
+```
+the broad curved cutting edge of a huge double bitted axe head shearing the top layer off a walking stack of files, loose sheets bursting upward, the creature staggering on, the long haft sweeping up out of the top of the frame, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 3.2 Stufe II
+
+Derselbe Stapel mittig gespalten, beide Hälften kippen auseinander, ein Aktendeckel dreht sich in der Luft.
+
+```
+a walking stack of files split down the middle by the axe blade, both halves toppling apart, a file cover spinning through the air, paper confetti pouring from the split, the haft rising clear above the wreckage, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 3.3 Stufe III
+
+**Ein Dutzend Ablagestapel in einem Hieb**, eine Schneise quer durch die Registratur, Papierschnee bis unter die Decke.
+
+```
+a dozen walking file creatures cut down by one single sweep of a glowing double bitted axe blade, a cleared lane driven straight through a vast archive, paper snow filling the air to the ceiling, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+## 4. Brandschutzausnahme · Feuerzauber
+*Wirkungsszene.*
+
+### 4.1 Stufe I
+
+Ein **Wandelnder Ablagestapel** fängt an einer Ecke Feuer und versucht, es auszuschlagen.
+
+```
+a walking stack of files catching fire at one corner, beating at the flames with a paper arm, orange firelight throwing its shadow across the archive floor, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 4.2 Stufe II
+
+Derselbe in Vollbrand, die Gestalt noch erkennbar, Funken steigen in die Dunkelheit.
+
+```
+the same walking file creature fully ablaze, its shape still readable inside the roaring fire, embers streaming up into the dark, the whole frame lit orange and gold, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 4.3 Stufe III
+
+Die **ganze Registratur brennt**, ein Dutzend Aktengestalten als Fackeln, und mittendrin ein Siegel, das nicht brennt.
+
+```
+an entire archive hall burning, a dozen file creatures standing as living torches down both aisles, and in the centre foreground one dark wax seal that will not burn, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+## 5. Kaltverfügung · Frostzauber
+*Wirkungsszene.*
+
+### 5.1 Stufe I
+
+Einer **Grünhaut** kriecht der Frost vom gestempelten Blatt aus das Bein hoch. Sie sieht hinunter.
+
+```
+frost creeping up a green skinned goblin's leg from a glowing stamped document lying at its feet, the goblin looking down at its own freezing shin, pale blue light against a dark chamber, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 5.2 Stufe II
+
+Dieselbe steht als **Eisblock**, mitten im Schrei, die Faust noch erhoben.
+
+```
+the same green skinned goblin frozen solid inside a block of clear blue ice, caught mid scream with one fist still raised, cracks of light running through the ice, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 5.3 Stufe III
+
+Eine **ganze Kammer erstarrt**, ein Dutzend Gestalten mitten in der Bewegung, ein Gletscher bricht durch die Decke.
+
+```
+an entire vaulted chamber frozen over, a dozen figures locked mid motion inside the ice, a glacier bursting down through the ceiling, shafts of cold blue light, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+## 6. Blitzbeschluss · Arkanzauber
+*Wirkungsszene.*
+
+### 6.1 Stufe I
+
+Ein **Knochenritter** zuckt, der Blitz fährt ihm durch den Helm, der Rippenbogen leuchtet von innen durch.
+
+```
+a bolt of violet lightning punching down through a skeleton knight's helmet, its ribcage lit blazing white from within, the figure convulsing, arcs crawling across the flagstones, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 6.2 Stufe II
+
+Der Blitz **springt weiter**, drei Skelette in der Kette, alle drei durchleuchtet.
+
+```
+the violet bolt leaping onward through three skeletons in a chain, all three lit from inside at once, white arcs jumping between their bones, the hall strobing, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 6.3 Stufe III
+
+Die Kette springt durch die **ganze Halle**, ein Dutzend Gestalten gleichzeitig durchleuchtet, das Gewölbe steht im Blitzlicht.
+
+```
+the lightning chain leaping through an entire hall, a dozen figures lit from within simultaneously, the whole vault caught in one violent violet flash, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
 ## 7. Vollzugszulage · mehr Schaden
+*Wirkungsszene.*
+
+### 7.1 Stufe I
+
+Der Stempel kommt herunter, eine **Grünhaut** sieht hoch, der Schatten liegt schon auf ihr.
 
 ```
-epic pixel art scene of a titanic wooden office stamp descending out of black storm clouds toward a single tiny desk on an empty plain, the moment before impact, a shockwave ring of dust already racing outward across the ground, the stamp filling the upper half of the frame, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+a titanic wooden office stamp plunging down with its broad inked face turned flat downward, a green skinned goblin below looking up as the shadow already covers it, dust racing outward, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 8. Erschwerniszulage · mehr Leben
+### 7.2 Stufe II
+
+Der Abdruck im Boden, die Grünhaut ist weg, aus dem Abdruck **quillt Konfetti**.
 
 ```
-epic pixel art scene of a battered dented official issue helmet resting on a broken standard planted in the ground, standing alone on a vast battlefield of drifted paperwork stretching to the horizon, low sun behind it throwing a long shadow, torn forms turning in the wind, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+a deep stamped impression pressed into the stone floor where the goblin stood, paper confetti welling up out of the imprint in a bright column, the stamp lifting away above, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 9. Härtefallregelung · weniger Schaden nehmen
+### 7.3 Stufe III
+
+Ein **Feld aus Abdrücken** quer durch die Kammer, aus jedem steigt eine Konfettiwolke.
 
 ```
-epic pixel art scene of a colossal shield built from a heavy wooden clipboard bound in iron, planted immovably in the earth with a great wax seal bolted to its centre as a boss, a dense storm of arrows and steel nibs shattering against it in a spray of sparks, a besieged ministry gate looming behind, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+a field of stamped impressions punched across an entire chamber, a cloud of glowing confetti rising from every one of them, the giant stamp already lifting for the next, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 10. Gebührenbefreiung · weniger Manakosten
+## 8. Härtefallregelung · weniger Schaden nehmen
+*Wirkungsszene.*
+
+### 8.1 Stufe I
+
+Ein **Waldschamane** schleudert eine Verfügung, sie zerschellt am Klemmbrett-Schild.
 
 ```
-epic pixel art scene of an endless paper receipt unfurling out of a break in the clouds and pouring down like a waterfall into the open floor of a vast treasury vault, a shattered padlock tumbling through the air beside it, warm light glowing through the falling paper, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, one accent of warm amber backlight, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render, gold, bright yellow
+a forest shaman hurling a glowing green decree that shatters into sparks against a huge iron bound clipboard shield planted in the earth, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 11. Prüfvermerk · kritische Treffer
+### 8.2 Stufe II
+
+**Drei Waldschamanen**, ein Sperrfeuer, alles prallt ab, der Schild steht unbewegt.
 
 ```
-epic pixel art scene of a colossal brass magnifying glass hanging in the sky above a vast plain of scattered documents, focusing a single narrow blazing beam of sunlight down onto one sheet far below, the paper beginning to scorch at that one point, long shadows stretching across the plain, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+three forest shamans laying down a barrage of glowing decrees, every one of them shattering against the unmoved clipboard shield, sparks filling the air, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
 ```
 
-## 12. Eilverfahren · Angriffstempo
+### 8.3 Stufe III
+
+Eine **Belagerung**: Geschosse aus allen Richtungen, der Schild in der Mitte, ein Ring zerbrochener Federn am Boden.
 
 ```
-epic pixel art scene of a giant brass pocket stopwatch bursting apart at the seam, its casing splitting open as gears and springs and a burst of white light erupt outward, the chain whipping behind it, streaks of motion cutting across a churning sky, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render, clock face numerals
+a full siege, glowing projectiles converging from every direction onto a single clipboard shield at the centre of the frame, a thick ring of broken quills piled at its foot, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+## 9. Prüfvermerk · kritische Treffer
+*Wirkungsszene.*
+
+### 9.1 Stufe I
+
+Die Lupe findet an einer **Mumie** die Naht der Banderole. Ein heller Punkt, sonst nichts.
+
+```
+a brass magnifying glass focusing one blinding pinpoint of light onto the seam of a mummy's wrapping, the linen beginning to smoke at that single spot, dark tomb behind, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 9.2 Stufe II
+
+Der Brennpunkt zündet die Naht, das **Siegel platzt**, die Banderole löst sich in Konfetti auf.
+
+```
+the focused pinpoint igniting the seam, the wax seal bursting apart, the wrapping unravelling into a spray of paper confetti, the mummy staggering, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 9.3 Stufe III
+
+Ein **Dutzend Mumien**, jede mit einem glühenden Punkt an derselben Stelle, alle Siegel platzen gleichzeitig.
+
+```
+a dozen mummies standing in a tomb, each with a glowing pinpoint burning at exactly the same spot on its wrapping, every wax seal bursting in the same instant, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+## 10. Eilverfahren · Angriffstempo
+*Wirkungsszene.*
+
+### 10.1 Stufe I
+
+Eine **Grünhaut** holt aus, ist aber schon von Nachbildern umgeben. Der Schlag war vorher da.
+
+```
+a green skinned goblin winding up to strike but already ringed by glowing after images of a blow that landed before it began, motion streaks curving through the air, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 10.2 Stufe II
+
+Drei Gegner, alle mitten in der Bewegung angehalten, eine **Spur von Nachbildern** zieht durch sie hindurch.
+
+```
+three enemies held frozen mid motion while a blazing streak of after images tears straight through all of them, confetti starting to burst from each, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+### 10.3 Stufe III
+
+Eine **ganze Kammer steht still**, Staub hängt in der Luft, eine einzige Spur hat alle erledigt, überall fällt Konfetti.
+
+```
+an entire chamber standing still with dust hanging in the air, one single blazing motion trail having finished every enemy in it, confetti caught falling everywhere, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render
+```
+
+## 11. Erschwerniszulage · mehr Leben
+*Gegenstandsszene.*
+
+### 11.1 Stufe I
+
+Der Helm auf einem Pfosten, eine Delle frisch, ein Pfeil prallt gerade ab.
+
+```
+a battered official issue helmet set on a wooden post, one fresh dent glowing hot, an arrow glancing off it in a spray of sparks, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 11.2 Stufe II
+
+Derselbe unter einem **Hagel von Geschossen**, Funken überall, vollkommen unbewegt.
+
+```
+the same helmet under a hail of arrows and bolts, sparks bursting all over it, completely unmoved, the light of the impacts filling the frame, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 11.3 Stufe III
+
+Der Helm in einem **Trümmerfeld**, ein Ring zerbrochener Waffen um ihn, und nur Kratzer.
+
+```
+the helmet standing alone in a field of rubble, a wide ring of shattered weapons heaped around it, dawn light behind, and only scratches on the steel, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+## 12. Gebührenbefreiung · weniger Manakosten
+*Gegenstandsszene.*
+
+### 12.1 Stufe I
+
+Ein Beleg mit gesprungenem Vorhängeschloss, ein **Rinnsal Licht** läuft daraus hervor.
+
+```
+a paper receipt with a cracked padlock hanging from it, a thin trickle of golden light running out through the crack, dark vault behind, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 12.2 Stufe II
+
+Der Beleg rollt sich aus, aus dem Rinnsal wird ein **Strom**, das Schloss fällt.
+
+```
+the receipt unrolling downward, the trickle swelling into a bright stream of golden light, the broken padlock falling away through the air, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 12.3 Stufe III
+
+Ein **Wasserfall aus Belegen** stürzt in ein Tresorgewölbe, Licht durch das fallende Papier.
+
+```
+a waterfall of receipts pouring down out of the darkness into a vast treasury vault, blazing golden light shining through the falling paper, the burst padlock suspended in the spray, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
 ```
 
 ## 13. Dienstweg · Lauftempo
+*Gegenstandsszene.*
+
+### 13.1 Stufe I
+
+Ein Stiefelpaar auf einem Feldweg, Staubfahne, das Dorf klein dahinter.
 
 ```
-epic pixel art scene of a pair of colossal worn courier boots striding across a mountain range at dawn, each boot larger than the peaks it steps between, trailing plumes of dust, a ribbon of unspooling paper unwinding behind them across the valleys like a road, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render, legs, boots being worn
+a pair of worn courier boots striding along a country path, a plume of dust kicked up behind them, a small village far back in the evening light, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 13.2 Stufe II
+
+Dieselben **über einem Tal**, die Straße als Papierband darunter.
+
+```
+the same boots striding over an entire valley, each boot larger than the hills, a ribbon of paper running beneath them as a road, dust trailing, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 13.3 Stufe III
+
+Die Stiefel **schreiten über ein Gebirge**, die Papierstraße spannt sich von Horizont zu Horizont.
+
+```
+colossal courier boots striding across a mountain range at dawn, the paper road stretching from horizon to horizon below them, clouds around their ankles, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
 ```
 
 ## 14. Laufender Bezug · Manaregeneration
+*Gegenstandsszene.*
+
+### 14.1 Stufe I
+
+Der Becher auf einem Schreibtisch, Dampf, ein einzelner Lichtfaden steigt auf.
 
 ```
-epic pixel art scene of an enormous chipped enamel office mug enshrined on a stone altar at the end of a vast vaulted hall, thick steam rising from it in great columns into shafts of light falling from high windows, drifts of offered paperwork heaped at the foot of the altar, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+a chipped enamel office mug standing on a dark desk, steam rising from it, a single thread of glowing blue light climbing out of the steam, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 14.2 Stufe II
+
+Der Becher auf einem **Sockel**, Dampfsäulen, Lichtschächte von oben.
+
+```
+the same mug raised on a stone plinth, thick columns of steam rising into shafts of light falling from above, blue glow pooling around its base, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 14.3 Stufe III
+
+Der Becher auf einem **Altar am Ende einer Kathedrale**, Dampf füllt das Gewölbe, Papieropfer am Fuß.
+
+```
+the mug enshrined on an altar at the end of a vast cathedral, steam filling the whole vault, blazing blue light pouring from the cup, drifts of offered paperwork heaped at the foot of the altar, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
 ```
 
 ## 15. Dienstalterszulage · mehr Erfahrung
+*Gegenstandsszene.*
+
+### 15.1 Stufe I
+
+Das Dienstbuch aufgeschlagen, wenige Stempel, ein Schimmer zwischen den Seiten.
 
 ```
-epic pixel art scene of a colossal service record book lying open on a stone pedestal, its pages turning by themselves in a rising wind, brilliant light pouring upward from between the leaves into a dark vaulted chamber, round stamp impressions on the open pages glowing faintly like constellations, epic fantasy trading card illustration, dramatic low angle hero shot, monumental scale, shafts of light breaking through, atmospheric depth with a distant background, awe and grandeur, chunky pixels, low resolution, 32 colour palette, earthy base of dusty ochre faded olive slate blue and warm grey, lifted by dramatic rim light and glowing highlights against deep shadow, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 Amiga game box art rendered in chunky pixels, painted title screen grandeur --ar 4:3 --style raw --s 25 --no gradients, smooth shading, fine detail, photorealism, blur, text, lettering, writing, letters, numbers, watermark, hands, people, faces, modern 3d render
+a service record book lying open on a desk, a few round stamp impressions on the page, a faint golden shimmer between the leaves, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 15.2 Stufe II
+
+Das Buch dicker, die Seiten **blättern von selbst**, Licht bricht hervor.
+
+```
+the same book much thicker, its pages turning by themselves in a rising wind, bright golden light breaking out from between them, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+```
+
+### 15.3 Stufe III
+
+Das Buch riesig auf einem Sockel, Seiten fliegen, die Stempel **glühen wie Sternbilder**.
+
+```
+a colossal service record book open on a stone plinth, pages flying loose in a storm of light, the round stamp impressions glowing like constellations, the radiance filling an entire hall, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
 ```
 
 ---
 
 ## Wenn die Bilder da sind
 
-**Der Einbau ist eine Zeile je Karte.** Der Katalog trägt heute `icon:'🔪'`; wer
-zusätzlich `bild:'assets/zulagen/stichprobe.png'` einträgt, bekommt automatisch
-ein `<img>` im Kartenfenster statt des Sinnbilds. `zulageKarteHTML()` kann das
-seit dem Kartenumbau, es muss nichts angefasst werden.
+Der Katalog trägt heute `icon:'🔪'`. Dazu kommt ein Feld mit einem Pfad je
+Stufe:
 
-Das Fenster steht auf `object-fit:cover` und `image-rendering:pixelated`, ein
-Bild im Verhältnis vier zu drei sitzt also passgenau und bleibt hart in den
-Kanten. Das Sinnbild bleibt trotzdem im Katalog stehen: es ist der Ersatz, wenn
-eine Datei fehlt, und es steht im Tooltip.
+```js
+bild:['assets/zulagen/stichprobe-1.png',
+      'assets/zulagen/stichprobe-2.png',
+      'assets/zulagen/stichprobe-3.png'],
+```
 
-**`zulagenAssert()` prüft das Bildfeld auf seine Form**, also darauf, dass dort
-ein Pfad steht und keine leere Zeichenkette. Was es nicht prüfen kann, ist ob
-die Datei existiert; wer die fünfzehn einträgt, sollte deshalb einmal mit
-offener Konsole durch die Kartei blättern. Der Fund aus dem G9-Nachtrag hing an
-genau dieser Lücke: zwei Dorffiguren standen drei Bauabschnitte lang ohne Hemd
-im Dorf, weil hinter dem Eintrag keine Datei lag.
+Mehr ist nicht zu tun. `zulageKarteHTML()` liest von dort, das Fenster steht auf
+`object-fit:cover` und `image-rendering:pixelated`, ein Bild im Verhältnis vier
+zu drei sitzt passgenau. Lücken sind erlaubt und fallen aufs Sinnbild zurück,
+die fünfundvierzig müssen also nicht auf einmal fertig sein.
+
+**Vorschlag zur Reihenfolge: erst die fünfzehn Stufe-III-Bilder.** Die verkaufen
+die Sammlung, und an ihnen zeigt sich am schnellsten, ob Stil und Wucht sitzen.
+
+`zulagenAssert()` prüft die Form des Feldes, nicht die Existenz der Dateien. Wer
+die fünfundvierzig einträgt, sollte einmal mit offener Konsole durch die Kartei
+blättern.
