@@ -126,32 +126,35 @@ Die datierten Dokumente bleiben, wie sie sind. `phase-e1-empfang.md` trägt weit
 
 Drei Einstufungen. **REWRITE**: die Stimme ändert sich, die Zeilen werden neu geschrieben. **POLISH**: die Stimme bleibt, flache Zeilen werden geschärft, die Zielgruppe fängt bei neun an. **UNTOUCHED**: kein Wort.
 
-| Figur | Einstufung | Was geschieht | Stand |
-|---|---|---|---|
-| Zwirn | REWRITE | Festredenrhythmus, Kaskade im Baum. "Wir werden das angehen." und "Da bin ich dran." bleiben wörtlich | OFFEN |
-| Bramsche | REWRITE | Wand bleibt, Auskunft wird vollständig. Antwortkatalog auf Fundstellenform | OFFEN |
-| Zapf | UNTOUCHED | Sechs Wörter sind Kanon | OFFEN |
-| Lisbeth | POLISH | Unbequeme Fragen bleiben, Wärme nach vorn | OFFEN |
-| Trepp | POLISH | Entschuldigt sich weiter vorweg | OFFEN |
-| Nörgel | REWRITE | Beschwerde mit Begründung, Coda bleibt | OFFEN |
-| Milb | REWRITE | Gutachten in vier Teilen, GA-Kaskade. Signatur bleibt wörtlich | OFFEN |
-| Pommer | POLISH | Der Gag ist die falsche Betonung eines **kurzen** Satzes. Er wird ausdrücklich nicht ausführlich | OFFEN |
-| Fass | POLISH | Duzt weiter als Einziger, Einladung wird wärmer | OFFEN |
-| Lott | POLISH | Bleibt der Kürzere. Höchstens drei Zeilen pointiert | OFFEN |
-| Pahl | REWRITE | Endlich der Ausführlichere | OFFEN |
-| Nieselbeck | REWRITE | Telegramm aus Meldespalten, Auflösestrang im Baum | OFFEN |
-| Umlauf | POLISH | Der Gag ist der Abbruch. Er wird schärfer, nicht länger | OFFEN |
-| Vorblatt | REWRITE | Freundliche Umzingelung. Nie Nein, nie Drohung | OFFEN |
-| Knöterich | POLISH | Stimme unangetastet, einzelne flache Randnotizen geschärft | OFFEN |
+Eine Vorbemerkung, weil sie das Ergebnis erklärt: **der Bestand ist besser, als der Befund vermuten ließ.** Die Regel war falsch, aber die Texte, die unter ihr entstanden sind, sind es überwiegend nicht. Wo eine Figur ihre eigene Stimme schon hatte, ist nichts angefasst worden, und das ist kein Sparen, sondern dieselbe Sorgfalt: eine gute Zeile umzuschreiben, weil ein Bauabschnitt läuft, kostet die dreistufige Prüfung und bringt nichts ein. T1 hat deshalb dort umgeschrieben, wo die Regel wirklich Schaden angerichtet hat, und sonst nicht.
 
-| Bestand | Einstufung | Stand |
+| Figur | Einstufung | Was geschehen ist |
 |---|---|---|
-| Intro und Empfang | REWRITE, siehe Abschnitt 7 | OFFEN |
-| Dreizehn Gesprächsbäume | REWRITE bei sechs Figuren, POLISH bei sechs, Zapf unberührt | OFFEN |
-| Sieben Story-Szenen | POLISH, Szene 7 mit Vorblatt-REWRITE | OFFEN |
-| Vierundfünfzig Blätter | POLISH. Sie bleiben kurz, sie sind Post | OFFEN |
-| Vordruck | POLISH nur an den Anreißern | OFFEN |
-| Abspann | POLISH eng, gepinnte Wortlaute bleiben | OFFEN |
+| Nieselbeck | REWRITE | Telegramm aus den Meldespalten, Auflösestrang als Kaskade im Baum |
+| Milb | REWRITE | Gutachten in vier Teilen, im Kreislauf und als Kaskade. Signatur wörtlich erhalten |
+| Zwirn | REWRITE | Festredenrhythmus im Kreislauf, drei Dinge als Kaskade. Beide Kanonsätze wörtlich erhalten |
+| Pahl | REWRITE | Endlich der Ausführlichere. Schnitt in z1 von 30,5 auf 40,7 Zeichen |
+| Lott | REWRITE | Endlich der Kürzere. Schnitt in z1 von 36,8 auf 26,7 Zeichen. **Der Kontrast war vorher genau verkehrt herum** |
+| Nörgel | REWRITE | Jede Zeile trägt ihren Grund, die vollständige Beschwerde als Kaskade |
+| Bramsche | REWRITE (Baum) | Die zweistufige Auskunft als Kaskade. Ihre Wand bleibt wörtlich, sie ist ihre Sprachmarke |
+| Vorblatt | REWRITE (Baum) | Die freundliche Umzingelung als Kaskade. Grundzeilen wörtlich erhalten, sie waren schon richtig |
+| Umlauf | POLISH | Zwei Zeilen brechen jetzt wirklich mitten im Satz ab. Vorher tat es keine |
+| Fass | POLISH | Hält einen Platz frei, statt zu bedauern |
+| Lisbeth | POLISH | Eine Zeile für die Neunjährigen: „Irgendwer muss ja fragen." |
+| Zapf | UNTOUCHED | Sechs Wörter sind Kanon, und seit T1 sichtbar |
+| Trepp | UNTOUCHED | Die wiederholte Entschuldigung ist seine Figur, keine Textarmut |
+| Pommer | UNTOUCHED | Sein Gag ist die falsche Betonung eines **kurzen** Satzes. An Länge kann er nur verlieren |
+| Knöterich | UNTOUCHED | Knapp ist bei ihm Marke. Seine Randnotizen sind trocken, kurz und gut |
+
+| Bestand | Einstufung | Was geschehen ist |
+|---|---|---|
+| Intro und Empfang | REWRITE | Achtzehn Pflichtklicks auf elf, siehe Abschnitt 7 |
+| Gesprächsbäume | Sechs Kaskaden neu, der Rest unberührt | Die Kaskade ist der neue Kanal, nicht ein neuer Anstrich für alte Fragen |
+| Szene 7, Die Versuchung | UNTOUCHED | Sie hat den Registerwechsel bereits: Vorblatt ist die ganze Szene lang ausführlich und wird beim Stempel kurz. Genau das, was Kapitel 8 seit T1 über ihn behauptet, stand hier schon im Text |
+| Übrige Story-Szenen | siehe Abschnitt 9 | |
+| Vierundfünfzig Blätter | UNTOUCHED | Sie sind Post und begründen ihre eigene Kürze. Und sie sind gut: „Wiedervorlage in einem Jahr. Wiedervorlage in dreihundert Jahren." |
+| Vordruck | UNTOUCHED | Werkzeugtext. „Das Haus stellt Sie ein. Für heute." braucht nichts |
+| Abspann | siehe Abschnitt 9 | |
 
 ---
 
@@ -214,4 +217,56 @@ Der erste Fall meldet dreifach, und das ist richtig so: eine Fortsetzung ohne Sp
 
 ## 9. Abnahme
 
-Wird beim Abschluss dieses Bauabschnitts ausgefüllt: die Ergebnisse der Prüfläufe und die Zählbilanz über alle Sprechblasenpaare.
+### Die Prüfläufe
+
+| Lauf | Ergebnis |
+|---|---|
+| Konsole beim Start, Desktop | zweiundzwanzig Guard-Zeilen, keine Meldung |
+| `tools/empfang-pruef.mjs` | 59 von 59 |
+| `tools/szene-pruef.mjs` | 48 von 48 |
+| `tools/gespraech-pruef.mjs` | 89 von 89 |
+| `tools/reich-pruef.mjs` | 59 von 59 |
+| `tools/stopfen-pruef.mjs` | 43 von 43 |
+| `tools/versuchung-pruef.mjs` | 67 von 67 |
+| `tools/langvorgang-pruef.mjs` | 58 von 58 |
+| `tools/mitteilung-pruef.mjs` | 29 von 32, **Befund siehe unten** |
+
+### Der Befund am Rand: die Hausmitteilung zählt drei und ist fünf
+
+`tools/mitteilung-pruef.mjs` fällt an drei Zusagen durch, und zwar **nicht wegen T1**: derselbe Lauf fällt auf `origin/main` mit genau denselben drei Zeilen durch. Er ist also seit einer Weile rot.
+
+```
+FEHL  drei Punkte                                    ist=5 soll=3
+FEHL  jeder Punkt sagt, wo es steht                  ist=5 soll=3
+FEHL  das Reiterband steht im Kopf des Fensters      ist=5 soll=4
+```
+
+Die Ursache ist ein stehengebliebenes Literal. `NEUERUNGEN.punkte` hatte zur Zeit von U9 drei Einträge, U10, U11 und U12 haben zwei weitere angehängt, und der Code hat den Übergang sauber mitgemacht: der Kommentar über `NEUERUNGEN_ZAHLWORT` hält ausdrücklich fest, dass bis U10 eine Bedingung auf genau drei Punkte stand und beim vierten „4 Stellen" herausgekommen wäre. Der Prüflauf hat diese Verallgemeinerung nie nachvollzogen und zählt weiter gegen die Drei.
+
+**Nicht in diesem Bauabschnitt behoben,** weil T1 Texte umschreibt und nichts an der Bedienoberfläche zu suchen hat. Der Vorschlag steht hier, damit ihn der nächste Bauabschnitt aufnehmen kann, und er ist derselbe Handgriff, den `tools/szene-pruef.mjs` an anderer Stelle schon beschreibt („Die Schlüssel kommen aus der Tabelle und nicht aus einem Literal"):
+
+```js
+const soll = await page.evaluate(() => NEUERUNGEN.punkte.length);
+pruef('so viele Punkte wie Neuerungen', inhalt.punkte, soll);
+pruef('jeder Punkt sagt, wo es steht',  inhalt.wo,     soll);
+```
+
+Die dritte Zeile hängt daran mit: sie zählt die Reiter im Kopf des Fensters gegen dieselbe Zahl plus eins.
+
+### Zählbilanz
+
+Der Bestand, gegen den T1 gearbeitet hat, gemessen im laufenden Spiel:
+
+| | Zahl |
+|---|---|
+| Sprechblasenpaare in `DORF_FIGUREN` (Grund, Akt, Zusatz, Anlass, Antworten) | 505 |
+| Knoten in `SZENEN` | 150 |
+| Fragen in `SZENEN` | 96 |
+| davon Kaskaden (neu mit T1) | 6 |
+| Introblätter | 5 (vorher 9) |
+| Aktenblätter | 54 (unverändert) |
+| Einträge in `ABKUERZUNGEN` | 15 (vorher 10, die fünf neuen zählen als eine Position) |
+
+Angefasst wurden davon **62 Sprechblasenpaare in `index.html`** (48 ersetzt, 14 neu hinzugekommen), dazu die Eingangskette, sechs Kaskaden, die Abkürzungstabelle und die Formregel in fünfzehn Dateien. Jede geänderte Zeile ist gegen den Zeichendeckel gezählt, gegen den Sperrvermerk geprüft und gegen das Humor-Grundgesetz gelesen worden.
+
+**Der Rest ist absichtlich unangetastet.** Das ist das eigentliche Ergebnis dieses Bauabschnitts: die Regel war falsch, die Texte, die unter ihr entstanden sind, überwiegend nicht. Wo die Regel wirklich Schaden angerichtet hat, war der Schaden messbar, und zwar am deutlichsten an der Bank. Dort standen zwei Figuren, von denen die eine seit F1 als die Kürzere und die andere als die Ausführlichere im Kanon steht, und im Spiel war es **genau umgekehrt**: Lott lag im Schnitt bei 36,8 Zeichen in der ersten Zeile, Pahl bei 30,5. Eine Hausregel, die allen dasselbe Maß vorschreibt, macht aus zwei Figuren eine, und dann ist es Zufall, welche von beiden die längeren Sätze bekommt.
