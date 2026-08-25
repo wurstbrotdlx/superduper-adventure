@@ -484,11 +484,12 @@
   #ausweisBtn:hover{background:#2a2214;border-color:#c9a227;}
   #ausweisBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
 
-  /* Ton, Schrift und Spielstand sitzen im Rucksack, nicht im Guertel. U8 hat
-     sie dort gelassen und ihnen nur eine eigene Kachel gegeben: sie standen
-     bisher als Anhaengsel unter dem Beutel, und der Beutel ist das, was man
-     im Rucksack sucht. Ein eigener Abschnitt fuer die Optionen wird sie
-     vermutlich ganz herausholen; bis dahin stehen sie wenigstens fuer sich. */
+  /* Ton, Schrift und Spielstand sassen seit Phase 2 im Inventar, weil dort
+     der Musikknopf lag. Das war Herkunft und kein Ort: ein Lautstaerkeregler
+     liegt nicht in einem Beutel. Seit dem dritten U8-Nachtrag stehen sie in
+     ihrem eigenen Fenster (#optionen), je in einer eigenen Kachel — der
+     "eigene Abschnitt fuer die Optionen", den U8 sich selbst aufgeschrieben
+     hatte. Was hier bleibt, gilt fuer die Tonkachel. */
   #musikBox h4 + *{margin-top:0;}
   #musikRow{display:flex;align-items:center;gap:10px;}
   #musikRow #musicBtn{flex:0 0 auto;}
@@ -2134,34 +2135,66 @@
       <div class="gfSatz">Der Feldkessel steht im Rucksack und bleibt dort. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
       <div id="kesselBtn" title="Kessel &amp; Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
     </div>
+   </div>
+  </div>
+</div>
+
+<!-- U8-Nachtrag 3: Die Einstellungen als fuenftes Fenster.
+     Auf Ansage: "Pack die Lautstaerke und Speichern etc in einen extra
+     Menuepunkt innerhalb dieses Menues."
+
+     Damit ist der Punkt eingeloest, den U8 selbst als offen notiert hat:
+     "Ein eigener Abschnitt fuer die Optionen. Ton, Schrift, Spielstand [...]
+     gehoeren dorthin. Solange es ihn nicht gibt, stehen sie da, wo sie schon
+     standen." Sie standen im Rucksack, weil dort der Ton seit Phase 2 lag —
+     das war Herkunft und kein Ort. Ein Lautstaerkeregler liegt nicht in
+     einem Beutel.
+
+     Der Inhalt ist Wort fuer Wort derselbe und haengt an denselben IDs; drei
+     Kacheln statt eines Kastens mit drei Ueberschriften, damit die Spalten
+     des Grossfensters greifen. Der Rucksack traegt seither nur noch, was in
+     ihm liegt. -->
+<div id="optionen" class="grossFenster">
+  <div class="gfKopf">
+    <div class="gfBand" data-band="optionen"></div>
+    <span class="panelZu" id="closeOptionenBtn" title="Schließen (Esc)">✖</span>
+  </div>
+  <div class="gfBody">
+   <div class="gfSpalten">
     <div class="gfKachel" id="musikBox">
-    <h4>🎵 TON</h4>
-    <div id="musikRow">
-      <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
-      <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke">
+      <h4>🎵 TON</h4>
+      <div id="musikRow">
+        <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
+        <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke">
+      </div>
+      <div class="gfSatz" style="margin-top:9px;">Wie gesprächig Knöterich ist:</div>
+      <div id="knToneRow">
+        <div class="knToneBtn" data-v="gespraechig">Gesprächig</div>
+        <div class="knToneBtn" data-v="dienstlich">Dienstlich</div>
+        <div class="knToneBtn" data-v="schweigt">Schweigt</div>
+      </div>
     </div>
-    <div id="knToneRow">
-      <div class="knToneBtn" data-v="gespraechig">Gesprächig</div>
-      <div class="knToneBtn" data-v="dienstlich">Dienstlich</div>
-      <div class="knToneBtn" data-v="schweigt">Schweigt</div>
-    </div>
-    <h4 style="margin-top:10px;">🔠 SCHRIFT</h4>
-    <div id="schriftRow">
-      <div class="schriftBtn" data-v="0">Normal</div>
-      <div class="schriftBtn" data-v="1">Groß</div>
-      <div class="schriftBtn" data-v="2">Größer</div>
+    <div class="gfKachel">
+      <h4>🔠 SCHRIFT</h4>
+      <div class="gfSatz">Gilt für Gespräche, Vordrucke und Menüs. Wird gemerkt.</div>
+      <div id="schriftRow">
+        <div class="schriftBtn" data-v="0">Normal</div>
+        <div class="schriftBtn" data-v="1">Groß</div>
+        <div class="schriftBtn" data-v="2">Größer</div>
+      </div>
     </div>
     <!-- SP3: Der eine Kasten des Spiels, der Technik Technik nennt. Begründung
          steht ausführlich am SP3-Block im Skript: eine Datensicherung, die
          niemand als solche erkennt, ist keine. -->
-    <h4 style="margin-top:10px;">💾 SPIELSTAND</h4>
-    <div id="speicherRow">
-      <div class="schriftBtn" id="spSpeichern" title="Aktuelle Schicht auf diesem Gerät sichern">Speichern</div>
-      <div class="schriftBtn" id="spExport" title="Alles als Datei sichern, für den Gerätewechsel">Export</div>
-      <div class="schriftBtn" id="spImport" title="Spielstand-Datei einlesen und Seite neu laden">Import</div>
-    </div>
-    <div id="speicherInfo">Das Spiel speichert auf diesem Gerät und automatisch, sobald der Tab in den Hintergrund geht.</div>
-    <input type="file" id="spDatei" accept="application/json,.json" style="display:none">
+    <div class="gfKachel">
+      <h4>💾 SPIELSTAND</h4>
+      <div id="speicherRow">
+        <div class="schriftBtn" id="spSpeichern" title="Aktuelle Schicht auf diesem Gerät sichern">Speichern</div>
+        <div class="schriftBtn" id="spExport" title="Alles als Datei sichern, für den Gerätewechsel">Export</div>
+        <div class="schriftBtn" id="spImport" title="Spielstand-Datei einlesen und Seite neu laden">Import</div>
+      </div>
+      <div id="speicherInfo">Das Spiel speichert auf diesem Gerät und automatisch, sobald der Tab in den Hintergrund geht.</div>
+      <input type="file" id="spDatei" accept="application/json,.json" style="display:none">
     </div>
    </div>
   </div>
@@ -4316,7 +4349,7 @@ const MUS = {
     // Overlay erst in ihrer letzten, sie funktionieren nur, weil jeder Aufrufer es schon
     // auf 'flex' stehen hat. Wer einen neuen Aufrufer ergänzt, muss das mitprüfen.
     muffled = ovMuffle || (el('overlay').style.display !== 'flex'
-              && (invOpen || charakterOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen));
+              && (invOpen || charakterOpen || spellTreeOpen || kesselOpen || optionenOpen || schlossOpen || amtFensterOpen));
     if(!AC) return;
     // Aus-Zweig: im Spiel gilt weiter die Überstunden-Kurve aus setOvertime. Dessen
     // q-Guard schreibt erst beim nächsten 1/50-Schritt nach (in den Überstunden bis zu
@@ -10788,7 +10821,7 @@ function knAllDone(){
 // Sperrzonen gelten nur für Dienstzettel, nicht für Randnotizen und nicht für
 // die spielerausgelöste Wiederholung (Nachfragen).
 function knSperrzone(){
-  if(invOpen || charakterOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen) return true;
+  if(invOpen || charakterOpen || spellTreeOpen || kesselOpen || optionenOpen || schlossOpen || amtFensterOpen) return true;
   if(document.getElementById('overlay').style.display === 'flex') return true;
   if(kammer){ const mod = kammer.mods[kammer.idx]; if(mod && mod.begonnen && !mod.fertig) return true; }
   if(boss && boss.aggro) return true;
@@ -13508,6 +13541,13 @@ const GROSSFENSTER = [
   {id:'spellTree', sinn:'✨', wort:'Zauber',    taste:'T',
    offen:() => spellTreeOpen, auf:() => toggleSpellTree(),
    stern:() => (player.spellPoints > 0 && player.level >= ZAUBER_AB_STUFE) ? '#c77dff' : null},
+  // U8-Nachtrag 3: Die Einstellungen. Sie haben als einziges Fenster keinen
+  // Guertelknopf, und das ist Absicht: der Guertel ist die Spalte, aus der man
+  // im Gefecht etwas holt, und eine Lautstaerke holt dort niemand. Der Weg
+  // fuehrt ueber das Band — also ueber jedes andere Fenster — und ueber die
+  // Taste O.
+  {id:'optionen',  sinn:'⚙️', wort:'Optionen',  taste:'O',
+   offen:() => optionenOpen,  auf:() => toggleOptionen(),  stern:() => null},
 ];
 
 // Schliesst jedes Grossfenster ausser dem genannten. Zwei von ihnen stehen an
@@ -13587,6 +13627,19 @@ function toggleCharakter(blatt){
 // statt einen zweiten Zustand zu fuehren, der mit dem ersten auseinanderlaufen
 // kann.
 function zulagenOffen(){ return charakterOpen && charBlatt === 'mappe'; }
+
+// U8-Nachtrag 3: Die Einstellungen. Bauform wortgleich mit den uebrigen
+// Grossfenstern; zu rendern gibt es nichts, weil die drei Kaesten ihren Stand
+// selbst tragen (die Klassen setzen refreshKnTone(), refreshSchrift() und die
+// Spielstand-Knoepfe beim Umschalten).
+let optionenOpen = false;
+function toggleOptionen(){
+  optionenOpen = !optionenOpen;
+  el('optionen').style.display = optionenOpen ? 'flex' : 'none';
+  if(optionenOpen){ grossfensterRaeumen('optionen'); gfBandZeichnen(); knIdleT = 0; }
+  MUS.muffle();   // offenes Panel daempft die Musik
+  panelSicht();   // U1
+}
 
 function renderCharakter(){
   if(!charakterOpen) return;
@@ -14060,6 +14113,7 @@ document.getElementById('invBtn').onclick = toggleInventory;
 // U8: der Charakterknopf und die beiden Blaetter des Charakterfensters.
 document.getElementById('charBtn').onclick = () => toggleCharakter();
 document.getElementById('closeCharBtn').onclick = () => toggleCharakter();
+document.getElementById('closeOptionenBtn').onclick = () => toggleOptionen();
 for(const t of document.querySelectorAll('#charakter .gfBlatt'))
   t.onclick = () => charBlattWaehlen(t.dataset.blatt);
 document.getElementById('musicBtn').onclick = toggleMusic;
@@ -15972,6 +16026,7 @@ function startShift(){
   if(invOpen) toggleInventory();
   if(spellTreeOpen) toggleSpellTree();
   if(charakterOpen) toggleCharakter();   // U8: samt Kartenmappe, die eines seiner Blaetter ist
+  if(optionenOpen) toggleOptionen();
   if(amtFensterOpen) amtFensterSchliessen();
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;
   attackTouch = null; lockedTarget = null;
@@ -22627,6 +22682,7 @@ const PANEL_REGISTER = [
   // das es jetzt gibt.
   {id:'charakter',  offen:() => charakterOpen,  zu:() => toggleCharakter()},
   {id:'kessel',     offen:() => kesselOpen,     zu:() => toggleKessel()},
+  {id:'optionen',   offen:() => optionenOpen,   zu:() => toggleOptionen()},
   {id:'ausweis',    offen:() => ausweisOpen,    zu:() => toggleAusweis()},
   {id:'fullmap',    offen:() => fullmapOpen,    zu:() => toggleFullmap()},
   {id:'schloss',    offen:() => schlossOpen,    zu:() => schlossZu()},
@@ -22717,9 +22773,9 @@ window.addEventListener('keydown', e => {
   // Vollständige Belegung, damit sie nicht wieder nur in einer Plandatei steht
   // (ZUSAGEN-BILANZ-2026-08-04.md, Fund 14): w a s d Bewegung, Space Angriff,
   // q und 1 Trank, e Zauber, r Ultimate, i Inventar, t Zauberbaum, m Musik,
-  // k Kessel, l Vollbildkarte, c Charakter (U8), z Kartenmappe (K1, seit U8
-  // das zweite Blatt des Charakterfensters), f Kontextaktion, Esc schließt
-  // Panels der Reihe nach.
+  // k Kessel, l Vollbildkarte, c Charakter (U8), o Optionen (U8-Nachtrag 3),
+  // z Kartenmappe (K1, seit U8 das zweite Blatt des Charakterfensters),
+  // f Kontextaktion, Esc schließt Panels der Reihe nach.
   // '1' ist die Zweitbelegung für den Trank. Sie ist bewusst dokumentiert: die
   // Ziffernreihe ist genau der Bereich, in den eine spätere Schnellwahl greifen
   // würde, und dann kollidiert sie stumm. 'l' (Landkarte) statt 'm': m ist schon
@@ -22729,6 +22785,7 @@ window.addEventListener('keydown', e => {
   if(k === 'r') castUltimate();
   if(k === 'i') toggleInventory(); if(k === 't') toggleSpellTree(); if(k === 'm') toggleMusic();
   if(k === 'c') toggleCharakter();   // U8
+  if(k === 'o') toggleOptionen();    // U8-Nachtrag 3
   if(k === 'z') toggleZulagen();     // K1, seit U8 der kurze Weg auf die Mappe
   if(k === 'k') toggleKessel();
   if(k === 'l') toggleFullmap();
@@ -22739,6 +22796,7 @@ window.addEventListener('keydown', e => {
     else if(spellTreeOpen) toggleSpellTree();
     else if(charakterOpen) toggleCharakter();
     else if(kesselOpen) toggleKessel();
+    else if(optionenOpen) toggleOptionen();
     else if(ausweisOpen) toggleAusweis();
     else if(fullmapOpen) toggleFullmap();
     else if(schlossOpen) schlossZu();
@@ -23267,7 +23325,7 @@ function bakeUiSkin(){
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
-  for(const sel of ['#inv', '#charakter', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap', '#gespraech']){
+  for(const sel of ['#inv', '#charakter', '#spellTree', '#kessel', '#optionen', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap', '#gespraech']){
     const el = document.querySelector(sel); if(!el) continue;
     el.style.borderImageSource = `url("${frameUrl}")`;
     el.style.borderImageSlice = '2 2 5 2';
