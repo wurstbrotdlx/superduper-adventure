@@ -34,6 +34,41 @@
      ===================================================================== */
   :root{--fs:1.2;}
 
+  /* =====================================================================
+     U7 — Das Raster der Bedienschicht.
+
+     Die Oberkanten der drei linken Baender und der beiden rechten standen
+     bis U7 als einzelne Pixelzahlen in fuenf Regeln und noch einmal in
+     jedem Breakpoint. Wer die Statuskarte um vier Pixel kleiner machte,
+     musste an sieben Stellen nachrechnen — und hat es nicht getan, weshalb
+     die Ortszeile in der ersten Fassung durch die Karte lief.
+
+     Jetzt gibt es zwei gemessene Groessen je Seite (Ort und Hoehe der Karte,
+     Ort und Kantenlaenge der Minikarte) und drei gerechnete Kanten darunter.
+     Ein Breakpoint aendert nur noch die vier Groessen; alles, was darunter
+     haengt, rueckt mit.
+
+       --karteY/--karteH   Statuskarte oben links
+       --reiheY/--reiheH   Ortszeile und Bossbalken, direkt darunter
+       --spalteY           Knopfspalte am linken Rand (nur Touch)
+       --mapY/--mapH       Minikarte oben rechts
+       --statY             Beute und Uhr, direkt darunter
+     ===================================================================== */
+  :root{
+    /* --rand ist der Abstand aller vier Ecken zur Bildkante. Er stand als
+       --karteY auch fuer links, was zwei Bedeutungen in einem Namen waren. */
+    --rand:10px;
+    --karteY:var(--rand); --karteH:84px;
+    --mapY:10px;   --mapH:124px;
+    --reiheH:26px;
+    --reiheY:calc(var(--karteY) + var(--karteH) + 8px);
+    --spalteY:calc(var(--karteY) + var(--karteH) + var(--reiheH) + 16px);
+    --statY:calc(var(--mapY) + var(--mapH) + 8px);
+    /* Breite der Knopfspalte samt Raendern. Auf dem Schirm gibt es sie nicht,
+       dort ist sie 0 und jede Rechnung damit ein Nullgeschaeft. */
+    --railW:0px;
+  }
+
   html,body{margin:0;padding:0;overflow:hidden;background:#05030a;font-family:'Courier New',ui-monospace,monospace;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;overscroll-behavior:none;}
   #game{position:fixed;inset:0;display:block;cursor:crosshair;image-rendering:pixelated;touch-action:none;-webkit-tap-highlight-color:transparent;}
   #hud,#inv{touch-action:manipulation;}
@@ -42,21 +77,100 @@
      Daumen bewegen lassen. */
   #overlay{touch-action:pan-y;}
   #spellTree{touch-action:pan-y;}
-  #hud{position:fixed;left:0;right:0;bottom:0;height:96px;pointer-events:none;z-index:10;
-       background:linear-gradient(to top,rgba(10,8,16,.95),rgba(10,8,16,.75) 70%,transparent);
-       display:flex;align-items:flex-end;justify-content:center;gap:18px;padding:0 16px 10px;}
+  /* =====================================================================
+     U7 — SCHICHT 1: SPIEL UND STEUERUNG
+
+     Bis hierher lag der Zustand des Spielers UNTEN in der Mitte: zwei Kugeln
+     von 84 Pixeln, dazwischen ein Erfahrungsbalken und der Guertel. Auf dem
+     Handy wurden aus den Kugeln zwei senkrechte Roehren an den beiden
+     Bildschirmraendern, weil unten kein Platz mehr war. Das hat zwei Dinge
+     gekostet, die man auf einem Telefon nicht ausgeben darf: die halbe
+     Bildhoehe an beiden Seiten, und die Ecke unten links, in der der Daumen
+     liegt.
+
+     Die Vorbilder (Diablo Immortal, Vampire Survivors-Ableger, Eternium,
+     Stardew) machen es alle gleich, und zwar ohne Ausnahme: der Zustand
+     gehoert nach OBEN LINKS an ein rundes Lichtbild, die Karte nach oben
+     rechts, der Daumen bleibt unten frei. Genau das steht jetzt hier.
+
+     Der Umbau ist bewusst NICHT zwei Entwuerfe (einer fuer Maus, einer fuer
+     Finger). Es ist einer, den der Finger erweitert: dieselbe Statuskarte,
+     dieselbe Minikarte, derselbe Guertel — auf Touch kommen der Daumenring
+     und der Faecher dazu, und der Guertel wandert an den Rand. Zwei
+     getrennte Entwuerfe waren der Grund, warum die Roehren ueberhaupt
+     entstanden sind.
+     ===================================================================== */
+
+  /* --- Oben links: die Statuskarte ---------------------------------------
+     Lichtbild, Stufe, Leben, Mana, Erfahrung in einem Stueck. Das Lichtbild
+     ist derselbe Ausschnitt aus dem gebackenen Heldenblatt, den der
+     Dienstausweis zeigt (renderAusweisFoto), also traegt es Haarton und
+     Garderobe der laufenden Schicht von selbst.
+     pointer-events:none — die Karte ist eine Anzeige, kein Knopf. Damit
+     zaehlt ein Griff auf sie als "daneben" und schliesst ein offenes Panel,
+     genau wie ein Griff ins Bild (U1). */
+  /* height ist gesetzt und nicht dem Inhalt ueberlassen: --karteH ist die Zahl,
+     mit der die Ortszeile, der Bossbalken und die Knopfspalte rechnen. Solange
+     die Hoehe aus Innenabstand plus Lichtbild ENTSTAND, konnte sie von --karteH
+     abweichen, ohne dass es jemandem auffiel — und dann lief die Ortszeile
+     durch die Karte. Genau das hat tools/steuerung-pruef.mjs gemeldet (70
+     gemessen gegen 62 gerechnet). */
+  #statusKarte{position:fixed;left:var(--rand);top:var(--karteY);z-index:12;pointer-events:none;
+       display:flex;align-items:center;gap:10px;box-sizing:border-box;height:var(--karteH);
+       padding:6px 14px 6px 6px;border-radius:44px;
+       background:linear-gradient(100deg,rgba(14,10,20,.94),rgba(14,10,20,.62));
+       border:2px solid rgba(107,90,58,.9);box-shadow:0 3px 14px rgba(0,0,0,.7);}
   /* image-rendering: bakeUiSkin() legt round_brown.png (16x16) als background-image
-     mit background-size:100% 100% unter Orbs und Touch-Rundknöpfe, das ist 3,5- bis
-     5-fach hochskalierte Pixelkunst. Ohne pixelated glättet der Browser sie weich,
-     Regressionsregel 14 verlangt das Gegenteil (R6/F34). Die Füllungen darunter
-     (#hpFill/#manaFill/.orbTicks) sind CSS-Verläufe, keine Rasterbilder. */
-  .orbWrap{width:84px;height:84px;border-radius:50%;border:3px solid #6b5a3a;background:#1a0505;overflow:hidden;position:relative;flex:0 0 auto;box-shadow:0 0 12px rgba(0,0,0,.8) inset;image-rendering:pixelated;}
-  #hpFill{position:absolute;left:0;right:0;bottom:0;height:100%;background:radial-gradient(circle at 35% 30%,#ff6a5a,#b31414 60%,#7a0a0a);transition:height .15s;}
-  #manaFill{position:absolute;left:0;right:0;bottom:0;height:100%;background:radial-gradient(circle at 35% 30%,#5a9eff,#144cb3 60%,#0a207a);transition:height .15s;}
-  .orbTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:calc(12px * var(--fs));text-shadow:0 1px 2px #000;}
-  #midHud{display:flex;flex-direction:column;gap:6px;align-items:center;}
-  #xpBar{width:340px;height:10px;border:2px solid #6b5a3a;background:#141210;border-radius:5px;overflow:hidden;}
+     mit background-size:100% 100% unter Lichtbild und Touch-Rundknöpfe, das ist
+     3,5- bis 5-fach hochskalierte Pixelkunst. Ohne pixelated glättet der Browser
+     sie weich, Regressionsregel 14 verlangt das Gegenteil (R6/F34). */
+  #portraitRing{position:relative;width:62px;height:62px;flex:0 0 auto;border-radius:50%;
+       border:3px solid #6b5a3a;background:#17130d;overflow:hidden;image-rendering:pixelated;
+       box-shadow:0 0 10px rgba(0,0,0,.85) inset;}
+  #hudPortrait{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);
+       width:50px;height:56px;image-rendering:pixelated;}
+  /* Die Stufe sitzt AM Lichtbild und nicht mehr als Zeile "Stufe 7" daneben.
+     Eine Zahl im Ring ist die Form, die jedes Spiel dieses Zuschnitts benutzt,
+     und sie kostet keine Zeile. */
+  #lvlTxt{position:absolute;right:-1px;bottom:-1px;min-width:19px;height:19px;padding:0 3px;
+       box-sizing:border-box;border-radius:10px;border:2px solid #c9a227;background:#17130d;
+       color:#f4d97a;font-weight:bold;font-size:calc(10px * var(--fs));line-height:15px;
+       text-align:center;box-shadow:0 1px 4px #000;}
+  #balkenSpalte{display:flex;flex-direction:column;gap:4px;}
+  /* Waagerecht statt Kugel: eine Kugel zeigt einen Anteil, ein Balken zeigt
+     ihn UND wie viel davon noch kommt. Zwei Balken uebereinander sind ausserdem
+     mit einem Blick vergleichbar, zwei Kugeln links und rechts vom Guertel
+     waren es nie. */
+  /* Die Breite ist gedeckelt UND vom Fenster abhaengig: 200 Pixel sind der
+     Platz, den die Minikarte samt Raendern rechts braucht. Ohne den zweiten
+     Teil lief die Karte auf einem 360 Pixel breiten Telefon in die Minikarte. */
+  .wBalken{position:relative;width:min(186px, calc(100vw - 200px));height:15px;border-radius:8px;border:2px solid #6b5a3a;
+       background:#120a0a;overflow:hidden;box-shadow:0 0 8px rgba(0,0,0,.85) inset;}
+  .manaBalken{background:#080c1e;}
+  #hpFill,#manaFill{position:absolute;left:0;top:0;bottom:0;width:100%;transition:width .15s;}
+  #hpFill{background:linear-gradient(180deg,#ff8a72,#e02a22 55%,#8a0d0d);}
+  #manaFill{background:linear-gradient(180deg,#8fc4ff,#2a6ae0 55%,#0d2a8a);}
+  /* Die Segmente sind aus dem mobilen Roehren-Entwurf uebernommen und gelten
+     jetzt ueberall: die Anzahl waechst mit der Stufe (segmentZahl()), die
+     Kachelbreite setzt updateHUD ueber background-size. Gravur wie zuvor —
+     dunkle Kerbe mit heller Kante, lesbar auf der Fuellung wie auf dem Grund. */
+  .orbTicks{position:absolute;inset:0;pointer-events:none;
+       background-image:linear-gradient(to right, rgba(0,0,0,.85) 0 2px, rgba(232,217,168,.4) 2px 3px, transparent 3px);
+       background-repeat:repeat-x;background-position:left;background-size:100% 100%;
+       box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);}
+  .orbTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+       color:#fff;font-weight:bold;font-size:calc(10px * var(--fs));
+       text-shadow:0 1px 2px #000,0 0 5px rgba(0,0,0,.9);letter-spacing:.5px;}
+  #xpBar{width:min(186px, calc(100vw - 200px));height:7px;border:1px solid #5a4a2d;background:#141210;border-radius:4px;overflow:hidden;}
   #xpFill{height:100%;width:0%;background:linear-gradient(90deg,#8a2be2,#d8bfd8);transition:width 0.2s;}
+
+  /* --- Unten: der Guertel ------------------------------------------------
+     Ohne Kugeln und ohne Erfahrungsbalken bleibt eine Knopfreihe, die keine
+     96 Pixel hohe Bank mehr braucht. Der Verlauf bleibt, aber flacher: er
+     traegt die Knoepfe gegen einen hellen Boden, ohne das Bild zu beschneiden. */
+  #hud{position:fixed;left:0;right:0;bottom:0;height:66px;pointer-events:none;z-index:10;
+       background:linear-gradient(to top,rgba(10,8,16,.92),rgba(10,8,16,.55) 62%,transparent);
+       display:flex;align-items:flex-end;justify-content:center;padding:0 16px 10px;}
   #beltRow{display:flex;gap:8px;align-items:center;}
   .beltSlot{pointer-events:auto;cursor:pointer;min-width:54px;height:44px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;color:#e8d9a8;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:calc(13px * var(--fs));padding:0 8px;gap:4px;}
   .beltSlot:hover{border-color:#c9a227;}
@@ -64,12 +178,34 @@
   /* Beschriftungen sind für Touch unsichtbar: Ziel eines Drags ist immer der Button
      selbst, nie ein Kind-Span, der beim HUD-Refresh ausgetauscht werden könnte. */
   .beltSlot *{pointer-events:none;}
-  #statCol{color:#e8d9a8;font-weight:bold;font-size:calc(13px * var(--fs));text-shadow:0 1px 2px #000;display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:130px;}
-  #zone{position:fixed;left:12px;top:12px;color:#f4e6b8;font-size:calc(16px * var(--fs));font-weight:bold;text-shadow:0 2px 4px #000;z-index:10;pointer-events:none;}
-  #minimap{position:fixed;top:12px;right:12px;width:128px;height:128px;border:3px solid #6b5a3a;border-radius:4px;z-index:10;background:#000;image-rendering:pixelated;opacity:.92;}
-  #bossbar{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(480px,60vw);z-index:11;display:none;}
-  #bossname{display:block;text-align:center;color:#ffd9d9;font-weight:bold;font-size:calc(14px * var(--fs));text-shadow:0 1px 3px #000;margin-bottom:3px;}
-  #bossback{height:14px;border:2px solid #7a1d1d;background:#210808;border-radius:4px;overflow:hidden;}
+
+  /* --- Oben rechts: Karte, Beute, Uhr ------------------------------------
+     Die Uhr stand bis U7 als Anhaengsel in der Ortszeile ("... · 22:07").
+     Dort war sie ganz links im Bild und wanderte mit der Laenge des Ortsnamens
+     hin und her. Sie gehoert zur Karte: beides sagt, WO und WANN man ist. */
+  #minimap{position:fixed;top:var(--mapY);right:var(--rand);width:var(--mapH);height:var(--mapH);
+       box-sizing:border-box;border:3px solid #6b5a3a;
+       border-radius:10px;z-index:10;background:#000;image-rendering:pixelated;opacity:.95;
+       box-shadow:0 3px 14px rgba(0,0,0,.7);}
+  #statCol{position:fixed;top:var(--statY);right:12px;z-index:11;pointer-events:none;
+       color:#e8d9a8;font-weight:bold;font-size:calc(12px * var(--fs));text-shadow:0 1px 3px #000;
+       display:flex;flex-direction:column;gap:3px;align-items:flex-end;text-align:right;}
+  #uhrTxt{color:#c9b98a;}
+  /* Die Ortszeile rutscht unter die Statuskarte. Sie ist die einzige Zeile
+     hier, die lang werden darf, deshalb bekommt sie eine Obergrenze und
+     bricht um, statt in die Minikarte zu laufen. */
+  #zone{position:fixed;left:14px;top:var(--reiheY);color:#f4e6b8;font-size:calc(13px * var(--fs));font-weight:bold;
+       text-shadow:0 2px 4px #000;z-index:9;pointer-events:none;line-height:1.35;
+       max-width:min(460px, calc(100vw - 150px));}
+  /* Der Bossbalken liegt ueber der Ortszeile (z-index 11 gegen 9) und deckt
+     sie zu, wo beide zusammenkommen. Das ist auf einem stehenden Telefon der
+     Normalfall und braucht keine Zeile Skript: waehrend eines Bosskampfes ist
+     der Name des Gegners die Auskunft, der Name des Feldes nicht. */
+  #bossbar{position:fixed;top:var(--reiheY);left:50%;transform:translateX(-50%);width:min(460px,calc(100vw - 24px));z-index:11;display:none;
+       background:rgba(12,8,10,.86);border:2px solid rgba(122,29,29,.9);border-radius:10px;padding:5px 12px 7px;
+       box-shadow:0 3px 14px rgba(0,0,0,.7);}
+  #bossname{display:block;text-align:center;color:#ffd9d9;font-weight:bold;font-size:calc(13px * var(--fs));text-shadow:0 1px 3px #000;margin-bottom:3px;}
+  #bossback{height:12px;border:2px solid #7a1d1d;background:#210808;border-radius:4px;overflow:hidden;}
   #bossfill{height:100%;width:100%;background:linear-gradient(90deg,#8e1010,#e33131);}
   
   #inv{position:fixed;top:50%;right:24px;transform:translateY(-50%);width:min(360px,calc(100vw - 48px));max-height:85vh;overflow-y:auto;z-index:20;display:none;
@@ -631,6 +767,8 @@
   body.szeneLaeuft #hud,
   body.szeneLaeuft #minimap,
   body.szeneLaeuft #touchCluster,
+  body.szeneLaeuft #statusKarte,
+  body.szeneLaeuft #statCol,
   body.szeneLaeuft #zone{display:none;}
 
   /* =====================================================================
@@ -925,88 +1063,197 @@
   .gwOpt.hot .gwNr{color:#f4d97a;}
   .gwOpt.aus{opacity:.45;cursor:default;}
 
-  /* --- Touch-Modus UI (nur body.touch, Desktop unverändert) --- */
+  /* =====================================================================
+     U7 — TOUCH: DAUMENRING LINKS, FAECHER RECHTS
+
+     Die Regel darunter ist die des Genres und sie ist keine Geschmacksfrage:
+     die beiden unteren Ecken gehoeren den Daumen und sonst niemandem. Links
+     wird gegangen, rechts wird geschlagen. Alles andere — Karte, Zustand,
+     Menuezugaenge — geht nach oben und an die Kante.
+
+     Was U7 dafuer geraeumt hat: die zwei senkrechten Roehren an den
+     Bildschirmraendern (Leben/Mana, jetzt in der Statuskarte oben links) und
+     der Guertel quer ueber die untere Bildkante (jetzt eine Spalte am rechten
+     Rand). Beides lag im Weg des Daumens.
+     ===================================================================== */
   .touchOnly{display:none;}
   body.touch .touchOnly{display:flex;}
   #touchCluster{display:none;}
   body.touch #touchCluster{display:block;position:fixed;right:0;bottom:0;width:230px;height:250px;z-index:11;pointer-events:none;}
   #touchCluster .tBtn{position:absolute;pointer-events:auto;border:3px solid #6b5a3a;border-radius:50%;
     background:rgba(23,19,13,.85);color:#e8d9a8;display:flex;align-items:center;justify-content:center;
-    touch-action:none;-webkit-user-select:none;user-select:none;image-rendering:pixelated;}  /* s. .orbWrap, R6/F34 — deckt #attackBtn mit ab */
-  #attackBtn{width:78px;height:78px;right:14px;bottom:118px;font-size:calc(30px * var(--fs));}
-  #attackBtn.locked{border-color:#ff5a5a;box-shadow:0 0 10px rgba(255,90,90,.6);}
-  /* Daumen-Fächer: Kampf-Buttons aus dem Belt um den Attack-Button gruppieren.
-     position:fixed nimmt sie aus dem Flex-Flow; Rest des Belts (Menü-Buttons) bleibt zentriert. */
+    touch-action:none;-webkit-user-select:none;user-select:none;image-rendering:pixelated;}  /* s. #portraitRing, R6/F34 — deckt #attackBtn mit ab */
+  /* Der Schlagknopf ist der Mittelpunkt des Faechers. Sein Mittelpunkt liegt
+     55 von rechts und 137 von unten; jede Zahl weiter unten ist daraus
+     gerechnet und nicht geschaetzt. */
+  /* box-sizing: ohne border-box zaehlt der 3 Pixel breite Rand doppelt oben
+     drauf, aus 82 werden 88 — und der Kreisbogen unten stimmt nicht mehr.
+     tools/steuerung-pruef.mjs hat genau das gefunden (49 px2 zwischen
+     Schlagknopf und Ultimate). */
+  #attackBtn{box-sizing:border-box;width:82px;height:82px;right:14px;bottom:96px;font-size:calc(31px * var(--fs));
+    box-shadow:0 4px 16px rgba(0,0,0,.65);}
+  #attackBtn.locked{border-color:#ff5a5a;box-shadow:0 0 12px rgba(255,90,90,.65);}
+  /* Daumen-Faecher: die drei Kampfknoepfe aus dem Guertel sitzen auf einem
+     Kreisbogen um den Schlagknopf. Radius 96, Winkel 180/135/90 Grad — das ist
+     der Weg, den ein Daumen ohne Umgreifen abfaehrt.
+
+       Knopf     Winkel   Mittelpunkt (von rechts / von unten)
+       Zauber    180      55+96 = 151 / 137
+       Ultimate  135      55+68 = 123 / 137+68 = 205
+       Trank      90      55     /       137+96 = 233
+
+     Die Angaben in der Regel sind Mittelpunkt minus halbe Kantenlaenge (28).
+     Zwischen Schlagknopf (Radius 41) und Trabanten (Radius 28) bleiben 27
+     Pixel Luft, zwischen zwei Trabanten 19 — genug, um mit dem Daumen nicht
+     den falschen zu treffen.
+     position:fixed nimmt sie aus dem Flex-Fluss des Guertels. */
   body.touch #potionBtn, body.touch #spellBtn, body.touch #ultBtn{
-    position:fixed;z-index:11;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;touch-action:none;
+    position:fixed;z-index:11;box-sizing:border-box;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;touch-action:none;
+    box-shadow:0 3px 12px rgba(0,0,0,.6);
     /* border-image ignoriert border-radius und machte die Rundknöpfe eckig (F18).
        !important nötig: bakeUiSkin() schreibt border-image inline auf jeden .beltSlot.
-       --cfui-round setzt bakeUiSkin(), gleiche Optik wie die Desktop-Orbs. */
+       --cfui-round setzt bakeUiSkin(), gleiche Optik wie das Lichtbild oben links. */
     border-image-source:none !important;background-image:var(--cfui-round);background-size:100% 100%;image-rendering:pixelated;}
-  body.touch #spellBtn{right:102px;bottom:128px;}    /* ~180° vom Attack-Button, Radius ~88px */
-  body.touch #ultBtn{right:84px;bottom:194px;}       /* ~135° */
-  body.touch #potionBtn{right:18px;bottom:212px;}    /* ~90°  */
-  /* Kontext- und Abbruch-Button nach vorn: rechts unten liegt der Daumen-Fächer
-     und würde die beiden Neuzugänge sonst überdecken. */
-  body.touch #aktionBtn, body.touch #kamExitBtn{order:-1;}
-  body.touch #beltRow{justify-content:flex-start;max-width:calc(100vw - 32px);}   /* linksbündig, volle Breite ohne Kugeln */
+  body.touch #spellBtn {right:123px;bottom:109px;}   /* 180° */
+  body.touch #ultBtn   {right: 97px;bottom:179px;}   /* 135°, Radius 99 statt 96:
+                                                        bei 96 stiessen die
+                                                        Rechtecke der beiden
+                                                        Kreise ueber Eck auf
+                                                        einem Pixel zusammen */
+  body.touch #potionBtn{right: 27px;bottom:205px;}   /*  90° */
+
+  /* Der Guertel wird auf Touch zur Spalte am rechten Rand, unterhalb der
+     Minikarte. Unten quer konnte er nicht bleiben: dort liegen jetzt der
+     Daumenring (links) und der Faecher (rechts), und dazwischen war auf einem
+     stehenden Telefon Platz fuer anderthalb Knoepfe — der Guertel brach in
+     zwei Zeilen um und wuchs dem Faecher entgegen.
+     Rechts oben ist er mit demselben Daumen erreichbar, der ohnehin auf der
+     rechten Haelfte liegt, und er verdeckt nichts, was im Kampf zaehlt. */
+  body.touch #hud{background:none;height:0;padding:0;}
+  /* Die Menuezugaenge stehen als Spalte am LINKEN Rand, unter der Ortszeile.
+     Rechts war kein Platz: dort liegen die Minikarte (oben) und der Faecher
+     (unten), und dazwischen bleiben auf einem 640 Pixel hohen Telefon keine
+     drei Knopfhoehen. Links ist die Kante zwischen Ortszeile und Daumenring
+     frei, und der Ring beginnt erst 188 Pixel ueber der Unterkante.
+
+     Die Spalte bricht um, wenn selbst das nicht reicht (liegendes Telefon):
+     aus einer Spalte werden mehrere, und sie wachsen nach RECHTS in das leere
+     Bandmitte hinein, nicht in den Faecher. 196 = 188 Ringoberkante + 8 Luft.
+     dvh vor vh: die Adressleiste des Telefons zaehlt mit. */
+  body.touch #beltRow{position:fixed;left:10px;top:var(--spalteY);z-index:11;
+    flex-direction:column;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;gap:8px;
+    max-height:max(56px, calc(100vh - 196px - var(--spalteY)));
+    max-height:max(56px, calc(100dvh - 196px - var(--spalteY)));}
   /* Auf Touch tragen die Menü-Knöpfe nur ihr Symbol: rund statt beschriftet passt
      die doppelte Anzahl in eine Zeile. Der Kontext-Knopf behält seinen Text, der
      Text ist dort die eigentliche Information (Hebel / Schloss / Öffnen). */
   body.touch .beltSlot .bl{display:none;}
-  body.touch #spellsBtn, body.touch #invBtn, body.touch #kamExitBtn, body.touch #prioBtn{
-    width:52px;height:52px;min-width:0;padding:0;border-radius:50%;font-size:calc(22px * var(--fs));gap:0;position:relative;
+  body.touch #spellsBtn, body.touch #zulagenBtn, body.touch #invBtn, body.touch #prioBtn,
+  body.touch #kamExitBtn{
+    box-sizing:border-box;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;font-size:calc(22px * var(--fs));gap:0;position:relative;
+    box-shadow:0 3px 12px rgba(0,0,0,.6);
     border-image-source:none !important;background-image:var(--cfui-round);background-size:100% 100%;image-rendering:pixelated;}   /* s. F18-Kommentar oben */
-  body.touch #aktionBtn{height:52px;border-radius:26px;padding:0 14px;border-image-source:none !important;}   /* gleiche Höhe wie die runden; Pille behält ihre Rundung (F18) */
+  /* Der Kontextknopf ("Benutzen") gehoert nicht in die Spalte: er kommt und
+     geht mit dem, wovor man gerade steht, und wuerde sie bei jedem Schritt
+     umbauen. Er steht mittig ueber der unteren Kante — zwischen beiden Daumen,
+     von beiden erreichbar, und ohne Faecher oder Ring zu beruehren.
+     Sein Text bleibt: "Hebel", "Schloss", "Oeffnen" ist dort die eigentliche
+     Auskunft, das Sinnbild allein waere ein Raetsel.
+     Der Kammer-Abbruch bleibt dagegen in der Spalte. Er ist waehrend eines
+     ganzen Kammergangs sichtbar, nicht schrittweise, und baut sie nicht um. */
+  /* Er sitzt unter dem Schlagknopf an derselben rechten Kante und waechst
+     nach links. Nicht mittig unten: dort reicht auf einem 360 Pixel breiten
+     Telefon der Daumenring hin, und ein Knopf, der unter dem Daumen liegt,
+     mit dem man laeuft, wird gedrueckt, ohne dass man es will.
+     14 Pixel unter dem Schlagknopf bleiben 14 Pixel Luft (30+52 gegen 96). */
+  body.touch #aktionBtn{
+    position:fixed;z-index:11;right:14px;bottom:30px;
+    box-sizing:border-box;height:52px;border-radius:26px;padding:0 18px;min-width:0;
+    max-width:calc(100vw - 170px);white-space:nowrap;overflow:hidden;
+    box-shadow:0 3px 12px rgba(0,0,0,.6);border-image-source:none !important;}   /* Pille behält ihre Rundung (F18) */
 
-  /* Mobil stehen Leben und Mana als senkrechte Thermometer an den Bildschirm-
-     rändern statt als Kugeln im Gürtel: links Leben, rechts Mana. Beide sind
-     aus dem Flex-Fluss genommen, dadurch bekommt der Gürtel unten die volle
-     Breite. Die Füllung läuft schon vorher über die Höhe, deshalb braucht das
-     HUD-Update dafür keine einzige Zeile. Sie liegen im oberen Bildschirm-
-     drittel, damit sie weder dem Daumen-Fächer noch dem Gürtel in die Quere
-     kommen; pointer-events erben sie von #hud, der Joystick greift durch. */
-  body.touch .orbWrap{
-    position:fixed;top:15vh;width:26px;height:46vh;border-radius:14px;border:2px solid #6b5a3a;
-    box-shadow:0 0 10px rgba(0,0,0,.85) inset,0 2px 8px rgba(0,0,0,.6);z-index:12;}
-  body.touch .hpOrb{left:8px;}
-  body.touch .manaOrb{right:8px;}
-  /* Rundverlauf ist für eine Kugel gemalt, in der Röhre wirkt ein Querverlauf */
-  body.touch #hpFill{background:linear-gradient(90deg,#7a0a0a,#ff6a5a 45%,#b31414);}
-  body.touch #manaFill{background:linear-gradient(90deg,#0a207a,#5a9eff 45%,#144cb3);}
-  /* Statt Zahlen zeigen die Röhren Segmente. Die Anzahl wächst mit der Stufe
-     (siehe segmentZahl() im Skript), die Kachelhöhe setzt updateHUD über
-     background-size. Auf dem Desktop bleiben die Kugeln bei ihren Zahlen. */
-  .orbTicks{position:absolute;inset:0;pointer-events:none;display:none;}
-  body.touch .orbTicks{
-    display:block;
-    /* Gravur: dunkle Kerbe mit heller Oberkante — liest sich auf der Füllung
-       genauso wie auf dem leeren, fast schwarzen Teil der Röhre. */
-    background-image:linear-gradient(to top, rgba(0,0,0,.85) 0 3px, rgba(232,217,168,.45) 3px 4px, transparent 4px);
-    background-repeat:repeat-y;background-position:bottom;background-size:100% 100%;
-    box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);border-radius:12px;}
-  body.touch .orbTxt{display:none;}
-  body.touch #spBadge, body.touch #skillBadge{
+  body.touch #spBadge, body.touch #skillBadge, body.touch #zulBadge{
     position:absolute;top:-2px;right:-2px;font-size:calc(15px * var(--fs));line-height:1;text-shadow:0 1px 3px #000;}
   body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
   body.touch #spellBtn.cancelHot{border-color:#ff5a5a;background:#2a0d0d;}
   body.touch #spellBtn.cancelHot #spellBtnTxt::after{content:' ✖';color:#ff5a5a;}
 
+  /* Auf Touch rueckt der Dienstzettel unter die Statuskarte und den
+     Bossbalken — oben in der Mitte ist seit U7 kein freies Band mehr. */
+  body.touch #knZettel, body.touch #knRandnotiz{top:126px;max-width:min(420px,calc(100vw - 160px));}
+  /* Die Statuskarte wird auf Touch etwas kleiner: ein Telefon hat weniger
+     Bildhoehe zu verschenken als ein Schirm, und die Zahlen in den Balken
+     bleiben auch bei 13 Pixeln Hoehe lesbar. */
+  body.touch{--karteH:70px; --reiheH:40px; --railW:74px;}
+
+  /* =====================================================================
+     U7 — Die Knopfspalte ist eine Insel, und die Panels lassen sie frei.
+
+     Seit U1 gilt: der Guertel behaelt mit offenem Panel seine Wirkung. Dafuer
+     verankern die Mobil-Regeln alle Panels OBEN und lassen unten den Streifen
+     des Daumenfaechers frei. Das war richtig, solange der Guertel unten lag.
+
+     Seit U7 liegt er links, und der erste Lauf von tools/menue-pruef.mjs nach
+     dem Umbau hat genau das gemeldet: "<div id='inv'> intercepts pointer
+     events" — der Zauberknopf war da, aber nicht mehr erreichbar. Also gilt
+     dieselbe Regel jetzt an zwei Kanten statt an einer: unten der Faecher,
+     links die Spalte.
+
+     Die Panels werden dadurch auf einem schmalen Telefon 74 Pixel schmaler
+     (390 - 16 - 74 = 300 statt 374). Das ist der Preis und er wird hier
+     ausdruecklich genannt: der Abschnitt fuer die Menuefenster wird die
+     Spalte in ein richtiges Reiterband verwandeln und den Platz
+     zurueckholen. Bis dahin ist ein etwas schmaleres Fenster besser als ein
+     Knopf, der sich nicht druecken laesst.
+     ===================================================================== */
+  body.touch #inv{width:min(360px, calc(100vw - 48px - var(--railW)));}
+  body.touch #spellTree{left:calc(24px + var(--railW));width:min(420px, calc(100vw - 48px - var(--railW)));}
+  /* Die mittig gestellten Panels ruecken um die halbe Spaltenbreite nach
+     rechts; ihre eigene Breitenklemme rechnet die ganze Spalte ab. */
+  body.touch #zulagen, body.touch #fullmap, body.touch #kessel,
+  body.touch #schloss, body.touch #ausweis, body.touch #amtFenster{
+    left:calc(50% + var(--railW) / 2);}
+  body.touch #zulagen{width:min(680px, calc(100vw - 48px - var(--railW)));}
+  body.touch #fullmap{width:min(560px, calc(100vw - 32px - var(--railW)));}
+  body.touch #kessel{width:min(420px, calc(100vw - 32px - var(--railW)));}
+  body.touch #schloss{width:min(320px, calc(100vw - 32px - var(--railW)));}
+  body.touch #ausweis{width:min(340px, calc(100vw - 32px - var(--railW)));}
+  body.touch #amtFenster{width:min(320px, calc(100vw - 32px - var(--railW)));}
+  body.touch #statusKarte{padding:5px 12px 5px 5px;gap:8px;}
+  body.touch #portraitRing{width:52px;height:52px;border-width:2px;}
+  body.touch #hudPortrait{width:42px;height:47px;}
+  body.touch .wBalken{height:13px;}
+  body.touch #xpBar{height:6px;}
+  body.touch #zone{font-size:calc(12px * var(--fs));}
+
   /* --- Mobile / kleine Screens --- */
   @media (max-width: 480px){
-    .orbWrap{width:60px;height:60px;border-width:2px;}
-    .orbTxt{font-size:calc(11px * var(--fs));}
-    #xpBar{width:clamp(110px,38vw,340px);}
-    #hud{height:auto;min-height:96px;gap:8px;padding:14px 6px 8px;}
-    #beltRow{flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 140px);}
+    /* U7: Auf 390 Pixeln Breite darf die Statuskarte nicht die halbe Zeile
+       fressen. Sie schrumpft als Ganzes — Lichtbild, Balken und Schrift —,
+       und die Minikarte gleich mit; die Reihenfolge der vier Ecken bleibt.
+       Geaendert werden nur die vier gemessenen Groessen des Rasters, alles
+       Weitere rueckt von selbst mit (s. :root oben). */
+    :root, body.touch{--rand:6px; --karteY:6px; --karteH:62px; --mapY:6px; --mapH:88px; --reiheH:40px;}
+    /* body.touch mitschreiben: die Regeln im Touch-Block oben sind spezifischer
+       als eine ID allein, ein Medienblock aendert daran nichts. Ohne die zweite
+       Haelfte jeder Zeile behielt das Lichtbild hier seine 52 Pixel. */
+    #statusKarte, body.touch #statusKarte{padding:4px 10px 4px 4px;gap:7px;}
+    #portraitRing, body.touch #portraitRing{width:46px;height:46px;border-width:2px;}
+    #hudPortrait, body.touch #hudPortrait{width:37px;height:41px;}
+    #lvlTxt{min-width:17px;height:17px;line-height:13px;font-size:calc(9px * var(--fs));}
+    .wBalken, body.touch .wBalken{height:12px;}
+    #xpBar, body.touch #xpBar{height:5px;}
+    .orbTxt{font-size:calc(9px * var(--fs));}
+    #hud{height:auto;min-height:60px;gap:8px;padding:10px 6px 8px;}
+    #beltRow{flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 24px);}
     .beltSlot{min-width:44px;height:44px;font-size:calc(12px * var(--fs));padding:0 6px;}
     #musikRow{gap:8px;}
-    #statCol{min-width:0;font-size:calc(11px * var(--fs));}
-    #minimap{width:88px;height:88px;top:8px;right:8px;}
-    #zone{font-size:calc(13px * var(--fs));top:8px;left:8px;max-width:55vw;}
-    #bossbar{width:min(480px,86vw);}
-    #inv{right:8px;width:min(360px,calc(100vw - 16px));}
-    #spellTree{left:8px;width:min(420px,calc(100vw - 16px));}
+    #statCol{font-size:calc(11px * var(--fs));right:8px;}
+    #minimap{border-radius:8px;}
+    #zone{font-size:calc(12px * var(--fs));left:10px;}
+    body.touch #knZettel, body.touch #knRandnotiz{top:calc(var(--spalteY) + 4px);max-width:calc(100vw - 200px);}
+    #inv, body.touch #inv{right:8px;width:min(360px,calc(100vw - 16px - var(--railW)));}
+    #spellTree, body.touch #spellTree{left:calc(8px + var(--railW));width:min(420px,calc(100vw - 16px - var(--railW)));}
     .spellNode{font-size:calc(12px * var(--fs));}
     .spellNode .sDesc,.spellNode .sMana{font-size:calc(11px * var(--fs));}
     .eqSlot .lbl{font-size:calc(10px * var(--fs));}
@@ -1028,18 +1275,18 @@
     }
 
     /* Kessel bleibt zentriert breit, aber top-verankert wie die anderen Panels */
-    #kessel{
-      top:56px; left:8px; transform:none; box-sizing:border-box;
-      width:calc(100vw - 16px);
+    #kessel, body.touch #kessel{
+      top:56px; left:calc(8px + var(--railW)); transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px - var(--railW));
       max-height:calc(100vh - 341px);
       max-height:max(240px, calc(100dvh - 341px));
       background-color:rgba(20,14,24,.93);
     }
     /* K1: Zulagen wie der Kessel, breit und oben verankert. Die Kartei rueckt
        auf drei Spalten, vier waeren auf 360px Breite Briefmarken. */
-    #zulagen{
-      top:56px; left:8px; transform:none; box-sizing:border-box;
-      width:calc(100vw - 16px);
+    #zulagen, body.touch #zulagen{
+      top:56px; left:calc(8px + var(--railW)); transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px - var(--railW));
       max-height:calc(100vh - 341px);
       max-height:max(240px, calc(100dvh - 341px));
       background-color:rgba(20,14,24,.93);
@@ -1064,13 +1311,13 @@
     .zulKarte .zArt{font-size:calc(9px * var(--fs));}
     .zulKarte .zSatz{font-size:calc(10px * var(--fs));}
     .zulKarte .zIcon{font-size:calc(44px * var(--fs));}
-    #schloss{
-      top:56px; left:8px; transform:none; box-sizing:border-box;
-      width:calc(100vw - 16px); background-color:rgba(20,14,24,.93);
+    #schloss, body.touch #schloss{
+      top:56px; left:calc(8px + var(--railW)); transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px - var(--railW)); background-color:rgba(20,14,24,.93);
     }
-    #ausweis{
-      top:56px; left:8px; transform:none; box-sizing:border-box;
-      width:calc(100vw - 16px); max-height:calc(100vh - 96px); overflow-y:auto;
+    #ausweis, body.touch #ausweis{
+      top:56px; left:calc(8px + var(--railW)); transform:none; box-sizing:border-box;
+      width:calc(100vw - 16px - var(--railW)); max-height:calc(100vh - 96px); overflow-y:auto;
       background-color:rgba(20,14,24,.93);
     }
     /* U3: Das Gespraechsfenster folgt der Regel der uebrigen Panels und
@@ -1086,6 +1333,15 @@
        Ohne sie waere der Fall "passt nirgends" nicht gerollt, sondern
        abgeschnitten, denn die Tafel traegt seit U4 overflow:hidden fuer ihre
        Trennkante. */
+    /* U7-Ausnahme: die Gespraechstafel laesst die Knopfspalte NICHT frei,
+       sie deckt sie zu. Der Versuch, auch sie um 74 Pixel einzuruecken, hat
+       tools/gespraech-pruef.mjs zwei Zeilen gekostet ("alle Antworten stehen
+       in der Tafel", "die Tafel selbst rollt nicht"): U6 hat die Hoehe der
+       Tafel auf 360 Pixel Breite gegen jede Figur und jeden Szenenknoten
+       gemessen, und bei 286 stehen Knoeterichs fuenf Antworten nicht mehr.
+       Waehrend eines Gespraechs ist das auch richtig so — dort wird weder
+       gekaempft noch der Rucksack geoeffnet, und U6 laesst die Tafel aus
+       demselben Grund schon in den Daumenfaecher hineinwachsen. */
     #gespraech{
       top:56px;bottom:auto;left:8px;transform:none;
       width:calc(100vw - 16px);background-color:rgba(20,14,24,.93);
@@ -1185,20 +1441,75 @@
     .skillRow{min-height:40px;}
   }
   @media (max-width: 380px){
-    #statCol{display:none;}
-    .orbWrap{width:52px;height:52px;}
+    /* U7: Frueher fiel hier die ganze rechte Spalte weg (Stufe, Beute, freie
+       Punkte). Die Stufe steht seither am Lichtbild, die freien Punkte als
+       Sternchen am Rucksack — bleibt die Beute, und die faellt nicht weg,
+       sie rueckt nur enger an die Karte. */
+    :root, body.touch{--karteH:60px;}
+    #statusKarte, body.touch #statusKarte{gap:5px;padding:4px 8px 4px 4px;}
+    #portraitRing, body.touch #portraitRing{width:42px;height:42px;}
+    #hudPortrait, body.touch #hudPortrait{width:34px;height:38px;}
+    #statCol{font-size:calc(10px * var(--fs));gap:2px;}
+    #freiTxt{display:none !important;}
+  }
+  /* U7: Ein liegendes Telefon hat weniger Bildhoehe als ein stehendes Breite.
+     Die Statuskarte gibt dort ihre Balkenhoehe ab, damit oben nicht ein
+     Fuenftel des Bildes fuer den Zustand draufgeht — und die Knopfspalte
+     bricht in mehrere kurze Spalten um (s. max-height an #beltRow). */
+  @media (max-height: 460px){
+    :root, body.touch{--rand:8px; --karteY:8px; --karteH:62px; --mapY:8px; --mapH:96px; --reiheH:36px;}
+    #statusKarte, body.touch #statusKarte{padding:4px 10px 4px 4px;gap:7px;}
+    #portraitRing, body.touch #portraitRing{width:46px;height:46px;border-width:2px;}
+    #hudPortrait, body.touch #hudPortrait{width:37px;height:41px;}
+    .wBalken, body.touch .wBalken{height:12px;}
+    #xpBar, body.touch #xpBar{height:5px;}
+    /* Beute und Uhr wandern NEBEN die Minikarte statt unter sie. Unter ihr
+       beginnt auf einem liegenden Telefon schon der Faecher: der Trankknopf
+       reicht bis 129 Pixel unter die Oberkante hinauf und lag genau dort, wo
+       die Zahlen standen (2137 px2, gemeldet von tools/steuerung-pruef.mjs). */
+    #statCol{top:var(--mapY);right:calc(var(--rand) + var(--mapH) + 10px);align-items:flex-end;}
+    body.touch #knZettel, body.touch #knRandnotiz{top:calc(var(--spalteY) + 4px);}
   }
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
+
+<!-- =====================================================================
+     U7 — Die erste Schicht: Spiel und Steuerung.
+     Vier Ecken, vier Aufgaben. Das ist die Ordnung, die jedes Handyspiel
+     dieses Zuschnitts benutzt, und sie stand hier bis U7 nicht:
+
+       oben links    wer bin ich   Lichtbild, Stufe, Leben, Mana, Erfahrung
+       oben rechts   wo bin ich    Minikarte, Beute, Uhr
+       unten links   wohin gehe    Daumenring (Joystick)
+       unten rechts  was tue ich   Schlag und der Faecher der Fertigkeiten
+
+     Was vorher da war und warum es weicht, steht bei den einzelnen Regeln.
+     Angefasst wird nur diese Schicht: die Menuefenster (Rucksack, Zauber,
+     Kessel, Zulagen, Optionen) behalten Aufbau und Aussehen und kommen in
+     einem eigenen Abschnitt dran.
+     ===================================================================== -->
+<div id="statusKarte">
+  <div id="portraitRing">
+    <canvas id="hudPortrait" width="16" height="18"></canvas>
+    <span id="lvlTxt">1</span>
+  </div>
+  <div id="balkenSpalte">
+    <div class="wBalken hpBalken"><div id="hpFill"></div><div class="orbTicks" id="hpTicks"></div><div class="orbTxt" id="hpTxt">60</div></div>
+    <div class="wBalken manaBalken"><div id="manaFill"></div><div class="orbTicks" id="manaTicks"></div><div class="orbTxt" id="manaTxt">40</div></div>
+    <div id="xpBar"><div id="xpFill"></div></div>
+  </div>
+</div>
 <div id="zone">📍 Grasland, Ablage A (Stufe 1)</div>
 <canvas id="minimap" width="128" height="128" title="Vollbildkarte (L)" style="cursor:pointer"></canvas>
+<div id="statCol">
+  <span id="goldTxt">💰 0</span>
+  <span id="uhrTxt" style="display:none;"></span>
+  <span id="freiTxt" style="display:none;"></span>
+</div>
 <div id="bossbar"><span id="bossname">Schattenfürst · Fürst Nachtrag</span><div id="bossback"><div id="bossfill"></div></div></div>
 <div id="hud">
-  <div class="orbWrap hpOrb"><div id="hpFill"></div><div class="orbTicks" id="hpTicks"></div><div class="orbTxt" id="hpTxt">60</div></div>
-  <div id="midHud">
-    <div id="xpBar"><div id="xpFill"></div></div>
     <div id="beltRow">
       <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)">🧪 <span id="potCount">0</span></div>
       <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:calc(11px * var(--fs));">· (E)</span></div>
@@ -1210,13 +1521,6 @@
       <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;">🏳️<span class="bl">Abbruch</span></div>
       <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯<span class="bl" id="prioTxt">Nah</span></div>
     </div>
-  </div>
-  <div class="orbWrap manaOrb"><div id="manaFill"></div><div class="orbTicks" id="manaTicks"></div><div class="orbTxt" id="manaTxt">40</div></div>
-  <div id="statCol">
-    <span id="lvlTxt">Stufe 1</span>
-    <span id="goldTxt">💰 0</span>
-    <span id="freiTxt" style="display:none;"></span>
-  </div>
 </div>
 <div id="touchCluster"><div class="tBtn" id="attackBtn">⚔️</div></div>
 
@@ -2565,6 +2869,30 @@ function bakeHeroSheet(){
   BAKED_HERO_ANIM = anims;
   SHEETS['hero_baked'] = {img:canvas, cols:totalFrames, n:totalFrames, fw:64, fh:64, ax:CF_ANCHOR.ax, ay:CF_ANCHOR.ay, rowStart:0};
   TINT_CACHE.delete('hero_baked');   // getönte Kopien des alten Bakes verwerfen (Haar/Rüstung geändert)
+  renderHudPortrait();               // U7: das Lichtbild oben links haengt am selben Bake
+}
+
+// U7: Das Lichtbild der Statuskarte. Derselbe Ausschnitt wie im Dienstausweis
+// (renderAusweisFoto, s. dort fuer die Herkunft der vier Zahlen) und aus
+// demselben Blatt — also traegt es Haarton, Frisur und Ruestungsstufe der
+// laufenden Schicht, ohne dass hier eine Zeile davon weiss.
+//
+// Gerufen aus bakeHeroSheet() und nicht aus updateHUD(): das Bild aendert sich
+// genau dann, wenn das Blatt neu gebacken wird (Ausruestung, Haar, Schichtstart),
+// und bakeHeroSheet() hat dafuer schon seinen Dirty-Check. Ein drawImage je
+// Frame waere derselbe Fehler, den R6/F32 an anderer Stelle abgestellt hat.
+function renderHudPortrait(){
+  const cv = el('hudPortrait'); if(!cv) return;
+  const c = cv.getContext('2d');
+  c.imageSmoothingEnabled = false;
+  c.clearRect(0, 0, cv.width, cv.height);
+  const sh = SHEETS['hero_baked'];
+  if(!sh || !BAKED_HERO_ANIM) return;   // vor loadAssets(): leerer Ring, kein Fehler
+  const sx = BAKED_HERO_ANIM.idle.offset * 64 + 24;
+  // 1:1 in eine 16x18-Flaeche: die Vergroesserung macht CSS mit
+  // image-rendering:pixelated, also nearest neighbour bei JEDER Ringgroesse.
+  // Ein groesserer Puffer haette bei 52 Pixeln Ring krumm skaliert.
+  c.drawImage(sh.img, sx, 20, 16, 18, 0, 0, cv.width, cv.height);
 }
 
 // ===========================================================================
@@ -7221,6 +7549,17 @@ const aimAngle = ()=>{ const a = aimPoint(); return Math.atan2(a.wy - player.y, 
 let touchMode = false;
 const touchMove = {x:0, y:0, active:false};              // analoger Stick-Vektor, |v| <= 1
 const joy = {id:null, baseX:0, baseY:0, curX:0, curY:0, R:60, DEAD:8};
+// U7: Wo der Ring liegt, solange niemand ihn anfasst. Unten links, ein Ring-
+// radius plus Rand von der Ecke weg — das ist die Stelle, an der der linke
+// Daumen von selbst zu liegen kommt.
+//
+// Die beiden Zahlen sind keine Geschmacksfrage, an ihnen haengt die Knopfspalte:
+// die Oberkante des Rings liegt damit immer 188 Pixel ueber der Unterkante des
+// Bildes (R+68 Sockel plus R Radius), und genau darauf rechnet die max-height
+// von #beltRow im <style>. Wer hier etwas aendert, aendert dort mit.
+// 16 statt 26 am linken Rand: bei 26 stiess der Ring auf einem 360 Pixel breiten
+// Telefon an den Kontextknopf.
+const joyRuhe = () => ({ x: 16 + joy.R, y: canvas.height - (joy.R + 68) });
 let attackTouch = null;                                   // {id, sx, sy} Screen-Koordinaten
 
 // --- Touch-Kampf (Wild-Rift-Stil) ---
@@ -12952,7 +13291,7 @@ function update(dt){
     // M4: der Ort steht vor der Zahl. Wer unten ist, liest "Sperrablage" und
     // nicht "Kammer, Ebene 2" — der Name ist die Auskunft, die Ebene der Zusatz.
     const ort = kammer.ebene > 0 ? `📍 Sperrablage · Ebene ${kammer.ebene + 1}` : `📍 Kammer · Schwierigkeit ${kammer.diff}`;
-    setTxt('zone', `${ort} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}${schichtHudSuffix()}`);
+    setTxt('zone', `${ort} · Raum ${Math.min(kammer.idx+1, kammer.mods.length)}/${kammer.mods.length}`);
   } else {
     // 6 Türen, also billig genug für den Frame: Cooldown und die reine Optik
     // des Torgitters (fährt hoch, wenn der Spieler in Aktionsreichweite kommt).
@@ -12969,7 +13308,7 @@ function update(dt){
   knTick(dt);
 
   if(schattenlandActive){
-    setTxt('zone', `📍 Schattenland · erledigt ${shadowKills} / 500${schichtHudSuffix()}`);
+    setTxt('zone', `📍 Schattenland · erledigt ${shadowKills} / 500`);
     // Horde Spawner
     if(monsters.length < 130 && (!boss || boss.dead)){
       const a = Math.random() * Math.PI * 2;
@@ -12987,13 +13326,17 @@ function update(dt){
     // laut Weltbibel ein eigener Ort mit eigener Aktenbedeutung, also bekommt sie
     // auch eine eigene Zeile — sonst stünde der Spieler am Meer und läse "Grasland".
     const amStrand = T(Math.floor(player.x/TS), Math.floor(player.y/TS)) === G_BEACH;
-    setTxt('zone', (inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage (Stufe ' + player.level + ')'   // G5
-                 : amStrand      ? '📍 Küste, Am Rand der Tilgung (Stufe ' + player.level + ')'
-                 : zb === 'snow'  ? '📍 Frostkamm, Die Eisablage (Stufe ' + player.level + ')'
-                 : zb === 'sand'  ? '📍 Aschewüste, Der Brandabschnitt (Stufe ' + player.level + ')'
-                 : zb === 'sumpf' ? '📍 Moorbruch, Die Nassablage (Stufe ' + player.level + ')'
-                 : zb === 'ruine' ? '📍 Steinfeld, Der Altbestand (Stufe ' + player.level + ')'
-                           : '📍 Grasland, Ablage A (Stufe ' + player.level + ')') + schichtHudSuffix());
+    // U7: ohne "(Stufe N)". Die Stufe steht seither im Ring des Lichtbilds, und
+    // zweimal dieselbe Zahl in einem Bild ist keine doppelte Auskunft, sondern
+    // eine halbe. Auf einem stehenden Telefon war sie ausserdem genau der
+    // Zusatz, der die Zeile auf zwei Zeilen brach.
+    setTxt('zone', inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage'   // G5
+                 : amStrand      ? '📍 Küste, Am Rand der Tilgung'
+                 : zb === 'snow'  ? '📍 Frostkamm, Die Eisablage'
+                 : zb === 'sand'  ? '📍 Aschewüste, Der Brandabschnitt'
+                 : zb === 'sumpf' ? '📍 Moorbruch, Die Nassablage'
+                 : zb === 'ruine' ? '📍 Steinfeld, Der Altbestand'
+                           : '📍 Grasland, Ablage A');
   }
   if(schattenlandActive){
     if(shadowKills >= 500 && !boss){
@@ -13752,16 +14095,49 @@ function render(){
   }
 
   ctx.restore();
-  // Virtueller Joystick (nur während aktivem Touch sichtbar, Screen-Space)
-  if(touchMode && joy.id !== null){
-    ctx.globalAlpha = 0.35;
-    ctx.strokeStyle = '#e8d9a8'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(joy.baseX, joy.baseY, joy.R, 0, Math.PI*2); ctx.stroke();
-    const jdx = joy.curX - joy.baseX, jdy = joy.curY - joy.baseY;
-    const jlen = Math.sqrt(jdx*jdx + jdy*jdy) || 1, jcl = Math.min(jlen, joy.R);   // R6/F41
-    ctx.fillStyle = '#c9a227';
-    ctx.beginPath(); ctx.arc(joy.baseX + jdx/jlen*jcl, joy.baseY + jdy/jlen*jcl, 24, 0, Math.PI*2); ctx.fill();
-    ctx.globalAlpha = 1;
+  // Virtueller Joystick, Screen-Space.
+  //
+  // U7: Bis hierher war der Ring UNSICHTBAR, solange kein Finger auf dem Glas
+  // lag. Wer das Spiel zum ersten Mal auf einem Telefon oeffnete, sah unten
+  // links nichts und musste raten, dass die ganze linke Bildhaelfte der
+  // Steuerknueppel ist. Das steht so in der Dienstanweisung ("links gehen"),
+  // aber eine Anweisung ist kein Knopf.
+  //
+  // Jetzt liegt dort dauerhaft ein blasser Ring in der Ruhelage — dieselbe
+  // Rolle wie der aufgemalte Kreis unten links in jedem Vorbild. Er ist KEIN
+  // Zielbereich, sondern ein Hinweis: der Griff bleibt frei, die linke Haelfte
+  // nimmt den Finger weiterhin dort an, wo er landet. Das ist die bessere
+  // Bedienung (der Daumen muss nichts treffen) und der Ring sagt trotzdem, wo
+  // gemeint ist.
+  if(touchMode && state === 'play'){
+    ctx.save();
+    if(joy.id === null){
+      const h = joyRuhe();
+      ctx.globalAlpha = 0.16;
+      ctx.strokeStyle = '#e8d9a8'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(h.x, h.y, joy.R, 0, Math.PI*2); ctx.stroke();
+      ctx.fillStyle = '#e8d9a8';
+      ctx.beginPath(); ctx.arc(h.x, h.y, 22, 0, Math.PI*2); ctx.fill();
+      // Vier Sporne: sie machen aus dem Kreis ein Steuerkreuz und damit aus
+      // einem Zierring einen Knopf.
+      ctx.globalAlpha = 0.13; ctx.lineWidth = 2;
+      for(let i = 0; i < 4; i++){
+        const a = i * Math.PI/2;
+        ctx.beginPath();
+        ctx.moveTo(h.x + Math.cos(a)*(joy.R-13), h.y + Math.sin(a)*(joy.R-13));
+        ctx.lineTo(h.x + Math.cos(a)*(joy.R-4),  h.y + Math.sin(a)*(joy.R-4));
+        ctx.stroke();
+      }
+    } else {
+      ctx.globalAlpha = 0.35;
+      ctx.strokeStyle = '#e8d9a8'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(joy.baseX, joy.baseY, joy.R, 0, Math.PI*2); ctx.stroke();
+      const jdx = joy.curX - joy.baseX, jdy = joy.curY - joy.baseY;
+      const jlen = Math.sqrt(jdx*jdx + jdy*jdy) || 1, jcl = Math.min(jlen, joy.R);   // R6/F41
+      ctx.fillStyle = '#c9a227';
+      ctx.beginPath(); ctx.arc(joy.baseX + jdx/jlen*jcl, joy.baseY + jdy/jlen*jcl, 24, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
   }
   // Minimap braucht keine 60 Hz — alle 4 Frames reicht optisch und spart spürbar.
   if((frameNo++ & 3) === 0) renderMinimap();
@@ -14376,27 +14752,40 @@ const ULT_TITEL = `${ULT_SPELL.name} (R) · ${ULT_SPELL.mana} Mana`;
 const ZAUBER_SCHLOSS = `🔒 <span style="font-size:calc(9px * var(--fs))">ab St. ${ZAUBER_AB_STUFE}</span>`;
 const ZAUBER_SCHLOSS_TITEL = `Zauberbefugnis ab Stufe ${ZAUBER_AB_STUFE}`;
 
-// Segmente der mobilen Röhren: eins zu Beginn, ab jeder vollen Stufenschwelle
-// eins dazu, bei fünf ist Schluss. Leben zählt in Fünfer-, Mana in Siebenerschritten.
+// Segmente der Leisten: eins zu Beginn, ab jeder vollen Stufenschwelle eins
+// dazu, bei fünf ist Schluss. Leben zählt in Fünfer-, Mana in Siebenerschritten.
+// Bis U7 gab es sie nur auf dem Handy (senkrechte Röhren), seither überall:
+// eine Kerbe pro Segment sagt, wie viel ein Schlag von der Leiste nimmt, und
+// das ist auf einem Schirm so nützlich wie auf einem Telefon.
 const HP_SEG_STUFE = 5, MANA_SEG_STUFE = 7, SEG_MAX = 5;
 const segmentZahl = (schritt)=> Math.min(SEG_MAX, 1 + Math.floor(player.level / schritt));
 
 function updateHUD(){
-  setStyle('hpFill', 'height', Math.max(0, (player.hp / derived.maxHp) * 100) + '%');
+  // U7: Leben und Mana laufen waagerecht (Statuskarte oben links) statt
+  // senkrecht (Kugel im Guertel / Roehre am Rand). Deshalb width und nicht
+  // height, und deshalb steht die Segmentbreite vorn im background-size.
+  setStyle('hpFill', 'width', Math.max(0, (player.hp / derived.maxHp) * 100) + '%');
   setTxt('hpTxt', Math.ceil(player.hp) + ' / ' + derived.maxHp);
-  setStyle('manaFill', 'height', Math.max(0, (player.mana / derived.maxMana) * 100) + '%');
+  setStyle('manaFill', 'width', Math.max(0, (player.mana / derived.maxMana) * 100) + '%');
   setTxt('manaTxt', Math.ceil(player.mana) + ' / ' + derived.maxMana);
-  // Kachelhöhe = eine Segmentbreite; der Verlauf zeichnet die Trennlinie selbst
-  setStyle('hpTicks', 'backgroundSize', '100% ' + (100 / segmentZahl(HP_SEG_STUFE)) + '%');
-  setStyle('manaTicks', 'backgroundSize', '100% ' + (100 / segmentZahl(MANA_SEG_STUFE)) + '%');
+  // Kachelbreite = eine Segmentbreite; der Verlauf zeichnet die Trennlinie selbst
+  setStyle('hpTicks', 'backgroundSize', (100 / segmentZahl(HP_SEG_STUFE)) + '% 100%');
+  setStyle('manaTicks', 'backgroundSize', (100 / segmentZahl(MANA_SEG_STUFE)) + '% 100%');
   setTxt('potCount', player.potions);
   setTxt('goldTxt', '💰 ' + player.gold);
-  setTxt('lvlTxt', 'Stufe ' + player.level);
+  // U7: nur noch die Zahl. Das Wort "Stufe" stand daneben, solange die Zahl in
+  // einer Textspalte lag; im Ring des Lichtbilds sagt die Stelle, was sie ist.
+  setTxt('lvlTxt', player.level);
+  // U7: Die Dienstuhr stand als Anhaengsel in der Ortszeile und wanderte mit
+  // deren Laenge. Jetzt hat sie ihren Platz unter der Minikarte.
+  const uhr = schichtUhrText();
+  setStyle('uhrTxt', 'display', uhr ? 'inline' : 'none');
+  if(uhr) setTxt('uhrTxt', uhr);
   // S1: freie Punkte stehen dauerhaft unter Stufe und Gold, nicht nur als
   // Sternchen am Rucksack. Am Bildschirmrand einer Touch-Sitzung ist statCol
   // ausgeblendet (s. CSS), dort traegt das Sternchen die Meldung allein.
   setStyle('freiTxt', 'display', player.skillPoints > 0 ? 'inline' : 'none');
-  if(player.skillPoints > 0) setTxt('freiTxt', '✚ ' + player.skillPoints + (touchMode ? ' Punkte' : ' Punkte [I]'));
+  if(player.skillPoints > 0) setTxt('freiTxt', '✚ ' + player.skillPoints + (touchMode ? '' : ' [I]'));
   setStyle('skillBadge', 'display', player.skillPoints > 0 ? 'inline' : 'none');
   setStyle('spBadge', 'display', player.spellPoints > 0 && player.level >= ZAUBER_AB_STUFE ? 'inline' : 'none');
   // K1: Das Sternchen brennt, solange eine Vorlage offen ist — ausliegend oder
@@ -14561,12 +14950,16 @@ function startGame(){
 //  (siehe KLADDE_KEY) und das Amt-Guthaben/die Ausbauten (AMT_KEY) nicht.
 // ===========================================================================
 
-function schichtHudSuffix(){
+// U7: Hiess bis dahin schichtHudSuffix() und wurde an die Ortszeile gehaengt.
+// Die Uhr steht jetzt unter der Minikarte in ihrem eigenen Feld (#uhrTxt), also
+// liefert die Funktion nur noch den Text und keinen Anhang mehr — kein fuehrendes
+// Trennzeichen, kein Bezug auf die Zeile davor.
+function schichtUhrText(){
   if(!CONFIG.schichtModus || state !== 'play') return '';
-  if(shiftEndPending) return ' · ⏱ Überstunden';
+  if(shiftEndPending) return '⏱ Überstunden';
   const s = Math.max(0, Math.ceil(shiftT));
   const mm = Math.floor(s/60), ss = s%60;
-  return ` · ⏱ ${mm}:${ss<10?'0':''}${ss}`;
+  return `⏱ ${mm}:${ss<10?'0':''}${ss}`;
 }
 
 const DIENST_BEMERKUNGEN = [
@@ -21921,7 +22314,7 @@ function bakeUiSkin(){
   // unverändert — das Rundknopf-Sprite scheint nur im ungefüllten Teil durch,
   // was optisch wie ein leeres Glas/Sockel wirkt (kein neuer Schreibpfad pro Frame,
   // updateHUD() ändert weiterhin nur height/background-size der Kinder).
-  document.querySelectorAll('.orbWrap, .tBtn, #attackBtn').forEach(el => {
+  document.querySelectorAll('#portraitRing, .tBtn, #attackBtn').forEach(el => {
     el.style.backgroundImage = `url("${roundUrl}")`;
     el.style.backgroundSize = '100% 100%';
   });
