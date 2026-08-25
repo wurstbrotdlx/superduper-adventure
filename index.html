@@ -71,12 +71,15 @@
 
   html,body{margin:0;padding:0;overflow:hidden;background:#05030a;font-family:'Courier New',ui-monospace,monospace;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;overscroll-behavior:none;}
   #game{position:fixed;inset:0;display:block;cursor:crosshair;image-rendering:pixelated;touch-action:none;-webkit-tap-highlight-color:transparent;}
-  #hud,#inv{touch-action:manipulation;}
+  #hud{touch-action:manipulation;}
   /* U3: pan-y statt manipulation. #overlay rollt seit U3 selbst (s. dort),
      und ein Vordruck, der laenger ist als das Telefon, muss sich mit dem
      Daumen bewegen lassen. */
   #overlay{touch-action:pan-y;}
-  #spellTree{touch-action:pan-y;}
+  /* U8: Gerollt wird seit U8 nicht mehr das Fenster, sondern sein Rollfeld
+     (.gfBody). Die Erlaubnis, mit dem Daumen zu rollen, wandert deshalb
+     dorthin — an #spellTree haette sie ins Leere gezeigt. */
+  .gfBody{touch-action:pan-y;}
   /* =====================================================================
      U7 — SCHICHT 1: SPIEL UND STEUERUNG
 
@@ -208,32 +211,45 @@
   #bossback{height:12px;border:2px solid #7a1d1d;background:#210808;border-radius:4px;overflow:hidden;}
   #bossfill{height:100%;width:100%;background:linear-gradient(90deg,#8e1010,#e33131);}
   
-  #inv{position:fixed;top:50%;right:24px;transform:translateY(-50%);width:min(360px,calc(100vw - 48px));max-height:85vh;overflow-y:auto;z-index:20;display:none;
-       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #inv h2{margin:0 0 8px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
-  #equipGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;}
-  .eqSlot{position:relative;height:52px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;display:flex;align-items:center;justify-content:center;font-size:calc(22px * var(--fs));cursor:pointer;}
-  .eqSlot .lbl{position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:calc(8px * var(--fs));color:#9a8a5f;pointer-events:none;}
-  #skillBox{border:1px solid #7a5a10;border-radius:6px;padding:8px;margin-bottom:8px;background:#1a140b;}
-  #skillBox h4{margin:0 0 6px;color:#f4d97a;font-size:calc(12px * var(--fs));display:flex;justify-content:space-between;}
-  .skillRow{display:flex;justify-content:space-between;align-items:center;font-size:calc(11px * var(--fs));margin-bottom:4px;}
+  /* U8: Kasten, Lage und Groesse von #inv stehen nicht mehr hier, sondern
+     einmal bei .grossFenster weiter unten. Was bleibt, ist der Inhalt. */
+  /* Vier Plaetze, so breit wie die Kachel es zulaesst: in einer schmalen
+     zwei mal zwei, in einer breiten nebeneinander. */
+  #equipGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:9px;max-width:470px;}
+  .eqSlot{position:relative;height:86px;border:2px solid #6b5a3a;border-radius:6px;background:#17130d;display:flex;align-items:center;justify-content:center;font-size:calc(22px * var(--fs));cursor:pointer;}
+  .eqSlot .lbl{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:calc(9px * var(--fs));color:#9a8a5f;pointer-events:none;}
+  /* U8: #skillBox ist seit U8 eine .gfKachel und holt Rahmen, Grund und
+     Ueberschrift von dort. Hier steht nur noch, was ihm allein gehoert. */
+  .skillRow{display:flex;justify-content:space-between;align-items:center;font-size:calc(12px * var(--fs));margin-bottom:7px;gap:10px;}
   .skillBtn{background:#c9a227;border:none;border-radius:3px;color:#000;font-weight:bold;padding:1px 6px;cursor:pointer;}
   .skillBtn:disabled{background:#4a3e20;color:#7a6e50;cursor:default;}
-  #statBox{font-size:calc(11px * var(--fs));line-height:1.4;border:1px solid #5a4a2d;border-radius:6px;padding:6px 8px;margin-bottom:8px;background:#141009;color:#d8c898;}
-  /* S1: Der Ertrag eines Punktes steht neben dem Punkt. Vorher stand da '(+HP)'. */
-  .skWert{color:#9a8a5f;font-weight:normal;}
+  #statBox{font-size:calc(12px * var(--fs));line-height:1.9;border:1px solid #5a4a2d;border-radius:6px;padding:8px 10px;background:#141009;color:#d8c898;}
+  /* S1: Der Ertrag eines Punktes steht neben dem Punkt. Vorher stand da '(+HP)'.
+     U8: unter dem Punkt statt neben ihm — die Zeile bricht sonst in einer
+     Kachel von 264 Pixeln so um, dass die Zahl allein auf der zweiten Zeile
+     steht, und die Zahl ist das, was man sucht. */
+  .skWert{display:block;color:#9a8a5f;font-weight:normal;font-size:calc(10px * var(--fs));line-height:1.35;}
+  .skName{min-width:0;overflow-wrap:anywhere;}
+  .skName b{color:#f4d97a;}
   #skHint{font-size:calc(10px * var(--fs));color:#f4d97a;margin-top:6px;line-height:1.35;min-height:1px;}
   #skillBox.offen{border-color:#f4d97a;box-shadow:0 0 0 1px rgba(244,217,122,0.25);}
   /* S1: freie Punkte gehoeren in die Dauersicht, nicht nur ins Inventar. */
   #freiTxt{color:#f4d97a;animation:freiPuls 1.6s ease-in-out infinite;}
   @keyframes freiPuls{0%,100%{opacity:1;}50%{opacity:0.45;}}
-  #bagGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
-  .bagSlot{height:46px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;align-items:center;justify-content:center;font-size:calc(20px * var(--fs));cursor:pointer;}
+  /* U8: Das Raster zaehlt keine Spalten mehr, es misst Felder. Sechs feste
+     Spalten waren die richtige Zahl fuer ein Fenster von 360 Pixeln; in einem
+     von tausend wuerden daraus sechs Briefmarken mit Luft dazwischen. */
+  /* Acht mal drei, und zwar genau: vierundzwanzig Faecher gehen ohne Rest
+     auf, und eine Tasche muss wie eine Tasche aussehen und nicht wie eine
+     Zeile. max-width, damit sie in einem tausend Pixel breiten Fenster nicht
+     zum Fries wird. Auf schmalen Schirmen greift die Regel im Mobil-Block. */
+  #bagGrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:7px;max-width:620px;}
+  .bagSlot{height:58px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;align-items:center;justify-content:center;font-size:calc(20px * var(--fs));cursor:pointer;}
 
-  #spellTree{position:fixed;top:50%;left:24px;transform:translateY(-50%);width:min(420px,calc(100vw - 48px));max-height:88vh;overflow-y:auto;z-index:20;display:none;
-       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #spellTree h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
-  #spellCols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  /* U8: Lage und Groesse von #spellTree stehen bei .grossFenster. Die drei
+     Zweige duerfen jetzt breiter werden, statt drei Spalten in 420 Pixel zu
+     quetschen — ein Zauberbaum ohne Platz zwischen den Aesten ist eine Liste. */
+  #spellCols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
   .spellColTitle{font-size:calc(11px * var(--fs));text-align:center;color:#c9a227;margin-bottom:4px;}
   .spellNode{border:2px solid #4c4030;border-radius:6px;padding:6px;margin-bottom:8px;font-size:calc(11px * var(--fs));background:#141009;cursor:pointer;text-align:center;}
   .spellNode .sIcon{font-size:calc(20px * var(--fs));}
@@ -256,9 +272,13 @@
      weiter unten. Seitenverhaeltnis wie eine Karteikarte, Stufe II gold,
      Stufe III violett mit Schein — dieselbe Lesart wie .rar2/.rar3 und
      .ultNode.known, damit ein Kracher aussieht wie ein Kracher. --- */
-  #zulagen{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(680px,calc(100vw - 48px));max-height:88vh;overflow-y:auto;z-index:20;display:none;
-       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #zulagen h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
+  /* U8: Die Zulagen sind kein eigenes Fenster mehr. Der Kasten steht Wort
+     fuer Wort unveraendert da, er haengt nur nicht mehr am Bildschirmrand,
+     sondern auf dem zweiten Blatt des Charakterfensters — dort, wo der
+     Wunsch ihn haben wollte ("dort findet man auch die Spielkarten-Mappe").
+     Alles, was hier unter #zulagen steht, gilt deshalb weiter; weg ist nur
+     die Panel-Rezeptur (Lage, Rahmen, Grund, Rollbalken), die jetzt
+     .grossFenster traegt. */
   #zulagen h4{margin:12px 0 4px;font-size:calc(12px * var(--fs));color:#c9a227;display:flex;justify-content:space-between;align-items:baseline;}
   #zulagen h4 span{color:#9a8a5f;font-weight:normal;font-size:calc(10px * var(--fs));}
   .zulSub{font-size:calc(11px * var(--fs));color:#9a8a5f;margin-bottom:6px;line-height:1.4;}
@@ -355,6 +375,22 @@
   @keyframes zulGlanz{from{background-position:130% 0;}to{background-position:-30% 0;}}
   @media (prefers-reduced-motion: reduce){ .zulKarte.s3 .zBild::after{animation:none;} }
 
+  /* U8: In einem Fenster von tausend Pixeln waeren drei gleiche Spalten drei
+     Plakate. Die Karte behaelt ihr Format und die Reihe fuellt sich auf. */
+  #charMappe .zulReihe, #charMappe .zulReihe.klein{
+    grid-template-columns:repeat(auto-fill, minmax(180px, 230px));
+    justify-content:start;
+  }
+  /* Die drei Kaesten der Mappe bekommen denselben Rahmen wie eine .gfKachel,
+     sobald etwas darin steht. :not(:empty), weil renderZulagen() einen Kasten
+     leer laesst, wenn es dazu nichts zu sagen gibt — ein leerer Rahmen waere
+     eine Ankuendigung ohne Inhalt. */
+  #charMappe > #zulagen > div:not(:empty){
+    border:1px solid #7a5a10; border-radius:8px; padding:11px 13px 13px;
+    background:#1a140b; margin-bottom:14px;
+  }
+  #charMappe #zulagen h4{margin-top:0;}
+
   .zulKarte.angelegt{border-color:#6aff8f;box-shadow:0 0 9px rgba(106,255,143,.30);}
   .zulKarte.angelegt .zKopf{border-color:#6aff8f;}
   .zulKarte.leer, .zulKarte.zu{
@@ -387,31 +423,37 @@
   #fullmapLegend{margin-top:8px;font-size:calc(10px * var(--fs));color:#9a8a5f;line-height:1.5;}
 
   /* --- Kessel & Kladde (K) --- */
-  #kessel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 32px));max-height:86vh;overflow-y:auto;z-index:21;display:none;
-       background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
-  #kessel h2{margin:0 0 2px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
-  #kesselSub{font-size:calc(10px * var(--fs));color:#9a8a5f;margin-bottom:10px;font-style:italic;line-height:1.4;}
-  #kesselTabs{display:flex;gap:6px;margin-bottom:10px;}
-  .kTab{flex:1;text-align:center;padding:8px 4px;border:2px solid #4c4030;border-radius:6px;background:#141009;color:#c9b98a;
-        cursor:pointer;font-size:calc(12px * var(--fs));font-weight:bold;min-height:40px;display:flex;align-items:center;justify-content:center;}
-  .kTab.on{border-color:#c9a227;background:#241c10;color:#f4d97a;}
-  #potRow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
-  .potSlot{height:64px;border:2px dashed #6b5a3a;border-radius:6px;background:#17130d;display:flex;flex-direction:column;
-           align-items:center;justify-content:center;cursor:pointer;padding:3px;overflow:hidden;}
+  /* U8: Lage und Groesse stehen bei .grossFenster. Der Kessel ist das
+     Fenster, das der Wunsch ausdruecklich groesser haben wollte ("Kochen
+     bleibt im Rucksack, bekommt aber ein groesseres Fenster mit mehr
+     Uebersicht") — was hier bleibt, ist der Inhalt, und der bekommt Luft:
+     drei Kesselplaetze, die keine Briefmarken mehr sind, und ein
+     Zutatenbeutel, der neben dem Kessel steht statt unter ihm. */
+  #kesselSub{font-size:calc(11px * var(--fs));color:#9a8a5f;font-style:italic;line-height:1.5;margin:0 0 10px;}
+  /* U8: Die drei Kesselreiter sind .gfBlatt geworden — dieselbe Form wie die
+     zwei Blaetter des Charakterfensters, weil es dasselbe ist: Seiten in
+     einem Fenster. Die eigene .kTab-Rezeptur faellt damit weg; sie stand
+     seit dem Kessel hier und war das Vorbild fuer .gfBlatt. */
+  #potRow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+  .potSlot{height:96px;border:2px dashed #6b5a3a;border-radius:6px;background:#17130d;display:flex;flex-direction:column;
+           align-items:center;justify-content:center;cursor:pointer;padding:5px;overflow:hidden;gap:4px;}
   .potSlot.full{border-style:solid;}
-  .potSlot .pi{font-size:calc(18px * var(--fs));line-height:1.1;}
-  .potSlot .pn{font-size:calc(8px * var(--fs));line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
+  .potSlot .pi{font-size:calc(30px * var(--fs));line-height:1.1;}
+  .potSlot .pn{font-size:calc(10px * var(--fs));line-height:1.2;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
   #brewBtn{width:100%;font-family:inherit;font-weight:bold;font-size:calc(15px * var(--fs));padding:11px;cursor:pointer;color:#1a1206;
            background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;margin-bottom:10px;}
   #brewBtn:disabled{background:#4a3e20;color:#7a6e50;cursor:default;}
   #kesselResult{display:none;border:2px solid #6b5a3a;border-radius:6px;background:#1a140b;padding:8px 10px;margin-bottom:10px;font-size:calc(12px * var(--fs));line-height:1.5;}
   #kesselResult .rname{font-weight:bold;font-size:calc(13px * var(--fs));margin-bottom:3px;}
-  #zutGrid,#invZutGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
-  .zutTile{position:relative;min-height:54px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;
-           flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:3px 2px;overflow:hidden;}
+  /* U8: dasselbe Mass wie beim Beutel — Felder statt Spaltenzahlen. Vier
+     feste Spalten waren fuer 420 Pixel gerechnet; im Grossfenster wuerde die
+     Kachel eines Fliegenpilzes sonst breiter als hoch. */
+  #zutGrid,#invZutGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:7px;}
+  .zutTile{position:relative;min-height:74px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;
+           flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:4px 3px;overflow:hidden;gap:2px;}
   .zutTile:hover{background:#241c10;}
-  .zutTile .zi{font-size:calc(17px * var(--fs));line-height:1;}
-  .zutTile .zn{font-size:calc(7px * var(--fs));line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
+  .zutTile .zi{font-size:calc(24px * var(--fs));line-height:1;}
+  .zutTile .zn{font-size:calc(9px * var(--fs));line-height:1.15;text-align:center;color:#c9b98a;overflow-wrap:anywhere;}
   .zutTile .zc{position:absolute;top:1px;right:3px;font-size:calc(9px * var(--fs));font-weight:bold;color:#f4d97a;text-shadow:0 1px 2px #000;}
   .zutEmpty{grid-column:1 / -1;font-size:calc(11px * var(--fs));color:#9a8a5f;font-style:italic;padding:6px 2px;}
   #kladdeBox{font-size:calc(12px * var(--fs));line-height:1.6;}
@@ -426,25 +468,28 @@
   #blaetterBox .ak:hover{background:rgba(255,255,255,0.04);}
   #blaetterBox .akText{margin-top:4px;color:#d8cba8;font-style:italic;}
   #blaetterBox .akText p{margin:0 0 4px;}
-  #zutBox h4{margin:10px 0 6px;color:#f4d97a;font-size:calc(12px * var(--fs));}
 
-  /* Kessel sitzt oben im Inventar, nicht mehr im Gürtel. Der Kessel ist das
-     Herzstück der Ausrüstung, also steht er über den Skills. */
-  #kesselBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:46px;margin-bottom:10px;
+  /* Der Kessel wird aus dem Rucksack aufgemacht und bleibt dort — U8 hat
+     daran nichts geaendert, nur den Knopf in die Kachel 'Verarbeitung'
+     gestellt, wo er nicht mehr ueber der Befaehigung klebt. */
+  #kesselBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:52px;margin-bottom:8px;
     border:2px solid #6aff8f;border-radius:6px;background:#132014;color:#e8d9a8;font-weight:bold;font-size:calc(14px * var(--fs));cursor:pointer;}
   #kesselBtn:hover{background:#1b2e1d;border-color:#9dffb8;}
   #kesselHint{color:#6aff8f;font-size:calc(11px * var(--fs));font-weight:normal;}
   #kesselBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
 
   /* W6: Dienstausweis-Knopf, gleiche Bauform wie #kesselBtn, andere Farbe. */
-  #ausweisBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:40px;margin-bottom:10px;
+  #ausweisBtn{display:flex;align-items:center;justify-content:center;gap:6px;height:44px;margin-bottom:0;
     border:2px solid #8a6d3b;border-radius:6px;background:#201a10;color:#e8d9a8;font-weight:bold;font-size:calc(13px * var(--fs));cursor:pointer;}
   #ausweisBtn:hover{background:#2a2214;border-color:#c9a227;}
   #ausweisBtn *{pointer-events:none;}   /* Klickziel ist immer der Knopf, nie ein Kind-Span */
 
-  /* Ton-Steuerung sitzt unten im Inventar, nicht mehr im Gürtel */
-  #musikBox{margin-top:12px;padding-top:8px;border-top:1px solid #4c4030;}
-  #musikBox h4{margin:0 0 6px;color:#f4d97a;font-size:calc(12px * var(--fs));}
+  /* Ton, Schrift und Spielstand sitzen im Rucksack, nicht im Guertel. U8 hat
+     sie dort gelassen und ihnen nur eine eigene Kachel gegeben: sie standen
+     bisher als Anhaengsel unter dem Beutel, und der Beutel ist das, was man
+     im Rucksack sucht. Ein eigener Abschnitt fuer die Optionen wird sie
+     vermutlich ganz herausholen; bis dahin stehen sie wenigstens fuer sich. */
+  #musikBox h4 + *{margin-top:0;}
   #musikRow{display:flex;align-items:center;gap:10px;}
   #musikRow #musicBtn{flex:0 0 auto;}
   #musicVol{flex:1;min-width:80px;accent-color:#c9a227;cursor:pointer;}
@@ -571,7 +616,11 @@
      setzen weiter unten background-color auf .93 (durchsichtiger, weil das
      Panel dort fast den ganzen Schirm fuellt) — mit der Kurzschrift haetten
      sie diesen Verlauf mitgeloescht. */
-  #inv, #spellTree, #kessel, #schloss, #ausweis, #fullmap, #amtFenster, #zulagen{
+  /* U8: Vier der acht Panels sind seit U8 Grossfenster und holen sich Grund,
+     Schatten und das Aufblenden von dort. Was hier steht, gilt fuer die vier
+     kleinen, die es geblieben sind: Symbolschloss, Dienstausweis, Karte und
+     Amtsstube. */
+  #schloss, #ausweis, #fullmap, #amtFenster{
     background-image:
       linear-gradient(rgba(78,56,32,.38), rgba(78,56,32,0) 150px),
       linear-gradient(rgba(24,17,28,.25), rgba(6,4,10,.45));
@@ -587,8 +636,7 @@
      overflow-y:auto sind — vorher scrollte die Ueberschrift samt Schliess-
      knopf aus dem Bild, und der Weg zurueck war Esc oder Hochscrollen.
      top:-14px = negatives Panel-Padding, damit es buendig oben klebt. */
-  #inv > h2, #spellTree > h2, #kessel > h2, #schloss > h2,
-  #ausweis > h2, #fullmap > h2, #amtFenster > h2, #zulagen > h2{
+  #schloss > h2, #ausweis > h2, #fullmap > h2, #amtFenster > h2{
     position:sticky;top:-14px;z-index:3;
     margin:-14px -14px 12px;padding:10px 14px;gap:10px;
     background:linear-gradient(#3d2e19,#261c0f 65%,#1b1309);
@@ -596,19 +644,12 @@
     box-shadow:0 1px 0 rgba(244,217,122,.20) inset, 0 4px 10px rgba(0,0,0,.55);
     text-shadow:0 2px 0 #241a09, 0 0 12px rgba(244,217,122,.22);
   }
-  /* #kessel setzt margin:0 0 2px, weil direkt darunter #kesselSub sitzt.
-     Das Band braucht denselben Abstand wie die anderen, der Untertitel
-     ruecht dafuer wieder heran. */
-  #kessel > h2{margin-bottom:8px;}
-  #kesselSub{margin-top:-2px;}
-
   /* Schliessknopf. round_brown.png ist der Rundknopf aus UI_Buttons.png, den
      G5 fuer Orbs und Touch-Cluster geschnitten hat — hier zum ersten Mal auch
      im Menue. Fallback im var(), falls die lizenzierte Grafik fehlt: dann
      bleibt ein Verlauf statt eines leeren Kastens. Dunkles Kreuz auf hellem
      Knopf, gleiche Lesart wie #brewBtn (dunkle Schrift auf Gold). */
-  #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeSchlossBtn,
-  #closeAusweisBtn, #closeFullmapBtn, .panelZu{
+  #closeSchlossBtn, #closeAusweisBtn, #closeFullmapBtn, .panelZu{
     flex:0 0 auto;display:flex;align-items:center;justify-content:center;
     width:28px;height:28px;margin:-3px -4px -3px 0;
     font-size:calc(13px * var(--fs));line-height:1;color:#2e1d0a;
@@ -617,58 +658,36 @@
     text-shadow:0 1px 0 rgba(255,240,200,.45);
     transition:filter .12s ease, transform .12s ease;
   }
-  #closeInvBtn:hover, #closeSpellBtn:hover, #closeKesselBtn:hover,
   #closeSchlossBtn:hover, #closeAusweisBtn:hover, #closeFullmapBtn:hover,
   .panelZu:hover{filter:brightness(1.2);transform:scale(1.1);}
 
   /* Felder und Knoepfe im Panel: eine gemeinsame Woelbung (Licht oben, Schatten
      unten). Nur background-image — border-color und box-shadow bleiben frei,
      die gehoeren den Seltenheitsklassen .rar0..4 und den Zustandsklassen. */
-  .bagSlot, .eqSlot, .zutTile, .potSlot, .symBtn, .kTab, .spellNode,
+  .bagSlot, .eqSlot, .zutTile, .potSlot, .symBtn, .gfBlatt, .gfReiter, .spellNode,
   .knToneBtn, .schriftBtn, .ultNode, .zulKarte, #schlossAnz, #statBox, #kesselResult{
     background-image:
       radial-gradient(ellipse at 50% -10%, rgba(255,236,192,.11), transparent 68%),
       linear-gradient(rgba(255,255,255,.03), rgba(0,0,0,.30));
   }
   .bagSlot:hover, .eqSlot:hover, .zutTile:hover, .symBtn:hover, .potSlot:hover,
-  .kTab:hover, .knToneBtn:hover, .schriftBtn:hover{
+  .gfBlatt:hover, .gfReiter:hover, .knToneBtn:hover, .schriftBtn:hover{
     background-image:
       radial-gradient(ellipse at 50% -10%, rgba(255,236,192,.18), transparent 68%),
       linear-gradient(rgba(255,255,255,.06), rgba(0,0,0,.24));
   }
-  .kTab.on{box-shadow:0 0 10px rgba(201,162,39,.30), 0 1px 0 rgba(244,217,122,.25) inset;}
-
-  /* Abschnittsueberschriften im Panel bekommen dieselbe Goldlinie wie das
-     Kopfband, damit ein langes Inventar in Kapitel zerfaellt statt in eine
-     Reihe gleich aussehender Kaesten. */
-  #skillBox h4, #zutBox h4, #musikBox h4{
-    border-bottom:1px solid rgba(201,162,39,.35);padding-bottom:4px;
-  }
+  .gfBlatt.on{box-shadow:0 1px 0 rgba(244,217,122,.25) inset;}
 
   /* Rollbalken. Der Systembalken ist hellgrau und der einzige Fleck im Panel,
-     der nicht aus dieser Welt stammt. */
-  #inv, #spellTree, #kessel, #ausweis, #zulagen{scrollbar-width:thin;scrollbar-color:#7a5f33 rgba(0,0,0,.35);}
-  #inv::-webkit-scrollbar, #spellTree::-webkit-scrollbar,
-  #kessel::-webkit-scrollbar, #ausweis::-webkit-scrollbar, #zulagen::-webkit-scrollbar{width:10px;}
-  #inv::-webkit-scrollbar-track, #spellTree::-webkit-scrollbar-track,
-  #kessel::-webkit-scrollbar-track, #ausweis::-webkit-scrollbar-track,
-  #zulagen::-webkit-scrollbar-track{background:rgba(0,0,0,.35);}
-  #inv::-webkit-scrollbar-thumb, #spellTree::-webkit-scrollbar-thumb,
-  #kessel::-webkit-scrollbar-thumb, #ausweis::-webkit-scrollbar-thumb,
-  #zulagen::-webkit-scrollbar-thumb{
+     der nicht aus dieser Welt stammt. U8: gerollt wird in den Grossfenstern
+     das Rollfeld (.gfBody), nicht mehr das Fenster — der Balken zieht mit um.
+     Der Dienstausweis rollt weiter als Ganzes und bleibt deshalb stehen. */
+  #ausweis, .gfBody{scrollbar-width:thin;scrollbar-color:#7a5f33 rgba(0,0,0,.35);}
+  #ausweis::-webkit-scrollbar, .gfBody::-webkit-scrollbar{width:10px;}
+  #ausweis::-webkit-scrollbar-track, .gfBody::-webkit-scrollbar-track{background:rgba(0,0,0,.35);}
+  #ausweis::-webkit-scrollbar-thumb, .gfBody::-webkit-scrollbar-thumb{
     background:linear-gradient(#9a7c44,#5a4a2d);border-radius:6px;
     border:2px solid transparent;background-clip:padding-box;}
-
-  /* Die drei scrollbaren Panels endeten bei 85vh/86vh und liefen damit auf einem
-     800px hohen Fenster bis y=744 — der Guertel beginnt bei 704, das Inventar lag
-     also ueber Manakugel und Stufenanzeige. Sie sind z-index 20 gegen 10, es war
-     kein Abschneiden, sondern ein Verdecken. Jetzt endet das Panel oberhalb des
-     HUD-Streifens (96px hoch, plus Luft). Auf Mobil ueberschreiben die
-     Breakpoints weiter unten diese Werte wie bisher. */
-  #inv, #spellTree, #kessel, #zulagen{
-    max-height:calc(100vh - 200px);
-    max-height:max(260px, calc(100dvh - 200px));
-  }
 
   /* =====================================================================
      U2 — dieselben Menues, jetzt mit den Zellen des Packs statt mit CSS, das
@@ -716,10 +735,11 @@
     border-image-repeat:repeat;
     image-rendering:pixelated;
   }
-  /* .kTab bleibt aussen vor: der gestrichelte Rahmen ist fuer ein Feld von 46px
-     gezeichnet. Auf einem Reiter von 140x40 wird daraus ein weisser Kasten, der
-     lauter ist als der Reiter selbst — im ersten U2-Durchgang probiert und
-     verworfen. Die Reiter behalten die Goldkante aus U1. */
+  /* Die Reiter bleiben aussen vor: der gestrichelte Rahmen ist fuer ein Feld
+     von 46px gezeichnet. Auf einem Reiter von 140x40 wird daraus ein weisser
+     Kasten, der lauter ist als der Reiter selbst — im ersten U2-Durchgang
+     probiert und verworfen. Sie behalten die Goldkante aus U1; seit U8 gilt
+     das fuer .gfBlatt und .gfReiter. */
 
   /* Breite Knoepfe. Mit 'fill', hier ist die Fuellung des Packs erwuenscht:
      diese drei Knoepfe waren schon vorher hell mit dunkler Schrift
@@ -741,12 +761,10 @@
   /* Schliessknopf. Der Kreis mit dem eingepraegten X ersetzt round_brown plus
      ✖-Zeichen. body.cfuiX setzt bakeUiSkin(), nur wenn die Zelle geladen ist —
      ohne sie bleibt das Zeichen sichtbar (s. dort). */
-  #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeSchlossBtn,
-  #closeAusweisBtn, #closeFullmapBtn, .panelZu{
+  #closeSchlossBtn, #closeAusweisBtn, #closeFullmapBtn, .panelZu{
     background-image:var(--cfui-x, var(--cfui-round, linear-gradient(#c9a227,#8a6d3b)));
     image-rendering:pixelated;
   }
-  body.cfuiX #closeInvBtn, body.cfuiX #closeSpellBtn, body.cfuiX #closeKesselBtn,
   body.cfuiX #closeSchlossBtn, body.cfuiX #closeAusweisBtn,
   body.cfuiX #closeFullmapBtn, body.cfuiX .panelZu{font-size:0;}
 
@@ -759,6 +777,346 @@
     transition:opacity .18s ease;
     background:radial-gradient(ellipse at 50% 45%, rgba(5,3,10,.26) 0%, rgba(5,3,10,.66) 100%);}
   body.panelOffen #menuVeil{opacity:1;}
+
+  /* =====================================================================
+     U8 — DIE ZWEITE SCHICHT DER OBERFLAECHE: DIE MENUEFENSTER
+
+     U7 hat die Schicht geordnet, die WAEHREND des Spiels dasteht, und im
+     selben Atemzug angekuendigt, dass die Menues danach drankommen
+     ("Rucksack, Befaehigung, Zauber, Kessel, Sammelkarten, Optionen").
+     Das ist hier. Drei Dinge aendern sich.
+
+     1. GROESSE. Die Fenster waren Kaesten zwischen 360 und 680 Pixeln, die
+        NEBEN dem Spiel standen: das Inventar rechts, der Zauberbaum links,
+        Kessel und Kartei mittig. Sie fuellen jetzt den Schirm bis auf die
+        Raender, an denen die Bedienschicht liegt. Ein Beutel mit
+        vierundzwanzig Faechern, ein Zauberbaum mit drei Zweigen und eine
+        Sammlung von fuenfundvierzig Karten sind keine Randnotizen; auf 360
+        Pixeln waren sie genau so gesetzt.
+
+     2. ORDNUNG. Vier Fenster und ein Band, das sie verbindet:
+        Charakter, Rucksack, Kochen, Zauber. Wer im Rucksack steht und in den
+        Zauberbaum will, tippt einen Reiter, statt das Fenster zuzumachen und
+        den zweiten Knopf zu suchen. Der Kessel steht im Band NEBEN dem
+        Rucksack, weil er zum Rucksack gehoert und aus ihm aufgemacht wird —
+        sein Knopf bleibt dort, wo er war.
+
+     3. ZUSTAENDIGKEIT. Was am Traeger haengt, steht beim Traeger: Befaehigung,
+        Werte, Ausruestung, Dienstausweis und die Kartenmappe im
+        Charakterfenster. Was in der Tasche liegt, im Rucksack. Die Zauber
+        bleiben ihr eigenes Fenster mit eigener Taste und eigenem Zustand, wie
+        sie es waren.
+
+     WARUM "nahezu" UND NICHT "ganz"
+
+     U1 hat drei Zusagen gemacht: ein offenes Menue nimmt den Kampf nicht weg,
+     der Guertel wirkt weiter, und ein Griff NEBEN das Fenster wischt es weg.
+     Ein wirklich bildschirmfuellendes Fenster kassiert alle drei auf einmal —
+     es deckt den Guertel zu, es deckt den Faecher zu, und ein "daneben" gibt
+     es dann nicht mehr. Also bildschirmfuellend bis auf genau die Streifen,
+     in denen die Bedienschicht liegt, und keinen Pixel weiter:
+
+       Schirm    oben  102  unter der Statuskarte
+                 unten  78  ueber dem Guertel (66 hoch)
+                 seitl.      soviel, wie ueber 1180 Fensterbreite hinausgeht,
+                             mindestens aber die Spalte mit Minikarte und
+                             Beute (Rand + Kartenhoehe + 10)
+       Finger    oben   86  unter der Statuskarte
+                 unten 285  ueber dem Daumenfaecher — dieselbe Zahl, mit der
+                             die Mobil-Regeln seit U1 rechnen (349 minus der
+                             alten Oberkante 64)
+                 links   74+8  neben der Knopfspalte
+                 rechts   8
+
+     Damit bleibt in jedem Format eine Flaeche, die "daneben" heisst, und
+     tools/menue-pruef.mjs prueft weiter, dass ein Griff dorthin das Fenster
+     schliesst, ohne einen Schlag auszuloesen.
+
+     KEINE NEUE GRAFIKDATEI. Der Pixelrahmen ist derselbe wie seit G5, die
+     Zellen sind die vier aus U2, der Schliessknopf traegt .panelZu und erbt
+     damit alles, was die kleinen Panels haben. Was hier neu gezeichnet wird,
+     zeichnet CSS.
+     ===================================================================== */
+
+  /* Die vier Kanten. Jede Zahl ist aus dem U7-Raster gerechnet und nicht
+     geschaetzt: --karteH ist die Hoehe der Statuskarte, --mapH die der
+     Minikarte, --railW die Breite der Knopfspalte. Aendert eine Bruchstelle
+     eine dieser Groessen, wandern die Fensterkanten von selbst mit. */
+  :root{
+    /* --spalteY und nicht die Unterkante der Statuskarte: dazwischen steht die
+       Ortszeile ("Vordermuehl an der Ablage"), und ein Fenster, das ihr das
+       letzte Drittel abschneidet, sieht nach Unfall aus. Am Finger darf sie
+       zugedeckt werden — dort war sie es vor U8 auch (Panels ab 64). */
+    --gfOben:  var(--spalteY);
+    --gfUnten: 78px;
+    --gfLinks: max(calc(var(--rand) + var(--mapH) + 10px), calc((100vw - 1180px) / 2));
+    --gfRechts:var(--gfLinks);
+  }
+  /* Am Finger sind die Raender andere: links die Knopfspalte, unten der
+     Faecher, rechts nichts. Die Minikarte darf hier zugedeckt werden — auf
+     einem Telefon ist die Alternative ein Fenster von 190 Pixeln Breite. */
+  body.touch{
+    --gfOben:  calc(var(--karteY) + var(--karteH) + 8px);
+    --gfUnten: 285px;
+    --gfLinks: calc(var(--railW) + 8px);
+    --gfRechts:8px;
+  }
+
+  .grossFenster{
+    position:fixed; z-index:20; display:none;
+    left:var(--gfLinks); right:var(--gfRechts); top:var(--gfOben);
+    height:calc(100vh - var(--gfOben) - var(--gfUnten));
+    height:calc(100dvh - var(--gfOben) - var(--gfUnten));
+    /* Die Untergrenze darf nicht selbst aus dem Bild laufen: min() klemmt sie
+       auf das, was ueberhaupt da ist. Ohne die zweite Haelfte stuende auf
+       einem liegenden Telefon ein 260 Pixel hohes Fenster in 100 Pixeln. */
+    min-height:min(240px, calc(100dvh - var(--gfOben) - 8px));
+    box-sizing:border-box; overflow:hidden;
+    flex-direction:column;            /* display:flex setzt der Oeffner */
+    color:#e8d9a8;
+    border:3px solid #8a6d3b; border-radius:12px;
+    background-color:rgba(20,14,24,.965);
+    background-image:
+      linear-gradient(rgba(78,56,32,.34), rgba(78,56,32,0) 240px),
+      linear-gradient(rgba(24,17,28,.25), rgba(6,4,10,.45));
+    box-shadow:0 16px 60px rgba(0,0,0,.94);
+    animation:panelAuf .16s ease-out;
+  }
+
+  /* --- Der Kopf: Reiterband und Schliessknopf ---------------------------
+     Er liegt NEBEN dem Rollfeld und nicht darin. Das klebende Kopfband aus
+     U1 war die Antwort auf dieselbe Frage in einem Fenster, das als Ganzes
+     rollte; hier rollt nur noch der Inhalt, und die Frage stellt sich nicht
+     mehr. */
+  .gfKopf{
+    flex:0 0 auto; display:flex; align-items:center; gap:10px;
+    padding:8px 12px; border-bottom:2px solid #7a5a10;
+    background:linear-gradient(#3d2e19,#261c0f 65%,#1b1309);
+    box-shadow:0 1px 0 rgba(244,217,122,.20) inset, 0 4px 10px rgba(0,0,0,.55);
+  }
+  .gfBand{display:flex; gap:7px; flex:1 1 auto; min-width:0; flex-wrap:wrap;}
+  .gfReiter{
+    position:relative; display:flex; align-items:center; gap:7px; cursor:pointer;
+    min-height:44px; padding:0 16px; border:2px solid #4c4030; border-radius:8px;
+    background:#141009; color:#c9b98a; font-weight:bold; white-space:nowrap;
+    font-size:calc(12px * var(--fs)); letter-spacing:1px;
+    text-shadow:0 1px 0 #241a09;
+    transition:filter .12s ease;
+  }
+  .gfReiter .gfSinn{font-size:calc(17px * var(--fs));line-height:1;}
+  .gfReiter:hover{background:#241c10; color:#f4e6c8;}
+  /* Der aktive Reiter ist derselbe Ton wie .gfBlatt.on — ein Haus, ein
+     Zeichen fuer "hier stehen Sie". */
+  .gfReiter.on{
+    border-color:#c9a227; background:#241c10; color:#f4d97a;
+    box-shadow:0 0 10px rgba(201,162,39,.30), 0 1px 0 rgba(244,217,122,.25) inset;
+  }
+  /* Das Sternchen sass bisher am Guertelknopf und sagte dort "hier wartet
+     etwas". Im Band sagt es dasselbe, nur an der Stelle, an der man ohnehin
+     hinsieht, wenn ein Fenster offen ist. */
+  .gfReiter .gfStern{
+    position:absolute; top:-7px; right:-5px; line-height:1;
+    font-size:calc(14px * var(--fs)); text-shadow:0 1px 3px #000;
+  }
+  .gfKopf .panelZu{margin:0; width:34px; height:34px; cursor:pointer;}
+
+  /* --- Die Blaetter eines Fensters --------------------------------------
+     Zweite Ebene, andere Form: das Band oben sind Fenster, die Blaetter sind
+     Seiten in einem Fenster. Deshalb Karteireiter mit offener Unterkante und
+     nicht noch einmal Knoepfe. */
+  .gfBlaetter{
+    flex:0 0 auto; display:flex; gap:6px; flex-wrap:wrap;
+    padding:10px 14px 0; border-bottom:2px solid #4c4030;
+  }
+  .gfBlatt{
+    position:relative; display:flex; align-items:center; gap:6px; cursor:pointer;
+    min-height:40px; padding:0 14px; margin-bottom:-2px;
+    border:2px solid #4c4030; border-bottom-color:transparent;
+    border-radius:8px 8px 0 0; background:#141009; color:#9a8a5f;
+    font-size:calc(12px * var(--fs)); white-space:nowrap;
+  }
+  .gfBlatt:hover{background:#241c10; color:#c9b98a;}
+  .gfKurz{display:none;}
+  .gfBlatt.on{border-color:#c9a227; border-bottom-color:transparent; background:#241c10; color:#f4d97a;}
+
+  /* --- Das Rollfeld ----------------------------------------------------- */
+  .gfBody{flex:1 1 auto; min-height:0; overflow-y:auto; padding:14px 16px 18px;}
+
+  /* --- Die Kacheln ------------------------------------------------------
+     Ein Fenster von tausend Pixeln Breite mit einer Spalte darin waere kein
+     Gewinn, sondern eine sehr lange Zeile. auto-fit statt einer festen
+     Spaltenzahl, weil dieselbe Regel dann auf dem Schirm drei bis vier
+     Kacheln nebeneinander stellt und auf dem Telefon eine — ohne zweiten
+     Entwurf, und das war die Lehre aus U7. */
+  /* align-items:stretch (der Vorgabewert, hier ausdruecklich): Kacheln einer
+     Zeile bekommen dieselbe Hoehe. Mit 'start' stand jede so hoch, wie ihr
+     Inhalt es hergab, und eine Zeile aus vier Kacheln hatte vier
+     Unterkanten. */
+  .gfSpalten{
+    display:grid; gap:14px; align-items:stretch;
+    grid-template-columns:repeat(auto-fill, minmax(min(100%, 264px), 1fr));
+  }
+  /* Eine Groesse ueber der einfachen Kachel, und zwar 'die ganze Zeile'.
+     Ein 'span 2' stand hier kurz und war falsch: faellt das Raster auf EINE
+     Spalte zusammen (schmales Fenster, liegendes Telefon), legt span 2 eine
+     zweite Spalte an, die es nicht gibt, und die Kachel laeuft seitlich aus
+     dem Fenster. '1 / -1' heisst dagegen "bis zur letzten Linie" und ist
+     auch bei einer einzigen Spalte richtig. Auf einem liegenden Telefon
+     genau so gesehen: der Beutel stand halb neben dem Fenster.
+     auto-fill und nicht auto-fit: auto-fit laesst leere Spalten
+     zusammenfallen, und ein Blatt mit zwei Kacheln haette dann zwei sehr
+     breite statt zweier normaler. */
+  .gfSpalten .weit{grid-column:1 / -1;}
+  /* min-width:0 ist hier keine Feinheit, sondern die Bedingung dafuer, dass
+     das Fenster ueberhaupt haelt. Ein Rasterfeld steht von Haus aus auf
+     min-width:auto und wird damit so breit, wie sein Inhalt es MINDESTENS
+     braucht — bei einer Kachel mit einem Raster darin (Zauberbaum, Beutel)
+     ist das die Summe der engsten Spalten und nicht die Breite der Kachel.
+     Auf 390 Pixeln stand der Zauberbaum dadurch 376 Pixel breit in einem
+     294 Pixel breiten Rollfeld und lief seitlich heraus. Dieselbe Falle wie
+     bei der Sammelkarte in K1 ('Vollziehbarkeit' drueckte ihre Spalte
+     breiter als ihren Anteil), nur eine Ebene hoeher. */
+  .gfSpalten > *, .gfKachel{min-width:0;}
+  .gfKachel{
+    border:1px solid #7a5a10; border-radius:8px; padding:11px 13px 13px;
+    background:#1a140b;
+  }
+  .gfKachel > h4{
+    margin:0 0 9px; color:#f4d97a; font-size:calc(12px * var(--fs));
+    letter-spacing:1px; display:flex; justify-content:space-between;
+    align-items:baseline; gap:10px;
+    border-bottom:1px solid rgba(201,162,39,.35); padding-bottom:5px;
+  }
+  .gfKachel > h4 > span{color:#9a8a5f; font-weight:normal; font-size:calc(10px * var(--fs));}
+  /* Der Satz unter einer Ueberschrift, der sagt, wozu die Kachel da ist.
+     Amtsdeutsch, kein Tutorial — dieselbe Rolle wie #kesselSub. */
+  .gfSatz{font-size:calc(10px * var(--fs)); color:#9a8a5f; font-style:italic;
+    line-height:1.5; margin:0 0 9px;}
+
+  /* --- Das Charakterfenster ---------------------------------------------
+     Lichtbild und Amtsbezeichnung stehen im selben Kasten wie der Knopf zum
+     Ausweis: wer wissen will, wer er im Dienst ist, sieht es hier und braucht
+     das Dokument nur, wenn er die Insignien sucht. */
+  #charAmt{display:flex; gap:12px; align-items:flex-start; margin-bottom:10px;}
+  #charFoto{
+    image-rendering:pixelated; flex:0 0 auto; width:80px; height:90px;
+    border:2px solid #6b5a3a; border-radius:4px; background:#17130d;
+  }
+  /* "Monsterangelegenheitenanwaerter" ist dreissig Zeichen lang und in
+     diesem Haus keine Ausnahme, sondern der Witz. Er hat in die Kachel zu
+     passen, also bricht er notfalls mitten im Wort. */
+  #charAmtText{font-size:calc(12px * var(--fs)); line-height:1.7; min-width:0;
+    overflow-wrap:anywhere; hyphens:auto; -webkit-hyphens:auto;}
+  #charAmtText b{color:#f4d97a;}
+  #charAmtText .kl{color:#9a8a5f; font-size:calc(10px * var(--fs)); line-height:1.5;}
+
+  /* --- Zauberbaum im Grossfenster ---------------------------------------
+     Die Ultimates standen bisher als Reihe unter drei schmalen Spalten. Bei
+     Fensterbreite duerfen sie nebeneinander stehen; sie sind der Abschluss
+     des Baumes und keine Fussnote. */
+  #ultimateRow{
+    margin-top:14px; display:grid; gap:12px;
+    grid-template-columns:repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  }
+  /* Dieselbe Regel eine Ebene tiefer: der Zauberknoten ist auf dem Telefon
+     selbst ein Raster (Sinnbild, Name, Mana / Beschreibung), und 'Verlangsamt
+     alle in Reichweite.' darf seine Spalte nicht breiter druecken als den
+     Knoten. */
+  #spellCols, #ultimateRow, .spellNode, .ultNode{min-width:0;}
+  .spellNode .sName, .spellNode .sDesc, .spellNode .sMana{
+    min-width:0; overflow-wrap:anywhere;}
+
+  /* --- Der Kessel im Grossfenster ---------------------------------------
+     Der Beutel stand unter dem Kessel, und wer eine Zutat suchte, rollte an
+     den drei Plaetzen vorbei, die er gerade fuellen wollte. Nebeneinander
+     sieht man beides zugleich — das war der ganze Wunsch ("mehr Uebersicht").
+     Bei zu wenig Breite fallen die zwei Spalten von selbst untereinander. */
+  #kesselPane{
+    display:grid; gap:16px; align-items:start;
+    grid-template-columns:repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  }
+  #kesselLinks, #kesselRechts{min-width:0;}
+
+  /* --- Am Finger: die Reiter tragen nur ihr Sinnbild --------------------
+     Dieselbe Entscheidung wie beim Guertel in U7 (body.touch .beltSlot .bl):
+     vier beschriftete Reiter brauchen 440 Pixel und brechen auf einem
+     Telefon in zwei Zeilen um, vier Sinnbilder passen in eine. Die Blaetter
+     behalten ihre Schrift — dort ist das Wort die Auskunft. */
+  /* Schmal ODER flach: beides macht aus dem Band eine Liste. Die zweite
+     Bedingung greift auf einem liegenden Telefon (844x390), wo die erste es
+     nicht tut — dort ist nicht die Breite knapp, sondern die Hoehe, und ein
+     Kopf aus zwei Reiterzeilen und zwei Blattzeilen fraesse das ganze
+     Fenster. */
+  @media (max-width: 620px), (max-height: 560px){
+    /* Vier Sinnbilder teilen sich die Zeile zu gleichen Teilen. Ohne flex:1
+       traegt jeder Reiter seine eigene Breite, und vier davon brachen auf
+       300 Pixeln in zwei Zeilen um — ein Band, das zwei Zeilen braucht, ist
+       keines mehr, sondern eine Liste. */
+    .gfBand{flex-wrap:nowrap; gap:6px;}
+    .gfReiter{flex:1 1 0; min-width:0; justify-content:center; padding:0 4px; letter-spacing:0;}
+    .gfReiter .gfWort{display:none;}
+    .gfReiter .gfSinn{font-size:calc(19px * var(--fs));}
+    /* Die Blaetter tragen ihre Kurzform: "Werte & Ausruestung" ist auf einem
+       Telefon eine Zeile fuer sich. Zwei Beschriftungen im HTML statt einer,
+       weil das Wort auf dem Schirm die bessere Auskunft ist und die Kuerzung
+       nur der Not gehorcht. */
+    .gfLang{display:none;}
+    .gfKurz{display:inline;}
+    .gfBlatt{min-height:36px; padding:0 11px; font-size:calc(11px * var(--fs));}
+    /* Auch die Blaetter des Kessels geben ihr Wort ab, wenn es eng wird —
+       drei beschriftete Reiter brauchen mehr, als ein liegendes Telefon dem
+       Fenster laesst, und ein Reiterband, das gerollt werden muss, findet
+       niemand. Das Wort steht weiter im title. */
+    .gfBlatt .gfWort{display:none;}
+    .gfKopf{padding:7px 9px; gap:7px;}
+    .gfBody{padding:11px 11px 15px;}
+    .gfBlaetter{padding:8px 10px 0;}
+    .gfKachel{padding:9px 10px 11px;}
+  }
+  /* Die Spaltenzahl haengt dagegen NUR an der Breite. Ein flaches, aber
+     breites Fenster (ein Schirm mit halber Hoehe) soll seine Breite
+     weiterbenutzen duerfen. */
+  @media (max-width: 620px){
+    /* Auf einem schmalen Schirm OHNE Finger (ein kleines Browserfenster) gaebe
+       die Regel oben beiden Seiten den Streifen der Minikarte, und vom Fenster
+       bliebe ein Rest. Dort ist die Karte das kleinere Opfer. Die Zeile steht
+       an :root und nicht an body.touch, also behaelt der Finger seine Kanten
+       (Knopfspalte links, Faecher unten). */
+    :root{--gfLinks:8px; --gfRechts:8px;}
+    /* Eine Spalte, und damit gibt es nichts mehr, was zwei davon nehmen
+       koennte: ohne diese Zeile legte 'span 2' eine zweite Spalte an, die es
+       auf einem Telefon nicht gibt, und das Fenster liefe seitlich aus. */
+    .gfSpalten{grid-template-columns:1fr; gap:11px;}
+  }
+  /* Ein liegendes Telefon hat die Hoehe nicht, die ein Fenster hier braucht,
+     und den Platz dafuer in der Breite. Also nimmt es die Hoehe ganz und
+     rueckt seitlich zwischen die beiden Inseln:
+
+       links   die Knopfspalte, die dort in mehrere kurze Spalten umbricht
+               (bis zu vier bei sichtbarem Kammer-Abbruch, 4 x 64 = 256),
+               und darunter der Daumenring (Mittelpunkt 16+R, R=60, also bis
+               136). 280 laesst beide frei.
+       rechts  der Faecher, 230 breit, plus Luft: 246.
+       oben    dieselbe Kante wie im Hochformat, unter der Statuskarte.
+
+     Bleiben auf 844x390 rund 318 mal 300 Pixel. Das ist wenig und es ist
+     ehrlich: mehr gibt ein liegendes Telefon nicht her, ohne eine der drei
+     Zusagen aus U1 zu brechen. */
+  @media (max-height: 460px){
+    #bagGrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;}
+    .bagSlot{height:48px;}
+    #equipGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+    .eqSlot{height:66px;}
+    #zutGrid, #invZutGrid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));}
+    #potRow{gap:6px;}
+    .potSlot{height:74px;}
+    body.touch{
+      --gfOben: calc(var(--karteY) + var(--karteH) + 8px);
+      --gfUnten: 10px;
+      --gfLinks: 280px;
+      --gfRechts: 246px;
+    }
+  }
   /* E1: Waehrend des Empfangs ist noch nichts im Dienst, was das HUD anzeigen
      koennte: keine Schicht, keine Zone, keine Beute, kein Angriffsknopf. Die
      Leisten standen in der ersten Fassung trotzdem da und haben die Szene
@@ -1169,7 +1527,7 @@
      die doppelte Anzahl in eine Zeile. Der Kontext-Knopf behält seinen Text, der
      Text ist dort die eigentliche Information (Hebel / Schloss / Öffnen). */
   body.touch .beltSlot .bl{display:none;}
-  body.touch #spellsBtn, body.touch #zulagenBtn, body.touch #invBtn,
+  body.touch #spellsBtn, body.touch #charBtn, body.touch #invBtn,
   body.touch #kamExitBtn{
     box-sizing:border-box;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;font-size:calc(22px * var(--fs));gap:0;position:relative;
     box-shadow:0 3px 12px rgba(0,0,0,.6);
@@ -1195,6 +1553,10 @@
 
   body.touch #spBadge, body.touch #skillBadge, body.touch #zulBadge{
     position:absolute;top:-2px;right:-2px;font-size:calc(15px * var(--fs));line-height:1;text-shadow:0 1px 3px #000;}
+  /* U8: Am Charakter-Knopf koennen zwei Sternchen gleichzeitig brennen —
+     freie Punkte und eine offene Vorlage. Auf Touch liegen beide auf
+     derselben Ecke, also bekommt das blaue die andere. */
+  body.touch #zulBadge{right:auto;left:-2px;}
   body.touch #spellBtn.aiming{border-color:#f4d97a;box-shadow:0 0 10px rgba(244,217,122,.8);}
   body.touch #spellBtn.cancelHot{border-color:#ff5a5a;background:#2a0d0d;}
   body.touch #spellBtn.cancelHot #spellBtnTxt::after{content:' ✖';color:#ff5a5a;}
@@ -1224,19 +1586,24 @@
      (390 - 16 - 74 = 300 statt 374). Das ist der Preis und er wird hier
      ausdruecklich genannt: der Abschnitt fuer die Menuefenster wird die
      Spalte in ein richtiges Reiterband verwandeln und den Platz
-     zurueckholen. Bis dahin ist ein etwas schmaleres Fenster besser als ein
-     Knopf, der sich nicht druecken laesst.
+     zurueckholen.
+
+     U8-NACHTRAG: das Reiterband gibt es jetzt (s. .gfBand weiter unten), die
+     Spalte bleibt trotzdem stehen. Sie ist nicht nur ein Menuezugang, sondern
+     traegt auf Touch auch Trank, Zauber, Ultimate und die Zielwahl — und die
+     duerfen unter einem offenen Fenster nicht verschwinden (U1). Was das Band
+     zurueckholt, ist nicht die Spaltenbreite, sondern der WEG: aus dem
+     Rucksack in den Zauberbaum ist es jetzt ein Reiter statt Fenster zu und
+     Knopf suchen.
      ===================================================================== */
-  body.touch #inv{width:min(360px, calc(100vw - 48px - var(--railW)));}
-  body.touch #spellTree{left:calc(24px + var(--railW));width:min(420px, calc(100vw - 48px - var(--railW)));}
-  /* Die mittig gestellten Panels ruecken um die halbe Spaltenbreite nach
-     rechts; ihre eigene Breitenklemme rechnet die ganze Spalte ab. */
-  body.touch #zulagen, body.touch #fullmap, body.touch #kessel,
-  body.touch #schloss, body.touch #ausweis, body.touch #amtFenster{
+  /* Die vier kleinen Panels ruecken um die halbe Spaltenbreite nach rechts;
+     ihre eigene Breitenklemme rechnet die ganze Spalte ab. Die vier
+     Grossfenster brauchen das nicht: sie stehen ohnehin an Kanten, die die
+     Spalte kennen (--gfLinks). */
+  body.touch #fullmap, body.touch #schloss,
+  body.touch #ausweis, body.touch #amtFenster{
     left:calc(50% + var(--railW) / 2);}
-  body.touch #zulagen{width:min(680px, calc(100vw - 48px - var(--railW)));}
   body.touch #fullmap{width:min(560px, calc(100vw - 32px - var(--railW)));}
-  body.touch #kessel{width:min(420px, calc(100vw - 32px - var(--railW)));}
   body.touch #schloss{width:min(320px, calc(100vw - 32px - var(--railW)));}
   body.touch #ausweis{width:min(340px, calc(100vw - 32px - var(--railW)));}
   body.touch #amtFenster{width:min(320px, calc(100vw - 32px - var(--railW)));}
@@ -1273,8 +1640,6 @@
     #minimap{border-radius:8px;}
     #zone{font-size:calc(12px * var(--fs));left:10px;}
     body.touch #knZettel, body.touch #knRandnotiz{top:calc(var(--spalteY) + 4px);max-width:calc(100vw - 200px);}
-    #inv, body.touch #inv{right:8px;width:min(360px,calc(100vw - 16px - var(--railW)));}
-    #spellTree, body.touch #spellTree{left:calc(8px + var(--railW));width:min(420px,calc(100vw - 16px - var(--railW)));}
     .spellNode{font-size:calc(12px * var(--fs));}
     .spellNode .sDesc,.spellNode .sMana{font-size:calc(11px * var(--fs));}
     .eqSlot .lbl{font-size:calc(10px * var(--fs));}
@@ -1285,33 +1650,11 @@
     #overlay p{font-size:calc(12px * var(--fs));line-height:1.6;}
     #overlay button{font-size:calc(16px * var(--fs));padding:12px 26px;}
 
-    /* --- Panels: top-verankert, Fächer-Zone frei --- */
-    #inv, #spellTree{
-      top:64px; transform:none; box-sizing:border-box;
-      max-height:calc(100vh - 349px);
-      max-height:max(240px, calc(100dvh - 349px));
-      /* background-COLOR, nicht die Kurzschrift: die U1-Regel weiter oben legt
-         den Verlauf als background-image an, den die Kurzschrift mitloeschte. */
-      background-color:rgba(20,14,24,.93);
-    }
-
-    /* Kessel bleibt zentriert breit, aber top-verankert wie die anderen Panels */
-    #kessel, body.touch #kessel{
-      top:56px; left:calc(8px + var(--railW)); transform:none; box-sizing:border-box;
-      width:calc(100vw - 16px - var(--railW));
-      max-height:calc(100vh - 341px);
-      max-height:max(240px, calc(100dvh - 341px));
-      background-color:rgba(20,14,24,.93);
-    }
-    /* K1: Zulagen wie der Kessel, breit und oben verankert. Die Kartei rueckt
-       auf drei Spalten, vier waeren auf 360px Breite Briefmarken. */
-    #zulagen, body.touch #zulagen{
-      top:56px; left:calc(8px + var(--railW)); transform:none; box-sizing:border-box;
-      width:calc(100vw - 16px - var(--railW));
-      max-height:calc(100vh - 341px);
-      max-height:max(240px, calc(100dvh - 341px));
-      background-color:rgba(20,14,24,.93);
-    }
+    /* U8: Die vier Grossfenster brauchen hier keine eigene Verankerung mehr.
+       Ihre vier Kanten stehen als --gfOben/--gfUnten/--gfLinks/--gfRechts
+       einmal bei .grossFenster, und die Werte fuer den Finger setzt
+       body.touch — dieselben Zahlen, mit denen diese Regeln bis U8 gerechnet
+       haben (Spalte 74 links, Faecher 285 unten). */
     /* Zwei Spalten statt drei, und die Karte bleibt eine Karte. Bei drei
        Spalten blieben auf 390px Breite rund hundert Pixel je Karte, und darin
        steht kein Wort dieses Hauses: 'Haertefallregelung' braucht auf Courier
@@ -1418,11 +1761,16 @@
     #gespraechText{font-size:calc(14px * var(--fs));min-height:calc(14px * var(--fs) * 2.9);}
     .gwOpt{padding:9px 8px;font-size:calc(13px * var(--fs));}
 
-    #zutGrid, #invZutGrid{grid-template-columns:repeat(3,1fr);}
+    #zutGrid, #invZutGrid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));}
+    #bagGrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;}
+    .bagSlot{height:48px;}
+    #equipGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+    .eqSlot{height:66px;}
+    .zutTile{min-height:66px;}
     .zutTile .zn{font-size:calc(9px * var(--fs));}
-    .zutTile .zi{font-size:calc(19px * var(--fs));}
+    .zutTile .zi{font-size:calc(21px * var(--fs));}
     .potSlot .pn{font-size:calc(9px * var(--fs));}
-    .kTab{font-size:calc(13px * var(--fs));}
+
 
     /* --- Close-Buttons: 44px Tap-Target ---
        #closeFullmapBtn und der Amtsstuben-Knopf (.panelZu) fehlten hier: die
@@ -1431,13 +1779,11 @@
        eigenen, wortgleichen Regel weiter oben; beide sind hier zusammengefasst.
        Rundung und Rand-Abstand folgen jetzt dem U1-Kopfband (padding 10px 14px)
        statt dem alten randlosen h2. */
-    #closeInvBtn, #closeSpellBtn, #closeKesselBtn, #closeAusweisBtn,
-    #closeSchlossBtn, #closeFullmapBtn, .panelZu{
+    #closeAusweisBtn, #closeSchlossBtn, #closeFullmapBtn, .panelZu{
       display:flex; align-items:center; justify-content:center;
       width:44px; height:44px; margin:-9px -8px -9px 0;
       font-size:calc(19px * var(--fs)); border-radius:50%; flex:0 0 auto;
     }
-    #closeInvBtn:active, #closeSpellBtn:active, #closeKesselBtn:active,
     #closeAusweisBtn:active, #closeSchlossBtn:active, #closeFullmapBtn:active,
     .panelZu:active{filter:brightness(1.35);}
 
@@ -1540,9 +1886,16 @@
       <div class="beltSlot" id="potionBtn" title="Heiltrank (Q)">🧪 <span id="potCount">0</span></div>
       <div class="beltSlot disabled" id="spellBtn" title="Aktiver Zauber (E)"><span id="spellBtnTxt" style="font-size:calc(11px * var(--fs));">· (E)</span></div>
       <div class="beltSlot disabled" id="ultBtn" title="Ultimate (R)"><span id="ultBtnTxt" style="font-size:calc(11px * var(--fs));">🔒 Ult (R)</span></div>
+      <!-- U8: Drei Menuezugaenge in der Reihenfolge des Reiterbands. Aus dem
+           Kartei-Knopf ist der Charakter-Knopf geworden: die Mappe liegt jetzt
+           dort, und ein eigener Knopf fuer eines von zwei Blaettern waere ein
+           vierter Knopf fuer dasselbe Fenster. Die Taste Z fuehrt weiter direkt
+           auf die Mappe, der Knopf auf die Werte. Beide Sternchen sitzen jetzt
+           an diesem Knopf: freie Befaehigungspunkte (gold) und eine offene
+           Vorlage (blau) warten beide im Charakterfenster. -->
+      <div class="beltSlot" id="charBtn" title="Charakter (C)">🧍<span class="bl">Charakter</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span><span id="zulBadge" style="color:#5ac8ff;display:none;">★</span></div>
+      <div class="beltSlot" id="invBtn" title="Rucksack (I)">🎒<span class="bl">Rucksack</span></div>
       <div class="beltSlot" id="spellsBtn" title="Zauberbaum (T)">✨<span class="bl">Zauber</span><span id="spBadge" style="color:#c77dff;display:none;">★</span></div>
-      <div class="beltSlot" id="zulagenBtn" title="Zulagen (Z)">🗂️<span class="bl">Zulagen</span><span id="zulBadge" style="color:#5ac8ff;display:none;">★</span></div>
-      <div class="beltSlot" id="invBtn" title="Inventar & Skills (I)">🎒<span class="bl">Inv</span><span id="skillBadge" style="color:#f4d97a;display:none;">★</span></div>
       <div class="beltSlot" id="aktionBtn" title="Benutzen (F)" style="display:none;">🖐️ <span id="aktionTxt">Benutzen</span></div>
       <div class="beltSlot" id="kamExitBtn" title="Kammer verlassen (Esc)" style="display:none;">🏳️<span class="bl">Abbruch</span></div>
       <div class="beltSlot touchOnly" id="prioBtn" title="Ziel-Priorität: Nächster / Schwächster">🎯<span class="bl" id="prioTxt">Nah</span></div>
@@ -1553,34 +1906,42 @@
 <!-- U1: Schleier hinter offenen Menues. Rein optisch (pointer-events:none),
      die Klick-daneben-Logik haengt am Zeigerziel, nicht an diesem Element. -->
 <div id="menuVeil"></div>
-<div id="inv">
-  <h2>INVENTAR & BEFÄHIGUNG <span style="cursor:pointer" id="closeInvBtn">✖</span></h2>
-  <div id="kesselBtn" title="Kessel & Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
-  <div id="ausweisBtn" title="Dienstausweis">🪪 Dienstausweis</div>
-  <div id="skillBox">
-    <h4>BEFÄHIGUNG <span>frei: <span id="spCount">0</span></span></h4>
-    <div class="skillRow"><span>💪 Kraft <span class="skWert" id="skWertStr"></span>: <span id="skStr">0</span></span> <button class="skillBtn" id="btnStr">+</button></div>
-    <div class="skillRow"><span>❤️ Zähigkeit <span class="skWert" id="skWertVit"></span>: <span id="skVit">0</span></span> <button class="skillBtn" id="btnVit">+</button></div>
-    <div class="skillRow"><span>⚡ Behändigkeit <span class="skWert" id="skWertAgi"></span>: <span id="skAgi">0</span></span> <button class="skillBtn" id="btnAgi">+</button></div>
-    <div class="skillRow"><span>🧠 Amtskunde <span class="skWert" id="skWertInt"></span>: <span id="skInt">0</span></span> <button class="skillBtn" id="btnInt">+</button></div>
-    <div id="skHint"></div>
+<!-- =====================================================================
+     U8 — Vier Grossfenster und ein Band, das sie verbindet.
+
+     Das Band (.gfBand) steht in jedem der vier Fenster und wird von
+     gfBandZeichnen() geschrieben, nicht hier: die vier Reiter sind in einer
+     Tabelle beschrieben (GROSSFENSTER weiter unten im Skript), und eine
+     Tabelle, die viermal von Hand ins HTML kopiert wird, ist keine.
+
+     Der Rucksack. Was in der Tasche liegt, und was man mit dem Ton, der
+     Schrift und dem Spielstand macht — beides stand hier schon, nur
+     untereinander und in einem Fenster von 360 Pixeln. Was den TRAEGER
+     betrifft (Befaehigung, Werte, Ausruestung, Ausweis), ist nach nebenan
+     ins Charakterfenster gezogen.
+     ===================================================================== -->
+<div id="inv" class="grossFenster">
+  <div class="gfKopf">
+    <div class="gfBand" data-band="inv"></div>
+    <span class="panelZu" id="closeInvBtn" title="Schließen (Esc)">✖</span>
   </div>
-  <div id="statBox">
-    <div>Schaden: <span id="stDmg">0-0</span> | Rüstung: <span id="stArm">0</span></div>
-    <div>Max HP: <span id="stHp">0</span> | Max Mana: <span id="stMana">0</span></div>
-  </div>
-  <div id="equipGrid">
-    <div class="eqSlot" id="eqWeapon"><span class="lbl">Waffe</span></div>
-    <div class="eqSlot" id="eqArmor"><span class="lbl">Rüstung</span></div>
-    <div class="eqSlot" id="eqShield"><span class="lbl">Schild</span></div>
-    <div class="eqSlot" id="eqBoots"><span class="lbl">Stiefel</span></div>
-  </div>
-  <div id="bagGrid"></div>
-  <div id="zutBox" style="display:none;">
-    <h4>🧺 ZUTATEN <span id="zutTotal" style="color:#9a8a5f;font-weight:normal;"></span></h4>
-    <div id="invZutGrid"></div>
-  </div>
-  <div id="musikBox">
+  <div class="gfBody">
+   <div class="gfSpalten">
+    <div class="gfKachel weit">
+      <h4>🎒 TASCHE <span id="tascheZahl"></span></h4>
+      <div id="bagGrid"></div>
+    </div>
+    <div class="gfKachel weit" id="zutBox" style="display:none;">
+      <h4>🧺 ZUTATEN <span id="zutTotal"></span></h4>
+      <div class="gfSatz">Antippen legt in den Kessel. Zutaten werden nicht weggeworfen.</div>
+      <div id="invZutGrid"></div>
+    </div>
+    <div class="gfKachel">
+      <h4>🍲 VERARBEITUNG</h4>
+      <div class="gfSatz">Der Feldkessel steht im Rucksack und bleibt dort. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
+      <div id="kesselBtn" title="Kessel &amp; Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
+    </div>
+    <div class="gfKachel" id="musikBox">
     <h4>🎵 TON</h4>
     <div id="musikRow">
       <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
@@ -1608,6 +1969,75 @@
     </div>
     <div id="speicherInfo">Das Spiel speichert auf diesem Gerät und automatisch, sobald der Tab in den Hintergrund geht.</div>
     <input type="file" id="spDatei" accept="application/json,.json" style="display:none">
+    </div>
+   </div>
+  </div>
+</div>
+
+<!-- U8: Das Charakterfenster. Der Wunsch war woertlich "ein Charakterfenster
+     fuer Stats und Ausruestung, und dort findet man auch die Spielkarten-
+     Mappe" — genau diese drei Dinge stehen hier, auf zwei Blaettern: die
+     Person auf dem ersten, die Sammlung auf dem zweiten.
+
+     Nichts davon ist neu erfunden. #skillBox, #statBox und #equipGrid sind
+     die Kaesten aus dem Inventar, #zulZiehung/#zulMappe/#zulKartei die aus
+     dem Zulagenfenster, das es als Fenster nicht mehr gibt. Sie haben nur
+     ihren Platz gewechselt, und die Renderfunktionen schreiben weiter in
+     dieselben IDs. -->
+<div id="charakter" class="grossFenster">
+  <div class="gfKopf">
+    <div class="gfBand" data-band="charakter"></div>
+    <span class="panelZu" id="closeCharBtn" title="Schließen (Esc)">✖</span>
+  </div>
+  <div class="gfBlaetter">
+    <div class="gfBlatt on" data-blatt="werte"><span class="gfLang">Werte &amp; Ausrüstung</span><span class="gfKurz">Werte</span></div>
+    <div class="gfBlatt" data-blatt="mappe"><span class="gfLang">Kartenmappe</span><span class="gfKurz">Mappe</span></div>
+  </div>
+  <div class="gfBody">
+    <div id="charWerte">
+      <div class="gfSpalten">
+        <div class="gfKachel">
+          <h4>🪪 IM DIENST</h4>
+          <div id="charAmt">
+            <canvas id="charFoto" width="16" height="18"></canvas>
+            <div id="charAmtText"></div>
+          </div>
+          <div id="ausweisBtn" title="Dienstausweis">🪪 Dienstausweis</div>
+        </div>
+        <div class="gfKachel" id="skillBox">
+          <h4>💪 BEFÄHIGUNG <span>frei: <span id="spCount">0</span></span></h4>
+          <div class="skillRow"><span class="skName">💪 Kraft: <b id="skStr">0</b><span class="skWert" id="skWertStr"></span></span> <button class="skillBtn" id="btnStr">+</button></div>
+          <div class="skillRow"><span class="skName">❤️ Zähigkeit: <b id="skVit">0</b><span class="skWert" id="skWertVit"></span></span> <button class="skillBtn" id="btnVit">+</button></div>
+          <div class="skillRow"><span class="skName">⚡ Behändigkeit: <b id="skAgi">0</b><span class="skWert" id="skWertAgi"></span></span> <button class="skillBtn" id="btnAgi">+</button></div>
+          <div class="skillRow"><span class="skName">🧠 Amtskunde: <b id="skInt">0</b><span class="skWert" id="skWertInt"></span></span> <button class="skillBtn" id="btnInt">+</button></div>
+          <div id="skHint"></div>
+        </div>
+        <div class="gfKachel">
+          <h4>📐 WERTE</h4>
+          <div id="statBox">
+            <div>Schaden: <span id="stDmg">0-0</span> | Rüstung: <span id="stArm">0</span></div>
+            <div>Max HP: <span id="stHp">0</span> | Max Mana: <span id="stMana">0</span></div>
+          </div>
+        </div>
+        <div class="gfKachel">
+          <h4>🛡️ AUSRÜSTUNG</h4>
+          <div class="gfSatz">Antippen legt ab, rechte Maustaste wirft weg. Was zu schwer ist, bleibt in der Tasche.</div>
+          <div id="equipGrid">
+            <div class="eqSlot" id="eqWeapon"><span class="lbl">Waffe</span></div>
+            <div class="eqSlot" id="eqArmor"><span class="lbl">Rüstung</span></div>
+            <div class="eqSlot" id="eqShield"><span class="lbl">Schild</span></div>
+            <div class="eqSlot" id="eqBoots"><span class="lbl">Stiefel</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="charMappe" style="display:none;">
+      <div id="zulagen">
+        <div id="zulZiehung"></div>
+        <div id="zulMappe"></div>
+        <div id="zulKartei"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1617,22 +2047,39 @@
   <div id="fullmapLegend">🔵 Ihr · 🟡 Vordermühl · 🟢 Kessel · 🔴 Monster · 🟣 Portal</div>
 </div>
 
-<div id="kessel">
-  <h2>🍲 KESSEL <span style="cursor:pointer" id="closeKesselBtn">✖</span></h2>
-  <div id="kesselSub">Amtlich zugelassener Feldkessel. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
-  <div id="kesselTabs">
-    <div class="kTab on" id="tabKessel">🍲 Kochen</div>
-    <div class="kTab" id="tabKladde">📓 Kladde</div>
-    <div class="kTab" id="tabBlaetter">🗄 Akten</div>
+<!-- U8: Der Kessel. Er bleibt, was er war — ein eigenes Fenster mit eigener
+     Taste, aufgemacht aus dem Rucksack — und wird nur groesser. Die einzige
+     Aenderung am Aufbau: der Beutel steht neben dem Kessel statt unter ihm
+     (#kesselLinks / #kesselRechts). Wer eine Zutat sucht, soll die drei
+     Plaetze sehen, die er gerade fuellt. Die drei Reiter sind dieselben. -->
+<div id="kessel" class="grossFenster">
+  <div class="gfKopf">
+    <div class="gfBand" data-band="kessel"></div>
+    <span class="panelZu" id="closeKesselBtn" title="Schließen (Esc)">✖</span>
   </div>
-  <div id="kesselPane">
-    <div id="potRow"></div>
-    <button id="brewBtn" disabled>KOCHEN</button>
-    <div id="kesselResult"></div>
-    <div id="zutGrid"></div>
+  <div class="gfBlaetter" id="kesselTabs">
+    <div class="gfBlatt on" id="tabKessel" title="Kochen">🍲<span class="gfWort">Kochen</span></div>
+    <div class="gfBlatt" id="tabKladde" title="Kladde">📓<span class="gfWort">Kladde</span></div>
+    <div class="gfBlatt" id="tabBlaetter" title="Akten">🗄<span class="gfWort">Akten</span></div>
   </div>
-  <div id="kladdePane" style="display:none;"><div id="kladdeBox"></div></div>
-  <div id="blaetterPane" style="display:none;"><div id="blaetterBox"></div></div>
+  <div class="gfBody">
+    <div id="kesselPane">
+      <div class="gfKachel" id="kesselLinks">
+        <h4>🍲 KESSEL</h4>
+        <div id="kesselSub">Amtlich zugelassener Feldkessel. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
+        <div id="potRow"></div>
+        <button id="brewBtn" disabled>KOCHEN</button>
+        <div id="kesselResult"></div>
+      </div>
+      <div class="gfKachel" id="kesselRechts">
+        <h4>🧺 BEUTEL <span id="kesselZutTotal"></span></h4>
+        <div class="gfSatz">Antippen legt in den Kessel, ein zweiter Griff auf den Platz holt die Zutat zurück.</div>
+        <div id="zutGrid"></div>
+      </div>
+    </div>
+    <div id="kladdePane" style="display:none;"><div class="gfKachel"><h4>📓 KLADDE</h4><div id="kladdeBox"></div></div></div>
+    <div id="blaetterPane" style="display:none;"><div class="gfKachel"><h4>🗄 AKTEN</h4><div id="blaetterBox"></div></div></div>
+  </div>
 </div>
 
 <div id="schloss">
@@ -1657,21 +2104,22 @@
 
 <div id="amtFenster"></div>
 
-<div id="spellTree">
-  <h2>ZAUBERBAUM <span style="font-size:calc(11px * var(--fs));color:#e8d9a8;">Punkte: <span id="spellPtsCount">0</span></span> <span style="cursor:pointer" id="closeSpellBtn">✖</span></h2>
-  <div id="spellCols"></div>
-  <div id="ultimateRow"></div>
-</div>
-
-<!-- K1: Zulagen. Statisches Geruest wie #spellTree, Inhalt schreibt
-     renderZulagen(). Der Schliessknopf traegt .panelZu und erbt damit
-     Rundknopf, Hover und die cfuiX-Zelle, ohne eine eigene ID in drei
-     Selektorlisten nachzutragen. -->
-<div id="zulagen">
-  <h2>🗂️ ZULAGEN <span class="panelZu" style="cursor:pointer" id="closeZulagenBtn">✖</span></h2>
-  <div id="zulZiehung"></div>
-  <div id="zulMappe"></div>
-  <div id="zulKartei"></div>
+<!-- U8: Der Zauberbaum bleibt ausdruecklich sein eigenes Fenster ("Zauber
+     bleiben extra") — eigene Taste, eigener Zustand, eigener Guertelknopf.
+     Er bekommt nur den Kasten der anderen und damit Breite: drei Zweige
+     nebeneinander statt drei Spalten in 420 Pixeln. -->
+<div id="spellTree" class="grossFenster">
+  <div class="gfKopf">
+    <div class="gfBand" data-band="spellTree"></div>
+    <span class="panelZu" id="closeSpellBtn" title="Schließen (Esc)">✖</span>
+  </div>
+  <div class="gfBody">
+    <div class="gfKachel weit">
+      <h4>✨ ZAUBERBAUM <span>Punkte: <span id="spellPtsCount">0</span></span></h4>
+      <div id="spellCols"></div>
+      <div id="ultimateRow"></div>
+    </div>
+  </div>
 </div>
 
 <!-- U3: Das Gespraechsfenster. Die Huelle steht im HTML, damit bakeUiSkin()
@@ -3675,7 +4123,7 @@ const MUS = {
     // Overlay erst in ihrer letzten, sie funktionieren nur, weil jeder Aufrufer es schon
     // auf 'flex' stehen hat. Wer einen neuen Aufrufer ergänzt, muss das mitprüfen.
     muffled = ovMuffle || (el('overlay').style.display !== 'flex'
-              && (invOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen));
+              && (invOpen || charakterOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen));
     if(!AC) return;
     // Aus-Zweig: im Spiel gilt weiter die Überstunden-Kurve aus setOvertime. Dessen
     // q-Guard schreibt erst beim nächsten 1/50-Schritt nach (in den Überstunden bis zu
@@ -8776,8 +9224,8 @@ function castActiveSpell(){ const sp = SPELLS.find(s=>s.id===activeSpellId); if(
 
 function toggleSpellTree(){
   spellTreeOpen = !spellTreeOpen;
-  document.getElementById('spellTree').style.display = spellTreeOpen ? 'block' : 'none';
-  if(spellTreeOpen){ renderSpellTree(); knIdleT = 0; }
+  document.getElementById('spellTree').style.display = spellTreeOpen ? 'flex' : 'none';   // U8: .grossFenster ist eine Spalte
+  if(spellTreeOpen){ grossfensterRaeumen('spellTree'); gfBandZeichnen(); renderSpellTree(); knIdleT = 0; }
   panelSicht();   // U1
   MUS.muffle();   // offenes Panel dämpft die Musik
 }
@@ -8961,7 +9409,11 @@ function castSpell(sp, target){                          // target: optionaler W
 //  weiter oben darf sie also rufen; ausgefuehrt wird auf Skriptebene nur, was
 //  die Guards ganz unten anstossen, und da steht alles.
 // ===========================================================================
-let zulagenOpen = false;
+// U8: 'zulagenOpen' gibt es nicht mehr. Die Mappe ist seit U8 das zweite Blatt
+// des Charakterfensters und kein Fenster mit eigenem Zustand; ob sie offen ist,
+// beantwortet zulagenOffen() aus charakterOpen und charBlatt. Ein zweiter
+// Zustand daneben waere genau der Kopie-Fehler, den U1 an den Aufraeum-Listen
+// aufgeraeumt hat.
 
 // Halbes Los fuer Karten, die im Moment nichts taeten: die Gattung liegt nicht
 // in der Hand, oder der Zweig hat noch keinen gelernten Spruch. Nie null Lose —
@@ -9048,12 +9500,12 @@ function zulageAblegen(idx){
   recalc(); updateHUD(); renderZulagen();
 }
 
+// U8: Der Weg zur Mappe fuehrt jetzt durch das Charakterfenster. Die Funktion
+// bleibt stehen und heisst weiter so, weil die Taste Z, das Sternchen und die
+// Guards sie kennen — sie schlaegt nur ein Blatt auf statt ein Fenster.
 function toggleZulagen(){
-  zulagenOpen = !zulagenOpen;
-  document.getElementById('zulagen').style.display = zulagenOpen ? 'block' : 'none';
-  if(zulagenOpen){ renderZulagen(); knIdleT = 0; }
-  panelSicht();   // U1
-  MUS.muffle();   // offenes Panel daempft die Musik
+  if(zulagenOffen()) toggleCharakter();      // zweiter Druck auf Z macht wieder zu
+  else toggleCharakter('mappe');
 }
 
 function zulageName(zf, stufe){ return stufe >= 3 ? zf.unikat : zf.name; }
@@ -9118,7 +9570,7 @@ function zulageTooltip(zk, hinweis){
 }
 
 function renderZulagen(){
-  if(!zulagenOpen) return;   // geschlossen wird nichts geschrieben (Guards rufen das mit)
+  if(!zulagenOffen()) return;   // geschlossen wird nichts geschrieben (Guards rufen das mit)
 
   // --- Die Ziehung ---------------------------------------------------------
   const zbox = document.getElementById('zulZiehung');
@@ -10112,7 +10564,7 @@ function knAllDone(){
 // Sperrzonen gelten nur für Dienstzettel, nicht für Randnotizen und nicht für
 // die spielerausgelöste Wiederholung (Nachfragen).
 function knSperrzone(){
-  if(invOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen) return true;
+  if(invOpen || charakterOpen || spellTreeOpen || kesselOpen || schlossOpen || amtFensterOpen) return true;
   if(document.getElementById('overlay').style.display === 'flex') return true;
   if(kammer){ const mod = kammer.mods[kammer.idx]; if(mod && mod.begonnen && !mod.fertig) return true; }
   if(boss && boss.aggro) return true;
@@ -12711,13 +13163,25 @@ function bindTooltip(el, item, isEquipped, dropAction, clickAction, htmlFn){
   }, {passive:true});
 }
 
-function toggleInventory(){ invOpen = !invOpen; document.getElementById('inv').style.display = invOpen ? 'block' : 'none'; if(invOpen){ renderInventory(); knIdleT = 0; } MUS.muffle(); panelSicht(); }
+// U8: 'flex' statt 'block' — .grossFenster ist eine Spalte aus Kopf, Blaettern
+// und Rollfeld, und die drei muessen sich die Hoehe teilen. Und: zwei
+// Grossfenster stehen an derselben Stelle, also raeumt eines das andere weg.
+// Das ist kein Verlust — vor U8 standen Inventar und Zauberbaum an
+// verschiedenen Kanten und konnten beide offen sein; seit U8 fuehrt das
+// Reiterband von einem zum anderen, und zwar genau so: das eine zu, das
+// andere auf.
+function toggleInventory(){
+  invOpen = !invOpen;
+  document.getElementById('inv').style.display = invOpen ? 'flex' : 'none';
+  if(invOpen){ grossfensterRaeumen('inv'); renderInventory(); knIdleT = 0; }
+  MUS.muffle(); panelSicht();
+}
 
 function addSkill(type){
   if(player.skillPoints > 0){
     player.skillPoints--; player.skills[type]++;
     if(!kn.flags.hatGesteigert){ kn.flags.hatGesteigert = true; saveKn(); }   // S1: Wissenslücke geschlossen
-    recalc(); updateHUD(); renderInventory();
+    recalc(); updateHUD(); renderCharakter();
   }
 }
 
@@ -12747,7 +13211,10 @@ function equipItemFromBag(idx){
   if(currentEquipped) currentEquipped.fluchRuht = false;   // Budget-Flag gilt nur im Equip-Slot, nicht in der Tasche
   player.equip[slotType] = item; player.bag[idx] = currentEquipped;
   document.getElementById('tooltip').style.display = 'none';
-  recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory();
+  // U8: Das Stueck wechselt zwischen zwei Fenstern — Tasche im Rucksack,
+  // Platz im Charakterfenster. Beide Renderer steigen selbst aus, wenn ihr
+  // Fenster zu ist, also kostet der zweite Ruf nichts.
+  recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory(); renderCharakter();
 }
 
 function unequipItem(slotType){
@@ -12757,7 +13224,7 @@ function unequipItem(slotType){
     item.fluchRuht = false;   // Budget-Flag gilt nur im Equip-Slot, nicht in der Tasche
     player.bag[emptyIdx] = item; player.equip[slotType] = null;
     document.getElementById('tooltip').style.display = 'none';
-    recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory();
+    recalc(); knCheckFluchEquipped(); updateHUD(); renderInventory(); renderCharakter();
   } else {
     floaters.push({x:player.x, y:player.y-30, txt:'Tasche voll!', col:'#ff0000', t:1.0});
   }
@@ -12788,40 +13255,174 @@ function befaehigungHinweis(){
     : 'Ein Punkt wartet auf eine Entscheidung.';
 }
 
-function renderInventory(){
-  document.getElementById('spCount').innerText = player.skillPoints;
+// ===========================================================================
+//  U8: Die vier Grossfenster und das Band, das sie verbindet
+//
+//  Bis U7 war jedes Menuefenster eine Insel: eigener Knopf im Guertel, eigene
+//  Taste, eigene Ecke des Bildschirms, und der Weg von einem zum anderen ging
+//  ueber "zumachen, aufmachen". Vier Fenster mit demselben Kasten und einem
+//  Band im Kopf sind derselbe Bestand, nur begehbar.
+//
+//  Die Tabelle ist die einzige Stelle, an der die vier Fenster als Reihe
+//  stehen. Das Band schreibt gfBandZeichnen() daraus, das Wegraeumen macht
+//  grossfensterRaeumen() daraus, und wer ein fuenftes Fenster baut, traegt es
+//  hier ein und nirgends sonst. (Dasselbe Verfahren wie PANEL_REGISTER in U1,
+//  und aus demselben Grund: dieselbe Liste dreimal von Hand ist zweimal
+//  falsch.)
+//
+//  'stern' liefert die Farbe eines Sternchens oder null. Es ist dasselbe
+//  Zeichen wie am Guertelknopf und sagt dasselbe: hier wartet etwas.
+const GROSSFENSTER = [
+  {id:'charakter', sinn:'🧍', wort:'Charakter', taste:'C',
+   offen:() => charakterOpen, auf:() => toggleCharakter(),
+   stern:() => player.skillPoints > 0 ? '#f4d97a'
+             : (player.zulagenAngebot || player.zulagenZiehungen > 0) ? '#5ac8ff' : null},
+  {id:'inv',       sinn:'🎒', wort:'Rucksack',  taste:'I',
+   offen:() => invOpen,       auf:() => toggleInventory(), stern:() => null},
+  {id:'kessel',    sinn:'🍲', wort:'Kochen',    taste:'K',
+   offen:() => kesselOpen,    auf:() => toggleKessel(),    stern:() => null},
+  {id:'spellTree', sinn:'✨', wort:'Zauber',    taste:'T',
+   offen:() => spellTreeOpen, auf:() => toggleSpellTree(),
+   stern:() => (player.spellPoints > 0 && player.level >= ZAUBER_AB_STUFE) ? '#c77dff' : null},
+];
+
+// Schliesst jedes Grossfenster ausser dem genannten. Zwei von ihnen stehen an
+// derselben Stelle im Bild; uebereinander waeren sie kein Stapel, sondern ein
+// Fenster, das aussieht wie ein anderes.
+function grossfensterRaeumen(ausser){
+  for(const f of GROSSFENSTER) if(f.id !== ausser && f.offen()) f.auf();
+}
+
+// Das Band in den Kopf jedes offenen Grossfensters schreiben. Gerufen wird es
+// von den Oeffnern, nicht je Bild: ein Band, das sich nicht aendert, muss
+// nicht sechzigmal in der Sekunde neu geschrieben werden.
+function gfBandZeichnen(){
+  for(const band of document.querySelectorAll('.gfBand')){
+    const hier = band.dataset.band;
+    band.innerHTML = GROSSFENSTER.map(f => {
+      const st = f.stern();
+      return `<div class="gfReiter${f.id === hier ? ' on' : ''}" data-ziel="${f.id}"`
+           + ` title="${f.wort} (${f.taste})">`
+           + `<span class="gfSinn">${f.sinn}</span><span class="gfWort">${f.wort}</span>`
+           + (st ? `<span class="gfStern" style="color:${st}">★</span>` : '')
+           + `</div>`;
+    }).join('');
+  }
+}
+
+// Ein Griff auf einen Reiter. Der Weg fuehrt ueber die Oeffner der Fenster und
+// nicht an ihnen vorbei: jeder von ihnen raeumt, rendert, daempft die Musik und
+// setzt den Schleier, und all das gilt hier genauso.
+document.addEventListener('click', e => {
+  const r = e.target.closest && e.target.closest('.gfReiter');
+  if(!r) return;
+  const f = GROSSFENSTER.find(g => g.id === r.dataset.ziel);
+  if(f && !f.offen()) f.auf();
+});
+
+// ===========================================================================
+//  U8: Das Charakterfenster
+//
+//  Alles, was am Traeger haengt: die Befaehigung, die abgeleiteten Werte, die
+//  vier Ausruestungsplaetze, der Dienstausweis — und auf dem zweiten Blatt die
+//  Kartenmappe, die bis U8 ein eigenes Fenster war. Sie hat keine Zeile
+//  Renderlogik verloren; renderZulagen() schreibt weiter in #zulZiehung,
+//  #zulMappe und #zulKartei, die jetzt hier liegen.
+let charakterOpen = false;
+let charBlatt = 'werte';                 // 'werte' | 'mappe'
+
+// Ein Blatt umschlagen. Kein Fenster geht dabei auf oder zu.
+function charBlattWaehlen(b){
+  charBlatt = b;
+  for(const t of document.querySelectorAll('#charakter .gfBlatt'))
+    t.classList.toggle('on', t.dataset.blatt === b);
+  el('charWerte').style.display = b === 'werte' ? 'block' : 'none';
+  el('charMappe').style.display = b === 'mappe' ? 'block' : 'none';
+  if(charakterOpen) renderCharakter();
+}
+
+// Der Oeffner. Mit Argument schlaegt er zugleich das Blatt auf — so kommt die
+// Taste Z weiterhin direkt auf die Mappe, ohne dass es dafuer ein zweites
+// Fenster braucht.
+function toggleCharakter(blatt){
+  const wechsel = charakterOpen && blatt && blatt !== charBlatt;
+  if(wechsel){ charBlattWaehlen(blatt); return; }
+  charakterOpen = !charakterOpen;
+  el('charakter').style.display = charakterOpen ? 'flex' : 'none';
+  if(charakterOpen){
+    grossfensterRaeumen('charakter');
+    charBlattWaehlen(blatt || charBlatt);   // zeichnet gleich mit
+    knIdleT = 0;
+  }
+  MUS.muffle();   // offenes Panel daempft die Musik
+  panelSicht();   // U1
+}
+
+// Die Mappe ist ein Blatt und kein Fenster mehr. Wer sie fuer offen haelt,
+// meint diese beiden Bedingungen — und renderZulagen() fragt genau danach,
+// statt einen zweiten Zustand zu fuehren, der mit dem ersten auseinanderlaufen
+// kann.
+function zulagenOffen(){ return charakterOpen && charBlatt === 'mappe'; }
+
+function renderCharakter(){
+  if(!charakterOpen) return;
+  gfBandZeichnen();
+  if(charBlatt === 'mappe'){ renderZulagen(); return; }
+
+  // --- Wer man im Dienst ist. Dasselbe Lichtbild wie auf dem Ausweis, aus
+  //     demselben Bake — es traegt Haarton und Garderobe der Schicht von
+  //     selbst (P1). ---
+  renderAusweisFoto('charFoto');
+  el('charAmtText').innerHTML =
+      `<div><b>${rangName()}</b></div>`
+    + `<div>${rangGruppeName()}</div>`
+    + `<div class="kl">${rangVerhaeltnis()}</div>`
+    + `<div class="kl">Stufe ${player.level} · Schicht ${amt.schichten + 1}</div>`;
+
+  el('spCount').innerText = player.skillPoints;
   ['Str','Vit','Agi','Int'].forEach(s => {
-    document.getElementById('sk'+s).innerText = player.skills[s.toLowerCase()];
-    document.getElementById('btn'+s).disabled = player.skillPoints <= 0;
-    document.getElementById('skWert'+s).innerText = BEFAEHIGUNG_WERT[s]();
+    el('sk'+s).innerText = player.skills[s.toLowerCase()];
+    el('btn'+s).disabled = player.skillPoints <= 0;
+    el('skWert'+s).innerText = BEFAEHIGUNG_WERT[s]();
   });
-  document.getElementById('skHint').innerText = befaehigungHinweis();
-  document.getElementById('skillBox').classList.toggle('offen', player.skillPoints > 0);
+  el('skHint').innerText = befaehigungHinweis();
+  el('skillBox').classList.toggle('offen', player.skillPoints > 0);
   // S1: 'zu schwer gefuehrt' ist eine Aussage ueber die Waffe, keine Zahl —
   // deshalb steht sie an der Zahl, die sie kaputtmacht.
-  document.getElementById('stDmg').innerText = `${derived.dmgMin}-${derived.dmgMax}`
+  el('stDmg').innerText = `${derived.dmgMin}-${derived.dmgMax}`
     + (derived.zuSchwer ? ' (zu schwer)' : '');
-  document.getElementById('stArm').innerText = derived.armor;
-  document.getElementById('stHp').innerText = derived.maxHp;
-  document.getElementById('stMana').innerText = derived.maxMana;
+  el('stArm').innerText = derived.armor;
+  el('stHp').innerText = derived.maxHp;
+  el('stMana').innerText = derived.maxMana;
 
   const eqTypes = {weapon:'eqWeapon', armor:'eqArmor', shield:'eqShield', boots:'eqBoots'};
   for(const key in eqTypes){
-    const el = document.getElementById(eqTypes[key]);
+    const e = el(eqTypes[key]);
     const item = player.equip[key];
-    el.innerHTML = item ? `<span class="lbl">${SLOT_DE[key]}</span><span style="font-size:calc(26px * var(--fs));line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${SLOT_DE[key]}</span>`;
-    el.className = 'eqSlot ' + (item ? `rar${item.rar}` : '');
+    e.innerHTML = item ? `<span class="lbl">${SLOT_DE[key]}</span><span style="font-size:calc(30px * var(--fs));line-height:1;">${item.base.icon || '❔'}</span>` : `<span class="lbl">${SLOT_DE[key]}</span>`;
+    e.className = 'eqSlot ' + (item ? `rar${item.rar}` : '');
     // R10/F52: Budget-Flag gilt nur im Equip-Slot. Ohne Reset behauptet der Tooltip
     // am aufgehobenen Stück weiter "Dieser Fluch ruht".
-    bindTooltip(el, item, true, () => { item.fluchRuht = false; player.equip[key] = null; dropItemToFloor(item); recalc(); knCheckFluchEquipped(); renderInventory(); }, () => unequipItem(key));
+    bindTooltip(e, item, true, () => { item.fluchRuht = false; player.equip[key] = null; dropItemToFloor(item); recalc(); knCheckFluchEquipped(); renderCharakter(); }, () => unequipItem(key));
   }
+}
 
-  const bagGrid = document.getElementById('bagGrid'); bagGrid.innerHTML = '';
+// U8: Der Rucksack traegt nur noch, was in ihm liegt — die Tasche, den Beutel
+// und die Kaesten fuer Ton, Schrift und Spielstand, die schon vorher hier
+// standen. Befaehigung, Werte und Ausruestung sind ins Charakterfenster
+// gezogen, wo sie hingehoeren.
+function renderInventory(){
+  if(!invOpen) return;
+  gfBandZeichnen();
+  const belegt = player.bag.filter(Boolean).length;
+  el('tascheZahl').innerText = `${belegt} von 24 Fächern belegt`;
+
+  const bagGrid = el('bagGrid'); bagGrid.innerHTML = '';
   for(let i=0; i<24; i++){
     const slot = document.createElement('div'); slot.className = 'bagSlot';
     const item = player.bag[i];
     if(item){
-      slot.classList.add(`rar${item.rar}`); slot.innerHTML = `<span style="font-size:calc(22px * var(--fs));line-height:1;">${item.base.icon || '❔'}</span>`;
+      slot.classList.add(`rar${item.rar}`); slot.innerHTML = `<span style="font-size:calc(24px * var(--fs));line-height:1;">${item.base.icon || '❔'}</span>`;
       bindTooltip(slot, item, false, () => { player.bag[i] = null; dropItemToFloor(item); renderInventory(); }, () => equipItemFromBag(i));
     }
     bagGrid.appendChild(slot);
@@ -12829,10 +13430,10 @@ function renderInventory(){
 
   // Zutaten liegen im eigenen Beutel, nicht in den 24 Taschenplätzen: sonst wäre
   // die Tasche nach zwei Biomen voll und Ausrüstung hätte keinen Platz mehr.
-  document.getElementById('zutBox').style.display = player.pouch.length ? 'block' : 'none';
+  el('zutBox').style.display = player.pouch.length ? 'block' : 'none';
   if(player.pouch.length){
-    document.getElementById('zutTotal').innerText = `(${pouchTotal()})`;
-    fillZutatGrid(document.getElementById('invZutGrid'), z => { addToPot(z); });
+    el('zutTotal').innerText = `${pouchTotal()} Stück`;
+    fillZutatGrid(el('invZutGrid'), z => { addToPot(z); });
   }
 }
 
@@ -12976,6 +13577,7 @@ function renderKesselPane(){
   const b = el('brewBtn');
   b.disabled = missing > 0;
   b.innerText = missing === 0 ? 'KOCHEN' : missing === 1 ? 'NOCH EINE ZUTAT' : `NOCH ${missing} ZUTATEN`;
+  setTxt('kesselZutTotal', player.pouch.length ? `${pouchTotal()} Stück` : '');
   fillZutatGrid(el('zutGrid'), addToPot);
 }
 
@@ -13075,7 +13677,9 @@ function switchKesselTab(t){
   el('tabKessel').classList.toggle('on', t === 'kessel');
   el('tabKladde').classList.toggle('on', t === 'kladde');
   el('tabBlaetter').classList.toggle('on', t === 'blaetter');
-  el('kesselPane').style.display = t === 'kessel' ? 'block' : 'none';
+  // U8: 'grid' und nicht 'block' — der Kesselplatz steht seit U8 neben dem
+  // Beutel, und das Raster dafuer haengt an #kesselPane (s. CSS).
+  el('kesselPane').style.display = t === 'kessel' ? 'grid' : 'none';
   el('kladdePane').style.display = t === 'kladde' ? 'block' : 'none';
   el('blaetterPane').style.display = t === 'blaetter' ? 'block' : 'none';
   if(t === 'kladde') renderKladde();
@@ -13085,10 +13689,11 @@ function switchKesselTab(t){
 
 function toggleKessel(){
   kesselOpen = !kesselOpen;
-  el('kessel').style.display = kesselOpen ? 'block' : 'none';
+  el('kessel').style.display = kesselOpen ? 'flex' : 'none';   // U8: .grossFenster ist eine Spalte
   if(kesselOpen){
-    if(invOpen) toggleInventory();          // der Knopf sitzt im Inventar: nicht zwei Panels stapeln
+    grossfensterRaeumen('kessel');           // der Knopf sitzt im Rucksack: nicht zwei Fenster stapeln
     el('kesselResult').style.display = 'none';
+    gfBandZeichnen();
     switchKesselTab(kesselTab);
     knIdleT = 0;
   }
@@ -13102,7 +13707,10 @@ function toggleAusweis(){
   ausweisOpen = !ausweisOpen;
   el('ausweis').style.display = ausweisOpen ? 'block' : 'none';
   if(ausweisOpen){
-    if(invOpen) toggleInventory();   // der Knopf sitzt im Inventar: nicht zwei Panels stapeln
+    // U8: Der Knopf sitzt im Charakterfenster. Der Ausweis ist ein kleines
+    // Panel geblieben (ein Dokument ist kein Arbeitsfenster) und legt sich
+    // deshalb nicht dazu, sondern raeumt es weg.
+    grossfensterRaeumen(null);
     renderAusweis();
     knIdleT = 0;
   }
@@ -13139,8 +13747,7 @@ function toggleFullmap(){
   fullmapOpen = !fullmapOpen;
   el('fullmap').style.display = fullmapOpen ? 'block' : 'none';
   if(fullmapOpen){
-    if(invOpen) toggleInventory();
-    if(kesselOpen) toggleKessel();
+    grossfensterRaeumen(null);
     if(ausweisOpen) toggleAusweis();
     renderFullmap();
     knIdleT = 0;
@@ -13157,8 +13764,12 @@ function toggleFullmap(){
 // bei Bedarf sy/sh nachjustieren, falls eine Frisur oben anstößt.
 // P1: Das Lichtbild braucht dafür keine Zeile. Es kommt aus demselben Bake wie der
 // Held, die Haarfarbe der Schicht steht also von selbst darauf.
-function renderAusweisFoto(){
-  const cv = el('ausweisFoto'), c = cv.getContext('2d');
+// U8: Das Lichtbild haengt seit U8 an zwei Stellen — auf dem Ausweis und im
+// Charakterfenster. Ein Feldname als Argument statt einer zweiten Kopie
+// dieser sechs Zeilen; der Ausschnitt bleibt derselbe.
+function renderAusweisFoto(feld = 'ausweisFoto'){
+  const cv = el(feld); if(!cv) return;
+  const c = cv.getContext('2d');
   c.imageSmoothingEnabled = false;
   c.clearRect(0, 0, cv.width, cv.height);
   const s = SHEETS['hero_baked'];
@@ -13222,8 +13833,11 @@ document.getElementById('spellBtn').onclick = castActiveSpell;
 document.getElementById('ultBtn').onclick = castUltimate;
 document.getElementById('spellsBtn').onclick = toggleSpellTree;
 document.getElementById('invBtn').onclick = toggleInventory;
-document.getElementById('zulagenBtn').onclick = toggleZulagen;
-document.getElementById('closeZulagenBtn').onclick = toggleZulagen;
+// U8: der Charakterknopf und die beiden Blaetter des Charakterfensters.
+document.getElementById('charBtn').onclick = () => toggleCharakter();
+document.getElementById('closeCharBtn').onclick = () => toggleCharakter();
+for(const t of document.querySelectorAll('#charakter .gfBlatt'))
+  t.onclick = () => charBlattWaehlen(t.dataset.blatt);
 document.getElementById('musicBtn').onclick = toggleMusic;
 document.getElementById('musicVol').oninput = (e)=>{
   musicVolTarget = e.target.value/100;
@@ -13395,7 +14009,7 @@ function update(dt){
         if(emptyIdx !== -1){
           player.bag[emptyIdx] = drops[i].item; sfx.gold();
           floaters.push({x:player.x, y:player.y-20, txt:`+ ${drops[i].item.name}`, col:RARITY[drops[i].item.rar].col, t:1.0});
-          if(invOpen) renderInventory();
+          renderInventory();
         } else continue;
       }
       drops.splice(i,1); updateHUD();
@@ -15034,7 +15648,7 @@ function startShift(){
   if(fullmapOpen) toggleFullmap();
   if(invOpen) toggleInventory();
   if(spellTreeOpen) toggleSpellTree();
-  if(zulagenOpen) toggleZulagen();
+  if(charakterOpen) toggleCharakter();   // U8: samt Kartenmappe, die eines seiner Blaetter ist
   if(amtFensterOpen) amtFensterSchliessen();
   resetSpellDrag(); aDrag.id = null; atkBtnHeld = false; lockAim.active = false;
   attackTouch = null; lockedTarget = null;
@@ -21685,7 +22299,10 @@ const PANEL_REGISTER = [
   {id:'gespraech',  offen:() => gespraechOffen, zu:() => gespraechSchliessen()},
   {id:'inv',        offen:() => invOpen,        zu:() => toggleInventory()},
   {id:'spellTree',  offen:() => spellTreeOpen,  zu:() => toggleSpellTree()},
-  {id:'zulagen',    offen:() => zulagenOpen,    zu:() => toggleZulagen()},
+  // U8: Aus dem Zulagenfenster ist das Charakterfenster geworden; die Mappe
+  // ist eines seiner Blaetter. Ein Eintrag, wie vorher, nur mit dem Fenster,
+  // das es jetzt gibt.
+  {id:'charakter',  offen:() => charakterOpen,  zu:() => toggleCharakter()},
   {id:'kessel',     offen:() => kesselOpen,     zu:() => toggleKessel()},
   {id:'ausweis',    offen:() => ausweisOpen,    zu:() => toggleAusweis()},
   {id:'fullmap',    offen:() => fullmapOpen,    zu:() => toggleFullmap()},
@@ -21777,7 +22394,8 @@ window.addEventListener('keydown', e => {
   // Vollständige Belegung, damit sie nicht wieder nur in einer Plandatei steht
   // (ZUSAGEN-BILANZ-2026-08-04.md, Fund 14): w a s d Bewegung, Space Angriff,
   // q und 1 Trank, e Zauber, r Ultimate, i Inventar, t Zauberbaum, m Musik,
-  // k Kessel, l Vollbildkarte, z Zulagen (K1), f Kontextaktion, Esc schließt
+  // k Kessel, l Vollbildkarte, c Charakter (U8), z Kartenmappe (K1, seit U8
+  // das zweite Blatt des Charakterfensters), f Kontextaktion, Esc schließt
   // Panels der Reihe nach.
   // '1' ist die Zweitbelegung für den Trank. Sie ist bewusst dokumentiert: die
   // Ziffernreihe ist genau der Bereich, in den eine spätere Schnellwahl greifen
@@ -21787,7 +22405,8 @@ window.addEventListener('keydown', e => {
   if(k === 'e') castActiveSpell();
   if(k === 'r') castUltimate();
   if(k === 'i') toggleInventory(); if(k === 't') toggleSpellTree(); if(k === 'm') toggleMusic();
-  if(k === 'z') toggleZulagen();   // K1
+  if(k === 'c') toggleCharakter();   // U8
+  if(k === 'z') toggleZulagen();     // K1, seit U8 der kurze Weg auf die Mappe
   if(k === 'k') toggleKessel();
   if(k === 'l') toggleFullmap();
   if(k === 'f') fuehreAktion();
@@ -21795,7 +22414,7 @@ window.addEventListener('keydown', e => {
     if(gespraechOffen) gespraechSchliessen();   // U3: liegt oben, geht zuerst
     else if(invOpen) toggleInventory();
     else if(spellTreeOpen) toggleSpellTree();
-    else if(zulagenOpen) toggleZulagen();
+    else if(charakterOpen) toggleCharakter();
     else if(kesselOpen) toggleKessel();
     else if(ausweisOpen) toggleAusweis();
     else if(fullmapOpen) toggleFullmap();
@@ -22325,7 +22944,7 @@ function bakeUiSkin(){
 
   // Panels: nur der Rahmen wird zu Pixelkunst, die dunkle Füllung (rgba(20,14,24,…))
   // bleibt Kontrastgrund für den hellen Text — deshalb kein 'fill' im Slice-Wert.
-  for(const sel of ['#inv', '#spellTree', '#zulagen', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap', '#gespraech']){
+  for(const sel of ['#inv', '#charakter', '#spellTree', '#kessel', '#schloss', '#amtFenster', '#ovPanel', '#ausweis', '#fullmap', '#gespraech']){
     const el = document.querySelector(sel); if(!el) continue;
     el.style.borderImageSource = `url("${frameUrl}")`;
     el.style.borderImageSlice = '2 2 5 2';

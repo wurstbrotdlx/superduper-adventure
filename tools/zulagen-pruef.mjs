@@ -212,7 +212,15 @@ await frisch();
   pruef('und laesst den Feuerzauber in Ruhe', z.feuerMit, z.feuerRoh);
 }
 
-// --------------------------------------------------------------- Das Panel
+// --------------------------------------------------------------- Das Blatt
+//
+// U8: Die Mappe ist kein eigenes Fenster mehr, sondern das zweite Blatt des
+// Charakterfensters ("dort findet man auch die Spielkarten-Mappe"). Was sie
+// zeigt, ist unveraendert — dieselben drei Kaesten, dieselben Renderfunktionen,
+// dieselben IDs. Was sich aendert, ist nur, WORAN man 'offen' erkennt: nicht
+// mehr an einem eigenen Zustand, sondern an charakterOpen und dem Blatt.
+// Die Taste Z fuehrt weiter direkt hierher, der Guertelknopf heisst jetzt
+// charBtn und oeffnet das Fenster auf dem ersten Blatt.
 await frisch();
 {
   await page.evaluate(() => {
@@ -221,9 +229,11 @@ await frisch();
                             {familie:'brandschutzausnahme', stufe:1, angelegt:false}];
     recalc(); updateHUD();
   });
-  const zu = () => page.evaluate(() => document.getElementById('zulagen').style.display === 'block');
+  const zu = () => page.evaluate(() => zulagenOffen());
   await page.keyboard.press('z');
-  pruef('Taste Z oeffnet die Zulagen', await zu(), true);
+  pruef('Taste Z oeffnet die Kartenmappe', await zu(), true);
+  pruef('und zwar im Charakterfenster', await page.evaluate(() =>
+    charakterOpen && document.getElementById('charMappe').style.display !== 'none'), true);
   const z = await page.evaluate(() => ({
     ziehkarten: document.querySelectorAll('#zulZiehung .zulKarte').length,
     faecher: document.querySelectorAll('#zulMappe .zulKarte').length,
@@ -244,15 +254,30 @@ await frisch();
   pruef('das Sternchen brennt bei offener Vorlage', z.sternchen, 'inline');
   pruef('kein Kartentext traegt eine Zahl', z.zahlenImSatz, []);
   await page.keyboard.press('Escape');
-  pruef('Esc schliesst die Zulagen', await zu(), false);
-  await page.evaluate(() => document.getElementById('zulagenBtn').click());
-  pruef('der Guertelknopf oeffnet sie', await zu(), true);
-  // Esc-Reihenfolge: Inventar liegt im Register vor den Zulagen
-  await page.evaluate(() => { if(!invOpen) toggleInventory(); });
+  pruef('Esc schliesst die Kartenmappe', await zu(), false);
+  // U8: Der Guertelknopf oeffnet das Charakterfenster auf dem Blatt, das zuletzt
+  // aufgeschlagen war — hier also wieder auf der Mappe. Das ist Absicht: wer
+  // seine Sammlung durchsieht, macht das nicht in einem Zug, und ein Fenster,
+  // das bei jedem Oeffnen auf Seite eins zurueckspringt, laesst ihn jedes Mal
+  // neu blaettern. Die Taste Z fuehrt ohnehin direkt hierher.
+  await page.evaluate(() => document.getElementById('charBtn').click());
+  pruef('der Guertelknopf oeffnet das Charakterfenster', await page.evaluate(() => charakterOpen), true);
+  pruef('und schlaegt das zuletzt benutzte Blatt auf', await zu(), true);
+  await page.evaluate(() => document.querySelector('#charakter .gfBlatt[data-blatt="werte"]').click());
+  pruef('das erste Blatt zeigt die Mappe nicht', await zu(), false);
+  pruef('dafuer die Ausruestung', await page.evaluate(() =>
+    document.getElementById('charWerte').style.display !== 'none'
+    && document.querySelectorAll('#equipGrid .eqSlot').length === 4), true);
+  await page.evaluate(() => document.querySelector('#charakter .gfBlatt[data-blatt="mappe"]').click());
+  pruef('das zweite Blatt fuehrt zurueck auf die Mappe', await zu(), true);
+  // Esc-Reihenfolge: der Rucksack liegt im Register vor dem Charakterfenster.
+  // Er raeumt es beim Oeffnen weg (beide sind Grossfenster, s. U8), also wird
+  // hier ein KLEINES Panel darueber gelegt — dafuer gilt die Regel weiter.
+  await page.evaluate(() => schlossAuf({code:['a','b','c'], fertig:false}));
   await page.keyboard.press('Escape');
-  pruef('Esc nimmt genau eine Ebene', await page.evaluate(() => [invOpen, zulagenOpen]), [false, true]);
+  pruef('Esc nimmt genau eine Ebene', await page.evaluate(() => [charakterOpen, schlossOpen]), [false, true]);
   await page.keyboard.press('Escape');
-  pruef('der zweite Druck die naechste', await zu(), false);
+  pruef('der zweite Druck die naechste', await page.evaluate(() => schlossOpen), false);
 }
 
 // ------------------------------------------------------------- Die Schicht
