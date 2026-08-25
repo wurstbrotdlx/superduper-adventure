@@ -784,6 +784,35 @@ Dazu eine Zeile in `zulagenAssert()`, die dort fragt, wo es zu sehen ist: liegt
 der Pfad im Build, wenn es einen Build gibt. Im Quellbaum ist sie still, in
 einer ausgelieferten Datei mit fehlendem Bild meldet sie sich in der Konsole.
 
+### Der Effekt in Zahlen
+
+Kurz gesagt: die ausgelieferte Datei trug die Kartenkunst die ganze Zeit mit
+sich, sie kam nur nie auf den Bildschirm. Mehr als die Hälfte der Bytes, die
+ein Spieler herunterlud, war Bild, das kein Frame je zeigen konnte.
+
+| | vorher | nachher |
+|---|---:|---:|
+| Kartenbilder im Katalog | 45 | 45 |
+| davon auf der ausgelieferten Seite sichtbar | **0** | **45** |
+| 404 beim Zeichnen aller Karten | **45** | 0 |
+| kaputte Symbole gleichzeitig im Panel | bis zu 6 | 0 |
+| Kartenkunst in `dist/index.html` | 1819 KB | 1819 KB |
+| Anteil an der ausgelieferten Datei | 56 % | 56 % |
+| davon je auf dem Bildschirm angekommen | **0 Byte** | **1819 KB** |
+
+Die zwei Zeilen, die sich nicht ändern, sind der Punkt: eingebacken war alles,
+gelesen war nichts. Die Datei wog vorher wie nachher, sie zeigte nur nichts
+dafür.
+
+Die sechs gleichzeitig sichtbaren Symbole sind der Blick des Spielers, nicht
+der des Prüfers: drei Vorlagen in der Ziehung und ab Stufe 15 drei belegte
+Fächer darunter. Auf dem gemeldeten Bildschirmfoto sind drei davon zu sehen,
+weil die Mappe dort noch leer war.
+
+Die Reparatur selbst kostet 1624 Byte in der ausgelieferten Datei, also 0,05
+Prozent, und besteht aus zehn Zeilen Wirkcode. Kein Assetbyte bewegt, kein
+Katalogpfad geändert, kein CSS angefasst.
+
 ### Prüfprotokoll
 
 Gegenprobe im echten Chromium, an der gebauten Einzeldatei über `file://`, also
@@ -795,6 +824,11 @@ hat.
 |---|---|---|---|---|
 | vorher | 45 | 45 | 0 | **45** |
 | nachher | 45 | 45 | 45 | 0 |
+
+Die 404 sind separat über HTTP gezählt, nicht über `file://` geschlossen: die
+alte Fassung hinter einem Server aufgerufen, alle fünfundvierzig Karten
+gezeichnet, Antwortcodes mitgeschrieben. Fünfundvierzig 404, alle
+`assets/zulagen/`, sonst keiner.
 
 Der Quellbaum bleibt unberührt: über `serve.py` fünfundvierzig Bilder, alle als
 relativer Pfad, keines kaputt.
