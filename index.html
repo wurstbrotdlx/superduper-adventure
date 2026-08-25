@@ -595,6 +595,20 @@
   #overlay button:hover{filter:brightness(1.1);}
 
   /* =====================================================================
+     U8 — Die Hausmitteilung. Der einzige Text im Haus, der von aussen auf
+     das Spiel zeigt: linksbuendig, weil er gelesen und nicht bewundert
+     wird, und mit einer Marke am Rand, damit drei Punkte drei Punkte
+     bleiben. #overlay .panel zentriert alles, deshalb steht das
+     text-align hier ausdruecklich dagegen.
+     ===================================================================== */
+  #overlay .neuListe{text-align:left;margin:16px 0 0;}
+  #overlay .neuPunkt{border-left:3px solid #7a5a10;padding:0 0 0 12px;margin:0 0 14px;}
+  #overlay .neuPunkt b{color:#f4d97a;font-size:calc(14px * var(--fs));letter-spacing:.5px;}
+  #overlay .neuPunkt p{margin:3px 0 0;font-size:calc(13px * var(--fs));line-height:1.6;}
+  #overlay .neuWo{color:#7ad6ff;}
+  #overlay .neuFuss{font-size:calc(11px * var(--fs));color:#7a6a45;margin:14px 0 0;}
+
+  /* =====================================================================
      U1 — Menue-Anmutung. Acht Panels (#inv, #spellTree, #kessel, #schloss,
      #ausweis, #fullmap, #amtFenster, #zulagen) tragen seit jeher dieselbe
      Rezeptur in acht Kopien: rgba(20,14,24,.96), 3px #8a6d3b, radius 10,
@@ -1649,6 +1663,14 @@
     #overlay h3{font-size:calc(14px * var(--fs));}
     #overlay p{font-size:calc(12px * var(--fs));line-height:1.6;}
     #overlay button{font-size:calc(16px * var(--fs));padding:12px 26px;}
+    /* U8: dieselbe Rechnung wie eine Zeile darueber — auf dem Telefon muss die
+       Mitteilung samt Knopf in eine Bildhoehe passen, sonst steht der Weg ins
+       Spiel unter dem Bildrand (der Fund aus menue-pruef, s. Kommentar bei
+       #overlay .panel oben). */
+    #overlay .neuListe{margin:10px 0 0;}
+    #overlay .neuPunkt{margin:0 0 10px;padding-left:9px;}
+    #overlay .neuPunkt b{font-size:calc(12px * var(--fs));}
+    #overlay .neuPunkt p{font-size:calc(11px * var(--fs));line-height:1.5;}
 
     /* U8: Die vier Grossfenster brauchen hier keine eigene Verankerung mehr.
        Ihre vier Kanten stehen als --gfOben/--gfUnten/--gfLinks/--gfRechts
@@ -15477,6 +15499,95 @@ function updateHUD(){
   if(touchMode) el('attackBtn').classList.toggle('locked', !!lockedTarget);
 }
 
+// ===========================================================================
+//  U8 — Die Hausmitteilung. Was seit dem letzten Mal neu ist, und wo es steht.
+//
+//  Das Haus baut schneller, als jemand hinsieht. Die Statuskarte aus U7 sitzt
+//  seit heute oben links, und die fuenfundvierzig Kartenbilder liegen hinter
+//  einem Knopf, den man druecken muesste, um zu merken, dass es sie gibt. Also
+//  ein Blatt davor — vor dem Startbild und nicht darin, weil das Startbild
+//  bereits eine Aufgabe hat und die heisst: Dienst antreten.
+//
+//  Jeder Punkt sagt zwei Dinge und hoert dann auf: WAS sich geaendert hat und
+//  WO es zu sehen ist. Der Baubericht steht in den Phasendokumenten, hier
+//  steht die Fundstelle. Wer mehr will, spielt.
+//
+//  Drei Regeln:
+//   1. Wer zum ersten Mal hier ist, sieht sie nicht. "Neu" ist eine Aussage
+//      ueber ein Vorher, und ein leeres Geraet hat keines. Es bekommt den
+//      Stand still gestempelt und geht durch.
+//   2. Einmal zur Kenntnis genommen, bleibt sie weg — bis NEUERUNGEN.stand
+//      sich aendert. Der Stempel steht in localStorage und NICHT in
+//      SPEICHER_SCHLUESSEL: er gehoert dem Geraet, nicht dem Spielstand (wie
+//      sda_schrift und sda_targetPriority). Ein Import darf die Mitteilung
+//      eines fremden Geraets nicht zurueckdrehen.
+//   3. Sie bleibt nachlesbar. Das Startbild traegt den Knopf weiter, sonst
+//      waere die einzige Fassung dieses Textes die, die man gerade
+//      weggedrueckt hat — derselbe Grund, aus dem die Dienstanweisung dort
+//      steht.
+//
+//  Wer hier eine Runde eintraegt: NEUERUNGEN.punkte neu fuellen, stand und
+//  datum auf den Tag setzen. Alles andere bleibt.
+// ===========================================================================
+const NEUERUNGEN_KEY = 'sda_neuerungen';
+const NEUERUNGEN = {
+  stand: '2026-08-25',
+  datum: '25. August',
+  punkte: [
+    {
+      titel: 'Die Bedienschicht hat sich sortiert',
+      was: 'Leben, Mana und Erfahrung liegen nicht mehr verstreut, sondern als eine Karte beieinander, mit Lichtbild und Dienststufe. Die Dienstuhr wandert nicht mehr mit der Länge des Ortsnamens.',
+      wo: 'Im Dienst: Statuskarte oben links, Übersichtskarte oben rechts, Uhr und Beute darunter.',
+    },
+    {
+      titel: 'Auf dem Telefon sind die Daumen frei',
+      was: 'Der Gehring ist jetzt auch dann zu sehen, wenn ihn niemand hält. Der Gürtel liegt nicht mehr quer über der unteren Bildkante, und die Zielwahl ist kein Menüpunkt mehr.',
+      wo: 'Ruhering unten links, Knopfspalte am linken Rand, Zielwahl 🎯 am Angriffsfächer unten rechts.',
+    },
+    {
+      titel: 'Die Zulagen sind Sammelkarten geworden',
+      was: 'Namensleiste mit der Stufe, Bildfenster, Typenzeile, Textfeld — und fünfundvierzig gemalte Motive, eines für jede Familie auf jeder Stufe.',
+      wo: 'Gürtel 🗂️ Zulagen, auf der Tastatur Taste Z.',
+    },
+  ],
+};
+
+function neuerungenStandLesen(){ try{ return localStorage.getItem(NEUERUNGEN_KEY); }catch(_){ return null; } }
+function neuerungenStempeln(){ try{ localStorage.setItem(NEUERUNGEN_KEY, NEUERUNGEN.stand); }catch(_){} }
+
+// Regel 1 und 2 an einer Stelle. Wird genau einmal gefragt, beim Start.
+function neuerungenFaellig(){
+  if(!NEUERUNGEN.punkte.length) return false;
+  if(neuerungenStandLesen() === NEUERUNGEN.stand) return false;
+  const warSchonDa = SPEICHER_SCHLUESSEL.some(k => {
+    try{ return !!localStorage.getItem(k); }catch(_){ return false; }
+  });
+  if(!warSchonDa){ neuerungenStempeln(); return false; }
+  return true;
+}
+
+function showNeuerungen(){
+  state = 'menu';
+  camSnap();   // gleiche Kameraregel wie das Startbild: hinter dem Blatt steht das Dorf
+  const punkte = NEUERUNGEN.punkte.map(p => `
+    <div class="neuPunkt">
+      <b>${p.titel}</b>
+      <p>${p.was}</p>
+      <p class="neuWo">📍 ${p.wo}</p>
+    </div>`).join('');
+  document.getElementById('ovPanel').innerHTML = `
+    <h1>HAUSMITTEILUNG</h1>
+    <h3>Umlauf vom ${NEUERUNGEN.datum} · zur Kenntnis</h3>
+    <p style="font-size:calc(13px * var(--fs));color:#c9b98a;margin:0;">Seit Ihrer letzten Schicht hat das Haus ${NEUERUNGEN.punkte.length === 3 ? 'an drei Stellen' : `an ${NEUERUNGEN.punkte.length} Stellen`} umgeräumt. Kurz, was und wo.</p>
+    <div class="neuListe">${punkte}</div>
+    <button onclick="neuerungenWeg()">Zur Kenntnis genommen</button>
+    <p class="neuFuss">Steht ab jetzt auch im Startbild unter „Was ist neu".</p>
+  `;
+  document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
+}
+
+function neuerungenWeg(){ neuerungenStempeln(); showStartScreen(); }
+
 // W8: Das Startbild sagt jetzt, in welcher Welt man landet, bevor es fragt, ob
 // man hinein will. Der Aufhänger ist der erste Satz der Weltbibel (Kapitel 0),
 // er verrät nichts über die Akte und erklärt trotzdem alles über die Welt.
@@ -15504,7 +15615,9 @@ function showStartScreen(){
     <p style="font-size:calc(11px * var(--fs));color:#7ad6ff;margin:6px 0 0;">Gespeicherter Spielstand: Stufe ${sp.stufe | 0}, noch ${Math.max(1, Math.round((sp.restT | 0) / 60))} Minuten Dienstzeit.</p>
     <div><button onclick="spielstandVerwerfen()" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Neue Schicht beginnen</button></div>`
     : `<button onclick="startGame()">${erst ? 'Dienst antreten' : 'Dienst fortsetzen'}</button>`}
-    ${erst ? '' : `<div><button onclick="showDienstblatt(2,'menu')" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Dienstanweisung</button></div>`}
+    ${erst ? '' : `<div>
+      ${NEUERUNGEN.punkte.length ? `<button onclick="showNeuerungen()" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin:10px 8px 0 0;">Was ist neu</button>` : ''}
+      <button onclick="showDienstblatt(2,'menu')" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Dienstanweisung</button></div>`}
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
@@ -22993,7 +23106,10 @@ loadAssets().then(() => {
   stopfenAssert();            // SZ3: die Stelle im Steinfeld, Serie I und Vorblatts Ankunft
   knZettelPortrait();         // U6: und aus demselben Grund einen Schritt danach
   refreshFloor();
-  showStartScreen();
+  // U8: Die Hausmitteilung steht VOR dem Startbild, nicht darin. Faellig ist sie
+  // nur fuer ein Geraet, das ein Vorher hat und diesen Stand noch nicht gesehen
+  // hat (s. neuerungenFaellig); ihr Knopf fuehrt auf showStartScreen().
+  if(neuerungenFaellig()) showNeuerungen(); else showStartScreen();
   requestAnimationFrame(loop);
 });
 </script>
