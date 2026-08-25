@@ -5357,11 +5357,14 @@ const DORF_FIGUREN = [
    // Bild gilt (assets/figuren/README.md, Befunde am zweiten Paket).
    gestalt:{hair:'h1', haarFarbe:'#455033', hautFarbe:'#949341',
             hemd:'hemd', hemdFarbe:'#b49354', hose:'hose', schuh:'schuh'},
+   // T1: Eine Beschwerde ohne Begruendung ist keine, und er ist eine. Jede
+   // Zeile traegt jetzt ihren Grund mit, und die Coda aus Kapitel 8 steht am
+   // Ende, wo sie hingehoert. Die ganze Form steht in seinem Baum.
    grund:[
-     {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
-     {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie.'},
+     {z1:'Vierzig Jahre Probezeit. Mit Begründung.', z2:'Nächstes Jahr wird entfristet.'},
+     {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie. Aktenkundig.'},
      {z1:'Ich habe mich damals beschwert.', z2:'Dann hat man mich eingestellt.'},
-     {z1:'Ich trage eine Krawatte.', z2:'Fällt niemandem auf.'},
+     {z1:'Ich trage eine Krawatte. Vorschrift.', z2:'Fällt niemandem auf. Trotzdem.'},
      {z1:'Ich beschwere mich auch über mich.', z2:'Berechtigt, wie meistens.'},
      {z1:'Das ist nicht meine Zuständigkeit.', z2:'Ich mache es trotzdem.'},
    ],
@@ -5679,20 +5682,27 @@ const DORF_FIGUREN = [
    // statt aus der hochskalierten Ansichtsfassung — daher die Verschiebung um
    // ein bis zwei Zahlenschritte.
    gestalt:{hair:'h1', haarFarbe:'#a77256', hemd:'karo', hemdFarbe:'#855944', hose:'hose', schuh:'schuh'},
+   // T1: Lott ist der Kuerzere, im Satzbau und in der Geduld. Das steht seit F1
+   // in figuren-leben.md und war im Spiel nicht zu hoeren: seine Zeilen waren so
+   // lang wie Pahls, stellenweise laenger. Jetzt nicht mehr. Gemessen liegt sein
+   // Schnitt in z1 bei knapp siebenundzwanzig Zeichen, Pahls bei einundvierzig,
+   // und weil der Chor jede Spielhandlung kommentiert, sieht der Spieler den
+   // Unterschied hundertmal, ohne dass ihn je jemand erklaert. Das ist die
+   // billigste Dauervorfuehrung der neuen Formregel, die dieses Spiel hat.
    grund:[
-     {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
-     {z1:'Der Neue. Schlägt wieder alles kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
-     {z1:'Der Neue. Läuft, wo ich nur sitze.', z2:'Manche stehen auf. Ich nicht.'},
-     {z1:'Der Neue. Mutig. Nicht mein Bereich.', z2:'Ich sag nur, was ich sehe.'},
-     {z1:'Der Neue. Wieder klatschnass vom Kampf.', z2:'Ich bleibe trocken. Prinzip.'},
-     {z1:'Der Neue. Frag lieber Herrn Pahl.', z2:'Der hat mehr Geduld als ich.'},
+     {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
+     {z1:'Der Neue. Schlägt was kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
+     {z1:'Der Neue läuft. Ich sitze.', z2:'Manche stehen auf. Ich nicht.'},
+     {z1:'Der Neue. Mutig.', z2:'Nicht mein Bereich.'},
+     {z1:'Der Neue. Klatschnass.', z2:'Ich bleibe trocken. Prinzip.'},
+     {z1:'Der Neue. Fragen Sie Herrn Pahl.', z2:'Der hat mehr Worte als ich.'},
    ],
    akt:[
      'Der Neue zählt Konfetti. Süß.',
      'Krieg ausgesetzt. Ich sitze weiter.',
-     'N.N. Wenigstens fragt niemand nach mir.',
+     'N.N. Fragt ja auch keiner nach mir.',
      'Ich lese keine Adressen. Ich sitze.',
-     'Der Neue zieht los. Kein Kommentar heut.',
+     'Der Neue zieht los. Kein Kommentar.',
    ],
    // W11: Vordermühl steht in keinem Bestand. Wer nie geführt wurde, kann auch
    // nicht abgeschlossen werden, und das ist der Grund, aus dem die beiden noch
@@ -5787,20 +5797,23 @@ const DORF_FIGUREN = [
    // rechten Hälfte desselben Doppelporträts. Die beiden unterscheiden sich im
    // Dorf am Mantel, nicht am Haar — auf dem Bild sind beide fast kahl.
    gestalt:{hair:'h4', haarFarbe:'#b77451', hemd:'hemd', hemdFarbe:'#7d6a63', hose:'hose', schuh:'schuh'},
+   // T1: Pahl ist der Ausfuehrlichere. Er antwortet in ganzen Saetzen, gern
+   // einen Halbsatz mehr als noetig, und in seiner Antwort kommt Lott vor. Die
+   // andere Haelfte der Bank, siehe den Kommentar dort.
    grund:[
-     {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
-     {z1:'Sie kämpfen. Ich sehe nur zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
-     {z1:'Die Bank ist warm. Ich bleibe.', z2:'Kommentieren wärmt genauso gut.'},
-     {z1:'So nannte ich schon viele Neue.', z2:'Der Name bleibt. Sie wechseln.'},
-     {z1:'Ob ich ein Vorgang bin? Unhöflich.', z2:'Fragen Sie das nicht noch mal.'},
-     {z1:'Die Sonne dreht sich. Ich nicht.', z2:'Kommentar ist auch ein Beruf.'},
+     {z1:'Da ist er wieder, unser Neuer. Unterwegs.', z2:'Ich sehe gern zu. Beruflich.'},
+     {z1:'Sie kämpfen, und ich sehe dabei zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
+     {z1:'Die Bank hält warm, wenn man ihr Zeit gibt.', z2:'Ich gebe ihr sehr viel Zeit.'},
+     {z1:'So habe ich schon viele genannt, wissen Sie.', z2:'Der Name bleibt. Sie wechseln.'},
+     {z1:'Ob ich ein Vorgang bin? Das ist unhöflich.', z2:'Fragen Sie das nicht noch mal.'},
+     {z1:'Die Sonne dreht sich weiter, ich nicht.', z2:'Kommentar ist auch ein Beruf.'},
    ],
    akt:[
-     'Wieder einer, der alles ernst nimmt.',
+     'Wieder einer, der alles ernst nimmt. Schön.',
      'Ein Fest ohne Erlaubnis. Wie hübsch.',
-     'Ein Platz bleibt leer. Auffällig leer.',
-     'Ein Brief, den keiner lesen will.',
-     'Es wird still. Auffällig still hier.',
+     'Ein Platz bleibt leer, und das fällt auf.',
+     'Ein Brief, den keiner lesen will. Schade.',
+     'Es wird still hier. Auffällig still.',
    ],
    // W11: dieselbe Sache von der anderen Seite der Bank. Hintermühl ist nicht
    // niedergebrannt worden, es ist zugeklappt worden, und das ist das Stillste,
@@ -21687,6 +21700,13 @@ SZENEN.baumNoergel = {
      z1:'Eine Beschwerde. Sehr ausdauernd.', z2:'Irgendwann schreibt man selbst.'},
     {key:'krawatte', t:'Warum die Krawatte?',
      z1:'Weil sie zur Dienstkleidung gehört.', z2:'Fällt trotzdem niemandem auf.'},
+    // T1: die Beschwerde in ganzer Form. Vier Teile, alle vorschriftsmaessig,
+    // und die Belehrung ueber den Rechtsbehelf schreibt er sich selbst, weil
+    // sonst niemand zustaendig ist. Am Ende die Coda aus Kapitel 8. Er ledert
+    // dabei ein Verfahren ab und nie eine Person (Humor-Grundgesetz 4).
+    {key:'form', frei:'grün', t:'Wie beschwert man sich?',
+     z1:'In vier Teilen. Ich zeige es Ihnen.', z2:'Erstens der Sachverhalt.',
+     weiter:'be2', wt:'Und zweitens?'},
     {key:'antrag', frei:'probe', t:'Woher haben Sie die?',
      z1:'Beantragt. Bei der Materialausgabe.', z2:'Ordnungsgemäß. Mit Wortlaut.'},
     {key:'bestand', frei:'antrag', t:'Steht sie in einem Bestand?',
@@ -21696,6 +21716,11 @@ SZENEN.baumNoergel = {
   ],
   knoten:{
     hub:     {z1:'Von früher? Das ist eine lange Beschwerde.', z2:'Ich kürze sie ab.', hub:true},
+    be2:     {z1:'Zweitens die Würdigung. Selten günstig.', z2:'Drittens der Antrag.',
+              opts: () => [{t:'Und viertens?', zu:'be3'}]},
+    be3:     {z1:'Viertens die Belehrung über den Rechtsbehelf.', z2:'Die schreibe ich mir selbst.',
+              opts: () => [{t:'Und dann?', zu:'be4'}]},
+    be4:     {z1:'Dann lege ich sie ab. Bei mir.', z2:'Und mache es trotzdem.'},
     angebot: {z1:'Sie könnten selbst hingehen.', z2:'Ohne zu schlagen, meine ich.',
               opts: () => [
                 {t:'Ich gehe hin.', tun: () => { szeneKnoten('dank'); }},
@@ -21915,8 +21940,15 @@ SZENEN.baumVorblatt = {
      z1:'Ihr Anliegen wird bearbeitet.', z2:'Das ist bereits sehr viel.'},
     {key:'wagen', t:'Und Ihr Fuhrwerk?',
      z1:'Zwei Amtsschimmel. Sehr verlässlich.', z2:'Was sie ziehen, lebt länger.'},
+    // T1: die freundliche Umzingelung, seine Form der Laenge. Er sagt nie Nein
+    // und droht nie (Reichsregel 3, Weltbibel Kapitel 13: wenn er einmal droht,
+    // ist die Figur weg). Stattdessen prueft er gern, und die Pruefung wird
+    // geprueft, und am Ende steht der Spieler genau dort, wo er angefangen hat.
+    // Die Laenge tut, was er selbst nie taete. Drei Zuege reichen dafuer; wer
+    // mehr baut, macht aus dem Schrecken eine Textwand.
     {key:'nein', frei:'anhang', t:'Sagen Sie jemals Nein?',
-     z1:'Nein wäre eine Entscheidung.', z2:'Wir prüfen das lieber gern.'},
+     z1:'Nein wäre eine Entscheidung.', z2:'Wir prüfen das lieber gern.',
+     weiter:'nein2', wt:'Wie lange prüfen Sie?'},
     {key:'fach', frei:'nein', t:'Was liegt in Ihrem Fach?',
      z1:'Ein Stempel. Nicht mehr im Dienst.', z2:'Und nicht außer Dienst.'},
     {key:'alt', nach:3, t:'Warum nicht wegwerfen?',
@@ -21924,6 +21956,9 @@ SZENEN.baumVorblatt = {
   ],
   knoten:{
     hub:     {z1:'Von früher? Das ist ein anhängiger Zeitraum.', z2:'Fragen Sie unbesorgt.', hub:true},
+    nein2:   {z1:'Bis die Prüfung geprüft ist.', z2:'Auch das prüfen wir gern.',
+              opts: () => [{t:'Und dann?', zu:'nein3'}]},
+    nein3:   {z1:'Dann ist Ihr Anliegen anhängig.', z2:'Das ist bereits sehr viel.'},
     angebot: {z1:'Ich könnte ihn Ihnen zeigen.', z2:'Gern. Zeigen ist unverbindlich.',
               opts: () => [
                 {t:'Zeigen Sie ihn.', tun: () => { szeneKnoten('dank'); }},

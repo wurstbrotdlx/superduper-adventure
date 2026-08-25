@@ -301,10 +301,12 @@ Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: 
 
 ### Grundzeilen (Kreislauf)
 
-1. „Vierzig Jahre Probezeit.“ (24) / „Nächstes Jahr wird entfristet.“ (30)
-2. „Die Entfristung macht die Amtsleitung.“ (38) / „Die sieht man nie.“ (18)
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Vierzig Jahre Probezeit. Mit Begründung.“ (40) / „Nächstes Jahr wird entfristet.“ (30)
+2. „Die Entfristung macht die Amtsleitung.“ (38) / „Die sieht man nie. Aktenkundig.“ (31)
 3. „Ich habe mich damals beschwert.“ (31) / „Dann hat man mich eingestellt.“ (30)
-4. „Ich trage eine Krawatte.“ (24) / „Fällt niemandem auf.“ (20)
+4. „Ich trage eine Krawatte. Vorschrift.“ (36) / „Fällt niemandem auf. Trotzdem.“ (30)
 5. „Ich beschwere mich auch über mich.“ (34) / „Berechtigt, wie meistens.“ (25)
 6. „Das ist nicht meine Zuständigkeit.“ (34) / „Ich mache es trotzdem.“ (22)
 
@@ -313,8 +315,26 @@ Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: 
 I. „Noch ein Formular, noch keine Antwort.“ (38)
 II. „Jetzt braucht auch Zwirn die Amtsleitung.“ (41)
 III. „Die Stelle ist leer, ich bin es nicht.“ (38)
+IV. „Gelesen und gezeichnet. Ich bin im Dienst.“ (42)
+V. „Auch jetzt ist es nicht meine Zuständigkeit.“ (44)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Vierzig Jahre Probezeit.“ (24) / „Nächstes Jahr wird entfristet.“ (30)
+2. „Die Entfristung macht die Amtsleitung.“ (38) / „Die sieht man nie.“ (18)
+3. „Ich habe mich damals beschwert.“ (31) / „Dann hat man mich eingestellt.“ (30)
+4. „Ich trage eine Krawatte.“ (24) / „Fällt niemandem auf.“ (20)
+5. „Ich beschwere mich auch über mich.“ (34) / „Berechtigt, wie meistens.“ (25)
+6. „Das ist nicht meine Zuständigkeit.“ (34) / „Ich mache es trotzdem.“ (22)
+
+I. „Noch ein Formular, noch keine Antwort.“ (38)
+II. „Jetzt braucht auch Zwirn die Amtsleitung.“ (41)
+III. „Die Stelle ist leer, ich bin es nicht.“ (38)
 IV. „Gelesen und gezeichnet. Ich bin im Dienst.“ (42)   *(W5, `45912f6`. Vorher: „Niemand fragt mich. Jetzt fragen alle.“)*
 V. „Auch jetzt ist es nicht meine Zuständigkeit.“ (44)
+
+</details>
 
 ### Zusatzzeilen, erst nach dem Lager (Nachtrag W-Nörgel)
 
@@ -477,6 +497,26 @@ Optik: Held-Komposit (`gestalt`: Haar h1 braun, keine Rüstungs-Layer wie Knöte
 
 ### Grundzeilen, Basis-Variante (wenn seit Schichtbeginn nichts Nennenswertes passiert ist)
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Der Neue. Wieder unterwegs.“ (27) / „Ich sitze. Zuständig für nichts.“ (32)
+2. „Der Neue. Schlägt was kurz und klein.“ (37) / „Sauber. Nichts bleibt stehen.“ (29)
+3. „Der Neue läuft. Ich sitze.“ (26) / „Manche stehen auf. Ich nicht.“ (29)
+4. „Der Neue. Mutig.“ (16) / „Nicht mein Bereich.“ (19)
+5. „Der Neue. Klatschnass.“ (22) / „Ich bleibe trocken. Prinzip.“ (28)
+6. „Der Neue. Fragen Sie Herrn Pahl.“ (32) / „Der hat mehr Worte als ich.“ (27)
+
+### Aktzeilen
+
+I. „Der Neue zählt Konfetti. Süß.“ (29)
+II. „Krieg ausgesetzt. Ich sitze weiter.“ (35)
+III. „N.N. Fragt ja auch keiner nach mir.“ (35)
+IV. „Ich lese keine Adressen. Ich sitze.“ (35)
+V. „Der Neue zieht los. Kein Kommentar.“ (35)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Der Neue. Schon wieder unterwegs.“ (33) / „Ich sitze. Zuständig für nichts.“ (32)
 2. „Der Neue. Schlägt wieder alles kurz und klein.“ (46) / „Sauber. Nichts bleibt stehen.“ (29)
 3. „Der Neue. Läuft, wo ich nur sitze.“ (34) / „Manche stehen auf. Ich nicht.“ (29)
@@ -484,13 +524,13 @@ Optik: Held-Komposit (`gestalt`: Haar h1 braun, keine Rüstungs-Layer wie Knöte
 5. „Der Neue. Wieder klatschnass vom Kampf.“ (39) / „Ich bleibe trocken. Prinzip.“ (28)
 6. „Der Neue. Frag lieber Herrn Pahl.“ (33) / „Der hat mehr Geduld als ich.“ (28)
 
-### Aktzeilen
-
 I. „Der Neue zählt Konfetti. Süß.“ (29)
 II. „Krieg ausgesetzt. Ich sitze weiter.“ (35)
 III. „N.N. Wenigstens fragt niemand nach mir.“ (39)
 IV. „Ich lese keine Adressen. Ich sitze.“ (35)
 V. „Der Neue zieht los. Kein Kommentar heut.“ (40)
+
+</details>
 
 ### Anlass-Zeilen (kommentiert das jeweils letzte Ereignis, z2 spielt auf Pahl an)
 
@@ -533,6 +573,26 @@ Optik: Held-Komposit (`gestalt`: Haar h4 ingwerfarben, keine Rüstungs-Layer), s
 
 ### Grundzeilen, Basis-Variante
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Da ist er wieder, unser Neuer. Unterwegs.“ (41) / „Ich sehe gern zu. Beruflich.“ (28)
+2. „Sie kämpfen, und ich sehe dabei zu.“ (35) / „Zwei Berufe. Meiner ist leicht.“ (31)
+3. „Die Bank hält warm, wenn man ihr Zeit gibt.“ (43) / „Ich gebe ihr sehr viel Zeit.“ (28)
+4. „So habe ich schon viele genannt, wissen Sie.“ (44) / „Der Name bleibt. Sie wechseln.“ (30)
+5. „Ob ich ein Vorgang bin? Das ist unhöflich.“ (42) / „Fragen Sie das nicht noch mal.“ (30)
+6. „Die Sonne dreht sich weiter, ich nicht.“ (39) / „Kommentar ist auch ein Beruf.“ (29)
+
+### Aktzeilen
+
+I. „Wieder einer, der alles ernst nimmt. Schön.“ (43)
+II. „Ein Fest ohne Erlaubnis. Wie hübsch.“ (36)
+III. „Ein Platz bleibt leer, und das fällt auf.“ (41)
+IV. „Ein Brief, den keiner lesen will. Schade.“ (41)
+V. „Es wird still hier. Auffällig still.“ (36)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Der Neue. Wieder unterwegs.“ (27) / „Ich sehe zu. Das reicht mir.“ (28)
 2. „Sie kämpfen. Ich sehe nur zu.“ (29) / „Zwei Berufe. Meiner ist leicht.“ (31)
 3. „Die Bank ist warm. Ich bleibe.“ (30) / „Kommentieren wärmt genauso gut.“ (31)
@@ -540,13 +600,13 @@ Optik: Held-Komposit (`gestalt`: Haar h4 ingwerfarben, keine Rüstungs-Layer), s
 5. „Ob ich ein Vorgang bin? Unhöflich.“ (34) / „Fragen Sie das nicht noch mal.“ (30)
 6. „Die Sonne dreht sich. Ich nicht.“ (32) / „Kommentar ist auch ein Beruf.“ (29)
 
-### Aktzeilen
-
 I. „Wieder einer, der alles ernst nimmt.“ (36)
 II. „Ein Fest ohne Erlaubnis. Wie hübsch.“ (36)
 III. „Ein Platz bleibt leer. Auffällig leer.“ (38)
 IV. „Ein Brief, den keiner lesen will.“ (33)
 V. „Es wird still. Auffällig still hier.“ (36)
+
+</details>
 
 ### Anlass-Zeilen (z2 spielt auf Lott an)
 
