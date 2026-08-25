@@ -389,26 +389,26 @@ an entire chamber standing still with dust hanging in the air, one single blazin
 
 ### 11.1 Stufe I
 
-Der Helm auf einem Pfosten, eine Delle frisch, ein Pfeil prallt gerade ab.
+Der Helm freigestellt, eine Delle glüht noch, ein Pfeil prallt in Funken ab.
 
 ```
-a battered official issue helmet set on a wooden post, one fresh dent glowing hot, an arrow glancing off it in a spray of sparks, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+a battered official issue steel helmet, one fresh dent still glowing hot, a single arrow ricocheting off it in a spray of sparks, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 11.2 Stufe II
 
-Derselbe unter einem **Hagel von Geschossen**, Funken überall, vollkommen unbewegt.
+Derselbe zernarbt, ein **Funkensturm** aus einem Dutzend Treffern, die Dellen glühen weiß.
 
 ```
-the same helmet under a hail of arrows and bolts, sparks bursting all over it, completely unmoved, the light of the impacts filling the frame, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same helmet heavily scarred and ringed by a storm of sparks from a dozen simultaneous impacts, dents glowing white, bolts shattering against it, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 11.3 Stufe III
 
-Der Helm in einem **Trümmerfeld**, ein Ring zerbrochener Waffen um ihn, und nur Kratzer.
+Derselbe **massiv und vergoldet**, Panzerplatten und Nieten, ein Hof aus zersplitterten Pfeilspitzen kreist um ihn.
 
 ```
-the helmet standing alone in a field of rubble, a wide ring of shattered weapons heaped around it, dawn light behind, and only scratches on the steel, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same helmet grown massive and gilded with reinforcement plates and rivets, blazing with rim light, a slow halo of shattered arrowheads orbiting it, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ## 12. Gebührenbefreiung · weniger Manakosten
@@ -416,26 +416,26 @@ the helmet standing alone in a field of rubble, a wide ring of shattered weapons
 
 ### 12.1 Stufe I
 
-Ein Beleg mit gesprungenem Vorhängeschloss, ein **Rinnsal Licht** läuft daraus hervor.
+Ein Beleg mit gesprungenem Schloss, ein **Rinnsal Gold** läuft heraus.
 
 ```
-a paper receipt with a cracked padlock hanging from it, a thin trickle of golden light running out through the crack, dark vault behind, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+a rolled paper receipt with a cracked iron padlock hanging from it, a thin trickle of golden light escaping through the crack, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 12.2 Stufe II
 
-Der Beleg rollt sich aus, aus dem Rinnsal wird ein **Strom**, das Schloss fällt.
+Der Beleg entrollt, aus dem Rinnsal wird ein **Strom**, das Schloss zerplatzt in der Luft.
 
 ```
-the receipt unrolling downward, the trickle swelling into a bright stream of golden light, the broken padlock falling away through the air, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the receipt unrolled and streaming, the trickle swollen into a bright torrent of golden light, the padlock bursting apart mid air, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 12.3 Stufe III
 
-Ein **Wasserfall aus Belegen** stürzt in ein Tresorgewölbe, Licht durch das fallende Papier.
+Ein **riesiger Beleg in Blattgold**, ein Geysir aus Licht bricht heraus, das Schloss zerfliegt in glühenden Splittern.
 
 ```
-a waterfall of receipts pouring down out of the darkness into a vast treasury vault, blazing golden light shining through the falling paper, the burst padlock suspended in the spray, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+a colossal ornate receipt bound in gold leaf and wax seals, a blazing geyser of golden light erupting from it, the shattered padlock exploding outward in glowing fragments, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ## 13. Dienstweg · Lauftempo
@@ -443,26 +443,26 @@ a waterfall of receipts pouring down out of the darkness into a vast treasury va
 
 ### 13.1 Stufe I
 
-Ein Stiefelpaar auf einem Feldweg, Staubfahne, das Dorf klein dahinter.
+Ein Stiefelpaar freigestellt, Staub kringelt an den Sohlen, feine Tempolinien.
 
 ```
-a pair of worn courier boots striding along a country path, a plume of dust kicked up behind them, a small village far back in the evening light, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+a pair of worn leather courier boots, dust curling from the soles, faint speed lines trailing behind them, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 13.2 Stufe II
 
-Dieselben **über einem Tal**, die Straße als Papierband darunter.
+Dieselben mit **leuchtenden Schlieren**, Bewegungslinien peitschen vorbei, das Leder raucht.
 
 ```
-the same boots striding over an entire valley, each boot larger than the hills, a ribbon of paper running beneath them as a road, dust trailing, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same boots trailing bright glowing streaks, motion lines whipping past, the leather scuffed and steaming, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 13.3 Stufe III
 
-Die Stiefel **schreiten über ein Gebirge**, die Papierstraße spannt sich von Horizont zu Horizont.
+Dieselben **mit Messingflügeln und Runen**, in Tempolicht gehüllt, Funken sprühen aus den Absätzen.
 
 ```
-colossal courier boots striding across a mountain range at dawn, the paper road stretching from horizon to horizon below them, clouds around their ankles, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same boots grown ornate with winged brass fittings and glowing runes, wreathed in blazing streaks of speed light, sparks pouring from the heels, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ## 14. Laufender Bezug · Manaregeneration
@@ -470,26 +470,26 @@ colossal courier boots striding across a mountain range at dawn, the paper road 
 
 ### 14.1 Stufe I
 
-Der Becher auf einem Schreibtisch, Dampf, ein einzelner Lichtfaden steigt auf.
+Der Becher freigestellt, Dampf, ein einzelner blauer Lichtfaden steigt auf.
 
 ```
-a chipped enamel office mug standing on a dark desk, steam rising from it, a single thread of glowing blue light climbing out of the steam, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+a chipped enamel office mug, steam rising from it, a single thread of glowing blue light climbing out of the steam, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 14.2 Stufe II
 
-Der Becher auf einem **Sockel**, Dampfsäulen, Lichtschächte von oben.
+Derselbe mit **Dampfsäulen**, blaue Helligkeit läuft über den Rand.
 
 ```
-the same mug raised on a stone plinth, thick columns of steam rising into shafts of light falling from above, blue glow pooling around its base, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same mug with thick columns of glowing steam pouring upward, blue radiance spilling over its rim, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 14.3 Stufe III
 
-Der Becher auf einem **Altar am Ende einer Kathedrale**, Dampf füllt das Gewölbe, Papieropfer am Fuß.
+Derselbe **mit Goldrand und Edelsteinen**, ein blauer Dampfgeysir bricht heraus, ein Lichthof um die Tasse.
 
 ```
-the mug enshrined on an altar at the end of a vast cathedral, steam filling the whole vault, blazing blue light pouring from the cup, drifts of offered paperwork heaped at the foot of the altar, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same mug grown ornate with a gold rim and inlaid gems, a blazing blue geyser of steam erupting from it, a halo of light around the cup, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ## 15. Dienstalterszulage · mehr Erfahrung
@@ -497,26 +497,26 @@ the mug enshrined on an altar at the end of a vast cathedral, steam filling the 
 
 ### 15.1 Stufe I
 
-Das Dienstbuch aufgeschlagen, wenige Stempel, ein Schimmer zwischen den Seiten.
+Das Dienstbuch aufgeschlagen, wenige Stempel glimmen auf der Seite.
 
 ```
-a service record book lying open on a desk, a few round stamp impressions on the page, a faint golden shimmer between the leaves, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+a service record book lying open, a few round stamp impressions glowing faintly on the page, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 15.2 Stufe II
 
-Das Buch dicker, die Seiten **blättern von selbst**, Licht bricht hervor.
+Dasselbe deutlich dicker, die Seiten **blättern von selbst**, Gold bricht dazwischen hervor.
 
 ```
-the same book much thicker, its pages turning by themselves in a rising wind, bright golden light breaking out from between them, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same book much thicker, its pages turning by themselves, bright golden light breaking out from between the leaves, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ### 15.3 Stufe III
 
-Das Buch riesig auf einem Sockel, Seiten fliegen, die Stempel **glühen wie Sternbilder**.
+Dasselbe **riesig in vergoldetem Leder**, Seiten reißen sich los, die Stempel **glühen wie Sternbilder**.
 
 ```
-a colossal service record book open on a stone plinth, pages flying loose in a storm of light, the round stamp impressions glowing like constellations, the radiance filling an entire hall, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, deep contrast between dark silhouettes and a blazing background, bold dark outlines, clean readable shapes, dithering in the gradients, dramatic cinematic lighting, epic fantasy trading card illustration, centred iconic composition, awe and grandeur --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters
+the same book grown colossal and bound in gilded leather, pages tearing loose in a storm of light, the round stamp impressions blazing like constellations, the object floating centred and isolated on a deep smooth vignette gradient background, nothing else in frame, hero item showcase, glinting sparkles in the air around it, detailed modern pixel art, high resolution sprite work with crisp hard pixels, vibrant saturated colours, strong rim light and inner glow, bloom around every light source, bold dark outlines, clean readable shapes, dithering in the gradients, epic fantasy trading card item art, perfectly centred iconic composition --ar 4:3 --s 250 --no text, lettering, writing, letters, numbers, watermark, logo, signature, frame, border, ui, hud, blur, smooth airbrush, painterly brushwork, photorealism, 3d render, people, faces, characters, landscape, scenery, room, interior, architecture, horizon
 ```
 
 ---
