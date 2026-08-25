@@ -388,8 +388,66 @@ dem dunklen Panel des Ministeriums leuchten daraus vier lachsfarbene Eckpunkte. 
 Falle steckt in allen `UI_Frames`-Zellen. Ausserdem liegen gesichtet, aber unverbaut:
 `UI_Ribbons` (Spruchbaender, Mitte hoeher als die Enden, geht nicht als border-image),
 `Book_UI` (Buchgruende und Lesebaendchen, beides hell), `UI_Bars` (gehoert ins HUD),
-`UI_Icons`/`UI_Button_Icons` (der Guertel traegt Emoji), `UI_ALL` (Sammelblatt, 181 KB).
+`UI_ALL` (Sammelblatt, 181 KB). *(Bis U11 stand hier auch `UI_Icons`/`UI_Button_Icons` mit der Begruendung "der Guertel traegt Emoji". Genau das ist seit U11/U12 nicht mehr wahr, siehe den Abschnitt darunter.)*
 Begruendung je Posten in `phase-u2-menuegrafik.md`.
+
+### Von U11 und U12 gebraucht (`ui/ico_*.png`)
+
+Achtundzwanzig Sinnbilder, geschnitten aus derselben Tabelle in `tools/ui-zellen.mjs`
+und mit `--pruef` nachrechenbar. Sie ersetzen die System-Emoji der Bedienoberflaeche:
+U11 die neun Bedienknoepfe, U12 Kopfband, Reiterband, Panelkoepfe, Befaehigung und die
+vier Dinge, die als Emoji ins Bild gemalt wurden. Zusammen rund 8,7 KB.
+
+| Datei | Quelle | Rect | Verwendung |
+|---|---|---|---|
+| `ico_schlag.png` | `UI_Icons.png` | (112,16) | Schlagknopf |
+| `ico_trank.png` | `Food_Icons_NO_Outline.png` | (112,128) | Trankknopf, Trank im Feld |
+| `ico_zauber.png` | `UI_Icons.png` | (144,48) | Zauberbaum, Reiter |
+| `ico_rucksack.png` | `UI_Icons.png` | (144,32) | Rucksack, Reiter, Tasche |
+| `ico_charakter.png` | `UI_Icons.png` | (192,16) | Charakterfenster, Reiter |
+| `ico_ziel.png` | `UI_Crosshairs.png` | (0,128) | Zielwahl am Faecher |
+| `ico_sperre.png` | `UI_Icons.png` | (208,80) | gesperrter Zauber, gesperrtes Ultimate |
+| `ico_abbruch.png` | `UI_Icons.png` | (176,80) | Kammer verlassen |
+| `ico_hand.png` | `UI_Icons.png` | (48,224) | Kontextknopf |
+| `ico_gold.png` | `UI_Icons.png` | (96,0) | Beute, Amtskasse, Muenzen im Feld |
+| `ico_zahnrad.png` | `UI_Icons.png` | (32,16) | Optionen, Reiter |
+| `ico_ton.png` | `UI_Icons.png` | (160,64) | Ton-Abschnitt, Musikknopf an |
+| `ico_ton_aus.png` | `UI_Icons.png` | (176,64) | Musikknopf aus |
+| `ico_schrift.png` | `UI_Button_Icons.png` | (160,32) | Schrift-Abschnitt |
+| `ico_speicher.png` | `UI_Icons.png` | (144,16) | Spielstand-Abschnitt |
+| `ico_kladde.png` | `UI_Icons.png` | (176,16) | Kladde, Reiter |
+| `ico_akten.png` | `UI_Icons.png` | (208,16) | Akten, Reiter |
+| `ico_amtskunde.png` | `UI_Icons.png` | (160,16) | Befaehigung: Amtskunde |
+| `ico_ruestung.png` | `UI_Icons.png` | (192,0) | Ausruestungs-Abschnitt |
+| `ico_schluessel.png` | `UI_Icons.png` | (208,48) | Symbolschloss, Panel und Feld |
+| `ico_brief.png` | `UI_Icons.png` | (224,16) | Aktentafel im Feld |
+| `ico_kraft.png` | `UI_Icons.png` | (16,16) | Befaehigung: Kraft |
+| `ico_herz.png` | `UI_Icons.png` | (0,0) | Befaehigung: Zaehigkeit |
+| `ico_blitz.png` | `UI_Icons.png` | (144,0) | Befaehigung: Behaendigkeit |
+| `ico_werte.png` | `UI_Icons.png` | (48,16) | Werte-Abschnitt |
+| `ico_dienst.png` | `UI_Icons.png` | (64,16) | Im Dienst, Dienstausweis |
+| `ico_zettel.png` | `UI_Icons.png` | (0,16) | Dienstzettel, Dienstbericht |
+| `ico_kessel.png` | `Food_Icons_NO_Outline.png` | (16,64) | Kessel, Kochen, Verarbeitung, Reiter |
+
+**Bewusst nicht verwendet:** die fertigen Knoepfe MIT eingelegtem Zeichen aus
+`UI_Buttons.png` (ab x=144) und `UI_ALL.png`. Sie waeren die Abkuerzung und tragen die
+falschen Sinnbilder: Pause, Wiedergabe, Note, Ein/Aus, Lautstaerke, Haus, Pfeile,
+Buchstaben. Kein Schwert, kein Trank, kein Rucksack. `UI_Button_Icons.png` traegt trotz
+seines Namens Gamepad- und Tastaturglyphen; genau eine Zelle daraus ist gebraucht, das
+grosse A.
+
+**Der Trank und das Einmachglas kommen ausdruecklich aus dem Ordner `No Outline`** des
+Hauptpacks, obwohl der Name das Gegenteil verspricht: genau diese Fassung traegt
+denselben DUNKLEN Rand wie alle `UI_Icons`, waehrend die im Ordner `Outline` einen
+zusaetzlichen cremefarbenen darum legt. Auf dem hellen Achteck verschwaende der, und im
+selben Fenster stuenden zwei verschiedene Randfarben nebeneinander.
+
+**Diese achtundzwanzig duerfen fehlen, aber nur gemeinsam.** Sie sind mit
+`optional:true` registriert, und `bakeUiSkin()` setzt die Klasse `body.cfuiIco` nur,
+wenn ALLE da sind — fehlt eine, bleibt jedes Sinnbild ein Emoji und die Konsole nennt
+die fehlende beim Namen. Vier gezeichnete und vier fremde Zeichen nebeneinander waeren
+schlechter als acht fremde. Begruendung je Posten in `phase-u11-sinnbilder.md` und
+`phase-u12-sinnbilder-rest.md`.
 
 **Diese vier duerfen fehlen.** Sie sind mit `optional:true` registriert; `bakeUiSkin()`
 setzt die zugehoerigen CSS-Variablen dann nicht, und die Menues fallen auf den
