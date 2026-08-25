@@ -36,7 +36,18 @@ const ASSET_DIR = join(ROOT, 'assets');
 //   Die dreizehn Porträts, die das Spiel seit U5 wirklich zeigt, liegen als
 //   echte 128er in assets/portraets/ (65 KB statt 3,0 MB) und stehen deshalb
 //   NICHT hier — sie werden eingebacken wie jede andere Spielgrafik.
-const SKIP_DIRS = ['assets/figuren'];
+//
+//   assets/eingang/ — der Durchlauferhitzer für Kartenbilder: dort liegen die
+//   Midjourney-Originale, bis `tools/zulagen-bild.py` sie auf Kartengröße
+//   gerechnet hat. Ein Lauf ohne diese Zeile hat sie mit eingebacken und die
+//   ausgelieferte Datei um 16 MB schwerer gemacht, für Bilder, die kein Frame
+//   je zeichnet. Der Ordner steht zusätzlich in der .gitignore; beides
+//   zusammen, weil das eine gegen Auslieferung schützt und das andere gegen
+//   das Repo.
+//
+//   assets/zulagen/ steht dagegen NICHT hier: das sind die gerechneten 400er,
+//   die die Karten wirklich zeigen (1,4 MB für fünfundvierzig).
+const SKIP_DIRS = ['assets/figuren', 'assets/eingang'];
 
 // Genau diese Zeile wird ersetzt. Fehlt sie, bricht der Build ab, statt still
 // eine Datei ohne Grafik zu schreiben.
