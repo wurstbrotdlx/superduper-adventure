@@ -116,7 +116,7 @@ Sieben Pakete, überlappungsfrei, parallel ausführbar.
 * **TDZ.** Alle sieben Guard-Selbstaufrufe und jede Funktion, die auf Skriptebene läuft. Liest eine von ihnen etwas, das später deklariert wird? Zwei solche Fälle sind in W7 aufgetreten; `node --check` findet sie nicht, nur ein Ladeversuch im Browser.
 * **Persistenz.** `loadAmt()` ist eine Whitelist, `loadKladde()` additiv. Überlebt jedes Feld einen Reload? Gibt es ein Feld, das geschrieben, aber nie geladen wird?
 * **`#ovPanel`.** Die Zusage lautet „acht Schreibstellen, nie eine `id` darin". Zähl nach.
-* **Formregeln.** Gedankenstriche, Emojis und Zeichendeckel über **alle** Spieltexte, auch die, die kein Guard erfasst.
+* **Formregeln.** Gedankenstriche, Emojis und Zeichendeckel über **alle** Spieltexte, auch die, die kein Guard erfasst. Seit T1 zusätzlich: die Länge folgt der Sprachmarke der Figur. Zapf nie über sechs Wörter, Werkzeugtexte kurz, und keine Kaskade ohne Weiterklickzeile.
 * **Sperrvermerk.** Verrät irgendein Text die Kesselgrammatik? Die `GEHEIM`-Listen der Guards sind nicht identisch — vergleiche sie und prüfe, ob eine Lücke lässt.
 
 ## Form des Berichts

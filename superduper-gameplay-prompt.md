@@ -253,7 +253,7 @@ Alle unten genannten Bezeichner und Zeilennummern wurden gegen den Stand nach Co
 
 ### Die Figur
 
-Amtsrat a. D. Knöterich vom Amt für Monsterangelegenheiten. Er siezt den Spieler. Ton: trocken, Behördenkomik, kurz. Keine Emojis in seinen Texten, keine Gedankenstriche in Spieltexten (gilt im ganzen Projekt).
+Amtsrat a. D. Knöterich vom Amt für Monsterangelegenheiten. Er siezt den Spieler. Ton: trocken, Behördenkomik, kurz. Keine Emojis in seinen Texten, keine Gedankenstriche in Spieltexten (gilt im ganzen Projekt). *(Kurz ist seit T1 seine eigene Sprachmarke und keine Hausregel mehr: er weiß alles und darf nichts sagen. Für die anderen Figuren gilt „Länge nach Sprachmarke", Weltbibel Kapitel 13.)*
 
 **Wo er steht.** Zum Zeitpunkt dieser Phase gab es kein begehbares Dorf: das Amt aus Phase 4 war ein Overlay-Panel, kein Ort. Knöterich steht deshalb als **Außenstelle neben dem Kessel-Prop** (**seit G5 liegt das Dorf um genau diese Stelle herum, sein Standort ist damit mitten im Dorf und bleibt unverändert**) (`KESSEL_T = {x:15, y:41}`, `KESSEL` in Pixeln, gezeichnet über `DRAW_KESSEL` / `drawKessel()`). Setz ihn auf eine begehbare Nachbarkachel, nicht auf den Kessel. Er hat keine KI, keine Kollision, keine Trefferbox und läuft nie mit. `placeMonsters()` darf nicht auf seine Kachel spawnen.
 
@@ -277,7 +277,7 @@ Neues Zeichentyp-Tag `DRAW_ALTER` in der Konstantenzeile neben `DRAW_KESSEL` (~3
 
 **Blasen-Reichweite: 150 Pixel** (`sqDist < 22500`, kein `Math.hypot`). Muss größer sein als die 97 Pixel vom Spawn zum Kessel, sonst kommt Beat 1 nie. Blase erscheint beim Eintritt in den Radius, verschwindet beim Austritt. Steht kein Beat und keine Wiederholung an, zeigt die Blase nichts.
 
-Fiktion für die anderen beiden Kanäle: das ist Post, kein Gespräch. Der Zettel begründet seine eigene Kürze, ein Formular labert nicht. Halte dich daran, das ist die Bremse gegen wachsende Texte.
+Fiktion für die anderen beiden Kanäle: das ist Post, kein Gespräch. Der Zettel begründet seine eigene Kürze, ein Formular labert nicht. Halte dich daran, das ist die Bremse gegen wachsende Texte. *(T1 bestätigt die Bremse ausdrücklich: die Kaskadenregel gilt für Gespräche, nie für Zettel, Formulare, Randnotizen oder Blätter.)*
 
 ### Grundgesetz, gilt für jeden Text
 

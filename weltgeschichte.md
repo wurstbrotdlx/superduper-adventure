@@ -12,7 +12,7 @@ Diese Datei erzählt. Die `superduper-weltbibel.md` bleibt der Kanon und behält
 
 **Ein offener Punkt, ehrlich benannt.** Die Weltbibel schließt Zwischenspiele in Kapitel 14 ausdrücklich aus ("Keine Cutscene, kein Kamerafahrt-Skript, kein Standbild-Interlude"). Der Auftrag zu dieser Datei verlangt sie. Ich habe beides bedient: die Szenen in Kapitel 8 stehen als Text da, wie man sie spielen würde, **und jede trägt eine Zeile "Mit Bordmitteln", die sagt, wie sie ohne neue Technik ins Spiel kommt** (Blatt, Amtspanel, Dienstbericht, vier Antwortzeilen im Gesprächsfenster aus U3). Wer die Regel halten will, baut die rechte Spalte. Wer sie kippen will, hat den Text. Die Entscheidung liegt nicht bei mir.
 
-**Formregeln gelten hier wie überall.** Keine Gedankenstriche in Spieltexten, keine Emojis, kurze Sätze, Zeichendeckel 48/32/44 bei Figurenzeilen. Alle Figurenzeilen unten sind gegengezählt, die Zahl steht dahinter. Der Sperrvermerk aus Weltbibel Kapitel 7 gilt unverändert: **kein Text in dieser Datei verrät Kesselgrammatik.** Geprüft, Zeile für Zeile, Notiz in Kapitel 11.
+**Formregeln gelten hier wie überall.** Keine Gedankenstriche in Spieltexten, keine Emojis, Länge nach Sprachmarke (Stand T1), Zeichendeckel 48/32/44 bei Figurenzeilen. Alle Figurenzeilen unten sind gegengezählt, die Zahl steht dahinter. Der Sperrvermerk aus Weltbibel Kapitel 7 gilt unverändert: **kein Text in dieser Datei verrät Kesselgrammatik.** Geprüft, Zeile für Zeile, Notiz in Kapitel 11.
 
 ---
 
@@ -606,7 +606,7 @@ Danach das Finale in reinster Amtsform, jedes bestehende System liefert ein Puzz
 
 Ausgeschrieben. Jede Szene trägt eine Zeile **Mit Bordmitteln**, die sagt, wie sie ohne neue Technik ins Spiel kommt, falls die Regel aus Weltbibel Kapitel 14 stehen bleibt.
 
-Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emojis, kurze Sätze, und keine Figur weiß, dass sie komisch ist.
+Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emojis, Länge nach Sprachmarke (Stand T1), und keine Figur weiß, dass sie komisch ist.
 
 ---
 
@@ -1285,7 +1285,7 @@ Sieben Sätze, die für jeden neuen Text in dieser Welt gelten. Sie stehen zusä
 * **Kapitel 3, Adelskleidung.** Formuliert als Lagen von Vorgängen, nicht als Zutaten, Seltenheiten oder Stufen.
 * **Serie I, Blatt 5.** Die Bewilligung des Dorffestes ist eine Genehmigung im Verwaltungssinn. Das Wort steht bewusst ohne jede Nebenbestimmung daneben, damit es nicht in die Nähe der Kesselbescheide gerät.
 
-**Formregeln (Weltbibel Kapitel 13).** Keine Gedankenstriche und keine Emojis in gesprochenen Zeilen, Blättern oder Szenen. Kurze Sätze. Höchstens eine Taste pro Hinweis, und in dieser Datei wird keine einzige Taste genannt.
+**Formregeln (Weltbibel Kapitel 13).** Keine Gedankenstriche und keine Emojis in gesprochenen Zeilen, Blättern oder Szenen. Kurze Sätze nach dem damaligen Stand von Kapitel 13; seit T1 gilt stattdessen: Länge nach Sprachmarke. Höchstens eine Taste pro Hinweis, und in dieser Datei wird keine einzige Taste genannt.
 
 **Zeichendeckel.** Alle Grundzeilen und Aktzeilen der vier neuen Figuren in Kapitel 6 sind gegengezählt und stehen mit ihrer Zeichenzahl da. Zeile 1 höchstens 48, Zeile 2 höchstens 32, Aktzeile höchstens 44. Die Szenentexte in Kapitel 8 sind Fließtext und fallen nicht unter den Deckel; wer sie in das Gesprächsfenster aus U3 einbaut, muss sie umbrechen und dabei neu zählen.
 

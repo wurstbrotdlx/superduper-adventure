@@ -2,7 +2,7 @@
 
 Ministerium für Monsterangelegenheiten
 
-Ein Browser-Action-RPG, in dem der Spieler nicht Held ist, sondern Außendienstler einer Monsterbehörde. Monster werden nicht erledigt, sie werden bearbeitet. Zielgruppe 10 bis 99, zwei Humor-Ebenen: Kinder verstehen die Situation, Erwachsene den Paragrafen.
+Ein Browser-Action-RPG, in dem der Spieler nicht Held ist, sondern Außendienstler einer Monsterbehörde. Monster werden nicht erledigt, sie werden bearbeitet. Zielgruppe 9 bis 99, zwei Humor-Ebenen: Kinder verstehen die Situation, Erwachsene den Paragrafen.
 
 Das Repo heißt aus historischen Gründen noch `superduper-adventure`.
 

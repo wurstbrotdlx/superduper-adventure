@@ -6,7 +6,7 @@ Titel: **DAS MONSTRAL MINISTERIUM**. Rang, Titel und Laufbahn in Kapitel 17, Beg
 
 Diese Datei ist der Kanon. Sie erfindet nichts um, was schon gebaut ist, sondern gibt dem Gebauten einen Grund. Jede bestehende Mechanik (Kessel, Kladde, Schicht, Fluch, Kammer, Konfetti, Knöterich) bekommt hier eine Fiktion, die sie erklärt. Wo die Fiktion und der Code sich widersprechen würden, gewinnt der Code.
 
-Zielgruppe 10 bis 99. Ton: Monkey Island und Zak McKracken, aber in Amtsdeutsch.
+Zielgruppe 9 bis 99. Ton: Monkey Island, Zak McKracken, Day of the Tentacle und Theme Hospital, aber in Amtsdeutsch. Und wie bei den Vorbildern gilt: die Welt ist absurd, aber liebenswert. Man will sie retten. *(Stand 25.08.2026, T1. Vorher stand hier „Zielgruppe 10 bis 99" und nur die ersten beiden Vorbilder.)*
 
 ---
 
@@ -341,6 +341,8 @@ Das ergibt für die bestehenden 26 Adjektive sofort eine Herkunft:
 
 Bauprinzip pro Figur: **eine Besessenheit, ein Hindernis, eine Sprachmarke.** Wie bei Monkey Island. Niemand ist ein Witz, jeder ist jemand, der etwas versucht.
 
+**Zur Sprachmarke gehört seit T1 auch die Länge** (Kapitel 13, Formregeln). Sie steht bei jeder Figur mit dabei: wer ausführlich wird, wird es in ihrer Form, und wer knapp bleibt, bleibt es aus ihrem Grund. Wo unten nichts über Länge steht, redet die Figur in zwei Sätzen wie bisher.
+
 **Stand nach W11.** Das Ensemble ist von zwölf auf sechzehn Figuren gewachsen. Vier kommen aus `weltgeschichte.md`, Kapitel 6, und stehen unten unter der Überschrift "Aus dem Reich". Drei davon sind gebaut (Nieselbeck, Umlauf, Vorblatt), die vierte (Konrad zu Händen Aufschub) steht nur in Hochablage und deshalb im Spiel bisher nirgends.
 
 **Außerdem hat jede bestehende Figur einen Zuwachs bekommen**, also genau eine neue Tatsache, die ab jetzt gilt. Keine ist umgeschrieben worden. Der Zuwachs steht bei der jeweiligen Figur als eigener Absatz *(Zuwachs W11)*, dreizehn Absätze plus einer für den Kater Anlage 3.
@@ -354,7 +356,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Besessenheit:** Buch führen. "Ich führe Buch." Er notiert alles, seit vierzig Jahren.
 * **Hindernis:** Er ist pensioniert. Seine **Entpflichtung** wurde allerdings nie bearbeitet. Er ist deshalb gleichzeitig außer Dienst und im Dienst. Er kann nicht aufhören. Er kommt jeden Morgen, weil er muss, und bleibt jeden Abend, weil er will.
 * **Das Geheimnis:** Er ist der letzte Mensch, der den Vorgang 1 vollständig gelesen hat. Er weiß alles. Er darf nichts sagen: **Amtsverschwiegenheit**, und die endet nicht mit der Pensionierung. Damit wird die harte Designregel "Knöterich erklärt Tasten, nie Zusammenhänge" zur tiefsten Eigenschaft der Figur. Er erklärt nicht, weil er nicht darf. Und man merkt ihm an, dass er möchte.
-* **Sprachmarke:** Zwei kurze Sätze. Siezt immer. Nennt Dinge beim Aktenbegriff. Keine Emojis, keine Gedankenstriche.
+* **Sprachmarke:** Zwei kurze Sätze. Siezt immer. Nennt Dinge beim Aktenbegriff. Keine Emojis, keine Gedankenstriche. *(T1: Knapp ist bei ihm Marke, nicht Hausregel. Er weiß alles und darf nichts sagen, und Amtsverschwiegenheit spart Wörter. In einem Haus voller Redner ist der Einzige, der schweigen muss, eine Figur statt eines Stilmerkmals.)*
 * **Der Gag mit doppeltem Boden:** Der Fluch **Amtsschweigen** ist nach seinem Zustand benannt. Er sperrt das Lernen der Kladde. Wer den Fluch trägt, ist für eine Weile Knöterich.
 * **Quest-Hebel:** Die Gießkanne. Siehe Langvorgang 1.
 * **Ansprechbar seit U6** (`phase-u6-knoeterich-tafel.md`). Er war die einzige Figur des Ensembles ohne Gesprächstafel, weil er älter ist als die Tabelle, an der sie hängt. Er hat jetzt sechs Grundzeilen, fünf Aktzeilen und eine Anredeform wie alle anderen (Wortlaut in `figuren-dorf.md`, Serie 3), und sein gemaltes Porträt steht in der Tafel wie im Dienstzettel. **Die Regel darüber ist unverändert und war die schwerste Auflage dieses Abschnitts:** keine der neuen Zeilen erklärt einen Zusammenhang. Sie erklären auch keine Taste, das tun seine eigenen Kanäle; sie sagen, wer er ist und dass er nicht sagen darf, was er weiß.
@@ -366,7 +368,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Besessenheit:** Das Dorffest. Seit elf Jahren geplant. Vordermühl hat noch nie eins gehabt.
 * **Hindernis:** Ein Fest braucht eine Genehmigung. Genehmigungen erteilt die Amtsleitung. Die Amtsleitung ist N. N.
 * **Wesen:** Herzlich, händeschüttelnd, hohl, und im entscheidenden Moment doch anständig. Er führt das Jahresgespräch, weil sonst niemand da ist, der befugt wäre. Er ist gar nicht dein Vorgesetzter. Das stört ihn nicht.
-* **Sprachmarke:** Redet in Ankündigungen. "Wir werden das angehen." "Da bin ich dran."
+* **Sprachmarke:** Redet in Ankündigungen. "Wir werden das angehen." "Da bin ich dran." *(T1: ausführlich. Aus jeder Auskunft wird eine kleine Festrede, mit Begrüßung, Rückblick, Ausblick und Dank. Er meint jede Silbe, und das ist der Grund, warum man ihm zuhört.)*
 * **Der Riss:** Er hat den Dienstreiseantrag der letzten Amtsleiterin unterschrieben. Er weiß, dass sie deshalb weg ist. Er sagt es in Akt III.
 
 *(Zuwachs W11.)* Die Bewilligung des Dorffestes ist im Jahr 1004 erteilt worden, unterschrieben und gestempelt. Sie steckt seither in der verstopften Rohrpost unter dem Steinfeld. Zwirn hat seit acht Jahren recht und weiß es nicht.
@@ -376,7 +378,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Besessenheit:** Ordnung. Sie weiß, wo alles liegt, und zwar wirklich alles.
 * **Hindernis:** Sie gibt nichts heraus ohne korrekt gestellten Antrag. Nicht aus Bosheit, sondern weil sie einmal etwas ohne Antrag herausgegeben hat und das war der Brandabschnitt.
 * **Spielfunktion:** Der Hinweisgeber. Eine präzise Frage pro Schicht, wenn sie richtig gestellt ist. Sie darf dabei nie Kesselgrammatik verraten, nur Fundorte und Zusammenhänge der Geschichte.
-* **Sprachmarke:** Fragt zurück, statt zu antworten. "In welcher Sache?"
+* **Sprachmarke:** Fragt zurück, statt zu antworten. "In welcher Sache?" *(T1: zweistufig. Ohne Antrag bleibt sie eine Wand aus drei Wörtern. Auf korrekt gestellten Antrag antwortet sie vollständig: Fundstelle, Gang, Regalseite, Langform, Vorbehalt. Die Auskunft ist die Belohnung, und sie ist üppig.)*
 * **Begleitung:** Der Kater **Anlage 3**. Er schläft auf genau der Akte, die man braucht. Immer. Bramsche weckt ihn nicht.
 
 *(Zuwachs W11.)* Sie hat 985 die Archivausfertigung nicht herausgegeben, weil sie danebengegriffen hat. Der Griff daneben hat das Dokument gerettet. Sie hält sich für schuldig an einem Landstrich und ist in Wahrheit die Retterin des Beweisstücks. Sie erfährt es nie.
@@ -388,7 +390,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Besessenheit:** Dass die Dinge laufen. Er repariert alles, ohne je zu erklären, wie.
 * **Hindernis:** Nichts. Zapf hat keine Probleme. Zapf hat Werkzeug.
 * **Spielfunktion:** Der Mann, der die Wahrheit im Nebensatz sagt. Über den Kessel sagt er genau einen Satz, und der ist ein halber Weltenbau: **"Der Kessel ist kein Kessel. Der Kessel ist ein Kopierer."**
-* **Sprachmarke:** Kürzeste Sätze im Spiel. Nie mehr als sechs Wörter. Handelt gegen Kaffee.
+* **Sprachmarke:** Kürzeste Sätze im Spiel. Nie mehr als sechs Wörter. Handelt gegen Kaffee. *(T1: unangetastet. Die sechs Wörter sind Kanon, und sie sind seit T1 sichtbar, weil um ihn herum geredet wird. Er ist die einzige Figur ohne Hindernis: er redet nicht über Arbeit, er arbeitet.)*
 
 *(Zuwachs W11.)* Er beendet den Krieg. Mit sechs Wörtern und Werkzeug: der Stopfen in der Rohrpost unter dem Steinfeld ist eine festgewordene Kapsel, und Zapf bekommt sie raus. Siehe Langvorgang 10.
 
@@ -396,7 +398,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 
 * **Besessenheit:** Dass man Monster nicht erledigen, sondern beantworten müsste.
 * **Hindernis:** Sie ist im sechsten Jahr Praktikum. Unbezahlt. Ihr Praktikumsbericht braucht die Unterschrift einer weisungsbefugten Person. Es gibt keine.
-* **Spielfunktion:** Das Gewissen und die zweite Meinung. Für zehnjährige Spieler ist sie die Identifikationsfigur, für erwachsene der wunde Punkt. Sie hat am Ende recht.
+* **Spielfunktion:** Das Gewissen und die zweite Meinung. Für neunjährige Spieler ist sie die Identifikationsfigur, für erwachsene der wunde Punkt. Sie hat am Ende recht.
 * **Sprachmarke:** Stellt Fragen, die niemand beantworten will. "Und wenn er einfach nur wartet?"
 * **Traum:** Ein **Amt für Monsterbelange**. Nicht gegen sie. Für sie.
 
@@ -418,7 +420,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Besessenheit:** Seine Entfristung. Er ist seit vierzig Jahren in der Probezeit.
 * **Hindernis:** Entfristungen erteilt die Amtsleitung.
 * **Spielfunktion:** Der Beweis, dass Lisbeth recht hat, und niemandem fällt es auf. Er trägt eine Krawatte. Er ist das Publikumsliebling-Material des Spiels.
-* **Sprachmarke:** Beschwert sich über alles, einschließlich seiner selbst. "Das ist nicht meine Zuständigkeit. Ich mache es trotzdem."
+* **Sprachmarke:** Beschwert sich über alles, einschließlich seiner selbst. "Das ist nicht meine Zuständigkeit. Ich mache es trotzdem." *(T1: ausführlich. Eine Beschwerde ohne Begründung ist keine, und er ist eine. Sachverhalt, Würdigung, gern eine Belehrung über den Rechtsbehelf, und immer dieselbe Coda: er macht es trotzdem.)*
 * **Die Auflösung:** Die trockenen Bemerkungen der "Sachbearbeitung" im Dienstbericht sind von ihm. Er kommentiert seit vierzig Jahren die Arbeit von Leuten, die seinesgleichen schreddern. Und er ist dabei fair.
 
 *(Zuwachs W11.)* Er kann die Schrift auf dem Umschlag lesen. Neu ab hier: Vorblatt bietet ihm die Entfristung an, damit er es nicht tut. Vierzig Jahre Probezeit gegen ein Unterlassen. Wie er sich entscheidet, sagt er nicht.
@@ -428,7 +430,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Besessenheit:** Die richtige Einstufung.
 * **Hindernis:** Er liegt systematisch um genau eine Stufe daneben. Immer in dieselbe Richtung. Er weiß es nicht.
 * **Spielfunktion:** Erklärt im Nachhinein, warum sich Kammern manchmal falsch anfühlen, und liefert eine mechanische Belohnung, wenn man es ihm beweist.
-* **Sprachmarke:** Bewertet ungefragt. "Das würde ich mit Drei ansetzen. Höchstens."
+* **Sprachmarke:** Bewertet ungefragt. "Das würde ich mit Drei ansetzen. Höchstens." *(T1: ausführlich, und von allen am gründlichsten. Er begutachtet in ganzer Form: Gegenstand, Maßstab, Ansetzung, Vorbehalt. Je gründlicher das Gutachten, desto sicherer liegt es eine Stufe daneben. Die GA löst er auf Nachfrage auf, vollständig und mit Herleitung, und die Herleitung ist der eigentliche Stolz.)*
 
 *(Zuwachs W11.)* Er liegt auch bei der Hoheitsstufe des eigenen Hauses eine Stufe daneben, nach oben. Er ist Ritter der Vorlage und stellt sich als Freiherr vor.
 
@@ -437,7 +439,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Besessenheit:** Der Antrag muss zum Ausgegebenen passen.
 * **Hindernis:** Er gibt exakt aus, was auf dem Antrag steht. Nicht, was gemeint war.
 * **Spielfunktion:** Der klassische Adventure-Widerstand. Wer den richtigen Wortlaut findet, bekommt das richtige Ding.
-* **Sprachmarke:** Liest vor, was dasteht. Betont dabei die falschen Wörter.
+* **Sprachmarke:** Liest vor, was dasteht. Betont dabei die falschen Wörter. *(T1: bleibt kurz, und zwar ausdrücklich. Sein Gag ist die falsche Betonung eines kurzen Satzes; ein langer Satz hat zu viele Wörter, um eines davon falsch zu betonen.)*
 
 *(Zuwachs W11.)* Er führt eine Liste der Dinge, die er ausgegeben hat, ohne dass sie beantragt waren. Die Liste ist leer. Er ist sehr stolz auf die Liste.
 
@@ -452,6 +454,7 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 
 * **Besessenheit:** Kommentieren.
 * **Spielfunktion:** Der Chor. Zwei Zeilen zu allem, was der Spieler gerade getan hat. Sie sind der Ort für die frechsten Gags, weil sie nichts zu verlieren haben.
+* **Sprachmarken:** *(Nachgetragen mit T1 aus `figuren-leben.md`, wo sie seit F1 stehen und im Spiel nicht zu hören waren.)* **Lott** ist der Kürzere, im Satzbau und in der Geduld. Er sagt "Der Neue" und einen halben Satz hinterher. **Pahl** ist der Ausführlichere: er antwortet in ganzen Sätzen, gern einen Halbsatz mehr als nötig, und in seiner Antwort kommt Lott vor. Keiner von beiden spricht den anderen direkt an, wenn jemand zuhört. Damit ist die Bank die billigste Dauervorführung des ganzen Tonprinzips: derselbe Anlass, einmal kurz, einmal lang, hundertmal im Spiel, und niemand erklärt es je.
 * **Das Unheimliche im Hintergrund:** Sie sitzen dort länger, als das Dorf alt ist. Sie stammen aus Hintermühl. Niemand hat je nachgeprüft, ob sie Vorgänge sind. Sie selbst finden die Frage unhöflich.
 
 *(Zuwachs W11.)* Hintermühl ist nicht untergegangen, es ist **abgeschlossen** worden: das Aktenhaus, in dessen Bestand es geführt war, hat 806 seine letzte Uferfrage erledigt, und was in einem geschlossenen Bestand steht, ist damit ebenfalls erledigt. Kein Feuer, kein Überfall, ein Aktendeckel. Dass die beiden noch da sind, hat einen Grund: Vordermühl steht in keinem Bestand. Es wurde nie aufgeschrieben, und was nie aktenkundig war, kann nicht abgeschlossen werden.
@@ -465,6 +468,8 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Wer sie gießt:** Knöterich. Jeden Morgen. Vierzig Jahre. Er sagt nichts dazu.
 
 *(Zuwachs W11.)* Sie ist ohne den Brief losgegangen. Sie hielt den Sack für unzuständig und sich selbst für ausreichend. Das ist ihr Fehler, sie kennt ihn seit vierzig Jahren, und ihr letzter Bericht ist einzeilig, weil sie irgendwann aufgehört hat, sich zu erklären.
+
+*(T1.)* Ihre Einzeiligkeit ist die Auszahlung des ganzen Tonsystems und wird nicht angefasst. Sie ist die einzige Figur, die je etwas getan hat, und die einzige, die aufgehört hat, sich zu erklären. Das trägt nur in einem Haus, in dem alle anderen erklären.
 
 ### Fürst Nachtrag, genannt der Schattenfürst
 
@@ -492,7 +497,7 @@ Der Gegenspieler, und er hebt nie die Stimme. Erscheint ab Akt III im Dorf, vor 
 
 * **Besessenheit:** Dass nichts geschieht. Nicht aus Bosheit, sondern aus Verantwortung: er hat als Einziger im Reich nachgerechnet, was die Zustellung auslöst, und beschützt einundvierzigtausend Menschen davor, an einem Nachmittag niemand zu sein.
 * **Hindernis:** Er darf nichts entscheiden, denn eine Entscheidung schließt etwas. Er kann nicht Nein sagen und nicht Ja. Er kann ausschließlich **bearbeiten lassen**.
-* **Sprachmarke:** Sagt nie Nein, sondern "das prüfen wir gern". Benutzt den vollständigen Titel seines Gegenübers, auch bei Leuten, die keinen haben, und macht davor eine winzige Pause. Die Pause ist die Beleidigung.
+* **Sprachmarke:** Sagt nie Nein, sondern "das prüfen wir gern". Benutzt den vollständigen Titel seines Gegenübers, auch bei Leuten, die keinen haben, und macht davor eine winzige Pause. Die Pause ist die Beleidigung. *(T1: ausführlich, und seine Antworten sind die längsten des Reiches. Er umzingelt freundlich: er sagt so lange „das prüfen wir gern", bis das Gegenüber von selbst aufgibt. Die Länge tut, was er selbst nie täte. In Szene 7 kippt das: dort wird er kurz, und die Kürze ist der Moment, in dem man sieht, dass etwas zerbrochen ist.)*
 * **Harte Regel:** Er droht nie. Wenn er einmal droht, ist die Figur weg. Seine ganze Macht besteht darin, dass er freundlich bleibt und trotzdem gewinnt.
 
 #### Reichsbotin Kordula Umlauf
@@ -502,7 +507,7 @@ Erscheint ab Akt II. Sie bringt die Welt ins Dorf.
 * **Besessenheit:** Ankommen. Einmal. Irgendwo.
 * **Hindernis:** Ihr Laufzettel hat auf der Rückseite noch elf Stellen, und die Rückseite füllt sich schneller, als die Vorderseite abgearbeitet wird.
 * **Spielfunktion:** Über sie erfährt der Spieler zum ersten Mal, dass Oben ein Ort ist. Sie ist außerdem der Grund, warum Vorblatt überhaupt merkt, dass in Vordermühl etwas in Bewegung kommt: sie erzählt es weiter, ohne etwas Böses dabei zu denken, weil Erzählen ihr Beruf ist.
-* **Sprachmarke:** Redet schnell, in Aufzählungen, und hört mitten im Satz auf, weil sie weitermuss.
+* **Sprachmarke:** Redet schnell, in Aufzählungen, und hört mitten im Satz auf, weil sie weitermuss. *(T1: bleibt, wie sie ist. Ihr Gag ist der Abbruch, und ein Abbruch braucht keine Länge, sondern einen guten Zeitpunkt.)*
 * **Bleibt offen:** Ob sie ein Mensch ist oder ein Umlauf. Wie bei Lott und Pahl.
 
 #### Wetterbeauftragter Ferdinand Nieselbeck
@@ -512,7 +517,7 @@ Steht von Anfang an im Dorf.
 * **Besessenheit:** Regen. Ein einziges Mal. Er hat alles vorbereitet: einen Eimer, einen Messstab, zwei Tabellen und einen Hut.
 * **Hindernis:** Die Veranlassung für Niederschlag im Bereich VII wurde im Jahr 897 zur Klärung zurückgestellt und liegt im Frostkamm. Er weiß genau, wo. Er darf sie nicht holen, weil er für Wetter zuständig ist und nicht für Ablagen. Der Außendienst ist für Ablagen zuständig. Siehe Langvorgang 11.
 * **Spielfunktion:** Der freundlichste Running Gag des Spiels. Er meldet jeden Morgen dasselbe. Beim ersten Mal ist es komisch. Ab Schicht dreißig ist es etwas anderes.
-* **Sprachmarke:** Meldet, statt zu reden. Sagt "gemeldet wird" und dann den Satz. Ist nie enttäuscht, immer bereit.
+* **Sprachmarke:** Meldet, statt zu reden. Sagt "gemeldet wird" und dann den Satz. Ist nie enttäuscht, immer bereit. *(T1: er meldet in Spalten. Seine Sätze sind Telegramme aus den Spalten seiner Meldung, Menge, Dauer, Bodenart, Anmerkungen, und die kürzt er ab. Jedes Kürzel löst er auf Nachfrage auf, freundlich und dann, nur dann, in ganzen Sätzen: bei seinen eigenen Spalten kommt er ins Erzählen. Er ist damit der kürzeste Sprecher des Spiels und der einzige, der auf Wunsch ausführlich wird.)*
 
 #### Konrad zu Händen Aufschub, Vierter Wartender
 
@@ -741,7 +746,7 @@ Warum das richtig ist:
 
 ## 13. Humor-Grundgesetz
 
-Die elf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt, prüft sie hiergegen, bevor sie eingebaut wird.
+Die zwölf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt, prüft sie hiergegen, bevor sie eingebaut wird. *(Es waren elf bis zum 25.08.2026; die zwölfte kam mit T1 dazu. Ältere Dokumente sprechen deshalb von elf Regeln, und die Nummern 1 bis 11 zeigen unverändert dorthin, wohin sie immer zeigten.)*
 
 1. **Die Welt findet sich selbst normal, mit gezählten Ausnahmen.** *(Geändert am 23.08.2026 auf Ansage des Projektinhabers, am selben Tag wie Regel 7. Bis dahin lautete sie: „Niemand im Spiel weiß, dass er komisch ist. In dem Moment, in dem eine Figur den Witz bemerkt, ist er weg." Die Nummer bleibt stehen, damit die Verweise in Regel 10, Regel 11 und in den Phasendokumenten weiter zeigen, wohin sie zeigen.)* Der Normalfall ist unverändert und gilt für die große Mehrheit aller Zeilen: die Figuren nehmen ihre Welt vollkommen ernst, und der Witz entsteht daraus, dass niemand ihn bemerkt. Neu ist, dass die Ausnahme erlaubt ist. Eine Figur darf einmal aus ihrer Welt heraussehen, den Spieler als das ansprechen, was er ist, oder trocken bemerken, dass hier etwas nicht stimmt. Vier Bedingungen:
 
@@ -753,7 +758,7 @@ Die elf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt,
 3. **Amtsdeutsch trifft Alltag.** Der Kontrast trägt alles. "Sie verlieren Konfetti. Das ist selten gut."
 4. **Nie über Menschen lachen, immer über Zuständigkeit.** Keine Figur ist dumm. Jede Figur ist gefangen.
 5. **Absurde Regeln werden konsequent zu Ende befolgt.** Das ist Monkey Island. Wenn Monster gegrüßt werden müssen, dann grüßt man eben.
-6. **Zwei Ebenen in jedem Gag.** Zehnjährige verstehen die Situation, Erwachsene den Paragrafen. Beide lachen an derselben Stelle, aus verschiedenen Gründen. Das ist der ganze Trick der Zielgruppe 10 bis 99.
+6. **Zwei Ebenen in jedem Gag.** Neunjährige verstehen die Situation, Erwachsene den Paragrafen. Beide lachen an derselben Stelle, aus verschiedenen Gründen. Das ist der ganze Trick der Zielgruppe 9 bis 99.
 7. **Popkultur in Maßen, und nur die, die jeder kennt.** *(Geändert am 23.08.2026 auf Ansage des Projektinhabers. Bis dahin lautete die Regel: „Keine Meta-Witze, keine Popkultur, keine Anspielungen auf das Jahr der Entstehung." Die alte Fassung steht so noch in `phase-e1-empfang.md`; datierte Phasendokumente werden nicht rückwirkend umgeschrieben.)* Anspielungen und Zitate sind erlaubt. Sie tragen aber nur unter vier Bedingungen, und die vierte ist die, an der die alte Regel hing:
 
     1. **Allgemein bekannt.** Wer die Anspielung nicht erkennt, darf nichts vermissen. Die Zeile muss ohne sie vollständig sein und für sich funktionieren. Wird sie erkannt, ist sie ein zweiter Boden, nie der erste.
@@ -766,6 +771,7 @@ Die elf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schreibt,
 
     Und die Gegenprobe gehört dazu: der ganze Prunk hängt an einer Sache, die seit vierhundert Jahren nicht erledigt ist. Die Form ist maximal, der Ertrag ist null. Wo das eine ohne das andere steht, ist es kein Gag mehr, sondern nur noch Dekoration.
 11. **Der Spieler ist der Gerade.** Trockenheit braucht ein Gegenüber, das nachfragt. Eine Figur sagt den Satz, der Spieler sagt "wie bitte", und erst dadurch wird aus einer Auskunft ein Gag. Bis U3 hatte das Spiel keinen Kanal dafür, seither hat es einen. Vorher war jede Figur trocken und keine war der Gerade, und damit lief die Trockenheit ins Leere. *(Nachgetragen mit E1, 22.08.2026.)*
+12. **Belehrung ist eine Liebeserklärung.** *(Nachgetragen mit T1, 25.08.2026, zusammen mit der Formregel „Die Länge ist eine Sprachmarke".)* Wer in diesem Haus ausführlich wird, schenkt Aufmerksamkeit: Milb prüft gründlich, weil ihm die Einstufung heilig ist, Zwirn kündigt an, weil er sich freut, Nörgel begründet, weil er es trotzdem tut. Die Länge einer Antwort zeigt nie Wichtigtuerei, sondern Hingabe, und sie lacht nie über den, der zuhört; eine Figur, die lang redet, um jemanden kleinzumachen, ist nicht komisch, sondern unhöflich, und damit fällt sie unter Regel 4. Und die Länge braucht den Geraden: jede Kaskade läuft über eine Weiterklickzeile des Spielers, der jederzeit gehen darf. Wer bleibt, bleibt freiwillig, und das ist der Unterschied zwischen einem Vortrag und einer Wand aus Text. Genau hier hängt die Wärme (Regel 9): eine Figur, die zu viel erklärt, will helfen.
 
 **Warum die beiden nachkamen.** Die Rückmeldung lautete: die Witze und Anspielungen tragen nicht, niemand versteht sie. Der Befund dahinter war nicht, dass die Witze fehlten oder zu fein waren, sondern dass sie ohne Takt dastanden. `Anlage 1 liegt nicht vor` ist die Pointe des ersten Akts und stand als Feld acht von zehn in einem Formular. Der Befund gilt unverändert: mehr Anspielungen wären die falsche Antwort gewesen. *(Nachtrag 23.08.2026: Regel 7 verbietet sie seit der Änderung oben nicht mehr, sie dosiert sie. Das ändert nichts an diesem Befund. Was eine Situation nicht trägt, trägt ein Zitat erst recht nicht.)* Was trägt, ist die Situation, und die Situation braucht Zeit und ein Gegenüber. Siehe `phase-e1-empfang.md`.
 
@@ -795,6 +801,8 @@ Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. Der G
 2. **Kein Satz braucht die Langform, um verstanden zu werden.** Die Situation trägt, das Kürzel ist die zweite Etage.
 3. **Höchstens eine unerklärte Abkürzung je Gespräch.** Zwei sind Fachsprache, drei sind eine Wand.
 
+**Ausnahme, festgehalten mit T1: Nieselbecks Meldekürzel.** Der Wetterbeauftragte spricht in seiner Meldung, und eine Meldung hat Spalten: Menge, Dauer, Bodenart, Anmerkungen. Seine Spaltenkürzel (`Mg.`, `Da.`, `Ba.`, `Anm.`, dazu `Vlg.` für die Veranlassung) zählen gegen die Zwölf als **eine** Position, die Familie der Meldekürzel. Drei Bedingungen halten die Ausnahme im Zaum: erstens löst er jedes selbst auf, im eigenen Gesprächsbaum, auf die einfachste aller Fragen; zweitens stehen sie nur in seinen Zeilen und nirgends sonst; drittens gilt Grenze 2 unverändert, jede seiner Zeilen trägt auch ohne Auflösung. Statt „höchstens eine unerklärte je Gespräch" gilt bei ihm: **keine, deren Auflösung mehr als eine Nachfrage entfernt ist.** `szeneAssert()` rechnet das seit T1 bei jedem Start nach. Die Auflösung der eigenen Spalten ist die einzige Stelle, an der Nieselbeck ins Erzählen kommt, und genau das ist der Gag.
+
 **Die Eskalation läuft über die fünf Akte** und ist in `superduper-figurenleben-prompt.md`, Abschnitt 9, ausgeschrieben: erst gewöhnliche Kürzel, dann die Abkürzung einer Abkürzung, dann dasselbe Kürzel für zweierlei, dann eine Langform, die niemand mehr kennt, und zuletzt die einzige, die niemand je abgekürzt hat.
 
 **Formregeln, aus dem bestehenden Projekt übernommen und hier verbindlich für alle Texte:**
@@ -803,7 +811,7 @@ Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. Der G
 * Keine Emojis in Figurentexten.
 * Zeichendeckel einhalten (Zettelzeile 1 max. 48, Zeile 2 max. 32, Randnotiz max. 44).
 * Höchstens eine Taste pro Hinweis.
-* Kurze Sätze. Zwei sind genug. Drei sind schon zu viel.
+* **Die Länge ist eine Sprachmarke.** Wie viel eine Figur redet, sagt ihre Sprachmarke in Kapitel 8, nicht eine Hausregel. Beamte dieses Hauses sind in Erklärungen und Belehrungen ausführlich: wer zuständig ist, begründet, und wer begründet, hört so schnell nicht auf. Ausführlich heißt viele kurze Sätze hintereinander, nie lange Zeilen: der Zeichendeckel bleibt, die Länge entsteht als Kaskade über mehrere Tafelzüge, und der Spieler bleibt der Gerade, der weiterklicken darf (Regel 11). Knapp ist ab jetzt eine Auszeichnung: sie gehört den Figuren, deren Marke sie ist (Zapf, Knöterich, Lott, Sturz), und jedem Werkzeugtext (Zettel, Randnotiz, Formular, Schild, Blatt), denn Post begründet ihre eigene Kürze. *(Bis zum 25.08.2026 stand hier: „Kurze Sätze. Zwei sind genug. Drei sind schon zu viel." Als Deckel für alle hat die Regel alle Figuren gleich klingen lassen. Geändert auf Ansage des Projektinhabers, siehe `phase-t1-tonlage.md`.)*
 
 ---
 
@@ -917,7 +925,7 @@ W8 beantwortet „was ist das hier und warum", nicht „was macht dieser Knopf, 
 
 Kapitel 5 und 18.2. Der eine Kauf, den dieses Spiel anbietet, und die einzige Art, wie derselbe Mensch zweimal antreten kann.
 
-* **Eine Gebühr, keine Bestechung.** Bezahlt wird an die Amtskasse, nicht an eine Person. Niemand im Haus nimmt Geld, niemand drückt ein Auge zu. Humor-Grundgesetz 2, 4 und 8 lassen nichts anderes zu, und die Zielgruppe ab 10 erst recht nicht.
+* **Eine Gebühr, keine Bestechung.** Bezahlt wird an die Amtskasse, nicht an eine Person. Niemand im Haus nimmt Geld, niemand drückt ein Auge zu. Humor-Grundgesetz 2, 4 und 8 lassen nichts anderes zu, und die Zielgruppe ab 9 erst recht nicht.
 * **Die Begründung stand schon in Kapitel 5.** Eine Verlängerung wäre eine Neubesetzung, eine Neubesetzung erfordert eine Ausschreibung, eine Ausschreibung erfordert die Amtsleitung, und die gibt es nicht. Ein Antrag auf Wiedereinsetzung in den vorigen Stand ist aber keine Neubesetzung, sondern eine Berichtigung: anderer Paragraf, keine Ausschreibung, keine Leitung nötig. Der N.-N.-Gag arbeitet hier zum ersten Mal für den Spieler statt gegen ihn.
 * **Der Stand wird eng ausgelegt.** Zurück kommen die halbe Stufe und das Gesicht. Nicht zurück kommen Ausrüstung (Amtsvermögen), Zauber und Skillpunkte (Beurteilung, keine Sache). Man bekommt genau den Teil wieder, der das Haus nichts kostet. Mechanisch heißt das: Zähigkeit zurück, Können nicht.
 * **Zwei Regeln bleiben unangetastet.** „Persönliche Qualifikation ist nicht übertragbar" gilt wörtlich weiter, denn es wird nichts übertragen, wenn niemand wechselt. Und 18.2 bleibt in Kraft: der Rang kostet weiterhin kein Gold, der Antrag fasst `amt.schichten` nicht an.
@@ -1479,5 +1487,5 @@ Vor dem Einbau, jede Zeile einzeln:
 3. Gedankenstrich, Emoji, Blut? Dann raus.
 4. Zeichendeckel eingehalten, auch in der Touch-Fassung?
 5. Mehr als eine Taste genannt?
-6. Funktioniert die Zeile für eine Zehnjährige? Funktioniert sie für eine Neunundneunzigjährige? Wenn nur eins von beidem: umschreiben, nicht streichen.
+6. Funktioniert die Zeile für eine Neunjährige? Funktioniert sie für eine Neunundneunzigjährige? Wenn nur eins von beidem: umschreiben, nicht streichen.
 7. Lacht die Zeile über eine Person oder über eine Zuständigkeit?

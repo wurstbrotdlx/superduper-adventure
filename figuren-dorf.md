@@ -6,7 +6,7 @@ Inhaltslieferung zu Bauabschnitt **W3** ("Das Dorf spricht") aus `superduper-wel
 
 **Sperrvermerk, unverändert aus Kapitel 7, hier auf alle elf Figuren angewandt:** keine Figur erklärt oder deutet an, wie die Beglaubigung im Kessel rechnet (Substantiv=Slot, Adjektiv=Wirkung, Seltenheit=Alter des Aktenzeichens, drei Zutaten=dreifache Ausfertigung, Fluch=Bewilligung+Auflage im selben Bescheid, zwei harte Flüche=Verhältnismäßigkeit). Figuren dürfen über Akten, den Krieg, das Amt, ihre eigene Lage und den Vorgang 1 reden, nie über die Zutaten-Mechanik.
 
-**Formregeln, unverändert aus Kapitel 13:** keine Gedankenstriche, keine Emojis, kurze Sätze. **Zeichendeckel:** Dialogzeile 1 (`z1`) höchstens 48 Zeichen, Zeile 2 (`z2`) höchstens 32 Zeichen, einzeilige Aktzeile höchstens 44 Zeichen. Alle Werte unten sind gegengezählt, nicht geschätzt.
+**Formregeln, unverändert aus Kapitel 13:** keine Gedankenstriche, keine Emojis, Länge nach Sprachmarke *(Stand T1, 25.08.2026; bis dahin stand hier „kurze Sätze" als Deckel für alle)*. **Zeichendeckel:** Dialogzeile 1 (`z1`) höchstens 48 Zeichen, Zeile 2 (`z2`) höchstens 32 Zeichen, einzeilige Aktzeile höchstens 44 Zeichen. Alle Werte unten sind gegengezählt, nicht geschätzt.
 
 **Zwei Optik-Gruppen für den Einbau** (Entscheidung, keine Erfindung neuer Assets — siehe Plan zu W3):
 

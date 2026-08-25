@@ -151,7 +151,11 @@ Vor der ersten Zeile lesen und danach gegen jede Zeile halten:
   es ist an dieser Stelle gesperrt und hat schon einmal eine fertige Zeile gekostet
   (siehe Bramsches Rangantwort in `figuren-dorf.md`).
 * **Formregeln.** Keine Gedankenstriche in Spieltexten. Keine Emojis in Figurentexten.
-  Kurze Sätze, zwei sind genug, drei sind zu viel. Höchstens eine Taste pro Hinweis.
+  Länge nach Sprachmarke (Weltbibel Kapitel 13, Stand T1): ausführliche Figuren
+  kaskadieren über mehrere Tafelzüge, knappe bleiben knapp, und Werkzeugtexte
+  (Zettel, Randnotiz, Blatt, Formular) bleiben in jedem Fall kurz. Höchstens eine
+  Taste pro Hinweis. *(Bis zum 25.08.2026 stand hier „kurze Sätze, zwei sind genug,
+  drei sind zu viel" als Deckel für alle Figuren.)*
 * **Zeichendeckel, gegengezählt und nicht geschätzt:** `z1` höchstens 48 Zeichen,
   `z2` höchstens 32, Aktzeile (Einzeiler) höchstens 44, Namensschild höchstens 24
   (`SCHILD_DECKEL`), Antwortzeile im Gesprächsfenster höchstens 28 (`ANTWORT_DECKEL`).
@@ -179,7 +183,11 @@ Handgriffe:
 5. **Die höfliche Katastrophe.** Niemand ist böse, alle sind zuvorkommend, und genau das
    ist der Schrecken. Das Reich ist nicht drohend, es ist erleichtert.
 6. **Untertreibung schlägt Zuspitzung.** „Das war der Brandabschnitt." ist der ganze Satz.
-   Wer erklärt, hat verloren.
+   Wer eine **Pointe** erklärt, hat verloren. Wer ein **Verfahren** erklärt, fängt gerade
+   erst an: die Belehrung ist seit T1 eine eigene Gagform (Humor-Grundgesetz 12), und ihr
+   Witz liegt darin, dass die Gründlichkeit echt ist und das Ergebnis trotzdem schief.
+   Erklärt wird das Verfahren, nie der Witz und nie die Welt; der Sperrvermerk bleibt
+   Sperrvermerk.
 7. **Der volle Einsatz für die falsche Sache.** Niemand ist faul, jeder ist gründlich.
    Nicht über Menschen lachen, immer über Zuständigkeit.
 8. **Wärme unten drunter.** Jede Figur versucht etwas, und am Ende gelingt es. Ohne diese
@@ -192,7 +200,7 @@ Die alte Regel 7 („keine Meta-Witze, keine Popkultur, keine Anspielungen") ist
 heißt sie ausgeschrieben:
 
 * **Erlaubt sind Anspielungen und Zitate, die jeder kennt.** Die Schwelle ist nicht
-  „Kenner erkennen es", sondern „eine Zehnjährige und eine Neunundneunzigjährige haben es
+  „Kenner erkennen es", sondern „eine Neunjährige und eine Neunundneunzigjährige haben es
   beide schon einmal gehört". Alles Speziellere ist ein Zwinkern unter Eingeweihten und
   bleibt draußen.
 * **Die Zeile muss ohne die Anspielung vollständig sein.** Wer sie nicht erkennt, darf
@@ -313,6 +321,12 @@ gegen die Materialausgabe, Zapf sieht nur den Schaden. Niemand kommentiert alles
 **Was ausdrücklich nicht wächst:** `grund` und `akt` bleiben, wie sie sind. Sechs
 Grundzeilen und fünf Aktzeilen je Figur sind Bestand, und Bestand wird in diesem Projekt
 nicht umgeschrieben, sondern ergänzt. Alles Neue kommt als `zusatz` oder `anlass` dazu.
+
+**Ausnahme T1** (`phase-t1-tonlage.md`, 25.08.2026): die Tonlagen-Reform darf bestehende
+Zeilen umschreiben, weil die Regel, an der sie entlanggeschrieben wurden, nicht mehr gilt.
+Die Zahlen bleiben (sechs Grundzeilen, fünf Aktzeilen), die Auflage auch: jede
+umgeschriebene Zeile durchläuft die dreistufige Prüfung neu und wird im Phasendokument
+gezählt. Für jede Lieferung nach T1 gilt der Satz oben unverändert weiter.
 
 **Bramsche** bekommt zusätzlich acht neue Fragen in ihrer Antworttabelle, alle aus den
 Hintergrundgeschichten der anderen: sie ist der Hinweisgeber, und ab F1 lohnt es sich,
@@ -896,7 +910,7 @@ war, hat einen Fund und keine Tapete.
 
 ## 14. Was ausdrücklich nicht passiert
 
-* Keine bestehende Zeile aus `figuren-dorf.md` wird geändert. F1 ist Zuwachs.
+* Keine bestehende Zeile aus `figuren-dorf.md` wird geändert. F1 ist Zuwachs. *(Gilt für F1. T1 hebt den Satz für seine eigene Lieferung ausdrücklich auf, siehe `phase-t1-tonlage.md`, Abschnitt 5.)*
 * Keine Kesselgrammatik, in keiner Andeutung, von keiner Figur.
 * Kein Monster bekommt einen Titel. Ausnahme bleibt Fürst Nachtrag.
 * Der Kaiser wird nirgends in der Vergangenheit erwähnt.
