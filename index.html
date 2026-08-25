@@ -9715,10 +9715,28 @@ function zulageBildPfad(zf, stufe){
   return (typeof b === 'string' ? b : b[stufe - 1]) || null;
 }
 
-function zulageKarteHTML(zf, stufe, extra){
+// Der Pfad aus dem Katalog ist eine Datei neben index.html — das gilt aber nur
+// im Quellbaum. Der Einzeldatei-Build liefert eine HTML ohne assets/ daneben
+// (GitHub Pages laedt genau die eine Datei hoch), dort ist derselbe Pfad nur
+// noch der Schluessel in ASSET_BLOBS. Ein festes src="assets/..." war deshalb
+// die zweite Ladestelle, vor der der Kommentar bei knZettelPortrait() warnt:
+// im Spiel unsichtbar, in der ausgelieferten Fassung fuenfundvierzig kaputte
+// Bildsymbole auf den Karten.
+//
+// Fehlt der Schluessel im Build, gibt es das Bild nicht und ein Ladeversuch
+// waere ein sicherer 404 — dieselbe Regel wie in loadAssets(). Dann faellt die
+// Karte auf das Sinnbild zurueck, den Weg, den sie ohnehin geht, solange kein
+// Bild danebenliegt.
+function zulageBildQuelle(zf, stufe){
   const pfad = zulageBildPfad(zf, stufe);
-  const bild = pfad ? `<img src="${pfad}" alt="">`
-                    : `<span class="zIcon">${zf.icon}</span>`;
+  if(!pfad) return null;
+  return ASSET_BLOBS ? (ASSET_BLOBS[pfad] || null) : pfad;
+}
+
+function zulageKarteHTML(zf, stufe, extra){
+  const quelle = zulageBildQuelle(zf, stufe);
+  const bild = quelle ? `<img src="${quelle}" alt="">`
+                      : `<span class="zIcon">${zf.icon}</span>`;
   return `<div class="zulKarte s${stufe}${extra || ''}">
     <div class="zKopf">
       <span class="zName">${zulageName(zf, stufe)}</span>
@@ -19527,6 +19545,15 @@ function zulagenAssert(){
             const soll = id + '-' + st + '.jpg';
             if(!pfad.endsWith('/' + soll))
               fehler('Bildpfad passt nicht zu Familie und Stufe', id, st, pfad, 'erwartet ' + soll);
+            // Und der Pfad muss dort, wo die Karte laeuft, auch etwas laden.
+            // Im Einzeldatei-Build liegt kein assets/ neben der HTML, dort ist
+            // der Pfad nur ein Schluessel in ASSET_BLOBS. Was der Build nicht
+            // eingebacken hat (uebersprungener Ordner, umbenannte Datei), ist
+            // auf der Karte ein kaputtes Bildsymbol, und zwar ausschliesslich
+            // in der ausgelieferten Fassung. Genau so ist es passiert, und
+            // genau deshalb steht die Frage hier und nicht nur im Quellbaum.
+            if(ASSET_BLOBS && !ASSET_BLOBS[pfad])
+              fehler('Bildpfad liegt nicht im Einzeldatei-Build', id, st, pfad);
           }
         }
       }
