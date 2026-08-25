@@ -614,7 +614,42 @@ Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emoji
 
 **Bild:** Wir sehen nie ein Gesicht. Wir sehen einen Schreibtisch von oben. Eine Hand legt Papiere hin, eins nach dem anderen. Zwischen den Blättern jeweils ein Stempelgeräusch. Sonst nichts. Kein Erzähler mit Pathos, sondern eine ruhige Stimme, die vorliest, was auf dem Blatt steht.
 
-**Dauer:** unter zwei Minuten. Neun Blätter.
+**Dauer:** unter einer Minute. Fünf Blätter. *(Gebaute Fassung, Stand T1. Die Langfassung mit neun Blättern steht darunter und ist die Quelle geblieben.)*
+
+> **Blatt I.** Ein Schreiben, zwei Zeilen lang. Daneben dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.
+> STIMME: Wer räumt das Papier aus dem Fluss? Um Nachricht wird gebeten.
+> STIMME: Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.
+> STIMME: Auf keinem steht ein Ausgang.
+> *(Ganz unten auf dem letzten, in anderer Schrift: "Es ist eine kurze Frage.")*
+
+> **Blatt II.** Ein Bericht mit einer Tabelle. Darunter ein Abkommen, drei Unterschriftsfelder, zwei davon ausgefüllt.
+> STIMME: Acht Jahre. Verluste an Bearbeitungskapazität: erheblich.
+> STIMME: Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.
+> STIMME: Der Friede wurde in dreifacher Ausfertigung aufgesetzt. Die dritte war für die andere Seite.
+> *(Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.)*
+
+> **Blatt III.** Ein Umschlag. Die Anschrift ist ein Gekritzel.
+> STIMME: Der Bote konnte sie nicht lesen.
+> STIMME: Er hat den Umschlag nicht weggeworfen. Er hebt ihn auf, bis er ihn lesen kann.
+> *(Die Hand legt ihn nicht auf den Stapel. Sie legt ihn beiseite.)*
+
+> **Blatt IV.** Ein handgeschriebenes Schild. Darauf steht: Provisorium.
+> STIMME: Für die abschließende Bearbeitung ist eine Stelle einzurichten.
+> STIMME: Die Stelle ist vorläufig.
+> STIMME: Das war vor vierhundert Jahren.
+
+> **Blatt V.** Ein Formular. Oben steht: Einstellung für einen Tag. Das Namensfeld ist leer.
+> STIMME: Was nicht bearbeitet wird, wird lebendig.
+> STIMME: Es läuft inzwischen ziemlich viel herum.
+> STIMME: Heute sind Sie dran.
+> *(Die Hand schiebt das Formular nach vorn, auf die Kamera zu, und legt einen Stift daneben.)*
+
+**Warum fünf und nicht neun.** Der Befund des Projektinhabers lautete "viel zu lang", und er meinte den ganzen Anfang. Vier der neun Blätter waren paarweise dasselbe Bild zweimal: die Rückfrage und dieselbe Rückfrage sechsmal gemahnt sind ein Bild und eine Eskalation, der Bericht und das Abkommen mit dem leeren dritten Feld sind Ursache und Folge in einem Zug. Gestrichen sind die alten Blätter 1 und 2. Der Plan mit den zwölf Zeilen und die Kaisertür mit dem Schild IM TERMIN sind beide wahr und beide gut, aber sie erklären auf Blatt 1 etwas, wonach noch niemand gefragt hat. Sie stehen weiter in Kapitel 1 und in Aktenserie H, und der Spieler findet sie dort, wenn er so weit ist.
+
+Was übrig bleibt, ist eine Kette ohne Seitenwege: eine kleine Frage, niemand antwortet, acht Jahre, ein Friede, dem eine Unterschrift fehlt, ein Brief, den niemand lesen konnte, eine Stelle auf Zeit, die vierhundert Jahre alt ist. Und heute Sie.
+
+<details>
+<summary>Die Langfassung mit neun Blättern, Stand bis 25.08.2026</summary>
 
 > **Blatt 1.** Ein Plan mit zwölf Zeilen.
 > STIMME: Im Jahr null teilte jemand die Welt in zwölf Bereiche und schrieb daneben, wer sich kümmert.
@@ -660,9 +695,11 @@ Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emoji
 > STIMME: Heute sind Sie dran.
 > *(Die Hand schiebt das Formular nach vorn, auf die Kamera zu, und legt einen Stift daneben.)*
 
+</details>
+
 **Bild aus. Titel. Danach beginnt das Spiel genau dort, wo es heute schon beginnt: beim Einstellungsvordruck aus W8.**
 
-**Mit Bordmitteln:** Neun Standbilder oder neun gerenderte Blattgrafiken im bestehenden Blattstil aus W2, je zwei Textzeilen darunter, weiterklicken mit einer Taste. Kein Kameraskript, keine Animation, kein Ton nötig. Wer noch weiter sparen will, baut das Intro als **Blattserie 0 in der Kladde**, die beim ersten Spielstart automatisch aufgeschlagen ist. Dann ist es technisch ein bestehendes Panel und trotzdem ein Intro.
+**Mit Bordmitteln:** Standbilder oder gerenderte Blattgrafiken im bestehenden Blattstil aus W2, je zwei Textzeilen darunter, weiterklicken mit einer Taste. Kein Kameraskript, keine Animation, kein Ton nötig. Wer noch weiter sparen will, baut das Intro als **Blattserie 0 in der Kladde**, die beim ersten Spielstart automatisch aufgeschlagen ist. Dann ist es technisch ein bestehendes Panel und trotzdem ein Intro.
 
 ---
 

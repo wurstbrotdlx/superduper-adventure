@@ -161,7 +161,7 @@ async function bisZumEmpfang(page){
   pruef('Knoeterich nennt zuerst seinen Namen',
         (await gesagt(page)).includes('Knöterich'), true);
   const beats = await durchDieVorstellung(page);
-  pruef('die Vorstellung hat fuenf Zuege', beats, 5);
+  pruef('die Vorstellung hat drei Zuege', beats, 3);
 
   // Waehrend der Tafeln, nicht danach: mit der letzten faellt die Buehne, und
   // eine Messung hinterher haette genau das nicht gesehen.
@@ -173,10 +173,10 @@ async function bisZumEmpfang(page){
   // absichtlich ausgetauscht wurde. Die uebrigen 57 stehen unveraendert und
   // sind damit der Beweis, dass der Anfang den Umbau der Maschine ueberlebt hat.
   pruef('das erste Introblatt steht', await page.evaluate(() =>
-        el('ovPanel').textContent.includes('zwölf Bereiche')), true);
+        el('ovPanel').textContent.includes('aus dem Fluss')), true);
 
   const tafeln = await durchDenAnriss(page);
-  pruef('das Intro hat neun Blaetter', tafeln, 9);
+  pruef('das Intro hat fuenf Blaetter', tafeln, 5);
   pruef('danach ist das Overlay weg', await page.evaluate(() => el('overlay').style.display), 'none');
   pruef('und die Buehne faellt fuer den Empfang',
         await page.evaluate(() => el('introBuehne').style.display), 'none');
@@ -226,7 +226,6 @@ async function bisZumEmpfang(page){
   pruef('drei Lesarten stehen zur Wahl', (await antworten(page)).length, 3);
   await waehle(page, 'Weiblich');
   pruef('die Angabe ist uebernommen', await page.evaluate(() => amt.gestalt), 'w');
-  await waehle(page, 'Unterschreiben');
   await waehle(page, 'Dienst antreten');
   await page.waitForTimeout(1500);
   pruef('das Spiel laeuft', await page.evaluate(() => state), 'play');

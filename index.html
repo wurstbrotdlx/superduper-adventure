@@ -20660,12 +20660,25 @@ const AKTE_SPERRE_NAMEN = ['Nachtrag', 'Trepp', 'Sturz', 'Schattenfürst', 'Amts
 
 // --- Szene 1: Das Intro ------------------------------------------------------
 //
-//  Neun Blaetter aus weltgeschichte.md, Kapitel 8, woertlich. Sie ersetzen die
-//  fuenf Anrisstafeln aus E1 und stehen an derselben Stelle im Ablauf: nach
+//  Fuenf Blaetter aus weltgeschichte.md, Kapitel 8. Sie ersetzen die fuenf
+//  Anrisstafeln aus E1 und stehen an derselben Stelle im Ablauf: nach
 //  Knoeterichs Vorstellung, vor dem Empfang. Das ist kein Nebeneinander, es ist
 //  ein Austausch, und er hat einen Grund. Beide erzaehlen dieselben
 //  vierhundert Jahre. Die Tafeln taten es in fuenf Behauptungen, das Intro tut
-//  es in neun Dokumenten, und Dokumente sind das, was dieses Haus hat.
+//  es in Dokumenten, und Dokumente sind das, was dieses Haus hat.
+//
+//  T1: Es waren neun, jetzt sind es fuenf, und der Befund dazu lautete "viel
+//  zu lang". Vier davon waren paarweise dasselbe Bild zweimal: die Rueckfrage
+//  und dieselbe Rueckfrage sechsmal gemahnt sind EIN Bild und eine Eskalation,
+//  der Bericht und das Abkommen mit dem leeren dritten Feld sind Ursache und
+//  Folge in einem Zug. Gestrichen sind die beiden ersten, die Weltordnung mit
+//  den zwoelf Bereichen und die Kaisertuer mit dem Schild IM TERMIN. Beide sind
+//  wahr, beide sind gut, und beide erklaeren etwas, wonach auf Blatt 1 noch
+//  niemand gefragt hat; sie stehen weiter in weltgeschichte.md, Kapitel 1, und
+//  in Aktenserie H. Was bleibt, ist eine Kette ohne Seitenwege: eine kleine
+//  Frage, niemand antwortet, acht Jahre, ein Friede, dem eine Unterschrift
+//  fehlt, ein Brief, den niemand lesen konnte, eine Stelle auf Zeit, die
+//  vierhundert Jahre alt ist. Und heute Sie.
 //
 //  Die Reihenfolge aus E2 traegt es zusaetzlich: erst der Mann, dann seine
 //  Geschichte. Nach der Vorstellung sind diese neun Blaetter nicht die Stimme
@@ -20677,38 +20690,22 @@ const AKTE_SPERRE_NAMEN = ['Nachtrag', 'Trepp', 'Sturz', 'Schattenfürst', 'Amts
 //  tut. Alles drei ist freier Panel-Text ohne Zeichendeckel, wie die Tafeln
 //  vorher auch.
 const INTRO_BLAETTER = [
-  {blatt:'Ein Plan mit zwölf Zeilen.',
-   stimme:['Im Jahr null teilte jemand die Welt in zwölf Bereiche und schrieb daneben, wer sich kümmert.',
-           'Sechs gelten als abgeschlossen. Fünf wurden nie eingerichtet.',
-           'Und dann gibt es uns.']},
-
-  {blatt:'Ein Türschild. Darauf steht IM TERMIN.',
-   stimme:['Der Kaiser liest seit dem Jahr fünfhundertachtundachtzig seine Post.',
-           'Man klopft nicht.']},
-
-  {blatt:'Ein sehr kurzes Schreiben, zwei Zeilen.',
-   stimme:['Wer räumt das Papier aus dem Fluss?',
-           'Um Nachricht wird gebeten.'],
-   regie:'Die Hand legt es auf einen Stapel. Der Stapel ist schon hoch.'},
-
-  {blatt:'Dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.',
-   stimme:['Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.',
+  {blatt:'Ein Schreiben, zwei Zeilen lang. Daneben dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.',
+   stimme:['Wer räumt das Papier aus dem Fluss? Um Nachricht wird gebeten.',
+           'Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.',
            'Auf keinem steht ein Ausgang.'],
    regie:'Ganz unten auf dem letzten, in anderer Schrift: Es ist eine kurze Frage.'},
 
-  {blatt:'Ein Bericht, sehr sachlich, mit einer Tabelle.',
+  {blatt:'Ein Bericht mit einer Tabelle. Darunter ein Abkommen, drei Unterschriftsfelder, zwei davon ausgefüllt.',
    stimme:['Acht Jahre. Verluste an Bearbeitungskapazität: erheblich.',
-           'Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.']},
-
-  {blatt:'Ein Abkommen. Drei Unterschriftsfelder. Zwei sind ausgefüllt.',
-   stimme:['Der Friede wurde in dreifacher Ausfertigung aufgesetzt.',
-           'Eine für uns. Eine fürs Archiv. Eine für die andere Seite.',
-           'Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.']},
+           'Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.',
+           'Der Friede wurde in dreifacher Ausfertigung aufgesetzt. Die dritte war für die andere Seite.'],
+   regie:'Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.'},
 
   {blatt:'Ein Umschlag. Die Anschrift ist ein Gekritzel.',
-   stimme:['Der Bote konnte die Anschrift nicht lesen.',
-           'Er hat sie nicht weggeworfen. Er hat sie behalten, bis er sie lesen kann.'],
-   regie:'Die Hand legt den Umschlag nicht auf den Stapel. Sie legt ihn beiseite.'},
+   stimme:['Der Bote konnte sie nicht lesen.',
+           'Er hat den Umschlag nicht weggeworfen. Er hebt ihn auf, bis er ihn lesen kann.'],
+   regie:'Die Hand legt ihn nicht auf den Stapel. Sie legt ihn beiseite.'},
 
   {blatt:'Ein handgeschriebenes Schild. Darauf steht: Provisorium.',
    stimme:['Für die abschließende Bearbeitung ist eine Stelle einzurichten.',
@@ -20824,10 +20821,21 @@ const szeneOffen = () => szeneFragen().filter(f =>
 // DIENSTBLATT.felder: szeneAssert() baut die Liste beim Start genauso wie
 // die Tafel beim Rendern, und beide sehen dasselbe.
 const EMPFANG_KNOTEN = {
-  // E2: Die fünf Knoten der Vorstellung. Sie laufen vor dem Anriss und auf
+  // E2: Die Knoten der Vorstellung. Sie laufen vor dem Anriss und auf
   // schwarzem Grund, und sie beheben einen Fehlstand der ersten Fassung:
   // Knöterich sprach dort als erster Mensch des Spiels, ohne dass jemand
   // gesagt hätte, wer er ist. Er war irgendwer mit einem Formular.
+  //
+  // T1: Es sind drei statt fünf. Die alten Züge 3, 4 und 5 trugen denselben
+  // Gedanken dreimal (er ist außer Dienst, er ist trotzdem im Dienst, das ist
+  // kein Widerspruch), und drei Züge für einen Gedanken sind ein Vortrag und
+  // keine Vorstellung. Was bleibt, bleibt aus einem Grund: "Außer Dienst" ist
+  // die Auflösestelle von a. D. (Kapitel 13, der laufende Gag), "Das ist
+  // Verwaltung." ist die Pointe, und "Setzen Sie sich nicht hin." ist der
+  // Aufhänger, auf den die erste Empfangsfrage zurückzeigt. Weggefallen ist
+  // "Ich führe Buch. Seit vierzig Jahren." Der Satz steht zweimal weiter
+  // hinten in denselben Worten, bei nn und bei geheim, und trifft dort härter,
+  // weil er dann eine Auskunft verweigert statt eine anzukündigen.
   //
   // Sie tun zugleich etwas fürs Erzählen. Nach dieser Vorstellung sind die
   // Anrisstafeln nicht mehr eine Stimme aus dem Nichts, sondern SEIN Bericht.
@@ -20846,18 +20854,8 @@ const EMPFANG_KNOTEN = {
   },
   vorstellung3: {
     z1:'Ich bin beides. Das ist kein Widerspruch.',
-    z2:'Das ist Verwaltung.',
-    opts: () => [{t:'Und was tun Sie hier?', zu:'vorstellung4'}],
-  },
-  vorstellung4: {
-    z1:'Ich führe Buch. Seit vierzig Jahren.',
-    z2:'Jemand muss aufschreiben, was hier geschieht.',
-    opts: () => [{t:'Was geschieht hier denn?', zu:'vorstellung5'}],
-  },
-  vorstellung5: {
-    z1:'Setzen Sie sich nicht hin. Das dauert.',
-    z2:'Ich sage es einmal. Hören Sie zu.',
-    opts: () => [{t:'Ich höre.', tun:() => empfangAnriss()}],
+    z2:'Das ist Verwaltung. Setzen Sie sich nicht hin.',
+    opts: () => [{t:'Was geschieht hier?', tun:() => empfangAnriss()}],
   },
 
   gruss: {
@@ -20875,25 +20873,22 @@ const EMPFANG_KNOTEN = {
     z2:'Wie soll das Haus Sie anschreiben?',
     opts: () => GESTALT_WAHL.map(g => ({
       t: g.kurz.charAt(0).toUpperCase() + g.kurz.slice(1) + '.',
-      tun: () => { amt.gestalt = g.key; saveAmt(); szeneKnoten('vermerkt'); },
+      tun: () => { amt.gestalt = g.key; saveAmt(); szeneKnoten('schluss'); },
     })),
   },
-  vermerkt: {
-    z1:'Vermerkt.',
-    z2:'Auf Dienst und Laufbahn wirkt das nicht.',
+
+  // T1: Der Vermerk und der Schluss waren zwei Zuege und sagten zusammen einen
+  // Satz. Die Folgenlosigkeit der Anrede (phase-anrede.md) bleibt gesprochen,
+  // sie ist die Pointe des Feldes; die zweite Zeile sagt, wo unterschrieben
+  // wird, und beides passt in einen Zug. Der Weg ueber den Vordruck behaelt
+  // seine Beschriftung, damit er derselbe Weg bleibt.
+  schluss: {
+    z1:'Vermerkt. Auf die Laufbahn wirkt es nicht.',
+    z2:'Unten unterschreiben. Oben ist für die Leitung.',
     opts: () => [
-      {t:'Unterschreiben.',        zu:'schluss'},
+      {t:'Dienst antreten.',       tun:() => empfangEnde()},
       {t:'Erst den Vordruck.',     tun:() => empfangVordruck()},
       {t:'Ich hätte noch Fragen.', zu:'gruss', wenn:() => szeneOffen().length > 0},
-    ],
-  },
-
-  schluss: {
-    z1:'Unten unterschreiben. Oben bleibt frei.',
-    z2:'Oben ist für die Leitung. Viel Erfolg heute.',
-    opts: () => [
-      {t:'Dienst antreten.', tun:() => empfangEnde()},
-      {t:'Vordruck lesen.',  tun:() => empfangVordruck()},
     ],
   },
 };
