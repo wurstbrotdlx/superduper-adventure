@@ -6177,6 +6177,11 @@ const WIRKUNG = {
 //    satz       Anzeigetext je Stufe. Ganze Saetze, KEINE Zahlen, keine
 //               Gedankenstriche (Weltbibel Kapitel 13). Gerechnet wird intern,
 //               zulagenAssert() prueft beides bei jedem Laden nach.
+//    bild       (freiwillig) Feld aus bis zu drei Pfaden, EINES JE STUFE. Die
+//               drei Stufen zeigen dieselbe Sache in drei Haertegraden, und
+//               diese Eskalation ist der Sammelanreiz. Luecken sind erlaubt,
+//               dann steht dort das Sinnbild. Ein einzelner Pfad gilt fuer
+//               alle drei. Siehe zulagen-bildprompts.md.
 //
 //  Zu den &shy; in den Namen: das sind weiche Trennstellen an den Fugen der
 //  Komposita. Sie gehen durch innerHTML und werden dort zum unsichtbaren
@@ -8628,12 +8633,29 @@ function zulageArtZeile(zf){
 }
 
 // Die Karte in der Bauform einer Sammelkarte: Namensleiste, Bildfenster,
-// Typenzeile, Textfeld. Das Bildfenster nimmt ein <img>, sobald der Katalog
-// ein 'bild' traegt, und sonst das Sinnbild gross. Damit ist der Weg von
-// Emoji zu gemalter Kartenkunst eine Zeile im Katalog und keine Zeile hier.
+// Typenzeile, Textfeld.
+//
+// Das Bildfenster nimmt ein <img>, sobald der Katalog fuer DIESE STUFE ein
+// Bild traegt. 'bild' ist deshalb ein Feld mit bis zu drei Pfaden, eines je
+// Stufe: die drei Stufen einer Familie zeigen dieselbe Sache in drei
+// Haertegraden, und genau diese Eskalation ist der Grund, eine Sammlung
+// ueberhaupt vollmachen zu wollen. Ein einzelner Pfad statt eines Feldes gilt
+// weiter und dann fuer alle drei.
+//
+// Fehlt der Eintrag, faellt die Karte auf das Sinnbild zurueck. Das ist kein
+// Notbehelf, sondern Absicht: fuenfundvierzig Bilder entstehen nicht an einem
+// Tag, und ein halb gefuellter Katalog darf das Panel nicht mit leeren
+// Rahmen zupflastern.
+function zulageBildPfad(zf, stufe){
+  const b = zf.bild;
+  if(!b) return null;
+  return (typeof b === 'string' ? b : b[stufe - 1]) || null;
+}
+
 function zulageKarteHTML(zf, stufe, extra){
-  const bild = zf.bild ? `<img src="${zf.bild}" alt="">`
-                       : `<span class="zIcon">${zf.icon}</span>`;
+  const pfad = zulageBildPfad(zf, stufe);
+  const bild = pfad ? `<img src="${pfad}" alt="">`
+                    : `<span class="zIcon">${zf.icon}</span>`;
   return `<div class="zulKarte s${stufe}${extra || ''}">
     <div class="zKopf">
       <span class="zName">${zulageName(zf, stufe)}</span>
@@ -17530,10 +17552,31 @@ function zulagenAssert(){
         fehler('Zweig ausserhalb der Zauberzweige', id, zf.zweig);
       if(typeof zf.stapelbar !== 'boolean') fehler('Familie sagt nicht, ob sie stapelt', id);
       // Das Bildfeld ist freiwillig, solange das Sinnbild ein Emoji ist. Steht
-      // eines da, muss es ein Pfad sein: ein leerer String liesse ein <img> mit
-      // leerem src im Kartenfenster stehen, und das ist im Bild ein Loch.
-      if('bild' in zf && (typeof zf.bild !== 'string' || !zf.bild.trim()))
-        fehler('Bildfeld ist kein Pfad', id, zf.bild);
+      // eines da, muss es ein Pfad sein oder ein Feld aus bis zu drei Pfaden,
+      // eines je Stufe. Ein leerer String liesse ein <img> mit leerem src im
+      // Kartenfenster stehen, und das ist im Bild ein Loch; ein viertes Bild
+      // waere eine Stufe, die es nicht gibt, und wuerde nie gezeigt.
+      if('bild' in zf){
+        const b = zf.bild;
+        if(Array.isArray(b)){
+          if(!b.length) fehler('Bildfeld ist ein leeres Feld', id);
+          if(b.length > 3) fehler('Bildfeld traegt mehr Bilder als Stufen', id, b.length);
+          b.forEach((pfad, i) => {
+            // Luecken sind erlaubt (die Bilder entstehen nach und nach), aber
+            // was dasteht, muss ein Pfad sein.
+            if(pfad !== null && pfad !== undefined && (typeof pfad !== 'string' || !pfad.trim()))
+              fehler('Bildpfad ist keiner', id, 'Stufe ' + ZULAGE_ROEMISCH[i], pfad);
+          });
+        } else if(typeof b !== 'string' || !b.trim()){
+          fehler('Bildfeld ist weder Pfad noch Feld aus Pfaden', id, b);
+        }
+        // Und die Fundstelle muss lesen, was hier steht.
+        for(let st = 1; st <= 3; st++){
+          const pfad = zulageBildPfad(zf, st);
+          if(pfad !== null && typeof pfad !== 'string')
+            fehler('Bildpfad der Stufe kommt nicht als Zeichenkette an', id, st, pfad);
+        }
+      }
       // Die Typenzeile der Karte, an derselben Formregel wie die Anzeigesaetze.
       const artZeile = zulageArtZeile(zf);
       if(!artZeile || /undefined/.test(artZeile)) fehler('Typenzeile unvollstaendig', id, artZeile);
