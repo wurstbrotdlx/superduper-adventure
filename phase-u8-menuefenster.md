@@ -295,6 +295,126 @@ Der Einzeldatei-Build läuft unverändert durch (`node tools/build-single.mjs`, 
 
 ---
 
+## U8-Nachtrag: Vollbild am Finger
+
+Der erste Lauf auf einem echten Telefon hat den Abschnitt oben an einer Stelle widerlegt, und zwar
+an der wichtigsten. Der Befund kam als Bildschirmfoto samt Urteil:
+
+> Schau mal gerade im mobile sind die Menüs Schrott. Viel zu kleines Fenster. Viel zu große Schrift
+> und Menüführung. Ich will doch nicht ewig scrollen. Das muss im mobile Bereich vollbild werden.
+> Vor mir aus ohne Gürtel oder mit n roten Puls über den ganzen Bildschirm wenn man Schaden
+> erleidet.
+
+Er hat in jedem Punkt recht, und der Grund steht in Befund 1 dieses Dokuments: die Rechnung, mit der
+das Fenster seine vier Kanten bekommt, war für den Schirm richtig und fürs Telefon falsch.
+
+### Was die Rechnung auf 393 Pixeln wirklich ergeben hat
+
+| Streifen | Grund | Kosten |
+|---|---|---|
+| oben 86 | Statuskarte | 10 % der Höhe |
+| unten 285 | Daumenfächer | 33 % der Höhe |
+| links 82 | Knopfspalte | 21 % der Breite |
+| rechts 8 | Rand | — |
+
+Bleiben **300 × 483**, also **knapp ein Fünftel der Bildfläche** — und darin muss noch das Kopfband
+stehen, die Blattreihe und der Schließknopf. Für den Inhalt blieb ein Kasten von der Größe einer
+Postkarte. Auf dem Bildschirmfoto ist genau eine Kachel zu sehen (`IM DIENST`), die
+`BEFÄHIGUNG` ist am unteren Rand angeschnitten, alles andere lag im Rollfeld.
+
+Dazu kam, dass die Beschriftung mitgewachsen ist statt mitzuschrumpfen: der Schriftregler `--fs`
+steht auf 1,2, und der Mobil-Block aus U8 hat `#statBox` und `.skillRow` sogar noch von 11 auf
+**12** Pixel angehoben — richtig gedacht für ein Panel von 300 Pixeln, das man an die Nase hält,
+falsch für ein Fenster, dessen Kopfzeile schon die halbe Kachel frisst.
+
+### Eingriff 1: alle vier Kanten auf null
+
+Am Finger füllt das Fenster den Schirm. Die vier Variablen gehen in einem Medienblock auf `0px`,
+der Rahmen verliert seine Rundung, der Pixelrahmen aus G5 sitzt jetzt auf der Bildkante.
+
+**Das kostet genau die drei Zusagen aus U1** — Gürtel, Fächer und der Griff daneben liegen darunter.
+Der Preis ist ausdrücklich genannt und ausdrücklich bezahlt worden („vor mir aus ohne Gürtel"). An
+ihre Stelle treten zwei Dinge:
+
+1. **Der Schließknopf ist der Ausgang**, und weil er am Finger der einzige ist, liegt er dort im
+   Daumenmaß (44 statt 34). Diese eine Zeile war nötig, weil `.gfKopf .panelZu` (zwei Klassen) sonst
+   gegen die 44er-Regel aus dem Mobil-Block (eine Klasse) gewonnen hätte — der einzige Ausgang wäre
+   der kleinste Knopf im Bild gewesen.
+2. **Das Reiterband ersetzt den Gürtel** als Weg von Fenster zu Fenster. Es stand ohnehin schon da;
+   seit dem Nachtrag ist es am Finger nicht mehr die Abkürzung, sondern der Weg.
+
+Auf dem **Schirm ändert sich nichts.** Dort ist Platz für beides, und ein Fenster, das einen
+1440er-Schirm zukleistert, wäre kein Gewinn. Es bleibt **ein Entwurf mit zwei Formaten** und nicht
+zwei Entwürfe: dieselben Fenster, dieselben Kacheln, dieselbe Renderlogik, nur andere Kanten — und
+was sich unterscheidet, steht in genau einem Medienblock. Das ist dieselbe Lehre, mit der U7
+angefangen hat (die zwei Röhren waren zwei Entwürfe, und beim zweiten ist es nicht immer passiert).
+
+### Eingriff 2: die Menüführung schrumpft, nicht nur das Fenster wächst
+
+Der Regler `--fs` bleibt und soll bleiben: er ist eine Zusage an die Lesbarkeit der **Sätze**. Ein
+Reiterband, ein Kachelkopf und eine Wertzeile sind aber Beschriftung und keine Sätze. Sie bekommen
+am Finger kleinere Grundzahlen, auf die der Regler weiterhin wirkt — die drei Stufen bleiben also
+spürbar, nur nicht mehr auf Kosten des Inhalts.
+
+Dazu vier Maße, die je eine ganze Zeile Höhe gespart haben: das Lichtbild 64×72 statt 80×90 (vier
+Bildpunkte je Quellpixel statt fünf, beides ganzzahlig, also bleibt es scharf), die Ausrüstung in
+**einer** Reihe zu vier statt drei plus Nachzügler, die Kachelköpfe von 12 auf 10, die Sätze von 10
+auf 9.
+
+**Ergebnis, gemessen auf 393 × 852:** das Blatt „Werte & Ausrüstung" braucht **2 Pixel** mehr als
+das Rollfeld hoch ist. Es passt also auf einen Blick, und genau das war der Auftrag („Ich will doch
+nicht ewig scrollen"). Was danach noch rollt, rollt, weil es eine Liste ist: 37 Zutaten, 45
+Sammelkarten. Eine Sammlung ohne Rollfeld gibt es nicht.
+
+### Eingriff 3: der Schadenspuls
+
+Die Welt läuft weiter, während ein Menü offen steht — das ist die Zusage aus U1, an der U8 nichts
+geändert hat, und `knSperrzone()` sowie `MUS.muffle()` sind die einzigen Stellen, die ein offenes
+Panel überhaupt bemerken. Seit dem Nachtrag liegt der Lebensbalken aber darunter. Wer im Rucksack
+steht und angegriffen wird, hätte gar keine Anzeige mehr.
+
+`#schadensPuls` ist diese Anzeige: ein roter Rand über dem ganzen Bild, wenn getroffen wird.
+
+* **Kein Vollflächen-Blitz.** Die Mitte bleibt frei, sonst verdeckte ausgerechnet die Warnung das,
+  was man gerade liest. Außen dunkelrot, innen nichts.
+* **Die Stärke hängt an zwei Dingen, nicht an einem.** Am Schaden, damit ein Kratzer nicht aussieht
+  wie ein Treffer, der die Schicht beendet — und am verbliebenen Leben, denn dieselben acht Punkte
+  sind bei 60 eine Notiz und bei 9 eine Nachricht. Dazu ein Zuschlag, solange ein Fenster offen
+  steht: dort ist der Puls der **einzige** Kanal, und was allein steht, darf lauter sein.
+* **`z-index: 45`** — über allem, was zugedeckt werden kann (Großfenster 20, Gesprächstafel 21,
+  Symbolschloss und Amtsstube 22), unter dem Overlay (50). Ein Dienstbericht braucht keinen Puls,
+  das Spiel steht dort ohnehin.
+* **`pointer-events: none`**, wie beim Schleier aus U1 und aus demselben Grund: eine Fläche über dem
+  ganzen Bild, die Klicks fängt, wäre das Ende jeder Bedienung.
+* **Kein Schreibpfad im Renderpfad.** Gezeichnet wird je Treffer, nicht je Bild, über
+  `element.animate()`. Ein zweiter Treffer während des ersten bricht die laufende Animation sauber
+  ab, ohne dass jemand einen erzwungenen Umbruch braucht, um sie neu zu starten.
+* **Bei „Bewegung reduzieren"** bleibt er sichtbar und wird nur ruhiger. Eine Warnung wegzulassen
+  wäre keine Rücksicht.
+
+Er gilt auf **beiden** Formaten. Auf dem Schirm ist er Zugabe, am Finger ist er der Ersatz — aber
+zwei Entwürfe wären wieder der Fehler, den U7 abgestellt hat.
+
+### Der Prüflauf hat die Seiten getauscht
+
+`tools/menue-pruef.mjs` hat im Touch-Abschnitt bis zum Nachtrag dieselben drei Zusagen geprüft wie
+auf dem Schirm. Jetzt prüft er dort **das Gegenteil, und zwar genauso streng**:
+
+| vorher | jetzt |
+|---|---|
+| Tipp auf die Welt schließt das Inventar | das Fenster füllt den Schirm (alle vier Kanten auf 0) |
+| Angriffsknopf wirkt trotz offenem Panel | der Schließknopf liegt im Daumenmaß **und** schließt, ohne zuzuschlagen |
+| Gürtelknopf öffnet den Zauberbaum | das Band führt in den Zauberbaum, ohne Gürtel und ohne Schlag |
+| die Knopfspalte liegt neben dem Fenster | der Schadenspuls leuchtet auf, liegt über dem Fenster, fängt keinen Griff ab und ist danach wieder weg |
+
+Der Desktop-Abschnitt ist **unverändert** — dort gelten die drei Zusagen weiter, und dort werden sie
+weiter gemessen. Der Lauf steht damit auf **69 Prüfungen** (von 68).
+
+Ohne Regression gelaufen: `zulagen-pruef` 50/50, `speicher-pruef` 34/34, `steuerung-pruef` alles in
+Ordnung, `gespraech-pruef` 87/89 wie auf dem Branch-Punkt.
+
+---
+
 ### Was ausdrücklich offen bleibt
 
 - **Der Inhalt des Kochens.** Der Wunsch sagt es selbst: „Das kochen wird nachher noch
@@ -302,6 +422,10 @@ Der Einzeldatei-Build läuft unverändert durch (`node tools/build-single.mjs`, 
 - **Der Inhalt des Rucksacks.** Dito. Die Kacheln stehen, was in ihnen steht, ist der alte Bestand.
 - **Ein eigener Abschnitt für die Optionen.** Ton, Schrift, Spielstand und die Zielwahl aus U7
   gehören dorthin. Solange es ihn nicht gibt, stehen sie da, wo sie schon standen.
-- **Das Charakterfenster füllt seine Höhe nicht.** Vier Kacheln auf einem 586 Pixel hohen Blatt
-  lassen unten Luft. Das ist der ehrliche Zustand: mehr Werte hat die Figur nicht, und ein
-  Fenster, das je Blatt seine Größe ändert, wäre schlechter als eines mit Luft.
+- **Das Charakterfenster füllt auf dem Schirm seine Höhe nicht.** Vier Kacheln auf einem 586 Pixel
+  hohen Blatt lassen unten Luft. Das ist der ehrliche Zustand: mehr Werte hat die Figur nicht, und
+  ein Fenster, das je Blatt seine Größe ändert, wäre schlechter als eines mit Luft. Am Finger ist
+  das seit dem Nachtrag kein Thema mehr, dort füllt dasselbe Blatt den Schirm auf zwei Pixel genau.
+- **Der Zutatenbeutel rollt am Finger weiterhin lang.** 37 Stapel mit dreizeiligen Namen
+  („amtlich beglaubigte Fürstenkrone") sind keine Übersicht. Das gehört in die angekündigte
+  Überarbeitung des Rucksacks und nicht in einen Nachtrag zur Geometrie.
