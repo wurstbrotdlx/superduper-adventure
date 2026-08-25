@@ -183,7 +183,16 @@
     border:1px solid #4c4030;border-radius:2px;overflow:hidden;position:relative;
     background:radial-gradient(ellipse at 50% 38%, #2a2117 0%, #120d08 72%);
   }
-  .zulKarte .zBild img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated;}
+  /* image-rendering bleibt ausdruecklich auf auto und nicht auf pixelated, so
+     wie es beim ersten Wurf des Kartenlayouts stand. Damals sollte die
+     Kartenkunst Pixelkunst werden; seit K1-11 ist sie gemalt und gesaettigt.
+     Das Bild liegt mit 400 mal 300 ueber dem Fenster (gemessene 299 mal 225
+     echte Pixel bei doppelter Punktdichte), wird also verkleinert, und
+     pixelated hiesse dabei naechster Nachbar statt Glaettung: harte Treppen
+     und Moire an feinen Kanten. Nachgemessen an einem Bild mit feinem Raster
+     betrug der Unterschied im Mittel 1,87 von 255 und an den Kanten bis 113.
+     Wer das hier auf pixelated zurueckstellt, macht die Karten schlechter. */
+  .zulKarte .zBild img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto;}
   .zulKarte .zIcon{font-size:calc(40px * var(--fs));line-height:1;filter:drop-shadow(0 2px 5px rgba(0,0,0,.7));}
   .zulKarte .zArt{
     font-size:calc(8px * var(--fs));letter-spacing:.4px;color:#8a7c58;
