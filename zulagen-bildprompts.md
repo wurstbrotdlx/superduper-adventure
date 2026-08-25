@@ -15,6 +15,36 @@ Typenzeile und Text. Genau dieses Fenster wird gefüllt, deshalb `--ar 4:3`.
 Der Katalog nimmt die drei Bilder bereits an: `bild` ist ein Feld mit einem
 Pfad je Stufe, Lücken fallen aufs Sinnbild zurück. Der Einbau ist eine Zeile.
 
+## Der Weg vom fertigen Bild ins Spiel
+
+**Der Dateiname ist die einzige Verbindung** zwischen Bild und Karte, und er
+steht deshalb an jedem der fünfundvierzig Prompts:
+
+```
+<familienschlüssel>-<stufe>.jpg        z. B.  stichprobe-3.jpg
+```
+
+Der Schlüssel ist derselbe wie im Katalog `ZULAGE`. Klickfassung und diese
+Datei stammen aus einer Quelle, die Namen können deshalb nicht auseinanderlaufen.
+
+**Hochgeladen wird auf einen eigenen Eingangszweig**, nicht auf `main`:
+
+```
+https://github.com/wurstbrotdlx/superduper-adventure/upload/main/assets/eingang
+```
+
+unten dann „Create a new branch for this commit" mit dem Zweignamen
+`bilder-eingang`. Der Grund ist Gewicht: Midjourney liefert rund zwanzigmal so
+viel Bild, wie die Karte braucht. Das Bildfenster misst 149 mal 112 Punkte,
+auf einem Schirm mit doppelter Punktdichte also 299 mal 225 echte Pixel. Ins
+Repo kommt eine auf 400 mal 300 gerechnete Fassung nach `assets/zulagen/`; die
+Originale bleiben auf dem Eingangszweig, der danach weggeworfen wird, und
+erreichen `main` nie.
+
+**Schubweise ist ausdrücklich vorgesehen.** Eine Familie ohne Bild zeigt ihr
+Sinnbild, eine mit zwei Bildern zeigt es auf der dritten Stufe. Ein halb
+gefüllter Katalog ist nie kaputt, nur noch nicht fertig.
+
 ## Der Stil kommt aus den Referenzbildern, nicht aus der Vergangenheit
 
 Die erste Fassung stand auf der Amiga-Formel der Figurenporträts: zweiunddreißig
@@ -160,6 +190,8 @@ gedeckte Flachheit richtig und ist es hier nicht mehr.
 
 ### 1.1 Stufe I
 
+Sichern als `stichprobe-1.jpg`
+
 Der Öffner **schnippt einem Sandskorpion ein Blatt heraus**, mitten im Sprung. Der Skorpion löst sich schon in Konfetti auf, das Musterblatt segelt davon.
 
 ```
@@ -168,6 +200,8 @@ a big glowing brass letter opener flicking a single sheet of paper out of a star
 
 ### 1.2 Stufe II
 
+Sichern als `stichprobe-2.jpg`
+
 **Drei Schattenlinge** verlieren im selben Wisch je ein Blatt und **platzen gleichzeitig zu Konfetti**. Drei Musterblätter steigen auf.
 
 ```
@@ -175,6 +209,8 @@ three shadow imps each losing one sheet of paper to the same sweep of a glowing 
 ```
 
 ### 1.3 Stufe III
+
+Sichern als `stichprobe-3.jpg`
 
 Ein **Konfettisturm im ganzen Archiv**: Dutzende Gestalten lösen sich auf einmal auf, und aus dem Wirbel legt sich ein tadellos geordneter Musterstapel.
 
@@ -187,6 +223,8 @@ a whole archive room full of shadow creatures dissolving into a joyful blizzard 
 
 ### 2.1 Stufe I
 
+Sichern als `klingenzulage-1.jpg`
+
 Einem **Knochenritter** schlägt die Klinge die Vorschriftenrolle aus der Hand. Erster Funke, er sieht ihr nach.
 
 ```
@@ -195,6 +233,8 @@ a glowing official sword striking a rulebook scroll out of a skeleton knight's g
 
 ### 2.2 Stufe II
 
+Sichern als `klingenzulage-2.jpg`
+
 Ein Hieb, und der Knochenritter **fällt zu einem ordentlichen Stapel zusammen**, obenauf ein Aktendeckel, dazu eine Konfettiwolke.
 
 ```
@@ -202,6 +242,8 @@ one stroke of the glowing sword and a skeleton knight folds neatly down into a t
 ```
 
 ### 2.3 Stufe III
+
+Sichern als `klingenzulage-3.jpg`
 
 Eine **Reihe Knochenritter** klappt der Reihe nach zu sauberen Stapeln zusammen, eine Konfettiwelle rollt durch die ganze Halle.
 
@@ -214,6 +256,8 @@ a whole row of skeleton knights collapsing one after another into neat tidy stac
 
 ### 3.1 Stufe I
 
+Sichern als `pauschalabfertigung-1.jpg`
+
 Die Axt hackt einem **Wandelnden Ablagestapel** die oberste Lage ab. Blätter stieben, der Rest wankt weiter.
 
 ```
@@ -222,6 +266,8 @@ the broad curved cutting edge of a huge double bitted axe head shearing the top 
 
 ### 3.2 Stufe II
 
+Sichern als `pauschalabfertigung-2.jpg`
+
 Derselbe Stapel mittig gespalten, beide Hälften kippen wie Klappstühle auseinander, ein Aktendeckel dreht sich in der Luft.
 
 ```
@@ -229,6 +275,8 @@ a walking stack of files split neatly down the middle by the axe blade, both hal
 ```
 
 ### 3.3 Stufe III
+
+Sichern als `pauschalabfertigung-3.jpg`
 
 **Ein Dutzend Ablagestapel in einem Hieb**, eine Schneise quer durch die Registratur, Papierschnee bis unter die Decke.
 
@@ -241,6 +289,8 @@ a dozen walking file creatures toppling in one single sweep of a glowing double 
 
 ### 4.1 Stufe I
 
+Sichern als `brandschutzausnahme-1.jpg`
+
 Einem **Wandelnden Ablagestapel** glimmt die oberste Seite an. Er fächelt erschrocken mit einem Papierarm.
 
 ```
@@ -249,6 +299,8 @@ the topmost page of a walking stack of files glowing and curling with a small fl
 
 ### 4.2 Stufe II
 
+Sichern als `brandschutzausnahme-2.jpg`
+
 **Ein heller Wusch**, und der Stapel ist weg: eine Säule aus Funken und Konfetti steht, wo er stand.
 
 ```
@@ -256,6 +308,8 @@ one bright whoosh of flame and the walking file creature is gone, a tall column 
 ```
 
 ### 4.3 Stufe III
+
+Sichern als `brandschutzausnahme-3.jpg`
 
 Die **ganze Registratur geht hoch**, überall Funkensäulen und Konfettiwirbel, und mittendrin ein Siegel, das nicht brennt.
 
@@ -268,6 +322,8 @@ an entire archive hall going up at once in a joyful roar of burning paper, colum
 
 ### 5.1 Stufe I
 
+Sichern als `kaltverfuegung-1.jpg`
+
 Einer **Grünhaut** kriecht der Frost vom gestempelten Blatt aus das Bein hoch. Sie sieht empört hinunter.
 
 ```
@@ -276,6 +332,8 @@ frost creeping up a green skinned goblin's leg from a glowing stamped document a
 
 ### 5.2 Stufe II
 
+Sichern als `kaltverfuegung-2.jpg`
+
 Dieselbe steht im **Eisblock, mitten im Widerspruch**, der Zeigefinger noch erhoben.
 
 ```
@@ -283,6 +341,8 @@ the same green skinned goblin standing frozen inside a block of clear blue ice, 
 ```
 
 ### 5.3 Stufe III
+
+Sichern als `kaltverfuegung-3.jpg`
 
 Eine **ganze Kammer eingefroren**, ein Dutzend Gestalten mitten in der Geste, wie eine Registratur, die man beim Satz unterbrochen hat.
 
@@ -295,6 +355,8 @@ an entire vaulted chamber frozen over, a dozen figures held mid gesture inside t
 
 ### 6.1 Stufe I
 
+Sichern als `blitzbeschluss-1.jpg`
+
 Ein Blitz trifft einen **Knochenritter**, für einen Moment leuchtet er wie ein Röntgenbild und steht qualmend da.
 
 ```
@@ -303,6 +365,8 @@ a bolt of violet lightning striking a skeleton knight, its bones lighting up bri
 
 ### 6.2 Stufe II
 
+Sichern als `blitzbeschluss-2.jpg`
+
 Der Blitz **springt weiter**, drei Skelette leuchten wie Lampen, Konfetti beginnt zu rieseln.
 
 ```
@@ -310,6 +374,8 @@ the violet bolt leaping onward through three skeletons in a chain, all three glo
 ```
 
 ### 6.3 Stufe III
+
+Sichern als `blitzbeschluss-3.jpg`
 
 Die Kette springt durch die **ganze Halle**, ein Dutzend Gestalten leuchtet gleichzeitig auf, dann steht der Raum voll Konfetti.
 
@@ -322,6 +388,8 @@ the lightning chain leaping through an entire hall, a dozen figures lighting up 
 
 ### 7.1 Stufe I
 
+Sichern als `vollzugszulage-1.jpg`
+
 Der Stempel kommt herunter, eine **Grünhaut** sieht mit mildem Interesse hoch, der Schatten liegt schon auf ihr.
 
 ```
@@ -330,6 +398,8 @@ a titanic wooden office stamp plunging down with its broad inked face turned fla
 
 ### 7.2 Stufe II
 
+Sichern als `vollzugszulage-2.jpg`
+
 Ein Abdruck im Boden, die Grünhaut ist **abgestempelt und erledigt**, aus dem Abdruck quillt Konfetti.
 
 ```
@@ -337,6 +407,8 @@ a deep stamped impression pressed into the stone floor where the goblin stood, a
 ```
 
 ### 7.3 Stufe III
+
+Sichern als `vollzugszulage-3.jpg`
 
 Ein **Feld aus Abdrücken** quer durch die Kammer, aus jedem steigt eine Konfettiwolke.
 
@@ -349,6 +421,8 @@ a field of stamped impressions punched across an entire chamber, a cloud of glow
 
 ### 8.1 Stufe I
 
+Sichern als `haertefallregelung-1.jpg`
+
 Ein **Waldschamane** schleudert eine Verfügung, sie zerschellt am Klemmbrett-Schild.
 
 ```
@@ -357,6 +431,8 @@ a forest shaman hurling a glowing green decree that shatters into harmless spark
 
 ### 8.2 Stufe II
 
+Sichern als `haertefallregelung-2.jpg`
+
 **Drei Waldschamanen**, ein Sperrfeuer, alles prallt ab, der Schild steht unbewegt.
 
 ```
@@ -364,6 +440,8 @@ three forest shamans laying down a barrage of glowing decrees, every one of them
 ```
 
 ### 8.3 Stufe III
+
+Sichern als `haertefallregelung-3.jpg`
 
 Eine **Belagerung**: Geschosse aus allen Richtungen, der Schild in der Mitte, ein Ring zerbrochener Federn am Boden.
 
@@ -376,6 +454,8 @@ a full siege, glowing projectiles converging from every direction onto a single 
 
 ### 9.1 Stufe I
 
+Sichern als `pruefvermerk-1.jpg`
+
 Die Lupe findet an einer **Mumie** das Siegel der Banderole. Ein heller Punkt, sonst nichts.
 
 ```
@@ -384,6 +464,8 @@ a brass magnifying glass focusing one bright pinpoint of light onto the wax seal
 
 ### 9.2 Stufe II
 
+Sichern als `pruefvermerk-2.jpg`
+
 Das **Siegel springt auf**, die Banderole rollt sich als langes Schriftband ab, die Mumie zerfällt erleichtert zu Konfetti.
 
 ```
@@ -391,6 +473,8 @@ the wax seal popping open with a bright flash, the wrapping unrolling into one l
 ```
 
 ### 9.3 Stufe III
+
+Sichern als `pruefvermerk-3.jpg`
 
 Ein **Dutzend Mumien**, alle Siegel springen im selben Moment auf, überall entrollen sich Schriftbänder.
 
@@ -403,6 +487,8 @@ a dozen mummies standing in a tomb, every wax seal popping open in the same inst
 
 ### 10.1 Stufe I
 
+Sichern als `eilverfahren-1.jpg`
+
 Eine **Grünhaut** holt aus, ist aber schon von Nachbildern umgeben. Der Schlag war vorher da.
 
 ```
@@ -411,6 +497,8 @@ a green skinned goblin winding up to strike but already ringed by glowing after 
 
 ### 10.2 Stufe II
 
+Sichern als `eilverfahren-2.jpg`
+
 Drei Gegner, alle mitten in der Bewegung angehalten, eine **Spur von Nachbildern** zieht durch sie hindurch, Konfetti setzt ein.
 
 ```
@@ -418,6 +506,8 @@ three enemies held frozen mid motion while a blazing streak of after images tear
 ```
 
 ### 10.3 Stufe III
+
+Sichern als `eilverfahren-3.jpg`
 
 Eine **ganze Kammer steht still**, Staub hängt in der Luft, eine einzige Spur hat alles erledigt, überall fällt Konfetti.
 
@@ -430,6 +520,8 @@ an entire chamber standing still with dust hanging in the air, one single blazin
 
 ### 11.1 Stufe I
 
+Sichern als `erschwerniszulage-1.jpg`
+
 Der Helm freigestellt, eine Delle glüht noch, ein Pfeil prallt in Funken ab.
 
 ```
@@ -438,6 +530,8 @@ a battered official issue steel helmet, one fresh dent still glowing hot, a sing
 
 ### 11.2 Stufe II
 
+Sichern als `erschwerniszulage-2.jpg`
+
 Derselbe zernarbt, ein **Funkensturm** aus einem Dutzend Treffern, die Dellen glühen weiß.
 
 ```
@@ -445,6 +539,8 @@ the same helmet heavily scarred and ringed by a storm of sparks from a dozen sim
 ```
 
 ### 11.3 Stufe III
+
+Sichern als `erschwerniszulage-3.jpg`
 
 Derselbe **massiv und vergoldet**, Panzerplatten und Nieten, ein Hof aus zersplitterten Pfeilspitzen kreist um ihn.
 
@@ -457,6 +553,8 @@ the same helmet grown massive and gilded with reinforcement plates and rivets, b
 
 ### 12.1 Stufe I
 
+Sichern als `gebuehrenbefreiung-1.jpg`
+
 Ein Beleg mit gesprungenem Schloss, ein **Rinnsal Gold** läuft heraus.
 
 ```
@@ -465,6 +563,8 @@ a rolled paper receipt with a cracked iron padlock hanging from it, a thin trick
 
 ### 12.2 Stufe II
 
+Sichern als `gebuehrenbefreiung-2.jpg`
+
 Der Beleg entrollt, aus dem Rinnsal wird ein **Strom**, das Schloss zerplatzt in der Luft.
 
 ```
@@ -472,6 +572,8 @@ the receipt unrolled and streaming, the trickle swollen into a bright torrent of
 ```
 
 ### 12.3 Stufe III
+
+Sichern als `gebuehrenbefreiung-3.jpg`
 
 Ein **riesiger Beleg in Blattgold**, ein Geysir aus Licht bricht heraus, das Schloss zerfliegt in glühenden Splittern.
 
@@ -484,6 +586,8 @@ a colossal ornate receipt bound in gold leaf and wax seals, a blazing geyser of 
 
 ### 13.1 Stufe I
 
+Sichern als `dienstweg-1.jpg`
+
 Ein Stiefelpaar freigestellt, Staub kringelt an den Sohlen, feine Tempolinien.
 
 ```
@@ -492,6 +596,8 @@ a pair of worn leather courier boots, dust curling from the soles, faint speed l
 
 ### 13.2 Stufe II
 
+Sichern als `dienstweg-2.jpg`
+
 Dieselben mit **leuchtenden Schlieren**, Bewegungslinien peitschen vorbei, das Leder raucht.
 
 ```
@@ -499,6 +605,8 @@ the same boots trailing bright glowing streaks, motion lines whipping past, the 
 ```
 
 ### 13.3 Stufe III
+
+Sichern als `dienstweg-3.jpg`
 
 Dieselben **mit Messingflügeln und Runen**, in Tempolicht gehüllt, Funken sprühen aus den Absätzen.
 
@@ -511,6 +619,8 @@ the same boots grown ornate with winged brass fittings and glowing runes, wreath
 
 ### 14.1 Stufe I
 
+Sichern als `laufender_bezug-1.jpg`
+
 Der Becher freigestellt, Dampf, ein einzelner blauer Lichtfaden steigt auf.
 
 ```
@@ -519,6 +629,8 @@ a chipped enamel office mug, steam rising from it, a single thread of glowing bl
 
 ### 14.2 Stufe II
 
+Sichern als `laufender_bezug-2.jpg`
+
 Derselbe mit **Dampfsäulen**, blaue Helligkeit läuft über den Rand.
 
 ```
@@ -526,6 +638,8 @@ the same mug with thick columns of glowing steam pouring upward, blue radiance s
 ```
 
 ### 14.3 Stufe III
+
+Sichern als `laufender_bezug-3.jpg`
 
 Derselbe **mit Goldrand und Edelsteinen**, ein blauer Dampfgeysir bricht heraus, ein Lichthof um die Tasse.
 
@@ -538,6 +652,8 @@ the same mug grown ornate with a gold rim and inlaid gems, a blazing blue geyser
 
 ### 15.1 Stufe I
 
+Sichern als `dienstalterszulage-1.jpg`
+
 Das Dienstbuch aufgeschlagen, wenige Stempel glimmen auf der Seite.
 
 ```
@@ -546,6 +662,8 @@ a service record book lying open, a few round stamp impressions glowing faintly 
 
 ### 15.2 Stufe II
 
+Sichern als `dienstalterszulage-2.jpg`
+
 Dasselbe deutlich dicker, die Seiten **blättern von selbst**, Gold bricht dazwischen hervor.
 
 ```
@@ -553,6 +671,8 @@ the same book much thicker, its pages turning by themselves, bright golden light
 ```
 
 ### 15.3 Stufe III
+
+Sichern als `dienstalterszulage-3.jpg`
 
 Dasselbe **riesig in vergoldetem Leder**, Seiten reißen sich los, die Stempel **glühen wie Sternbilder**.
 
