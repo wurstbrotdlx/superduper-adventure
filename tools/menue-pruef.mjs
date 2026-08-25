@@ -239,42 +239,85 @@ const danebenPunkt = async p => p.evaluate(() => {
 }
 
 // ------------------------------------------------------------------ Touch
+//
+// AM FINGER GILT SEIT DEM U8-NACHTRAG ETWAS ANDERES ALS AUF DEM SCHIRM, und
+// dieser Abschnitt ist die Stelle, an der das nachgerechnet wird.
+//
+// Bis dahin galten hier dieselben drei Zusagen aus U1 wie oben: der Guertel
+// wirkt, der Angriffsknopf wirkt, ein Tipp daneben wischt weg. Auf einem
+// Telefon war der Preis dafuer ein Fenster von 300 mal 483 Pixeln — ein
+// Drittel der Bildflaeche, in dem drei Zeilen Kopf und eine Kachel standen.
+// Der Projektinhaber hat den Tausch ausdruecklich angeordnet: Vollbild, "vor
+// mir aus ohne Guertel".
+//
+// Also wird hier jetzt das GEGENTEIL geprueft, und zwar genauso streng:
+//
+//   Vollbild      das Fenster fuellt den Schirm wirklich, in beiden Lagen
+//   Ausgang       der Schliessknopf ist da, im Daumenmass, und er schliesst
+//   Reiterband    der Wechsel von Fenster zu Fenster geht ohne den Guertel
+//   Puls          was der zugedeckte Lebensbalken nicht mehr sagen kann,
+//                 sagt #schadensPuls — und zwar UEBER dem Fenster und ohne
+//                 einen einzigen Griff abzufangen
+//
+// Was NICHT geprueft wird, weil es am Finger nicht mehr gilt: der Tipp
+// daneben. Es gibt kein Daneben mehr. Auf dem Schirm gibt es eines, und dort
+// steht die Pruefung unveraendert.
 {
   const { page, ctx, laut } = await spiel({ viewport: { width: 390, height: 844 },
                                             deviceScaleFactor: 2, hasTouch: true, isMobile: true });
   await page.evaluate(() => document.body.classList.add('touch'));
 
   await page.evaluate(() => toggleInventory());
-  await page.touchscreen.tap(195, 700);
+  await page.waitForTimeout(120);
   let z = await stand(page);
-  pruef('Tipp auf die Welt schliesst das Inventar', z.inv, false);
-  pruef('und fuehrt dabei keinen Angriff', z.schlaege, 0);
-  pruef('und startet keinen Joystick', await page.evaluate(() => joy.id), null);
+  const voll = await page.evaluate(() => {
+    const r = document.getElementById('inv').getBoundingClientRect();
+    return { l: Math.round(r.left), t: Math.round(r.top),
+             b: Math.round(innerWidth - r.right), u: Math.round(innerHeight - r.bottom) };
+  });
+  pruef('das Fenster fuellt den Schirm', voll, { l: 0, t: 0, b: 0, u: 0 });
 
+  // Der Ausgang. Am Finger der einzige, deshalb beides: Daumenmass und Wirkung.
+  const zuKnopf = await page.evaluate(() => {
+    const r = document.getElementById('closeInvBtn').getBoundingClientRect();
+    return [Math.round(r.width), Math.round(r.height)];
+  });
+  pruef('der Schliessknopf liegt im Daumenmass', zuKnopf.every(v => v >= 44), true);
+  await page.locator('#closeInvBtn').tap();
+  z = await stand(page);
+  pruef('und schliesst das Fenster', z.inv, false);
+  pruef('ohne dabei zuzuschlagen', z.schlaege, 0);
+
+  // Das Band ersetzt den Guertel als Weg von Fenster zu Fenster — der liegt
+  // jetzt darunter, also muss es das allein koennen.
   await page.evaluate(() => { window.__schlaege = 0; toggleInventory(); });
-  await page.locator('#attackBtn').tap();
+  await page.waitForTimeout(120);
+  await page.locator('#inv .gfReiter[data-ziel="spellTree"]').tap();
   z = await stand(page);
-  pruef('Angriffsknopf wirkt trotz offenem Panel', z.schlaege >= 1, true);
-  pruef('Angriffsknopf schliesst das Panel nicht', z.inv, true);
+  pruef('das Band fuehrt in den Zauberbaum', [z.zauber, z.inv], [true, false]);
+  pruef('auch ohne Guertel und ohne Schlag', z.schlaege, 0);
 
-  await page.locator('#spellsBtn').tap();
-  z = await stand(page);
-  pruef('Guertelknopf oeffnet den Zauberbaum', z.zauber, true);
-  pruef('und raeumt dabei den Rucksack weg', z.inv, false);
+  // Der Puls. Er ist am Finger die einzige Anzeige, die ein Vollbildmenue
+  // nicht zudeckt, also wird alles daran geprueft, woran er scheitern kann:
+  // dass er ueberhaupt aufleuchtet, dass er ueber dem Fenster liegt, dass er
+  // wieder verschwindet und dass er keinen Griff abfaengt.
+  const puls = await page.evaluate(async () => {
+    const e = document.getElementById('schadensPuls');
+    const f = document.getElementById('spellTree');
+    hurtPlayer(30);
+    await new Promise(r => setTimeout(r, 90));
+    const hell = +getComputedStyle(e).opacity;
+    const drueber = +getComputedStyle(e).zIndex > +getComputedStyle(f).zIndex;
+    const durchlaessig = document.elementFromPoint(innerWidth / 2, innerHeight / 2) !== e;
+    await new Promise(r => setTimeout(r, 700));
+    return { leuchtet: hell > 0.2, drueber, durchlaessig, danachAus: +getComputedStyle(e).opacity === 0 };
+  });
+  pruef('der Schadenspuls leuchtet auf', puls.leuchtet, true);
+  pruef('und liegt ueber dem Vollbildfenster', puls.drueber, true);
+  pruef('faengt dabei keinen Griff ab', puls.durchlaessig, true);
+  pruef('und ist danach wieder weg', puls.danachAus, true);
 
-  // U8: Die Knopfspalte liegt links neben dem Fenster und bleibt erreichbar —
-  // das ist dieselbe Zusage wie in U7, nur mit einem Fenster, das jetzt so
-  // gross ist, dass sie leicht haette fallen koennen.
-  pruef('die Knopfspalte liegt neben dem Fenster', await page.evaluate(() => {
-    const s = document.getElementById('spellsBtn').getBoundingClientRect();
-    const f = document.getElementById('spellTree').getBoundingClientRect();
-    return s.right <= f.left + 1;
-  }), true);
-
-  await page.touchscreen.tap(195, 780);
-  z = await stand(page);
-  pruef('Tipp daneben raeumt das Fenster', [z.inv, z.zauber], [false, false]);
-
+  await page.evaluate(() => toggleSpellTree());
   pruef('Konsole still (Touch)', laut, []);
   await ctx.close();
 }

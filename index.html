@@ -768,6 +768,46 @@
   body.cfuiX #closeSchlossBtn, body.cfuiX #closeAusweisBtn,
   body.cfuiX #closeFullmapBtn, body.cfuiX .panelZu{font-size:0;}
 
+  /* =====================================================================
+     U8-Nachtrag — DER SCHADENSPULS
+
+     Am Finger fuellt ein offenes Menue seit dem Nachtrag den Schirm, und
+     damit liegt der Lebensbalken darunter. Die Welt laeuft trotzdem weiter,
+     daran hat U8 nichts geaendert (das war schon die Zusage aus U1: "ein
+     offenes Panel nimmt in diesem Spiel den Kampf nicht weg"). Wer im
+     Rucksack steht und angegriffen wird, hat also seit dem Nachtrag keine
+     Anzeige mehr — ausser dieser.
+
+     Ein roter Rand ueber dem ganzen Bild, wenn getroffen wird. Er ist
+     ausdruecklich KEIN Vollflaechen-Blitz: die Mitte bleibt frei, sonst
+     verdeckte ausgerechnet die Warnung das, was man gerade liest. Aussen
+     dunkelrot, innen nichts — dieselbe Lesart, mit der jedes Spiel dieses
+     Zuschnitts Treffer meldet.
+
+     z-index 45: ueber allem, was zugedeckt werden koennte (Grossfenster 20,
+     Gespraechstafel 21, Symbolschloss und Amtsstube 22), unter dem Overlay
+     (50). Ein Dienstbericht oder ein Todesbild braucht keinen Puls, das
+     Spiel steht dort ohnehin.
+
+     pointer-events:none, wie beim Schleier und aus demselben Grund: eine
+     Flaeche ueber dem ganzen Bild, die Klicks faengt, waere das Ende jeder
+     Bedienung. Der Puls faengt nichts, er leuchtet nur.
+
+     Gezeichnet wird er nicht je Bild, sondern je Treffer, und zwar ueber die
+     Animations-Schnittstelle des Browsers (element.animate in
+     schadensPuls()). Kein Schreibpfad im Renderpfad, keine Klasse, die
+     zurueckgesetzt werden muss, und ein zweiter Treffer bricht den ersten
+     sauber ab. */
+  #schadensPuls{
+    position:fixed; inset:0; z-index:45; pointer-events:none; opacity:0;
+    /* Der freie Kern ist knapp bemessen (30 Prozent), der Rand traegt dafuer.
+       Bei 42 Prozent stand das Rot in einem schmalen Saum und war auf einem
+       Telefon im Gefecht schlicht zu uebersehen — und ein Warnzeichen, das
+       man uebersieht, ist keines. */
+    background:radial-gradient(ellipse 74% 64% at 50% 50%,
+               rgba(255,0,0,0) 30%, rgba(176,10,10,.62) 66%, rgba(84,0,0,.97) 100%);
+  }
+
   /* Der Schleier. Ausdruecklich KEIN modaler Vorhang: pointer-events:none, und
      z-index 9 haelt ihn unter HUD (10), Dienstzettel (12) und Panels (20+).
      Er verdunkelt nur die Welt. Ein klickfangendes Element ueber dem ganzen
@@ -828,9 +868,42 @@
                  links   74+8  neben der Knopfspalte
                  rechts   8
 
-     Damit bleibt in jedem Format eine Flaeche, die "daneben" heisst, und
-     tools/menue-pruef.mjs prueft weiter, dass ein Griff dorthin das Fenster
-     schliesst, ohne einen Schlag auszuloesen.
+     U8-NACHTRAG (auf Ansage des Projektinhabers nach dem ersten Lauf auf dem
+     Telefon: "im mobile sind die Menue Schrott. Viel zu kleines Fenster.
+     [...] Das muss im mobile Bereich vollbild werden. Vor mir aus ohne
+     Guertel oder mit n roten Puls ueber den ganzen Bildschirm wenn man
+     Schaden erleidet."):
+
+     Die Rechnung oben stimmt fuer den Schirm und war fuer das Telefon
+     falsch. Auf 393 Pixeln Breite blieben dem Fenster nach Abzug von
+     Kopfstreifen, Knopfspalte und Faecher 300 mal 483 — ein Drittel der
+     Bildflaeche, und darin Kopfband, Blaetter und eine Kachel. Der Rest war
+     Rollen. Ein Menue, das man rollen muss, um seinen zweiten Kasten zu
+     sehen, ist keine Uebersicht, sondern ein Fenster mit Aussicht auf ein
+     Fenster.
+
+     AM FINGER GILT DESHALB DAS GEGENTEIL: alle vier Kanten auf null, das
+     Fenster fuellt den Schirm. Das kostet genau die drei Zusagen aus U1 —
+     Guertel, Faecher und der Griff daneben liegen darunter — und der
+     Projektinhaber hat diesen Preis ausdruecklich genannt und bezahlt.
+     Was an ihre Stelle tritt:
+
+       schliessen   der Schliessknopf im Kopf, auf Touch im Daumenmass (44),
+                    und das Reiterband, das ins naechste Fenster fuehrt
+       Zustand      #schadensPuls, ein roter Rand ueber dem ganzen Bild, wenn
+                    getroffen wird (s. dort). Die Welt laeuft naemlich weiter,
+                    daran hat U8 nichts geaendert — nur sieht man den
+                    Lebensbalken jetzt nicht mehr, waehrend sie das tut.
+
+     Auf dem SCHIRM bleibt alles, wie es zwei Absaetze weiter oben steht: dort
+     ist Platz fuer beides, und ein Fenster, das einen 1440er Schirm zukleistert,
+     waere kein Gewinn. Ein Entwurf mit zwei Formaten, nicht zwei Entwuerfe:
+     dieselben Fenster, dieselben Kacheln, dieselbe Renderlogik, nur andere
+     Kanten. Was sich unterscheidet, steht in genau einem Medienblock.
+
+     tools/menue-pruef.mjs prueft beides getrennt: auf dem Schirm weiter den
+     Griff daneben samt ausbleibendem Schlag, am Finger, dass das Fenster den
+     Schirm wirklich fuellt und der Schliessknopf im Daumenmass liegt.
 
      KEINE NEUE GRAFIKDATEI. Der Pixelrahmen ist derselbe wie seit G5, die
      Zellen sind die vier aus U2, der Schliessknopf traegt .panelZu und erbt
@@ -1048,6 +1121,19 @@
      Kopf aus zwei Reiterzeilen und zwei Blattzeilen fraesse das ganze
      Fenster. */
   @media (max-width: 620px), (max-height: 560px){
+    /* Vollbild. Die vier Kanten auf null, der Rahmen ohne Rundung: eine
+       abgerundete Ecke braucht etwas, wogegen sie sich abhebt, und an der
+       Bildkante ist da nichts. Der Pixelrahmen aus G5 bleibt, er sitzt jetzt
+       auf der Schirmkante und rahmt das Bild statt eines Kastens darin. */
+    :root, body.touch{--gfOben:0px; --gfUnten:0px; --gfLinks:0px; --gfRechts:0px;}
+    .grossFenster{border-radius:0; min-height:0; box-shadow:none;}
+    /* Der Schliessknopf ist am Finger der einzige Weg nach draussen — es gibt
+       kein "daneben" mehr. Also Daumenmass, und nicht die 34 Pixel des
+       Schirms. Ohne diese Zeile gewaenne .gfKopf .panelZu (zwei Klassen)
+       gegen die 44er-Regel weiter unten (eine Klasse), und der einzige
+       Ausgang waere der kleinste Knopf im Bild. */
+    .gfKopf .panelZu{width:44px; height:44px; margin:0;}
+
     /* Vier Sinnbilder teilen sich die Zeile zu gleichen Teilen. Ohne flex:1
        traegt jeder Reiter seine eigene Breite, und vier davon brachen auf
        300 Pixeln in zwei Zeilen um — ein Band, das zwei Zeilen braucht, ist
@@ -1068,10 +1154,50 @@
        Fenster laesst, und ein Reiterband, das gerollt werden muss, findet
        niemand. Das Wort steht weiter im title. */
     .gfBlatt .gfWort{display:none;}
-    .gfKopf{padding:7px 9px; gap:7px;}
-    .gfBody{padding:11px 11px 15px;}
-    .gfBlaetter{padding:8px 10px 0;}
-    .gfKachel{padding:9px 10px 11px;}
+    .gfKopf{padding:6px 8px; gap:8px;}
+    .gfBody{padding:10px 10px 14px;}
+    .gfBlaetter{padding:7px 9px 0;}
+    .gfKachel{padding:8px 9px 10px;}
+
+    /* Die Menuefuehrung selbst wird kleiner, nicht nur das Fenster groesser.
+       Der Schriftregler (--fs, Vorgabe 1,2) gilt weiter und soll es auch: er
+       ist eine Zusage an die Lesbarkeit der SAETZE. Ein Reiterband, ein
+       Kachelkopf und eine Wertzeile sind aber Beschriftung und keine Saetze,
+       und sie haben in der Vorfassung zusammen mehr Hoehe gebraucht als der
+       Inhalt darunter. Also kleinere Grundzahlen, auf die der Regler dann
+       wirkt — die Stufen 'Normal / Gross / Groesser' bleiben spuerbar. */
+    .gfKachel > h4{font-size:calc(10px * var(--fs)); letter-spacing:.5px; margin-bottom:7px; padding-bottom:4px;}
+    .gfKachel > h4 > span{font-size:calc(9px * var(--fs));}
+    .gfSatz{font-size:calc(9px * var(--fs)); margin-bottom:7px;}
+    .skillRow{font-size:calc(11px * var(--fs)); margin-bottom:5px;}
+    .skWert{font-size:calc(9px * var(--fs));}
+    #skHint{font-size:calc(9px * var(--fs));}
+    #statBox{font-size:calc(11px * var(--fs)); line-height:1.7; padding:7px 9px;}
+    /* Lichtbild und Amtsbezeichnung: das Bild war 80x90 und hat auf einem
+       Telefon die halbe Kachel genommen. 64x72 ist derselbe Ausschnitt, nur
+       vier Bildpunkte je Quellpixel statt fuenf — beides ganzzahlig, also
+       bleibt es scharf (Regressionsregel 14). */
+    #charFoto{width:64px; height:72px;}
+    #charAmt{gap:10px; margin-bottom:8px;}
+    #charAmtText{font-size:calc(11px * var(--fs)); line-height:1.55;}
+    #charAmtText .kl{font-size:calc(9px * var(--fs));}
+    #ausweisBtn{height:40px; font-size:calc(11px * var(--fs));}
+    #kesselBtn{height:46px; font-size:calc(12px * var(--fs));}
+    /* Vier Plaetze in EINER Zeile statt drei plus einem Nachzuegler: der
+       Umbruch hat eine ganze Reihe Hoehe gekostet und sah aus wie ein Fehler. */
+    #equipGrid{grid-template-columns:repeat(4,minmax(0,1fr)); max-width:none;}
+    #musikBox h4{margin-top:8px;}
+    #speicherInfo{font-size:calc(8px * var(--fs));}
+
+    /* Die Kartenmappe zurueck auf zwei Spalten. Die Regel aus dem
+       Grossfenster-Block (auto-fill, hoechstens 230 breit) haelt die Karte
+       auf einem Schirm im Kartenformat — auf 393 Pixeln ergibt dieselbe
+       Regel EINE Spalte, und dann ist eine Sammelkarte ein Plakat und die
+       Ziehung drei Bildschirme lang. Zwei Spalten sind die Zahl, die K1
+       fuer das Telefon schon einmal begruendet hat: bei dreien blieben rund
+       hundert Pixel je Karte, und darin steht kein Wort dieses Hauses. */
+    #charMappe .zulReihe, #charMappe .zulReihe.klein{
+      grid-template-columns:repeat(2,1fr); gap:8px; justify-content:stretch;}
   }
   /* Die Spaltenzahl haengt dagegen NUR an der Breite. Ein flaches, aber
      breites Fenster (ein Schirm mit halber Hoehe) soll seine Breite
@@ -1088,34 +1214,22 @@
        auf einem Telefon nicht gibt, und das Fenster liefe seitlich aus. */
     .gfSpalten{grid-template-columns:1fr; gap:11px;}
   }
-  /* Ein liegendes Telefon hat die Hoehe nicht, die ein Fenster hier braucht,
-     und den Platz dafuer in der Breite. Also nimmt es die Hoehe ganz und
-     rueckt seitlich zwischen die beiden Inseln:
-
-       links   die Knopfspalte, die dort in mehrere kurze Spalten umbricht
-               (bis zu vier bei sichtbarem Kammer-Abbruch, 4 x 64 = 256),
-               und darunter der Daumenring (Mittelpunkt 16+R, R=60, also bis
-               136). 280 laesst beide frei.
-       rechts  der Faecher, 230 breit, plus Luft: 246.
-       oben    dieselbe Kante wie im Hochformat, unter der Statuskarte.
-
-     Bleiben auf 844x390 rund 318 mal 300 Pixel. Das ist wenig und es ist
-     ehrlich: mehr gibt ein liegendes Telefon nicht her, ohne eine der drei
-     Zusagen aus U1 zu brechen. */
+  /* Ein liegendes Telefon hatte in der Vorfassung eigene Kanten: rechts vom
+     Daumenring, links vom Faecher, unter der umgebrochenen Knopfspalte —
+     318 mal 300 Pixel, und das war das Aeusserste, was sich holen liess,
+     ohne eine der drei Zusagen aus U1 zu brechen. Seit dem U8-Nachtrag sind
+     die Zusagen am Finger bezahlt (s. oben), also faellt die Rechnung weg:
+     liegend gilt dasselbe Vollbild wie stehend, und der Medienblock traegt
+     nur noch, was in ein flaches Fenster wirklich nicht passt. */
   @media (max-height: 460px){
-    #bagGrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;}
-    .bagSlot{height:48px;}
-    #equipGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
-    .eqSlot{height:66px;}
+    #bagGrid{grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;}
+    .bagSlot{height:44px;}
+    #equipGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+    .eqSlot{height:58px;}
     #zutGrid, #invZutGrid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));}
     #potRow{gap:6px;}
     .potSlot{height:74px;}
-    body.touch{
-      --gfOben: calc(var(--karteY) + var(--karteH) + 8px);
-      --gfUnten: 10px;
-      --gfLinks: 280px;
-      --gfRechts: 246px;
-    }
+    #charFoto{width:52px; height:58px;}
   }
   /* E1: Waehrend des Empfangs ist noch nichts im Dienst, was das HUD anzeigen
      koennte: keine Schicht, keine Zone, keine Beute, kein Angriffsknopf. Die
@@ -1642,8 +1756,11 @@
     body.touch #knZettel, body.touch #knRandnotiz{top:calc(var(--spalteY) + 4px);max-width:calc(100vw - 200px);}
     .spellNode{font-size:calc(12px * var(--fs));}
     .spellNode .sDesc,.spellNode .sMana{font-size:calc(11px * var(--fs));}
-    .eqSlot .lbl{font-size:calc(10px * var(--fs));}
-    #statBox,.skillRow{font-size:calc(12px * var(--fs));}
+    /* U8-Nachtrag: Diese beiden Zeilen haben die Menueschrift auf dem Telefon
+       ANGEHOBEN — richtig fuer ein Panel von 300 Pixeln, falsch fuer ein
+       Fenster, das den Schirm fuellt und in dem die Beschriftung ohnehin zu
+       laut war. Die Masse stehen jetzt einmal im Vollbild-Block darueber. */
+    .eqSlot .lbl{font-size:calc(9px * var(--fs));}
     #overlay .panel{max-width:94vw;padding:16px 10px;}
     #overlay h1{font-size:calc(20px * var(--fs));letter-spacing:1px;}
     #overlay h3{font-size:calc(14px * var(--fs));}
@@ -1906,6 +2023,9 @@
 <!-- U1: Schleier hinter offenen Menues. Rein optisch (pointer-events:none),
      die Klick-daneben-Logik haengt am Zeigerziel, nicht an diesem Element. -->
 <div id="menuVeil"></div>
+<!-- U8-Nachtrag: der Schadenspuls. Liegt ueber den Menuefenstern und ist am
+     Finger die einzige Anzeige, die ein Vollbildmenue nicht zudeckt. -->
+<div id="schadensPuls"></div>
 <!-- =====================================================================
      U8 — Vier Grossfenster und ein Band, das sie verbindet.
 
@@ -9093,6 +9213,37 @@ function gainXP(x){
   }
 }
 
+// U8-Nachtrag: Der rote Rand bei einem Treffer. Er ist die Antwort auf den
+// Preis, den das Vollbildmenue am Finger kostet: der Lebensbalken liegt dann
+// darunter, die Monster nicht.
+//
+// Die Staerke haengt an zwei Dingen und nicht an einem. Am Schaden, damit ein
+// Kratzer nicht aussieht wie ein Treffer, der die Schicht beendet — und am
+// verbliebenen Leben, denn dieselben acht Punkte sind bei 60 eine Notiz und
+// bei 9 eine Nachricht. Der Zuschlag bei offenem Fenster kommt oben drauf:
+// dort ist der Puls der EINZIGE Kanal, und was allein steht, darf lauter sein.
+//
+// element.animate() statt einer Klasse: ein zweiter Treffer waehrend des
+// ersten bricht die laufende Animation sauber ab (cancel), ohne dass jemand
+// einen erzwungenen Umbruch braucht, um sie neu zu starten. Und es steht
+// nichts im Renderpfad — der Puls kostet je Treffer, nicht je Bild.
+let pulsLauf = null;
+function schadensPuls(schaden){
+  const e = el('schadensPuls'); if(!e || !e.animate) return;
+  const anteil = Math.min(1, schaden / Math.max(1, derived.maxHp));
+  const knapp  = player.hp / Math.max(1, derived.maxHp);
+  const zugedeckt = panelOffenIrgendwo() ? 0.22 : 0;
+  const staerke = Math.min(0.92, 0.26 + anteil * 1.1 + (knapp < 0.3 ? 0.22 : 0) + zugedeckt);
+  // Anschlag hart, Abklang lang: so liest sich der Puls als Schlag und nicht
+  // als Blinken. Bei "Bewegung reduzieren" bleibt er sichtbar und wird nur
+  // ruhiger — eine Warnung wegzulassen waere keine Ruecksicht.
+  const ruhig = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(pulsLauf) pulsLauf.cancel();
+  pulsLauf = e.animate(
+    [{opacity:0}, {opacity:staerke, offset:ruhig ? 0.25 : 0.08}, {opacity:0}],
+    {duration: ruhig ? 620 : 460, easing:'ease-out'});
+}
+
 function hurtPlayer(raw){
   if(player.dead) return;
   player.kampfT = 3;      // Fluch 'Nüchternheitsgebot': Kampf sperrt kurz das Trinken
@@ -9102,7 +9253,7 @@ function hurtPlayer(raw){
   const bollwerk = FX.bollwerk ? Math.min(0.4, FX.bollwerk*0.08) : 0;   // Wirkung 'Abweisung'
   const d = Math.max(1, Math.round(raw*(1-Math.min(0.6,red))*(1-bollwerk)));
   player.hp -= d; player.hurtT = 0.25;
-  addShake(12, 0.2); sfx.hurt();
+  addShake(12, 0.2); sfx.hurt(); schadensPuls(d);
   floaters.push({x:player.x, y:player.y-24, txt:String(d), col:'#ffe14d', t:0.8, big:true});
   if(player.hp<=0){
     player.hp=0; player.dead=true;
