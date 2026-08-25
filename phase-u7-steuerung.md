@@ -134,6 +134,26 @@ man es will.
 Der Kammer-Abbruch bleibt dagegen in der Spalte. Er ist während eines ganzen Kammergangs
 sichtbar, nicht schrittweise, und baut sie nicht um.
 
+**Und die Zielscheibe gehört überhaupt nicht dorthin.** In der ersten Fassung dieses
+Abschnitts stand sie mit in der Spalte, zwischen Zauberbaum, Kartei und Rucksack — und die
+erste Frage bei der Abnahme war folgerichtig, was für ein Menüpunkt das sein soll. Keiner:
+`#prioBtn` schaltet um, auf wen der Schlagknopf zielt, wenn kein Ziel festgehalten ist — auf
+den nächsten („Nah") oder auf den mit dem wenigsten Leben („Schwach"). Das ist eine
+Kampfeinstellung.
+
+Sie sitzt jetzt **oben auf dem Fächer**, über dem Trank, im selben senkrechten Strang: 44
+Pixel statt 56, weil sie im Gefecht selten angefasst wird — aber im Daumenmaß, nicht darunter.
+Auf einem liegenden Telefon endet der Strang über dem Trank bei 73 Pixeln unter der
+Oberkante, und dort steht schon die Statuskarte; dort rückt sie deshalb auf die andere Seite
+des Bogens, links neben den Zauberknopf.
+
+Auf 44 Pixeln ohne Beschriftung wäre nicht zu sehen, welche der beiden Zielwahlen gerade
+gilt. Der Rand sagt es: ruhiges Messing für „Nah", Warnorange für „Schwach". Auf dem Schirm
+steht das Wort weiterhin daneben, dort ist Platz dafür.
+
+Ein eigener Abschnitt für die Optionen wird sie vermutlich ganz dorthin holen. Bis dahin
+steht sie wenigstens bei ihresgleichen.
+
 ---
 
 ### Befund 4: der Fächer war ein Fächer, aber kein Kreis
@@ -326,6 +346,7 @@ dieser Begründung im Quelltext.
 - Nichts steht außerhalb des Fensters.
 - Die Uhr steht unter der Minikarte und wandert nicht mehr.
 - Mit offenem Panel bleiben die Knöpfe der Spalte erreichbar (Ausnahme: Gesprächstafel).
+- In der Spalte stehen nur Menüzugänge; die Zielwahl steht am Fächer und zeigt ihren Zustand.
 - Die Konsole ist beim Start still.
 
 ## Prüfprotokoll

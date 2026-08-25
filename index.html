@@ -1114,6 +1114,27 @@
        !important nötig: bakeUiSkin() schreibt border-image inline auf jeden .beltSlot.
        --cfui-round setzt bakeUiSkin(), gleiche Optik wie das Lichtbild oben links. */
     border-image-source:none !important;background-image:var(--cfui-round);background-size:100% 100%;image-rendering:pixelated;}
+  /* Die Zielwahl ist KEIN Menuepunkt, und in der Menuespalte hat sie in der
+     ersten Fassung von U7 trotzdem gestanden — zwischen Zauberbaum, Kartei und
+     Rucksack, mit denen sie nichts zu tun hat. Sie schaltet um, auf wen der
+     Schlagknopf zielt, wenn kein Ziel festgehalten ist: auf den naechsten
+     ("Nah") oder auf den mit dem wenigsten Leben ("Schwach"). Das ist eine
+     Kampfeinstellung und gehoert an den Kampf.
+     Sie sitzt deshalb OBEN AUF dem Faecher, ueber dem Trank: derselbe
+     senkrechte Strang, kleiner als die drei Kampfknoepfe (44 statt 56), weil
+     sie im Gefecht selten angefasst wird — aber im Daumenmass, nicht darunter.
+     Ein eigener Abschnitt fuer die Optionen wird sie vermutlich ganz dorthin
+     holen; bis dahin steht sie wenigstens bei ihresgleichen. */
+  body.touch #prioBtn{
+    position:fixed;z-index:11;box-sizing:border-box;width:44px;height:44px;min-width:0;padding:0;
+    border-radius:50%;font-size:calc(18px * var(--fs));gap:0;
+    right:27px;bottom:271px;
+    box-shadow:0 3px 12px rgba(0,0,0,.6);
+    border-image-source:none !important;background-image:var(--cfui-round);background-size:100% 100%;image-rendering:pixelated;}
+  /* Ohne Beschriftung waere auf 44 Pixeln nicht zu sehen, welche der beiden
+     Zielwahlen gerade gilt. Der Rand sagt es: ruhiges Messing fuer "Nah",
+     Warnorange fuer "Schwach". refreshPrioBtn() setzt die Klasse. */
+  body.touch #prioBtn.schwach{border-color:#ff9f4a;box-shadow:0 0 10px rgba(255,159,74,.55);}
   body.touch #spellBtn {right:123px;bottom:109px;}   /* 180° */
   body.touch #ultBtn   {right: 97px;bottom:179px;}   /* 135°, Radius 99 statt 96:
                                                         bei 96 stiessen die
@@ -1148,7 +1169,7 @@
      die doppelte Anzahl in eine Zeile. Der Kontext-Knopf behält seinen Text, der
      Text ist dort die eigentliche Information (Hebel / Schloss / Öffnen). */
   body.touch .beltSlot .bl{display:none;}
-  body.touch #spellsBtn, body.touch #zulagenBtn, body.touch #invBtn, body.touch #prioBtn,
+  body.touch #spellsBtn, body.touch #zulagenBtn, body.touch #invBtn,
   body.touch #kamExitBtn{
     box-sizing:border-box;width:56px;height:56px;min-width:0;padding:0;border-radius:50%;font-size:calc(22px * var(--fs));gap:0;position:relative;
     box-shadow:0 3px 12px rgba(0,0,0,.6);
@@ -1469,6 +1490,11 @@
        die Zahlen standen (2137 px2, gemeldet von tools/steuerung-pruef.mjs). */
     #statCol{top:var(--mapY);right:calc(var(--rand) + var(--mapH) + 10px);align-items:flex-end;}
     body.touch #knZettel, body.touch #knRandnotiz{top:calc(var(--spalteY) + 4px);}
+    /* Ueber dem Trank endet der Faecher auf einem liegenden Telefon bei 73
+       Pixeln unter der Oberkante, und dort steht schon die Statuskarte. Die
+       Zielwahl rueckt deshalb auf die andere Seite des Bogens, links neben
+       den Zauberknopf — in der Breite ist ein liegendes Telefon reich. */
+    body.touch #prioBtn{right:187px;bottom:115px;}
   }
 </style>
 </head>
@@ -22012,6 +22038,10 @@ document.addEventListener('visibilitychange', () => { if(document.hidden){ liveT
 // ===== Priority-Toggle =====
 function refreshPrioBtn(){
   document.getElementById('prioTxt').innerText = targetPriority === 'closest' ? 'Nah' : 'Schwach';
+  // U7: Auf dem Telefon traegt der Knopf keine Beschriftung (44 Pixel), also
+  // traegt sie der Rand. Die Zeile darueber bleibt: auf dem Schirm steht das
+  // Wort weiterhin daneben.
+  document.getElementById('prioBtn').classList.toggle('schwach', targetPriority === 'lowhp');
 }
 document.getElementById('prioBtn').onclick = () => {   // simpler onclick reicht: kein Drag-Semantik, emulierter Click ok
   targetPriority = targetPriority === 'closest' ? 'lowhp' : 'closest';
