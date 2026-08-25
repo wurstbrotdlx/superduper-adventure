@@ -438,8 +438,8 @@ V. „Ich war zuständig. Nun bin ich hier.“ (36)
 
 1. „Vierzehn Türme, ein Aufzug, neun Stockwerke.“ (44) / „Der Rest ist Treppe.“ (20)
 2. „Ich bin im Umlauf. Seit einer Weile.“ (36) / „Man gewöhnt sich daran.“ (23)
-3. „Oben ist es sauber. Sehr sauber.“ (32) / „Und sehr leise.“ (15)
-4. „Elf Stellen noch. Auf der Rückseite.“ (36) / „Vorne war ich schon.“ (20)
+3. „Oben ist sauber, leise, hell, und dann,“ (39) / „Verzeihung. Ich muss weiter.“ (28) *(T1)*
+4. „Elf Stellen noch, zwölf mit dem Tor, und“ (40) / „Nein, dreizehn. Muss los.“ (25) *(T1)*
 5. „Die Rohrpost geht nicht. Seit immer.“ (36) / „Ich laufe. Geht auch.“ (21)
 6. „Ich muss weiter. War nett bei Ihnen.“ (36) / „Wirklich. Sehr nett.“ (20)
 

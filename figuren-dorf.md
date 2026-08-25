@@ -235,6 +235,26 @@ Optik: `cfnpc_chloe` (Chef_Chloe, wandert). Heimatanker: Kachel (3, 40). **G6:**
 
 ### Grundzeilen (Kreislauf)
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Man erledigt Monster nicht.“ (27) / „Man beantwortet sie.“ (20)
+2. „Und wenn er einfach nur wartet?“ (31) / „Das fragt hier keiner gern.“ (27)
+3. „Sechstes Jahr Praktikum, immer noch unbezahlt.“ (46) / „Es fehlt nur eine Unterschrift.“ (31)
+4. „Es fehlt eine weisungsbefugte Person.“ (37) / „Es gibt sie einfach nicht.“ (26)
+5. „Mein Traum: ein Amt für Monster.“ (32) / „Nicht gegen sie, für sie.“ (25)
+6. „Ich stelle nur die Fragen, die stören.“ (38) / „Irgendwer muss ja fragen.“ (25)
+
+### Aktzeilen
+
+I. „Ich zähle mit, aber ich frage schon.“ (36)
+II. „Jetzt fragt endlich jemand mit mir.“ (35)
+III. „Ein leerer Stuhl. Genau mein Problem.“ (37)
+IV. „Fragen Sie Nörgel. Er kann das lesen.“ (37)
+V. „Ich komme mit. Ich habe ja gefragt.“ (35)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Man erledigt Monster nicht.“ (27) / „Man beantwortet sie.“ (20)
 2. „Und wenn er einfach nur wartet?“ (31) / „Das fragt hier keiner gern.“ (27)
 3. „Sechstes Jahr Praktikum, immer noch unbezahlt.“ (46) / „Es fehlt nur eine Unterschrift.“ (31)
@@ -242,13 +262,13 @@ Optik: `cfnpc_chloe` (Chef_Chloe, wandert). Heimatanker: Kachel (3, 40). **G6:**
 5. „Mein Traum: ein Amt für Monster.“ (32) / „Nicht gegen sie, für sie.“ (25)
 6. „Ich stelle nur die Fragen, die stören.“ (38) / „Antworten fehlen meistens.“ (26)
 
-### Aktzeilen
-
 I. „Ich zähle mit, aber ich frage schon.“ (36)
 II. „Jetzt fragt endlich jemand mit mir.“ (35)
 III. „Ein leerer Stuhl. Genau mein Problem.“ (37)
 IV. „Fragen Sie Nörgel. Er kann das lesen.“ (37)   *(W5, `45912f6`: umformuliert, siehe `phase-w5-vorgang.md`. Vorher: „Ich habe nur gefragt, wer lesen kann.“)*
 V. „Ich komme mit. Ich habe ja gefragt.“ (35)   *(W5, `45912f6`. Vorher: „Vielleicht braucht er nur eine Antwort.“)*
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt III
 
@@ -456,10 +476,12 @@ Optik: `cfnpc_bruno` (Bartender_Bruno, wandert). Heimatanker: Kachel (24, 38). D
 
 ### Grundzeilen (Kreislauf)
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
 1. „Wie war der Tag da draußen?“ (27) / „Setz dich. Bleib ein bisschen.“ (30)
 2. „Zum Letzten Stempel schließt nie zu früh.“ (41) / „Bleib, so lang du willst.“ (25)
-3. „Alle hauen ab, bevor der Käse kommt.“ (36) / „Schade eigentlich.“ (18)
-4. „Einmal bleibt wer bis zum Schluss.“ (34) / „Das wär mal was.“ (16)
+3. „Alle hauen ab, bevor der Käse kommt.“ (36) / „Und der Käse ist gut.“ (21)
+4. „Einmal bleibt wer bis zum Schluss.“ (34) / „Ich halte einen Platz frei.“ (27)
 5. „Hier redet sich manches leichter.“ (33) / „Bei Suppe und Bier.“ (19)
 6. „Kaum eingekehrt, schon wieder Dienst.“ (37) / „So ein Jammer.“ (14)
 
@@ -470,6 +492,24 @@ II. „Die Gespräche werden länger, die Krüge auch.“ (44)
 III. „Der Stammtisch hat eine Lücke.“ (30)
 IV. „Heute sitzen alle enger zusammen.“ (33)
 V. „Es fühlt sich an wie ein letzter Abend.“ (39)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Wie war der Tag da draußen?“ (27) / „Setz dich. Bleib ein bisschen.“ (30)
+2. „Zum Letzten Stempel schließt nie zu früh.“ (41) / „Bleib, so lang du willst.“ (25)
+3. „Alle hauen ab, bevor der Käse kommt.“ (36) / „Schade eigentlich.“ (18)
+4. „Einmal bleibt wer bis zum Schluss.“ (34) / „Das wär mal was.“ (16)
+5. „Hier redet sich manches leichter.“ (33) / „Bei Suppe und Bier.“ (19)
+6. „Kaum eingekehrt, schon wieder Dienst.“ (37) / „So ein Jammer.“ (14)
+
+I. „Ein neues Gesicht am Tresen heute.“ (34)
+II. „Die Gespräche werden länger, die Krüge auch.“ (44)
+III. „Der Stammtisch hat eine Lücke.“ (30)
+IV. „Heute sitzen alle enger zusammen.“ (33)
+V. „Es fühlt sich an wie ein letzter Abend.“ (39)
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt IV
 
@@ -747,8 +787,8 @@ inzwischen ausdrücklich so.
 
 1. „Vierzehn Türme, ein Aufzug, neun Stockwerke.“ (44) / „Der Rest ist Treppe.“ (20)
 2. „Ich bin im Umlauf. Seit einer Weile.“ (36) / „Man gewöhnt sich daran.“ (23)
-3. „Oben ist es sauber. Sehr sauber.“ (32) / „Und sehr leise.“ (15)
-4. „Elf Stellen noch. Auf der Rückseite.“ (36) / „Vorne war ich schon.“ (20)
+3. „Oben ist sauber, leise, hell, und dann,“ (39) / „Verzeihung. Ich muss weiter.“ (28) *(T1)*
+4. „Elf Stellen noch, zwölf mit dem Tor, und“ (40) / „Nein, dreizehn. Muss los.“ (25) *(T1)*
 5. „Die Rohrpost geht nicht. Seit immer.“ (36) / „Ich laufe. Geht auch.“ (21)
 6. „Ich muss weiter. War nett bei Ihnen.“ (36) / „Wirklich. Sehr nett.“ (20)
 

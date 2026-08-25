@@ -5197,7 +5197,7 @@ const DORF_FIGUREN = [
      {z1:'Sechstes Jahr Praktikum, immer noch unbezahlt.', z2:'Es fehlt nur eine Unterschrift.'},
      {z1:'Es fehlt eine weisungsbefugte Person.', z2:'Es gibt sie einfach nicht.'},
      {z1:'Mein Traum: ein Amt für Monster.', z2:'Nicht gegen sie, für sie.'},
-     {z1:'Ich stelle nur die Fragen, die stören.', z2:'Antworten fehlen meistens.'},
+     {z1:'Ich stelle nur die Fragen, die stören.', z2:'Irgendwer muss ja fragen.'},
    ],
    akt:[
      'Ich zähle mit, aber ich frage schon.',
@@ -5608,8 +5608,9 @@ const DORF_FIGUREN = [
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
      {z1:'Zum Letzten Stempel schließt nie zu früh.', z2:'Bleib, so lang du willst.'},
-     {z1:'Alle hauen ab, bevor der Käse kommt.', z2:'Schade eigentlich.'},
-     {z1:'Einmal bleibt wer bis zum Schluss.', z2:'Das wär mal was.'},
+     // T1: waermer, nicht laenger. Er ueberredet nie, er haelt einen Platz frei.
+     {z1:'Alle hauen ab, bevor der Käse kommt.', z2:'Und der Käse ist gut.'},
+     {z1:'Einmal bleibt wer bis zum Schluss.', z2:'Ich halte einen Platz frei.'},
      {z1:'Hier redet sich manches leichter.', z2:'Bei Suppe und Bier.'},
      {z1:'Kaum eingekehrt, schon wieder Dienst.', z2:'So ein Jammer.'},
    ],
@@ -5998,8 +5999,11 @@ const DORF_FIGUREN = [
    grund:[
      {z1:'Vierzehn Türme, ein Aufzug, neun Stockwerke.', z2:'Der Rest ist Treppe.'},
      {z1:'Ich bin im Umlauf. Seit einer Weile.', z2:'Man gewöhnt sich daran.'},
-     {z1:'Oben ist es sauber. Sehr sauber.', z2:'Und sehr leise.'},
-     {z1:'Elf Stellen noch. Auf der Rückseite.', z2:'Vorne war ich schon.'},
+     // T1: Ihr Gag ist der Abbruch mitten im Satz, und bis hierher brach kein
+     // Satz wirklich ab. Jetzt zwei. Sie werden dadurch nicht laenger, nur
+     // ungeduldiger, und das ist bei ihr dasselbe wie eine Sprachmarke.
+     {z1:'Oben ist sauber, leise, hell, und dann,', z2:'Verzeihung. Ich muss weiter.'},
+     {z1:'Elf Stellen noch, zwölf mit dem Tor, und', z2:'Nein, dreizehn. Muss los.'},
      {z1:'Die Rohrpost geht nicht. Seit immer.', z2:'Ich laufe. Geht auch.'},
      {z1:'Ich muss weiter. War nett bei Ihnen.', z2:'Wirklich. Sehr nett.'},
    ],
