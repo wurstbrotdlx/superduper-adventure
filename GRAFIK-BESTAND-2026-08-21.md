@@ -58,6 +58,15 @@ Damit niemand es „repariert":
   Zellen wurden ausgeschnitten und umbenannt, der Namensvergleich findet sie deshalb nicht.
   Der Rest sind Rahmenvarianten, die der Skin nicht braucht.
 
+  > **Berichtigung vom 25.08.2026 (U11).** Der letzte Satz gilt fuer `UI_Frames.png` und
+  > ist fuer `UI_Icons.png` falsch. Das Blatt misst 624x256 im 16er-Raster, traegt also
+  > **624 Zellen**, ist die Icon-Quelle des Packs — und es lag nicht einmal unberuehrt da:
+  > G5 hat daraus `glint_strip.png` geschnitten (Zeile 3, Spalten 9-11). Hier ist ein
+  > ganzes Blatt hinter einer Sammelaussage ueber ein anderes verlorengegangen. U11 und
+  > U12 haben daraus achtundzwanzig Sinnbilder geholt und damit die System-Emoji der
+  > ganzen Bedienoberflaeche ersetzt. Der Bericht selbst bleibt stehen wie er ist, wie
+  > jeder datierte Stand in diesem Repo; das hier ist die Berichtigung.
+
 Bleiben grob 350 Dateien, die tatsächlich Inhalt sind, den es im Spiel nicht gibt.
 
 ## Die Kandidaten, nach Verhältnis von Ertrag zu Aufwand
