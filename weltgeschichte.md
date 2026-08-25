@@ -614,7 +614,7 @@ Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emoji
 
 **Bild:** Wir sehen nie ein Gesicht. Wir sehen einen Schreibtisch von oben. Eine Hand legt Papiere hin, eins nach dem anderen. Zwischen den Blättern jeweils ein Stempelgeräusch. Sonst nichts. Kein Erzähler mit Pathos, sondern eine ruhige Stimme, die vorliest, was auf dem Blatt steht.
 
-**Dauer:** unter einer Minute. Fünf Blätter. *(Gebaute Fassung, Stand T1. Die Langfassung mit neun Blättern steht darunter und ist die Quelle geblieben.)*
+**Dauer:** unter einer Minute. Fünf Blätter. *(T2: der Wortlaut im Spiel ist seit dem 25.08.2026 erzählerisch ausgebaut und Knöterich spricht in den Blättern mit. Die Blattfolge unten bleibt die Quelle, das Spiel trägt die ausgeschriebene Fassung.)* *(Gebaute Fassung, Stand T1. Die Langfassung mit neun Blättern steht darunter und ist die Quelle geblieben.)*
 
 > **Blatt I.** Ein Schreiben, zwei Zeilen lang. Daneben dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.
 > STIMME: Wer räumt das Papier aus dem Fluss? Um Nachricht wird gebeten.
