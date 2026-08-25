@@ -615,3 +615,124 @@ Die drei Prüfläufe des Hauses auf dem zusammengeführten Stand:
 `tools/zulagen-pruef.mjs` fünfundvierzig von fünfundvierzig,
 `tools/menue-pruef.mjs` neununddreißig von neununddreißig,
 `tools/speicher-pruef.mjs` vierunddreißig von vierunddreißig.
+
+## K1-13. Nachtrag: die fünfundvierzig Bilder
+
+Die Karten zeigen keine Sinnbilder mehr. Alle fünfzehn Familien tragen drei
+Bilder, eines je Stufe.
+
+### Der Dateiname ist die einzige Verbindung
+
+Fünfundvierzig Dateien und fünfundvierzig Karten lassen sich nur über den Namen
+zusammenbringen. Er steht deshalb an jedem Prompt, in der Klickfassung als
+eigenes Schildchen neben dem Kopierknopf: Familienschlüssel plus Stufe, also
+`stichprobe-3.jpg`. Prompt und Name stammen aus **einer** Quelle und können
+nicht auseinanderlaufen.
+
+`zulagenAssert()` rechnet den erwarteten Namen aus dem Katalog nach. Das ist die
+einzige Stelle, an der ein vertauschtes Bild überhaupt auffällt: ein Pfad, der
+auf eine falsche Datei zeigt, ist immer noch ein gültiger Pfad, und im Spiel
+sähe man nur eine Karte mit falschem Motiv. Wer fünfundvierzig Zeilen von Hand
+einträgt, dreht irgendwann eine Ziffer um.
+
+### Die Zuordnung war das eigentliche Problem
+
+Die Vorlagen kamen als `IMG_0706` bis `IMG_0750` aus dem Telefon, also ohne die
+Namen, unter denen sie zu sichern gewesen wären. Zugeordnet wurden sie über den
+Bildinhalt gegen die Szenenbeschreibungen, nachgeprüft an fünf Kontaktbögen.
+
+**Der Beleg, der die Zuordnung trägt, ist nicht das einzelne Motiv, sondern eine
+Grenze.** Zwischen dem fünfunddreißigsten und dem sechsunddreißigsten Bild
+springt die Bildart von Wirkungsszene auf freigestellten Gegenstand: davor eine
+ganze Kammer im Stillstand, danach ein Helm auf reinem Verlauf. Genau dort sagt
+der Katalog den Wechsel voraus. Läge die Reihenfolge auch nur um eins daneben,
+wäre das gebrochen. Ein einzelnes stimmiges Motiv wäre Zufall, eine stimmige
+Grenze ist keiner.
+
+Dazu die Einzelproben: der Brieföffner mit dem Sandskorpion, die Grünhaut im
+Eisblock mit erhobenem Zeigefinger, die Reihe Knochenritter, die eskalierenden
+Helme, Becher und Dienstbücher der stillen Karten. Und die Axt trifft mit dem
+Kopf, nicht mit dem Stiel: die Prompt-Korrektur aus K1-11 hat gehalten.
+
+### Das Werkzeug
+
+`tools/zulagen-bild.py`, nach dem Vorbild von `tools/figuren-px.py`. Anders als
+dort gibt es **keine Pixelkur**: die Kartenkunst steht seit K1-11 ausdrücklich
+auf gemalt und gesättigt, eine Quantisierung wäre hier kein Stil, sondern ein
+Schaden.
+
+Mittiger Zuschnitt auf vier zu drei, dann vierhundert mal dreihundert. Der
+Zuschnitt gehört ins Werkzeug und nicht in die Karte, weil `object-fit:cover`
+sonst selbst beschneidet, und zwar unkontrolliert: was aus dem Bild fällt,
+entschiede dann die Bildschirmbreite.
+
+Zusammen wiegen die fünfundvierzig **1364 KB**, im Schnitt 30,3 KB bei Güte 88.
+Der erste Schätzwert an Testbildern lag bei 637 KB und war damit um mehr als das
+Doppelte daneben: synthetische Muster packen viel besser als gemalte Bilder. Die
+Zahl in dieser Doku ist die gemessene.
+
+### Drei Funde
+
+**Am Kartenlayout.** `image-rendering` stand noch auf `pixelated`, aus der Zeit,
+als die Kartenkunst Pixelkunst werden sollte. Auf ein gemaltes Bild angewandt,
+das von vierhundert auf zweihundertneunundneunzig verkleinert wird, heißt das
+nächster Nachbar statt Glättung. Nachgemessen an einem Bild mit feinem Raster:
+im Mittel 1,87 von 255 Unterschied, an Kanten bis 113. **Vorher war das nicht zu
+sehen, weil ohne Bild gar kein `img` existiert** — die Regel hing drei
+Bauabschnitte lang wirkungslos im Blatt und wäre mit dem ersten echten Bild
+scharf geworden.
+
+**Am Build.** Der Eingangsordner wurde mit eingebacken. `dist/index.html` wog
+24 MB statt 3, für Bilder, die kein Frame je zeichnet. Der Ordner steht jetzt in
+den `SKIP_DIRS` **und** in der `.gitignore`: das eine schützt gegen
+Auslieferung, das andere gegen das Repo, und beides braucht es, weil die beiden
+Wege unabhängig sind.
+
+**Am eigenen Werkzeug.** Eine Doppelbelegung, also zwei Dateien für dieselbe
+Karte, wurde gemeldet — und die Datei trotzdem geschrieben, eine überschrieb die
+andere. Ein Wächter, der meldet und den Schaden dann doch anrichtet, ist keiner.
+Jetzt fliegen beide Anwärter raus und nichts wird geschrieben.
+
+### Ein Wächter, der wieder gefallen ist
+
+Zur Bildpfad-Regel gehörte kurz eine zweite Prüfung: kein Pfad zweimal im
+Katalog. Die Gegenprobe zeigte, dass sie nie anschlägt — der Fall wurde immer
+schon von der Namensregel gefangen. Und das ist kein Zufall: wenn jeder Pfad auf
+die eigene Familie und die eigene Stufe enden muss, tragen zwei Karten nie
+denselben, denn Schlüssel sind im Katalog eindeutig.
+
+Sie ist wieder entfernt, mit dem Grund im Quelltext. **Ein Wächter, der
+nachweislich nie etwas sagen kann, ist schlechter als keiner**, weil er Deckung
+vortäuscht, die es nicht gibt. Das ist die Kehrseite der Hausregel, dass ein
+Guard, der immer schweigt, nichts beweist: hier war schon vor dem Schweigen
+klar, dass er nichts beweisen kann.
+
+### Prüfprotokoll
+
+`zulagen-pruef.mjs` fünfundvierzig von fünfundvierzig, `menue-pruef.mjs`
+neununddreißig von neununddreißig, `speicher-pruef.mjs` vierunddreißig von
+vierunddreißig.
+
+Gegenproben zur neuen Bildpfad-Regel, fünf Fälle: Stufe vertauscht, fremde
+Familie, Pfad ohne Ordner, falsche Endung, derselbe Pfad an zwei Karten. Jeder
+wird gemeldet, danach ist der Guard still.
+
+Gegenproben zum Werkzeug, vier Fälle: Name ohne Stufe, Stufe vier, unbekannte
+Familie, Doppelbelegung. Alle gemeldet, Exit-Code eins, und im Doppelfall wird
+nachgezählt, dass **nichts** geschrieben wurde.
+
+Der Zuschnitt ist an drei Formaten nachgewiesen, nicht angenommen: ein zu
+breites, ein quadratisches und ein zu hohes Bild, jedes mit verschiedenfarbigen
+Rändern und einer Marke in der Mitte. Das zu breite verliert die Seiten, die
+beiden anderen verlieren oben und unten, die Mitte bleibt in allen dreien.
+
+Der Build ist der eigentliche Prüfstein, weil dort der stille Fehler säße: in
+`dist/index.html` stehen **fünfundvierzig** Kartenbilder als `data:`-URI und
+keine Reste des Eingangs. Die Datei wiegt 3148 KB.
+
+Sichtprobe bei 1280 und bei 390 Pixeln Breite: die Bilder füllen ihr Fenster,
+kein seitlicher Überlauf, Konsole still.
+
+**Was von hier aus nicht prüfbar ist:** die ausgelieferte Seite. Der Proxy
+dieser Sitzung blockt `github.io`; der Stand wird über den Deploy-Job und den
+lokalen Build belegt.
