@@ -6,7 +6,7 @@ Inhaltslieferung zu Bauabschnitt **W3** ("Das Dorf spricht") aus `superduper-wel
 
 **Sperrvermerk, unverändert aus Kapitel 7, hier auf alle elf Figuren angewandt:** keine Figur erklärt oder deutet an, wie die Beglaubigung im Kessel rechnet (Substantiv=Slot, Adjektiv=Wirkung, Seltenheit=Alter des Aktenzeichens, drei Zutaten=dreifache Ausfertigung, Fluch=Bewilligung+Auflage im selben Bescheid, zwei harte Flüche=Verhältnismäßigkeit). Figuren dürfen über Akten, den Krieg, das Amt, ihre eigene Lage und den Vorgang 1 reden, nie über die Zutaten-Mechanik.
 
-**Formregeln, unverändert aus Kapitel 13:** keine Gedankenstriche, keine Emojis, kurze Sätze. **Zeichendeckel:** Dialogzeile 1 (`z1`) höchstens 48 Zeichen, Zeile 2 (`z2`) höchstens 32 Zeichen, einzeilige Aktzeile höchstens 44 Zeichen. Alle Werte unten sind gegengezählt, nicht geschätzt.
+**Formregeln, unverändert aus Kapitel 13:** keine Gedankenstriche, keine Emojis, Länge nach Sprachmarke *(Stand T1, 25.08.2026; bis dahin stand hier „kurze Sätze" als Deckel für alle)*. **Zeichendeckel:** Dialogzeile 1 (`z1`) höchstens 48 Zeichen, Zeile 2 (`z2`) höchstens 32 Zeichen, einzeilige Aktzeile höchstens 44 Zeichen. Alle Werte unten sind gegengezählt, nicht geschätzt.
 
 **Zwei Optik-Gruppen für den Einbau** (Entscheidung, keine Erfindung neuer Assets — siehe Plan zu W3):
 
@@ -91,12 +91,14 @@ Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (17, 37), vor dem 
 
 ### Grundzeilen (Kreislauf bei wiederholtem Ansprechen)
 
-1. „Das Dorffest kommt. Seit elf Jahren.“ (36) / „Vordermühl hatte noch nie eins.“ (31)
-2. „Eine Genehmigung fehlt uns noch.“ (32) / „Da bin ich dran.“ (16)
-3. „Wir werden das angehen.“ (23) / „Noch dieses Jahr, vielleicht.“ (29)
-4. „Schön, dass Sie da sind! Wirklich.“ (34) / „Ihr Jahresgespräch führe ich.“ (29)
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Schön, dass Sie da sind! Wirklich schön.“ (40) / „Ihr Jahresgespräch führe ich.“ (29)
+2. „Zum Rückblick: elf Jahre Dorffest.“ (34) / „Vordermühl hatte noch nie eins.“ (31)
+3. „Zum Ausblick: wir werden das angehen.“ (37) / „Noch dieses Jahr, vielleicht.“ (29)
+4. „Zum Dank: Konfetti ist längst bestellt.“ (39) / „Nur die Genehmigung fehlt noch.“ (31)
 5. „Zuständig wäre die Amtsleitung.“ (31) / „Nur weiß ich nicht, wer sie ist.“ (32)
-6. „Konfetti habe ich schon bestellt.“ (33) / „Nur die Genehmigung fehlt noch.“ (31)
+6. „Da bin ich dran. Seit elf Jahren dran.“ (38) / „Man darf nicht lockerlassen.“ (28)
 
 ### Aktzeilen
 
@@ -105,6 +107,24 @@ II. „Wer zuständig ist? Klären wir noch.“ (35)
 III. „Der Schreibtisch ist leer. Ich weiß warum.“ (42)
 IV. „Ich habe gestanden. Das Fest steht noch aus.“ (44)
 V. „Wir werden das Fest feiern. Irgendwann.“ (39)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Das Dorffest kommt. Seit elf Jahren.“ (36) / „Vordermühl hatte noch nie eins.“ (31)
+2. „Eine Genehmigung fehlt uns noch.“ (32) / „Da bin ich dran.“ (16)
+3. „Wir werden das angehen.“ (23) / „Noch dieses Jahr, vielleicht.“ (29)
+4. „Schön, dass Sie da sind! Wirklich.“ (34) / „Ihr Jahresgespräch führe ich.“ (29)
+5. „Zuständig wäre die Amtsleitung.“ (31) / „Nur weiß ich nicht, wer sie ist.“ (32)
+6. „Konfetti habe ich schon bestellt.“ (33) / „Nur die Genehmigung fehlt noch.“ (31)
+
+I. „Elf Jahre Vorfreude, noch mehr Händedruck.“ (42)
+II. „Wer zuständig ist? Klären wir noch.“ (35)
+III. „Der Schreibtisch ist leer. Ich weiß warum.“ (42)
+IV. „Ich habe gestanden. Das Fest steht noch aus.“ (44)
+V. „Wir werden das Fest feiern. Irgendwann.“ (39)
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt II
 
@@ -215,6 +235,26 @@ Optik: `cfnpc_chloe` (Chef_Chloe, wandert). Heimatanker: Kachel (3, 40). **G6:**
 
 ### Grundzeilen (Kreislauf)
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Man erledigt Monster nicht.“ (27) / „Man beantwortet sie.“ (20)
+2. „Und wenn er einfach nur wartet?“ (31) / „Das fragt hier keiner gern.“ (27)
+3. „Sechstes Jahr Praktikum, immer noch unbezahlt.“ (46) / „Es fehlt nur eine Unterschrift.“ (31)
+4. „Es fehlt eine weisungsbefugte Person.“ (37) / „Es gibt sie einfach nicht.“ (26)
+5. „Mein Traum: ein Amt für Monster.“ (32) / „Nicht gegen sie, für sie.“ (25)
+6. „Ich stelle nur die Fragen, die stören.“ (38) / „Irgendwer muss ja fragen.“ (25)
+
+### Aktzeilen
+
+I. „Ich zähle mit, aber ich frage schon.“ (36)
+II. „Jetzt fragt endlich jemand mit mir.“ (35)
+III. „Ein leerer Stuhl. Genau mein Problem.“ (37)
+IV. „Fragen Sie Nörgel. Er kann das lesen.“ (37)
+V. „Ich komme mit. Ich habe ja gefragt.“ (35)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Man erledigt Monster nicht.“ (27) / „Man beantwortet sie.“ (20)
 2. „Und wenn er einfach nur wartet?“ (31) / „Das fragt hier keiner gern.“ (27)
 3. „Sechstes Jahr Praktikum, immer noch unbezahlt.“ (46) / „Es fehlt nur eine Unterschrift.“ (31)
@@ -222,13 +262,13 @@ Optik: `cfnpc_chloe` (Chef_Chloe, wandert). Heimatanker: Kachel (3, 40). **G6:**
 5. „Mein Traum: ein Amt für Monster.“ (32) / „Nicht gegen sie, für sie.“ (25)
 6. „Ich stelle nur die Fragen, die stören.“ (38) / „Antworten fehlen meistens.“ (26)
 
-### Aktzeilen
-
 I. „Ich zähle mit, aber ich frage schon.“ (36)
 II. „Jetzt fragt endlich jemand mit mir.“ (35)
 III. „Ein leerer Stuhl. Genau mein Problem.“ (37)
 IV. „Fragen Sie Nörgel. Er kann das lesen.“ (37)   *(W5, `45912f6`: umformuliert, siehe `phase-w5-vorgang.md`. Vorher: „Ich habe nur gefragt, wer lesen kann.“)*
 V. „Ich komme mit. Ich habe ja gefragt.“ (35)   *(W5, `45912f6`. Vorher: „Vielleicht braucht er nur eine Antwort.“)*
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt III
 
@@ -281,10 +321,12 @@ Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: 
 
 ### Grundzeilen (Kreislauf)
 
-1. „Vierzig Jahre Probezeit.“ (24) / „Nächstes Jahr wird entfristet.“ (30)
-2. „Die Entfristung macht die Amtsleitung.“ (38) / „Die sieht man nie.“ (18)
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Vierzig Jahre Probezeit. Mit Begründung.“ (40) / „Nächstes Jahr wird entfristet.“ (30)
+2. „Die Entfristung macht die Amtsleitung.“ (38) / „Die sieht man nie. Aktenkundig.“ (31)
 3. „Ich habe mich damals beschwert.“ (31) / „Dann hat man mich eingestellt.“ (30)
-4. „Ich trage eine Krawatte.“ (24) / „Fällt niemandem auf.“ (20)
+4. „Ich trage eine Krawatte. Vorschrift.“ (36) / „Fällt niemandem auf. Trotzdem.“ (30)
 5. „Ich beschwere mich auch über mich.“ (34) / „Berechtigt, wie meistens.“ (25)
 6. „Das ist nicht meine Zuständigkeit.“ (34) / „Ich mache es trotzdem.“ (22)
 
@@ -293,8 +335,26 @@ Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: 
 I. „Noch ein Formular, noch keine Antwort.“ (38)
 II. „Jetzt braucht auch Zwirn die Amtsleitung.“ (41)
 III. „Die Stelle ist leer, ich bin es nicht.“ (38)
+IV. „Gelesen und gezeichnet. Ich bin im Dienst.“ (42)
+V. „Auch jetzt ist es nicht meine Zuständigkeit.“ (44)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Vierzig Jahre Probezeit.“ (24) / „Nächstes Jahr wird entfristet.“ (30)
+2. „Die Entfristung macht die Amtsleitung.“ (38) / „Die sieht man nie.“ (18)
+3. „Ich habe mich damals beschwert.“ (31) / „Dann hat man mich eingestellt.“ (30)
+4. „Ich trage eine Krawatte.“ (24) / „Fällt niemandem auf.“ (20)
+5. „Ich beschwere mich auch über mich.“ (34) / „Berechtigt, wie meistens.“ (25)
+6. „Das ist nicht meine Zuständigkeit.“ (34) / „Ich mache es trotzdem.“ (22)
+
+I. „Noch ein Formular, noch keine Antwort.“ (38)
+II. „Jetzt braucht auch Zwirn die Amtsleitung.“ (41)
+III. „Die Stelle ist leer, ich bin es nicht.“ (38)
 IV. „Gelesen und gezeichnet. Ich bin im Dienst.“ (42)   *(W5, `45912f6`. Vorher: „Niemand fragt mich. Jetzt fragen alle.“)*
 V. „Auch jetzt ist es nicht meine Zuständigkeit.“ (44)
+
+</details>
 
 ### Zusatzzeilen, erst nach dem Lager (Nachtrag W-Nörgel)
 
@@ -332,10 +392,12 @@ Optik: `cfnpc_buba` (Farmer_Buba, wandert, neutral/ungetönt). Heimatanker: Kach
 
 ### Grundzeilen (Kreislauf)
 
-1. „Das würde ich mit Drei ansetzen.“ (32) / „Höchstens.“ (10)
-2. „Diese Kammer würde ich einstufen.“ (33) / „Ungefragt, versteht sich.“ (25)
-3. „Manche Kammern fühlen sich falsch an.“ (37) / „Das beunruhigt mich.“ (20)
-4. „Meine Zahlen stimmen immer. Fast.“ (33) / „Nur wo, weiß ich nicht.“ (23)
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Erstens der Gegenstand. Diese Kammer.“ (37) / „Ungefragt, versteht sich.“ (25)
+2. „Zweitens der Maßstab. Der Vordruck.“ (35) / „Sechs Zeilen. Genügt seit je.“ (29)
+3. „Das würde ich mit Drei ansetzen.“ (32) / „Höchstens. Das ist drittens.“ (28)
+4. „Viertens der Vorbehalt. Meine Zahlen stimmen.“ (45) / „Nur wo, weiß ich nicht.“ (23)
 5. „Ein Gutachten ist nie fertig.“ (29) / „Nur eingestellt.“ (16)
 6. „Andere raten. Ich stufe ein.“ (28) / „Das ist ein Unterschied.“ (24)
 
@@ -346,6 +408,24 @@ II. „Ohne Freigabe stufe ich das niedrig ein.“ (40)
 III. „Ein leerer Stuhl lässt sich nicht bewerten.“ (43)
 IV. „Diese Schrift verweigert sich der Note.“ (39)
 V. „Diesmal setze ich keine Note mehr an.“ (37)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Das würde ich mit Drei ansetzen.“ (32) / „Höchstens.“ (10)
+2. „Diese Kammer würde ich einstufen.“ (33) / „Ungefragt, versteht sich.“ (25)
+3. „Manche Kammern fühlen sich falsch an.“ (37) / „Das beunruhigt mich.“ (20)
+4. „Meine Zahlen stimmen immer. Fast.“ (33) / „Nur wo, weiß ich nicht.“ (23)
+5. „Ein Gutachten ist nie fertig.“ (29) / „Nur eingestellt.“ (16)
+6. „Andere raten. Ich stufe ein.“ (28) / „Das ist ein Unterschied.“ (24)
+
+I. „Die neue Kraft schätze ich auf Zwei.“ (36)
+II. „Ohne Freigabe stufe ich das niedrig ein.“ (40)
+III. „Ein leerer Stuhl lässt sich nicht bewerten.“ (43)
+IV. „Diese Schrift verweigert sich der Note.“ (39)
+V. „Diesmal setze ich keine Note mehr an.“ (37)
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt II
 
@@ -396,10 +476,12 @@ Optik: `cfnpc_bruno` (Bartender_Bruno, wandert). Heimatanker: Kachel (24, 38). D
 
 ### Grundzeilen (Kreislauf)
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
 1. „Wie war der Tag da draußen?“ (27) / „Setz dich. Bleib ein bisschen.“ (30)
 2. „Zum Letzten Stempel schließt nie zu früh.“ (41) / „Bleib, so lang du willst.“ (25)
-3. „Alle hauen ab, bevor der Käse kommt.“ (36) / „Schade eigentlich.“ (18)
-4. „Einmal bleibt wer bis zum Schluss.“ (34) / „Das wär mal was.“ (16)
+3. „Alle hauen ab, bevor der Käse kommt.“ (36) / „Und der Käse ist gut.“ (21)
+4. „Einmal bleibt wer bis zum Schluss.“ (34) / „Ich halte einen Platz frei.“ (27)
 5. „Hier redet sich manches leichter.“ (33) / „Bei Suppe und Bier.“ (19)
 6. „Kaum eingekehrt, schon wieder Dienst.“ (37) / „So ein Jammer.“ (14)
 
@@ -410,6 +492,24 @@ II. „Die Gespräche werden länger, die Krüge auch.“ (44)
 III. „Der Stammtisch hat eine Lücke.“ (30)
 IV. „Heute sitzen alle enger zusammen.“ (33)
 V. „Es fühlt sich an wie ein letzter Abend.“ (39)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
+1. „Wie war der Tag da draußen?“ (27) / „Setz dich. Bleib ein bisschen.“ (30)
+2. „Zum Letzten Stempel schließt nie zu früh.“ (41) / „Bleib, so lang du willst.“ (25)
+3. „Alle hauen ab, bevor der Käse kommt.“ (36) / „Schade eigentlich.“ (18)
+4. „Einmal bleibt wer bis zum Schluss.“ (34) / „Das wär mal was.“ (16)
+5. „Hier redet sich manches leichter.“ (33) / „Bei Suppe und Bier.“ (19)
+6. „Kaum eingekehrt, schon wieder Dienst.“ (37) / „So ein Jammer.“ (14)
+
+I. „Ein neues Gesicht am Tresen heute.“ (34)
+II. „Die Gespräche werden länger, die Krüge auch.“ (44)
+III. „Der Stammtisch hat eine Lücke.“ (30)
+IV. „Heute sitzen alle enger zusammen.“ (33)
+V. „Es fühlt sich an wie ein letzter Abend.“ (39)
+
+</details>
 
 ### Zusatzzeilen (W11), ab Akt IV
 
@@ -437,6 +537,26 @@ Optik: Held-Komposit (`gestalt`: Haar h1 braun, keine Rüstungs-Layer wie Knöte
 
 ### Grundzeilen, Basis-Variante (wenn seit Schichtbeginn nichts Nennenswertes passiert ist)
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Der Neue. Wieder unterwegs.“ (27) / „Ich sitze. Zuständig für nichts.“ (32)
+2. „Der Neue. Schlägt was kurz und klein.“ (37) / „Sauber. Nichts bleibt stehen.“ (29)
+3. „Der Neue läuft. Ich sitze.“ (26) / „Manche stehen auf. Ich nicht.“ (29)
+4. „Der Neue. Mutig.“ (16) / „Nicht mein Bereich.“ (19)
+5. „Der Neue. Klatschnass.“ (22) / „Ich bleibe trocken. Prinzip.“ (28)
+6. „Der Neue. Fragen Sie Herrn Pahl.“ (32) / „Der hat mehr Worte als ich.“ (27)
+
+### Aktzeilen
+
+I. „Der Neue zählt Konfetti. Süß.“ (29)
+II. „Krieg ausgesetzt. Ich sitze weiter.“ (35)
+III. „N.N. Fragt ja auch keiner nach mir.“ (35)
+IV. „Ich lese keine Adressen. Ich sitze.“ (35)
+V. „Der Neue zieht los. Kein Kommentar.“ (35)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Der Neue. Schon wieder unterwegs.“ (33) / „Ich sitze. Zuständig für nichts.“ (32)
 2. „Der Neue. Schlägt wieder alles kurz und klein.“ (46) / „Sauber. Nichts bleibt stehen.“ (29)
 3. „Der Neue. Läuft, wo ich nur sitze.“ (34) / „Manche stehen auf. Ich nicht.“ (29)
@@ -444,36 +564,36 @@ Optik: Held-Komposit (`gestalt`: Haar h1 braun, keine Rüstungs-Layer wie Knöte
 5. „Der Neue. Wieder klatschnass vom Kampf.“ (39) / „Ich bleibe trocken. Prinzip.“ (28)
 6. „Der Neue. Frag lieber Herrn Pahl.“ (33) / „Der hat mehr Geduld als ich.“ (28)
 
-### Aktzeilen
-
 I. „Der Neue zählt Konfetti. Süß.“ (29)
 II. „Krieg ausgesetzt. Ich sitze weiter.“ (35)
 III. „N.N. Wenigstens fragt niemand nach mir.“ (39)
 IV. „Ich lese keine Adressen. Ich sitze.“ (35)
 V. „Der Neue zieht los. Kein Kommentar heut.“ (40)
 
+</details>
+
 ### Anlass-Zeilen (kommentiert das jeweils letzte Ereignis, z2 spielt auf Pahl an)
 
-**crit:** „Direkt ins Aktenzeichen.“ / „Pahl schweigt. Wie erwartet.“ — „Das war kein Zufall. Glaub ich.“ / „Pahl, klatsch doch mal mit.“ — „Ein Treffer für die Geschichtsbücher.“ / „Pahl nickt. Immerhin das.“
+**crit:** „Direkt ins Aktenzeichen.“ / „Pahl schweigt. Wie erwartet.“ — „Kein Zufall. Glaub ich.“ / „Pahl, klatsch doch mal mit.“ — „Ein Treffer fürs Buch.“ / „Pahl nickt. Immerhin das.“
 
-**levelup:** „Der Neue wird befördert. Von wem?“ / „Pahl weiß es auch nicht.“ — „Höher, weiter, immer noch sitzend hier.“ / „Pahl klatscht. Ich nicke.“ — „Stufe hoch. Bank bleibt gleich.“ / „Pahl, freu dich für ihn.“
+**levelup:** „Befördert. Von wem?“ / „Pahl weiß es auch nicht.“ — „Höher, weiter. Ich sitze.“ / „Pahl klatscht. Ich nicke.“ — „Stufe hoch. Bank bleibt.“ / „Pahl, freu dich für ihn.“
 
-**ultimate:** „Na sowas. Ganz schön viel Zauber.“ / „Pahl duckt sich schon mal.“ — „Das hat sicher eine Genehmigung. Oder?“ / „Pahl fragt nicht nach. Klug.“ — „So viel Licht. Meine Augen, meine Akte.“ / „Pahl blinzelt. Sonst nichts.“
+**ultimate:** „Viel Zauber. Na sowas.“ / „Pahl duckt sich schon mal.“ — „Genehmigt? Bestimmt. Oder?“ / „Pahl fragt nicht nach. Klug.“ — „So viel Licht. Meine Augen.“ / „Pahl blinzelt. Sonst nichts.“
 
-**fluch:** „Neuer Fluch. Kleingedrucktes, wie immer.“ / „Pahl liest es. Ich nie.“ — „Jede Gabe hat einen Haken. Amtlich.“ / „Pahl nennt das gerecht.“ — „Noch ein Fluch. Passt zur Sammlung.“ / „Pahl seufzt fürs Protokoll.“
+**fluch:** „Neuer Fluch. Kleingedrucktes.“ / „Pahl liest es. Ich nie.“ — „Jede Gabe hat einen Haken.“ / „Pahl nennt das gerecht.“ — „Noch einer. Für die Sammlung.“ / „Pahl seufzt fürs Protokoll.“
 
-**goldfund:** „So viel Gold. Ich brauch keins.“ / „Pahl rechnet schon mit.“ — „Klingt nach Feierabend. Für dich.“ / „Pahl fragt: für wen sonst?“ — „Viel Gold. Wenig Aussicht auf Rente.“ / „Pahl lacht. Ich nicht.“
+**goldfund:** „So viel Gold. Brauch keins.“ / „Pahl rechnet schon mit.“ — „Klingt nach Feierabend.“ / „Pahl fragt: für wen sonst?“ — „Viel Gold. Keine Rente.“ / „Pahl lacht. Ich nicht.“
 
-**kammerAbbruch:** „Nichts gefunden. Passiert den Besten.“ / „Pahl zählt trotzdem mit.“ — „Leere Kammer. Voller Rückweg.“ / „Pahl seufzt lauter als ich.“ — „Manchmal ist leer auch eine Antwort.“ / „Pahl widerspricht. Natürlich.“
+**kammerAbbruch:** „Nichts gefunden. Passiert.“ / „Pahl zählt trotzdem mit.“ — „Leere Kammer. Voller Rückweg.“ / „Pahl seufzt lauter als ich.“ — „Leer ist auch eine Antwort.“ / „Pahl widerspricht. Natürlich.“
 
-**untaetigkeit:** „Der Neue steht. Wie ich. Interessant.“ / „Pahl findet das gruselig.“ — „Willkommen im Klub. Bank ist frei.“ / „Pahl rückt trotzdem nicht.“ — „Steh nicht so rum. Das ist mein Job.“ / „Pahl übernimmt notfalls.“
+**untaetigkeit:** „Der Neue steht. Wie ich.“ / „Pahl findet das gruselig.“ — „Bank ist frei. Willkommen.“ / „Pahl rückt trotzdem nicht.“ — „Rumstehen ist mein Job.“ / „Pahl übernimmt notfalls.“
 
 ### Zusatzzeilen (W11), ab Akt III
 
 Vordermühl steht in keinem Bestand (Weltgeschichte, Kapitel 5, und Serie G, Blatt 6). Wer nie geführt wurde, kann auch nicht abgeschlossen werden. Das ist der Grund, aus dem die beiden noch da sind, und es ist die freundlichste Zeile dieses Spiels.
 
-* „Wir zwei standen nie in einem Bestand.“ (38) / „Pahl sagt, das sei ein Glück.“ (29)
-* „Wer nicht geführt wird, bleibt da.“ (34) / „Pahl nickt. Ausnahmsweise.“ (26)
+* „Wir standen nie in einem Bestand.“ (33) / „Pahl sagt, das sei ein Glück.“ (29)
+* „Nicht geführt, also noch da.“ (28) / „Pahl nickt. Ausnahmsweise.“ (26)
 
 ### Anlass-Zeilen (SZ2): der Nachklang der Szenen
 
@@ -481,9 +601,9 @@ Zwei neue Anlässe, gebaut wie die sieben darüber. `umlauf` fällt, nachdem der
 
 **umlauf:** „Die kommt alle achtzig Jahre.“ (29) / „Pahl merkt sich so etwas.“ (25) — „Eine Botin. Die hat es eilig.“ (29) / „Pahl hätte gern die Liste.“ (26)
 
-**hintermuehl:** „Er hat es gesagt.“ (17) / „Nach vierzig Jahren.“ (20) — „Da war ein Wort. Ein einziges.“ (30) / „Pahl hat es auch gehört.“ (24)
+**hintermuehl:** „Er hat es gesagt.“ (17) / „Nach vierzig Jahren.“ (20) — „Ein Wort. Ein einziges.“ (23) / „Pahl hat es auch gehört.“ (24)
 
-**Prüfnotiz:** kein Fund. Besonders geprüft: „Direkt ins Aktenzeichen“ (kein Bezug zu Alter/Seltenheit), „Jede Gabe hat einen Haken. Amtlich.“ (sagt nur DASS, nie WARUM/WIE, kein Bescheid-Bezug).
+**Prüfnotiz:** kein Fund. Besonders geprüft: „Direkt ins Aktenzeichen“ (kein Bezug zu Alter/Seltenheit), „Jede Gabe hat einen Haken.“ (sagt nur DASS, nie WARUM/WIE, kein Bescheid-Bezug).
 
 ---
 
@@ -493,6 +613,26 @@ Optik: Held-Komposit (`gestalt`: Haar h4 ingwerfarben, keine Rüstungs-Layer), s
 
 ### Grundzeilen, Basis-Variante
 
+*Neu gefasst mit T1. Die Fassung davor steht unter den Aktzeilen.*
+
+1. „Da ist er wieder, unser Neuer. Unterwegs.“ (41) / „Ich sehe gern zu. Beruflich.“ (28)
+2. „Sie kämpfen, und ich sehe dabei zu.“ (35) / „Zwei Berufe. Meiner ist leicht.“ (31)
+3. „Die Bank hält warm, wenn man ihr Zeit gibt.“ (43) / „Ich gebe ihr sehr viel Zeit.“ (28)
+4. „So habe ich schon viele genannt, wissen Sie.“ (44) / „Der Name bleibt. Sie wechseln.“ (30)
+5. „Ob ich ein Vorgang bin? Das ist unhöflich.“ (42) / „Fragen Sie das nicht noch mal.“ (30)
+6. „Die Sonne dreht sich weiter, ich nicht.“ (39) / „Kommentar ist auch ein Beruf.“ (29)
+
+### Aktzeilen
+
+I. „Wieder einer, der alles ernst nimmt. Schön.“ (43)
+II. „Ein Fest ohne Erlaubnis. Wie hübsch.“ (36)
+III. „Ein Platz bleibt leer, und das fällt auf.“ (41)
+IV. „Ein Brief, den keiner lesen will. Schade.“ (41)
+V. „Es wird still hier. Auffällig still.“ (36)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Der Neue. Wieder unterwegs.“ (27) / „Ich sehe zu. Das reicht mir.“ (28)
 2. „Sie kämpfen. Ich sehe nur zu.“ (29) / „Zwei Berufe. Meiner ist leicht.“ (31)
 3. „Die Bank ist warm. Ich bleibe.“ (30) / „Kommentieren wärmt genauso gut.“ (31)
@@ -500,44 +640,44 @@ Optik: Held-Komposit (`gestalt`: Haar h4 ingwerfarben, keine Rüstungs-Layer), s
 5. „Ob ich ein Vorgang bin? Unhöflich.“ (34) / „Fragen Sie das nicht noch mal.“ (30)
 6. „Die Sonne dreht sich. Ich nicht.“ (32) / „Kommentar ist auch ein Beruf.“ (29)
 
-### Aktzeilen
-
 I. „Wieder einer, der alles ernst nimmt.“ (36)
 II. „Ein Fest ohne Erlaubnis. Wie hübsch.“ (36)
 III. „Ein Platz bleibt leer. Auffällig leer.“ (38)
 IV. „Ein Brief, den keiner lesen will.“ (33)
 V. „Es wird still. Auffällig still hier.“ (36)
 
+</details>
+
 ### Anlass-Zeilen (z2 spielt auf Lott an)
 
-**crit:** „Ein Treffer. Sauber getroffen.“ / „Lott hat sowas noch nie gesehen.“ — „Das saß. Sogar ich hab's gemerkt.“ / „Lott schläft schon wieder.“ — „Kritisch. Sehr kritisch sogar.“ / „Notieren Sie das, Lott.“
+**crit:** „Ein Treffer, und sauber getroffen dazu.“ / „Lott hat sowas noch nie gesehen.“ — „Das saß, und sogar ich habe es gemerkt.“ / „Lott schläft schon wieder.“ — „Kritisch, und zwar sehr kritisch sogar.“ / „Notieren Sie das, Lott.“
 
-**levelup:** „Eine Stufe höher. Wie fein.“ / „Lott zählt bestimmt falsch.“ — „Sie wachsen. Ich sitze weiter.“ / „Lott klatscht schon wieder.“ — „Stufenaufstieg. Herzlichen Glückwunsch.“ / „Lott, klatschen Sie leiser.“
+**levelup:** „Eine Stufe höher, und das ist zu Recht.“ / „Lott zählt bestimmt falsch.“ — „Sie wachsen, und ich sitze weiter hier.“ / „Lott klatscht schon wieder.“ — „Stufenaufstieg. Herzlichen Glückwunsch.“ / „Lott, klatschen Sie leiser.“
 
-**ultimate:** „Das war groß. Richtig groß.“ / „Lott hat die Augen zugemacht.“ — „Ein großer Zauber. Beeindruckend.“ / „Lott, aufwachen. Das war gut.“ — „So viel Kraft für so wenig Feind.“ / „Lott findet das übertrieben.“
+**ultimate:** „Das war groß, und ich sage das selten.“ / „Lott hat die Augen zugemacht.“ — „Ein großer Zauber, wirklich beeindruckend.“ / „Lott, aufwachen. Das war gut.“ — „So viel Kraft für so wenig Feind, finde ich.“ / „Lott findet das übertrieben.“
 
-**fluch:** „Ein Fluch mehr. Passt zu Ihnen.“ / „Lott nennt das nur konsequent.“ — „Schon wieder ein Haken dabei.“ / „Lott freut sich klammheimlich.“ — „Ein Fluch. Man gewöhnt sich daran.“ / „Lott gewöhnt sich nie.“
+**fluch:** „Ein Fluch mehr, und er passt zu Ihnen.“ / „Lott nennt das nur konsequent.“ — „Schon wieder ein Haken, und keiner liest ihn.“ / „Lott freut sich klammheimlich.“ — „Ein Fluch, an den man sich gewöhnen kann.“ / „Lott gewöhnt sich nie.“
 
-**goldfund:** „So viel Gold. Alles echt?“ / „Lott zählt es heimlich mit.“ — „Ein Sack voll Glück. Kommt kaum vor.“ / „Lott will die Hälfte haben.“ — „Reich geworden. Vorübergehend.“ / „Lott nennt das Statistik.“
+**goldfund:** „So viel Gold, und alles davon echt?“ / „Lott zählt es heimlich mit.“ — „Ein Sack voll Glück, das kommt kaum vor.“ / „Lott will die Hälfte haben.“ — „Reich geworden, wenn auch vorübergehend.“ / „Lott nennt das Statistik.“
 
-**kammerAbbruch:** „Nichts gefunden. Auch eine Leistung.“ / „Lott sieht das anders.“ — „Leer rausgekommen. Ehrlich immerhin.“ / „Lott nennt das Verschwendung.“ — „Keine Beute. Kommt öfter vor.“ / „Lott führt da eine Liste.“
+**kammerAbbruch:** „Nichts gefunden, und auch das ist etwas.“ / „Lott sieht das anders.“ — „Leer herausgekommen, aber ehrlich immerhin.“ / „Lott nennt das Verschwendung.“ — „Keine Beute, und das kommt öfter vor.“ / „Lott führt da eine Liste.“
 
-**untaetigkeit:** „Der Neue steht. Ich sitze auch.“ / „Lott findet das gemütlich.“ — „Nichts passiert. Endlich Ruhe.“ / „Lott redet trotzdem weiter.“ — „Sie stehen nur. Ich auch.“ / „Lott hält das für Faulheit.“
+**untaetigkeit:** „Der Neue steht, und ich sitze dabei.“ / „Lott findet das gemütlich.“ — „Nichts passiert, und das ist endlich Ruhe.“ / „Lott redet trotzdem weiter.“ — „Sie stehen einfach nur da, und ich sitze.“ / „Lott hält das für Faulheit.“
 
 ### Zusatzzeilen (W11), ab Akt III
 
 Hintermühl von der anderen Seite der Bank (Weltgeschichte, Kapitel 5). Das Dorf ist nicht niedergebrannt worden, es ist zugeklappt worden, und das ist das Stillste, was in dieser Welt passieren kann. Ob die beiden selbst Vorgänge sind, bleibt offen (Weltbibel, Kapitel 16).
 
-* „Man hat unser Dorf zugeklappt.“ (30) / „Lott spricht nicht darüber.“ (27)
-* „Kein Feuer. Ein Aktendeckel.“ (28) / „Lott war auch dabei.“ (20)
+* „Man hat unser Dorf zugeklappt, einfach so.“ (42) / „Lott spricht nicht darüber.“ (27)
+* „Kein Feuer, nur ein Aktendeckel.“ (32) / „Lott war auch dabei.“ (20)
 
 ### Anlass-Zeilen (SZ2): die andere Seite der Bank
 
 Dieselben zwei Anlässe wie bei Lott, mit den beiden übrigen Zeilen der Quelle. Pahl nennt in `hintermuehl` das Wort nicht, das Knöterich gesagt hat; er sagt nur, wie lange sie darauf gewartet haben. Ausgesprochen wird *Hintermühl* in Szene 4 genau einmal, und dabei bleibt es.
 
-**umlauf:** „Sie sagt jedes Mal, es war nett.“ (32) / „Lott glaubt ihr das sogar.“ (26) — „Vierzehn Türme. Und sie läuft.“ (30) / „Lott würde den Aufzug nehmen.“ (29)
+**umlauf:** „Sie sagt jedes Mal, es war nett hier.“ (37) / „Lott glaubt ihr das sogar.“ (26) — „Vierzehn Türme, und sie läuft sie alle.“ (39) / „Lott würde den Aufzug nehmen.“ (29)
 
-**hintermuehl:** „Wir haben ja gewartet.“ (22) / „Wir warten gut.“ (15) — „Vierzig Jahre für ein Wort.“ (27) / „Lott sagt gar nichts mehr.“ (26)
+**hintermuehl:** „Wir haben ja gewartet, all die Jahre.“ (37) / „Wir warten gut.“ (15) — „Vierzig Jahre für ein einziges Wort.“ (36) / „Lott sagt gar nichts mehr.“ (26)
 
 **Prüfnotiz:** kein Fund. „Ob ich ein Vorgang bin? Unhöflich.“ bleibt reine Abwehr der Frage (Kapitel 16: „wird nie geklärt“), ohne jede Erklärung.
 
@@ -578,6 +718,26 @@ seinen ersten Arbeitstag.
 
 #### Grundzeilen (Kreislauf)
 
+*Neu gefasst mit T1: er meldet in Spalten. Die Fassung bis zum 25.08.2026 steht darunter.*
+
+1. „Gemeldet wird: TNM negativ.“ (27) / „Wie gestern. Wie immer.“ (23)
+2. „Mg. null. Da. entfällt. Ba. trocken.“ (36) / „Anm.: keine. Alles bereit.“ (26)
+3. „Eimer: vorhanden. Messstab: vorhanden.“ (38) / „Für den Fall. Seit immer.“ (25)
+4. „Stelle: nie unbesetzt. Dreiundvierzig Jahre.“ (44) / „Das sagt sonst niemand.“ (23)
+5. „Wolken: vorhanden. Vlg.: fehlt.“ (31) / „Deshalb dürfen sie nicht.“ (25)
+6. „Sie waren im Frostkamm? Dort liegt etwas.“ (41) / „Von mir. Auf Eis.“ (17)
+
+#### Aktzeilen
+
+I. „Willkommen. Wetterlage: unverändert schön.“ (42)
+II. „Man fragt nach der Leitung. Ich melde nur.“ (42)
+III. „Dreiundvierzig Jahre. Der Eimer hält.“ (37)
+IV. „Wenn Sie hinauf müssen: bleibt schön.“ (37)
+V. „Bereitschaft: hergestellt. Man weiß nie.“ (40)
+
+<details>
+<summary>Die Fassung vor T1</summary>
+
 1. „Gemeldet wird: keine Niederschläge.“ (35) / „Wie gestern. Wie immer.“ (23)
 2. „Ich habe einen Eimer. Für den Fall.“ (35) / „Der Eimer ist bereit.“ (21)
 3. „Der Hut ist neu. Also fast neu.“ (31) / „Er wartet mit mir.“ (18)
@@ -585,13 +745,20 @@ seinen ersten Arbeitstag.
 5. „Meine Stelle war nie unbesetzt.“ (31) / „Das sagt sonst niemand.“ (23)
 6. „Sie waren im Frostkamm? Kalt dort.“ (34) / „Dort liegt etwas von mir.“ (25)
 
-#### Aktzeilen
+I. „Willkommen. Es bleibt schön. Wie immer.“ (39) · II. „Man fragt nach der Leitung. Ich melde nur.“ (42) · III. „Dreiundvierzig Jahre. Der Eimer hält.“ (37) · IV. „Wenn Sie hinauf müssen: Es wird schön.“ (38) · V. „Ich stehe bereit. Man weiß ja nie.“ (34)
 
-I. „Willkommen. Es bleibt schön. Wie immer.“ (39)
-II. „Man fragt nach der Leitung. Ich melde nur.“ (42)
-III. „Dreiundvierzig Jahre. Der Eimer hält.“ (37)
-IV. „Wenn Sie hinauf müssen: Es wird schön.“ (38)
-V. „Ich stehe bereit. Man weiß ja nie.“ (34)
+</details>
+
+#### Die Meldekürzel (T1)
+
+Seine Tabelle hat vier Spalten, und er kürzt sie alle ab: `Mg.` Menge, `Da.` Dauer, `Ba.` Bodenart,
+`Anm.` Anmerkungen, dazu `Vlg.` für die Veranlassung, auf die er wartet. Sie zählen gegen die zwölf
+Kürzel aus Weltbibel Kapitel 13 als **eine** Position, und die Bedingung dafür steht im Code:
+`szeneAssert()` prüft, dass jede Langform wörtlich in seinem eigenen Gesprächsbaum fällt, eine
+Nachfrage entfernt. Die Auflösung ist die einzige Stelle im Spiel, an der Nieselbeck ins Erzählen
+kommt, und sie läuft als Kaskade über drei Züge: „Die Spalten. Mg. ist die Menge. / Da. ist die
+Dauer.“ → „Ba. ist die Bodenart, Anm. sind die Anmerkungen. / Vlg. ist die Veranlassung.“ →
+„Anmerkungen. Da darf das Wetter erzählen. / Die Spalte ist noch leer.“
 
 #### Anredeform (18.5)
 
@@ -620,8 +787,8 @@ inzwischen ausdrücklich so.
 
 1. „Vierzehn Türme, ein Aufzug, neun Stockwerke.“ (44) / „Der Rest ist Treppe.“ (20)
 2. „Ich bin im Umlauf. Seit einer Weile.“ (36) / „Man gewöhnt sich daran.“ (23)
-3. „Oben ist es sauber. Sehr sauber.“ (32) / „Und sehr leise.“ (15)
-4. „Elf Stellen noch. Auf der Rückseite.“ (36) / „Vorne war ich schon.“ (20)
+3. „Oben ist sauber, leise, hell, und dann,“ (39) / „Verzeihung. Ich muss weiter.“ (28) *(T1)*
+4. „Elf Stellen noch, zwölf mit dem Tor, und“ (40) / „Nein, dreizehn. Muss los.“ (25) *(T1)*
 5. „Die Rohrpost geht nicht. Seit immer.“ (36) / „Ich laufe. Geht auch.“ (21)
 6. „Ich muss weiter. War nett bei Ihnen.“ (36) / „Wirklich. Sehr nett.“ (20)
 

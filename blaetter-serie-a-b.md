@@ -4,7 +4,7 @@ Inhaltslieferung zu Kapitel 12 der `superduper-weltbibel.md` ("Aktenfunde: wie d
 
 **Sperrvermerk, unverändert aus Kapitel 12:** kein Blatt darf Kesselgrammatik oder eine Fluch-Ableitung enthalten. Nicht als Regel, nicht als Andeutung, nicht als Rätsel. Ein Blatt darf beschreiben, dass beglaubigt wurde. Nie, wie.
 
-**Formregeln, unverändert aus Kapitel 13:** keine Gedankenstriche, keine Emojis, höchstens sechs Zeilen pro Blatt, kurze Sätze.
+**Formregeln, unverändert aus Kapitel 13:** keine Gedankenstriche, keine Emojis, höchstens sechs Zeilen pro Blatt, kurze Sätze. *(T1 ändert daran nichts: Blätter sind Post, und Post begründet ihre eigene Kürze. Die Kaskadenregel gilt für Gespräche, nie für Blätter.)*
 
 **Blatt A4 und Blatt E10 sind die bestehenden Musterblätter aus Kapitel 12 und werden hier unverändert als Blatt A4 übernommen** (E10 gehört zu Serie E, nicht Teil dieser Lieferung).
 

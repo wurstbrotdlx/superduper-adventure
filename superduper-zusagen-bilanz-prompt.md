@@ -90,7 +90,7 @@ Das zahlenreichste Paket. Framegrößen und Framezahlen im Manifest, Anker `ax`/
 
 ### Z6: Welt und Terminologie, Weltbibel plus W1, W2, Blätter
 
-Rangsystem und seine Stufen, Ensemble-Umfang, die Namenstabelle aus `phase-w1-terminologie.md` (R4 hat dort den Startbildschirm-Eintrag korrigiert, siehe F25), Zahl und Verteilung der Aktenfunde aus W2, Serien A und B aus `blaetter-serie-a-b.md`. Dazu die Formregeln als Vollständigkeitszusage: keine Gedankenstriche in sichtbaren Zeichenketten, keine Emojis in Knöterich-Texten, kein Blut, keine Preisgabe der Kesselgrammatik. Den Kanal-Scan aus R5 kannst du wiederholen, er ist billig.
+Rangsystem und seine Stufen, Ensemble-Umfang, die Namenstabelle aus `phase-w1-terminologie.md` (R4 hat dort den Startbildschirm-Eintrag korrigiert, siehe F25), Zahl und Verteilung der Aktenfunde aus W2, Serien A und B aus `blaetter-serie-a-b.md`. Dazu die Formregeln als Vollständigkeitszusage: keine Gedankenstriche in sichtbaren Zeichenketten, keine Emojis in Knöterich-Texten, kein Blut, keine Preisgabe der Kesselgrammatik, und seit T1 die Länge nach Sprachmarke. Den Kanal-Scan aus R5 kannst du wiederholen, er ist billig.
 
 ### Z7: Regressionsschutz als Zahlenwerk
 

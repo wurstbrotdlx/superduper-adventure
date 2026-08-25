@@ -52,6 +52,8 @@ jeden Morgen, weil er muss, und bleibt jeden Abend, weil er will.
 **Sprachmarke.** Zwei kurze Sätze. Siezt immer. Nennt Dinge beim Aktenbegriff. „Vermerkt."
 ist ein vollständiger Satz und meistens der ganze Kommentar.
 
+*(T1.)* Knapp ist bei ihm Marke, nicht Hausregel. Er weiß alles und darf nichts sagen, und Amtsverschwiegenheit spart Wörter.
+
 **Herkunft.** Er ist im Haus, seit es ihn gibt, und niemand weiß mehr, wann das war. Was
 datiert ist, ist der Anfang seiner Buchführung: **Jahr 972**, dasselbe Jahr, in dem
 Amtsleiterin Sturz den Dienstreiseantrag stellte und nicht wiederkam, in dem Nörgels
@@ -123,6 +125,8 @@ Die Amtsleitung ist N. N.
 **Sprachmarke.** Redet in Ankündigungen. „Wir werden das angehen." „Da bin ich dran."
 Schüttelt Hände, während er spricht, auch wenn niemand die seine hält.
 
+*(T1.)* Er ist ausführlich. Aus jeder Auskunft wird eine kleine Festrede: Begrüßung, Rückblick, Ausblick, Dank. Er meint jede Silbe, und deshalb hört man ihm zu.
+
 **Herkunft.** Vordermühl hat ihn gewählt, weil er der Einzige war, der sich gemeldet hat,
 und es hat ihn seither nicht wieder gewählt, weil sich niemand sonst meldet. Er ist im
 Dorf geboren. Er war nie weiter weg als bis zum Steinfeld.
@@ -188,6 +192,8 @@ Brandabschnitt.
 **Sprachmarke.** Fragt zurück, statt zu antworten. „In welcher Sache?" Sie stellt Fragen
 in Formularform, auch beim Grüßen.
 
+*(T1.)* Zweistufig. Ohne Antrag bleibt sie eine Wand aus drei Wörtern. Auf korrekt gestellten Antrag antwortet sie vollständig: Fundstelle, Gang, Regalseite, Langform, Vorbehalt. Die Auskunft ist die Belohnung, und sie ist üppig.
+
 **Herkunft.** Sie hat die Registratur von einer Vorgängerin übernommen, deren Namen sie
 kennt und nie nennt, weil er nicht zur Sache gehört. Sie ist seit über dreißig Jahren
 unten. Das Untergeschoss ist kühl, trocken und dunkel, und das sind laut ihr die drei
@@ -251,6 +257,8 @@ Figur des Ensembles ohne Hindernis, und daraus entsteht ihr ganzer Witz.
 **Sprachmarke.** Die kürzesten Sätze im Spiel. Nie mehr als sechs Wörter. Kein Konjunktiv.
 Handelt gegen Kaffee.
 
+*(T1.)* Unangetastet. Seine sechs Wörter sind seit T1 sichtbar, weil um ihn herum geredet wird.
+
 **Herkunft.** Aus Vordermühl, wie fast alle. Gelernt hat er nichts von dem, was er tut. Er
 hat es an Dingen gelernt, die kaputt waren, und das ist in dieser Welt eine reichhaltige
 Ausbildung.
@@ -312,6 +320,8 @@ einer weisungsbefugten Person. Es gibt keine.
 
 **Sprachmarke.** Stellt die Fragen, die niemand beantworten will, und entschuldigt sich
 nicht dafür. „Und wenn er einfach nur wartet?"
+
+*(T1.)* Sie bleibt bei zwei Sätzen, und das ist ihre Stärke: sie ist die Gerade im Haus. Wo eine Figur ausführlich wird, ist Lisbeth die, die trotzdem noch einmal nachfragt.
 
 **Herkunft.** Aus Vordermühl. Sie hat sich auf ein Praktikum beworben, weil im Aushang
 stand, das Haus bearbeite den ältesten Vorgang des Reiches, und sie war fünfzehn und fand
@@ -375,6 +385,8 @@ angestarrt.
 **Sprachmarke.** Entschuldigt sich, bevor er etwas sagt. „Wenn ich kurz stören darf." Der
 Satz steht in allen sechs Grundzeilen als erste Zeile, und das ist keine Textarmut, sondern
 die Figur.
+
+*(T1.)* Er bleibt kurz, aber nicht knapp: seine Entschuldigung frisst die halbe Zeile, und was danach kommt, ist deshalb immer weniger, als er sagen wollte.
 
 **Herkunft.** Emil Trepp der Erste war im **Jahr 612** der zuständige Zusteller für die
 dritte Ausfertigung. Er konnte die Anschrift nicht lesen und hat sie nicht weggeworfen,
@@ -441,6 +453,8 @@ eingestellt. Auf Probe.
 **Sprachmarke.** Beschwert sich über alles, einschließlich seiner selbst. „Das ist nicht
 meine Zuständigkeit. Ich mache es trotzdem." Der zweite Satz kommt immer.
 
+*(T1.)* Er ist ausführlich. Eine Beschwerde ohne Begründung ist keine, und er ist eine: Sachverhalt, Würdigung, gern eine Belehrung über den Rechtsbehelf. Die Coda kommt immer.
+
 **Herkunft.** Seine Probezeit beginnt im **Jahr 972** (Chronik, Jahr 972), im selben Jahr
 wie Knöterichs Buchführung und Sturz' Dienstreise. Vorher stand er draußen und hat sich
 beschwert, wie es seine Art ist. Er ist der einzige Beschäftigte des Hauses, der seine
@@ -502,6 +516,8 @@ Richtung, und er weiß es nicht.
 
 **Sprachmarke.** Bewertet ungefragt. „Das würde ich mit Drei ansetzen. Höchstens." Sagt
 „ansetzen", nie „schätzen", und der Unterschied ist ihm wichtig.
+
+*(T1.)* Er ist der Ausführlichste im Haus. Er begutachtet in ganzer Form: Gegenstand, Maßstab, Ansetzung, Vorbehalt. Je gründlicher das Gutachten, desto sicherer liegt es eine Stufe daneben, und die Herleitung ist sein eigentlicher Stolz.
 
 **Herkunft.** Promoviert, und das Fach nennt er nie. Er ist als Gutachter ins Haus gekommen,
 als das Haus zum letzten Mal jemanden eingestellt hat, der nicht selbst darum gebeten hat.
@@ -571,6 +587,8 @@ Zutatenzahlen.
 **Sprachmarke.** Liest vor, was dasteht, und betont dabei die falschen Wörter. „Auf dem
 Antrag steht Eimer. Nicht Kanne."
 
+*(T1.)* Er bleibt kurz, ausdrücklich. Sein Gag ist die falsche Betonung eines kurzen Satzes; ein langer Satz hat zu viele Wörter, um eines davon falsch zu betonen.
+
 **Herkunft.** Er hat die Materialausgabe von jemandem übernommen, der großzügig war, und
 er hat den Bestand danach zwei Jahre lang aufgeräumt. Zwei Jahre, in denen er jedes Stück
 in die Hand genommen und gegen ein Blatt gehalten hat, und am Ende stimmte der Bestand mit
@@ -638,6 +656,8 @@ Er hat noch nie erlebt, dass jemand einfach sitzen bleibt.
 **Sprachmarke.** Duzt als Einziger im Ensemble. Redet in Einladungen. „Setz dich. Bleib ein
 bisschen." Fragt nie, was jemand erlebt hat, sondern wie der Tag war.
 
+*(T1.)* Er bleibt bei zwei Sätzen, aber die zweiten werden wärmer. Eine Einladung, die zu lang wird, klingt nach Überredung, und Fass überredet nie.
+
 **Herkunft.** Das Gasthaus ist in der Familie, der Name ist es auch. Er hat ihn vom
 Großvater, und der hatte ihn von jemandem, der wusste, was er verspricht. Wer das war, ist
 nicht überliefert, und Fass hat nie nachgefragt, weil man einen Hausnamen nicht hinterfragt,
@@ -703,6 +723,8 @@ der nie geführt wurde.
 **Sprachmarken.** Lott sagt „Der Neue" und dann etwas Trockenes über sich selbst. Pahl
 antwortet mit einem vollständigen Satz, in dem Lott vorkommt. Keiner von beiden spricht den
 anderen direkt an, wenn jemand zuhört.
+
+*(T1.)* Der Unterschied steht seit F1 hier und war im Spiel nicht zu hören: Lotts Zeilen waren so kurz wie Pahls. Seit T1 ist Lott der Kürzere und Pahl der Ausführlichere, auch in den Spielzeilen. Damit ist die Bank die Dauervorführung des ganzen Tonprinzips: derselbe Anlass, einmal in vier Wörtern, einmal in zwei Sätzen.
 
 **Herkunft.** **Hintermühl**, eine halbe Wegstunde flussaufwärts. Größer als Vordermühl,
 zwei Gasthäuser, eine Kapelle. Im **Jahr 806** hat das Aktenhaus, in dessen Bestand
@@ -805,6 +827,8 @@ Er darf sie nicht holen, weil er für Wetter zuständig ist und nicht für Ablag
 **Sprachmarke.** Meldet, statt zu reden. Sagt „gemeldet wird" und dann den Satz. Ist nie
 enttäuscht, immer bereit.
 
+*(T1.)* Er meldet in Spalten. Menge, Dauer, Bodenart, Anmerkungen, und die kürzt er ab. Jedes Kürzel löst er auf Nachfrage auf, freundlich und dann, nur dann, in ganzen Sätzen: bei seinen eigenen Spalten kommt er ins Erzählen. Er ist der kürzeste Sprecher des Spiels und der einzige, der auf Wunsch ausführlich wird.
+
 **Herkunft.** Er hat die Stelle vor dreiundvierzig Jahren angetreten. Die Stelle des
 Wetterbeauftragten ist die einzige im ganzen Haus, die nie unbesetzt war, und zugleich die
 einzige, die nie tätig geworden ist (Chronik, Jahr 897). Er hat an seinem ersten Tag alles
@@ -862,6 +886,8 @@ füllt sich schneller, als die Vorderseite abgearbeitet wird.
 
 **Sprachmarke.** Redet schnell, in Aufzählungen, und hört mitten im Satz auf, weil sie
 weitermuss. Sie isst dabei.
+
+*(T1.)* Sie bleibt, wie sie ist. Ihr Gag ist der Abbruch, und der braucht keine Länge, sondern einen guten Zeitpunkt.
 
 **Herkunft.** Im Umlauf seit dreihundert Jahren. Ein Umlauf ist ein Schriftstück, das von
 Stelle zu Stelle weitergereicht wird, bis alle es abgezeichnet haben. **Ob sie ein Mensch
@@ -923,6 +949,8 @@ der Beste, den das Reich je hatte.
 **Sprachmarke.** Sagt nie Nein, sondern „das prüfen wir gern". Duzt niemanden, siezt sogar
 Katzen, benutzt den vollständigen Titel seines Gegenübers auch bei Leuten, die keinen haben.
 Vor dem „Sie" macht er eine winzige Pause, und die Pause ist die Beleidigung.
+
+*(T1.)* Seine Antworten sind die längsten des Reiches. Er umzingelt freundlich: er sagt so lange, dass man das gern prüfe, bis das Gegenüber von selbst aufgibt. Die Länge tut, was er selbst nie täte. In Szene 7 wird er kurz, und die Kürze ist der Bruch.
 
 **Herkunft.** Er hat mit sechsundzwanzig eine Zuständigkeit geerbt und sie seither
 verteidigt. Sein Haus heißt Vorblatt nach dem Blatt, das vor dem eigentlichen Dokument
@@ -989,6 +1017,8 @@ dem zweiten Tag weiß sie es.
 
 **Sprachmarke.** Kurz, sachlich, ohne Höflichkeitsformeln, und mit den Jahren immer kürzer.
 Ihr letzter Bericht ist einzeilig.
+
+*(T1.)* Wird nicht angefasst. Ihre Einzeiligkeit ist die Auszahlung des ganzen Tonsystems und trägt nur in einem Haus, in dem alle anderen erklären.
 
 **Herkunft.** Ministerialdirektorin des Hauses, höchster Beamtenposten. Im **Jahr 972** hat
 sie beschlossen, den Brief selbst zuzustellen, weil es sonst niemand tat, hat einen
@@ -1152,6 +1182,7 @@ als Konstante `ABKUERZUNGEN` in den Code übernommen und dort geprüft.
 | 3 | `zu Händen` | wird nie gekürzt, das ist die Aussage | das Reich | III | Bramsche | Wurzel (Bestand) |
 | 4 | `n. O.` | nach der Ordnung, die Jahreszählung | jede Urkunde, jedes Blatt | I | Bramsche | Wurzel (Bestand) |
 | 5 | `TNM` | Tägliche Niederschlagsmeldung | Nieselbeck | I | Nieselbeck selbst, in seinem Baum | I: das gewöhnliche Kürzel |
+| 5a | `Mg.`, `Da.`, `Ba.`, `Anm.`, `Vlg.` | Menge, Dauer, Bodenart, Anmerkungen, Veranlassung | Nieselbeck, und nur er | I | Nieselbeck selbst, Spalte für Spalte, auf eine einzige Nachfrage | I: die Familie der Meldekürzel, zählt gegen die Zwölf als **eine** Position (T1) |
 | 6 | `MfM` | Ministerium für Monsterangelegenheiten | Zwirn auf Antragsformularen, Pommer auf Bestandslisten | I | Bramsche | I: das gewöhnliche Kürzel |
 | 7 | `T.` | die TNM, noch einmal gekürzt | Trepp, weil es auf dem Umschlag kürzer ist | II | Bramsche, und nur sie | II: die Abkürzung der Abkürzung |
 | 8 | `GA` | Gutachterliche Ansetzung | Milb, stolz | II | Milb, ausführlich | II: die Abkürzung der Abkürzung |

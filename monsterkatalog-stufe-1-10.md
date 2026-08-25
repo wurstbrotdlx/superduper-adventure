@@ -16,8 +16,8 @@ Skript. Im Spiel prüft `monsterAssert()` dieselben Bänder ein zweites Mal, dor
 die echten Formeln aus `recalc()` statt gegen eine Abschrift davon.
 
 **Formregeln, unverändert aus Kapitel 13:** keine Gedankenstriche im Fließtext, keine Emojis,
-kurze Sätze. Die Markierung in der Überschrift folgt der Repo-Regel aus der README und ist
-kein Fließtext.
+Länge nach Sprachmarke (Stand T1); Katalogtexte bleiben kurz, sie sind Werkzeugtext. Die
+Markierung in der Überschrift folgt der Repo-Regel aus der README und ist kein Fließtext.
 
 Zwei Vorgaben waren im Auftrag offen und sind hier gesetzt, weil ohne sie nichts zu rechnen
 ist: **N = 28 Gegner** und **X = Sollstufe 10**. 7 Biome zu drei bis fünf Gegnern, jedes

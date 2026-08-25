@@ -212,7 +212,7 @@ async function frisch(opt){
                                        hasTouch: true, deviceScaleFactor: 2 });
   await page.evaluate(() => startGame());
   await page.waitForTimeout(300);
-  for(let i = 0; i < 5; i++){
+  for(let i = 0; i < 3; i++){
     await page.evaluate(() => { gespraechFertigTippen(); const o = szeneOptionen(); if(o.length) o[0].tun(); });
     await page.waitForTimeout(200);
   }

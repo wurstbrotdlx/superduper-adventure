@@ -100,7 +100,7 @@ Kein Codeeingriff außer Kommentaren.
 
 ### R5: Amtsdeutsch. Nicht mehr blockiert, F25 ist entschieden. — ERLEDIGT
 
-Registerarbeit. `weltbibel` Abschnitt 13 und 19 sind hier verbindlich, nicht optional.
+Registerarbeit. `weltbibel` Abschnitt 13 und 19 sind hier verbindlich, nicht optional. *(Seit T1 gilt dort: Länge nach Sprachmarke. Wer eine Zeile ins Register hebt, macht sie nicht kürzer, als die Figur ist, und die Knappen bleiben knapp.)*
 
 * **F28** Vier Gedankenstriche in dauerhaft sichtbaren HUD-Zeichenketten. Der Platzhalter im Gürtel steht bei jedem neuen Spieler von der ersten Sekunde an. **Vorsicht:** die beiden Platzhalter-Stellen müssen dieselbe Ersatzform bekommen, sonst springt der Text beim ersten `updateHUD()`.
 * **F26** `ABADDON ERWACHT!` als roter Einblender, fünf Sekunden, während die Bossleiste daneben den neuen Namen zeigt. Dazu der Platzhalter im Markup.

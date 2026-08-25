@@ -4934,13 +4934,18 @@ const DORF_FIGUREN = [
   {key:'zwirn', name:'Bürgermeister Alfons Zwirn', kurz:'Bürgermeister Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob', komposit:true,
    // schüttere sandige Haare über blanker Kopfhaut, ockerbraune Weste
    gestalt:{hair:'h1', haarFarbe:'#9f704b', hemd:'hof', hemdFarbe:'#765937', hose:'hof', schuh:'schuh'},
+   // T1: Aus jeder Auskunft wird bei ihm eine kleine Festrede. Der Kreislauf
+   // traegt sie in der Reihenfolge, in der eine Rede laeuft: Begruessung,
+   // Rueckblick, Ausblick, Dank, und danach zweimal die Sache selbst. Er meint
+   // jede Silbe, und deshalb hoert man ihm zu (Humor-Grundgesetz 12). Die beiden
+   // Saetze aus seiner Sprachmarke in Kapitel 8 stehen woertlich drin.
    grund:[
-     {z1:'Das Dorffest kommt. Seit elf Jahren.', z2:'Vordermühl hatte noch nie eins.'},
-     {z1:'Eine Genehmigung fehlt uns noch.', z2:'Da bin ich dran.'},
-     {z1:'Wir werden das angehen.', z2:'Noch dieses Jahr, vielleicht.'},
-     {z1:'Schön, dass Sie da sind! Wirklich.', z2:'Ihr Jahresgespräch führe ich.'},
+     {z1:'Schön, dass Sie da sind! Wirklich schön.', z2:'Ihr Jahresgespräch führe ich.'},
+     {z1:'Zum Rückblick: elf Jahre Dorffest.', z2:'Vordermühl hatte noch nie eins.'},
+     {z1:'Zum Ausblick: wir werden das angehen.', z2:'Noch dieses Jahr, vielleicht.'},
+     {z1:'Zum Dank: Konfetti ist längst bestellt.', z2:'Nur die Genehmigung fehlt noch.'},
      {z1:'Zuständig wäre die Amtsleitung.', z2:'Nur weiß ich nicht, wer sie ist.'},
-     {z1:'Konfetti habe ich schon bestellt.', z2:'Nur die Genehmigung fehlt noch.'},
+     {z1:'Da bin ich dran. Seit elf Jahren dran.', z2:'Man darf nicht lockerlassen.'},
    ],
    akt:[
      'Elf Jahre Vorfreude, noch mehr Händedruck.',
@@ -5192,7 +5197,7 @@ const DORF_FIGUREN = [
      {z1:'Sechstes Jahr Praktikum, immer noch unbezahlt.', z2:'Es fehlt nur eine Unterschrift.'},
      {z1:'Es fehlt eine weisungsbefugte Person.', z2:'Es gibt sie einfach nicht.'},
      {z1:'Mein Traum: ein Amt für Monster.', z2:'Nicht gegen sie, für sie.'},
-     {z1:'Ich stelle nur die Fragen, die stören.', z2:'Antworten fehlen meistens.'},
+     {z1:'Ich stelle nur die Fragen, die stören.', z2:'Irgendwer muss ja fragen.'},
    ],
    akt:[
      'Ich zähle mit, aber ich frage schon.',
@@ -5352,11 +5357,14 @@ const DORF_FIGUREN = [
    // Bild gilt (assets/figuren/README.md, Befunde am zweiten Paket).
    gestalt:{hair:'h1', haarFarbe:'#455033', hautFarbe:'#949341',
             hemd:'hemd', hemdFarbe:'#b49354', hose:'hose', schuh:'schuh'},
+   // T1: Eine Beschwerde ohne Begruendung ist keine, und er ist eine. Jede
+   // Zeile traegt jetzt ihren Grund mit, und die Coda aus Kapitel 8 steht am
+   // Ende, wo sie hingehoert. Die ganze Form steht in seinem Baum.
    grund:[
-     {z1:'Vierzig Jahre Probezeit.', z2:'Nächstes Jahr wird entfristet.'},
-     {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie.'},
+     {z1:'Vierzig Jahre Probezeit. Mit Begründung.', z2:'Nächstes Jahr wird entfristet.'},
+     {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie. Aktenkundig.'},
      {z1:'Ich habe mich damals beschwert.', z2:'Dann hat man mich eingestellt.'},
-     {z1:'Ich trage eine Krawatte.', z2:'Fällt niemandem auf.'},
+     {z1:'Ich trage eine Krawatte. Vorschrift.', z2:'Fällt niemandem auf. Trotzdem.'},
      {z1:'Ich beschwere mich auch über mich.', z2:'Berechtigt, wie meistens.'},
      {z1:'Das ist nicht meine Zuständigkeit.', z2:'Ich mache es trotzdem.'},
    ],
@@ -5448,11 +5456,18 @@ const DORF_FIGUREN = [
    // komposit:true fehlte hier seit G8 — Milb lief die ganze Zeit als
    // Farmer_Buba durchs Dorf, mit dessen Strohhut. Ein Gutachter mit Strohhut.
    gestalt:{hair:'h5', haarFarbe:'#68624d', hemd:'hof', hemdFarbe:'#314f62', hose:'hof', schuh:'schuh'},
+   // T1: Er ist der Ausfuehrlichste im Haus, und seine Form ist das Gutachten in
+   // vier Teilen: Gegenstand, Massstab, Ansetzung, Vorbehalt. Der Kreislauf der
+   // Grundzeilen traegt sie in dieser Reihenfolge, wer ihn also zweimal
+   // anspricht, hoert ein vollstaendiges Gutachten und merkt es nicht. Die
+   // Signatur aus Kapitel 8 bleibt woertlich stehen, sie ist Teil drei.
+   // Der vierte Teil ist die gesperrte Tatsache aus LV7 von innen: er hat
+   // keinen Vorbehalt, und genau deshalb liegt er immer eine Stufe daneben.
    grund:[
-     {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens.'},
-     {z1:'Diese Kammer würde ich einstufen.', z2:'Ungefragt, versteht sich.'},
-     {z1:'Manche Kammern fühlen sich falsch an.', z2:'Das beunruhigt mich.'},
-     {z1:'Meine Zahlen stimmen immer. Fast.', z2:'Nur wo, weiß ich nicht.'},
+     {z1:'Erstens der Gegenstand. Diese Kammer.', z2:'Ungefragt, versteht sich.'},
+     {z1:'Zweitens der Maßstab. Der Vordruck.', z2:'Sechs Zeilen. Genügt seit je.'},
+     {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens. Das ist drittens.'},
+     {z1:'Viertens der Vorbehalt. Meine Zahlen stimmen.', z2:'Nur wo, weiß ich nicht.'},
      {z1:'Ein Gutachten ist nie fertig.', z2:'Nur eingestellt.'},
      {z1:'Andere raten. Ich stufe ein.', z2:'Das ist ein Unterschied.'},
    ],
@@ -5593,8 +5608,9 @@ const DORF_FIGUREN = [
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},
      {z1:'Zum Letzten Stempel schließt nie zu früh.', z2:'Bleib, so lang du willst.'},
-     {z1:'Alle hauen ab, bevor der Käse kommt.', z2:'Schade eigentlich.'},
-     {z1:'Einmal bleibt wer bis zum Schluss.', z2:'Das wär mal was.'},
+     // T1: waermer, nicht laenger. Er ueberredet nie, er haelt einen Platz frei.
+     {z1:'Alle hauen ab, bevor der Käse kommt.', z2:'Und der Käse ist gut.'},
+     {z1:'Einmal bleibt wer bis zum Schluss.', z2:'Ich halte einen Platz frei.'},
      {z1:'Hier redet sich manches leichter.', z2:'Bei Suppe und Bier.'},
      {z1:'Kaum eingekehrt, schon wieder Dienst.', z2:'So ein Jammer.'},
    ],
@@ -5667,88 +5683,95 @@ const DORF_FIGUREN = [
    // statt aus der hochskalierten Ansichtsfassung — daher die Verschiebung um
    // ein bis zwei Zahlenschritte.
    gestalt:{hair:'h1', haarFarbe:'#a77256', hemd:'karo', hemdFarbe:'#855944', hose:'hose', schuh:'schuh'},
+   // T1: Lott ist der Kuerzere, im Satzbau und in der Geduld. Das steht seit F1
+   // in figuren-leben.md und war im Spiel nicht zu hoeren: seine Zeilen waren so
+   // lang wie Pahls, stellenweise laenger. Jetzt nicht mehr. Gemessen liegt sein
+   // Schnitt in z1 bei knapp siebenundzwanzig Zeichen, Pahls bei einundvierzig,
+   // und weil der Chor jede Spielhandlung kommentiert, sieht der Spieler den
+   // Unterschied hundertmal, ohne dass ihn je jemand erklaert. Das ist die
+   // billigste Dauervorfuehrung der neuen Formregel, die dieses Spiel hat.
    grund:[
-     {z1:'Der Neue. Schon wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
-     {z1:'Der Neue. Schlägt wieder alles kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
-     {z1:'Der Neue. Läuft, wo ich nur sitze.', z2:'Manche stehen auf. Ich nicht.'},
-     {z1:'Der Neue. Mutig. Nicht mein Bereich.', z2:'Ich sag nur, was ich sehe.'},
-     {z1:'Der Neue. Wieder klatschnass vom Kampf.', z2:'Ich bleibe trocken. Prinzip.'},
-     {z1:'Der Neue. Frag lieber Herrn Pahl.', z2:'Der hat mehr Geduld als ich.'},
+     {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
+     {z1:'Der Neue. Schlägt was kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
+     {z1:'Der Neue läuft. Ich sitze.', z2:'Manche stehen auf. Ich nicht.'},
+     {z1:'Der Neue. Mutig.', z2:'Nicht mein Bereich.'},
+     {z1:'Der Neue. Klatschnass.', z2:'Ich bleibe trocken. Prinzip.'},
+     {z1:'Der Neue. Fragen Sie Herrn Pahl.', z2:'Der hat mehr Worte als ich.'},
    ],
    akt:[
      'Der Neue zählt Konfetti. Süß.',
      'Krieg ausgesetzt. Ich sitze weiter.',
-     'N.N. Wenigstens fragt niemand nach mir.',
+     'N.N. Fragt ja auch keiner nach mir.',
      'Ich lese keine Adressen. Ich sitze.',
-     'Der Neue zieht los. Kein Kommentar heut.',
+     'Der Neue zieht los. Kein Kommentar.',
    ],
    // W11: Vordermühl steht in keinem Bestand. Wer nie geführt wurde, kann auch
    // nicht abgeschlossen werden, und das ist der Grund, aus dem die beiden noch
    // da sind. Ob sie Vorgänge sind, bleibt offen (Weltbibel Kapitel 16).
    zusatz:[{abAkt:3, zeilen:[
-     {z1:'Wir zwei standen nie in einem Bestand.', z2:'Pahl sagt, das sei ein Glück.'},
-     {z1:'Wer nicht geführt wird, bleibt da.',     z2:'Pahl nickt. Ausnahmsweise.'},
+     {z1:'Wir standen nie in einem Bestand.', z2:'Pahl sagt, das sei ein Glück.'},
+     {z1:'Nicht geführt, also noch da.',     z2:'Pahl nickt. Ausnahmsweise.'},
    ]},
    {abSchicht:12, zeilen:[
-     {z1:'Sie haben uns schon einmal gefragt.', z2:'Wir sitzen hier. Wir merken das.'},
+     {z1:'Sie fragen zum zweiten Mal.', z2:'Wir sitzen hier. Wir merken das.'},
      {z1:'Der Neue ist keiner mehr.', z2:'Pahl sagt, das dauert immer.'},
    ]},
    {abStufe:8, zeilen:[
-     {z1:'Der Neue wird groß. Ich nicht.', z2:'Ich sitze. Das reicht mir.'},
+     {z1:'Der Neue wird groß.', z2:'Ich sitze. Das reicht mir.'},
      {z1:'Sie wachsen. Die Bank nicht.', z2:'Pahl hat nachgemessen.'},
    ]},
    {skill:'str', ab:7, zeilen:[
      {z1:'Der Neue trägt was weg.', z2:'Ich trage nichts. Nie.'},
-     {z1:'Kraft ist praktisch da draußen.', z2:'Hier drin reicht Sitzen.'},
+     {z1:'Kraft ist was für draußen.', z2:'Hier drin reicht Sitzen.'},
    ]},
    {abRang:6, zeilen:[
-     {z1:'Der Neue hat jetzt was Amtliches.', z2:'Wir zwei haben gar nichts.'},
+     {z1:'Jetzt was Amtliches.', z2:'Wir zwei haben gar nichts.'},
      {z1:'Ein Titel. Sehr fein.', z2:'Pahl gratuliert. Ich nicke.'},
    ]},
    {phase:'antritt', zeilen:[
      {z1:'Früh unterwegs. Wie immer.', z2:'Wir sitzen schon länger da.'},
-     {z1:'Guten Morgen. Von uns beiden.', z2:'Pahl sagt es selten selbst.'},
+     {z1:'Morgen. Von uns beiden.', z2:'Pahl sagt es selten selbst.'},
    ]},
    {abAkt:5, zeilen:[
-     {z1:'Wir haben damals aufgeräumt.', z2:'Steine sortiert. Das war es.'},
+     {z1:'Wir haben aufgeräumt.', z2:'Steine sortiert. Das war es.'},
      {z1:'Man macht das so am Ende.', z2:'Pahl hat rechts gemacht.'},
    ]}
    ],
    anlass:{
      crit:[
        {z1:'Direkt ins Aktenzeichen.', z2:'Pahl schweigt. Wie erwartet.'},
-       {z1:'Das war kein Zufall. Glaub ich.', z2:'Pahl, klatsch doch mal mit.'},
-       {z1:'Ein Treffer für die Geschichtsbücher.', z2:'Pahl nickt. Immerhin das.'},
+       {z1:'Kein Zufall. Glaub ich.', z2:'Pahl, klatsch doch mal mit.'},
+       {z1:'Ein Treffer fürs Buch.', z2:'Pahl nickt. Immerhin das.'},
      ],
      levelup:[
-       {z1:'Der Neue wird befördert. Von wem?', z2:'Pahl weiß es auch nicht.'},
-       {z1:'Höher, weiter, immer noch sitzend hier.', z2:'Pahl klatscht. Ich nicke.'},
-       {z1:'Stufe hoch. Bank bleibt gleich.', z2:'Pahl, freu dich für ihn.'},
+       {z1:'Befördert. Von wem?', z2:'Pahl weiß es auch nicht.'},
+       {z1:'Höher, weiter. Ich sitze.', z2:'Pahl klatscht. Ich nicke.'},
+       {z1:'Stufe hoch. Bank bleibt.', z2:'Pahl, freu dich für ihn.'},
      ],
      ultimate:[
-       {z1:'Na sowas. Ganz schön viel Zauber.', z2:'Pahl duckt sich schon mal.'},
-       {z1:'Das hat sicher eine Genehmigung. Oder?', z2:'Pahl fragt nicht nach. Klug.'},
-       {z1:'So viel Licht. Meine Augen, meine Akte.', z2:'Pahl blinzelt. Sonst nichts.'},
+       {z1:'Viel Zauber. Na sowas.', z2:'Pahl duckt sich schon mal.'},
+       {z1:'Genehmigt? Bestimmt. Oder?', z2:'Pahl fragt nicht nach. Klug.'},
+       {z1:'So viel Licht. Meine Augen.', z2:'Pahl blinzelt. Sonst nichts.'},
      ],
      fluch:[
-       {z1:'Neuer Fluch. Kleingedrucktes, wie immer.', z2:'Pahl liest es. Ich nie.'},
-       {z1:'Jede Gabe hat einen Haken. Amtlich.', z2:'Pahl nennt das gerecht.'},
-       {z1:'Noch ein Fluch. Passt zur Sammlung.', z2:'Pahl seufzt fürs Protokoll.'},
+       {z1:'Neuer Fluch. Kleingedrucktes.', z2:'Pahl liest es. Ich nie.'},
+       {z1:'Jede Gabe hat einen Haken.', z2:'Pahl nennt das gerecht.'},
+       {z1:'Noch einer. Für die Sammlung.', z2:'Pahl seufzt fürs Protokoll.'},
      ],
      goldfund:[
-       {z1:'So viel Gold. Ich brauch keins.', z2:'Pahl rechnet schon mit.'},
-       {z1:'Klingt nach Feierabend. Für dich.', z2:'Pahl fragt: für wen sonst?'},
-       {z1:'Viel Gold. Wenig Aussicht auf Rente.', z2:'Pahl lacht. Ich nicht.'},
+       {z1:'So viel Gold. Brauch keins.', z2:'Pahl rechnet schon mit.'},
+       {z1:'Klingt nach Feierabend.', z2:'Pahl fragt: für wen sonst?'},
+       {z1:'Viel Gold. Keine Rente.', z2:'Pahl lacht. Ich nicht.'},
      ],
      kammerAbbruch:[
-       {z1:'Nichts gefunden. Passiert den Besten.', z2:'Pahl zählt trotzdem mit.'},
+       {z1:'Nichts gefunden. Passiert.', z2:'Pahl zählt trotzdem mit.'},
        {z1:'Leere Kammer. Voller Rückweg.', z2:'Pahl seufzt lauter als ich.'},
-       {z1:'Manchmal ist leer auch eine Antwort.', z2:'Pahl widerspricht. Natürlich.'},
+       {z1:'Leer ist auch eine Antwort.', z2:'Pahl widerspricht. Natürlich.'},
      ],
      untaetigkeit:[
-       {z1:'Der Neue steht. Wie ich. Interessant.', z2:'Pahl findet das gruselig.'},
-       {z1:'Willkommen im Klub. Bank ist frei.', z2:'Pahl rückt trotzdem nicht.'},
-       {z1:'Steh nicht so rum. Das ist mein Job.', z2:'Pahl übernimmt notfalls.'},
+       {z1:'Der Neue steht. Wie ich.', z2:'Pahl findet das gruselig.'},
+       {z1:'Bank ist frei. Willkommen.', z2:'Pahl rückt trotzdem nicht.'},
+       {z1:'Rumstehen ist mein Job.', z2:'Pahl übernimmt notfalls.'},
      ],
      // SZ2: der Nachklang der Szenen 2 und 4. Er faellt genau einmal, weil
      // npcSprechen() letzterAnlass beim Lesen verbraucht.
@@ -5758,7 +5781,7 @@ const DORF_FIGUREN = [
      ],
      hintermuehl:[
        {z1:'Er hat es gesagt.', z2:'Nach vierzig Jahren.'},
-       {z1:'Da war ein Wort. Ein einziges.', z2:'Pahl hat es auch gehört.'},
+       {z1:'Ein Wort. Ein einziges.', z2:'Pahl hat es auch gehört.'},
      ],
      // SZ3: der Nachklang der Entklammerung. Vier Zeilen der Weltgeschichte,
      // aufgeteilt auf die beiden, die sie dort sprechen. Lott stellt fest, was
@@ -5775,103 +5798,106 @@ const DORF_FIGUREN = [
    // rechten Hälfte desselben Doppelporträts. Die beiden unterscheiden sich im
    // Dorf am Mantel, nicht am Haar — auf dem Bild sind beide fast kahl.
    gestalt:{hair:'h4', haarFarbe:'#b77451', hemd:'hemd', hemdFarbe:'#7d6a63', hose:'hose', schuh:'schuh'},
+   // T1: Pahl ist der Ausfuehrlichere. Er antwortet in ganzen Saetzen, gern
+   // einen Halbsatz mehr als noetig, und in seiner Antwort kommt Lott vor. Die
+   // andere Haelfte der Bank, siehe den Kommentar dort.
    grund:[
-     {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sehe zu. Das reicht mir.'},
-     {z1:'Sie kämpfen. Ich sehe nur zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
-     {z1:'Die Bank ist warm. Ich bleibe.', z2:'Kommentieren wärmt genauso gut.'},
-     {z1:'So nannte ich schon viele Neue.', z2:'Der Name bleibt. Sie wechseln.'},
-     {z1:'Ob ich ein Vorgang bin? Unhöflich.', z2:'Fragen Sie das nicht noch mal.'},
-     {z1:'Die Sonne dreht sich. Ich nicht.', z2:'Kommentar ist auch ein Beruf.'},
+     {z1:'Da ist er wieder, unser Neuer. Unterwegs.', z2:'Ich sehe gern zu. Beruflich.'},
+     {z1:'Sie kämpfen, und ich sehe dabei zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
+     {z1:'Die Bank hält warm, wenn man ihr Zeit gibt.', z2:'Ich gebe ihr sehr viel Zeit.'},
+     {z1:'So habe ich schon viele genannt, wissen Sie.', z2:'Der Name bleibt. Sie wechseln.'},
+     {z1:'Ob ich ein Vorgang bin? Das ist unhöflich.', z2:'Fragen Sie das nicht noch mal.'},
+     {z1:'Die Sonne dreht sich weiter, ich nicht.', z2:'Kommentar ist auch ein Beruf.'},
    ],
    akt:[
-     'Wieder einer, der alles ernst nimmt.',
+     'Wieder einer, der alles ernst nimmt. Schön.',
      'Ein Fest ohne Erlaubnis. Wie hübsch.',
-     'Ein Platz bleibt leer. Auffällig leer.',
-     'Ein Brief, den keiner lesen will.',
-     'Es wird still. Auffällig still hier.',
+     'Ein Platz bleibt leer, und das fällt auf.',
+     'Ein Brief, den keiner lesen will. Schade.',
+     'Es wird still hier. Auffällig still.',
    ],
    // W11: dieselbe Sache von der anderen Seite der Bank. Hintermühl ist nicht
    // niedergebrannt worden, es ist zugeklappt worden, und das ist das Stillste,
    // was in dieser Welt passieren kann.
    zusatz:[{abAkt:3, zeilen:[
-     {z1:'Man hat unser Dorf zugeklappt.', z2:'Lott spricht nicht darüber.'},
+     {z1:'Man hat unser Dorf zugeklappt, einfach so.', z2:'Lott spricht nicht darüber.'},
      {z1:'Kein Feuer. Ein Aktendeckel.',   z2:'Lott war auch dabei.'},
    ]},
    {abSchicht:12, zeilen:[
-     {z1:'Sie gehen nie richtig weg.', z2:'Sie kommen immer wieder her.'},
+     {z1:'Sie gehen nie richtig weg, ist Ihnen das klar?', z2:'Sie kommen immer wieder her.'},
      {z1:'Wir kennen Ihren Gang inzwischen.', z2:'Lott hört ihn zuerst.'},
    ]},
    {abStufe:8, zeilen:[
-     {z1:'Sie sind gewachsen. Sauber.', z2:'Lott hat es auch bemerkt.'},
-     {z1:'Wachsen ist ein guter Beruf.', z2:'Ich habe einen anderen.'},
+     {z1:'Sie sind gewachsen, und zwar sauber.', z2:'Lott hat es auch bemerkt.'},
+     {z1:'Wachsen ist ein guter Beruf, sagt man.', z2:'Ich habe einen anderen.'},
    ]},
    {zweig:0, zeilen:[
-     {z1:'Sie machen Licht da draußen.', z2:'Lott mag das nicht.'},
-     {z1:'Feuer ist warm. Hier auch.', z2:'Die Bank steht in der Sonne.'},
+     {z1:'Sie machen Licht da draußen, hört man.', z2:'Lott mag das nicht.'},
+     {z1:'Feuer ist warm, und hier ist es das auch.', z2:'Die Bank steht in der Sonne.'},
    ]},
    {abRang:6, zeilen:[
      {z1:'Man redet Sie jetzt mit Titel an.', z2:'Uns redet gar niemand an.'},
-     {z1:'Sehr schön für Sie. Ehrlich.', z2:'Lott meint das auch so.'},
+     {z1:'Sehr schön für Sie, und das ehrlich.', z2:'Lott meint das auch so.'},
    ]},
    {phase:'feierabend', zeilen:[
-     {z1:'Die Sonne geht. Wir bleiben.', z2:'Lott zuerst. Er sitzt näher.'},
-     {z1:'Abends redet es sich besser.', z2:'Da fragt niemand mehr nach.'},
+     {z1:'Die Sonne geht, und wir bleiben sitzen.', z2:'Lott zuerst. Er sitzt näher.'},
+     {z1:'Abends redet es sich einfach besser.', z2:'Da fragt niemand mehr nach.'},
    ]},
    {abAkt:5, zeilen:[
-     {z1:'Wir haben die Steine gelegt.', z2:'Ordentlich. Wie es sich gehört.'},
-     {z1:'Danach sind wir losgegangen.', z2:'Und dann haben wir uns gesetzt.'},
+     {z1:'Wir haben damals die Steine gelegt.', z2:'Ordentlich. Wie es sich gehört.'},
+     {z1:'Danach sind wir losgegangen, wir beide.', z2:'Und dann haben wir uns gesetzt.'},
    ]}
    ],
    anlass:{
      crit:[
-       {z1:'Ein Treffer. Sauber getroffen.', z2:'Lott hat sowas noch nie gesehen.'},
-       {z1:'Das saß. Sogar ich hab\'s gemerkt.', z2:'Lott schläft schon wieder.'},
-       {z1:'Kritisch. Sehr kritisch sogar.', z2:'Notieren Sie das, Lott.'},
+       {z1:'Ein Treffer, und sauber getroffen dazu.', z2:'Lott hat sowas noch nie gesehen.'},
+       {z1:'Das saß, und sogar ich habe es gemerkt.', z2:'Lott schläft schon wieder.'},
+       {z1:'Kritisch, und zwar sehr kritisch sogar.', z2:'Notieren Sie das, Lott.'},
      ],
      levelup:[
-       {z1:'Eine Stufe höher. Wie fein.', z2:'Lott zählt bestimmt falsch.'},
-       {z1:'Sie wachsen. Ich sitze weiter.', z2:'Lott klatscht schon wieder.'},
+       {z1:'Eine Stufe höher, und das ist zu Recht.', z2:'Lott zählt bestimmt falsch.'},
+       {z1:'Sie wachsen, und ich sitze weiter hier.', z2:'Lott klatscht schon wieder.'},
        {z1:'Stufenaufstieg. Herzlichen Glückwunsch.', z2:'Lott, klatschen Sie leiser.'},
      ],
      ultimate:[
-       {z1:'Das war groß. Richtig groß.', z2:'Lott hat die Augen zugemacht.'},
-       {z1:'Ein großer Zauber. Beeindruckend.', z2:'Lott, aufwachen. Das war gut.'},
-       {z1:'So viel Kraft für so wenig Feind.', z2:'Lott findet das übertrieben.'},
+       {z1:'Das war groß, und ich sage das selten.', z2:'Lott hat die Augen zugemacht.'},
+       {z1:'Ein großer Zauber, wirklich beeindruckend.', z2:'Lott, aufwachen. Das war gut.'},
+       {z1:'So viel Kraft für so wenig Feind, finde ich.', z2:'Lott findet das übertrieben.'},
      ],
      fluch:[
-       {z1:'Ein Fluch mehr. Passt zu Ihnen.', z2:'Lott nennt das nur konsequent.'},
-       {z1:'Schon wieder ein Haken dabei.', z2:'Lott freut sich klammheimlich.'},
-       {z1:'Ein Fluch. Man gewöhnt sich daran.', z2:'Lott gewöhnt sich nie.'},
+       {z1:'Ein Fluch mehr, und er passt zu Ihnen.', z2:'Lott nennt das nur konsequent.'},
+       {z1:'Schon wieder ein Haken, und keiner liest ihn.', z2:'Lott freut sich klammheimlich.'},
+       {z1:'Ein Fluch, an den man sich gewöhnen kann.', z2:'Lott gewöhnt sich nie.'},
      ],
      goldfund:[
-       {z1:'So viel Gold. Alles echt?', z2:'Lott zählt es heimlich mit.'},
-       {z1:'Ein Sack voll Glück. Kommt kaum vor.', z2:'Lott will die Hälfte haben.'},
-       {z1:'Reich geworden. Vorübergehend.', z2:'Lott nennt das Statistik.'},
+       {z1:'So viel Gold, und alles davon echt?', z2:'Lott zählt es heimlich mit.'},
+       {z1:'Ein Sack voll Glück, das kommt kaum vor.', z2:'Lott will die Hälfte haben.'},
+       {z1:'Reich geworden, wenn auch vorübergehend.', z2:'Lott nennt das Statistik.'},
      ],
      kammerAbbruch:[
-       {z1:'Nichts gefunden. Auch eine Leistung.', z2:'Lott sieht das anders.'},
-       {z1:'Leer rausgekommen. Ehrlich immerhin.', z2:'Lott nennt das Verschwendung.'},
-       {z1:'Keine Beute. Kommt öfter vor.', z2:'Lott führt da eine Liste.'},
+       {z1:'Nichts gefunden, und auch das ist etwas.', z2:'Lott sieht das anders.'},
+       {z1:'Leer herausgekommen, aber ehrlich immerhin.', z2:'Lott nennt das Verschwendung.'},
+       {z1:'Keine Beute, und das kommt öfter vor.', z2:'Lott führt da eine Liste.'},
      ],
      untaetigkeit:[
-       {z1:'Der Neue steht. Ich sitze auch.', z2:'Lott findet das gemütlich.'},
-       {z1:'Nichts passiert. Endlich Ruhe.', z2:'Lott redet trotzdem weiter.'},
-       {z1:'Sie stehen nur. Ich auch.', z2:'Lott hält das für Faulheit.'},
+       {z1:'Der Neue steht, und ich sitze dabei.', z2:'Lott findet das gemütlich.'},
+       {z1:'Nichts passiert, und das ist endlich Ruhe.', z2:'Lott redet trotzdem weiter.'},
+       {z1:'Sie stehen einfach nur da, und ich sitze.', z2:'Lott hält das für Faulheit.'},
      ],
      // SZ2, die andere Seite der Bank. Vier Zeilen der Quelle, zwei hier,
      // zwei bei Lott.
      umlauf:[
-       {z1:'Sie sagt jedes Mal, es war nett.', z2:'Lott glaubt ihr das sogar.'},
-       {z1:'Vierzehn Türme. Und sie läuft.', z2:'Lott würde den Aufzug nehmen.'},
+       {z1:'Sie sagt jedes Mal, es war nett hier.', z2:'Lott glaubt ihr das sogar.'},
+       {z1:'Vierzehn Türme, und sie läuft sie alle.', z2:'Lott würde den Aufzug nehmen.'},
      ],
      hintermuehl:[
-       {z1:'Wir haben ja gewartet.', z2:'Wir warten gut.'},
-       {z1:'Vierzig Jahre für ein Wort.', z2:'Lott sagt gar nichts mehr.'},
+       {z1:'Wir haben ja gewartet, all die Jahre.', z2:'Wir warten gut.'},
+       {z1:'Vierzig Jahre für ein einziges Wort.', z2:'Lott sagt gar nichts mehr.'},
      ],
      // SZ3: dieselbe Szene von der anderen Seite der Bank aus.
      vorblatt:[
        {z1:'Der hat ganz schön was auf.', z2:'Lott sieht nur den Mantel.'},
-       {z1:'Sie haben ihn aufgemacht.', z2:'Darunter war ein Herr.'},
+       {z1:'Sie haben ihn tatsächlich aufgemacht.', z2:'Darunter war ein Herr.'},
      ],
    }},
 
@@ -5896,20 +5922,30 @@ const DORF_FIGUREN = [
    // Schläfenprobe trifft Mützenschatten. Jacke bis oben zugeknöpft, dasselbe Grün.
    gestalt:{hair:'h1', haarFarbe:'#71825f', hut:'muetze',
             hemd:'kittel', hemdFarbe:'#586833', hose:'latz', schuh:'schuh'},
+   // T1: Er meldet in Spalten. Seine Tabelle hat vier davon (Menge, Dauer,
+   // Bodenart, Anmerkungen, siehe figuren-leben.md), dazu die Veranlassung, auf
+   // die er wartet, und er kuerzt sie alle ab. Das ist der Telegrammstil, den
+   // Kapitel 13 seit T1 als seine Sprachmarke fuehrt: er ist der kuerzeste
+   // Sprecher des Spiels, und der einzige, der auf Nachfrage ausfuehrlich wird.
+   // Die Aufloesung steht in seinem Baum, Spalte fuer Spalte, eine Frage
+   // entfernt; szeneAssert() rechnet nach, dass jede Langform dort woertlich
+   // faellt. Die Meldekuerzel selbst laufen an ABK_GROSS und ABK_PUNKT vorbei
+   // (zwei Buchstaben vor dem Punkt, kein Versalienlauf) und erzeugen deshalb
+   // keine Fehlmeldung im alten Abkuerzungs-Guard.
    grund:[
-     {z1:'Gemeldet wird: keine Niederschläge.', z2:'Wie gestern. Wie immer.'},
-     {z1:'Ich habe einen Eimer. Für den Fall.', z2:'Der Eimer ist bereit.'},
-     {z1:'Der Hut ist neu. Also fast neu.', z2:'Er wartet mit mir.'},
-     {z1:'Wolken sind da. Sie dürfen nur nicht.', z2:'Es fehlt die Veranlassung.'},
-     {z1:'Meine Stelle war nie unbesetzt.', z2:'Das sagt sonst niemand.'},
-     {z1:'Sie waren im Frostkamm? Kalt dort.', z2:'Dort liegt etwas von mir.'},
+     {z1:'Gemeldet wird: TNM negativ.', z2:'Wie gestern. Wie immer.'},
+     {z1:'Mg. null. Da. entfällt. Ba. trocken.', z2:'Anm.: keine. Alles bereit.'},
+     {z1:'Eimer: vorhanden. Messstab: vorhanden.', z2:'Für den Fall. Seit immer.'},
+     {z1:'Stelle: nie unbesetzt. Dreiundvierzig Jahre.', z2:'Das sagt sonst niemand.'},
+     {z1:'Wolken: vorhanden. Vlg.: fehlt.', z2:'Deshalb dürfen sie nicht.'},
+     {z1:'Sie waren im Frostkamm? Dort liegt etwas.', z2:'Von mir. Auf Eis.'},
    ],
    akt:[
-     'Willkommen. Es bleibt schön. Wie immer.',
+     'Willkommen. Wetterlage: unverändert schön.',
      'Man fragt nach der Leitung. Ich melde nur.',
      'Dreiundvierzig Jahre. Der Eimer hält.',
-     'Wenn Sie hinauf müssen: Es wird schön.',
-     'Ich stehe bereit. Man weiß ja nie.',
+     'Wenn Sie hinauf müssen: bleibt schön.',
+     'Bereitschaft: hergestellt. Man weiß nie.',
    ],
    zusatz:[
    {abSchicht:11, zeilen:[
@@ -5917,23 +5953,23 @@ const DORF_FIGUREN = [
      {z1:'Elf Tage. Ich zähle mit.', z2:'Zählen gehört zur Stelle.'},
    ]},
    {abStufe:9, zeilen:[
-     {z1:'Gemeldet wird: Sie sind gewachsen.', z2:'Wetter bleibt unverändert.'},
+     {z1:'Gemeldet wird: Sie sind gewachsen.', z2:'Wetter: unverändert.'},
      {z1:'Sie ändern sich. Das Wetter nicht.', z2:'Einer von uns beiden reicht.'},
    ]},
    {zweig:1, zeilen:[
      {z1:'Sie machen Eis. Das ist Niederschlag.', z2:'Fast. Nicht ganz. Leider.'},
-     {z1:'Gemeldet wird: örtliches Eis.', z2:'Nicht amtlich. Aber schön.'},
+     {z1:'Gemeldet wird: örtliches Eis. Mg.: gering.', z2:'Nicht amtlich. Aber schön.'},
    ]},
    {abRang:4, zeilen:[
      {z1:'Sie steigen. Meine Stelle bleibt.', z2:'Sie war nie unbesetzt.'},
      {z1:'Gemeldet wird: ein Aufstieg im Haus.', z2:'Das melde ich gern mit.'},
    ]},
    {phase:'antritt', zeilen:[
-     {z1:'Gemeldet wird: keine Niederschläge.', z2:'Vorbereitungen abgeschlossen.'},
+     {z1:'Gemeldet wird: TNM negativ.', z2:'Vorbereitungen: abgeschlossen.'},
      {z1:'Guten Morgen. Der Eimer steht.', z2:'Wie gestern. Wie immer.'},
    ]},
    {abAkt:3, zeilen:[
-     {z1:'Ich führe zwei Tabellen.', z2:'Eine davon ist leer.'},
+     {z1:'Ich führe zwei Tabellen. Eine ist leer.', z2:'Die leere ist die wichtige.'},
      {z1:'Die Kopfzeile ziehe ich nach.', z2:'Jedes Jahr. Tinte verblasst.'},
    ]}
    ],
@@ -5943,12 +5979,12 @@ const DORF_FIGUREN = [
        {z1:'Stehen ist keine Verzögerung.', z2:'Es ist Bereitschaft.'},
      ],
      levelup:[
-       {z1:'Gemeldet wird: ein Aufstieg.', z2:'Vorbereitungen unverändert.'},
+       {z1:'Gemeldet wird: ein Aufstieg.', z2:'Vorbereitungen: unverändert.'},
        {z1:'Sie kommen voran. Schön.', z2:'Ich stehe weiter bereit.'},
      ],
      kammerAbbruch:[
        {z1:'Zurückgekommen. Auch gut.', z2:'Man kann nicht immer los.'},
-       {z1:'Gemeldet wird: eine Rückkehr.', z2:'Trocken zurück. Wie immer.'},
+       {z1:'Gemeldet wird: eine Rückkehr.', z2:'Ba.: trocken. Wie immer.'},
      ]
    }},
 
@@ -5963,8 +5999,11 @@ const DORF_FIGUREN = [
    grund:[
      {z1:'Vierzehn Türme, ein Aufzug, neun Stockwerke.', z2:'Der Rest ist Treppe.'},
      {z1:'Ich bin im Umlauf. Seit einer Weile.', z2:'Man gewöhnt sich daran.'},
-     {z1:'Oben ist es sauber. Sehr sauber.', z2:'Und sehr leise.'},
-     {z1:'Elf Stellen noch. Auf der Rückseite.', z2:'Vorne war ich schon.'},
+     // T1: Ihr Gag ist der Abbruch mitten im Satz, und bis hierher brach kein
+     // Satz wirklich ab. Jetzt zwei. Sie werden dadurch nicht laenger, nur
+     // ungeduldiger, und das ist bei ihr dasselbe wie eine Sprachmarke.
+     {z1:'Oben ist sauber, leise, hell, und dann,', z2:'Verzeihung. Ich muss weiter.'},
+     {z1:'Elf Stellen noch, zwölf mit dem Tor, und', z2:'Nein, dreizehn. Muss los.'},
      {z1:'Die Rohrpost geht nicht. Seit immer.', z2:'Ich laufe. Geht auch.'},
      {z1:'Ich muss weiter. War nett bei Ihnen.', z2:'Wirklich. Sehr nett.'},
    ],
@@ -10739,7 +10778,12 @@ const HINWEISE = [
    z1:'Kammer erledigt. Kommt in die Akte.', z2:'Weiter im Dienst.', z2t:'Weiter im Dienst.'},
   {id:'ult1', prio:40, art:'zustand',
    wenn:()=> !!player.spellsKnown[ULT_SPELL.id],
-   z1:'Alles gelernt. Jetzt wird es albern.', z2:'R. Einmal reicht.', z2t:'Der Ult-Knopf. Einmal reicht.'},
+   // T1-Nachlese: hier stand "Jetzt wird es albern." Das ist das Spiel, das
+   // seinen eigenen Witz benennt, und damit ist er weg (Grundgesetz 1). Der
+   // Spruch heisst bereits Konfetti-Kataklysmus des juengsten Gerichts, der
+   // Witz steht also im Namen. Knoeterich erklaert Tasten, nie Zusammenhaenge,
+   // und schon gar nicht kommentiert er den groessten Moment des Spielers.
+   z1:'Sie dürfen jetzt alles. Amtlich alles.', z2:'R. Einmal reicht.', z2t:'Der Ult-Knopf. Einmal reicht.'},
   {id:'portal1', prio:35, art:'ereignis',
    wenn:()=> !!kn.pending.portal1,
    z1:'Das Portal ist nicht mein Ressort.', z2:'Viel Glück.', z2t:'Viel Glück.'},
@@ -10747,7 +10791,10 @@ const HINWEISE = [
    // Auslöser fällt mit dem Öffnen von #overlay zusammen (eigene Sperrzone), erscheint
    // deshalb erst 5s nach state==='play' in der Folgeschicht.
    wenn:()=> !!kn.pending.feierabend1 && (gameT - knPlayStartT >= 5),
-   z1:'Erste Schicht überstanden.', z2:'Der Bericht liegt beim Amt.', z2t:'Der Bericht liegt beim Amt.'},
+   // T1-Nachlese: der Hinweis feuert erst in der Folgeschicht, der Spieler ist
+   // also gerade wiedergekommen. Genau das sagte niemand, und es ist bei
+   // Knoeterich die groesste denkbare Anerkennung: eine Feststellung.
+   z1:'Erste Schicht. Sie sind wiedergekommen.', z2:'Der Bericht liegt beim Amt.', z2t:'Der Bericht liegt beim Amt.'},
   {id:'amt1', prio:25, art:'zustand',
    // amt.bankGold ändert sich nur in endShift(), also faktisch beim Öffnen von #overlay:
    // dieselbe Sperrzonen-Verzögerung wie feierabend1, deshalb dieselbe 5s-Wartezeit.
@@ -10879,6 +10926,15 @@ const ABKUERZUNGEN = {
   'a. D.':     {lang: 'außer Dienst',                         wo: 'knoeterich'},
   'n. O.':     {lang: 'nach der Ordnung',                     wo: 'bramsche'},
   'TNM':       {lang: 'Tägliche Niederschlagsmeldung',        wo: 'nieselbeck'},
+  // T1: die Familie der Meldekuerzel. Sie zaehlt gegen die Zwoelf aus Kapitel 13
+  // als EINE Position, und die Bedingung dafuer steht im Guard am Ende von
+  // szeneAssert(): jede Langform faellt woertlich in Nieselbecks eigenem Baum,
+  // eine Nachfrage entfernt. Sie stehen nur in seinen Zeilen und nirgends sonst.
+  'Mg.':       {lang: 'Menge',                                wo: 'nieselbeck'},
+  'Da.':       {lang: 'Dauer',                                wo: 'nieselbeck'},
+  'Ba.':       {lang: 'Bodenart',                             wo: 'nieselbeck'},
+  'Anm.':      {lang: 'Anmerkungen',                          wo: 'nieselbeck'},
+  'Vlg.':      {lang: 'Veranlassung',                         wo: 'nieselbeck'},
   'MfM':       {lang: 'Ministerium für Monsterangelegenheiten', wo: 'bramsche'},
   'T.':        {lang: 'die TNM, noch einmal gekürzt',         wo: 'bramsche'},
   'GA':        {lang: 'Gutachterliche Ansetzung',             wo: 'milb'},
@@ -17813,7 +17869,12 @@ function abspannBlaetter(){
      z2:'Er beschwert sich sehr lange und sehr genau über die Feierlichkeit und lässt sich dabei die Krawatte richten.'},
 
     {z1:'Das Fest. Vordermühl, abends.',
-     z2:'Lott und Pahl finden die Musik zu laut. Fass räumt nicht ab, weil zum ersten Mal alle bis zum Ende bleiben. Das Gasthaus heißt Zum Letzten Stempel und hat vierhundert Jahre darauf gewartet.'},
+     // T1-Nachlese: Zwirn fehlte im ganzen Abspann bis auf einen Nebensatz.
+     // Szene 7 laesst ihn verstummen, und zwar zum ersten Mal ueberhaupt; ein
+     // Bogen, der einen Redner verstummen laesst, muss ihn wieder sprechen
+     // lassen. Hier ist die Auszahlung der neuen Formregel: seine Laenge wird
+     // endlich angenommen (Grundgesetz 12, Reichsregel 7).
+     z2:'Zwirn hält eine Rede. Sie ist sehr lang, und alle hören zu. Lott und Pahl finden die Musik zu laut. Fass räumt nicht ab, weil zum ersten Mal alle bis zum Ende bleiben. Das Gasthaus heißt Zum Letzten Stempel und hat vierhundert Jahre darauf gewartet.'},
 
     {blatt:'Und dann regnet es. Zum ersten Mal seit hundertfünfzehn Jahren, mitten auf ein Dorffest.',
      stimme:[{wer:'Nieselbeck', z:'Gemeldet wird: Niederschlag.'}],
@@ -20213,7 +20274,8 @@ const DIENSTBLATT_ANZ = 3;
 // Alle Texte hier sind freier Panel-Text und tragen deshalb KEINEN
 // Zeichendeckel, gleiche Begruendung wie bei rangZeremonieBlock(). Die
 // Formregeln aus Kapitel 13 gelten trotzdem: kein Gedankenstrich, kein Emoji
-// im Figurentext, kurze Saetze.
+// im Figurentext, Laenge nach Sprachmarke (Stand T1). Der Vordruck selbst
+// bleibt knapp: er ist Werkzeugtext, und ein Formular labert nicht.
 const DIENSTBLATT = [
   {
     nr: 1,
@@ -20250,7 +20312,7 @@ const DIENSTBLATT = [
     nr: 2,
     kopf: 'DIENSTANWEISUNG',
     unter: 'Vordruck A 1, Blatt 2 von 3',
-    lead: 'Was zu tun ist, in der Reihenfolge, in der es Ihnen begegnet.',
+    lead: 'Was zu tun ist. In der Reihenfolge des Hauses.',
     punkte: () => [
       ['Erledigung', 'Was draußen umherläuft, ist unbearbeitet. Wer zuschlägt, schließt ab. Es fällt Aktenkonfetti.'],
       ['Sachbestand', 'Was dabei liegen bleibt, wird aufgenommen. Es sieht aus wie Abfall. Es ist Bestand.'],
@@ -20280,7 +20342,7 @@ const DIENSTBLATT = [
     nr: 3,
     kopf: 'LAUFBAHN UND ZIEL',
     unter: 'Vordruck A 1, Blatt 3 von 3',
-    lead: 'Woran Sie merken, dass Sie vorankommen.',
+    lead: 'Wohin das führt. Der Posten steigt mit.',
     felder: () => [
       ['Je Aufstieg', 'zwei Befähigungspunkte. Kraft, Zähigkeit, Behändigkeit, Amtskunde. Sie liegen im Rucksack und werden dort vergeben.'],
       ['Ab Stufe 4', 'Zauberbefugnis. Vorher schlägt der Außendienst, danach darf er auch wirken. Der Manavorrat wächst mit der Amtskunde, nicht mit der Stufe.'],
@@ -20659,12 +20721,25 @@ const AKTE_SPERRE_NAMEN = ['Nachtrag', 'Trepp', 'Sturz', 'Schattenfürst', 'Amts
 
 // --- Szene 1: Das Intro ------------------------------------------------------
 //
-//  Neun Blaetter aus weltgeschichte.md, Kapitel 8, woertlich. Sie ersetzen die
-//  fuenf Anrisstafeln aus E1 und stehen an derselben Stelle im Ablauf: nach
+//  Fuenf Blaetter aus weltgeschichte.md, Kapitel 8. Sie ersetzen die fuenf
+//  Anrisstafeln aus E1 und stehen an derselben Stelle im Ablauf: nach
 //  Knoeterichs Vorstellung, vor dem Empfang. Das ist kein Nebeneinander, es ist
 //  ein Austausch, und er hat einen Grund. Beide erzaehlen dieselben
 //  vierhundert Jahre. Die Tafeln taten es in fuenf Behauptungen, das Intro tut
-//  es in neun Dokumenten, und Dokumente sind das, was dieses Haus hat.
+//  es in Dokumenten, und Dokumente sind das, was dieses Haus hat.
+//
+//  T1: Es waren neun, jetzt sind es fuenf, und der Befund dazu lautete "viel
+//  zu lang". Vier davon waren paarweise dasselbe Bild zweimal: die Rueckfrage
+//  und dieselbe Rueckfrage sechsmal gemahnt sind EIN Bild und eine Eskalation,
+//  der Bericht und das Abkommen mit dem leeren dritten Feld sind Ursache und
+//  Folge in einem Zug. Gestrichen sind die beiden ersten, die Weltordnung mit
+//  den zwoelf Bereichen und die Kaisertuer mit dem Schild IM TERMIN. Beide sind
+//  wahr, beide sind gut, und beide erklaeren etwas, wonach auf Blatt 1 noch
+//  niemand gefragt hat; sie stehen weiter in weltgeschichte.md, Kapitel 1, und
+//  in Aktenserie H. Was bleibt, ist eine Kette ohne Seitenwege: eine kleine
+//  Frage, niemand antwortet, acht Jahre, ein Friede, dem eine Unterschrift
+//  fehlt, ein Brief, den niemand lesen konnte, eine Stelle auf Zeit, die
+//  vierhundert Jahre alt ist. Und heute Sie.
 //
 //  Die Reihenfolge aus E2 traegt es zusaetzlich: erst der Mann, dann seine
 //  Geschichte. Nach der Vorstellung sind diese neun Blaetter nicht die Stimme
@@ -20676,38 +20751,22 @@ const AKTE_SPERRE_NAMEN = ['Nachtrag', 'Trepp', 'Sturz', 'Schattenfürst', 'Amts
 //  tut. Alles drei ist freier Panel-Text ohne Zeichendeckel, wie die Tafeln
 //  vorher auch.
 const INTRO_BLAETTER = [
-  {blatt:'Ein Plan mit zwölf Zeilen.',
-   stimme:['Im Jahr null teilte jemand die Welt in zwölf Bereiche und schrieb daneben, wer sich kümmert.',
-           'Sechs gelten als abgeschlossen. Fünf wurden nie eingerichtet.',
-           'Und dann gibt es uns.']},
-
-  {blatt:'Ein Türschild. Darauf steht IM TERMIN.',
-   stimme:['Der Kaiser liest seit dem Jahr fünfhundertachtundachtzig seine Post.',
-           'Man klopft nicht.']},
-
-  {blatt:'Ein sehr kurzes Schreiben, zwei Zeilen.',
-   stimme:['Wer räumt das Papier aus dem Fluss?',
-           'Um Nachricht wird gebeten.'],
-   regie:'Die Hand legt es auf einen Stapel. Der Stapel ist schon hoch.'},
-
-  {blatt:'Dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.',
-   stimme:['Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.',
+  {blatt:'Ein Schreiben, zwei Zeilen lang. Daneben dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.',
+   stimme:['Wer räumt das Papier aus dem Fluss? Um Nachricht wird gebeten.',
+           'Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.',
            'Auf keinem steht ein Ausgang.'],
    regie:'Ganz unten auf dem letzten, in anderer Schrift: Es ist eine kurze Frage.'},
 
-  {blatt:'Ein Bericht, sehr sachlich, mit einer Tabelle.',
+  {blatt:'Ein Bericht mit einer Tabelle. Darunter ein Abkommen, drei Unterschriftsfelder, zwei davon ausgefüllt.',
    stimme:['Acht Jahre. Verluste an Bearbeitungskapazität: erheblich.',
-           'Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.']},
-
-  {blatt:'Ein Abkommen. Drei Unterschriftsfelder. Zwei sind ausgefüllt.',
-   stimme:['Der Friede wurde in dreifacher Ausfertigung aufgesetzt.',
-           'Eine für uns. Eine fürs Archiv. Eine für die andere Seite.',
-           'Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.']},
+           'Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.',
+           'Der Friede wurde in dreifacher Ausfertigung aufgesetzt. Die dritte war für die andere Seite.'],
+   regie:'Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.'},
 
   {blatt:'Ein Umschlag. Die Anschrift ist ein Gekritzel.',
-   stimme:['Der Bote konnte die Anschrift nicht lesen.',
-           'Er hat sie nicht weggeworfen. Er hat sie behalten, bis er sie lesen kann.'],
-   regie:'Die Hand legt den Umschlag nicht auf den Stapel. Sie legt ihn beiseite.'},
+   stimme:['Der Bote konnte sie nicht lesen.',
+           'Er hat den Umschlag nicht weggeworfen. Er hebt ihn auf, bis er ihn lesen kann.'],
+   regie:'Die Hand legt ihn nicht auf den Stapel. Sie legt ihn beiseite.'},
 
   {blatt:'Ein handgeschriebenes Schild. Darauf steht: Provisorium.',
    stimme:['Für die abschließende Bearbeitung ist eine Stelle einzurichten.',
@@ -20823,10 +20882,21 @@ const szeneOffen = () => szeneFragen().filter(f =>
 // DIENSTBLATT.felder: szeneAssert() baut die Liste beim Start genauso wie
 // die Tafel beim Rendern, und beide sehen dasselbe.
 const EMPFANG_KNOTEN = {
-  // E2: Die fünf Knoten der Vorstellung. Sie laufen vor dem Anriss und auf
+  // E2: Die Knoten der Vorstellung. Sie laufen vor dem Anriss und auf
   // schwarzem Grund, und sie beheben einen Fehlstand der ersten Fassung:
   // Knöterich sprach dort als erster Mensch des Spiels, ohne dass jemand
   // gesagt hätte, wer er ist. Er war irgendwer mit einem Formular.
+  //
+  // T1: Es sind drei statt fünf. Die alten Züge 3, 4 und 5 trugen denselben
+  // Gedanken dreimal (er ist außer Dienst, er ist trotzdem im Dienst, das ist
+  // kein Widerspruch), und drei Züge für einen Gedanken sind ein Vortrag und
+  // keine Vorstellung. Was bleibt, bleibt aus einem Grund: "Außer Dienst" ist
+  // die Auflösestelle von a. D. (Kapitel 13, der laufende Gag), "Das ist
+  // Verwaltung." ist die Pointe, und "Setzen Sie sich nicht hin." ist der
+  // Aufhänger, auf den die erste Empfangsfrage zurückzeigt. Weggefallen ist
+  // "Ich führe Buch. Seit vierzig Jahren." Der Satz steht zweimal weiter
+  // hinten in denselben Worten, bei nn und bei geheim, und trifft dort härter,
+  // weil er dann eine Auskunft verweigert statt eine anzukündigen.
   //
   // Sie tun zugleich etwas fürs Erzählen. Nach dieser Vorstellung sind die
   // Anrisstafeln nicht mehr eine Stimme aus dem Nichts, sondern SEIN Bericht.
@@ -20845,18 +20915,8 @@ const EMPFANG_KNOTEN = {
   },
   vorstellung3: {
     z1:'Ich bin beides. Das ist kein Widerspruch.',
-    z2:'Das ist Verwaltung.',
-    opts: () => [{t:'Und was tun Sie hier?', zu:'vorstellung4'}],
-  },
-  vorstellung4: {
-    z1:'Ich führe Buch. Seit vierzig Jahren.',
-    z2:'Jemand muss aufschreiben, was hier geschieht.',
-    opts: () => [{t:'Was geschieht hier denn?', zu:'vorstellung5'}],
-  },
-  vorstellung5: {
-    z1:'Setzen Sie sich nicht hin. Das dauert.',
-    z2:'Ich sage es einmal. Hören Sie zu.',
-    opts: () => [{t:'Ich höre.', tun:() => empfangAnriss()}],
+    z2:'Das ist Verwaltung. Setzen Sie sich nicht hin.',
+    opts: () => [{t:'Was geschieht hier?', tun:() => empfangAnriss()}],
   },
 
   gruss: {
@@ -20874,25 +20934,22 @@ const EMPFANG_KNOTEN = {
     z2:'Wie soll das Haus Sie anschreiben?',
     opts: () => GESTALT_WAHL.map(g => ({
       t: g.kurz.charAt(0).toUpperCase() + g.kurz.slice(1) + '.',
-      tun: () => { amt.gestalt = g.key; saveAmt(); szeneKnoten('vermerkt'); },
+      tun: () => { amt.gestalt = g.key; saveAmt(); szeneKnoten('schluss'); },
     })),
   },
-  vermerkt: {
-    z1:'Vermerkt.',
-    z2:'Auf Dienst und Laufbahn wirkt das nicht.',
+
+  // T1: Der Vermerk und der Schluss waren zwei Zuege und sagten zusammen einen
+  // Satz. Die Folgenlosigkeit der Anrede (phase-anrede.md) bleibt gesprochen,
+  // sie ist die Pointe des Feldes; die zweite Zeile sagt, wo unterschrieben
+  // wird, und beides passt in einen Zug. Der Weg ueber den Vordruck behaelt
+  // seine Beschriftung, damit er derselbe Weg bleibt.
+  schluss: {
+    z1:'Vermerkt. Auf die Laufbahn wirkt es nicht.',
+    z2:'Unten unterschreiben. Oben ist für die Leitung.',
     opts: () => [
-      {t:'Unterschreiben.',        zu:'schluss'},
+      {t:'Dienst antreten.',       tun:() => empfangEnde()},
       {t:'Erst den Vordruck.',     tun:() => empfangVordruck()},
       {t:'Ich hätte noch Fragen.', zu:'gruss', wenn:() => szeneOffen().length > 0},
-    ],
-  },
-
-  schluss: {
-    z1:'Unten unterschreiben. Oben bleibt frei.',
-    z2:'Oben ist für die Leitung. Viel Erfolg heute.',
-    opts: () => [
-      {t:'Dienst antreten.', tun:() => empfangEnde()},
-      {t:'Vordruck lesen.',  tun:() => empfangVordruck()},
     ],
   },
 };
@@ -20959,13 +21016,19 @@ SZENEN.umlauf = {
     u5: {wer:'umlauf', z1:'Oben hat einen Bäcker. Ich kenne ihn.', z2:'Er heißt Bruno. Wie Sie.',
          opts: () => [{t:'Herr Fass?', zu:'u6'}]},
     u6: {wer:'fass', z1:'Ich wische hier nur.', z2:'Das ist ein alter Fleck.',
-         opts: () => [{t:'Sie sagen ja nichts.', zu:'u7'}]},
+         opts: () => [{t:'Ein alter Fleck?', zu:'u7'}]},
     u7: {wer:'umlauf', z1:'Ihre Stelle wird jedes Jahr ausgeschrieben.', z2:'Die Amtsleitung, meine ich.',
          opts: () => [{t:'Jedes Jahr?', zu:'u8'}]},
     u8: {z1:'Jedes Jahr. Steht in der Liste.', z2:'Ich trage die Liste.',
          opts: () => [{t:'Und niemand meldet sich?', zu:'u9'}]},
-    u9: {z1:'Es meldet sich nur nie jemand.', z2:'Komisch eigentlich.',
-         opts: () => [{t:'Sehr komisch.', zu:'u10'}]},
+    // T1-Nachlese: der Gerade sagt "wie bitte", er annotiert nicht. Hier stand
+    // "Komisch eigentlich." und darunter "Sehr komisch." Der Witz wurde zweimal
+    // angezeigt und starb dabei. Jetzt redet Umlauf ungeruehrt weiter, der
+    // Spieler greift zu, und der Abbruch in u10 wird von einem Abgang zu einer
+    // Pointe. Vierzig Jahre ist die gedeckte Zahl (Sturz ist so lange vermisst),
+    // und "Kein Name" ist woertlich N. N., ohne das Kuerzel zu bemuehen.
+    u9: {z1:'Es meldet sich nur nie jemand.', z2:'Vierzig Jahre. Kein Name.',
+         opts: () => [{t:'Könnte ich mich melden?', zu:'u10'}]},
     u10:{z1:'Ich muss weiter. Elf Stellen noch.', z2:'Auf der Rückseite.',
          opts: () => [{t:'War nett.', tun: () => szeneEnde('umlauf', 'szeneUmlauf')}]},
   },
@@ -21010,8 +21073,13 @@ SZENEN.schublade = {
   sperre: [],
   ende:   () => szeneEnde('schublade', 'szeneSchublade'),
   knoten: {
-    s1: {z1:'Wer ist Vorblatt?', z2:'Der Name steht unter jedem Blatt.',
-         opts: () => [{t:'Knöterich fragen.', zu:'s2'}]},
+    // T1-Nachlese: hier stand Knoeterich vor seinem eigenen Portraet und
+    // fragte "Wer ist Vorblatt?", und der Spieler antwortete darauf mit
+    // "Knoeterich fragen." Am Kippunkt des Spiels ist das eine Verwirrung, und
+    // es verschenkt Grundgesetz 11: die schoene Abfuhr in s2 beantwortete eine
+    // Frage, die niemand gestellt hatte. Jetzt stellt sie der Spieler.
+    s1: {z1:'Vierzig Blätter. Ich kenne den Stapel.', z2:'Sie wollen einen Namen wissen.',
+         opts: () => [{t:'Wer ist Vorblatt?', zu:'s2'}]},
     s2: {z1:'Ich führe Buch. Ich lese nicht vor.', z2:'Fragen Sie mich etwas Leichteres.',
          opts: () => [{t:'Vierzig Jahre, ein Bescheid.', zu:'s3'}]},
     s3: {z1:'Einundvierzig.', z2:'Der erste kam vor ihrer Abreise.',
@@ -21161,7 +21229,11 @@ SZENEN.vorblatt = {
     v2: {z1:'Sie entklammern mich. Lage für Lage.', z2:'Es ist keine Peinlichkeit, es ist ein Verfahren.',
          opts: () => [{t:'Bitte sehr.', zu:'v3'}]},
     v3: {z1:'Sie sind der Außendienst.', z2:'Man hat mir geschrieben.',
-         opts: () => [{t:'Wer schreibt Ihnen?', zu:'v4'}]},
+         // T1-Nachlese: die Frage lautete "Wer schreibt Ihnen?" und bekam eine
+         // Antwort zu einem anderen Thema. Bei Vorblatt ist Ausweichen zwar die
+         // Sprachmarke, aber im Baum ist es markiert und hier war es nicht;
+         // fuer ein Kind las es sich schlicht als Fehler.
+         opts: () => [{t:'Über mich?', zu:'v4'}]},
     v4: {z1:'Sie führen keinen Vorgang.', z2:'Das macht Sie sehr frei.',
          opts: () => [{t:'Da fällt eine Lage.', zu:'v5'}]},
     v5: {z1:'Diese hier ist aus dem Jahr 987.', z2:'Eine Uferfrage. Ich hänge an ihr.',
@@ -21426,11 +21498,22 @@ SZENEN.baumNieselbeck = {
      z1:'Tägliche Niederschlagsmeldung.', z2:'Den langen Namen sagt keiner.'},
     {key:'tnm2', frei:'tnm', t:'Und warum täglich?',
      z1:'Die Meldung ist täglich.', z2:'Das Wetter nicht.'},
+    // T1: die Aufloesung der Meldekuerzel, und die einzige Stelle im Spiel, an
+    // der Nieselbeck ins Erzaehlen kommt. Kapitel 13 laesst die Familie nur
+    // deshalb als eine Position gegen die Zwoelf zaehlen: er loest sie selbst
+    // auf, eine Nachfrage entfernt, und die Kaskade macht aus der Auskunft
+    // einen kleinen Vortrag ueber vier Spalten, von denen drei immer leer sind.
+    {key:'spalten', frei:'meldung', t:'Was heißt das alles?',
+     z1:'Die Spalten. Mg. ist die Menge.', z2:'Da. ist die Dauer.',
+     weiter:'spalten2', wt:'Und die anderen?'},
     {key:'frostkamm', nach:3, t:'Was liegt im Frostkamm?',
      z1:'Mein Antrag auf Verwendung.', z2:'Auf Eis. Ordnungsgemäß.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Ich bin noch beim Anfang.', z2:'Fragen Sie ruhig.', hub:true},
+    spalten2:{z1:'Ba. ist die Bodenart, Anm. sind die Anmerkungen.', z2:'Vlg. ist die Veranlassung.',
+              opts: () => [{t:'Welche ist Ihre liebste?', zu:'spalten3'}]},
+    spalten3:{z1:'Anmerkungen. Da darf das Wetter erzählen.', z2:'Die Spalte ist noch leer.'},
     angebot: {z1:'Sie könnten ihn anfordern.', z2:'Wenn Sie mögen. Ohne Eile.',
               opts: () => [
                 {t:'Ich fordere ihn an.', tun: () => { kn.flags.baumEimer = true; saveKn(); szeneKnoten('dank'); }},
@@ -21451,8 +21534,13 @@ SZENEN.baumZwirn = {
   wenn: () => !CONFIG.schichtModus || amt.schichten >= 4,
   sprecher: () => szeneSprecherAusDorf('zwirn'),
   fragen:[
+    // T1: die Festrede, in ganzer Form. Drei Dinge, ordentlich aufgezaehlt,
+    // und die ersten beiden hat er seit elf Jahren beisammen. Der Witz ist der
+    // volle Einsatz fuer die falsche Sache (Grundgesetz 2), die Waerme ist,
+    // dass er das Konfetti privat bezahlt und es nicht erwaehnt.
     {key:'fest', t:'Warum kein Fest?',
-     z1:'Es fehlt die Genehmigung. Nur die.', z2:'Sonst steht alles bereit.'},
+     z1:'Eine gute Frage. Zuerst: danke dafür.', z2:'Ein Fest braucht drei Dinge.',
+     weiter:'fest2', wt:'Nämlich?'},
     {key:'amt', t:'Sind Sie mein Vorgesetzter?',
      z1:'Nein. Ich führe nur das Gespräch.', z2:'Weil sonst niemand darf.'},
     {key:'dorf', t:'Wie lange sind Sie hier?',
@@ -21466,6 +21554,9 @@ SZENEN.baumZwirn = {
   ],
   knoten:{
     hub:     {z1:'Von früher? Da fange ich gern an.', z2:'Setzen Sie sich ruhig nicht.', hub:true},
+    fest2:   {z1:'Erstens Menschen. Die sind da.', z2:'Zweitens Konfetti. Bestellt.',
+              opts: () => [{t:'Und drittens?', zu:'fest3'}]},
+    fest3:   {z1:'Drittens die Genehmigung.', z2:'Da bin ich dran. Seit elf Jahren.'},
     angebot: {z1:'Sie könnten sich das ansehen.', z2:'Der Keller ist offen. Immer.',
               opts: () => [
                 {t:'Ich sehe es mir an.', tun: () => { szeneKnoten('dank'); }},
@@ -21496,11 +21587,20 @@ SZENEN.baumBramsche = {
      z1:'Ein Herr aus Hochablage. Sehr höflich.', z2:'Höflichkeit ist kein Antrag.'},
     {key:'griff', frei:'herr', t:'Sie haben danebengegriffen?',
      z1:'Ich habe das Falsche hinausgetragen.', z2:'In die Sonne. Drei Tage.'},
+    // T1: Bramsche ist zweistufig, und hier sieht man beide Stufen in einem Zug.
+    // Ohne Antrag drei Woerter. Auf korrekt gestellten Antrag die Auskunft in
+    // ganzer Form: Fundstelle, Gang, Regalseite, Langform, Vorbehalt. Die Wand
+    // ist ihre Sprachmarke, die Auskunft ist die Belohnung, und die Belohnung
+    // ist ueppig. Wer sie einmal richtig anspricht, merkt sich das.
     {key:'heft', nach:3, t:'Führen Sie noch etwas?',
-     z1:'Ein Heft. Nicht das Eingangsbuch.', z2:'In welcher Sache fragen Sie?'},
+     z1:'Ein Heft. Nicht das Eingangsbuch.', z2:'In welcher Sache fragen Sie?',
+     weiter:'auskunft', wt:'In der Sache des Hefts.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Das ist ein weites Feld.', z2:'Fragen Sie genau.', hub:true},
+    auskunft: {z1:'Antrag angenommen. Dann in ganzer Form.', z2:'Fundstelle: Gang zwei, links.',
+               opts: () => [{t:'Und was steht darin?', zu:'auskunft2'}]},
+    auskunft2:{z1:'Langform: Verzeichnis nicht gestellter Anträge.', z2:'Vorbehalt: es ist nicht amtlich.'},
     angebot: {z1:'Es steht darin, wer nichts beantragt hat.', z2:'Ich zeige es ungern her.',
               opts: () => [
                 {t:'Zeigen Sie es mir.', tun: () => { kn.flags.baumHeft = true; saveKn(); szeneKnoten('dank'); }},
@@ -21600,7 +21700,7 @@ SZENEN.baumTrepp = {
     {key:'schrift', frei:'sack', t:'Warum lesen Sie es nicht?',
      z1:'Die Schrift ist mir fremd.', z2:'Nicht unleserlich. Fremd.'},
     {key:'starren', frei:'schrift', t:'Sie starren sie an?',
-     z1:'Jeden Tag. Seit vierzig Jahren.', z2:'Man gewöhnt sich Strichen an.'},
+     z1:'Jeden Tag. Seit vierzig Jahren.', z2:'Man gewöhnt sich an Striche.'},
     {key:'vater', nach:3, t:'Wie kam der Sack zu Ihnen?',
      z1:'Mein Vater hat ihn mir gegeben.', z2:'Mit fünf Wörtern dazu.'},
   ],
@@ -21632,6 +21732,13 @@ SZENEN.baumNoergel = {
      z1:'Eine Beschwerde. Sehr ausdauernd.', z2:'Irgendwann schreibt man selbst.'},
     {key:'krawatte', t:'Warum die Krawatte?',
      z1:'Weil sie zur Dienstkleidung gehört.', z2:'Fällt trotzdem niemandem auf.'},
+    // T1: die Beschwerde in ganzer Form. Vier Teile, alle vorschriftsmaessig,
+    // und die Belehrung ueber den Rechtsbehelf schreibt er sich selbst, weil
+    // sonst niemand zustaendig ist. Am Ende die Coda aus Kapitel 8. Er ledert
+    // dabei ein Verfahren ab und nie eine Person (Humor-Grundgesetz 4).
+    {key:'form', frei:'grün', t:'Wie beschwert man sich?',
+     z1:'In vier Teilen. Ich zeige es Ihnen.', z2:'Erstens der Sachverhalt.',
+     weiter:'be2', wt:'Und zweitens?'},
     {key:'antrag', frei:'probe', t:'Woher haben Sie die?',
      z1:'Beantragt. Bei der Materialausgabe.', z2:'Ordnungsgemäß. Mit Wortlaut.'},
     {key:'bestand', frei:'antrag', t:'Steht sie in einem Bestand?',
@@ -21641,6 +21748,11 @@ SZENEN.baumNoergel = {
   ],
   knoten:{
     hub:     {z1:'Von früher? Das ist eine lange Beschwerde.', z2:'Ich kürze sie ab.', hub:true},
+    be2:     {z1:'Zweitens die Würdigung. Selten günstig.', z2:'Drittens der Antrag.',
+              opts: () => [{t:'Und viertens?', zu:'be3'}]},
+    be3:     {z1:'Viertens die Belehrung über den Rechtsbehelf.', z2:'Die schreibe ich mir selbst.',
+              opts: () => [{t:'Und dann?', zu:'be4'}]},
+    be4:     {z1:'Dann lege ich sie ab. Bei mir.', z2:'Und mache es trotzdem.'},
     angebot: {z1:'Sie könnten selbst hingehen.', z2:'Ohne zu schlagen, meine ich.',
               opts: () => [
                 {t:'Ich gehe hin.', tun: () => { szeneKnoten('dank'); }},
@@ -21671,11 +21783,24 @@ SZENEN.baumMilb = {
      z1:'Gutachterliche Ansetzung. Mein Wort.', z2:'Ich habe es selbst gebildet.'},
     {key:'kurz', frei:'ga', t:'Warum kürzen Sie das ab?',
      z1:'Weil ich es oft schreibe.', z2:'Was oft kommt, wird kürzer.'},
+    // T1: das Gutachten in ganzer Form, die Kaskade dieser Figur. Vier Teile,
+    // maximal gruendlich vorgetragen, und der vierte ist der Fehler: ein
+    // Gutachten ohne Vorbehalt ist der Grund, warum er seit vierzig Jahren
+    // systematisch eine Stufe zu hoch liegt (LV7). Er sagt es selbst und stolz.
+    // Die gesperrte Tatsache bleibt gesperrt: er weiss nicht, was er da sagt.
+    {key:'gutachten', frei:'note', t:'Machen Sie eins über mich?',
+     z1:'Gern. Ein Gutachten hat vier Teile.', z2:'Erstens der Gegenstand: Sie.',
+     weiter:'g2', wt:'Und zweitens?'},
     {key:'vordruck', nach:3, t:'Und der Vordruck selbst?',
      z1:'Sechs Zeilen. Ich kenne ihn genau.', z2:'Seit vierzig Jahren derselbe.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Das setze ich mit Vier an.', z2:'Fragen Sie ruhig weiter.', hub:true},
+    g2:      {z1:'Zweitens der Maßstab. Der Vordruck.', z2:'Sechs Zeilen. Er genügt seit je.',
+              opts: () => [{t:'Und drittens?', zu:'g3'}]},
+    g3:      {z1:'Drittens die Ansetzung. Ich sage Drei.', z2:'Höchstens. Sie sind neu.',
+              opts: () => [{t:'Und viertens?', zu:'g4'}]},
+    g4:      {z1:'Viertens der Vorbehalt. Ich habe keinen.', z2:'Das ist die eigentliche Güte.'},
     angebot: {z1:'Ich könnte ihn Ihnen zeigen.', z2:'Er liegt hier. Natürlich.',
               opts: () => [
                 {t:'Zeigen Sie ihn mir.', tun: () => { szeneKnoten('dank'); }},
@@ -21780,7 +21905,10 @@ SZENEN.baumBank = {
     {key:'woher', frei:'bank', t:'Woher kommen Sie zwei?',
      z1:'Von flussaufwärts. Hintermühl.', z2:'Es gibt das nicht mehr.'},
     {key:'wiese', wer:'pahl', frei:'woher', t:'Was ist dort passiert?',
-     z1:'Nichts. Genau das ist es ja.', z2:'Kein Feuer. Ein Aktendeckel.'},
+     // T1-Nachlese: Pahls groesster Moment stand in Lotts Register, drei
+     // Fragmente statt eines Satzes. Das Bild "kein Feuer, ein Aktendeckel"
+     // ist gepinnt und bleibt woertlich, es wird nur zum ganzen Satz.
+     z1:'Passiert ist gar nichts. Das ist es ja.', z2:'Kein Feuer, nur ein Aktendeckel.'},
     {key:'steine', wer:'pahl', nach:3, t:'Auf der Wiese liegen Steine.',
      z1:'Sortiert. Das fällt Leuten auf.', z2:'Uns hat es niemand gedankt.'},
   ],
@@ -21814,7 +21942,7 @@ SZENEN.baumUmlauf = {
      z1:'Weil die Rohrpost steht. Seit immer.', z2:'Laufen geht auch. Schneller.'},
     {key:'ziel', frei:'oben', t:'Kommen Sie irgendwann an?',
      z1:'Ankommen ist nicht vorgesehen.', z2:'Weitergeben schon.'},
-    {key:'einmal', frei:'ziel', t:'Waren Sie je mal fertig?',
+    {key:'einmal', frei:'ziel', t:'Waren Sie je fertig?',
      z1:'Einmal habe ich es versucht.', z2:'In Hochablage. Eine Stunde.'},
     {key:'stunde', nach:3, t:'Und wie war das?',
      z1:'Lang. Länger als jeder Weg.', z2:'Danach zwei Tage aufgeholt.'},
@@ -21847,8 +21975,15 @@ SZENEN.baumVorblatt = {
      z1:'Ihr Anliegen wird bearbeitet.', z2:'Das ist bereits sehr viel.'},
     {key:'wagen', t:'Und Ihr Fuhrwerk?',
      z1:'Zwei Amtsschimmel. Sehr verlässlich.', z2:'Was sie ziehen, lebt länger.'},
+    // T1: die freundliche Umzingelung, seine Form der Laenge. Er sagt nie Nein
+    // und droht nie (Reichsregel 3, Weltbibel Kapitel 13: wenn er einmal droht,
+    // ist die Figur weg). Stattdessen prueft er gern, und die Pruefung wird
+    // geprueft, und am Ende steht der Spieler genau dort, wo er angefangen hat.
+    // Die Laenge tut, was er selbst nie taete. Drei Zuege reichen dafuer; wer
+    // mehr baut, macht aus dem Schrecken eine Textwand.
     {key:'nein', frei:'anhang', t:'Sagen Sie jemals Nein?',
-     z1:'Nein wäre eine Entscheidung.', z2:'Wir prüfen das lieber gern.'},
+     z1:'Nein wäre eine Entscheidung.', z2:'Wir prüfen das lieber gern.',
+     weiter:'nein2', wt:'Wie lange prüfen Sie?'},
     {key:'fach', frei:'nein', t:'Was liegt in Ihrem Fach?',
      z1:'Ein Stempel. Nicht mehr im Dienst.', z2:'Und nicht außer Dienst.'},
     {key:'alt', nach:3, t:'Warum nicht wegwerfen?',
@@ -21856,6 +21991,9 @@ SZENEN.baumVorblatt = {
   ],
   knoten:{
     hub:     {z1:'Von früher? Das ist ein anhängiger Zeitraum.', z2:'Fragen Sie unbesorgt.', hub:true},
+    nein2:   {z1:'Bis die Prüfung geprüft ist.', z2:'Auch das prüfen wir gern.',
+              opts: () => [{t:'Und dann?', zu:'nein3'}]},
+    nein3:   {z1:'Dann ist Ihr Anliegen anhängig.', z2:'Das ist bereits sehr viel.'},
     angebot: {z1:'Ich könnte ihn Ihnen zeigen.', z2:'Gern. Zeigen ist unverbindlich.',
               opts: () => [
                 {t:'Zeigen Sie ihn.', tun: () => { szeneKnoten('dank'); }},
@@ -21902,6 +22040,20 @@ function szeneOptionen(){
   if(!d) return [];
   const k = d.knoten[szene.knoten];
   if(k && k.opts) return k.opts().filter(o => !o.wenn || o.wenn()).map(szeneOpt);
+  // T1, die zweite echte Erweiterung der Maschine: eine Frage darf eine
+  // Fortsetzung tragen. weiter: nennt den Knoten, in dem die Figur weiterredet,
+  // wt: die Zeile, mit der der Spieler sie weiterreden laesst. Genau eine
+  // Option, denn eine Kaskade ist ein Monolog mit Einverstaendnis und keine
+  // Verzweigung; der letzte Knoten der Kette hat keine opts und faellt damit
+  // von selbst auf den Hub zurueck.
+  //
+  // Das ist der Kanal fuer die Laenge, die Kapitel 13 seit T1 verlangt: eine
+  // ausfuehrliche Figur redet nicht in laengeren Zeilen, sondern in mehr
+  // Zeilenpaaren hintereinander. Der Zeichendeckel bleibt dadurch unangetastet,
+  // und der Spieler bleibt der Gerade (Humor-Grundgesetz 11): er klickt jeden
+  // Zug einzeln weiter und darf jederzeit gehen.
+  const fr = szeneFrage(szene.knoten);
+  if(fr && fr.weiter) return [szeneOpt({t: fr.wt, zu: fr.weiter})];
   // Ein hub-Knoten zeigt die offenen Fragen plus den Ausgang der Szene. Ohne
   // Fragenliste gibt es keine hubs, dann ist das hier unerreichbar und
   // szeneAssert() meldet den Knoten ohne Ausgang.
@@ -22336,6 +22488,15 @@ function szeneAssert(){
     if(PRUEF_EMOJI.test(txt)) fehler('Emoji im Figurentext', wo, txt);
     for(const g of PRUEF_GEHEIM) if(txt.indexOf(g) >= 0) fehler('Kesselgrammatik im Text', wo, g, txt);
     for(const sp of (sperre || [])) if(txt.indexOf(sp) >= 0) fehler('Vorgriff auf die Akte', wo, sp, txt);
+    // T1-Nachlese: Reichsregel 1 sagt "von jeder Figur, in jedem Blatt, auf
+    // jeder Urkunde", geprueft wurde sie aber nur in knAssertCaps(), also in
+    // den Sprechblasen und auf Knoeterichs Zetteln. Sieben Story-Szenen,
+    // dreizehn Baeume, das Intro und der Abspann liefen ungeprueft, und das war
+    // eine Zusage ohne Deckung. Sie stand hier nur deshalb nie auf dem Spiel,
+    // weil zufaellig niemand gegen sie verstossen hat; nachgemessen, null
+    // Treffer. Dieser eine Aufruf deckt alle vier Bereiche ab, weil jede
+    // Zeile jeder Szene durch text() laeuft.
+    if(KAISER_PRAETERITUM.test(txt)) fehler('Der Kaiser steht in der Vergangenheit', wo, txt);
   };
 
   // (6) Die Tafelstapel. Jeder Eintrag traegt entweder gross/klein oder
@@ -22423,6 +22584,20 @@ function szeneAssert(){
       }
       if(f.nach && f.nach > fragen.length - 1)
         fehler('Wartefrage wartet auf mehr Fragen, als es gibt', wo(f.key), f.nach);
+      // (2b) T1: Fortsetzungen. Eine Kaskade braucht die Zeile, mit der der
+      // Spieler sie weiterlaufen laesst, und ein Ziel, das es gibt. Als Ziel
+      // ist nur ein Knoten zulaessig: eine Frage waere eine zweite Hub-Tuer
+      // und wuerde sich selbst aus der Liste der offenen Fragen streichen.
+      if(f.weiter){
+        if(!f.wt) fehler('Fortsetzung ohne Spielerzeile', wo(f.key), f.weiter);
+        else {
+          text(f.wt, wo(`Frage ${f.key} Fortsetzung`), d.sperre);
+          if(f.wt.length > ANTWORT_DECKEL)
+            fehler('Fortsetzung zu lang für die Zeile', wo(f.key), f.wt.length);
+        }
+        if(!d.knoten[f.weiter])
+          fehler('Fortsetzung zeigt auf einen Knoten, den es nicht gibt', wo(f.key), f.weiter);
+      }
     }
     if(fragen.length){
       const sicht = d.sicht || 3;
@@ -22483,6 +22658,29 @@ function szeneAssert(){
     for(const treffer of m){
       const merker = treffer.match(/'([a-zA-Z]+)'\)$/)[1];
       if(!(merker in kn.flags)) fehler('Szene setzt einen Merker, den der Spielstand nicht kennt', key, merker);
+    }
+  }
+
+  // (10) T1: Nieselbecks Meldekuerzel. Weltbibel Kapitel 13 laesst die Familie
+  // Mg./Da./Ba./Anm./Vlg. nur unter einer Bedingung als EINE Position gegen die
+  // Zwoelf zaehlen: er loest jede selbst auf, im eigenen Baum, eine Nachfrage
+  // entfernt. Geprueft wird woertlich auf die Langform, denn genau die ist die
+  // Zusage. Der allgemeine Abkuerzungs-Guard in knAssertCaps() sieht das nicht:
+  // er prueft, DASS ein Kuerzel einen Eintrag hat, nicht, dass die Langform im
+  // Spiel auch faellt.
+  {
+    const b = SZENEN.baumNieselbeck;
+    if(!b) fehler('baumNieselbeck fehlt, die Meldekürzel hätten keine Auflösestelle');
+    else {
+      const korpus = [];
+      for(const f of (b.fragen || [])) korpus.push(f.z1, f.z2);
+      for(const k in b.knoten) korpus.push(b.knoten[k].z1, b.knoten[k].z2);
+      const alles = korpus.filter(Boolean).join(' ');
+      for(const k in ABKUERZUNGEN){
+        if(ABKUERZUNGEN[k].wo !== 'nieselbeck') continue;
+        if(alles.indexOf(ABKUERZUNGEN[k].lang) < 0)
+          fehler('Meldekürzel ohne Auflösung im Baum', k, ABKUERZUNGEN[k].lang);
+      }
     }
   }
 

@@ -12,7 +12,7 @@ Diese Datei erzählt. Die `superduper-weltbibel.md` bleibt der Kanon und behält
 
 **Ein offener Punkt, ehrlich benannt.** Die Weltbibel schließt Zwischenspiele in Kapitel 14 ausdrücklich aus ("Keine Cutscene, kein Kamerafahrt-Skript, kein Standbild-Interlude"). Der Auftrag zu dieser Datei verlangt sie. Ich habe beides bedient: die Szenen in Kapitel 8 stehen als Text da, wie man sie spielen würde, **und jede trägt eine Zeile "Mit Bordmitteln", die sagt, wie sie ohne neue Technik ins Spiel kommt** (Blatt, Amtspanel, Dienstbericht, vier Antwortzeilen im Gesprächsfenster aus U3). Wer die Regel halten will, baut die rechte Spalte. Wer sie kippen will, hat den Text. Die Entscheidung liegt nicht bei mir.
 
-**Formregeln gelten hier wie überall.** Keine Gedankenstriche in Spieltexten, keine Emojis, kurze Sätze, Zeichendeckel 48/32/44 bei Figurenzeilen. Alle Figurenzeilen unten sind gegengezählt, die Zahl steht dahinter. Der Sperrvermerk aus Weltbibel Kapitel 7 gilt unverändert: **kein Text in dieser Datei verrät Kesselgrammatik.** Geprüft, Zeile für Zeile, Notiz in Kapitel 11.
+**Formregeln gelten hier wie überall.** Keine Gedankenstriche in Spieltexten, keine Emojis, Länge nach Sprachmarke (Stand T1), Zeichendeckel 48/32/44 bei Figurenzeilen. Alle Figurenzeilen unten sind gegengezählt, die Zahl steht dahinter. Der Sperrvermerk aus Weltbibel Kapitel 7 gilt unverändert: **kein Text in dieser Datei verrät Kesselgrammatik.** Geprüft, Zeile für Zeile, Notiz in Kapitel 11.
 
 ---
 
@@ -438,8 +438,8 @@ V. „Ich war zuständig. Nun bin ich hier.“ (36)
 
 1. „Vierzehn Türme, ein Aufzug, neun Stockwerke.“ (44) / „Der Rest ist Treppe.“ (20)
 2. „Ich bin im Umlauf. Seit einer Weile.“ (36) / „Man gewöhnt sich daran.“ (23)
-3. „Oben ist es sauber. Sehr sauber.“ (32) / „Und sehr leise.“ (15)
-4. „Elf Stellen noch. Auf der Rückseite.“ (36) / „Vorne war ich schon.“ (20)
+3. „Oben ist sauber, leise, hell, und dann,“ (39) / „Verzeihung. Ich muss weiter.“ (28) *(T1)*
+4. „Elf Stellen noch, zwölf mit dem Tor, und“ (40) / „Nein, dreizehn. Muss los.“ (25) *(T1)*
 5. „Die Rohrpost geht nicht. Seit immer.“ (36) / „Ich laufe. Geht auch.“ (21)
 6. „Ich muss weiter. War nett bei Ihnen.“ (36) / „Wirklich. Sehr nett.“ (20)
 
@@ -606,7 +606,7 @@ Danach das Finale in reinster Amtsform, jedes bestehende System liefert ein Puzz
 
 Ausgeschrieben. Jede Szene trägt eine Zeile **Mit Bordmitteln**, die sagt, wie sie ohne neue Technik ins Spiel kommt, falls die Regel aus Weltbibel Kapitel 14 stehen bleibt.
 
-Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emojis, kurze Sätze, und keine Figur weiß, dass sie komisch ist.
+Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emojis, Länge nach Sprachmarke (Stand T1), und keine Figur weiß, dass sie komisch ist.
 
 ---
 
@@ -614,7 +614,42 @@ Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emoji
 
 **Bild:** Wir sehen nie ein Gesicht. Wir sehen einen Schreibtisch von oben. Eine Hand legt Papiere hin, eins nach dem anderen. Zwischen den Blättern jeweils ein Stempelgeräusch. Sonst nichts. Kein Erzähler mit Pathos, sondern eine ruhige Stimme, die vorliest, was auf dem Blatt steht.
 
-**Dauer:** unter zwei Minuten. Neun Blätter.
+**Dauer:** unter einer Minute. Fünf Blätter. *(Gebaute Fassung, Stand T1. Die Langfassung mit neun Blättern steht darunter und ist die Quelle geblieben.)*
+
+> **Blatt I.** Ein Schreiben, zwei Zeilen lang. Daneben dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.
+> STIMME: Wer räumt das Papier aus dem Fluss? Um Nachricht wird gebeten.
+> STIMME: Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.
+> STIMME: Auf keinem steht ein Ausgang.
+> *(Ganz unten auf dem letzten, in anderer Schrift: "Es ist eine kurze Frage.")*
+
+> **Blatt II.** Ein Bericht mit einer Tabelle. Darunter ein Abkommen, drei Unterschriftsfelder, zwei davon ausgefüllt.
+> STIMME: Acht Jahre. Verluste an Bearbeitungskapazität: erheblich.
+> STIMME: Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.
+> STIMME: Der Friede wurde in dreifacher Ausfertigung aufgesetzt. Die dritte war für die andere Seite.
+> *(Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.)*
+
+> **Blatt III.** Ein Umschlag. Die Anschrift ist ein Gekritzel.
+> STIMME: Der Bote konnte sie nicht lesen.
+> STIMME: Er hat den Umschlag nicht weggeworfen. Er hebt ihn auf, bis er ihn lesen kann.
+> *(Die Hand legt ihn nicht auf den Stapel. Sie legt ihn beiseite.)*
+
+> **Blatt IV.** Ein handgeschriebenes Schild. Darauf steht: Provisorium.
+> STIMME: Für die abschließende Bearbeitung ist eine Stelle einzurichten.
+> STIMME: Die Stelle ist vorläufig.
+> STIMME: Das war vor vierhundert Jahren.
+
+> **Blatt V.** Ein Formular. Oben steht: Einstellung für einen Tag. Das Namensfeld ist leer.
+> STIMME: Was nicht bearbeitet wird, wird lebendig.
+> STIMME: Es läuft inzwischen ziemlich viel herum.
+> STIMME: Heute sind Sie dran.
+> *(Die Hand schiebt das Formular nach vorn, auf die Kamera zu, und legt einen Stift daneben.)*
+
+**Warum fünf und nicht neun.** Der Befund des Projektinhabers lautete "viel zu lang", und er meinte den ganzen Anfang. Vier der neun Blätter waren paarweise dasselbe Bild zweimal: die Rückfrage und dieselbe Rückfrage sechsmal gemahnt sind ein Bild und eine Eskalation, der Bericht und das Abkommen mit dem leeren dritten Feld sind Ursache und Folge in einem Zug. Gestrichen sind die alten Blätter 1 und 2. Der Plan mit den zwölf Zeilen und die Kaisertür mit dem Schild IM TERMIN sind beide wahr und beide gut, aber sie erklären auf Blatt 1 etwas, wonach noch niemand gefragt hat. Sie stehen weiter in Kapitel 1 und in Aktenserie H, und der Spieler findet sie dort, wenn er so weit ist.
+
+Was übrig bleibt, ist eine Kette ohne Seitenwege: eine kleine Frage, niemand antwortet, acht Jahre, ein Friede, dem eine Unterschrift fehlt, ein Brief, den niemand lesen konnte, eine Stelle auf Zeit, die vierhundert Jahre alt ist. Und heute Sie.
+
+<details>
+<summary>Die Langfassung mit neun Blättern, Stand bis 25.08.2026</summary>
 
 > **Blatt 1.** Ein Plan mit zwölf Zeilen.
 > STIMME: Im Jahr null teilte jemand die Welt in zwölf Bereiche und schrieb daneben, wer sich kümmert.
@@ -660,9 +695,11 @@ Formregeln gelten in jedem gesprochenen Satz: keine Gedankenstriche, keine Emoji
 > STIMME: Heute sind Sie dran.
 > *(Die Hand schiebt das Formular nach vorn, auf die Kamera zu, und legt einen Stift daneben.)*
 
+</details>
+
 **Bild aus. Titel. Danach beginnt das Spiel genau dort, wo es heute schon beginnt: beim Einstellungsvordruck aus W8.**
 
-**Mit Bordmitteln:** Neun Standbilder oder neun gerenderte Blattgrafiken im bestehenden Blattstil aus W2, je zwei Textzeilen darunter, weiterklicken mit einer Taste. Kein Kameraskript, keine Animation, kein Ton nötig. Wer noch weiter sparen will, baut das Intro als **Blattserie 0 in der Kladde**, die beim ersten Spielstart automatisch aufgeschlagen ist. Dann ist es technisch ein bestehendes Panel und trotzdem ein Intro.
+**Mit Bordmitteln:** Standbilder oder gerenderte Blattgrafiken im bestehenden Blattstil aus W2, je zwei Textzeilen darunter, weiterklicken mit einer Taste. Kein Kameraskript, keine Animation, kein Ton nötig. Wer noch weiter sparen will, baut das Intro als **Blattserie 0 in der Kladde**, die beim ersten Spielstart automatisch aufgeschlagen ist. Dann ist es technisch ein bestehendes Panel und trotzdem ein Intro.
 
 ---
 
@@ -1285,7 +1322,7 @@ Sieben Sätze, die für jeden neuen Text in dieser Welt gelten. Sie stehen zusä
 * **Kapitel 3, Adelskleidung.** Formuliert als Lagen von Vorgängen, nicht als Zutaten, Seltenheiten oder Stufen.
 * **Serie I, Blatt 5.** Die Bewilligung des Dorffestes ist eine Genehmigung im Verwaltungssinn. Das Wort steht bewusst ohne jede Nebenbestimmung daneben, damit es nicht in die Nähe der Kesselbescheide gerät.
 
-**Formregeln (Weltbibel Kapitel 13).** Keine Gedankenstriche und keine Emojis in gesprochenen Zeilen, Blättern oder Szenen. Kurze Sätze. Höchstens eine Taste pro Hinweis, und in dieser Datei wird keine einzige Taste genannt.
+**Formregeln (Weltbibel Kapitel 13).** Keine Gedankenstriche und keine Emojis in gesprochenen Zeilen, Blättern oder Szenen. Kurze Sätze nach dem damaligen Stand von Kapitel 13; seit T1 gilt stattdessen: Länge nach Sprachmarke. Höchstens eine Taste pro Hinweis, und in dieser Datei wird keine einzige Taste genannt.
 
 **Zeichendeckel.** Alle Grundzeilen und Aktzeilen der vier neuen Figuren in Kapitel 6 sind gegengezählt und stehen mit ihrer Zeichenzahl da. Zeile 1 höchstens 48, Zeile 2 höchstens 32, Aktzeile höchstens 44. Die Szenentexte in Kapitel 8 sind Fließtext und fallen nicht unter den Deckel; wer sie in das Gesprächsfenster aus U3 einbaut, muss sie umbrechen und dabei neu zählen.
 
