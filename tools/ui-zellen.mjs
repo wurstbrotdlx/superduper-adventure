@@ -172,6 +172,110 @@ const ZELLEN = [
   ['ico_abbruch.png', `${UI}/UI_Icons.png`, 176, 80, 16, 16,
    'Kammer verlassen. Rotes Kreuz. Die weisse Fahne, die es ersetzt, gibt es '
    + 'im Pack nicht, und ein Abbruch ist ohnehin kein Aufgeben.'],
+
+  // -------------------------------------------------------------------
+  // U12 — der Rest der Bedienoberflaeche: Panelkoepfe, Reiterband,
+  // Befaehigung und die Fundstuecke, die im Bild liegen.
+  //
+  // Diese siebzehn stehen zum groessten Teil auf DUNKLEM Grund
+  // (rgba(20,14,24,.96)) und nicht auf dem hellen Achteck. Das ist eine andere
+  // Frage als in U11 und dieselbe, an der in U2 der Beutel-Slot aus UI_Premade
+  // gescheitert ist: helle Zellen sind fuer helle Oberflaechen gezeichnet.
+  // tools/ui-icon-kontaktbogen.mjs zeigt seit U12 deshalb jede Zelle zweimal,
+  // links im Knopf und rechts auf dem Panelgrund.
+  // -------------------------------------------------------------------
+
+  ['ico_gold.png', `${UI}/UI_Icons.png`, 96, 0, 16, 16,
+   'Beute im Kopfband, Bankguthaben in der Amtsstube, Muenzhaufen im Bild. '
+   + 'Die volle Stufe der Dreiergruppe (voll/halb/leer bei 96/112/128) — die '
+   + 'anderen beiden zeigen einen angebissenen Betrag, und den gibt es hier nicht.'],
+
+  ['ico_zahnrad.png', `${UI}/UI_Icons.png`, 32, 16, 16, 16,
+   'Optionen, im Reiterband. Das Zahnrad ist das einzige Zeichen dieses Satzes, '
+   + 'das auch ausserhalb dieser Welt dasselbe bedeutet.'],
+
+  ['ico_ton.png', `${UI}/UI_Icons.png`, 160, 64, 16, 16,
+   'Ton-Abschnitt und Musikknopf. Von den sechs Ton-Zellen der Zeile ist es die '
+   + 'zweite: die erste (144) ist nur der Lautsprecher als Umriss und zerfaellt '
+   + 'auf dem dunklen Panel zu einem Winkel, die vier danach tragen bereits ein '
+   + 'Kreuz oder einen Haken und sagen damit mehr, als der Abschnittskopf soll.'],
+
+  ['ico_ton_aus.png', `${UI}/UI_Icons.png`, 176, 64, 16, 16,
+   'Musikknopf im Zustand "aus". Derselbe Lautsprecher wie ico_ton, mit rotem '
+   + 'Kreuz. Der Knopf hat zwei Schreiber im Code (toggleMusic und die '
+   + 'Entstummung beim ersten Griff), und beide setzen den ganzen Knopfinhalt '
+   + 'neu — ohne eigene Zelle fuer "aus" stuende dort mal ein Sinnbild und mal '
+   + 'ein Emoji.'],
+
+  ['ico_schrift.png', `${UI}/UI_Button_Icons.png`, 160, 32, 16, 16,
+   'Schrift-Abschnitt in den Optionen. Die einzige Zelle des Satzes aus '
+   + 'UI_Button_Icons.png — dem Blatt, das trotz seines Namens Gamepad- und '
+   + 'Tastaturglyphen traegt und deshalb sonst nichts hergibt. Ein grosses A '
+   + 'ist genau das, was der Abschnitt einstellt, und die weisse Tonstufe (Zeile '
+   + '2 von vierzehn) ist die einzige, die auf dem dunklen Panel steht.'],
+
+  ['ico_speicher.png', `${UI}/UI_Icons.png`, 144, 16, 16, 16,
+   'Spielstand. Eine Diskette, und das ist in diesem einen Kasten genau richtig: '
+   + 'er redet als einziger des Hauses Technik statt Amtsdeutsch (s. SP).'],
+
+  ['ico_kladde.png', `${UI}/UI_Icons.png`, 176, 16, 16, 16,
+   'Kladde, als Reiter und als Abschnittskopf. Gruenes Buch. Die vier Buecher '
+   + 'des Blattes (blau/gruen/rot/orange) sind dieselbe Zeichnung in vier '
+   + 'Farben, also traegt die Farbe hier die ganze Unterscheidung: rot ist die '
+   + 'Personalakte, gruen die Kladde, orange die Akten, blau die Amtskunde.'],
+
+  ['ico_akten.png', `${UI}/UI_Icons.png`, 208, 16, 16, 16,
+   'Akten, als Reiter und als Abschnittskopf. Oranges Buch, s. Kladde.'],
+
+  ['ico_ruestung.png', `${UI}/UI_Icons.png`, 192, 0, 16, 16,
+   'Ausruestungs-Abschnitt im Charakterfenster. Volles Schild aus der '
+   + 'Dreiergruppe voll/halb/leer.'],
+
+  ['ico_schluessel.png', `${UI}/UI_Icons.png`, 208, 48, 16, 16,
+   'Symbolschloss — als Panelkopf und als das Ding, das im Bild steht. Ein '
+   + 'Schluesselbund, weil das Pack kein Schloss hat; am Symbolschloss wird '
+   + 'ohnehin nicht aufgeschlossen, sondern eine Folge eingegeben.'],
+
+  ['ico_brief.png', `${UI}/UI_Icons.png`, 224, 16, 16, 16,
+   'Aktenfund im Bild (die Tafeln, die Blaetter ausgeben). Ein Brief, weil in '
+   + 'diesem Haus alles per Post kommt.'],
+
+  ['ico_kraft.png', `${UI}/UI_Icons.png`, 16, 16, 16, 16,
+   'Kraft, in der Befaehigung. Einzelnes Schwert. Es steht neben den gekreuzten '
+   + 'Klingen des Schlagknopfes und ist von ihnen zu unterscheiden — das war '
+   + 'in U11 der Grund, die Kreuzform fuer den Knopf zu nehmen.'],
+
+  ['ico_herz.png', `${UI}/UI_Icons.png`, 0, 0, 16, 16,
+   'Zaehigkeit, in der Befaehigung. Volles Herz.'],
+
+  ['ico_blitz.png', `${UI}/UI_Icons.png`, 144, 0, 16, 16,
+   'Behaendigkeit, in der Befaehigung. Voller Blitz.'],
+
+  ['ico_amtskunde.png', `${UI}/UI_Icons.png`, 160, 16, 16, 16,
+   'Amtskunde, in der Befaehigung. Blaues Buch, s. Kladde.'],
+
+  ['ico_werte.png', `${UI}/UI_Icons.png`, 48, 16, 16, 16,
+   'Werte-Abschnitt im Charakterfenster. Ein Schraubenschluessel, und das ist '
+   + 'die schwaechste Zuordnung dieses Satzes: gemeint sind die abgeleiteten '
+   + 'Werte, und das Pack hat weder Winkel noch Massband. Der Schraubenschluessel '
+   + 'ist das einzige Zeichen darin, das "gerechnet, nicht gewuerfelt" sagt.'],
+
+  ['ico_dienst.png', `${UI}/UI_Icons.png`, 64, 16, 16, 16,
+   'Abschnitt IM DIENST und der Dienstausweis. Eine Krone — hinter beiden steht '
+   + 'die Amtsbezeichnung samt Rang, und der Rang ist das, was die Krone meint. '
+   + 'Der Ausweis selbst hat im Pack keine Entsprechung.'],
+
+  ['ico_zettel.png', `${UI}/UI_Icons.png`, 0, 16, 16, 16,
+   'Dienstzettel und Dienstbericht. Eine Sprechblase: beide sind das, was '
+   + 'Knoeterich sagt, nur schriftlich.'],
+
+  ['ico_kessel.png', 'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png', 16, 64, 16, 16,
+   'Kessel, Kochen und Verarbeitung — Reiter, Knopf und drei Abschnittskoepfe. '
+   + 'Ein Einmachglas, und das ist keine Verlegenheit: das Pack hat keinen '
+   + 'Kessel, aber dieses Haus verarbeitet Monsterteile zu abgefuellten Traenken, '
+   + 'und ein Einmachglas ist genau das Ergebnis. Der Rundkolben war vergeben '
+   + '(ico_trank), und zwei Fenster mit demselben Zeichen waeren ein Fenster '
+   + 'zu wenig.'],
 ];
 
 if(!existsSync(QUELLE)){

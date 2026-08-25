@@ -1911,6 +1911,25 @@
   body.cfuiIco .ico-sperre   {background-image:var(--ico-sperre);}
   body.cfuiIco .ico-abbruch  {background-image:var(--ico-abbruch);}
   body.cfuiIco .ico-hand     {background-image:var(--ico-hand);}
+  body.cfuiIco .ico-gold      {background-image:var(--ico-gold);}
+  body.cfuiIco .ico-zahnrad   {background-image:var(--ico-zahnrad);}
+  body.cfuiIco .ico-ton       {background-image:var(--ico-ton);}
+  body.cfuiIco .ico-ton_aus   {background-image:var(--ico-ton_aus);}
+  body.cfuiIco .ico-schrift   {background-image:var(--ico-schrift);}
+  body.cfuiIco .ico-speicher  {background-image:var(--ico-speicher);}
+  body.cfuiIco .ico-kladde    {background-image:var(--ico-kladde);}
+  body.cfuiIco .ico-akten     {background-image:var(--ico-akten);}
+  body.cfuiIco .ico-ruestung  {background-image:var(--ico-ruestung);}
+  body.cfuiIco .ico-schluessel{background-image:var(--ico-schluessel);}
+  body.cfuiIco .ico-brief     {background-image:var(--ico-brief);}
+  body.cfuiIco .ico-kraft     {background-image:var(--ico-kraft);}
+  body.cfuiIco .ico-herz      {background-image:var(--ico-herz);}
+  body.cfuiIco .ico-blitz     {background-image:var(--ico-blitz);}
+  body.cfuiIco .ico-amtskunde {background-image:var(--ico-amtskunde);}
+  body.cfuiIco .ico-werte     {background-image:var(--ico-werte);}
+  body.cfuiIco .ico-dienst    {background-image:var(--ico-dienst);}
+  body.cfuiIco .ico-zettel    {background-image:var(--ico-zettel);}
+  body.cfuiIco .ico-kessel    {background-image:var(--ico-kessel);}
   /* Das Verbotsschild sitzt in einem Knopf, dessen Text am Finger weg ist
      (.bl aus U10) und am Schirm daneben steht. In beiden Faellen soll es die
      Zeile nicht auseinanderziehen. */
@@ -2251,7 +2270,7 @@
 <div id="zone">📍 Grasland, Ablage A (Stufe 1)</div>
 <canvas id="minimap" width="128" height="128" title="Vollbildkarte (L)" style="cursor:pointer"></canvas>
 <div id="statCol">
-  <span id="goldTxt">💰 0</span>
+  <span id="goldTxt"><i class="ico ico-gold">💰</i> 0</span>
   <span id="uhrTxt" style="display:none;"></span>
   <span id="freiTxt" style="display:none;"></span>
 </div>
@@ -2306,7 +2325,7 @@
   <div class="gfBody">
    <div class="gfSpalten">
     <div class="gfKachel weit">
-      <h4>🎒 TASCHE <span id="tascheZahl"></span></h4>
+      <h4><i class="ico ico-rucksack">🎒</i> TASCHE <span id="tascheZahl"></span></h4>
       <div id="bagGrid"></div>
     </div>
     <div class="gfKachel weit" id="zutBox" style="display:none;">
@@ -2315,9 +2334,9 @@
       <div id="invZutGrid"></div>
     </div>
     <div class="gfKachel">
-      <h4>🍲 VERARBEITUNG</h4>
+      <h4><i class="ico ico-kessel">🍲</i> VERARBEITUNG</h4>
       <div class="gfSatz">Der Feldkessel steht im Rucksack und bleibt dort. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
-      <div id="kesselBtn" title="Kessel &amp; Kladde (K)">🍲 Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
+      <div id="kesselBtn" title="Kessel &amp; Kladde (K)"><i class="ico ico-kessel">🍲</i> Kessel &amp; Kladde <span id="kesselHint">[K]</span></div>
     </div>
    </div>
   </div>
@@ -2346,9 +2365,9 @@
   <div class="gfBody">
    <div class="gfSpalten">
     <div class="gfKachel" id="musikBox">
-      <h4>🎵 TON</h4>
+      <h4><i class="ico ico-ton">🎵</i> TON</h4>
       <div id="musikRow">
-        <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)">🎵 Musik</div>
+        <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)"><i class="ico ico-ton">🎵</i> Musik</div>
         <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke">
       </div>
       <div class="gfSatz" style="margin-top:9px;">Wie gesprächig Knöterich ist:</div>
@@ -2359,7 +2378,7 @@
       </div>
     </div>
     <div class="gfKachel">
-      <h4>🔠 SCHRIFT</h4>
+      <h4><i class="ico ico-schrift">🔠</i> SCHRIFT</h4>
       <div class="gfSatz">Gilt für Gespräche, Vordrucke und Menüs. Wird gemerkt.</div>
       <div id="schriftRow">
         <div class="schriftBtn" data-v="0">Normal</div>
@@ -2371,7 +2390,7 @@
          steht ausführlich am SP3-Block im Skript: eine Datensicherung, die
          niemand als solche erkennt, ist keine. -->
     <div class="gfKachel">
-      <h4>💾 SPIELSTAND</h4>
+      <h4><i class="ico ico-speicher">💾</i> SPIELSTAND</h4>
       <div id="speicherRow">
         <div class="schriftBtn" id="spSpeichern" title="Aktuelle Schicht auf diesem Gerät sichern">Speichern</div>
         <div class="schriftBtn" id="spExport" title="Alles als Datei sichern, für den Gerätewechsel">Export</div>
@@ -2407,30 +2426,30 @@
     <div id="charWerte">
       <div class="gfSpalten">
         <div class="gfKachel">
-          <h4>🪪 IM DIENST</h4>
+          <h4><i class="ico ico-dienst">🪪</i> IM DIENST</h4>
           <div id="charAmt">
             <canvas id="charFoto" width="16" height="18"></canvas>
             <div id="charAmtText"></div>
           </div>
-          <div id="ausweisBtn" title="Dienstausweis">🪪 Dienstausweis</div>
+          <div id="ausweisBtn" title="Dienstausweis"><i class="ico ico-dienst">🪪</i> Dienstausweis</div>
         </div>
         <div class="gfKachel" id="skillBox">
-          <h4>💪 BEFÄHIGUNG <span>frei: <span id="spCount">0</span></span></h4>
-          <div class="skillRow"><span class="skName">💪 Kraft: <b id="skStr">0</b><span class="skWert" id="skWertStr"></span></span> <button class="skillBtn" id="btnStr">+</button></div>
-          <div class="skillRow"><span class="skName">❤️ Zähigkeit: <b id="skVit">0</b><span class="skWert" id="skWertVit"></span></span> <button class="skillBtn" id="btnVit">+</button></div>
-          <div class="skillRow"><span class="skName">⚡ Behändigkeit: <b id="skAgi">0</b><span class="skWert" id="skWertAgi"></span></span> <button class="skillBtn" id="btnAgi">+</button></div>
-          <div class="skillRow"><span class="skName">🧠 Amtskunde: <b id="skInt">0</b><span class="skWert" id="skWertInt"></span></span> <button class="skillBtn" id="btnInt">+</button></div>
+          <h4><i class="ico ico-kraft">💪</i> BEFÄHIGUNG <span>frei: <span id="spCount">0</span></span></h4>
+          <div class="skillRow"><span class="skName"><i class="ico ico-kraft">💪</i> Kraft: <b id="skStr">0</b><span class="skWert" id="skWertStr"></span></span> <button class="skillBtn" id="btnStr">+</button></div>
+          <div class="skillRow"><span class="skName"><i class="ico ico-herz">❤️</i> Zähigkeit: <b id="skVit">0</b><span class="skWert" id="skWertVit"></span></span> <button class="skillBtn" id="btnVit">+</button></div>
+          <div class="skillRow"><span class="skName"><i class="ico ico-blitz">⚡</i> Behändigkeit: <b id="skAgi">0</b><span class="skWert" id="skWertAgi"></span></span> <button class="skillBtn" id="btnAgi">+</button></div>
+          <div class="skillRow"><span class="skName"><i class="ico ico-amtskunde">🧠</i> Amtskunde: <b id="skInt">0</b><span class="skWert" id="skWertInt"></span></span> <button class="skillBtn" id="btnInt">+</button></div>
           <div id="skHint"></div>
         </div>
         <div class="gfKachel">
-          <h4>📐 WERTE</h4>
+          <h4><i class="ico ico-werte">📐</i> WERTE</h4>
           <div id="statBox">
             <div>Schaden: <span id="stDmg">0-0</span> | Rüstung: <span id="stArm">0</span></div>
             <div>Max HP: <span id="stHp">0</span> | Max Mana: <span id="stMana">0</span></div>
           </div>
         </div>
         <div class="gfKachel">
-          <h4>🛡️ AUSRÜSTUNG</h4>
+          <h4><i class="ico ico-ruestung">🛡️</i> AUSRÜSTUNG</h4>
           <div class="gfSatz">Antippen legt ab<span class="nurMaus">, rechte Maustaste wirft weg</span>. Was zu schwer ist, bleibt in der Tasche.</div>
           <div id="equipGrid">
             <div class="eqSlot" id="eqWeapon"><span class="lbl">Waffe</span></div>
@@ -2468,14 +2487,14 @@
     <span class="panelZu" id="closeKesselBtn" title="Schließen (Esc)">✖</span>
   </div>
   <div class="gfBlaetter" id="kesselTabs">
-    <div class="gfBlatt on" id="tabKessel" title="Kochen">🍲<span class="gfWort">Kochen</span></div>
-    <div class="gfBlatt" id="tabKladde" title="Kladde">📓<span class="gfWort">Kladde</span></div>
-    <div class="gfBlatt" id="tabBlaetter" title="Akten">🗄<span class="gfWort">Akten</span></div>
+    <div class="gfBlatt on" id="tabKessel" title="Kochen"><i class="ico ico-kessel">🍲</i><span class="gfWort">Kochen</span></div>
+    <div class="gfBlatt" id="tabKladde" title="Kladde"><i class="ico ico-kladde">📓</i><span class="gfWort">Kladde</span></div>
+    <div class="gfBlatt" id="tabBlaetter" title="Akten"><i class="ico ico-akten">🗄</i><span class="gfWort">Akten</span></div>
   </div>
   <div class="gfBody">
     <div id="kesselPane">
       <div class="gfKachel" id="kesselLinks">
-        <h4>🍲 KESSEL</h4>
+        <h4><i class="ico ico-kessel">🍲</i> KESSEL</h4>
         <div id="kesselSub">Amtlich zugelassener Feldkessel. Drei Zutaten hinein, ein Ausrüstungsteil heraus.</div>
         <div id="potRow"></div>
         <button id="brewBtn" disabled>KOCHEN</button>
@@ -2487,13 +2506,13 @@
         <div id="zutGrid"></div>
       </div>
     </div>
-    <div id="kladdePane" style="display:none;"><div class="gfKachel"><h4>📓 KLADDE</h4><div id="kladdeBox"></div></div></div>
-    <div id="blaetterPane" style="display:none;"><div class="gfKachel"><h4>🗄 AKTEN</h4><div id="blaetterBox"></div></div></div>
+    <div id="kladdePane" style="display:none;"><div class="gfKachel"><h4><i class="ico ico-kladde">📓</i> KLADDE</h4><div id="kladdeBox"></div></div></div>
+    <div id="blaetterPane" style="display:none;"><div class="gfKachel"><h4><i class="ico ico-akten">🗄</i> AKTEN</h4><div id="blaetterBox"></div></div></div>
   </div>
 </div>
 
 <div id="schloss">
-  <h2>🔐 SYMBOLSCHLOSS <span style="cursor:pointer" id="closeSchlossBtn">✖</span></h2>
+  <h2><i class="ico ico-schluessel">🔐</i> SYMBOLSCHLOSS <span style="cursor:pointer" id="closeSchlossBtn">✖</span></h2>
   <div id="schlossAnz">_  _  _</div>
   <div id="schlossTasten"></div>
   <div id="schlossMsg">Drei Symbole. Der Code steht im Raum.</div>
@@ -2503,7 +2522,7 @@
      mit festen Kind-IDs, damit renderAusweis() nur Textknoten schreibt und
      die Canvas nie ausgetauscht wird. -->
 <div id="ausweis">
-  <h2>🪪 <span id="ausweisTitel"></span> <span style="cursor:pointer" id="closeAusweisBtn">✖</span></h2>
+  <h2><i class="ico ico-dienst">🪪</i> <span id="ausweisTitel"></span> <span style="cursor:pointer" id="closeAusweisBtn">✖</span></h2>
   <div id="ausweisKopf">
     <canvas id="ausweisFoto" width="64" height="72"></canvas>
     <div id="ausweisFelder"></div>
@@ -2525,7 +2544,7 @@
   </div>
   <div class="gfBody">
     <div class="gfKachel weit">
-      <h4>✨ ZAUBERBAUM <span>Punkte: <span id="spellPtsCount">0</span></span></h4>
+      <h4><i class="ico ico-zauber">✨</i> ZAUBERBAUM <span>Punkte: <span id="spellPtsCount">0</span></span></h4>
       <div id="spellCols"></div>
       <div id="ultimateRow"></div>
     </div>
@@ -2560,7 +2579,7 @@
   </div>
 </div>
 <div id="tooltip"></div>
-<div id="knZettel"><span id="knZettelHead"><canvas id="knZettelBild" width="128" height="128"></canvas><span id="knZettelSinnbild">🧑‍💼</span></span><div id="knZettelText"><div id="knZettelZ1"></div><div id="knZettelZ2"></div></div></div>
+<div id="knZettel"><span id="knZettelHead"><canvas id="knZettelBild" width="128" height="128"></canvas><span id="knZettelSinnbild"><i class="ico ico-zettel">🧑‍💼</i></span></span><div id="knZettelText"><div id="knZettelZ1"></div><div id="knZettelZ2"></div></div></div>
 <div id="knRandnotiz"><span id="knRandTxt"></span></div>
 <div id="overlay"><div class="panel" id="ovPanel"></div></div>
 
@@ -3325,6 +3344,30 @@ addSheet('ico_sperre',    'cf/ui/ico_sperre.png',    1, 'raw', {optional:true});
 addSheet('ico_abbruch',   'cf/ui/ico_abbruch.png',   1, 'raw', {optional:true});  // UI_Icons.png      (176,80)
 addSheet('ico_hand',      'cf/ui/ico_hand.png',      1, 'raw', {optional:true});  // UI_Icons.png      (48,224)
 
+// U12: der Rest der Bedienoberflaeche — Panelkoepfe, Reiterband, Befaehigung und
+// die Fundstuecke im Bild. Sie stehen groesstenteils auf DUNKLEM Panelgrund und
+// nicht auf dem hellen Achteck; welche Zelle das aushaelt, zeigt seit U12 die
+// rechte Haelfte von tools/ui-icon-kontaktbogen.mjs.
+addSheet('ico_gold',       'cf/ui/ico_gold.png',       1, 'raw', {optional:true});  // (96,0)
+addSheet('ico_zahnrad',    'cf/ui/ico_zahnrad.png',    1, 'raw', {optional:true});  // (32,16)
+addSheet('ico_ton',        'cf/ui/ico_ton.png',        1, 'raw', {optional:true});  // (160,64)
+addSheet('ico_ton_aus',    'cf/ui/ico_ton_aus.png',    1, 'raw', {optional:true});  // (176,64)
+addSheet('ico_schrift',    'cf/ui/ico_schrift.png',    1, 'raw', {optional:true});  // UI_Button_Icons (160,32)
+addSheet('ico_speicher',   'cf/ui/ico_speicher.png',   1, 'raw', {optional:true});  // (144,16)
+addSheet('ico_kladde',     'cf/ui/ico_kladde.png',     1, 'raw', {optional:true});  // (176,16)
+addSheet('ico_akten',      'cf/ui/ico_akten.png',      1, 'raw', {optional:true});  // (208,16)
+addSheet('ico_ruestung',   'cf/ui/ico_ruestung.png',   1, 'raw', {optional:true});  // (192,0)
+addSheet('ico_schluessel', 'cf/ui/ico_schluessel.png', 1, 'raw', {optional:true});  // (208,48)
+addSheet('ico_brief',      'cf/ui/ico_brief.png',      1, 'raw', {optional:true});  // (224,16)
+addSheet('ico_kraft',      'cf/ui/ico_kraft.png',      1, 'raw', {optional:true});  // (16,16)
+addSheet('ico_herz',       'cf/ui/ico_herz.png',       1, 'raw', {optional:true});  // (0,0)
+addSheet('ico_blitz',      'cf/ui/ico_blitz.png',      1, 'raw', {optional:true});  // (144,0)
+addSheet('ico_amtskunde',  'cf/ui/ico_amtskunde.png',  1, 'raw', {optional:true});  // (160,16)
+addSheet('ico_werte',      'cf/ui/ico_werte.png',      1, 'raw', {optional:true});  // (48,16)
+addSheet('ico_dienst',     'cf/ui/ico_dienst.png',     1, 'raw', {optional:true});  // (64,16)
+addSheet('ico_zettel',     'cf/ui/ico_zettel.png',     1, 'raw', {optional:true});  // (0,16)
+addSheet('ico_kessel',     'cf/ui/ico_kessel.png',     1, 'raw', {optional:true});  // Food_Icons (16,64)
+
 // ===========================================================================
 //  Kammer-Interieur — Cute Fantasy Dungeons (Kenmi, itch.io), Phase G1.
 //  Werte per Alpha-Bounding-Box/Komponentenanalyse am PNG gemessen (nicht aus
@@ -3700,6 +3743,29 @@ function drawSprite(key, frame, x, y, scale, flip, tint, tintA){
   if(flip) ctx.scale(-1, 1);
   drawSpriteAt(key, frame, tint, tintA);
   ctx.restore();
+}
+
+// U12: ein Sinnbild ins Bild malen, mittig auf (x,y). Vier Dinge im Dorf waren
+// bis U12 Emoji, die ctx.fillText mit einer Serifenschrift gezeichnet hat: der
+// Muenzhaufen, der Trank, das Symbolschloss und die Aktentafel. Sie lagen damit
+// als glaenzende Systemgrafik zwischen lauter Pixelkunst, und anders als im
+// Menue stand daneben kein Text, der es erklaert haette.
+//
+// Der Ersatzweg ist derselbe wie bei den Knoepfen und aus demselben Grund: ohne
+// Zelle wird das Emoji gezeichnet, das der Aufrufer mitgibt. Deshalb steht die
+// Schriftgroesse hier auch nicht im Aufrufer — wer 17px Serife will, bekommt
+// eine Kantenlaenge von 16 mit derselben Zahl, und beide Wege treffen dieselbe
+// Stelle im Bild.
+function zeichneIco(key, ersatz, x, y, kante){
+  const s = SHEETS['ico_' + key];
+  if(s && s.img && s.img.complete && s.img.naturalWidth){
+    const k = kante || 16;
+    // Ganzzahlige Kante und ganzzahlige Ecke: eine Zelle von 16 auf 17 gedehnt
+    // waere hier derselbe Fehler wie der auf dem Schlagknopf in U10.
+    ctx.drawImage(s.img, Math.round(x - k/2), Math.round(y - k/2), k, k);
+    return;
+  }
+  ctx.fillText(ersatz, x, y + (kante || 16) * 0.36);
 }
 
 // Frameindex aus Laufzeit. loop=false klemmt am letzten Frame fest.
@@ -4107,7 +4173,7 @@ function applyMusicGain(){
 }
 function toggleMusic(){
   musicMuted = !musicMuted;
-  document.getElementById('musicBtn').innerText = musicMuted ? '🔇 Aus' : '🎵 Musik';
+  document.getElementById('musicBtn').innerHTML = musicMuted ? '<i class="ico ico-ton_aus">🔇</i> Aus' : '<i class="ico ico-ton">🎵</i> Musik';
   applyMusicGain();
 }
 
@@ -13299,7 +13365,7 @@ function renderAmtFenster(){
   // also +1 wie in knBegruessungLine(). showDorf()/showJahresgespraech() bleiben beim Rohwert.
   el('amtFenster').innerHTML = `
     <h2>🏛 Amtsstube <span class="panelZu" style="cursor:pointer;" onclick="amtFensterSchliessen()">✖</span></h2>
-    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;margin:0 0 4px;">Schicht ${amt.schichten + 1} · Bankguthaben: 💰 ${amt.bankGold}</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;margin:0 0 4px;">Schicht ${amt.schichten + 1} · Bankguthaben: <i class="ico ico-gold">💰</i> ${amt.bankGold}</p>
     <p style="font-size:calc(11px * var(--fs));color:#c9b98a;margin:0 0 8px;">${rangName()}<br>${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <div style="text-align:left;">${rows}</div>
     ${auftragFensterBlock()}
@@ -13467,7 +13533,8 @@ function drawKammerObj(o){
     case 'schloss':
       ctx.fillStyle = '#241d33'; ctx.fillRect(o.x - 15, o.y - 18, 30, 30);
       ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 2; ctx.strokeRect(o.x - 15, o.y - 18, 30, 30);
-      ctx.fillStyle = '#f4d97a'; ctx.font = '15px serif'; ctx.fillText('🔐', o.x, o.y + 2);
+      ctx.fillStyle = '#f4d97a'; ctx.font = '15px serif';
+      zeichneIco('schluessel', '🔐', o.x, o.y - 3, 16);
       break;
     case 'reset':
       ctx.strokeStyle = '#7ad6ff'; ctx.lineWidth = 2;
@@ -13498,7 +13565,7 @@ function drawKammerObj(o){
       ctx.fillStyle = '#2b2338'; ctx.fillRect(o.x - 26, o.y - 20, 52, 34);
       ctx.strokeStyle = '#8a7bb8'; ctx.lineWidth = 2; ctx.strokeRect(o.x - 26, o.y - 20, 52, 34);
       ctx.fillStyle = '#c9b98a'; ctx.font = 'bold 13px serif';
-      ctx.fillText('📜', o.x, o.y + 4);
+      zeichneIco('brief', '📜', o.x, o.y - 1, 16);
       if(nah){
         ctx.font = 'bold 10px Courier New';
         ctx.fillStyle = '#000';    ctx.fillText(o.titel, o.x+1, o.y - 27);
@@ -13749,15 +13816,15 @@ function befaehigungHinweis(){
 //  'stern' liefert die Farbe eines Sternchens oder null. Es ist dasselbe
 //  Zeichen wie am Guertelknopf und sagt dasselbe: hier wartet etwas.
 const GROSSFENSTER = [
-  {id:'charakter', sinn:'🧍', wort:'Charakter', taste:'C',
+  {id:'charakter', sinn:'🧍', ico:'charakter', wort:'Charakter', taste:'C',
    offen:() => charakterOpen, auf:() => toggleCharakter(),
    stern:() => player.skillPoints > 0 ? '#f4d97a'
              : (player.zulagenAngebot || player.zulagenZiehungen > 0) ? '#5ac8ff' : null},
-  {id:'inv',       sinn:'🎒', wort:'Rucksack',  taste:'I',
+  {id:'inv',       sinn:'🎒', ico:'rucksack',  wort:'Rucksack',  taste:'I',
    offen:() => invOpen,       auf:() => toggleInventory(), stern:() => null},
-  {id:'kessel',    sinn:'🍲', wort:'Kochen',    taste:'K',
+  {id:'kessel',    sinn:'🍲', ico:'kessel',    wort:'Kochen',    taste:'K',
    offen:() => kesselOpen,    auf:() => toggleKessel(),    stern:() => null},
-  {id:'spellTree', sinn:'✨', wort:'Zauber',    taste:'T',
+  {id:'spellTree', sinn:'✨', ico:'zauber',    wort:'Zauber',    taste:'T',
    offen:() => spellTreeOpen, auf:() => toggleSpellTree(),
    stern:() => (player.spellPoints > 0 && player.level >= ZAUBER_AB_STUFE) ? '#c77dff' : null},
   // U8-Nachtrag 3: Die Einstellungen. Sie haben als einziges Fenster keinen
@@ -13765,7 +13832,7 @@ const GROSSFENSTER = [
   // im Gefecht etwas holt, und eine Lautstaerke holt dort niemand. Der Weg
   // fuehrt ueber das Band — also ueber jedes andere Fenster — und ueber die
   // Taste O.
-  {id:'optionen',  sinn:'⚙️', wort:'Optionen',  taste:'O',
+  {id:'optionen',  sinn:'⚙️', ico:'zahnrad',   wort:'Optionen',  taste:'O',
    offen:() => optionenOpen,  auf:() => toggleOptionen(),  stern:() => null},
 ];
 
@@ -13786,7 +13853,8 @@ function gfBandZeichnen(){
       const st = f.stern();
       return `<div class="gfReiter${f.id === hier ? ' on' : ''}" data-ziel="${f.id}"`
            + ` title="${f.wort} (${f.taste})">`
-           + `<span class="gfSinn">${f.sinn}</span><span class="gfWort">${f.wort}</span>`
+           + `<span class="gfSinn"><i class="ico ico-${f.ico}">${f.sinn}</i></span>`
+           + `<span class="gfWort">${f.wort}</span>`
            + (st ? `<span class="gfStern" style="color:${st}">★</span>` : '')
            + `</div>`;
     }).join('');
@@ -14338,7 +14406,7 @@ for(const t of document.querySelectorAll('#charakter .gfBlatt'))
 document.getElementById('musicBtn').onclick = toggleMusic;
 document.getElementById('musicVol').oninput = (e)=>{
   musicVolTarget = e.target.value/100;
-  if(musicMuted && musicVolTarget>0){ musicMuted=false; document.getElementById('musicBtn').innerText='🎵 Musik'; }
+  if(musicMuted && musicVolTarget>0){ musicMuted=false; document.getElementById('musicBtn').innerHTML='<i class="ico ico-ton">🎵</i> Musik'; }
   applyMusicGain();
 };
 
@@ -15011,10 +15079,10 @@ function render(){
     const gf = animFrame('glint', gameT + d.x*0.017, 9);
     ctx.save(); ctx.textAlign = 'center'; ctx.font = '17px serif';
     if(d.kind === 'gold'){
-      ctx.fillText('💰', d.x, d.y+6+bob);
+      zeichneIco('gold', '💰', d.x, d.y+bob, 16);
       drawSprite('glint', gf, d.x, d.y-6+bob, 1.6);
     } else if(d.kind === 'potion'){
-      ctx.fillText('🧪', d.x, d.y+6+bob);
+      zeichneIco('trank', '🧪', d.x, d.y+bob, 16);
     } else if(d.kind === 'zutat'){
       ctx.shadowColor = RARITY[d.rar].col; ctx.shadowBlur = d.rar >= 2 ? 12 : 5;
       ctx.fillText(ZUTAT_NOUNS[d.noun].icon, d.x, d.y+4+bob);
@@ -15909,7 +15977,7 @@ function updateHUD(){
   setStyle('hpTicks', 'backgroundSize', (100 / segmentZahl(HP_SEG_STUFE)) + '% 100%');
   setStyle('manaTicks', 'backgroundSize', (100 / segmentZahl(MANA_SEG_STUFE)) + '% 100%');
   setTxt('potCount', player.potions);
-  setTxt('goldTxt', '💰 ' + player.gold);
+  setHTML('goldTxt', '<i class="ico ico-gold">💰</i> ' + player.gold);
   // U7: nur noch die Zahl. Das Wort "Stufe" stand daneben, solange die Zahl in
   // einer Textspalte lag; im Ring des Lichtbilds sagt die Stelle, was sie ist.
   setTxt('lvlTxt', player.level);
@@ -16033,9 +16101,9 @@ const NEUERUNGEN = {
       wo: 'Charakterfenster, zweites Blatt „Kartenmappe" — oder Taste Z.',
     },
     {
-      titel: 'Die Knöpfe tragen gezeichnete Sinnbilder',
-      was: 'Schwert, Trank, Rucksack, Zauberstern, Personalakte und Zielkreuz sind nicht mehr die Zeichen Ihres Telefons, sondern die des Spiels. Ein gesperrter Zauber trägt jetzt das Verbotsschild, das er verdient.',
-      wo: 'Überall am Gürtel, am Schirm wie am Finger.',
+      titel: 'Das Haus zeichnet seine Sinnbilder selbst',
+      was: 'Schwert, Trank, Rucksack, Personalakte, Zielkreuz, Beute, Befähigung, Reiterband und die Münzen im Feld sind nicht mehr die Zeichen Ihres Telefons, sondern die des Spiels. Ein gesperrter Zauber trägt jetzt das Verbotsschild, das er verdient.',
+      wo: 'Überall: Gürtel, Reiterband, Fensterköpfe und der Boden unter Ihren Füßen.',
     },
     {
       titel: 'Am Telefon sind die Knöpfe Knöpfe geworden',
@@ -16102,7 +16170,7 @@ function showStartScreen(){
   // erste Knopf und nicht ein Untermenü. Wer sie nicht will, drückt daneben.
   const sp = spielstandLesen();
   const stand = (CONFIG.schichtModus && amt.schichten > 0)
-    ? `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse 💰 ${amt.bankGold}</p>` : '';
+    ? `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse <i class="ico ico-gold">💰</i> ${amt.bankGold}</p>` : '';
   document.getElementById('ovPanel').innerHTML = `
     <h1>DAS MONSTRAL MINISTERIUM</h1>
     <h3>Erledigen. Beglaubigen. Feierabend.</h3>
@@ -16449,11 +16517,11 @@ function endShift(reason){
     <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${anlass}</p>
     <div id="berichtRoll" style="max-height:30vh;overflow-y:auto;">
     <div style="text-align:left;background:rgba(0,0,0,.5);padding:12px;border-radius:8px;font-size:calc(13px * var(--fs));margin:14px 0;border:1px solid #5a4a2d;">
-      <b>🧑‍💼 Dienstbericht</b><br>
+      <b><i class="ico ico-zettel">🧑‍💼</i> Dienstbericht</b><br>
       Monster erledigt: ${shiftKillsTotal}${killLines.length ? '<br><span style="font-size:calc(11px * var(--fs));color:#c9b98a;">'+killLines.join(' · ')+'</span>' : ''}<br>
       Zutatenaufkommen: ${zutatenGesamt} (${mitgenommen} mitgenommen, ${eingezogen} eingezogen)<br>
       Überstunden: ${ueberstunden}s<br>${auftragBericht ? '      ' + auftragBericht + '<br>' : ''}
-      Beuteaufkommen: 💰 ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse, ${verwaltung} Verwaltungskostenanteil)
+      Beuteaufkommen: <i class="ico ico-gold">💰</i> ${player.gold} (${carryGold} mitgenommen, ${abgabe} an die Amtskasse, ${verwaltung} Verwaltungskostenanteil)
     </div>
     ${rangBerichtBlock()}
     </div>
@@ -22715,7 +22783,7 @@ function wiederBlockHtml(){
   if(amt.wiedereinsetzung){
     return rahmen(`
       <span style="color:#c9b98a;">Bewilligt. Sie treten morgen erneut an, in Stufe ${amt.wiedereinsetzung.stand}.</span><br>
-      <span style="color:#9a8a5f;">Gebühr gebucht. Amtskasse: 💰 ${amt.bankGold}.</span><br>
+      <span style="color:#9a8a5f;">Gebühr gebucht. Amtskasse: <i class="ico ico-gold">💰</i> ${amt.bankGold}.</span><br>
       <span style="color:#7a6a45;">${WIEDER_VERMERK}</span>`);
   }
   if(!wiederZulaessig()){
@@ -22725,7 +22793,7 @@ function wiederBlockHtml(){
   const g = wiederGebuehr(), kann = wiederBezahlbar();
   return rahmen(`
     <span style="color:#c9b98a;">${WIEDER_KEIN_NEU}</span><br>
-    <span>Wiedereinsetzung in Stufe ${wiederStand()}. Gebühr 💰 ${g}, aus der Amtskasse. Bestand: 💰 ${amt.bankGold}.</span><br>
+    <span>Wiedereinsetzung in Stufe ${wiederStand()}. Gebühr <i class="ico ico-gold">💰</i> ${g}, aus der Amtskasse. Bestand: <i class="ico ico-gold">💰</i> ${amt.bankGold}.</span><br>
     <span style="color:#9a8a5f;">${WIEDER_ENG}</span><br>
     <button ${kann ? '' : 'disabled'} onclick="wiederBeantragen()" style="font-size:calc(12px * var(--fs));padding:6px 12px;margin:8px 0 0;">${kann ? 'ANTRAG STELLEN' : 'Amtskasse trägt das nicht'}</button>`);
 }
@@ -22889,7 +22957,7 @@ function showDorf(){
 
   document.getElementById('ovPanel').innerHTML = `
     <h1>AMT FÜR MONSTERANGELEGENHEITEN</h1>
-    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: 💰 ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: <i class="ico ico-gold">💰</i> ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
     <p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <p style="font-size:calc(11px * var(--fs));color:#9a8a5f;">Nächste Hebung nach Schicht ${(rangStufe()+1)*5}: ${rangNameVon(rangStufe()+1)}</p>
     <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
@@ -23580,7 +23648,8 @@ function bakeUiSkin(){
   // als acht Emoji. Deshalb eine Klasse fuer den ganzen Satz, gesetzt nur wenn
   // jede der acht Zellen wirklich da ist — und die Variablen werden gar nicht
   // erst geschrieben, wenn eine fehlt.
-  const ICONS = ['schlag', 'trank', 'zauber', 'rucksack', 'charakter', 'ziel', 'sperre', 'abbruch', 'hand'];
+  const ICONS = ['schlag', 'trank', 'zauber', 'rucksack', 'charakter', 'ziel', 'sperre', 'abbruch', 'hand',
+                 'gold', 'zahnrad', 'ton', 'ton_aus', 'schrift', 'speicher', 'kladde', 'akten', 'ruestung', 'schluessel', 'brief', 'kraft', 'herz', 'blitz', 'amtskunde', 'werte', 'dienst', 'zettel', 'kessel'];
   const iconUrls = ICONS.map(n => [n, url(`ico_${n}`)]);
   const vollstaendig = iconUrls.every(([, u]) => !!u);
   if(vollstaendig){

@@ -24,6 +24,14 @@
 //   - auf den Ton des Dorfwegs als Grund, nicht auf Schwarz,
 //   - bei deviceScaleFactor 3, wie ein Telefon es zeichnet.
 //
+// UND ZWEIMAL, auf beiden Gruenden des Spiels. Sinnbilder stehen hier an zwei
+// ganz verschiedenen Orten: im Knopf auf hellem Achteck und im Panelkopf auf
+// dunklem Grund (rgba(20,14,24,.96)). Was auf dem einen traegt, kann auf dem
+// anderen verschwinden — genau die Falle, an der in U2 der Beutel-Slot aus
+// UI_Premade gescheitert ist (helle Kachel auf dunklem Panel, vier lachsfarbene
+// Eckpunkte). Der Bogen zeigt deshalb jede Zelle links im Knopf und rechts auf
+// dem Panelgrund in Kopfzeilen-Groesse.
+//
 // KANDIDATEN stehen als Tabelle im Quelltext, wie in tools/ui-zellen.mjs und aus
 // demselben Grund: eine Auswahl, die man nicht nachschlagen kann, ist keine.
 // Wer neue Zellen sucht, traegt sie hier ein, laesst den Bogen laufen und
@@ -47,24 +55,46 @@ const KNOPF = +wert('--knopf', 56);
 const ICON  = +wert('--icon', 32);
 
 // [Beschriftung, Blatt (relativ zu Graphics/), x, y]  — alle Zellen 16x16.
-// Der Satz ist der aus U11, samt der Kandidaten, die durchgefallen sind: ein
-// Bogen, der nur die Gewinner zeigt, belegt nichts.
 const KANDIDATEN = [
+  // U11 — die Bedienknoepfe, samt der zwei Kandidaten, die durchgefallen sind:
+  // ein Bogen, der nur die Gewinner zeigt, belegt nichts.
   ['Schlag: Klingen',    `${UI}/UI_Icons.png`,      112,  16],
-  ['Schlag: Schwert',    `${UI}/UI_Icons.png`,       16,  16],
   ['Trank: Rundkolben',  'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png', 112, 128],
-  ['Trank: mit Outline', 'Cute_Fantasy/Icons/Outline/Food_Icons_Outline.png',       112, 128],
   ['Zauber: Stern blau', `${UI}/UI_Icons.png`,      144,  48],
   ['Zauber: Stern gold', `${UI}/UI_Icons.png`,       48,   0],
   ['Rucksack (genommen)',`${UI}/UI_Icons.png`,      144,  32],
   ['Rucksack: flach',    `${UI}/UI_Icons.png`,      160,  32],
   ['Charakter: Buch rot',`${UI}/UI_Icons.png`,      192,  16],
-  ['Charakter: Buch bl.',`${UI}/UI_Icons.png`,      160,  16],
   ['Ziel: geschlossen',  `${UI}/UI_Crosshairs.png`,   0, 128],
   ['Ziel: Punkte (weg)', `${UI}/UI_Crosshairs.png`,   0,   0],
   ['Sperre: Verbot',     `${UI}/UI_Icons.png`,      208,  80],
   ['Abbruch: rotes X',   `${UI}/UI_Icons.png`,      176,  80],
   ['Hand (Kontext)',     `${UI}/UI_Icons.png`,       48, 224],
+
+  // U12 — Panelkoepfe, Reiterband, Befaehigung und die Fundstuecke in der Welt.
+  // Diese stehen groesstenteils auf DUNKLEM Grund, also entscheidet die rechte
+  // Haelfte des Bogens.
+  ['Gold/Beute',         `${UI}/UI_Icons.png`,       96,   0],
+  ['Optionen: Zahnrad',  `${UI}/UI_Icons.png`,       32,  16],
+  ['Ton: Lautsprecher',  `${UI}/UI_Icons.png`,      144,  64],
+  ['Ton: Welle',         `${UI}/UI_Icons.png`,      160,  64],
+  ['Spielstand: Disk',   `${UI}/UI_Icons.png`,      144,  16],
+  ['Kladde: Buch gruen', `${UI}/UI_Icons.png`,      176,  16],
+  ['Akten: Buch orange', `${UI}/UI_Icons.png`,      208,  16],
+  ['Ausruestung: Schild',`${UI}/UI_Icons.png`,      192,   0],
+  ['Schloss: Schluessel',`${UI}/UI_Icons.png`,      208,  48],
+  ['Aktenfund: Brief',   `${UI}/UI_Icons.png`,      224,  16],
+  ['Kraft: Schwert',     `${UI}/UI_Icons.png`,       16,  16],
+  ['Zaehigkeit: Herz',   `${UI}/UI_Icons.png`,        0,   0],
+  ['Behaendigk.: Blitz', `${UI}/UI_Icons.png`,      144,   0],
+  ['Amtskunde: Buch bl.',`${UI}/UI_Icons.png`,      160,  16],
+  ['Werte: Schraubensl.',`${UI}/UI_Icons.png`,       48,  16],
+  ['Rang: Krone',        `${UI}/UI_Icons.png`,       64,  16],
+  ['Mitteilung: Sprech', `${UI}/UI_Icons.png`,        0,  16],
+  ['Kessel: Glas rot',   'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png',  16,  64],
+  ['Kessel: Glas gruen', 'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png',  16,  80],
+  ['Kessel: Glas gelb',  'Cute_Fantasy/Icons/No Outline/Food_Icons_NO_Outline.png',  16, 128],
+  ['Zutaten: Blume',     'Cute_Fantasy/Icons/No Outline/Other_Icons_NO_Outline.png',  0,  0],
 ];
 
 if(!existsSync(QUELLE)){
@@ -105,7 +135,8 @@ const png = await page.evaluate(async ({blaetter, KANDIDATEN, rund, KNOPF, ICON}
   for(const [k, v] of Object.entries(blaetter)) bl[k] = await lade(v);
   const achteck = await lade(rund);
 
-  const DPR = 3, SPALTEN = 5, ZELLE_W = 138, ZELLE_H = 118, RAND = 20, KOPF = 34;
+  const DPR = 3, SPALTEN = 4, ZELLE_W = 178, ZELLE_H = 118, RAND = 20, KOPF = 34;
+  const KOPFICON = 18;   // so gross steht ein Sinnbild in einer h4-Zeile
   const zeilen = Math.ceil(KANDIDATEN.length / SPALTEN);
   const cv = document.createElement('canvas');
   cv.width  = (RAND*2 + SPALTEN*ZELLE_W) * DPR;
@@ -119,15 +150,25 @@ const png = await page.evaluate(async ({blaetter, KANDIDATEN, rund, KNOPF, ICON}
   c.fillRect(0, 0, cv.width, cv.height);
   c.fillStyle = '#2e1d0a';
   c.font = 'bold 15px monospace';
-  c.fillText(`Kandidaten auf dem echten Achteck — Knopf ${KNOPF}, Sinnbild ${ICON}, DPR ${DPR}`, RAND, RAND + 14);
+  c.fillText(`Kandidaten — links im Knopf (${KNOPF}/${ICON}), rechts auf dem Panelgrund (${KOPFICON}), DPR ${DPR}`, RAND, RAND + 14);
 
   KANDIDATEN.forEach(([name, blatt, sx, sy], i) => {
     const zx = RAND + (i % SPALTEN) * ZELLE_W;
     const zy = RAND + KOPF + Math.floor(i / SPALTEN) * ZELLE_H;
-    const kx = zx + (ZELLE_W - KNOPF) / 2;
+    // links: im Knopf auf dem Achteck
+    const kx = zx + 6;
     c.drawImage(achteck, 0, 0, achteck.width, achteck.height, kx, zy, KNOPF, KNOPF);
     c.drawImage(bl[blatt], sx, sy, 16, 16,
                 kx + (KNOPF - ICON) / 2, zy + (KNOPF - ICON) / 2, ICON, ICON);
+    // rechts: auf dem Panelgrund, in der Groesse einer Kopfzeile
+    const px = kx + KNOPF + 10, pw = ZELLE_W - (px - zx) - 6;
+    c.fillStyle = '#140e18';
+    c.fillRect(px, zy, pw, KNOPF);
+    c.strokeStyle = '#8a6d3b'; c.lineWidth = 1;
+    c.strokeRect(px + .5, zy + .5, pw - 1, KNOPF - 1);
+    c.drawImage(bl[blatt], sx, sy, 16, 16, px + 8, zy + (KNOPF - KOPFICON) / 2, KOPFICON, KOPFICON);
+    c.fillStyle = '#e8d9a8'; c.font = 'bold 12px monospace';
+    c.fillText('KOPFZEILE', px + 8 + KOPFICON + 5, zy + KNOPF / 2 + 4);
     c.fillStyle = '#2e1d0a'; c.font = '11px monospace';
     c.fillText(name, zx + 4, zy + KNOPF + 16);
     c.fillStyle = '#6b4a28';
