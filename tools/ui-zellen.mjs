@@ -254,11 +254,17 @@ const ZELLEN = [
   ['ico_amtskunde.png', `${UI}/UI_Icons.png`, 160, 16, 16, 16,
    'Amtskunde, in der Befaehigung. Blaues Buch, s. Kladde.'],
 
-  ['ico_werte.png', `${UI}/UI_Icons.png`, 48, 16, 16, 16,
-   'Werte-Abschnitt im Charakterfenster. Ein Schraubenschluessel, und das ist '
-   + 'die schwaechste Zuordnung dieses Satzes: gemeint sind die abgeleiteten '
-   + 'Werte, und das Pack hat weder Winkel noch Massband. Der Schraubenschluessel '
-   + 'ist das einzige Zeichen darin, das "gerechnet, nicht gewuerfelt" sagt.'],
+  ['ico_werte.png', `${UI}/UI_Bars.png`, 0, 0, 16, 16,
+   'Werte-Abschnitt im Charakterfenster. Gestapelte Wertebalken.\n'
+   + '   U12 hatte hier den Schraubenschluessel aus UI_Icons (48,16) und hat ihn '
+   + 'selbst als die schwaechste Zuordnung des Satzes ausgewiesen: gemeint sind '
+   + 'die abgeleiteten Werte, und ein Werkzeug sagt "reparieren", nicht "messen".\n'
+   + '   Der Fehler war, nur UI_Icons.png abzusuchen. UI_Bars.png traegt in seiner '
+   + 'ersten Zeile den Balkenstapel, mit dem dieses Spiel Leben, Mana und '
+   + 'Erfahrung anzeigt — es ist die eigene Bildsprache des Hauses fuer '
+   + 'gemessene Werte, und der Kasten darunter listet genau vier davon '
+   + '(Schaden, Ruestung, Max HP, Max Mana). Die verzierte linke Kappe ist '
+   + 'dieselbe, die auch in der Statuskarte oben links sitzt.'],
 
   ['ico_dienst.png', `${UI}/UI_Icons.png`, 64, 16, 16, 16,
    'Abschnitt IM DIENST und der Dienstausweis. Eine Krone — hinter beiden steht '

@@ -38,8 +38,9 @@ Rucksack, kein Buch.
 Y, R1, L1, LT, RT) in vierzehn Farbfassungen. Genau eine Zelle daraus ist am Ende
 gebraucht worden: das große **A** für den Schrift-Abschnitt.
 
-Die Spiel-Sinnbilder liegen ausschließlich in `UI_Icons.png` und müssen aufgelegt
-werden — also genau die Bauart aus U11.
+Die Spiel-Sinnbilder liegen in `UI_Icons.png` und müssen aufgelegt werden — also genau
+die Bauart aus U11. *(Dieser Satz stand hier zuerst mit dem Wort ausschliesslich. Er war
+falsch, und die Berichtigung steht im Nachtrag: `UI_Bars.png` traegt den Balkenstapel.)*
 
 ### Fund 2: der Grund entscheidet, nicht die Zelle
 
@@ -58,8 +59,8 @@ Hälfte wäre der falsche Lautsprecher eingebaut worden.
 
 ### Die Auswahl
 
-Vierundzwanzig Zellen, dreiundzwanzig aus `UI_Icons.png`, eine aus `UI_Button_Icons`
-und eine aus den Speise-Icons des Hauptpacks.
+Vierundzwanzig Zellen: zweiundzwanzig aus `UI_Icons.png`, je eine aus
+`UI_Button_Icons.png`, `UI_Bars.png` und den Speise-Icons des Hauptpacks.
 
 | Ort | war | ist |
 |---|---|---|
@@ -72,7 +73,7 @@ und eine aus den Speise-Icons des Hauptpacks.
 | Abschnitt Schrift | 🔠 | großes A |
 | Abschnitt Spielstand | 💾 | Diskette |
 | Abschnitt Im Dienst, Dienstausweis | 🪪 | Krone |
-| Abschnitt Werte | 📐 | Schraubenschlüssel |
+| Abschnitt Werte | 📐 | Balkenstapel *(erst Schraubenschlüssel, s. Nachtrag)* |
 | Abschnitt Ausrüstung | 🛡️ | Schild |
 | Kraft, Zähigkeit, Behändigkeit, Amtskunde | 💪 ❤️ ⚡ 🧠 | Schwert, Herz, Blitz, blaues Buch |
 | Symbolschloss (Panel und im Feld) | 🔐 | Schlüsselbund |
@@ -105,6 +106,8 @@ Die Entscheidungen, die keine Geschmacksfragen sind:
 Die schwächste Zuordnung ist ausdrücklich benannt: **der Schraubenschlüssel für WERTE.**
 Gemeint sind die abgeleiteten Werte, und das Pack hat weder Winkel noch Maßband. Der
 Schraubenschlüssel ist das einzige Zeichen darin, das „gerechnet, nicht gewürfelt" sagt.
+*(Nachtrag vom selben Tag: es war nicht das einzige — der Fehler war, nur ein Blatt
+abzusuchen. Siehe den letzten Abschnitt.)*
 
 ### Fund 3: vier Schreiber hätten die Sinnbilder wieder ausradiert
 
@@ -176,3 +179,46 @@ mitgegebenen Emoji zurück.
 | Vier Großfenster am Schirm, 1440×900 | Reiterband, Köpfe und Befähigung tragen Zellen; keine Warnung |
 | Fundstücke im Bild, DPR 3 | Münzen und Tränke als Zellen gezeichnet |
 | `tools/build-single.mjs` | **243 Dateien** (215 vor U11) |
+
+---
+
+## Nachtrag: die Werte tragen jetzt Balken
+
+Noch am 25.08.2026, unmittelbar nach dem Bau.
+
+U12 hat den Schraubenschlüssel für den WERTE-Abschnitt selbst als **schwächste
+Zuordnung des ganzen Satzes** ausgewiesen und die Begründung gleich mitgeliefert: das
+Pack habe weder Winkel noch Maßband, also sei er das einzige Zeichen, das „gerechnet,
+nicht gewürfelt" sage.
+
+Der zweite Halbsatz war falsch, und der Fehler steht schon im ersten: **es wurde nur ein
+Blatt abgesucht.** `UI_Icons.png` hat tatsächlich nichts. `UI_Bars.png` trägt in seiner
+ersten Zeile den **Balkenstapel** — dasselbe Bauteil, mit dem dieses Spiel seit jeher
+Leben, Mana und Erfahrung anzeigt, samt der verzierten linken Kappe, die auch in der
+Statuskarte oben links sitzt.
+
+Das ist nicht bloß das hübschere Zeichen, es ist das richtige: der Kasten unter der
+Überschrift listet **vier gemessene Werte** (Schaden, Rüstung, Max HP, Max Mana), und
+Balken sind die eigene Bildsprache des Hauses dafür. Ein Werkzeug sagt „reparieren",
+nicht „messen".
+
+`ico_werte.png` kommt seither aus `UI_Bars.png` (0,0) statt aus `UI_Icons.png` (48,16).
+Eine Zeile in der Zellentabelle, keine Codeänderung.
+
+**Die Lehre, die über diesen einen Knopf hinausgeht:** `tools/ui-icon-kontaktbogen.mjs`
+hat in U11 und U12 dreimal einen Fehler gefunden, aber immer nur unter den Kandidaten,
+die jemand eingetragen hatte. Gegen ein Blatt, das gar nicht erst aufgeschlagen wurde,
+hilft er nicht. Die Kandidatentabelle im Werkzeug führt seit diesem Nachtrag deshalb
+auch die Balken-Zellen — samt der beiden, die verloren haben.
+
+### Prüfprotokoll des Nachtrags
+
+| Lauf | Ergebnis |
+|---|---|
+| `node --check` | Syntax ok |
+| Konsole | 22 Meldungen, keine Warnung, kein PAGEERROR; `cfuiIco`/`cfuiRund`/`cfuiX` gesetzt |
+| `tools/ui-zellen.mjs --pruef` | 32 Zellen, keine Abweichung |
+| `tools/steuerung-pruef.mjs` | vier Formate, Alles in Ordnung |
+| `tools/menue-pruef.mjs` | 78 von 78 |
+| `tools/build-single.mjs` | 243 Dateien, unverändert |
+| Charakterfenster, 1440×900 bei DPR 3 | Balken stehen in der Kopfzeile über den vier Werten |
