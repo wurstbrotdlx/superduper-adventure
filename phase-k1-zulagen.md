@@ -750,8 +750,15 @@ Browserfehler, sondern die ausgelieferte Datei.
 
 `zulageKarteHTML()` schrieb den Katalogpfad unverändert ins Markup:
 
-```
-const bild = pfad ? `<img src="${pfad}" alt="">` : ...
+```js
+// vorher
+const bild = pfad ? `<img src="${pfad}" alt="">`
+                  : `<span class="zIcon">${zf.icon}</span>`;
+
+// nachher
+const quelle = zulageBildQuelle(zf, stufe);
+const bild = quelle ? `<img src="${quelle}" alt="">`
+                    : `<span class="zIcon">${zf.icon}</span>`;
 ```
 
 Das stimmt im Quellbaum, wo `assets/zulagen/` neben der `index.html` liegt. Auf
