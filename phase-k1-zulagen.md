@@ -576,3 +576,42 @@ einer Quelle und werden Zeichen für Zeichen gegeneinander geprüft.
 
 **Was von hier aus nicht prüfbar ist:** Midjourney selbst. Ob ein Prompt
 knallt, zeigt erst der Lauf.
+
+## K1-12. Nachtrag: der Spielstand kam dazwischen
+
+Während der Nachtrag lief, ist SP (`phase-sp-spielstand.md`) auf den Hauptzweig
+gegangen und hat `index.html` an über sechshundert Zeilen angefasst. Der Zweig
+hat die Basis geholt, bevor er selbst gemergt wurde. Textlich ging das ohne
+Konflikt zusammen, was aber nichts über die Sache aussagt: zwei Bauabschnitte
+können sauber ineinanderfallen und trotzdem einander widersprechen.
+
+Die eine Stelle, an der sie sich berühren, ist die Dienstmappe. SP schreibt sie
+ausdrücklich mit in den Spielstand, mit einer Begründung im Quelltext, die den
+alten Satz „nichts davon geht nach localStorage" nicht bricht, sondern einordnet:
+gespeichert wird die Schicht, nicht die Akte, und eine fortgesetzte Schicht ohne
+Dienstmappe wäre keine Fortsetzung. Das war schon vorgesehen, bevor dieser
+Nachtrag begann.
+
+Geprüft wurde trotzdem, und zwar an der Naht, die dieser Nachtrag neu gemacht
+hat: SP prüft, **dass** die Mappe mitfährt, über Anzahl und Fachbelegung. Was SP
+nicht prüfen konnte, weil es die Kartenform noch nicht gab, ist ob eine
+**wiederhergestellte** Karte sich auch zeichnen lässt. Ein eigener Lauf legt
+dafür zwei Karten an, sichert, lädt die Seite neu, liest zurück und baut die
+Karten aus dem gelesenen Stand statt aus der Prüfdatei: Namensleiste,
+Bildfenster, Typenzeile und Textfeld stehen, die Stufe kommt als römische
+Ziffer, die eingelegte Karte ist noch eingelegt. Dreizehn von dreizehn.
+
+**Ein Fehler im eigenen Prüfskript, der erwähnt gehört**, weil er die Lehre des
+Hauses noch einmal bestätigt: der erste Wurf baute die Karten mit dem Schlüssel
+`art`, während das Feld `familie` heißt. Der Lauf meldete elf von elf. Er hatte
+nur bewiesen, dass JSON durch JSON kommt, denn die Rundprobe vergleicht ein
+Objekt mit sich selbst, und die Zeichenprüfung ging am Katalog vorbei statt an
+der gelesenen Mappe. Ein grüner Haken ist kein Beweis, solange nicht feststeht,
+woran er hängt. Die berichtigte Fassung zieht Familie und Stufe aus dem
+gelesenen Stand und prüft zusätzlich, dass beide Familien überhaupt im Katalog
+stehen.
+
+Die drei Prüfläufe des Hauses auf dem zusammengeführten Stand:
+`tools/zulagen-pruef.mjs` fünfundvierzig von fünfundvierzig,
+`tools/menue-pruef.mjs` neununddreißig von neununddreißig,
+`tools/speicher-pruef.mjs` vierunddreißig von vierunddreißig.
