@@ -23,3 +23,8 @@ assets/cf/ui/
 # Branch — kein PNG-Byte landet mehr als Git-Objekt im öffentlichen Repo.
 dist/
 docs/
+
+# Durchlauferhitzer fuer Kartenbilder: die Midjourney-Originale liegen hier,
+# bis tools/zulagen-bild.py sie auf Kartengroesse gerechnet hat. Ins Repo geht
+# nur das Ergebnis in assets/zulagen/.
+assets/eingang/

@@ -6222,70 +6222,101 @@ const WIRKUNG = {
 //  player. Das ist dieselbe TDZ-Disziplin wie bei den S1-Konstanten weiter unten.
 // ===========================================================================
 const ZULAGE = {
+  // Das bild-Feld traegt einen Pfad je Stufe. Die Dateinamen sind nicht frei
+  // gewaehlt, sondern Schluessel plus Stufe: zulagenAssert() rechnet sie aus
+  // dem Katalog nach, damit ein Zahlendreher oder eine vertauschte Familie
+  // nicht still das falsche Bild auf die Karte legt. Erzeugt werden sie mit
+  // tools/zulagen-bild.py aus den Midjourney-Vorlagen.
   // --- Waffengattung. Bis K1 war w.base.mode reine Animationswahl. ----------
   stichprobe: {name:'Stichprobe', icon:'🔪', fx:'dolch', modus:'dagger',
+    bild:['assets/zulagen/stichprobe-1.jpg', 'assets/zulagen/stichprobe-2.jpg',
+          'assets/zulagen/stichprobe-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Stichprobe ohne Vor&shy;ankündigung',
     satz:['Dein Dolch nimmt Stichproben.',
           'Deine Stichproben fallen gründlich aus.',
           'Jede Stichprobe gilt als vollständige Prüfung.']},
   klingenzulage: {name:'Klingen&shy;zulage', icon:'⚔️', fx:'schwert', modus:'sword',
+    bild:['assets/zulagen/klingenzulage-1.jpg', 'assets/zulagen/klingenzulage-2.jpg',
+          'assets/zulagen/klingenzulage-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Hoheitliche Klingen&shy;führung',
     satz:['Dein Schwert liegt besser in der Hand.',
           'Dein Schwert liegt deutlich besser in der Hand.',
           'Dein Schwert gilt amtlich als Argument.']},
   pauschalabfertigung: {name:'Pauschal&shy;abfertigung', icon:'🪓', fx:'axt', modus:'doubleaxe',
+    bild:['assets/zulagen/pauschalabfertigung-1.jpg', 'assets/zulagen/pauschalabfertigung-2.jpg',
+          'assets/zulagen/pauschalabfertigung-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Spaltung letzter Instanz',
     satz:['Deine Axt fertigt gründlicher ab.',
           'Deine Axt fertigt erheblich gründlicher ab.',
           'Was deine Axt trifft, ist abschließend geteilt.']},
   // --- Zauberzweig. Blitz ist im Haus kein eigenes Element, sondern Arkan. --
   brandschutzausnahme: {name:'Brandschutz&shy;ausnahme', icon:'🔥', fx:'feuer', zweig:0,
+    bild:['assets/zulagen/brandschutzausnahme-1.jpg', 'assets/zulagen/brandschutzausnahme-2.jpg',
+          'assets/zulagen/brandschutzausnahme-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Groß&shy;brand&shy;verfügung',
     satz:['Deine Feuerzauber dürfen heißer brennen.',
           'Deine Feuerzauber dürfen deutlich heißer brennen.',
           'Deine Feuerzauber gelten als angeordnetes Großfeuer.']},
   kaltverfuegung: {name:'Kalt&shy;verfügung', icon:'❄️', fx:'frost', zweig:1,
+    bild:['assets/zulagen/kaltverfuegung-1.jpg', 'assets/zulagen/kaltverfuegung-2.jpg',
+          'assets/zulagen/kaltverfuegung-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Kalt&shy;verfügung mit sofortiger Voll&shy;ziehbarkeit',
     satz:['Deine Frostzauber beißen kälter.',
           'Deine Frostzauber beißen deutlich kälter.',
           'Wen deine Frostzauber treffen, der ist kaltgestellt.']},
   blitzbeschluss: {name:'Blitz&shy;beschluss', icon:'⚡', fx:'arkan', zweig:2,
+    bild:['assets/zulagen/blitzbeschluss-1.jpg', 'assets/zulagen/blitzbeschluss-2.jpg',
+          'assets/zulagen/blitzbeschluss-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Unanfechtbarer Blitz&shy;beschluss',
     satz:['Deine Arkanzauber schlagen härter ein.',
           'Deine Arkanzauber schlagen deutlich härter ein.',
           'Gegen deine Arkanzauber gibt es keinen Widerspruch.']},
   // --- Allgemein. Erben die Hooks der Kessel-Wirkungen. ---------------------
   vollzugszulage: {name:'Vollzugs&shy;zulage', icon:'🔨', fx:'dmg',
+    bild:['assets/zulagen/vollzugszulage-1.jpg', 'assets/zulagen/vollzugszulage-2.jpg',
+          'assets/zulagen/vollzugszulage-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Sofort&shy;vollzug',
     satz:['Deine Angriffe tragen zusätzliche Härte.',
           'Deine Angriffe tragen erhebliche zusätzliche Härte.',
           'Deine Angriffe werden sofort vollzogen. Die Anhörung entfällt.']},
   erschwerniszulage: {name:'Erschwernis&shy;zulage', icon:'⛑️', fx:'leben',
+    bild:['assets/zulagen/erschwerniszulage-1.jpg', 'assets/zulagen/erschwerniszulage-2.jpg',
+          'assets/zulagen/erschwerniszulage-3.jpg'],
     wert:[1,2,4], stapelbar:true, unikat:'Volle Belastungs&shy;stufe',
     satz:['Du bist für Erschwernisse eingestuft. Du hältst mehr aus.',
           'Deine Einstufung steigt. Du hältst deutlich mehr aus.',
           'Du bist für die höchste Belastung zugelassen.']},
   haertefallregelung: {name:'Härtefall&shy;regelung', icon:'🛡️', fx:'bollwerk',
+    bild:['assets/zulagen/haertefallregelung-1.jpg', 'assets/zulagen/haertefallregelung-2.jpg',
+          'assets/zulagen/haertefallregelung-3.jpg'],
     wert:[1,2,4], stapelbar:false, unikat:'Bestands&shy;schutz',
     satz:['Schläge treffen dich milder. Du giltst als Härtefall.',
           'Schläge treffen dich deutlich milder.',
           'Du genießt Bestandsschutz. Vieles prallt einfach ab.']},
   gebuehrenbefreiung: {name:'Gebühren&shy;befreiung', icon:'🧾', fx:'sparsam',
+    bild:['assets/zulagen/gebuehrenbefreiung-1.jpg', 'assets/zulagen/gebuehrenbefreiung-2.jpg',
+          'assets/zulagen/gebuehrenbefreiung-3.jpg'],
     wert:[1,2,4], stapelbar:false, unikat:'Schwarze Null',
     satz:['Deine Zauber sind teilweise von der Gebühr befreit.',
           'Deine Zauber sind weitgehend von der Gebühr befreit.',
           'Deine Zauber kosten beinahe nichts. Die Gebührenstelle schweigt.']},
   pruefvermerk: {name:'Prüfvermerk', icon:'🔍', fx:'crit',
+    bild:['assets/zulagen/pruefvermerk-1.jpg', 'assets/zulagen/pruefvermerk-2.jpg',
+          'assets/zulagen/pruefvermerk-3.jpg'],
     wert:[1,2,4], stapelbar:false, unikat:'Beanstandung mit Folgen',
     satz:['Ab und zu findest du eine empfindliche Stelle.',
           'Du findest auffällig oft eine empfindliche Stelle.',
           'Fast jede deiner Prüfungen endet mit einer Beanstandung.']},
   eilverfahren: {name:'Eilverfahren', icon:'⏱️', fx:'tempo',
+    bild:['assets/zulagen/eilverfahren-1.jpg', 'assets/zulagen/eilverfahren-2.jpg',
+          'assets/zulagen/eilverfahren-3.jpg'],
     wert:[1,2,4], stapelbar:false, unikat:'Eilverfahren wegen Gefahr im Verzug',
     satz:['Deine Schläge werden bevorzugt bearbeitet.',
           'Deine Schläge überholen den Dienstweg.',
           'Deine Schläge sind erledigt, bevor der Vorgang angelegt ist.']},
   dienstweg: {name:'Dienstweg', icon:'🥾', fx:'speed',
+    bild:['assets/zulagen/dienstweg-1.jpg', 'assets/zulagen/dienstweg-2.jpg',
+          'assets/zulagen/dienstweg-3.jpg'],
     wert:[1,2,4], stapelbar:false, unikat:'Abkürzung, beglaubigt',
     satz:['Du kennst die kürzeren Flure.',
           'Du kennst die deutlich kürzeren Flure.',
@@ -6295,11 +6326,15 @@ const ZULAGE = {
   // selbst; der volle Kracher waere hier der Zauberspam aus der Zeit vor Z2
   // beziehungsweise eine Stufenleiter, die sich selbst ueberholt.
   laufender_bezug: {name:'Laufender Bezug', icon:'☕', fx:'mana',
+    bild:['assets/zulagen/laufender_bezug-1.jpg', 'assets/zulagen/laufender_bezug-2.jpg',
+          'assets/zulagen/laufender_bezug-3.jpg'],
     wert:[1,2,3], stapelbar:false, unikat:'Unerschöpf&shy;lichkeits&shy;klausel',
     satz:['Dein Mana kommt als laufender Bezug.',
           'Dein laufender Bezug fällt üppiger aus.',
           'Dein Vorrat gilt als unerschöpflich. Fast.']},
   dienstalterszulage: {name:'Dienstalters&shy;zulage', icon:'🗓️', fx:'xp',
+    bild:['assets/zulagen/dienstalterszulage-1.jpg', 'assets/zulagen/dienstalterszulage-2.jpg',
+          'assets/zulagen/dienstalterszulage-3.jpg'],
     wert:[1,2,3], stapelbar:false, unikat:'Altgedient',
     satz:['Dein Dienstalter wächst schneller als der Kalender.',
           'Dein Dienstalter wächst deutlich schneller als der Kalender.',
@@ -18179,6 +18214,23 @@ function zulagenAssert(){
           const pfad = zulageBildPfad(zf, st);
           if(pfad !== null && typeof pfad !== 'string')
             fehler('Bildpfad der Stufe kommt nicht als Zeichenkette an', id, st, pfad);
+          // Der Dateiname traegt Familie und Stufe. Das ist die einzige Stelle,
+          // an der sich ein vertauschtes Bild ueberhaupt bemerken laesst: ein
+          // Pfad, der auf eine Datei zeigt, ist immer noch ein gueltiger Pfad,
+          // und im Spiel sieht man nur eine Karte mit falschem Motiv. Wer
+          // fuenfundvierzig Zeilen von Hand eintraegt, dreht irgendwann eine
+          // Ziffer um.
+          // Eine Pruefung auf doppelte Pfade stand hier und ist wieder
+          // gefallen: sie kann nicht anschlagen. Wenn jeder Pfad auf die
+          // eigene Familie und die eigene Stufe enden muss, tragen zwei
+          // Karten nie denselben, denn Schluessel sind im Katalog eindeutig.
+          // Ein Waechter, der nachweislich nie etwas sagen kann, ist keine
+          // Deckung, sondern nur ihr Anschein.
+          if(typeof pfad === 'string'){
+            const soll = id + '-' + st + '.jpg';
+            if(!pfad.endsWith('/' + soll))
+              fehler('Bildpfad passt nicht zu Familie und Stufe', id, st, pfad, 'erwartet ' + soll);
+          }
         }
       }
       // Die Typenzeile der Karte, an derselben Formregel wie die Anzeigesaetze.
