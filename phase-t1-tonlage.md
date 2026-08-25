@@ -1,4 +1,4 @@
-# Bauabschnitt T1: Die Tonlage — OFFEN
+# Bauabschnitt T1: Die Tonlage — ERLEDIGT
 
 Die Länge wird eine Sprachmarke. Der Anfang wird kürzer. Die Zielgruppe fängt bei neun an.
 
@@ -179,6 +179,10 @@ Die Vorstellung verliert zwei Züge, weil drei ihrer fünf denselben Gedanken tr
 > Was nicht bearbeitet wird, wird lebendig.
 > Es läuft inzwischen ziemlich viel herum.
 > Heute sind Sie dran.
+
+**Die zwölf optionalen Empfangsfragen bleiben vollzählig.** Der Plan sah vor, `laeuft` zu streichen, weil Blatt V dieselbe Auskunft schon gibt. Beim Nachlesen war das falsch: die Frage hängt an `arbeit`, nicht am Intro, und ihre Antwort trägt einen eigenen Gag, den es sonst nirgends gibt („Das ist keine Redensart. Das ist Aktenkunde."). Das Längenproblem war der Pflichtweg, und der ist halbiert. Eine gute optionale Pointe zu streichen, die jeder überspringen kann, hätte den Anfang nicht kürzer gemacht, nur ärmer.
+
+**Nachgespielt statt behauptet.** Der neue Anfang ist im Browser Zug für Zug durchgeklickt worden, nicht nur gegen die Prüfläufe gehalten. Neun Pflichtzüge bis zum Empfangs-Hub, zwei weitere bis zum Dienstantritt. Dabei fiel ein Nebenertrag auf, den der Umbau nicht geplant hatte: Knöterichs letzter Satz vor dem Intro lautet jetzt „Setzen Sie sich nicht hin.", und die erste Antwortzeile, die der Spieler nach dem Intro auf der Tafel sieht, ist „Warum nicht hinsetzen?" Vorher lagen neun Blätter zwischen Aufhänger und Nachfrage, jetzt sind es fünf, und der Aufhänger trägt.
 
 ---
 
