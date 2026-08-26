@@ -60,6 +60,11 @@ TAFEL = {
     'nieselbeck': '12-nieselbeck',
     'umlauf':     '13-umlauf',
     'vorblatt':   '14-vorblatt',
+    # T4-Nachlese: Anlage 2 ist die letzte Figur, die hier dazukommt, und die
+    # einzige ohne Sprite. Bis hierher war ihr Portraetfeld ein Platzhalter aus
+    # tools/anlage2-portraet.py, denn ohne Datei haette gespraechPortrait()
+    # nichts zum Zurueckfallen und das Feld bliebe dunkel.
+    'anlage2':    '21-anlage2',
 }
 
 def raster(quelle: pathlib.Path) -> Image.Image:
