@@ -114,6 +114,44 @@ pruef('SP1 Stempel klemmen beidseitig',
       await page.evaluate(() => ({ stopfen: amt.stopfenSchicht, adress: amt.adressSchicht })),
       { stopfen: 9999, adress: 0 });
 
+// --- T4: der Umschlag ueberlebt die Nacht, und zwar in beiden Staenden -------
+// Der Grund fuer die Zweiwertigkeit steht im Spiel an kn.umschlag: eine Zeile
+// kann faellig sein, ohne gefallen zu sein. Genau dieser Zwischenstand ist der
+// gefaehrliche: er entsteht in dem Moment, in dem der Spieler faellt, und
+// zwischen ihm und der Auslieferung liegt der Feierabendbildschirm, auf dem
+// erfahrungsgemaess jemand den Browser zumacht. Ginge er dabei verloren, waere
+// die Zeile fuer immer weg, denn sie faellt genau einmal je Spielstand.
+//
+// Geprueft wird deshalb ueber ZWEI Ladevorgaenge und nicht am Objekt im Speicher.
+await page.evaluate(() => {
+  kn.umschlag = { ersterTod: 1, dank: 2 };
+  kn.flags.anlage2Dank = true;
+  saveKn();
+});
+await neuLaden();
+const t4 = await page.evaluate(() => {
+  const nachLaden = { umschlag: kn.umschlag, dank: kn.flags.anlage2Dank };
+  saveKn();                                    // derselbe Schreibvorgang wie oben bei SP1
+  const roh = JSON.parse(localStorage.getItem('sda_knoeterich_v1'));
+  return { nachLaden, nach: { umschlag: roh.umschlag, dank: roh.flags.anlage2Dank } };
+});
+pruef('T4 der faellige Umschlag ueberlebt den Neustart', t4.nachLaden.umschlag, { ersterTod: 1, dank: 2 });
+pruef('T4 der Kipppunkt ueberlebt ihn auch', t4.nachLaden.dank, true);
+pruef('T4 der naechste saveKn() frisst beides nicht', t4.nach, { umschlag: { ersterTod: 1, dank: 2 }, dank: true });
+
+// Und ein alter Spielstand, der die beiden Felder noch nicht kennt, laedt ohne
+// Zutun: loadKn() legt sie aus der Vorgabe an. Das ist die Zusage, die einen
+// Migrationsschritt erspart, und sie gilt nur, solange sie dort stehen.
+await page.evaluate(() => {
+  const o = JSON.parse(localStorage.getItem('sda_knoeterich_v1'));
+  delete o.umschlag; delete o.flags.anlage2Dank;
+  localStorage.setItem('sda_knoeterich_v1', JSON.stringify(o));
+});
+await neuLaden();
+pruef('T4 ein Spielstand ohne die Felder laedt trotzdem',
+      await page.evaluate(() => ({ umschlag: kn.umschlag, dank: kn.flags.anlage2Dank })),
+      { umschlag: {}, dank: false });
+
 // --- SP2: der Uebertrag ueberlebt die Nacht ----------------------------------
 await page.evaluate(() => {
   amt.uebertrag = null; saveAmt();
