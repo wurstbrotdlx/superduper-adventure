@@ -23,6 +23,9 @@
 //                 Portraet steht in der Tafel, der Ausgang schliesst sauber
 //   Kanal         ihre Notiz erscheint im Band, mit ihrer Marke und nicht mit
 //                 Knoeterichs, und sie schweigt, solange sie nicht da ist
+//   Ausbruch      T5: alle drei gefassten Zeilen faehrt sie einmal hoch, laut
+//                 gekleidet, und die Ruecknahme faellt zwei Sekunden spaeter
+//                 von selbst nach. Die Bank bekommt auch den lauten Anlass
 //   Regler        auf "Dienstlich" schweigt sie, auf "Gespraechig" redet sie
 //   Bank          letzterAnlass wird weiter gesetzt, sonst verstummt der Chor
 //                 auf der Bank (W3) und Langvorgang Hintermuehl haengt
@@ -255,8 +258,14 @@ async function imDienst(page){
     return anlage2Notiz('crit');
   }), false);
 
+  // T5: der Ruhezaehler wird hier ausdruecklich genullt. Ohne die Zeile misst
+  // dieser Block nicht mehr "eine Zeile aus ihrem Pool", sondern "eine Zeile
+  // aus ihrem Pool, solange kein Ausbruch faellig ist", und das ist eine
+  // andere Zusage. Sie stand bis T5 nur deshalb nicht da, weil es nichts gab,
+  // was den Pool haette ueberstimmen koennen.
   const notiz = await page.evaluate(() => {
     kn.flags.anlage2Da = true; kn.regler = 'gespraechig';
+    kn.counters.anlage2Ruhig = 0;
     knLastRandnotizT = -999; letzterAnlass = null;
     const ok = anlage2Notiz('crit');
     return { ok, text: el('knRandTxt').innerText,
@@ -294,6 +303,82 @@ async function imDienst(page){
     kn.regler = 'gespraechig'; knLastRandnotizT = -999;
     return anlage2Notiz('goldfund');
   }), true);
+
+  // ---- T5: der Ausbruch --------------------------------------------------
+  // Der Kanal, der ihr das Temperament gibt. Geprueft wird nicht, dass er
+  // existiert (das tut anlage2Assert beim Start), sondern dass er FAELLT, und
+  // zwar selten, zweiteilig und ohne die Bank zu verlieren.
+  //
+  // Die Seltenheit zuerst. Drei gefasste Zeilen, dann darf sie einmal; wer
+  // eben erst hochgefahren ist, faehrt nicht gleich wieder hoch.
+  pruef('unter drei ruhigen Zeilen bleibt sie gefasst', await page.evaluate(() => {
+    kn.counters.anlage2Ruhig = 2; kn.regler = 'gespraechig'; knLastRandnotizT = -999;
+    anlage2Notiz('crit');
+    return el('knRandnotiz').classList.contains('ausbruch');
+  }), false);
+  pruef('und der Zähler steigt dabei', await page.evaluate(() =>
+        kn.counters.anlage2Ruhig), 3);
+
+  const aus = await page.evaluate(() => {
+    kn.counters.anlage2Ruhig = 3; knLastRandnotizT = -999;
+    letzterAnlass = null; a2Nachklapp = null;
+    const ok = anlage2Notiz('crit');
+    return { ok, text: el('knRandTxt').innerText,
+             laut: el('knRandnotiz').classList.contains('ausbruch'),
+             ihreMarke: el('knRandnotiz').classList.contains('a2'),
+             anlass: letzterAnlass,
+             stand: kn.counters.anlage2Ruhig,
+             offen: !!a2Nachklapp };
+  });
+  pruef('ab drei bricht sie aus', aus.ok && aus.laut, true);
+  pruef('der Ausbruch stammt aus ihrer Tabelle', await page.evaluate(t =>
+        ANLAGE2_AUSBRUCH.crit.some(p => p.auf === t), aus.text), true);
+  // Sie faellt aus der Haltung, nicht aus der Figur: die Stimme bleibt ihre.
+  pruef('und traegt weiter ihre Marke', aus.ihreMarke, true);
+  // W3: auch der laute Kanal muss die Bank bedienen, sonst verstummt der Chor
+  // auf genau den Anlaessen, auf denen am meisten passiert.
+  pruef('die Bank bekommt auch den Ausbruch', aus.anlass, 'crit');
+  pruef('der Zähler faellt danach zurück', aus.stand, 0);
+  pruef('und eine Rücknahme steht offen', aus.offen, true);
+
+  // Die zweite Haelfte. Sie faellt in dasselbe Band, ohne den
+  // Vierzig-Sekunden-Takt abzuwarten, und sie nimmt die laute Kleidung wieder
+  // mit. Ein Ausbruch, der stehen bliebe, waere eine andere Figur.
+  await page.waitForTimeout(2800);
+  const zurueck = await page.evaluate(() => ({
+    text: el('knRandTxt').innerText,
+    laut: el('knRandnotiz').classList.contains('ausbruch'),
+    ihreMarke: el('knRandnotiz').classList.contains('a2'),
+    offen: !!a2Nachklapp }));
+  pruef('die Rücknahme faellt von selbst nach', zurueck.text !== aus.text, true);
+  pruef('sie gehoert zu genau diesem Ausbruch', await page.evaluate(
+        ([a, z]) => ANLAGE2_AUSBRUCH.crit.some(p => p.auf === a && p.zurueck === z),
+        [aus.text, zurueck.text]), true);
+  pruef('und legt die laute Kleidung wieder ab', zurueck.laut, false);
+  pruef('die Stimme bleibt ihre', zurueck.ihreMarke, true);
+  pruef('danach steht nichts mehr offen', zurueck.offen, false);
+
+  // Was der Regler auch hier gilt: wer waehrend des Ausbruchs abschaltet, hat
+  // das Nachwort abgeschaltet. Es verfaellt, statt spaeter aus dem
+  // Zusammenhang zu fallen.
+  pruef('auf Schweigt verfaellt die Rücknahme', await page.evaluate(async () => {
+    kn.counters.anlage2Ruhig = 3; knLastRandnotizT = -999;
+    anlage2Notiz('crit');
+    kn.regler = 'schweigt';
+    await new Promise(r => setTimeout(r, 400));
+    return !!a2Nachklapp;
+  }), false);
+
+  // Und der Gegenfall: ein Anlass ohne Paare bleibt beim Pool, auch wenn der
+  // Zaehler laengst voll ist. Die Niederlage ist genau dieser Anlass, und das
+  // ist eine Entscheidung aus T4: in ein Scheitern redet sie nicht hinein.
+  pruef('die Niederlage bleibt gefasst', await page.evaluate(() => {
+    kn.regler = 'gespraechig'; kn.counters.anlage2Ruhig = 9; knLastRandnotizT = -999;
+    const ok = anlage2Notiz('niederlage');
+    return { ok, laut: el('knRandnotiz').classList.contains('ausbruch') };
+  }), { ok: true, laut: false });
+  pruef('und verbraucht den Stand nicht', await page.evaluate(() =>
+        kn.counters.anlage2Ruhig > 3), true);
 
   // Die Gates. Eine gegatete Zeile taucht erst auf, wenn ihre Bedingung gilt,
   // und die ungegateten stehen von der ersten Minute an bereit.
