@@ -262,11 +262,21 @@ Aussage im Spiel selbst macht.)*
 pixel art of a single sheet of aged yellowed paper seen straight on, dog eared and soft at the corners, completely blank with no writing of any kind, one bold oversized brass staple punched through the top left corner, a torn scrap of a second sheet still caught under the staple, the paper filling most of the frame and floating on a flat background, gently curled as if it has been carried in a bag for a long time, comically dignified, no people, no hands, LucasArts SCUMM adventure game background, Monkey Island and Day of the Tentacle style, exaggerated cartoon proportions, warm and sympathetic, never grotesque, chunky pixels, low resolution, 32 colour palette, muted desaturated colours, dusty ochre, faded olive, slate blue, warm grey, no bright saturated colours, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 point and click adventure portrait, plain flat dark slate green background --ar 1:1 --style raw --s 25 --no gradients, smooth shading, fine detail, texture, realism, photorealism, blur, text, writing, letters, handwriting, print, watermark, full body, people, hands, faces, room, wall, floor, desk, table, interior, perspective
 ```
 
-**Bis das Bild da ist**, steht in `assets/portraets/anlage2.png` ein selbst gezeichneter
-Platzhalter aus `tools/anlage2-portraet.py`: dasselbe Motiv in derselben Palette, geometrisch
-statt gemalt. Er wird ersetzt, sobald ein Motiv aus dem Prompt oben vorliegt; der Weg dahin
-ist der übliche (Original nach `assets/figuren/21-anlage2.jpg`, Eintrag in `TAFEL` in
-`tools/figuren-px.py`, dann `python3 tools/figuren-px.py --tafel`).
+**Das Bild ist da** *(T4-Nachlese, 26.08.2026)*. Das Motiv liegt als
+`assets/figuren/21-anlage2.jpg`, `anlage2` steht in `TAFEL`, und
+`assets/portraets/anlage2.png` ist seither die gerasterte Fassung daraus statt des
+Platzhalters. Der Weg war der übliche und hat keine Codezeile gekostet.
+
+**Eine Abweichung, damit sie niemand zweimal sucht: das Original ist beschnitten.** Die
+Generierung hat das Blatt kleiner in den Rahmen gesetzt, als der Prompt verlangt („the paper
+filling most of the frame"): gemessen 62 Prozent der Breite und 78 der Höhe, während der
+Kater nebenan auf 85 zu 84 kommt. Bei 128 Pixeln zerfiel dabei ausgerechnet die Heftklammer,
+und die ist die Figur. Der Schnitt auf 885 im Quadrat nimmt nur Hintergrund weg, kein Stück
+Blatt, und bringt das Motiv auf 72 zu 90 Prozent. Beschnitten wurde die Datei und nicht die
+Pipeline: ein Ausschnitt-Feld für eine einzige Figur wäre ein System für einen Sonderfall.
+
+`tools/anlage2-portraet.py` bleibt liegen. Es hat seinen Zweck erfüllt, und wer das Repo
+ohne das Motiv klont, kann sich damit weiter ein lesbares Feld zeichnen.
 
 ---
 
