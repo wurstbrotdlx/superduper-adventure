@@ -306,8 +306,33 @@ gefährdete. Auf 390x844 hält er.
 | `tools/mitteilung-pruef.mjs` | 32 von 32 |
 | `tools/versuchung-pruef.mjs` | 67 von 67 |
 
+| `tools/gespraech-pruef.mjs` | 89 von 89 |
+
 Beim Laden: Konsole still, keine Meldung. Alle Zahlen auf dem Stand **nach** dem
-Merge von T5, nicht davor.
+Merge von T5, nicht davor, und **mit vorhandener Grafik**.
+
+### Zur Grafik, und was sie sichtbar gemacht hat
+
+Die Läufe liefen zunächst ohne das lizenzierte Cute-Fantasy-Paket, das per
+`.gitignore` nicht im Repo liegt. `gespraech-pruef.mjs` stand deshalb auf 87 von
+89 (Spielerporträt aus `SHEETS['hero_baked']`, Nörgels Blatt
+`goblin_maceman_idle`), auf `origin/main` genauso. Nach dem Einlegen des Pakets
+aus dem privaten Assets-Repo, denselben Weg, den `pages.yml` beim Build geht:
+**89 von 89.**
+
+**Und ein Prüfstand, der ohne Grafik gar nicht möglich war.** Der gesperrte Knopf
+bekommt seine Optik aus zwei Regeln, und die zweite schaltet die Pixel-Pille aus
+U10 ab (`#overlay button:disabled{border-image-source:none}`). Ohne das
+UI-Paket ist `--cfui-pill` nicht gesetzt, die Regel lief also gegen einen
+Fallback und war **ungetestet**. Mit Paket geprüft: LESEN trägt die Pille,
+der gesperrte Knopf bleibt flach und grau. Die Regel hält.
+
+**Eine Erwartung war dabei falsch, und das gehört hierher.** Erwartet worden war,
+die Tafeln über dem Dorf zu sehen. Sie stehen auf schwarzem Grund, und das ist
+kein fehlendes Bild: `introBuehne` steht während des ganzen Anfangs auf
+`display:block` mit z-index 15 (gemessen, nicht vermutet). Die Bühne aus E2
+verdeckt das Dorf bis `dienstAntritt`, also bis hinter `EINSTECKEN`. Der
+Erstkontakt spielt vollständig auf der Bühne.
 
 ### Eine fremde Prüfzahl, doch nachgezogen
 
