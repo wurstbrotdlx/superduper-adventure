@@ -66,13 +66,21 @@ const neuLaden = async () => {
 };
 const kopf = () => page.evaluate(() => document.querySelector('#ovPanel h1').textContent.trim());
 const stempel = () => page.evaluate(() => localStorage.getItem('sda_neuerungen'));
+// T3: Stand und Punktzahl werden gegen NEUERUNGEN gelesen statt abgeschrieben.
+// Der Vorschlag dazu steht seit T1 in phase-t1-tonlage.md, Abschnitt 9: die
+// Tabelle hatte zu U9-Zeiten drei Punkte, U10 bis U12 haben zwei angehaengt,
+// und der Lauf zaehlte weiter gegen die Drei. Drei Zeilen standen deshalb seit
+// Monaten rot, ohne dass etwas kaputt war. Wer den naechsten Punkt anhaengt,
+// aendert ab jetzt nichts an diesem Lauf.
+const sollStand  = () => page.evaluate(() => NEUERUNGEN.stand);
+const sollPunkte = () => page.evaluate(() => NEUERUNGEN.punkte.length);
 
 // --- 1. Das frische Geraet -------------------------------------------------
 await laden();
 await page.evaluate(() => localStorage.clear());
 await neuLaden();
 pruef('frisches Geraet sieht das Startbild', await kopf(), 'DAS MONSTRAL MINISTERIUM');
-pruef('und bekommt den Stand still gestempelt', await stempel(), '2026-08-25');
+pruef('und bekommt den Stand still gestempelt', await stempel(), await sollStand());
 pruef('ohne Vorher kein Knopf im Startbild',
       await page.evaluate(() => document.querySelector('#ovPanel').textContent.includes('Was ist neu')), false);
 
@@ -90,15 +98,16 @@ const inhalt = await page.evaluate(() => ({
   knoepfe: [...document.querySelectorAll('#ovPanel button')].map(b => b.textContent.trim()),
   stand: state,
 }));
-pruef('drei Punkte', inhalt.punkte, 3);
-pruef('jeder Punkt sagt, wo es steht', inhalt.wo, 3);
+const soll = await sollPunkte();
+pruef('so viele Punkte wie Neuerungen', inhalt.punkte, soll);
+pruef('jeder Punkt sagt, wo es steht', inhalt.wo, soll);
 pruef('genau ein Knopf, und der fuehrt weiter', inhalt.knoepfe, ['Zur Kenntnis genommen']);
 pruef('der Zustand ist Menue, nicht Spiel', inhalt.stand, 'menu');
 pruef('vor dem Klick steht kein Stempel', await stempel(), null);
 
 await page.locator('#ovPanel button').click();
 pruef('der Knopf fuehrt ins Startbild', await kopf(), 'DAS MONSTRAL MINISTERIUM');
-pruef('und stempelt den Stand', await stempel(), '2026-08-25');
+pruef('und stempelt den Stand', await stempel(), await sollStand());
 pruef('das Startbild bietet das Nachlesen an',
       await page.evaluate(() => [...document.querySelectorAll('#ovPanel button')].map(b => b.textContent.trim())),
       ['Dienst fortsetzen', 'Was ist neu', 'Dienstanweisung']);
@@ -148,8 +157,13 @@ pruef('Taste C oeffnet das Charakterfenster',
 await page.keyboard.press('z');
 pruef('Taste Z fuehrt direkt auf die Kartenmappe',
       await page.evaluate(() => [charakterOpen, charBlatt]), [true, 'mappe']);
+// T3: auch diese Zahl wird gelesen statt abgeschrieben. Sie stand auf vier,
+// seit U8 vier Grossfenster gebaut hat; die Optionen sind spaeter als fuenftes
+// dazugekommen, und der Lauf zaehlte weiter gegen die Vier. Dritter und
+// letzter der drei vorbestehenden Rotstaende aus phase-t1-tonlage.md.
 pruef('das Reiterband steht im Kopf des Fensters',
-      await page.evaluate(() => document.querySelectorAll('#charakter .gfReiter').length), 4);
+      await page.evaluate(() => document.querySelectorAll('#charakter .gfReiter').length),
+      await page.evaluate(() => GROSSFENSTER.length));
 await page.keyboard.press('Escape');
 pruef('die vier Ecken der Bedienschicht stehen',
       await page.evaluate(() => ['statusKarte', 'minimap', 'uhrTxt', 'prioBtn']

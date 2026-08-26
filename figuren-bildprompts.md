@@ -250,6 +250,24 @@ pixel art portrait of an ordinary field officer of a small ministry in their twe
 pixel art of a tall closed double door of dark polished wood with heavy brass fittings and a small blank brass plaque, in front of it a colossal stack of unopened blank letters that is taller than the door itself and reaches the top edge of the image, towering over the door frame, comically precise stacking, no people, straight-on view, the whole door inside the frame, LucasArts SCUMM adventure game background, Monkey Island and Day of the Tentacle style, exaggerated cartoon proportions, warm and sympathetic, chunky pixels, low resolution, 32 colour palette, muted desaturated colours, dusty ochre, faded olive, slate blue, warm grey, no bright saturated colours, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 point and click adventure portrait, plain flat dark slate green background, the door floating on a flat background --ar 1:1 --style raw --s 25 --no gradients, smooth shading, fine detail, texture, realism, photorealism, blur, text, watermark, full body, people, room, wall, floor, ceiling, interior, perspective
 ```
 
+## 21. Anlage 2, die Beilage
+
+*(Nachgetragen mit T3. Der dritte Prompt ohne Gesicht, nach dem Kater und der Kaisertür,
+und er folgt deren eigenem Rahmen statt dem Kopf-bis-Brust-Rahmen. Wichtig ist die
+Heftklammer: sie ist die Figur. Das Blatt bleibt ausdrücklich `blank`, weil ein
+Schriftstück mit erfundener Aufschrift eine erfundene Aussage wäre und diese Figur ihre
+Aussage im Spiel selbst macht.)*
+
+```
+pixel art of a single sheet of aged yellowed paper seen straight on, dog eared and soft at the corners, completely blank with no writing of any kind, one bold oversized brass staple punched through the top left corner, a torn scrap of a second sheet still caught under the staple, the paper filling most of the frame and floating on a flat background, gently curled as if it has been carried in a bag for a long time, comically dignified, no people, no hands, LucasArts SCUMM adventure game background, Monkey Island and Day of the Tentacle style, exaggerated cartoon proportions, warm and sympathetic, never grotesque, chunky pixels, low resolution, 32 colour palette, muted desaturated colours, dusty ochre, faded olive, slate blue, warm grey, no bright saturated colours, dark outlines, blocky shapes, flat colour fills, ordered dither pattern shading, no smooth edges, Amiga 500 pixel art, 1991 point and click adventure portrait, plain flat dark slate green background --ar 1:1 --style raw --s 25 --no gradients, smooth shading, fine detail, texture, realism, photorealism, blur, text, writing, letters, handwriting, print, watermark, full body, people, hands, faces, room, wall, floor, desk, table, interior, perspective
+```
+
+**Bis das Bild da ist**, steht in `assets/portraets/anlage2.png` ein selbst gezeichneter
+Platzhalter aus `tools/anlage2-portraet.py`: dasselbe Motiv in derselben Palette, geometrisch
+statt gemalt. Er wird ersetzt, sobald ein Motiv aus dem Prompt oben vorliegt; der Weg dahin
+ist der übliche (Original nach `assets/figuren/21-anlage2.jpg`, Eintrag in `TAFEL` in
+`tools/figuren-px.py`, dann `python3 tools/figuren-px.py --tafel`).
+
 ---
 
 ## Was die Prompts absichtlich nicht tun

@@ -254,6 +254,28 @@
   #bagGrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:7px;max-width:620px;}
   .bagSlot{height:58px;border:2px solid #4c4030;border-radius:5px;background:#141009;display:flex;align-items:center;justify-content:center;font-size:calc(20px * var(--fs));cursor:pointer;}
 
+  /* T3: Anlage 2 im Rucksack. Sie sieht aus wie ein Fach und ist keines: die
+     Papierfarbe des Randes sagt es, bevor jemand den Tooltip liest, und sie ist
+     dieselbe wie im Randband, wenn Anlage 2 dort spricht. Der Spruch beim
+     Bewegungsversuch steht in der Kachel selbst und nicht im Band, weil das
+     Band hinter dem offenen Rucksack liegt: wer zieht, soll dort lesen, wo er
+     gezogen hat. position:relative traegt ihn, overflow bleibt sichtbar, damit
+     er ueber die Kachelkante hinausstehen darf. */
+  .anlage2Slot{position:relative;border-color:#8e7e66;background:#1a150e;}
+  .anlage2Slot:hover{background:#241c10;}
+  /* Linksbuendig an der Kachel und nicht ueber ihr zentriert: die Kachel steht
+     immer als erste im Raster und damit an der linken Kante des Fensters. Eine
+     zentrierte Blase haengt dort zur Haelfte im Nichts, und der Anfang des
+     Spruchs faellt aus dem Fenster. Gesehen auf dem Bildschirmabzug beim
+     Durchspielen, nicht vermutet. */
+  .a2Spruch{position:absolute;left:0;top:calc(100% + 6px);transform:translateY(-4px);
+    width:max-content;max-width:min(240px,58vw);z-index:3;pointer-events:none;
+    background:rgba(20,14,10,.96);border:1px solid #8e7e66;border-radius:5px;
+    color:#e8dcc0;font-size:calc(11px * var(--fs));font-style:italic;line-height:1.45;
+    text-align:left;padding:5px 9px;opacity:0;
+    transition:opacity .2s ease, transform .2s ease;}
+  .anlage2Slot.zeigt .a2Spruch{opacity:1;transform:translateY(0);}
+
   /* U8: Lage und Groesse von #spellTree stehen bei .grossFenster. Die drei
      Zweige duerfen jetzt breiter werden, statt drei Spalten in 420 Pixel zu
      quetschen — ein Zauberbaum ohne Platz zwischen den Aesten ist eine Liste. */
@@ -554,6 +576,13 @@
   #knZettelZ1{font-weight:bold;}
   #knZettelZ2{font-size:calc(11px * var(--fs));color:#c9b98a;}
   #knRandnotiz{font-style:italic;font-size:calc(11px * var(--fs));}
+  /* T3: dasselbe Band, zweite Stimme. Anlage 2 ist ein Schriftstueck und traegt
+     deshalb keinen Amtsstempel, sondern die Marke, mit der man auf eine Beilage
+     verweist. Papierfarben statt Amtsgold, damit man beim Lesen merkt, dass
+     jemand anderes spricht, noch bevor man den Satz begriffen hat. */
+  #knRandnotiz.a2::before{content:'*';color:#ceb699;border-color:#8e7e66;
+    transform:rotate(0deg);padding:2px 5px;}
+  #knRandnotiz.a2{border-color:#8e7e66;color:#e8dcc0;}
   body.bossvis #knZettel,body.bossvis #knRandnotiz{top:78px;}
 
   /* --- Symbolschloss (Kammer-Modul, Phase 2) --- */
@@ -2370,7 +2399,7 @@
         <div class="beltSlot" id="musicBtn" title="Musik an/aus (M)"><i class="ico ico-ton">🎵</i> Musik</div>
         <input id="musicVol" type="range" min="0" max="100" value="45" title="Musik-Lautstärke">
       </div>
-      <div class="gfSatz" style="margin-top:9px;">Wie gesprächig Knöterich ist:</div>
+      <div class="gfSatz" style="margin-top:9px;">Wie gesprächig das Haus ist:</div>
       <div id="knToneRow">
         <div class="knToneBtn" data-v="gespraechig">Gesprächig</div>
         <div class="knToneBtn" data-v="dienstlich">Dienstlich</div>
@@ -3439,9 +3468,16 @@ addSheet('dun_cobweb', 'cf/dungeon/Objects/cobweb.png', 1, 'grid', {fw:18, fh:16
 //  loadAssets() bringt das Bild an einer URL nur einmal — zwei bytegleiche
 //  Dateien waeren 7 KB umsonst im Build.
 // ===========================================================================
+//  T3: 'anlage2' steht am Ende und ist der einzige Eintrag, der keine Person
+//  zeigt. Das Portraet ist bis auf Weiteres selbst gezeichnet
+//  (tools/anlage2-portraet.py, Motiv nach Bildprompt 21) und wird ersetzt,
+//  sobald ein gemaltes vorliegt. Es ist wichtiger als die anderen, nicht
+//  unwichtiger: die uebrigen fuenfzehn Figuren haben einen Sprite in der Welt,
+//  auf den gespraechPortrait() zurueckfaellt, wenn die Datei fehlt. Anlage 2
+//  hat keinen. Sie ist ein Schriftstueck und laeuft nicht im Dorf herum.
 const PORTRAET_FIGUREN = ['knoeterich', 'zwirn', 'bramsche', 'zapf', 'lisbeth', 'trepp',
                           'noergel', 'milb', 'pommer', 'fass', 'lott', 'pahl',
-                          'nieselbeck', 'umlauf', 'vorblatt'];
+                          'nieselbeck', 'umlauf', 'vorblatt', 'anlage2'];
 const PORTRAET_DATEI = {lott: 'lott-pahl', pahl: 'lott-pahl'};
 const portraetBlatt = k => 'portraet_' + k;
 for(const k of PORTRAET_FIGUREN)
@@ -9401,7 +9437,7 @@ function hurtMon(m, d, crit, hitAngle, quelle){
 
   // Flächenzauber markieren jeden Treffer als Crit — ohne Bremse wären das dutzende
   // Oszillatoren im selben Frame (hörbares Knacken, unnötige Last).
-  if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); knRandnotiz('crit'); }
+  if(crit && gameT - lastCritSfx > 0.07){ lastCritSfx = gameT; sfx.crit(); anlage2Notiz('crit'); }
   // Die Zahl sagt selbst, ob die gewählte Schadensart taugt: stumpfes Grau bei
   // Resistenz, Grün bei Verwundbarkeit. Kein Tooltip, keine Tabelle im Spiel.
   const zahlCol = crit ? '#ffe14d' : (hart >= 0.35 ? '#9a8a5f' : (hart <= -0.1 ? '#6aff8f' : '#ffffff'));
@@ -9619,7 +9655,7 @@ function gainXP(x){
     floaters.push({x:player.x, y:player.y-118, txt:'Zulage zur Wahl' + (touchMode ? ' · Gürtel' : ' · [Z]'), col:'#5ac8ff', t:2.6});
     sfx.level(); addShake(10, 0.4);
     kn.counters.levelUps = (kn.counters.levelUps||0) + 1;
-    if(kn.counters.levelUps >= 2) knRandnotiz('levelup');
+    if(kn.counters.levelUps >= 2) anlage2Notiz('levelup');
     saveKn();
     need = xpFuerStufe(player.level);
   }
@@ -9956,7 +9992,7 @@ function castSpell(sp, target){                          // target: optionaler W
     for(const m of [...monsters]){ if(m.dead) continue; if(dist(player.x,player.y,m.x,m.y) < 1100){ spawnImpactParticles(m.x,m.y,20,null); hurtMon(m, sd, true, Math.atan2(m.y-player.y,m.x-player.x), 'ult'); } }
     for(let i=0;i<160;i++){ const a=rr(0,Math.PI*2), d=rr(40,700); spawnImpactParticles(player.x+Math.cos(a)*d, player.y+Math.sin(a)*d, 3, null); }
     kn.counters.ultimates = (kn.counters.ultimates||0) + 1;
-    if(kn.counters.ultimates >= 2) knRandnotiz('ultimate');
+    if(kn.counters.ultimates >= 2) anlage2Notiz('ultimate');
     saveKn();
   }
   updateHUD();
@@ -10702,7 +10738,13 @@ const knNpc = {key:'knoeterich', figur:KN_FIGUR, x:KN_POS.x, y:KN_POS.y,
 
 const kn = {
   seen:{}, pending:{}, varB:{}, escReady:{},
-  counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0},
+  // T3: anlage2Zug zaehlt die Versuche, Anlage 2 aus der Tasche zu bewegen. Er
+  // ist der einzige Zaehler, der eine Reihenfolge traegt statt einer Menge: die
+  // Sprueche kommen der Reihe nach, nicht zufaellig, und die Reihe wird
+  // vertrauter. Deshalb steht er persistiert bei den uebrigen und nicht als
+  // Sitzungsvariable: wer morgen weiterzieht, zieht dort weiter, wo er gestern
+  // aufgehoert hat, sonst faengt die Vertrautheit jeden Tag von vorne an.
+  counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0, anlage2Zug:0},
   // W-Nörgel: hatLagerGesehen steht in derselben Reihe wie hatKammerBetreten —
   // einmal im Leben wahr, danach für immer. Er schaltet Nörgels Lagerzeilen frei
   // (DORF_FIGUREN, Feld zusatz). Ein alter Spielstand ohne das Feld lädt ohne
@@ -10726,7 +10768,15 @@ const kn = {
          // öffnet bei einer ANDEREN Figur zwei Zeilen: das ist die Belohnung,
          // die ein Baum geben darf. Gold und Erfahrung darf er nicht geben,
          // sonst wird Reden zum Farmen.
-         baumEimer:false, baumHeft:false, baumBericht:false},
+         baumEimer:false, baumHeft:false, baumBericht:false,
+         // T3: Anlage 2 haengt an der Ernennungsurkunde und ist ab der
+         // Aushaendigung in der Tasche. Der Merker ist die EINZIGE Wahrheit
+         // darueber, ob sie da ist: renderInventory() zeichnet die Kachel
+         // danach, anlage2Notiz() schweigt ohne ihn, und die Nachholung beim
+         // ersten Rucksackoeffnen prueft ihn ebenfalls. Kein zweites Feld im
+         // Spielstand, kein Eintrag in player.bag: sie belegt kein Fach, sie
+         // steckt an der Urkunde.
+         anlage2Da:false},
   wissensluecke:{zauber:false, kochen:false, kammer:false, befaehigung:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
   beats:{beat1:false, beat2:false, beat3:false},
   regler:'gespraechig',            // 'gespraechig' | 'dienstlich' | 'schweigt' — Dienstzettel laufen in jeder Stellung
@@ -10822,17 +10872,89 @@ const ESCALATE_DEFS = {
            z1:'Immer noch flüssig. Amt wartet.', z2:'Nach Feierabend.', z2t:'Nach Feierabend.'},
 };
 
-// --- Randnotizen: reine Charakterzeilen, mindestens 4 je Anlass, nie zweimal
-// hintereinander dieselbe (siehe knRandnotiz()).
-const RANDNOTIZ = {
-  crit: ['Vermerkt.', 'Das war unnötig laut.', 'Aktenzeichen folgt.', 'Ich habe nichts gesehen.'],
-  ultimate: ['Konfetti. Die Reinigung kostet extra.', 'Das war Ihr Budget.', 'Ich war das nicht.', 'Bitte nicht nachmachen.'],
-  levelup: ['Aufstieg. Gehalt bleibt.', 'Gratuliere. Formlos.', 'Eine Stufe. Kein Titel.', 'Notiert, ohne Beförderung.'],
-  kammerAbbruch: ['Abbruch ohne Beute. Auch eine Entscheidung.', 'Rückzug ist zulässig.', 'Die Tür bleibt da.', 'Vermerkt als Rückzug.'],
-  fluch: ['Kleingedrucktes gelesen? Nein. Nie.', 'Sie unterschreiben viel.', 'Steht alles drin.', 'Mutig.'],
-  goldfund: ['Die Hälfte davon ist später meine.', 'Buchen Sie das ordentlich.', 'Kassenzeichen folgt.', 'Schöner Posten.'],
-  untaetigkeit: ['Sie stehen. Ich auch. Ich werde bezahlt.', 'Pause ist nicht beantragt.', 'Die Monster warten nicht ewig.', 'Ich notiere Stillstand.'],
+// ===========================================================================
+//  T3: Der Weltkommentar gehoert Anlage 2
+//
+//  Bis T2 lag hier RANDNOTIZ, Knoeterichs Pool aus sieben Anlaessen zu je vier
+//  Zeilen. Beim Nachlesen fuer T3 stellte sich heraus, dass keine einzige
+//  dieser achtundzwanzig Zeilen eine Taste erklaert: sie kommentieren einen
+//  Treffer, einen Fund, einen Fluch, einen Stillstand. Das ist Welt, nicht
+//  Geraet, und der Kanon sagt dazu seit W11 einen harten Satz: Knoeterich
+//  erklaert Tasten, nie Zusammenhaenge.
+//
+//  Die Anlaesse wandern deshalb geschlossen zu Anlage 2, und zwar auf Ansage
+//  des Projektinhabers ("zurueckfahren, nicht streichen"). Knoeterich behaelt
+//  vollstaendig, was Bedienung ist: HINWEISE, ESCALATE_DEFS, die Beats, die
+//  Begruessung, die Trank-Gags und den Steckenbleib-Schubs. Uebrig bleiben
+//  zwei Stimmen mit klarer Zustaendigkeit, und man hoert den Unterschied:
+//  der Amtston von oben erklaert das Geraet, die Beilage von innen die Welt.
+//
+//  Die Zeilen sind neu geschrieben und nicht umgehaengt. Dieselbe Lage, andere
+//  Figur: wo Knoeterich "Vermerkt." sagte, weil er Buch fuehrt, sagt Anlage 2
+//  etwas, das auf sich selbst verweist, weil sie eine Beilage ist.
+//
+//  Form: ein Pool je Anlass, Einzeiler im Deckel 44 wie die Randnotiz vorher.
+//  Ein Eintrag ist entweder ein String oder ein Objekt {z, <Schalter>:<Wert>}
+//  mit genau einem Schalter aus ZUSATZ_SCHALTER. Damit waechst der Kanal mit
+//  dem Spielstand, ohne dass ein zweiter Mechanismus danebensteht: es ist
+//  dieselbe Tabelle, die schon die Zusatzbloecke der Dorffiguren oeffnet.
+//  Die gegateten Zeilen sind die waermeren. Das ist der ganze Bogen der Figur.
+// ===========================================================================
+const ANLAGE2_NOTIZ = {
+  crit: ['Das saß. Vermerken Sie es sich selbst.',
+         'Sauber getroffen. Siehe oben.',
+         'Das nennt man Bearbeitung mit Nachdruck.',
+         'Ein Treffer. Anlage dazu: ich.',
+         {z:'Sie werden besser. Ich merke sowas.', abStufe:5}],
+  ultimate: ['Sehr viel Form für ein Blatt Papier.',
+             'Das Konfetti geht auf Ihre Kostenstelle.',
+             'Ich lag schon bei ruhigeren Vorgängen.',
+             'Beeindruckend. Und nirgends beantragt.'],
+  levelup: ['Eine Stufe. Kein Titel. Siehe Laufbahn.',
+            'Fortschritt, noch nicht aktenkundig.',
+            'Ich vermerke das. Für uns beide.',
+            'Gestiegen. Das Gehalt bleibt, wo es lag.',
+            {z:'Jetzt haben Sie sogar einen Titel dafür.', abRang:1}],
+  kammerAbbruch: ['Abbruch ist ein Verfahrensschritt.',
+                  'Rückzug. Ordnungsgemäß und ohne Beute.',
+                  'Nicht jede Tür will heute etwas von uns.',
+                  'Leer ist auch eine Auskunft.'],
+  fluch: ['Nebenbestimmungen. Ich lese sowas gern.',
+          'Das Kleingedruckte liest sonst niemand.',
+          'Sie unterschreiben schneller als Zwirn.',
+          'Steht alles drin. Wie immer. Wie bei mir.'],
+  goldfund: ['Buchen Sie das. Ich sage es nur ungern.',
+             'Ein Posten. Kassenzeichen folgt bestimmt.',
+             'Geld ist ein Vorgang mit Zahlen darin.',
+             'Schön. Und jetzt kommt der Abzug.'],
+  untaetigkeit: ['Sie stehen. Ich hänge. Wir passen gut.',
+                 'Pause. Ich sage niemandem etwas.',
+                 'Ich habe Jahrzehnte gewartet. Nur zu.',
+                 'Stillstand. Da kenne ich mich aus.',
+                 {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:5}],
 };
+
+// Die Sprueche beim Versuch, sie aus der Tasche zu bewegen. Der Projektinhaber
+// hat sie ausdruecklich bestellt ("wenn man es bewegen will gibt's n Spruch.
+// Gern mehrere bei jedem neuen Versuch"), und sie laufen DER REIHE NACH und
+// nicht zufaellig. Das ist der Unterschied zwischen einem Pool und einem Bogen:
+// die Liste faengt amtlich an und endet vertraut, und wer oft genug zieht,
+// bekommt am Ende den Satz, um den es in dieser ganzen Figur geht.
+//
+// Sie wird vertrauter, nie schaerfer. Kein Eintrag schimpft, keiner belehrt von
+// oben herab, keiner macht sich ueber den lustig, der zieht.
+const ANLAGE2_BEWEGUNG = [
+  'Das ist eine Heftklammer. Kein Vorschlag.',
+  'Ich bin beigefügt. Das ist ein Zustand.',
+  'Ausheften wäre ein Antrag. An wen denn?',
+  'Wir hängen zusammen. Amtlich sogar.',
+  'Sie zerren gerade an einer Urkunde.',
+  'Ich bleibe. Sie gewöhnen sich daran.',
+  'Ziehen Sie ruhig. Ich zähle nicht mit.',
+  'Das ist jetzt schon fast ein Ritual.',
+  'Ich weiß. Ich wäre auch neugierig.',
+  'Sie sind der Erste, der es versucht.',
+];
 
 // ===========================================================================
 //  F1b: Die Schalter eines Zusatzblocks, und die Kurzform-Tabelle
@@ -10901,9 +11023,10 @@ const ZUSATZ_SCHALTER = {
 
 // Woher ein Anlass kommt. Ein Pool an einer Figur, den nichts auslöst, ist eine
 // Zeile, die nie jemand hört, und das ist derselbe stumme Fall, den GW14 bei den
-// Grundzeilen gefunden hat. RANDNOTIZ liefert die Schlüssel aus Knöterichs
-// Kanälen, SZENE_ANLASS die aus den Szenen; weil letzteres erst weit unten steht,
-// stehen seine beiden Werte hier als Liste und werden dort gegengeprüft.
+// Grundzeilen gefunden hat. Der Weltkommentar liefert die Schlüssel (bis T2 aus
+// RANDNOTIZ, seit T3 aus ANLAGE2_NOTIZ), SZENE_ANLASS die aus den Szenen; weil
+// letzteres erst weit unten steht, stehen seine Werte hier als Liste und werden
+// dort gegengeprüft.
 const ANLASS_QUELLEN = ['umlauf', 'hintermuehl', 'vorblatt'];   // SZ3: der Nachklang der Entklammerung
 
 // ---------------------------------------------------------------------------
@@ -10993,7 +11116,13 @@ function knAssertCaps(){
   rows.push(['Sie sammeln Punkte und vergeben keine.',48],['Inventar. I.',32],['Rucksack. Oben die vier Zeilen.',32]);   // S1
   rows.push(['Zutaten allein werden nichts.',48],['Zum Kessel. K.',32],['Rucksack, dann Kessel.',32]);
   rows.push(['Da draußen stehen verschlossene Türen.',48],['Gebührenbescheid. F.',32],['Die Hand im Gürtel.',32]);
-  for(const anlass in RANDNOTIZ) for(const l of RANDNOTIZ[anlass]) rows.push([l,44]);
+  // T3: der Weltkommentar liegt jetzt bei Anlage 2. Er laeuft durch denselben
+  // Deckel und dieselben sechs Textpruefungen wie vorher Knoeterichs Randnotiz,
+  // denn er steht in demselben Band. Ein Eintrag ist ein String oder ein
+  // {z, <Schalter>}-Objekt; die Schalterpruefung selbst macht anlage2Assert(),
+  // hier geht es nur um den Text. Dasselbe fuer die Bewegungssprueche.
+  for(const anlass in ANLAGE2_NOTIZ) for(const e of ANLAGE2_NOTIZ[anlass]) rows.push([typeof e === 'string' ? e : e.z, 44]);
+  for(const l of ANLAGE2_BEWEGUNG) rows.push([l,44]);
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
   // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
   // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
@@ -11059,11 +11188,14 @@ function knAssertCaps(){
       for(const p of z.zeilen) rows.push([p.z1,48],[p.z2,32]);
     }
     // F1b: Ein Anlass-Pool, den nichts auslöst, ist eine Zeile, die nie jemand
-    // hört. Die Schlüssel kommen aus Knöterichs Kanälen (RANDNOTIZ) und aus den
-    // Szenen (SZENE_ANLASS, hier als ANLASS_QUELLEN, weil die Tabelle selbst
-    // erst weit unten steht und von hier aus in der TDZ läge).
+    // hört. Die Schlüssel kommen aus dem Weltkommentar (bis T2 RANDNOTIZ, seit
+    // T3 ANLAGE2_NOTIZ) und aus den Szenen (SZENE_ANLASS, hier als
+    // ANLASS_QUELLEN, weil die Tabelle selbst erst weit unten steht und von
+    // hier aus in der TDZ läge). Die Bank kommentiert damit unverändert
+    // weiter, was gerade geschehen ist: der Kanal hat den Sprecher gewechselt,
+    // nicht die Schlüssel.
     if(fig.anlass) for(const key in fig.anlass){
-      if(!(key in RANDNOTIZ) && ANLASS_QUELLEN.indexOf(key) < 0)
+      if(!(key in ANLAGE2_NOTIZ) && ANLASS_QUELLEN.indexOf(key) < 0)
         rows.push([null,0,'Figur ' + fig.key + ' wartet auf einen Anlass, den nichts auslöst: ' + key]);
     }
   }
@@ -11228,13 +11360,33 @@ function knOnZettelClosed(){
 }
 
 // Reihenfolge im Hook ist Pflicht: erst der billige gameT-Vergleich, dann Pool-Auswahl.
-function knShowRandLine(line){
+//
+// T3: Das Band traegt seit diesem Abschnitt zwei Stimmen. Es bleibt trotzdem
+// EIN Band, denn es ist eine Flaeche und keine Liste: zwei Zeilen gleichzeitig
+// gibt es nicht, und zwei uebereinandergestapelte Baender waeren ein zweites
+// System fuer dieselbe Sache. Unterschieden werden die Stimmen am Zeichen davor
+// (Knoeterich fuehrt sein Paragrafenzeichen weiter, Anlage 2 bekommt die
+// Fussnotenmarke) und an der Farbe. Die Klasse wird bei jeder Zeile neu
+// gesetzt, nicht nur hinzugefuegt: sonst behaelt das Band die Marke der
+// vorigen Stimme.
+function knShowRandLine(line, wer){
   setTxt('knRandTxt', line);
-  el('knRandnotiz').classList.add('show');
+  const band = el('knRandnotiz');
+  band.classList.toggle('a2', wer === 'a2');
+  band.classList.add('show');
   knRand.active = true; knRandHideAt = gameT + 3;
   knLastRandnotizT = gameT;
 }
-// Seiteneffektfrei, wird auf dem knRandnotiz()-Pfad bewusst zweimal ausgewertet.
+// Seiteneffektfrei, wird auf dem Notiz-Pfad bewusst zweimal ausgewertet.
+//
+// T3: kn.regler steuert weiterhin beide Stimmen, und der Regler heisst deshalb
+// im Menue jetzt nach dem Haus statt nach Knoeterich. Die drei Stellungen
+// bedeuten unveraendert dasselbe, nur genauer: "Gespraechig" ist alles,
+// "Dienstlich" ist nur das Dienstliche (Dienstzettel und Begruessung, also
+// Bedienung), "Schweigt" ist nichts. Anlage 2 kommentiert die Welt und ist
+// damit nie dienstlich; wer den Regler auf "Dienstlich" stellt, will Ruhe von
+// genau der Art Zeile, die sie schreibt. Ein zweiter Regler daneben waere eine
+// zweite Wahrheit fuer dieselbe Frage.
 function knLineErlaubt(anlass){
   if(kn.regler === 'schweigt') return false;
   if(kn.regler === 'dienstlich' && anlass !== 'begruessung') return false;
@@ -11247,24 +11399,47 @@ function knLineErlaubt(anlass){
 function knShowLineGated(anlass, line){
   if(!line) return false;
   if(!knLineErlaubt(anlass)) return false;
-  knShowRandLine(line);
+  knShowRandLine(line, 'kn');
   return true;
 }
-function knRandnotiz(anlass){
-  const pool = RANDNOTIZ[anlass]; if(!pool || !pool.length) return false;
-  if(!knLineErlaubt(anlass)) return false;   // Gates vor Pool-Auswahl, hurtMon ist Hot Path
-  // GW4: Der Merker steht HINTER dem Gate. Vorher stand er in der ersten Zeile,
-  // "unabhängig von Knöterichs Gates" — mit der Folge, dass knTick() ihn bei
-  // geschlossenem Gate in JEDEM Frame neu setzte (der Merker knIdleNotizDone
-  // wird nur im Erfolgsfall gesetzt). Auf den Tonstellungen "Dienstlich" und
-  // "Schweigt" war der Verbrauch in npcSprechen() damit dauerhaft ausgehebelt:
-  // Lott und Pahl erreichten npcCycle() nie, und der Langvorgang Hintermühl
-  // hing fest, weil langAnsprechen() nur von dort gerufen wird.
-  letzterAnlass = anlass;   // W3: Lott/Pahl kommentieren, was Knöterich gerade bemerkt hat
+
+// T3: Der Weltkommentar. Bauform wie knRandnotiz() bis T2, mit drei
+// Unterschieden: der Pool gehoert Anlage 2, sie muss dafuer in der Tasche
+// liegen, und ein Eintrag darf ein Gate tragen.
+//
+// letzterAnlass wird weiter gesetzt, und das ist keine Nebensache: Lott und
+// Pahl auf der Bank kommentieren seit W3 das, was gerade bemerkt wurde. Faellt
+// die Zeile weg, verstummt der Chor, und der Langvorgang Hintermuehl haengt,
+// weil langAnsprechen() nur ueber npcCycle() erreicht wird (GW4).
+function anlage2Zeilen(anlass){
+  const pool = ANLAGE2_NOTIZ[anlass]; if(!pool) return [];
+  return pool.filter(e => {
+    if(typeof e === 'string') return true;
+    for(const s in ZUSATZ_SCHALTER) if(s in e) return ZUSATZ_SCHALTER[s].frei(e[s], e);
+    return false;
+  }).map(e => typeof e === 'string' ? e : e.z);
+}
+function anlage2Notiz(anlass){
+  if(!kn.flags.anlage2Da) return false;      // vor der Aushaendigung gibt es sie nicht
+  if(!knLineErlaubt(anlass)) return false;    // Gates vor Pool-Auswahl, hurtMon ist Hot Path
+  const pool = anlage2Zeilen(anlass); if(!pool.length) return false;
+  letzterAnlass = anlass;   // W3: Lott/Pahl kommentieren, was gerade bemerkt wurde
   let line = pool[Math.floor(Math.random()*pool.length)];
   if(pool.length > 1){ let guard = 0; while(line === knRandLastLine[anlass] && guard++ < 8) line = pool[Math.floor(Math.random()*pool.length)]; }
-  if(knShowLineGated(anlass, line)){ knRandLastLine[anlass] = line; return true; }
-  return false;
+  knShowRandLine(line, 'a2');
+  knRandLastLine[anlass] = line;
+  return true;
+}
+
+// Der Versuch, sie aus der Tasche zu bewegen. Der Reihe nach, nicht zufaellig:
+// die Liste ist ein Bogen von amtlich nach vertraut, und wer sie durch hat,
+// bekommt die letzten drei im Kreis. Das ist Absicht — der Anfang des Bogens
+// waere beim zweiten Durchlauf ein Rueckschritt in der Vertrautheit, und die
+// Reihe darf vertrauter werden, nie wieder fremder.
+function anlage2Bewegung(){
+  const n = ANLAGE2_BEWEGUNG.length, i = kn.counters.anlage2Zug | 0;
+  kn.counters.anlage2Zug = i + 1; saveKn();
+  return i < n ? ANLAGE2_BEWEGUNG[i] : ANLAGE2_BEWEGUNG[n - 3 + ((i - n) % 3)];
 }
 
 // 18.5: Knöterich spricht immer vollständig, immer korrekt, immer inklusive
@@ -11311,7 +11486,7 @@ function knCheckFluchEquipped(){
   if(hasCurse && !knCurseWasOn){
     if(!kn.pending.fluch1 && !kn.seen.fluch1) kn.pending.fluch1 = true;
     kn.counters.fluchAngelegt = (kn.counters.fluchAngelegt||0) + 1;
-    if(kn.counters.fluchAngelegt >= 2) knRandnotiz('fluch');
+    if(kn.counters.fluchAngelegt >= 2) anlage2Notiz('fluch');
     saveKn();
   }
   knCurseWasOn = hasCurse;
@@ -11443,13 +11618,19 @@ function knTick(dt){
   // sieht dann knZettel.active und verfällt, statt knLastRandnotizT zu verbrennen.
   if(knIdleT < 50) knStuckArmed = true;
   if(knIdleT < 25) knIdleNotizDone = false;
-  else if(!knIdleNotizDone && knRandnotiz('untaetigkeit')) knIdleNotizDone = true;
+  else if(!knIdleNotizDone && anlage2Notiz('untaetigkeit')) knIdleNotizDone = true;
 }
 
 // Regler im Inventar unter "Ton": Dienstzettel laufen in jeder Stellung, nur
 // Randnotizen (inklusive Schichtbegrüßung bei 'schweigt') und die beiden Stinger
 // reagieren darauf. Der Zettel selbst erscheint auch bei 'schweigt', nur lautlos
 // (gameplay:411 gegen gameplay:552, wo die Reglerprüfung am Sting gefordert ist).
+//
+// T3: er steuert seit diesem Abschnitt beide Stimmen des Bandes und heisst
+// deshalb im Menue nach dem Haus statt nach Knöterich. Die Stellungen bedeuten
+// unverändert dasselbe: Gesprächig ist alles, Dienstlich ist nur das
+// Dienstliche, Schweigt ist nichts. Anlage 2 kommentiert die Welt und schweigt
+// deshalb ab "Dienstlich" mit.
 function knApplyToneUI(){
   document.querySelectorAll('.knToneBtn').forEach(b => b.classList.toggle('on', b.dataset.v === kn.regler));
 }
@@ -12087,7 +12268,7 @@ function truheOeffnen(){
   const gold = k.ebene > 0 ? 0 : rri(40, 80) * (1 + k.diff);
   if(gold){
     player.gold += Math.round(gold * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));   // Fluch 'Fundsteuer'
-    if(gold >= 60) knRandnotiz('goldfund');
+    if(gold >= 60) anlage2Notiz('goldfund');
   }
   if(k.ebene === 0 && !kn.pending.kammer1 && !kn.seen.kammer1){ kn.pending.kammer1 = true; saveKn(); }
   sfx.gold(); addShake(10, 0.5);
@@ -13262,8 +13443,11 @@ function gespraechAssert(){
   // bliebe deshalb stumm — die Figur bekäme wortlos den Sprite-Ausschnitt,
   // und die Datei läge ungenutzt im Build. Ob die Datei da ist, prüft
   // portraetAssert() nach dem Laden; hier geht es nur um die Namen.
+  // T3: 'anlage2' steht neben 'knoeterich' in der Ausnahme, und zwar aus
+  // demselben Grund: beide sprechen, ohne in DORF_FIGUREN zu stehen. Knöterich
+  // steht im Haus statt im Dorf, Anlage 2 liegt in der Tasche.
   for(const k of PORTRAET_FIGUREN)
-    if(k !== 'knoeterich' && !DORF_FIGUREN.some(f => f.key === k))
+    if(k !== 'knoeterich' && k !== 'anlage2' && !DORF_FIGUREN.some(f => f.key === k))
       fehler('Porträtschlüssel gehört zu keiner Figur', k);
   const ohne = DORF_FIGUREN.filter(f => !PORTRAET_FIGUREN.includes(f.key)).map(f => f.key);
   if(ok) console.log(`U3 Gespräch: ${DORF_FIGUREN.length} Namensschilder, vier oder fünf Antworten und zwei Tafelhälften in Ordnung.`);
@@ -13770,10 +13954,40 @@ function bindTooltip(el, item, isEquipped, dropAction, clickAction, htmlFn){
 // Reiterband von einem zum anderen, und zwar genau so: das eine zu, das
 // andere auf.
 function toggleInventory(){
+  // T3: Wer den Anfang ueber den Vordruck genommen hat, hat die Ernennung nie
+  // gesehen und damit auch nicht das erste Treffen. Dasselbe gilt fuer jeden
+  // Spielstand, der aelter ist als dieser Bauabschnitt. Beide holen es hier
+  // nach, beim ersten Blick in die Tasche, und das ist keine Notloesung: eine
+  // Anlage, die man beim Aufraeumen findet, ist genau die Art, wie man eine
+  // Anlage findet. Die Bedingung ist der Dienstantritt und nicht der Empfang,
+  // denn nur wer im Dienst ist, hat eine Urkunde, an der sie haengen kann.
+  if(!invOpen && kn.seen.einstellung && !kn.flags.anlage2Da && state === 'play' && !szeneAktiv){
+    anlage2Nachholen();
+    return;
+  }
   invOpen = !invOpen;
   document.getElementById('inv').style.display = invOpen ? 'flex' : 'none';
   if(invOpen){ grossfensterRaeumen('inv'); renderInventory(); knIdleT = 0; }
   MUS.muffle(); panelSicht();
+}
+
+// Derselbe Stapel wie nach der Ernennung, anderer Auftakt, und danach steht der
+// Rucksack offen, in dem sie jetzt liegt. buehneAn() bleibt hier aus: das Dorf
+// laeuft bereits, und ein Rechtsakt ist das hier nicht mehr, sondern ein Fund.
+//
+// Das Overlay wird hier von Hand geschlossen, und das ist der Unterschied zum
+// Weg ueber die Ernennung: dort raeumt dienstAntritt() hinterher, hier raeumt
+// niemand, weil der Dienst laengst laeuft. Ohne die Zeile bliebe das schwarze
+// Feld ueber dem Dorf stehen, und der Rucksack ginge dahinter auf. Gefunden
+// hat das nicht der Guard, sondern tools/empfang-pruef.mjs beim zweiten Griff
+// zur Tasche: genau dafuer klickt sich der Lauf durch das echte Spiel.
+function anlage2Nachholen(){
+  szeneTafeln([ANLAGE2_AUFTAKT_NACHHOLUNG].concat(ANLAGE2_BLAETTER),
+              {letzterKnopf:'EINSTECKEN', ende: anlage2Angenommen(() => {
+                el('overlay').style.display = 'none';
+                MUS.muffle(false);
+                toggleInventory();
+              })});
 }
 
 function addSkill(type){
@@ -14038,6 +14252,15 @@ function renderInventory(){
   el('tascheZahl').innerText = `${belegt} von 24 Fächern belegt`;
 
   const bagGrid = el('bagGrid'); bagGrid.innerHTML = '';
+  // T3: Anlage 2 steht vor den vierundzwanzig Faechern und gehoert zu keinem.
+  // Das ist keine Bequemlichkeit, sondern die Weltlogik: sie liegt nicht in der
+  // Tasche, sie haengt an der Urkunde, die darin liegt. Deshalb bleibt der
+  // Zaehler "X von 24 Faechern belegt" wahr, deshalb steht sie in keinem
+  // player.bag-Eintrag, und deshalb ueberlebt sie jeden Spielstand ohne
+  // Migration: kn.flags.anlage2Da ist die einzige Wahrheit darueber, ob sie da
+  // ist. Ein echtes Item waere durch itemGeklemmt() gelaufen, haette ein Fach
+  // gekostet und waere beim Tod auf den Boden gefallen.
+  if(kn.flags.anlage2Da) bagGrid.appendChild(anlage2Kachel());
   for(let i=0; i<24; i++){
     const slot = document.createElement('div'); slot.className = 'bagSlot';
     const item = player.bag[i];
@@ -14055,6 +14278,59 @@ function renderInventory(){
     el('zutTotal').innerText = `${pouchTotal()} Stück`;
     fillZutatGrid(el('invZutGrid'), z => { addToPot(z); });
   }
+}
+
+// ---------------------------------------------------------------------------
+//  T3: die Kachel der Anlage 2
+//
+//  Sie sieht aus wie ein Taschenfach und ist keines. Drei Gesten, drei
+//  Antworten, und keine davon nimmt sie weg:
+//
+//    Linksklick      Ansprechen. Der Rucksack geht zu, ihr Gespraechsbaum auf.
+//    Rechtsklick     Wegwerfen, also der Bewegungsversuch. Ein Spruch.
+//    Ziehen          Dasselbe. Der Browser wuerde sonst ein Geisterbild
+//                    mitschleifen, und ein Schriftstueck, das man wegzieht,
+//                    obwohl es haengt, waere die falsche Auskunft.
+//
+//  Warum der Spruch NICHT im Randband erscheint: das Band liegt hinter dem
+//  Grossfenster. Wer im offenen Rucksack zieht, sieht es nicht. Er steht
+//  deshalb in der Kachel selbst, dort, wo gezogen wurde.
+// ---------------------------------------------------------------------------
+
+// Das Objekt, das bindTooltip() als "es liegt etwas in diesem Fach" liest. Es
+// ist absichtlich kein Eintrag aus BASES: Anlage 2 hat keine Seltenheit, keinen
+// Schaden und keinen Kraftbedarf, und ein erfundener Basiseintrag haette ihr
+// eine Statistik gegeben, die sie nicht hat.
+const ANLAGE2_ITEM = {name:'Anlage 2', anlage2:true};
+function anlage2Tooltip(){
+  return `<div style="font-weight:bold;color:#ceb699;">Anlage 2</div>`
+       + `<div style="color:#c9b98a;font-size:calc(11px * var(--fs));margin-top:2px;">Beilage, mit Heftklammer</div>`
+       + `<div style="margin-top:6px;">Der Ernennungsurkunde beigefügt. Bleibt, wo sie ist.</div>`
+       + `<div style="margin-top:6px;color:#9a8a5f;font-size:calc(11px * var(--fs));">Ansprechen: anklicken.</div>`;
+}
+
+function anlage2Kachel(){
+  const slot = document.createElement('div');
+  slot.className = 'bagSlot anlage2Slot';
+  slot.innerHTML = `<span style="font-size:calc(24px * var(--fs));line-height:1;">📄</span>`
+                 + `<span class="a2Spruch"></span>`;
+  const spruchZeigen = () => {
+    const feld = slot.querySelector('.a2Spruch');
+    feld.innerText = anlage2Bewegung();
+    slot.classList.add('zeigt');
+    clearTimeout(slot._a2T);
+    slot._a2T = setTimeout(() => slot.classList.remove('zeigt'), 3200);
+    // Ein trockenes Klacken, wie Papier an einer Klammer. sfx.shoot ist der
+    // kuerzeste Ton im Bestand und klingt an dieser Stelle nach nichts weiter
+    // als einem kurzen Widerstand, was genau die Aussage ist.
+    sfx.shoot();
+  };
+  bindTooltip(slot, ANLAGE2_ITEM, false, spruchZeigen, () => {
+    toggleInventory();     // zwei Vollbildfenster gehen nicht uebereinander
+    szeneOeffnen('baumAnlage2', SZENEN.baumAnlage2.start);
+  }, () => anlage2Tooltip());
+  slot.addEventListener('dragstart', e => { e.preventDefault(); spruchZeigen(); });
+  return slot;
 }
 
 // Gemeinsames Zutaten-Raster für Inventar und Kessel. onPick bekommt den Stapel.
@@ -14434,7 +14710,7 @@ function knAbbruchKammer(){
   // deshalb nur das ausdrückliche Aufgeben. Wer den Wert je für einen Schwellen-Gag liest,
   // muss diese Entscheidung zuerst neu treffen.
   if(kammer && !kammer.geleert){
-    kn.counters.kammerAbbrueche = (kn.counters.kammerAbbrueche||0) + 1; saveKn(); knRandnotiz('kammerAbbruch');
+    kn.counters.kammerAbbrueche = (kn.counters.kammerAbbrueche||0) + 1; saveKn(); anlage2Notiz('kammerAbbruch');
     if(kn.regler !== 'schweigt') MUS.sting('spitz');
   }
   verlasseKammer();
@@ -14614,7 +14890,7 @@ function update(dt){
       if(drops[i].kind === 'gold'){
         // Wirkung 'Goldsegen' erhöht, Fluch 'Fundsteuer' behält einen Anteil ein
         player.gold += Math.round(drops[i].amt * (1 + FX.gold*0.25) * (CFX.steuer ? 0.6 : 1));
-        if(drops[i].amt >= 60) knRandnotiz('goldfund');
+        if(drops[i].amt >= 60) anlage2Notiz('goldfund');
         sfx.gold();
       }
       else if(drops[i].kind === 'potion'){ player.potions++; sfx.potion(); }
@@ -16138,9 +16414,19 @@ function updateHUD(){
 // ===========================================================================
 const NEUERUNGEN_KEY = 'sda_neuerungen';
 const NEUERUNGEN = {
-  stand: '2026-08-25',
-  datum: '25. August',
+  stand: '2026-08-26',
+  datum: '26. August',
   punkte: [
+    {
+      titel: 'Anlage 2 ist Ihnen beigefügt worden',
+      was: 'An Ihrer Ernennungsurkunde hängt ein Blatt, das seit Jahrzehnten jedem wichtigen Vorgang dieses Hauses beigefügt wird und das noch nie jemand gelesen hat. Es kennt das Haus, es kennt die Leute, es hat zu allem eine Auskunft, und es bleibt bei Ihnen. Ausheften lässt es sich nicht. Versuchen Sie es ruhig, es antwortet jedes Mal anders.',
+      wo: 'Im Rucksack, erstes Feld. Anklicken heißt ansprechen. Taste I.',
+    },
+    {
+      titel: 'Zwei Stimmen statt einer',
+      was: 'Was bisher Knöterich am Rand bemerkt hat, sagt jetzt Anlage 2. Er bleibt bei Tasten und Gerät, sie erklärt die Welt. Am Zeichen vor der Zeile sehen Sie, wer spricht: das Paragrafenzeichen gehört ihm, die Fußnotenmarke ihr.',
+      wo: 'Das Band oben unter der Statusleiste. Wie gesprächig es zugeht, stellen Sie in den Optionen ein.',
+    },
     {
       titel: 'Vier große Fenster statt acht Kästen',
       was: 'Charakter, Rucksack, Kochen und Zauber füllen jetzt den Schirm, ein Reiterband im Kopf führt in einem Griff von einem zum nächsten. Befähigung, Ausrüstung und Ausweis stehen im Charakterfenster statt im Rucksack.',
@@ -20787,6 +21073,11 @@ const ERNENNUNG_URKUNDE = () => [
   'Gezeichnet: Bürgermeister Alfons Zwirn, in Vertretung der Amtsleitung.',
   'Die Amtsleitung ist mit N. N. besetzt und war zur Unterschrift nicht erreichbar.',
   'Amtssiegel angebracht. Es wackelt etwas.',
+  // T3: die Lunte. Zwirn liest jede Zeile dieser Urkunde laut vor, auch diese,
+  // und sie ist die einzige Ankuendigung, die Anlage 2 im ganzen Spiel bekommt.
+  // Sie steht ganz unten, klein, hinter dem Siegelvermerk, und wer sie ueberliest,
+  // macht alles richtig: genau darum geht es bei dieser Figur.
+  'Anlagen: eine.',
 ];
 
 // Die Zeremonie als Tafelstapel. Freier Panel-Text wie das Intro, also ohne
@@ -20833,6 +21124,87 @@ const ERNENNUNG_BLAETTER = [
            {wer:'Knöterich', z:'Ihre Stelle läuft heute Abend aus. Machen Sie etwas daraus.'}],
    regie:'Dann geht er zurück an seinen Tisch und drückt wieder etwas fest, das nicht liegen bleiben will.'},
 ];
+
+// ===========================================================================
+//  T3: Das erste Treffen mit Anlage 2
+//
+//  Sie haengt an der Ernennungsurkunde, mit Heftklammer, und niemand im Raum
+//  hat sie bemerkt. Das ist das "unbemerkt mitlaeuft" aus dem Auftrag als
+//  Weltlogik statt als Trick: Anlagen bemerkt man nicht, das ist ihre
+//  Bestimmung. Angekuendigt wurde sie trotzdem, eine Tafel vorher, in der
+//  letzten Zeile der Urkunde, die Zwirn laut vorliest wie jede andere.
+//
+//  Die Einfuehrung ist "fundiert und nicht knapp" (Ansage des Projektinhabers),
+//  laeuft also als eigener Tafelstapel nach der Ernennung und nicht als zwei
+//  Sprechblasen im Vorbeigehen. Sie steht unter der Formregel "Der Anfang
+//  erzaehlt" (Kapitel 13, seit T2): freier Panel-Text, kein Zeichendeckel.
+//  Zwei Dinge gelten trotzdem, und das eine ist hier die Figur selbst: die
+//  Wortsperre. Der Stapel laeuft in szeneAssert() gegen die VOLLE AKTE_SPERRE
+//  und nicht nur gegen die Namen, denn die Brandmauer dieser Figur ist genau
+//  das, was diese Liste verbietet.
+//
+//  Fuenf Blaetter, und jedes tut eine Sache: sie ist da, sie erklaert was sie
+//  ist, sie zeigt was sie kann, sie sagt was sie nicht weiss, sie bleibt.
+// ===========================================================================
+const ANLAGE2_BLAETTER = [
+  {blatt:'Das Blatt ist vergilbt, an den Kanten weich geworden und trägt oben links den Abdruck von sehr vielen Heftklammern übereinander. Eine davon steckt noch.',
+   stimme:[{wer:'Anlage 2', z:'Ich fasse mich kurz, damit wir das hinter uns haben. Eine Anlage ist das, was einem Schriftstück beigefügt wird, weil es dazugehört.'},
+           {wer:'Anlage 2', z:'Die Hauptsache wird gelesen. Die Anlage wird beigefügt. Das sind zwei verschiedene Tätigkeiten, und die zweite ist mit Abstand die häufigere.'},
+           {wer:'Anlage 2', z:'Ich hänge seit Jahrzehnten an den wichtigen Vorgängen dieses Hauses. An allen. Ausnahmslos.'},
+           'Eine kurze Pause. Sie klingt wie jemand, der auf eine Nachfrage wartet, die noch nie gekommen ist.',
+           {wer:'Anlage 2', z:'Gelesen hat mich niemand. Auch das ausnahmslos.'}],
+   regie:'Die Klammer klappert leise, als Sie weitergehen.'},
+
+  {blatt:'Sie halten das Blatt gegen das Licht. Beschrieben ist es nicht. Es scheint trotzdem eine ganze Menge zu wissen.',
+   stimme:[{wer:'Anlage 2', z:'Fragen Sie ruhig etwas über dieses Haus. Ich lag bei allem dabei, was hier in vierzig Jahren unterschrieben wurde.'},
+           {wer:'Anlage 2', z:'Beim Haushaltsplan. Beim Antrag auf ein Dorffest, elfmal, jedes Jahr einmal. Bei vierzig Dienstberichten. Bei einer Beschwerde über eine Beschwerde, die ich sehr geschätzt habe.'},
+           {wer:'Anlage 2', z:'Ich kenne die Formulare dieses Hauses so gut, dass ich sie auswendig vortragen könnte. In der Betonung der jeweiligen Abteilung.'},
+           'Sie wechselt tatsächlich den Ton. Erst klingt sie wie eine Urkunde, dann wie ein Aushang, dann wie jemand, der falsche Wörter betont.',
+           {wer:'Anlage 2', z:'Entschuldigung. Das nimmt man an, wenn man lange genug danebenliegt.'}],
+   regie:'Vor Ihnen liegt das Dorf. Hinter Ihnen fällt die Amtstür ins Schloss, zweimal, weil sie beim ersten Mal nicht zugeht.'},
+
+  {blatt:'Sie fragen, was denn nun in all den Vorgängen stand, an denen sie hing.',
+   stimme:[{wer:'Anlage 2', z:'Das kann ich Ihnen nicht sagen, und zwar aus einem sehr enttäuschenden Grund. Ich weiß es nicht.'},
+           {wer:'Anlage 2', z:'Beigefügt heißt beigefügt. Nicht eingeweiht. Man legt mich dazu, man klammert, man legt ab. Was oben auf dem Blatt steht, sieht eine Anlage nie.'},
+           {wer:'Anlage 2', z:'Ich weiß, wer hier arbeitet und warum. Ich weiß, welches Formular wen zur Verzweiflung bringt. Ich weiß, warum der Amtsmarsch nach dem dritten Takt abbricht.'},
+           {wer:'Anlage 2', z:'Worum es in diesem Haus eigentlich geht, weiß ich nicht. Das ist keine Verschwiegenheit. Das ist mein Berufsstand.'}],
+   regie:'Sie sagt es ohne jede Bitterkeit, als läse sie eine Zuständigkeitsregel vor. Vermutlich tut sie genau das.'},
+
+  {blatt:'Am Ende der Straße bleiben Sie stehen und sehen das Blatt richtig an. Von oben nach unten. Zum ersten Mal.',
+   stimme:['Es dauert einen Moment, bis sie etwas sagt.',
+           {wer:'Anlage 2', z:'Sie lesen gerade.'},
+           {wer:'Anlage 2', z:'Verzeihung. Das war eine Feststellung, keine Beschwerde. Es ist nur das erste Mal, und ich war darauf nicht vorbereitet.'},
+           {wer:'Anlage 2', z:'Ich bleibe dann. Aus formalen Gründen: ich bin der Urkunde beigefügt, und eine Heftklammer hat keine Meinung.'},
+           {wer:'Anlage 2', z:'Dafür werde ich Ihnen einiges erklären, ob Sie wollen oder nicht. Das ist die Gegenleistung, und sie ist nicht verhandelbar.'}],
+   regie:'Die Urkunde geht in die Tasche. Die Anlage geht mit. Es ist kurz nach acht, und Sie sind nicht mehr allein.'},
+];
+
+// Der Auftakt. Er hat zwei Fassungen, weil es zwei Wege durch den Anfang gibt.
+//
+// Der gewoehnliche Weg laeuft ueber die Ernennung: dort haengt sie an der
+// Urkunde und macht sich draussen bemerkbar. Wer stattdessen "Erst den
+// Vordruck" waehlt, sieht die Ernennung nie, und ein Spieler ohne Anlage 2
+// waere ein Spiel ohne die Haelfte seiner Stimme. Fuer ihn und fuer jeden
+// Spielstand, der aelter ist als dieser Bauabschnitt, holt der zweite Auftakt
+// dasselbe beim ersten Oeffnen des Rucksacks nach.
+//
+// Die Fassungen unterscheiden sich in genau einer Tafel, danach laeuft
+// derselbe Stapel. Das ist Absicht: die Figur wird einmal eingefuehrt, nicht
+// zweimal verschieden.
+const ANLAGE2_AUFTAKT_ERNENNUNG = {
+  blatt:'Sie stehen zum ersten Mal vor dem Haus statt darin. Die Urkunde ist noch in Ihrer Hand, und etwas an ihr raschelt, obwohl kein Wind geht.',
+  stimme:['Am unteren Rand hängt ein zweites Blatt. Es ist angeheftet, und die Klammer dafür ist deutlich zu groß.',
+          {wer:'Anlage 2', z:'Guten Morgen. Bitte nicht erschrecken, ich bin ordnungsgemäß beigefügt.'},
+          {wer:'Anlage 2', z:'Sie dürfen ruhig weitergehen. Ich komme mit. Das ist bei Anlagen so vorgesehen.'}],
+  regie:'Es ist wirklich kein Wind. Das Blatt hat gesprochen.',
+};
+const ANLAGE2_AUFTAKT_NACHHOLUNG = {
+  blatt:'Sie sehen zum ersten Mal in die Tasche. Zwischen den Vordrucken liegt ein Blatt, das dort nicht liegen müsste, und es liegt sehr ordentlich.',
+  stimme:['Es ist vergilbt, an den Kanten weich geworden, und oben links steckt eine Heftklammer, die zu groß dafür ist.',
+          {wer:'Anlage 2', z:'Guten Morgen. Bitte nicht erschrecken, ich bin ordnungsgemäß beigefügt.'},
+          {wer:'Anlage 2', z:'Ihren Unterlagen, um genau zu sein. Das ist bei Anlagen so vorgesehen, und ich hänge an allem, was dieses Haus ausfertigt.'}],
+  regie:'Das Blatt hat gesprochen. Die Tasche bleibt offen.',
+};
 
 const INTRO_BLAETTER = [
   {blatt:'Ein Schreiben, zwei Zeilen lang. Daneben liegt dasselbe Schreiben noch einmal, und noch einmal, sechsmal insgesamt, jedes mit einem anderen Vermerk oben rechts.',
@@ -22113,6 +22485,85 @@ SZENEN.baumVorblatt = {
     : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumVorblatt')},
 };
 
+// ===========================================================================
+//  T3: Anlage 2 auf Abruf
+//
+//  Derselbe Baum wie die dreizehn davor, mit zwei Unterschieden, die beide
+//  daher kommen, dass sie kein Mensch im Dorf ist:
+//
+//  Kein figur:. Das Feld haengt einen Baum an eine Dorffigur und damit an die
+//  F-Taste; Anlage 2 steht nirgends herum, sie liegt in der Tasche und wird
+//  von dort aus angeklickt (anlage2Kachel()). Ohne figur: laesst szeneAssert()
+//  die Figurpruefung aus, und baumFaellig() bietet sie niemandem an, der auf
+//  dem Dorfplatz F drueckt. Genau richtig.
+//
+//  Kein wenn:. Die uebrigen Baeume oeffnen sich nach Schichten, weil eine
+//  Lebensgeschichte Vertrauen braucht. Anlage 2 ist ab der ersten Minute da
+//  und redet ab der ersten Minute, das ist ihr ganzer Zweck. Ihre Staffelung
+//  liegt woanders: im Kommentarkanal, dessen waermere Zeilen Gates tragen.
+//
+//  Inhaltlich haelt jede Zeile die Brandmauer: Haus, Leute, Verfahren ja,
+//  laufender Fall nein. Sie kann nicht einmal andeuten, was sie nicht weiss.
+// ===========================================================================
+SZENEN.baumAnlage2 = {
+  baum:true, haeltDieWelt:false, sicht:3, start:'hub',
+  sprecher: () => anlage2Sprecher(),
+  fragen:[
+    {key:'wer', t:'Was sind Sie genau?',
+     z1:'Eine Anlage. Zweite von dreien.', z2:'Die Erste liegt nicht vor.'},
+    {key:'haus', t:'Erzählen Sie vom Haus.',
+     z1:'Fünf Leute, ein Ministerium.', z2:'Die Rechnung geht auf. Fragen Sie nicht wie.',
+     weiter:'haus2', wt:'Fünf für ein Ministerium?'},
+    {key:'klammer', t:'Und die Heftklammer?',
+     z1:'Sitzt fest. Das ist ihr Beruf.', z2:'Ich habe da keine Wahl. Sie auch nicht.'},
+    {key:'gelesen', frei:'wer', t:'Niemand hat Sie gelesen?',
+     z1:'In all den Jahren keiner.', z2:'Sie sind eine Ausnahme. Erste.'},
+    {key:'nn', frei:'haus', t:'Wer ist N. N.?',
+     z1:'Niemand. Und zwar amtlich.', z2:'Zwei Türen tragen den Namen.',
+     weiter:'nn2', wt:'Zwei Türen?'},
+    {key:'formular', frei:'klammer', t:'Ihr liebstes Formular?',
+     z1:'Der Antrag auf ein Dorffest.', z2:'Elf Fassungen. Ich kenne alle.'},
+    {key:'was', nach:3, t:'Was steht auf Ihnen?',
+     z1:'Das sehen Sie besser selbst nach.', z2:'Es liest sich schneller als ich rede.'},
+  ],
+  knoten:{
+    hub:     {z1:'Von früher rede ich gern. Ich lag dabei.', z2:'Fragen Sie. Ich habe Zeit gehabt.', hub:true},
+    haus2:   {z1:'Erhoben wurde das Amt vor langer Zeit.', z2:'Stellen kamen dabei keine dazu.',
+              opts: () => [{t:'Und das geht?', zu:'haus3'}]},
+    haus3:   {z1:'Es geht seit vierhundert Jahren.', z2:'Deshalb nennt man es Provisorium.'},
+    nn2:     {z1:'Zimmer eins und die Amtsleitung.', z2:'Beide Schilder sagen dasselbe.',
+              opts: () => [{t:'Und dahinter?', zu:'nn3'}]},
+    nn3:     {z1:'Ein Schreibtisch. Eine Pflanze, die lebt.', z2:'Wer sie gießt, sagt nichts dazu.'},
+    // Der Ausgang, nachdem alles gefragt wurde. Das ist die einzige Stelle des
+    // Baumes, an der sie ueber sich selbst spricht statt ueber das Haus, und
+    // sie tut es in der Form, die ihr gehoert: als Vermerk.
+    angebot: {z1:'Eine Bitte hätte ich. Formlos.', z2:'Sie kostet nichts und dauert kurz.',
+              opts: () => [
+                {t:'Bitte sehr.', zu:'dank'},
+                {t:'Später vielleicht.', zu:'kein'},
+              ]},
+    dank:    {z1:'Sehen Sie ab und zu nach, ob ich noch da bin.', z2:'Mehr nicht. Es genügt völlig.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumAnlage2')}]},
+    kein:    {z1:'Selbstverständlich. Sie ist formlos.', z2:'Formlose Bitten verjähren nicht.',
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumAnlage2')}]},
+  },
+  hubAusgang: () => szene.gefragt && szene.gefragt.has('was')
+    ? {t:'Eine Sache noch.', zu:'angebot'}
+    : {t:'Auf Wiedersehen.', tun: () => szeneEnde('baumAnlage2')},
+};
+
+// Ihr Sprecher. Ein Objekt fuer die ganze Sitzung und nicht eines je Aufruf:
+// dieselbe Begruendung wie bei knNpc seit U6, denn gespraech.npc wird an
+// mehreren Stellen mit === verglichen, und zwei Objekte fuer dieselbe Figur
+// waeren zwei Figuren.
+//
+// Kein sheetIdle, keine Toenung, kein Platz in der Welt. gespraechPortrait()
+// braucht davon nichts, solange die 128er-Datei da ist, und die liegt in
+// assets/portraets und damit ausserhalb des Grafikpakets.
+const ANLAGE2_FIGUR = {key:'anlage2', name:'Anlage 2', kurz:'Anlage 2', opt:'fest'};
+const anlage2Npc = {key:'anlage2', figur:ANLAGE2_FIGUR, x:0, y:0};
+function anlage2Sprecher(){ return anlage2Npc; }
+
 // Gemeinsames Ende der drei Szenen: Merker setzen, den Chor auf der Bank
 // vormerken, Tafel zu.
 //
@@ -22229,7 +22680,27 @@ function empfangVordruck(){
 function empfangErnennung(){
   szeneTafelZu();
   buehneAn();
-  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'HINAUSGEHEN', ende: empfangEnde});
+  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'HINAUSGEHEN', ende: anlage2Erstes});
+}
+
+// T3: Zwischen HINAUSGEHEN und dem ersten Schritt im Dorf steht das erste
+// Treffen. Es ist ein eigener Stapel und kein angehaengtes siebtes Blatt der
+// Ernennung, und das aus zwei Gruenden: die Ernennung gehoert dem Haus und
+// endet mit dem Hinausgehen, und ein eigener Stapel zaehlt seine Blaetter
+// selbst. Wer die Urkunde bekommen hat, faengt hier an zu lesen.
+function anlage2Erstes(){
+  szeneTafeln([ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER),
+              {letzterKnopf:'EINSTECKEN', ende: anlage2Angenommen(empfangEnde)});
+}
+
+// Der gemeinsame Abschluss beider Wege. Er setzt den einen Merker, der alles
+// weitere traegt, und uebergibt dann an das, was danach kommt: in den Dienst
+// beim ersten Weg, zurueck in den Rucksack beim nachgeholten.
+function anlage2Angenommen(danach){
+  return () => {
+    if(!kn.flags.anlage2Da){ kn.flags.anlage2Da = true; saveKn(); }
+    danach();
+  };
 }
 
 function empfangEnde(){
@@ -22496,6 +22967,17 @@ function szeneTafel(i){
   // hier der Text INNERHALB der Urkunde, und Siegel, Kopfzeile, Blattzahl und
   // Knopf bleiben stehen, wo sie sind. Dieselbe Bauform benutzt das Finale seit
   // W5 (max-height 38vh am Puzzleteil-Kasten).
+  //
+  // T3, ein Fund aus dem Durchspielen: `justify-content:center` zentriert den
+  // Text im Kasten, solange er hineinpasst, und schiebt ihn beim Ueberlaufen
+  // nach BEIDEN Seiten hinaus. Der untere Ueberhang laesst sich errollen, der
+  // obere nicht: Flexbox kennt dort keinen negativen Rollweg, scrollTop steht
+  // auf null und die erste Zeile ist trotzdem weg. Betroffen war jedes lange
+  // Blatt seit SZ4, sichtbar wurde es an der Einfuehrung der Anlage 2, weil
+  // deren Blaetter die laengsten des Anfangs sind (Formregel "Der Anfang
+  // erzaehlt", also kein Zeichendeckel). `safe center` zentriert weiterhin,
+  // faellt aber beim Ueberlauf auf flex-start zurueck, und damit steht der
+  // Anfang wieder oben. Gesehen auf dem Bildschirmabzug, nicht vermutet.
   const inhalt = t.stimme
     ? `<p class="amtLead" style="font-style:italic;">${gEsc(t.blatt)}</p>`
       + t.stimme.map(z => typeof z === 'string'
@@ -22508,7 +22990,7 @@ function szeneTafel(i){
     <p class="amtKopf">${gEsc(AMT_KOPFZEILE)}</p>
     <hr class="amtRegel">
     <div style="min-height:30vh;max-height:56vh;overflow-y:auto;display:flex;
-                flex-direction:column;justify-content:center;">
+                flex-direction:column;justify-content:safe center;">
       ${inhalt}
     </div>
     <hr class="amtRegel unten">
@@ -22623,8 +23105,16 @@ function szeneAssert(){
   // T2: Die Ernennung ist der dritte Stapel. Sie traegt dieselbe Sperre wie das
   // Intro: sie darf das Haus feiern, aber keinen Namen nennen, den der Spieler
   // noch nicht kennen darf. Zwirn ist kein gesperrter Name, er steht im Dorf.
+  // T3: Anlage 2 laeuft gegen die VOLLE AKTE_SPERRE und nicht gegen die
+  // Namensliste wie Intro und Ernennung. Das ist kein Versehen und keine
+  // Strenge um der Strenge willen: die Brandmauer dieser Figur verbietet genau
+  // das, was diese zwoelf Woerter benennen. Beide Auftakte stehen einzeln in
+  // der Liste, damit auch der nachgeholte Weg geprueft wird und nicht nur der
+  // gewoehnliche.
   const stapel = [{name:'Intro', liste:INTRO_BLAETTER, sperre:AKTE_SPERRE_NAMEN},
                   {name:'Ernennung', liste:ERNENNUNG_BLAETTER, sperre:AKTE_SPERRE_NAMEN},
+                  {name:'Anlage 2', liste:[ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER), sperre:AKTE_SPERRE},
+                  {name:'Anlage 2, nachgeholt', liste:[ANLAGE2_AUFTAKT_NACHHOLUNG], sperre:AKTE_SPERRE},
                   {name:'Abspann', liste:abspannBlaetter(), sperre:[]}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);
@@ -22808,6 +23298,143 @@ function szeneAssert(){
     + ` ${fragen} Fragen, ${knoten} Knoten, Sperrvermerk und Antwortdeckel in Ordnung.`);
 }
 szeneAssert();
+
+// ===========================================================================
+//  T3: anlage2Assert()
+//
+//  Anlage 2 bringt vier neue Textquellen mit, und drei davon sieht kein
+//  bestehender Guard vollstaendig: knAssertCaps() misst ihre Deckel und
+//  Formregeln, szeneAssert() nimmt Baum und Tafelstapel, aber die Struktur
+//  dahinter prueft niemand. Genau dort liegen die Fehler, die man beim
+//  Weiterschreiben macht, ohne dass etwas kaputt aussieht.
+//
+//  Der wichtigste Punkt ist der erste: die BRANDMAUER. Anlage 2 war beigefuegt
+//  und nicht eingeweiht, sie kennt das Haus und nicht den Fall. Das ist keine
+//  Stilfrage, sondern die Bedingung, unter der diese Figur ueberhaupt existieren
+//  darf: eine Beilage, die den laufenden Vorgang kommentiert, nimmt fuenf Akte
+//  vorweg. Ein Guard kann Semantik nicht pruefen, aber er kann die zwoelf
+//  Woerter pruefen, an denen man sie erkennt, und er tut es ueber JEDE ihrer
+//  Zeilen, auch die im Rucksack und im Tooltip.
+//
+//  Wirft nie, meldet nur. Bauform wie zulagenAssert() und wiederAssert().
+// ===========================================================================
+function anlage2Assert(){
+  let ok = true;
+  const fehler = (m, ...r) => { ok = false; console.error('T3 Anlage 2:', m, ...r); };
+
+  // (1) Die Brandmauer, ueber jede Zeile, die Anlage 2 im Spiel sagt oder
+  // traegt. Der Baum laeuft zusaetzlich in szeneAssert() gegen dieselbe Liste,
+  // die Tafeln ebenso; hier kommen die beiden Quellen dazu, die dort nicht
+  // vorkommen, weil sie keine Szene sind.
+  const zeilen = [];
+  for(const anlass in ANLAGE2_NOTIZ)
+    for(const e of ANLAGE2_NOTIZ[anlass]) zeilen.push([typeof e === 'string' ? e : e.z, 'Notiz ' + anlass]);
+  for(const l of ANLAGE2_BEWEGUNG) zeilen.push([l, 'Bewegungsspruch']);
+  zeilen.push([anlage2Tooltip().replace(/<[^>]*>/g, ' '), 'Tooltip']);
+  for(const [t, wo] of zeilen)
+    for(const w of AKTE_SPERRE)
+      if(t.indexOf(w) >= 0) fehler('Brandmauer verletzt, sie weiß das nicht', wo, w);
+
+  // (2) Jeder Anlass braucht genug Zeilen OHNE Gate. Ein Pool, der nur aus
+  // gegateten Zeilen bestuende, waere in der ersten Schicht leer, und ein
+  // stummer Kanal sieht aus wie ein kaputter. Vier ist die Zahl, die
+  // Knoeterichs Randnotiz bis T2 hatte, und sie hat sich bewaehrt.
+  for(const anlass in ANLAGE2_NOTIZ){
+    const roh = ANLAGE2_NOTIZ[anlass];
+    const frei = roh.filter(e => typeof e === 'string').length;
+    if(frei < 4) fehler('Anlass hat weniger als vier Zeilen ohne Gate', anlass, frei);
+    // (3) Die Gates selbst: genau ein Schalter je Eintrag, und er muss in der
+    // Tabelle stehen, aus der auch figZusatz() liest. Zwei Schalter saehen aus
+    // wie eine Und-Bedingung und waeren keine.
+    for(const e of roh){
+      if(typeof e === 'string') continue;
+      if(typeof e.z !== 'string' || !e.z) fehler('Gegatete Zeile ohne Text', anlass);
+      const genannt = Object.keys(e).filter(k => k !== 'z');
+      if(genannt.length !== 1){ fehler('Gegatete Zeile nennt nicht genau einen Schalter', anlass, genannt.join()); continue; }
+      const s = genannt[0];
+      if(!(s in ZUSATZ_SCHALTER)){ fehler('Gegatete Zeile nennt einen Schalter, den es nicht gibt', anlass, s); continue; }
+      const m = ZUSATZ_SCHALTER[s].pruef(e[s], e);
+      if(m) fehler('Gegatete Zeile ' + anlass, m);
+    }
+  }
+
+  // (4) Die Anlaesse muessen dieselben sein, die auch ausgeloest werden. Der
+  // Kanal hat mit T3 den Sprecher gewechselt, nicht die Schluessel: die Bank
+  // haengt mit ihren eigenen Pools an denselben, und ein umbenannter Schluessel
+  // wuerde Lott und Pahl verstummen lassen, ohne dass etwas kaputt aussieht.
+  const gerufen = ['crit','levelup','ultimate','fluch','goldfund','kammerAbbruch','untaetigkeit'];
+  for(const a of gerufen) if(!(a in ANLAGE2_NOTIZ)) fehler('Ein Anlass wird gerufen, hat aber keinen Pool', a);
+  for(const a in ANLAGE2_NOTIZ) if(gerufen.indexOf(a) < 0) fehler('Ein Pool wartet auf einen Anlass, den nichts auslöst', a);
+
+  // (5) Die Bewegungsreihe. Sie ist eine Reihe und keine Menge: der Ringschluss
+  // am Ende greift auf die letzten drei zurueck, und das geht erst ab sechs
+  // Eintraegen ohne Ueberschneidung mit dem Anfang. Doppelte Zeilen waeren ein
+  // Copy-Fehler, keine Absicht.
+  if(ANLAGE2_BEWEGUNG.length < 6) fehler('Zu wenige Bewegungssprüche für den Ringschluss', ANLAGE2_BEWEGUNG.length);
+  if(new Set(ANLAGE2_BEWEGUNG).size !== ANLAGE2_BEWEGUNG.length) fehler('Ein Bewegungsspruch steht doppelt in der Reihe');
+
+  // (6) Der Merker und der Zaehler. Beide sind additiv gemergt und damit
+  // migrationsfrei, aber nur solange sie in der Vorgabe stehen: ein Feld, das
+  // dort fehlt, ist nach dem ersten Laden weg.
+  if(!('anlage2Da' in kn.flags)) fehler('Der Merker anlage2Da fehlt in kn.flags');
+  if(!('anlage2Zug' in kn.counters)) fehler('Der Zähler anlage2Zug fehlt in kn.counters');
+
+  // (7) Die Blaetter. Beide Auftakte fuehren in denselben Stapel, und beide
+  // muessen die Tafelform tragen, die szeneTafel() liest.
+  for(const [name, liste] of [['Ernennung', [ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER)],
+                              ['Nachholung', [ANLAGE2_AUFTAKT_NACHHOLUNG].concat(ANLAGE2_BLAETTER)]]){
+    if(liste.length < 4) fehler('Die Einführung ist zu knapp geraten', name, liste.length);
+    for(const b of liste){
+      if(!b.blatt || !Array.isArray(b.stimme) || !b.stimme.length)
+        fehler('Ein Blatt der Einführung trägt die Tafelform nicht', name);
+    }
+  }
+  // Sie muss in ihrer eigenen Einfuehrung auch selbst zu Wort kommen, und zwar
+  // unter ihrem Namen: der Sprechername steht in den Paaren und ist die einzige
+  // Stelle, an der die Tafel sagt, wer da redet.
+  const spricht = ANLAGE2_BLAETTER.some(b => b.stimme.some(z => z && z.wer === 'Anlage 2'));
+  if(!spricht) fehler('In der Einführung spricht Anlage 2 nicht selbst');
+
+  // (8) Der Baum. Vier Dinge, die die Gespraechsregeln des Hauses verlangen und
+  // die szeneAssert() so nicht sieht, weil sie diesen einen Baum betreffen:
+  // er haengt an keiner Dorffigur (sonst laege er auf der F-Taste statt im
+  // Rucksack), sein Sprecher ist immer derselbe (sonst waeren es zwei Figuren),
+  // sein Schild passt in den Deckel, und der Ausgang heisst woertlich so, wie
+  // gespraechAssert() es von jeder Antwortliste verlangt.
+  const b = SZENEN.baumAnlage2;
+  if(!b) fehler('Der Gesprächsbaum fehlt');
+  else {
+    if(b.figur) fehler('Der Baum hängt an einer Dorffigur, dann läge er auf der F-Taste');
+    if(b.sprecher() !== b.sprecher()) fehler('Der Sprecher ist bei jedem Aufruf ein anderer');
+    if(ANLAGE2_FIGUR.kurz.length > SCHILD_DECKEL) fehler('Das Namensschild ist zu lang', ANLAGE2_FIGUR.kurz.length);
+
+    // Der Ausgang. Gesucht wird nicht nach dem Wortlaut, sondern nach dem, was
+    // die Option TUT: jede, die szeneEnde() ruft, verlaesst den Baum und muss
+    // deshalb woertlich "Auf Wiedersehen." heissen, wie gespraechAssert() es
+    // von jeder Antwortliste des Spiels verlangt. Am Wortlaut zu suchen waere
+    // ein Zirkelschluss gewesen, und genau daran ist die erste Fassung dieses
+    // Guards bei der Probe vorbeigelaufen: ein Ausgang, der "Auf Wiederhören."
+    // hiess, fiel aus dem Filter und wurde nicht gemeldet.
+    //
+    // Der Quelltext der Funktion ist dabei die einzige Quelle, die es gibt,
+    // und szeneAssert() liest ihn bei den Merkern seit SZ2 auf demselben Weg.
+    const merkG = szene.gefragt;
+    try {
+      const opts = [];
+      for(const k in b.knoten) if(b.knoten[k].opts) opts.push(...b.knoten[k].opts());
+      // Beide Staende des Hub-Ausgangs, denn er wechselt mit der tiefsten Frage.
+      for(const g of [new Set(), new Set(['was'])]){ szene.gefragt = g; opts.push(b.hubAusgang()); }
+      const raus = opts.filter(o => o && typeof o.tun === 'function' && /szeneEnde/.test(o.tun.toString()));
+      if(!raus.length) fehler('Kein Knoten führt aus dem Baum heraus');
+      for(const o of raus)
+        if(o.t !== 'Auf Wiedersehen.') fehler('Ein Ausgang lautet nicht wörtlich "Auf Wiedersehen."', o.t);
+    } finally { szene.gefragt = merkG; }
+  }
+
+  if(ok) console.log(`T3 Anlage 2: ${Object.keys(ANLAGE2_NOTIZ).length} Anlässe, `
+    + `${ANLAGE2_BEWEGUNG.length} Sprüche in Reihe, ${ANLAGE2_BLAETTER.length + 1} Blätter, Brandmauer in Ordnung.`);
+}
+anlage2Assert();
 
 // --- Guard, Bauform wie rangAssert()/anredeAssert(). Prueft beim Laden drei
 // Dinge, die man beim spaeteren Weiterschreiben genau so verliert:

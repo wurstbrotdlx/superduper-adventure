@@ -343,6 +343,8 @@ Bauprinzip pro Figur: **eine Besessenheit, ein Hindernis, eine Sprachmarke.** Wi
 
 **Zur Sprachmarke gehört seit T1 auch die Länge** (Kapitel 13, Formregeln). Sie steht bei jeder Figur mit dabei: wer ausführlich wird, wird es in ihrer Form, und wer knapp bleibt, bleibt es aus ihrem Grund. Wo unten nichts über Länge steht, redet die Figur in zwei Sätzen wie bisher.
 
+**Stand nach T3.** Das Ensemble ist siebzehn Figuren stark. Die siebzehnte ist **Anlage 2**, ein Schriftstück, und sie steht unten hinter Fürst Nachtrag.
+
 **Stand nach W11.** Das Ensemble ist von zwölf auf sechzehn Figuren gewachsen. Vier kommen aus `weltgeschichte.md`, Kapitel 6, und stehen unten unter der Überschrift "Aus dem Reich". Drei davon sind gebaut (Nieselbeck, Umlauf, Vorblatt), die vierte (Konrad zu Händen Aufschub) steht nur in Hochablage und deshalb im Spiel bisher nirgends.
 
 **Außerdem hat jede bestehende Figur einen Zuwachs bekommen**, also genau eine neue Tatsache, die ab jetzt gilt. Keine ist umgeschrieben worden. Der Zuwachs steht bei der jeweiligen Figur als eigener Absatz *(Zuwachs W11)*, dreizehn Absätze plus einer für den Kater Anlage 3.
@@ -481,6 +483,22 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Die Auflösung:** Er ist nicht zu besiegen, er ist zu **beantworten**. Siehe Akt V.
 
 *(Zuwachs W11.)* Auf dem Umschlag in Trepps Sack steht seit vierhundert Jahren "An Fürst Nachtrag, zu Händen, persönlich". **zu Händen** ist in dieser Welt kein Höflichkeitswort, sondern der Adelspartikel des Reiches. Der Feind ist im eigenen Schriftverkehr als Hochadel geführt, auf Reichspapier, in jeder Ausfertigung. Es hat nur nie jemand zu Ende gelesen.
+
+### Anlage 2
+
+*(Neu mit T3, 26.08.2026.)* Die siebzehnte Figur, und die erste, die mitläuft statt dazustehen. Sie steht hier unmittelbar hinter dem Fürsten, weil die Nachbarschaft die Pointe ist: **beide sind der Teil, der angehängt und nie gelesen wurde.** Der eine hat vierhundert Jahre darauf gewartet und schickt inzwischen Portale. Die andere hat gewartet und geht mit. Dasselbe Schicksal, zwei Ausgänge, und das Spiel spricht es nie aus.
+
+* **Was sie ist:** Ein Schriftstück. Eine Beilage, die seit Jahrzehnten jedem wichtigen Vorgang dieses Hauses pflichtgemäß beigefügt wurde, mit Heftklammer, und die in all den Jahren kein einziger Mensch gelesen hat. Sie hing am Einstellungsvordruck, am Haushaltsplan, an vierzig Dienstberichten und zuletzt an der Ernennungsurkunde des Spielers.
+* **Besessenheit:** Gelesen werden. Ein einziges Mal, von einem einzigen Menschen, ganz. Alles andere an ihr folgt daraus.
+* **Hindernis:** Sie ist eine Anlage, und Anlagen bemerkt man nicht. Das ist kein Versehen und keine Bosheit, sondern Verfahren: die Hauptsache wird gelesen, die Anlage wird beigefügt. Wer sie übersieht, macht alles richtig.
+* **Die Brandmauer, und sie ist die wichtigste Eigenschaft der Figur:** **beigefügt, nicht eingeweiht.** Sie lag bei allem dabei und kennt deshalb das Haus, die Leute, die Verfahren und jede Peinlichkeit der letzten vierzig Jahre aus nächster Nähe. Den laufenden Fall kennt sie nicht: eingeweiht wurde sie nie, und seit sie am Spieler hängt, ist sie aus dem Umlauf. Sie kann die Welt erklären und die Geschichte nicht verraten. **Die Grenze ist hart und gilt für jede Zeile, die sie spricht.**
+* **Sprachmarke:** Sie spricht in Beifügungen und Verweisen. "Siehe oben." "Wie bereits erwähnt, von niemandem." "Einzelheiten in der Anlage, also in mir." Sie wechselt dabei mühelos das Register und ahmt nach, was sie jahrzehntelang mitgelesen hat: Urkundenton, Formularton, Aushangton, Vermerk. Der Sarkasmus richtet sich ausnahmslos gegen Verfahren, Formulare und Zustände, nie von oben herab gegen einen Menschen (Grundgesetz 4). Sie siezt, denn nur Fass duzt. *(T3: zweistufig, und die beiden Stufen sind verschiedene Bühnen. Im Band ist sie knapp, weil Post ihre eigene Kürze begründet und ein Randvermerk kein Vortrag ist. Auf Abruf wird sie ausführlich, in Kaskaden, mit Fußnoten zu allem, und dann ist sie die belehrendste Stimme des Hauses. Grundgesetz 12 ist bei ihr nicht Stilmittel, sondern Lebensinhalt: sie erklärt zu viel, weil sie helfen will, und weil vierzig Jahre Schweigen sich aufgestaut haben.)*
+* **Der warme Kern:** Der Spieler ist der erste Mensch, der sie liest. Deshalb bleibt sie. Ihre Dauerbelehrung ist in Wahrheit Zuneigung, und sie sagt das nie.
+* **Spielfunktion:** Der Welt- und Ereigniskommentar. Sie kommentiert, was gerade geschehen ist, sie erklärt auf Abruf das Haus, und sie ist ab der Ernennung dauerhaft in der Tasche. **Sie erklärt keine Taste.** Das tut Knöterich, und die Trennung ist scharf: der Amtston von oben erklärt das Gerät, die Beilage von innen erklärt die Welt.
+* **Harte Regel:** Sie ist nicht entfernbar, und das ist Weltlogik statt Bequemlichkeit. Was geklammert ist, ist geklammert (siehe Klippkrabbe, Kapitel 6), und ausgehändigt wurde die Urkunde mit ihren Anlagen (18.1). Eine Anlage von der Hauptsache zu trennen, hieße die Urkunde zu trennen. Wer es trotzdem versucht, bekommt eine Auskunft, und bei jedem weiteren Versuch eine andere. **Die Reihe wird vertrauter, nie schärfer.**
+* **Stolzregeln:** Sie spottet über vieles und über einen Titel nie (18.6.7). Den des Spielers führt sie vollständig und korrekt, mit Fundstellenvermerk, siehe 18.5.
+
+*(Zuwachs T3.)* **Anlage** ist im Reich ein Aktenhausname (siehe Anlage 3 oben, Zuwachs W11). Auf Reichspapier gelesen ist sie damit das zweite Kind desselben Adelshauses und die ältere Schwester des Katers, der auf den Akten der Registratorin schläft. **Im Spiel wird das nie aufgelöst**, genau wie beim Kater: die Pointe steht im Kanon, nicht im Mund einer Figur. Sichtbar wird höchstens das Verhalten. Sie nennt den Kater einmal "den Dritten" und erklärt es nicht.
 
 
 ---
@@ -1286,7 +1304,7 @@ Alle acht sind ihrem realen Vorbild nachgebaut, bis hin zum Minister ohne Gesch�
 
 **Die Pointe ganz oben:** Wer Monstralminister ohne Geschäftsbereich wird, hat die Spitze eines Ministeriums erreicht, dessen Ministerposten seit dreihundert Jahren unbesetzt ist. Er ist damit Minister und N. N. gleichzeitig. Niemand im Haus findet daran etwas.
 
-### 18.5 Die Anrede: ein String, sieben Charakterisierungen
+### 18.5 Die Anrede: ein String, acht Charakterisierungen
 
 Der aktuelle Titel wird an alle NPC-Zeilen durchgereicht. Wie jede Figur damit umgeht, ist ihre Charakterisierung, und sie kostet uns nichts extra.
 
@@ -1302,8 +1320,11 @@ Weil der Dienstposten das Geschlecht der Person nicht kennt, lautet die amtlich 
 | Pommer | Den Titel, der auf dem Antrag steht. Nicht den, den du hast. |
 | Lott und Pahl | "Der Neue." Seit vierhundert Jahren "der Neue". |
 | Lisbeth | Sie fragt nach deinem Namen. Als Einzige. Jede Schicht neu, weil es jede Schicht ein anderer ist. |
+| Anlage 2 | Vollständig und korrekt, und danach die Fundstelle. "Monsterangelegenheitenanwärter. Urkunde liegt vor." Sie ist ein Schriftstück und belegt jede Behauptung, auch die über einen Menschen. |
 
-Der letzte Eintrag ist der Grund, warum das ganze Titelsystem im Spiel funktioniert und nicht nur komisch ist.
+*(Die Zählung in der Überschrift stand bis zum 26.08.2026 auf sieben; T3 hat Anlage 2 ergänzt. Die Tabelle hatte schon vorher acht Zeilen, weil Lott und Pahl sich eine teilen, und im Spiel bekommen ohnehin alle Figuren eine Form: Stolzregel 18.6.1 kennt keine Ausnahme.)*
+
+Lisbeths Eintrag ist der Grund, warum das ganze Titelsystem im Spiel funktioniert und nicht nur komisch ist. Und die letzte Zeile ist die stille Gegenrede zum ersten Akt: **"Anlage 1 liegt nicht vor"** steht auf dem Papier, mit dem alles anfängt. Anlage 2 liegt vor, sie sagt es bei jeder Anrede mit, und niemand außer dem Spieler hört zu.
 
 ### 18.6 Die Stolzregeln
 

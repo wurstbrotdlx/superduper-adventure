@@ -1,4 +1,4 @@
-# Figurenleben, Lieferung F1a — ERLEDIGT (18 von 18 Figuren)
+# Figurenleben, Lieferung F1a — ERLEDIGT (18 von 18 Figuren, plus Anlage 2 aus T3)
 
 Inhaltslieferung zu Bauabschnitt **F1** (`superduper-figurenleben-prompt.md`), Teil A: die
 Hintergrundgeschichten. Sie sind die Grundlage für die Dialogzeilen (F1c) und die
@@ -1132,6 +1132,98 @@ bleibt die einzige Ausnahme von der Regel, dass Monster keine Titel haben.
 
 ---
 
+## Anlage 2 — Beilage
+
+*(Nachgetragen mit Bauabschnitt T3, 26.08.2026. Die neunzehnte Figur der Datei und die
+einzige, die nach F1 dazugekommen ist. Sie folgt demselben Muster wie die achtzehn davor,
+mit einer Abweichung: bei **Herkunft** steht kein Geburtsort, weil ein Schriftstück
+ausgefertigt wird und nicht geboren.)*
+
+**Besessenheit.** Gelesen werden. Einmal, ganz, von einem Menschen. Nicht überflogen, nicht
+abgeheftet, nicht zur Kenntnis genommen. Gelesen.
+
+**Hindernis.** Sie ist eine Anlage. Anlagen werden beigefügt, nicht gelesen, und wer sie
+übersieht, macht nichts falsch. Das Verfahren ist auf ihrer Seite und arbeitet gegen sie.
+
+**Sprachmarke.** Spricht in Beifügungen und Verweisen. „Siehe oben." „Wie bereits erwähnt,
+von niemandem." „Einzelheiten in der Anlage, also in mir." Sie wechselt das Register
+mitten im Satz und ahmt nach, was sie jahrzehntelang mitgelesen hat: Urkundenton,
+Formularton, Aushangton, Vermerk, Rechtsbehelfsbelehrung. Sie siezt.
+
+*(T3.)* Zweistufig, und die beiden Stufen sind verschiedene Bühnen. Im Randband ist sie
+knapp, weil ein Vermerk am Rand knapp ist und Post ihre eigene Kürze begründet. Auf Abruf
+wird sie ausführlich, in Kaskaden, mit Fußnoten zu allem, und dort ist sie die belehrendste
+Stimme des Hauses. Der Sarkasmus trifft ausnahmslos Verfahren, Formulare und Zustände.
+Über einen Menschen spottet sie nie, und über einen Titel schon gar nicht.
+
+**Herkunft.** Ausgefertigt vor Jahrzehnten, in einem Vorgang, dessen Hauptsache längst
+erledigt ist. Seither ist sie beigefügt worden: dem Einstellungsvordruck, dem
+Haushaltsplan, vierzig Dienstberichten, zwei Bauanträgen für ein Dorffest, einer
+Beschwerde über eine Beschwerde und zuletzt der Ernennungsurkunde des Spielers. Immer mit
+Heftklammer, immer als Letztes, immer ungelesen.
+
+**Der Riss.** Sie weiß genau, wie oft sie beigefügt war. Sie hat mitgezählt. Sie nennt die
+Zahl nicht, und wer sie danach fragt, bekommt eine Auskunft über Zählweisen.
+
+**Das Geheimnis.** Sie hat vierzig Jahre lang zugehört, weil ihr nichts anderes übrig
+blieb, und weiß deshalb Dinge über dieses Haus, die außer Knöterich niemand weiß. Der
+Unterschied zwischen den beiden ist die Grenze dieser Figur: **er darf nicht sagen, was er
+weiß, sie weiß nicht, was sie nicht gehört hat.** Beigefügt, nicht eingeweiht. Sie war bei
+allem dabei und in nichts drin, und deshalb kann sie das Haus erklären und die Sache nicht
+verraten.
+
+**Der blinde Fleck.** Sie hält sich für unwichtig und begründet das mit dem Verfahren, statt
+zu merken, dass sie gerade jemandem etwas erklärt, der zuhört. Sie bemerkt es die ganze
+Zeit nicht. Der Spieler bemerkt es sofort.
+
+**Drei Verhältnisse.**
+
+* **Zu Knöterich:** Sie haben vierzig Jahre nebeneinander geschwiegen, aus verschiedenen
+  Gründen. Sie hält ihn für den einzigen im Haus, der ordentlich arbeitet, und sagt das
+  nie in seiner Hörweite. Er weiß nicht, dass sie da ist. Anlagen bemerkt man nicht.
+* **Zu Anlage 3:** Der Kater liegt auf den Akten, sie hing an ihnen. Sie haben dieselbe
+  Fundstelle bewohnt, von zwei Seiten. Sie nennt ihn „den Dritten", ohne zu erklären,
+  warum, und sie tut es genau einmal.
+* **Zu Bramsche:** Die Registratorin ist die einzige Person im Haus, die eine Anlage
+  jemals als Anlage angesprochen hat, nämlich in einem Verzeichnis. Anlage 2 rechnet ihr
+  das hoch an. Bramsche hat es als Ablagevorgang gemeint.
+
+**Was sie nie sagen wird.**
+
+1. **Was im laufenden Vorgang steht.** Nicht andeutungsweise, nicht als Vermutung, nicht
+   in einer Fußnote. Sie war beigefügt, nicht eingeweiht, und das ist keine Verschwiegenheit
+   wie bei Knöterich, sondern schlichtes Nichtwissen. Sie kann darüber nicht einmal lügen.
+2. **Dass sie mitgeht, weil jemand sie liest.** Sie begründet ihr Bleiben ausschließlich
+   mit der Klammer und der Aushändigung. Beides stimmt sogar.
+3. **Ihre eigene Hausnummer als Rangfrage.** Was „Anlage" auf Reichspapier bedeutet, wird
+   von ihr nie ausgesprochen, genau wie beim Kater.
+4. **Kesselgrammatik.** Sie hat bei vielem dabeigelegen, beim Kessel nie. Der Sperrvermerk
+   aus Kapitel 7 gilt für sie wie für alle.
+
+**Die eine neue Tatsache.** *(neu)* **Sie ist an der Ernennungsurkunde beigefügt worden,
+und die Urkunde sagt es selbst.** Auf dem Bogen steht unten, klein, zwischen Siegelvermerk
+und Rand: „Anlagen: eine." Zwirn liest jede Zeile der Urkunde laut vor, auch diese, und
+niemand im Raum hört hin, er selbst eingeschlossen. Der Satz ist damit die einzige Stelle
+im ganzen Spiel, an der die Figur angekündigt wird, bevor sie auftritt.
+*Widerspricht nichts: die Urkunde stammt aus T2 und wird nur ergänzt, nicht geändert; „Anlage
+1 liegt nicht vor" bleibt unangetastet, denn Anlage 1 gehört zu einem anderen Vorgang.*
+
+**Gesprächsstoff.** Was eine Anlage ist und warum sie niemand liest. Wie das Haus zum
+Ministerium wurde, ohne eine Stelle dazuzubekommen. Warum auf zwei Türen dasselbe steht.
+Wer im Haus welche Formulare erfindet. Warum der Amtsmarsch nach dem dritten Takt abbricht.
+Was in vierzig Dienstberichten immer gleich blieb. Alles Haus, alles Leute, alles Verfahren.
+Nichts über den Fall.
+
+**Prüfnotiz.** Ein Fund, und er ist eine Entscheidung: **Anlage 2 bekommt kein eigenes
+Kürzel.** Die Abkürzungstabelle unten steht auf zwölf, „mehr nicht", und ein dreizehntes
+hätte diese Zusage gebrochen. Der Verzicht ist die bessere Pointe und passt zur Figur: wer
+möchte, dass man ihn liest, kürzt nichts ab. Abgekürzt wird nach Kapitel 13, was nicht
+wichtig genug ist, um ausgeschrieben zu werden, und Anlage 2 schreibt deshalb alles aus,
+auch „siehe oben". Bestehende Kürzel darf sie zitieren, sie lösen sich an ihren
+angestammten Stellen auf.
+
+---
+
 ## Anlage 3 — Kater
 
 Ein halber Abschnitt, weil er ein Kater ist. Er bekommt keine Zeile.
@@ -1174,6 +1266,10 @@ Der laufende Gag über die Kurzform (Prompt, Abschnitt 9). **Zwölf Kürzel, meh
 sind Bestand und werden nur eingetragen, acht sind neu und verteilen sich über die fünf
 Stufen. Diese Tabelle ist die einzige Stelle, an der die Langformen stehen; sie wird in F1b
 als Konstante `ABKUERZUNGEN` in den Code übernommen und dort geprüft.
+
+*(T3, 26.08.2026: die Zwölf steht. Anlage 2 ist dazugekommen und hat ausdrücklich **kein**
+eigenes Kürzel bekommen, obwohl sie als Schriftstück das nächstliegende Recht darauf
+hätte. Begründung in ihrer Prüfnotiz oben: wer gelesen werden will, kürzt nichts ab.)*
 
 | # | Kürzel | Langform | Wer benutzt es | Ab | Auflösbar bei | Stufe |
 |---|---|---|---|---|---|---|
