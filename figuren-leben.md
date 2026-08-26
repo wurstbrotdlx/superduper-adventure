@@ -1262,6 +1262,17 @@ offenen Tafel.
 in der Nähe steht. Der Spieler bemerkt das mit der Zeit. Sie bemerkt es nie, und das ist
 derselbe blinde Fleck wie oben: wer sich für unwichtig hält, zählt seine Zuhörer nicht.
 
+**Die Wahl, die keine ist.** *(T6.)* Ihr Erstkontakt bietet dem Spieler an, sie nicht zu
+lesen, und nimmt das Nein nicht an: vier Ablehnungen, dann ist der Knopf ausgegraut und eine
+Störungsmeldung behauptet einen technischen Fehler. **Überredet wird vom Amt, nie von ihr.**
+Sie steht daneben, wird zusehends verlegen und distanziert sich, und sie bittet den Spieler
+kein einziges Mal. Das ist keine Feinheit, sondern die Figur: eine Anlage, die ums
+Gelesenwerden bettelt, ist nicht mehr die Anlage, die in vierzig Jahren keine einzige
+Nachfrage bekommen hat. Der Apparat ist der Täter, ihre Würde bleibt heil, und deshalb trägt
+„Sie lesen gerade." zwei Blätter später immer noch. Kosten entstehen keine: ablehnen bringt
+keinen Nachteil, und der einzige Nachhall ist eine Umschlagzeile für die, die bis zum grauen
+Knopf durchgehalten haben. Die Störungsmeldung wird übrigens der Anlage beigefügt.
+
 **Prüfnotiz.** Ein Fund, und er ist eine Entscheidung: **Anlage 2 bekommt kein eigenes
 Kürzel.** Die Abkürzungstabelle unten steht auf zwölf, „mehr nicht", und ein dreizehntes
 hätte diese Zusage gebrochen. Der Verzicht ist die bessere Pointe und passt zur Figur: wer

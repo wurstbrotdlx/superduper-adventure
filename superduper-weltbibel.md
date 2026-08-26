@@ -552,6 +552,14 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 * **Das Weltgesetz darf sie aussprechen, erklären und darüber belehren.** *(Geändert am 26.08.2026, siehe Kapitel 1. Bis dahin stand hier, sie erzähle nur die Folgen und sage den Satz nie.)* Es ist die oberste Doktrin des Hauses, sie hat sie vierzig Jahre lang auf jedem Deckblatt mitgelesen, und **sie ist die Figur, die sie am besten erklären kann**: nicht weil sie klüger wäre, sondern weil sie als einzige nichts zu verlieren hat, wenn sie einmal geradeheraus sagt, was hier eigentlich los ist. Wer sie danach fragt, bekommt den Satz, die vier Folgen und ungefragt drei Beispiele dazu.
 
 
+*(Zuwachs T6, 26.08.2026.)* **Der Erstkontakt bietet eine Wahl an, die keine ist.** Der Spieler darf entscheiden, ob er sie liest. Sagt er nein, meldet sich das **Amt** und überredet ihn über vier Stufen, bis der Nein-Knopf ausgegraut ist und eine Störungsmeldung einen technischen Fehler behauptet. Drei Festlegungen gehören zum Kanon und nicht zur Mechanik:
+
+* **Überredet wird vom Apparat, nie von ihr.** Sie wird dabei zusehends verlegen, distanziert sich („Das bin nicht ich. Ich hatte gerade erst aufgehört, so zu reden.") und bittet den Spieler kein einziges Mal. Eine Anlage, die ums Gelesenwerden bettelt, ist nicht mehr die Anlage, die in vierzig Jahren keine Nachfrage bekommen hat. **Der Apparat ist der Täter, ihre Würde bleibt heil**, und deshalb trägt das fünfte Blatt („Sie lesen gerade.") danach immer noch.
+* **Der Preis bleibt null** (Bauteil B2). Ablehnen kostet nichts, bringt keinen Nachteil und wird nirgends vorgeworfen. Der einzige Nachhall ist eine Umschlagzeile, und die ist warm.
+* **Der Ton, den T5c ihr genommen hat, kommt sofort zurück, nur aus einer anderen Ecke.** Sie hat sich vom Amtsdeutsch gelöst, das Haus nicht. Das ist kein Widerspruch zu T5c, sondern seine Probe: die Distanz hält.
+
+**Warum das die Behörde in einem Satz ist:** Das Haus stellt Ihnen frei, was es längst entschieden hat.
+
 ---
 
 ### Aus dem Reich (neu mit W11)
@@ -1290,6 +1298,10 @@ Zu bauen bleiben vier Stücke, und sie sind bewusst getrennt, weil sie verschied
 **Die eine Grenze, die durch alle fünf läuft, ist der Sperrvermerk und nicht das Weltgesetz.** *(Geändert am 26.08.2026: hier stand bis dahin, das Weltgesetz bleibe unausgesprochen. Es fällt, siehe Kapitel 1.)* Das Weltgesetz darf in T5b und T5d gesagt, erklärt und als Doktrin zitiert werden, und es soll, denn es ist der kürzeste Weg zu einem Spieler, der versteht, worum es geht. Was weiter gesperrt bleibt, ist der **Fall**: die Akte, Anlage 1 und was in ihr steht (`AKTE_SPERRE`). Wie die Welt funktioniert, darf jeder wissen; was in dieser einen Akte steht, nicht. Wer beim Schreiben unsicher wird, prüft nicht, ob die Zeile das Gesetz nennt, sondern ob sie den Vorgang verrät.
 
 **Reihenfolge und Grund:** T5a zuerst, weil es nichts kaputtmachen kann. T5c vor T5b, weil ihre neuen Erklärzeilen sonst im alten Ton entstünden und zweimal geschrieben werden müssten. T5d nach T5b, weil beide denselben Stoff tragen und der spätere vom früheren lernt. ~~und sich sonst doppeln~~ **Die Doppelung ist ausdrücklich erwünscht** (Ansage vom 26.08.2026): das Intro läuft einmal und ist irgendwann lange her, Anlage 2 ist immer da. Dasselbe zweimal zu hören ist bei einer Welt, die man verstehen muss, kein Fehler, sondern der Sinn. T5e zuletzt, weil es die Zahl aus dem Messlauf braucht und weil jede seiner Änderungen an einem Zeichendeckel und einem Guard vorbeimuss. **T5a bis T5d sind am 26.08.2026 erledigt worden, T5e ist offen.**
+
+### T6: Die Entscheidung, die keine ist — ERLEDIGT (siehe `phase-t6-scheinwahl.md`)
+
+Beim Erstkontakt darf der Spieler wählen, ob er Anlage 2 liest, und das Haus nimmt das Nein nicht an. Vier Ablehnungen, dann ist der Knopf ausgegraut und eine Störungsmeldung behauptet einen technischen Fehler. **Überredet wird vom Apparat, nicht von ihr**: sie wird verlegen, distanziert sich und bittet kein einziges Mal. Das ist die Behörde in einem Satz, und es ist dieselbe Pointe wie die Figur selbst, von der anderen Seite gelesen.
 
 ### Was wir ausdrücklich nicht bauen
 
