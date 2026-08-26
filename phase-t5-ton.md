@@ -456,6 +456,26 @@ ist manchmal sehr lange her." Das Intro läuft einmal, Anlage 2 ist immer da.
 Introblätter steht bei 39 Prozent und ist ausgenommen: dort ist der Amtston der
 Gegenstand, die Blätter **sind** die Dokumente. Knappheit 2 Prozent.
 
+## 5e. Die Hausmitteilung, nachgezogen
+
+Die README verpflichtet dazu: **wer einen Bauabschnitt ändert, der dort genannt
+ist, ändert den Punkt mit.** T5 hat vier sichtbare Änderungen gebracht, also
+bekommt die Mitteilung vier Punkte, in normalem Deutsch nach der eigenen neuen
+Formregel: die Hinweise reden Deutsch, Anlage 2 legt den Amtston ab, Anlage 2
+erklärt die Welt, der Anfang zeigt mehr davon.
+
+**Der Stempel musste mit.** `NEUERUNGEN.stand` ist ein String-Vergleich; ohne
+neuen Wert sähe die T5-Hälfte niemand, der die Mitteilung von heute Morgen
+schon weggeklickt hat. Neuer Wert: `2026-08-26-t5`, am selben Tag.
+
+**Der vierte Punkt sagt ehrlich, dass er die meisten nicht betrifft:** „Beim
+ersten Dienstantritt. Wer den hinter sich hat, sieht es nicht noch einmal."
+Eine Wo-Zeile, die auf etwas zeigt, das der Leser nie zu sehen bekommt, wäre
+genau der Fund vom U9-Auslieferungstag.
+
+`tools/mitteilung-pruef.mjs`: **32 von 32**, elf Punkte, jeder mit Weg, und die
+genannten Tasten werden im Lauf wirklich gedrückt.
+
 ## 6. Was offen bleibt
 
 Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
