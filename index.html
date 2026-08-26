@@ -583,6 +583,14 @@
   #knRandnotiz.a2::before{content:'*';color:#ceb699;border-color:#8e7e66;
     transform:rotate(0deg);padding:2px 5px;}
   #knRandnotiz.a2{border-color:#8e7e66;color:#e8dcc0;}
+  /* T5: derselbe Sprecher, aus der Haltung gefallen. Die Marke bleibt stehen,
+     sie ist weiterhin die Beilage; was wegfaellt, ist die Kursive. Kursiv
+     liest sich wie ein Randvermerk, und ein Ausbruch ist keiner. Eine Spur
+     heller, mehr nicht, und keine Sekunde laenger: zwei Sekunden spaeter
+     faellt die Ruecknahme an dieselbe Stelle und nimmt beides zurueck, den
+     Satz und die Farbe. */
+  #knRandnotiz.a2.ausbruch{font-style:normal;color:#f6e8c6;border-color:#a89272;}
+  #knRandnotiz.a2.ausbruch::before{color:#e0c9a4;border-color:#a89272;}
   /* T4: dasselbe Band, dieselbe Stimme, keine Maske. Der Umschlag ist die
      Stelle, an der Anlage 2 aufhoert zu kommentieren und nur noch feststellt.
      Deshalb faellt die Marke weg: eine Beilage verweist auf etwas, und hier
@@ -10793,7 +10801,11 @@ const kn = {
   // vertrauter. Deshalb steht er persistiert bei den uebrigen und nicht als
   // Sitzungsvariable: wer morgen weiterzieht, zieht dort weiter, wo er gestern
   // aufgehoert hat, sonst faengt die Vertrautheit jeden Tag von vorne an.
-  counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0, anlage2Zug:0},
+  // T5: anlage2Ruhig zaehlt die gefassten Zeilen seit dem letzten Ausbruch. Er
+  // steht persistiert bei den uebrigen und aus demselben Grund wie anlage2Zug:
+  // wer morgen weiterspielt, soll nicht jeden Morgen drei ruhige Zeilen lang
+  // auf den ersten Ausbruch warten. Additiv gemergt und damit migrationsfrei.
+  counters:{traenke:0, kammerAbbrueche:0, maxKillsSchicht:0, levelUps:0, ultimates:0, fluchAngelegt:0, anlage2Zug:0, anlage2Ruhig:0},
   // W-Nörgel: hatLagerGesehen steht in derselben Reihe wie hatKammerBetreten —
   // einmal im Leben wahr, danach für immer. Er schaltet Nörgels Lagerzeilen frei
   // (DORF_FIGUREN, Feld zusatz). Ein alter Spielstand ohne das Feld lädt ohne
@@ -10969,7 +10981,10 @@ const ANLAGE2_NOTIZ = {
          'Sauber getroffen. Das können Sie also.',
          'Im Haus hieße das Bearbeitung. Hier: bumm.',
          'Getroffen. Ich habe zugesehen.',
-         {z:'Sie werden besser. Ich merke sowas.', abStufe:5},
+         // T5: von Stufe 5 auf 3. Die waermsten Zeilen dieser Figur lagen hinter
+         // Gates, die viele Spieler nie erreichen, und eine Zuneigung, die erst
+         // nach Stunden anfaengt, ist im Zweifel gar keine.
+         {z:'Sie werden besser. Ich merke sowas.', abStufe:3},
          {z:'Sie werden wirklich besser. Ehrlich.', merker:'anlage2Dank'}],
   ultimate: ['So viel Getöse. Mir gefällt es.',
              'Das Konfetti zahlt am Ende jemand.',
@@ -11004,7 +11019,7 @@ const ANLAGE2_NOTIZ = {
                  'Pause. Ich sage keinem was.',
                  'Ich habe Jahrzehnte gewartet. Nur zu.',
                  'Stillstand. Da kenne ich mich aus.',
-                 {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:5},
+                 {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:3},   // T5, siehe crit
                  {z:'Sie sehen nach. Wie besprochen.', merker:'anlage2Dank'},
                  {z:'Wir zwei. Sonst niemand. Angenehm.', allein:true}],
   // T4: die drei neuen Anlaesse. Sie schliessen die Luecken im Bogen, die T3
@@ -11077,6 +11092,15 @@ const ANLAGE2_UMSCHLAG = [
 //
 // Sie wird vertrauter, nie schaerfer. Kein Eintrag schimpft, keiner belehrt von
 // oben herab, keiner macht sich ueber den lustig, der zieht.
+//
+// T5 hat diesen Satz praezisiert, weil er zu weit gefasst war und dabei die
+// falsche Sache verboten hat: gemeint ist "nie schaerfer GEGEN DEN SPIELER",
+// nicht "nie laut". Hier in der Bewegungsreihe faellt beides zusammen und der
+// Satz gilt woertlich weiter, denn wer zieht, ist immer der Spieler. Fuer die
+// Anlaesse gilt er ab T5 nur noch in der ersten Fassung: sie darf hochfahren,
+// gegen ein Verfahren, gegen ein Formular, gegen sich selbst. Nie gegen den,
+// der zuhoert. Diese Grenze steht nicht nur hier, sie steht als Pruefung in
+// anlage2Assert() (2c).
 const ANLAGE2_BEWEGUNG = [
   'Das ist eine Heftklammer. Kein Vorschlag.',
   'Ich bin beigefügt. Das ist ein Zustand.',
@@ -11089,6 +11113,77 @@ const ANLAGE2_BEWEGUNG = [
   'Ich weiß. Ich wäre auch neugierig.',
   'Sie sind der Erste, der es versucht.',
 ];
+
+// ===========================================================================
+//  T5: Der Ausbruch. Sie hatte einen Käfig und keinen Puls.
+// ===========================================================================
+//
+// Der Befund, der diesen Abschnitt ausgeloest hat, stand nicht in einem Guard,
+// sondern im Bestand: rund sechzig Zeilen, und praktisch jede folgt derselben
+// Bauform. Eine Feststellung, dann ein zweiter kurzer Satz, der sie ins
+// Amtliche dreht. Das ist ihre Haltung, und sie ist richtig. Aber eine Haltung
+// ist kein Temperament, und wer sechzigmal dieselbe Kadenz hoert, hoert eine
+// Figur, die nie ueberrascht wird.
+//
+// Zwei Regeln waren dafuer verantwortlich, und KEINE davon war die Brandmauer:
+//   * der 44er-Deckel macht jede Zeile gleich lang, und gleiche Laenge klingt
+//     nach gleichem Puls
+//   * "vertrauter, nie schaerfer" (bei ANLAGE2_BEWEGUNG) war zu weit gefasst.
+//     Gemeint war: nie schaerfer GEGEN DEN SPIELER. Dastehen tat: nie laut.
+//
+// Ein Ausbruch ist deshalb ZWEITEILIG, und das Paar ist die ganze Figur:
+// sie faehrt hoch und faengt sich sofort wieder, weil sie eine Anlage ist.
+//   auf      der Ausbruch. Kurz, unregelmaessig, Deckel 30 statt 44.
+//   zurueck  die Ruecknahme, zwei Sekunden spaeter im selben Band.
+// Zwei Baender uebereinander gibt es nicht (T3-6, das Band ist eine Flaeche
+// und keine Liste), also loest der Takt das ab: erst der Ausbruch, dann faellt
+// die Ruecknahme an dieselbe Stelle. Wer wegsieht, liest nur den zweiten Satz,
+// und auch das stimmt dann.
+//
+// raten:true kennzeichnet die zweite Bauart, und sie ist der eigentliche Fund
+// dieses Abschnitts: SIE DARF FALSCH LIEGEN. Eine Figur, die vorprescht und
+// danebentippt, verraet nichts, sie KANN nichts verraten, sie war ja nicht
+// eingeweiht. Das ist keine Umgehung der Brandmauer, das ist ihr staerkster
+// Beweis, und es ist die waermste Stelle, die diese Figur haben kann: der
+// Spieler weiss es besser, hoert sie raten und korrigiert sie nicht.
+//
+// Deshalb nimmt die Ruecknahme eines Rate-Paars die Vermutung ausdruecklich
+// zurueck. Ein Tipp, der stehen bleibt, waere eine Behauptung ueber den Fall,
+// und genau die darf sie nicht haben.
+//
+// Kein Ausbruch bei niederlage. T4 hat das entschieden und es bleibt: wer
+// jemandem in sein Scheitern hineinredet, ist ein Kommentator, kein Begleiter.
+const ANLAGE2_AUSBRUCH = {
+  crit: [
+    {auf:'Ja! Genau da hin.',        zurueck:'Verzeihung. Das war unsachlich.'},
+    {auf:'Oh. Oh, das war gut.',     zurueck:'Ich sage sonst nichts dazu.'},
+  ],
+  ultimate: [
+    {auf:'Was! Was war das denn!',   zurueck:'Ich habe mich erschrocken. Papier.'},
+  ],
+  levelup: [
+    {auf:'Endlich! Endlich einmal.', zurueck:'Das kam zu laut. Ich nehme es zurück.'},
+  ],
+  goldfund: [
+    {auf:'Das nehmen wir mit!',      zurueck:'Es steht mir nicht zu, das zu sagen.'},
+    {auf:'Das ist der Haushaltsrest.', zurueck:'Oder auch nicht. Ich rate nur.', raten:true},
+  ],
+  fluch: [
+    {auf:'Ich tippe auf Formfehler.', zurueck:'Vermutlich falsch. Ich lag nur dabei.', raten:true},
+  ],
+  kammerAbbruch: [
+    {auf:'Da war bestimmt nichts drin.', zurueck:'Ich weiß es nicht. Ich rate.', raten:true},
+  ],
+  bosssieg: [
+    {auf:'Das! Genau das eben!',     zurueck:'Entschuldigung. Ich bin nur Papier.'},
+  ],
+  ebene: [
+    {auf:'Nein. Nein, nicht hier runter.', zurueck:'Sie gehen ja doch. Ich bleibe dran.'},
+  ],
+  untaetigkeit: [
+    {auf:'Fragen Sie mich doch mal was.', zurueck:'Das war zu direkt. Bitte vergessen.'},
+  ],
+};
 
 // ===========================================================================
 //  F1b: Die Schalter eines Zusatzblocks, und die Kurzform-Tabelle
@@ -11277,6 +11372,12 @@ function knAssertCaps(){
   // Deckel und dieselben sechs Textpruefungen. Er darf nicht laenger sein, nur
   // weil er stiller ist.
   for(const u of ANLAGE2_UMSCHLAG) rows.push([u.z,44]);
+  // T5: der Ausbruch bekommt einen eigenen Deckel, und das ist nicht Bequemlichkeit,
+  // sondern der Befund dieses Abschnitts: 44 fuer alles machte jede Zeile gleich
+  // lang, und gleiche Laenge klingt nach gleichem Puls. Der Ausbruch ist kurz
+  // (30), die Ruecknahme darf sich Zeit nehmen (40). Die sechs Textpruefungen
+  // dahinter laufen unveraendert ueber beide Haelften.
+  for(const a in ANLAGE2_AUSBRUCH) for(const p of ANLAGE2_AUSBRUCH[a]) rows.push([p.auf,30],[p.zurueck,40]);
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
   // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
   // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
@@ -11420,6 +11521,11 @@ let knLastZettelT = -999, knBudgetShown = 0;
 let knLastRandnotizT = -999, knRandLastLine = {};
 let knIdleT = 0, knFrameCtr = 0, knClosingId = null, knNfIdx = -1, knBegruessungPending = null;
 let knCurseWasOn = false;
+// T5: die offene Klammer eines Ausbruchs, {z, at}. Laufzeit und nie
+// persistiert, und das ist keine Sparsamkeit: eine Ruecknahme, die einen
+// Neustart uebersteht, faellt zu einem Ausbruch, den niemand mehr gehoert hat.
+// Wer den Browser mitten im Satz schliesst, hat den Satz nicht gehoert.
+let a2Nachklapp = null;
 // Je Ruhephase genau ein Steckenbleib-Schubs (gameplay:346/448) und genau eine
 // Zeile zur Untätigkeit. knIdleT bleibt die eine monotone Uhr für beide Schwellen
 // (25s Notiz, 50s Schubs, gameplay:380); die Einmaligkeit hängt an diesen Merkern.
@@ -11536,7 +11642,11 @@ function knOnZettelClosed(){
 function knShowRandLine(line, wer){
   setTxt('knRandTxt', line);
   const band = el('knRandnotiz');
-  band.classList.toggle('a2', wer === 'a2');
+  // T5: der Ausbruch traegt beide Klassen. a2 ist die Stimme und bleibt, was
+  // sie ist; ausbruch legt nur darueber, was an dieser einen Zeile anders ist.
+  // Zwei getrennte Klassen waeren zwei Beschreibungen derselben Sprecherin.
+  band.classList.toggle('a2', wer === 'a2' || wer === 'a2x');
+  band.classList.toggle('ausbruch', wer === 'a2x');
   band.classList.toggle('umschlag', wer === 'u');
   band.classList.add('show');
   knRand.active = true; knRandHideAt = gameT + (wer === 'u' ? 5 : 3);
@@ -11584,10 +11694,39 @@ function anlage2Zeilen(anlass){
     return false;
   }).map(e => typeof e === 'string' ? e : e.z);
 }
+// T5: Wie selten ein Ausbruch ist, entscheidet ein Zaehler und kein Wuerfel.
+// Drei gefasste Zeilen, dann darf sie einmal. Das ist mit Absicht ablesbar und
+// nicht zufaellig: eine Figur, die alle paar Minuten hochfaehrt, hat keinen
+// Ausbruch mehr, sondern ein Temperament, und das ist eine andere Figur. Was
+// selten ist, wiegt, und derselbe Satz steht schon ueber dem Umschlag.
+const A2_AUSBRUCH_RUHE = 3;
+
+// Waehlt ein Paar, aendert aber nichts. Der Zaehler wird beim Aufrufer
+// genullt, und zwar erst, wenn die Zeile wirklich faellt: eine Auswahl, die
+// den Stand verbraucht und dann verworfen wird, verschluckt den Ausbruch.
+function anlage2AusbruchZug(anlass){
+  const paare = ANLAGE2_AUSBRUCH[anlass];
+  if(!paare || !paare.length) return null;
+  if((kn.counters.anlage2Ruhig | 0) < A2_AUSBRUCH_RUHE) return null;
+  return paare[Math.floor(Math.random()*paare.length)];
+}
+
 function anlage2Notiz(anlass){
   if(!kn.flags.anlage2Da) return false;      // vor der Aushaendigung gibt es sie nicht
   if(!knLineErlaubt(anlass)) return false;    // Gates vor Pool-Auswahl, hurtMon ist Hot Path
+  // T5: der Ausbruch geht vor, wenn er dran ist. Er braucht keinen freien Pool
+  // und keine Gate-Auswertung: das Paar steht als Ganzes da, und die zweite
+  // Haelfte ist bereits geschrieben. Der Zaehler faellt hier und nur hier.
+  const paar = anlage2AusbruchZug(anlass);
+  if(paar){
+    letzterAnlass = anlass;
+    kn.counters.anlage2Ruhig = 0; saveKn();
+    knShowRandLine(paar.auf, 'a2x');
+    a2Nachklapp = {z: paar.zurueck, at: gameT + 2.2};
+    return true;
+  }
   const pool = anlage2Zeilen(anlass); if(!pool.length) return false;
+  kn.counters.anlage2Ruhig = (kn.counters.anlage2Ruhig | 0) + 1; saveKn();
   letzterAnlass = anlass;   // W3: Lott/Pahl kommentieren, was gerade bemerkt wurde
   let line = pool[Math.floor(Math.random()*pool.length)];
   if(pool.length > 1){ let guard = 0; while(line === knRandLastLine[anlass] && guard++ < 8) line = pool[Math.floor(Math.random()*pool.length)]; }
@@ -11833,6 +11972,27 @@ function knTick(dt){
   // Rueckwege, den mit Schichtuhr und den ohne.
   if(kn.pending.niederlage && gameT - knPlayStartT >= 5 && anlage2Notiz('niederlage')){
     kn.pending.niederlage = false; saveKn();
+  }
+
+  // T5: die Ruecknahme eines Ausbruchs, und sie steht ganz vorn, weil sie eine
+  // offene Klammer ist. Alles andere im Band faengt etwas an, sie beendet
+  // etwas.
+  //
+  // Sie laeuft NICHT durch knLineErlaubt(), und das ist der einzige Weg im
+  // ganzen Band, der das darf. Begruendung: sie ist kein zweiter Anlass,
+  // sondern die zweite Haelfte derselben Aeusserung, und der Regler wurde beim
+  // ersten Teil bereits gefragt. Der Vierzig-Sekunden-Takt haette sie sonst
+  // sicher verschluckt, und ein Ausbruch ohne Ruecknahme ist die eine Fassung
+  // dieser Figur, die es nicht geben darf.
+  //
+  // Was trotzdem gilt, steht hier ausdruecklich: wer den Regler waehrend des
+  // Ausbruchs auf "Schweigt" stellt, hat das Nachwort abgestellt, und wer
+  // gestorben ist oder einen Dienstzettel vor sich hat, hoert es nicht mehr.
+  // In allen drei Faellen verfaellt sie, statt spaeter aus dem Zusammenhang zu
+  // fallen.
+  if(a2Nachklapp){
+    if(kn.regler === 'schweigt' || state !== 'play' || player.dead || knZettel.active) a2Nachklapp = null;
+    else if(gameT >= a2Nachklapp.at){ knShowRandLine(a2Nachklapp.z, 'a2'); a2Nachklapp = null; }
   }
 
   if(knBegruessungPending && knShowLineGated('begruessung', knBegruessungPending)) knBegruessungPending = null;
@@ -22836,7 +22996,7 @@ SZENEN.baumAnlage2 = {
   sprecher: () => anlage2Sprecher(),
   // T4-Nachlese: der letzte freie Platz im Umschlag, und der einzige, der ihr
   // wirklich zusteht. Ihre Besessenheit steht seit T3 im Kanon: gelesen werden,
-  // EINMAL, GANZ, von einem Menschen. Wer alle sieben Fragen gestellt hat, hat
+  // EINMAL, GANZ, von einem Menschen. Wer alle acht Fragen gestellt hat, hat
   // genau das getan, und bis heute sagte sie nichts dazu.
   //
   // Gezaehlt wird ueber Sitzungen hinweg und nicht in szene.gefragt: wer heute
@@ -23755,10 +23915,27 @@ function anlage2Assert(){
     for(const e of ANLAGE2_NOTIZ[anlass]) zeilen.push([typeof e === 'string' ? e : e.z, 'Notiz ' + anlass]);
   for(const l of ANLAGE2_BEWEGUNG) zeilen.push([l, 'Bewegungsspruch']);
   for(const u of ANLAGE2_UMSCHLAG) zeilen.push([u.z, 'Umschlag ' + u.id]);   // T4
+  // T5: beide Haelften des Ausbruchs. Die Ruecknahme gehoert ausdruecklich
+  // dazu, denn sie ist die Zeile, in der sie sich erklaert, und genau dort
+  // waere ein gesperrtes Wort am naheliegendsten.
+  for(const a in ANLAGE2_AUSBRUCH)
+    for(const p of ANLAGE2_AUSBRUCH[a]) zeilen.push([p.auf, 'Ausbruch ' + a], [p.zurueck, 'Rücknahme ' + a]);
   zeilen.push([anlage2Tooltip().replace(/<[^>]*>/g, ' '), 'Tooltip']);
-  for(const [t, wo] of zeilen)
+  // T5-Fund, aufgefallen beim Ausloesen der neuen Zweige: bis hierher lief
+  // diese Schleife ungeprueft auf indexOf. Eine Quelle ohne Text hat den Guard
+  // damit ABSTUERZEN lassen, statt ihn melden zu lassen, und weil er auf
+  // Skriptebene laeuft, nahm er das halbe Spiel mit. Ein Guard, der an genau
+  // dem Fehler zerbricht, den er finden soll, ist keiner, und das ist
+  // derselbe Zirkelschluss, den T3 schon einmal am Ausgang des Baumes hatte.
+  //
+  // Latent war der Fall seit T4 da: eine Umschlagzeile ohne z traf ihn
+  // ebenso, nur hat ihn niemand ausgeloest, weil (6b) danach kommt und die
+  // Probe von damals die Meldung sah, die noch vor dem Absturz kam.
+  for(const [t, wo] of zeilen){
+    if(typeof t !== 'string'){ fehler('Eine Zeile hat gar keinen Text', wo); continue; }
     for(const w of AKTE_SPERRE)
       if(t.indexOf(w) >= 0) fehler('Brandmauer verletzt, sie weiß das nicht', wo, w);
+  }
 
   // (2) Jeder Anlass braucht genug Zeilen OHNE Gate. Ein Pool, der nur aus
   // gegateten Zeilen bestuende, waere in der ersten Schicht leer, und ein
@@ -23782,6 +23959,52 @@ function anlage2Assert(){
       if(m) fehler('Gegatete Zeile ' + anlass, m);
     }
   }
+
+  // (2b) T5: der Ausbruch-Kanal. Er wird ueber dieselbe Funktion ausgeliefert
+  // wie der Kommentarkanal und haengt deshalb an denselben Schluesseln; ein
+  // Ausbruch an einem Anlass, den es dort nicht gibt, wuerde nie gerufen und
+  // waere derselbe stumme Fall, den (4) fuer die Pools nachhaelt.
+  let rate = 0;
+  for(const a in ANLAGE2_AUSBRUCH){
+    if(!(a in ANLAGE2_NOTIZ)) fehler('Ein Ausbruch wartet auf einen Anlass, den es nicht gibt', a);
+    // T4 hat entschieden, dass sie in ein Scheitern nicht hineinredet, sondern
+    // beim Wiederantritt wartet. Fuer den lauten Kanal gilt das erst recht,
+    // und weil eine Entscheidung, die nur in einem Dokument steht, beim
+    // naechsten Bauabschnitt verloren geht, steht sie hier.
+    if(a === 'niederlage') fehler('Ein Ausbruch steht auf der Niederlage, dort schweigt sie');
+    const paare = ANLAGE2_AUSBRUCH[a];
+    if(!Array.isArray(paare) || !paare.length){ fehler('Ein Ausbruch-Anlass hat keine Paare', a); continue; }
+    const aufGesehen = new Set();
+    for(const p of paare){
+      if(typeof p.auf !== 'string' || !p.auf) fehler('Ein Ausbruch hat keinen Text', a);
+      // Die Ruecknahme ist keine Zierde, sie ist die zweite Haelfte der Figur.
+      // Ohne sie bliebe eine Anlage stehen, die hochgefahren und dabei
+      // geblieben ist, und das ist eine andere Figur als diese.
+      if(typeof p.zurueck !== 'string' || !p.zurueck) fehler('Ein Ausbruch hat keine Rücknahme', a, p.auf);
+      if(aufGesehen.has(p.auf)) fehler('Zwei Ausbrüche desselben Anlasses beginnen gleich', a, p.auf);
+      aufGesehen.add(p.auf);
+      const extra = Object.keys(p).filter(k => k !== 'auf' && k !== 'zurueck' && k !== 'raten');
+      if(extra.length) fehler('Ein Ausbruch trägt ein Feld, das es nicht gibt', a, extra.join());
+      if('raten' in p){
+        if(p.raten !== true) fehler('raten kennt nur true, nicht', a, p.raten);
+        else rate++;
+      }
+      // (2c) Die Ton-Grenze, und sie ist der Grund, aus dem dieser Kanal
+      // ueberhaupt gebaut werden durfte. "Vertrauter, nie schaerfer" war zu
+      // weit gefasst und hat das Falsche verboten; praezise heisst es: sie
+      // darf laut werden, nie gegen den, der zuhoert. Ein Ausrufezeichen
+      // neben einer Anrede ist genau das, und es faellt hier auf und nicht
+      // erst der Spielerin in der dritten Schicht.
+      if(p.auf && p.auf.indexOf('!') >= 0 && /(^|[^A-Za-zÄÖÜäöüß])(Sie|Ihnen|Ihrer?|Ihre[nms]?)([^A-Za-zÄÖÜäöüß]|$)/.test(p.auf))
+        fehler('Ein Ausbruch fährt den Spieler an', a, p.auf);
+    }
+  }
+  // Und die Rate-Paare. Sie sind der Grund, warum eine harte Brandmauer und
+  // ein lebendiger Kanal sich nicht widersprechen: wer vorprescht und
+  // danebentippt, verraet nichts, weil er nichts weiss. Unter drei Stueck ist
+  // die Bauart ein Einzelfall statt einer Eigenschaft, und dann kippt die
+  // Figur beim naechsten Bauabschnitt still zurueck in die Haltung.
+  if(rate < 3) fehler('Zu wenige Ausbrüche, in denen sie danebenliegt', rate);
 
   // (4) Die Anlaesse muessen dieselben sein, die auch ausgeloest werden. Der
   // Kanal hat mit T3 den Sprecher gewechselt, nicht die Schluessel: die Bank
@@ -23807,6 +24030,12 @@ function anlage2Assert(){
   // dort fehlt, ist nach dem ersten Laden weg.
   if(!('anlage2Da' in kn.flags)) fehler('Der Merker anlage2Da fehlt in kn.flags');
   if(!('anlage2Zug' in kn.counters)) fehler('Der Zähler anlage2Zug fehlt in kn.counters');
+  // T5: ohne diesen Zaehler in der Vorgabe stuende er nach dem ersten Laden auf
+  // undefined, (undefined|0) waere 0, und der Kanal liefe trotzdem. Er liefe
+  // nur nie ueber drei hinaus, wenn ihn jemand spaeter nicht mehr schreibt,
+  // und dann faellt nie wieder ein Ausbruch. Genau die Art Ausfall, die
+  // niemandem auffaellt, weil nichts kaputt aussieht.
+  if(!('anlage2Ruhig' in kn.counters)) fehler('Der Zähler anlage2Ruhig fehlt in kn.counters');
   // T4: dasselbe fuer den Kipppunkt und den Umschlagspeicher. Der Merker muss
   // ausserdem in kn.flags stehen, weil ZUSATZ_SCHALTER.merker.pruef jede Zeile
   // dagegen haelt, die ihn nennt.
@@ -23908,9 +24137,11 @@ function anlage2Assert(){
     } finally { szene.gefragt = merkG; }
   }
 
+  const ausbrueche = Object.keys(ANLAGE2_AUSBRUCH).reduce((n, a) => n + ANLAGE2_AUSBRUCH[a].length, 0);
   if(ok) console.log(`T3 Anlage 2: ${Object.keys(ANLAGE2_NOTIZ).length} Anlässe, `
     + `${ANLAGE2_BEWEGUNG.length} Sprüche in Reihe, ${ANLAGE2_BLAETTER.length + 1} Blätter, `
-    + `${ANLAGE2_UMSCHLAG.length} Umschläge, Brandmauer in Ordnung.`);
+    + `${ANLAGE2_UMSCHLAG.length} Umschläge, ${ausbrueche} Ausbrüche (${rate} geraten), `
+    + `Brandmauer in Ordnung.`);
 }
 anlage2Assert();
 
