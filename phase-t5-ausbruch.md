@@ -28,12 +28,13 @@ ist nur nicht der Grund. Zwei andere Regeln waren es.
 
 Nachgezählt über den gesamten Bestand der Figur (`ANLAGE2_NOTIZ`,
 `ANLAGE2_BEWEGUNG`, `ANLAGE2_UMSCHLAG`), einmal wie er bis T4 aussah und einmal
-nach den Ton-Eingriffen aus **T5, Der Ton** (`phase-t5-ton.md`), die parallel
-zu diesem Abschnitt entstanden sind:
+auf dem heutigen Stand, also nach **T5, Der Ton** (`phase-t5-ton.md`) und
+**T6, Die Scheinwahl** (`phase-t6-scheinwahl.md`), die beide parallel zu
+diesem Abschnitt an derselben Figur gearbeitet haben:
 
-| | bis T4 | nach den Ton-Eingriffen |
+| | bis T4 | heute |
 |---|---|---|
-| Zeilen insgesamt | 77 | 83 |
+| Zeilen insgesamt | 77 | 84 |
 | kürzeste / längste | 28 / 43 Zeichen | 24 / 43 Zeichen |
 | Mittel | 36,3 Zeichen | 34,9 Zeichen |
 | **Streuung** | **3,2 Zeichen** | **3,9 Zeichen** |
@@ -41,19 +42,20 @@ zu diesem Abschnitt entstanden sind:
 | **Zeilen mit einem Ausrufezeichen** | **0** | **0** |
 
 Die letzten beiden Zeilen sind der ganze Befund, und die zweite Spalte ist der
-Beweis, dass er nicht die Sache des Ton-Abschnitts war. Zwei Drittel des
-Bestands folgen derselben Bauform (eine Feststellung, dann ein kurzer zweiter
-Satz, der sie dreht), die Längen liegen alle im selben Fingerbreit, und in
-dreiundachtzig Zeilen wird kein einziges Mal jemand laut.
+Beweis, dass er keinem der Nachbarabschnitte gehört. Zwei Drittel des Bestands
+folgen derselben Bauform (eine Feststellung, dann ein kurzer zweiter Satz, der
+sie dreht), die Längen liegen alle im selben Fingerbreit, und in
+vierundachtzig Zeilen wird kein einziges Mal jemand laut.
 
-**Der Ton-Abschnitt hat jede dieser Zeilen angefasst und keine davon im Puls.**
-Er hat das *Register* abgesenkt, also den Wortschatz, aus dem sie schöpft: aus
-„Ein Treffer. Anlage dazu: ich." wurde „Getroffen. Ich habe zugesehen." Der
-*Puls*, also wie gleichmäßig sie spricht, hat sich dabei um 0,7 Zeichen
+**Beide Nachbarn haben diese Zeilen angefasst und keiner davon den Puls.** Der
+Ton-Abschnitt hat das *Register* abgesenkt, also den Wortschatz, aus dem sie
+schöpft: aus „Ein Treffer. Anlage dazu: ich." wurde „Getroffen. Ich habe
+zugesehen." Die Scheinwahl hat ihr eine Entscheidung gegeben. Der *Puls*, also
+wie gleichmäßig sie spricht, hat sich über beide hinweg um 0,7 Zeichen
 Streuung bewegt, und die Zahl der Ausrufezeichen ist von null auf null
-gegangen. Ein Register lässt sich absenken, ohne einen Takt zu ändern, und
-genau das ist passiert. Deshalb stehen beide Abschnitte nebeneinander, statt
-einander zu ersetzen.
+gegangen. Ein Register lässt sich absenken und eine Figur um eine Wahl
+erweitern, ohne einen Takt zu ändern, und genau das ist zweimal passiert.
+Deshalb stehen die drei Abschnitte nebeneinander, statt einander zu ersetzen.
 
 Das ist gut geschrieben und es ist eine Haltung. Aber eine Haltung ist kein
 Temperament, und wer achtzigmal dieselbe Kadenz hört, hört eine Figur, die nie
@@ -352,6 +354,11 @@ fest, den es nicht mehr gibt, und färbt jede spätere Probe ein.
 
 Alle Läufe mit Playwright gegen `python3 serve.py` auf Port 8378. Nichts
 behauptet, alles gefahren.
+
+Die Zahlen zeigen den Stand **zum Zeitpunkt dieses Abschnitts**. Die Nachbarn
+haben seither eigene Zusagen angehängt, `empfang-pruef.mjs` steht heute
+beispielsweise bei 96; die Nachlese hat alle Läufe gegen den aktuellen Stand
+gefahren und keinen roten gefunden, der hierher gehört.
 
 | Lauf | Vorher | Nachher |
 |---|---|---|
