@@ -647,6 +647,14 @@
   #overlay p{font-size:calc(14px * var(--fs));line-height:1.9;}
   #overlay button{margin-top:18px;font-family:inherit;font-weight:bold;font-size:calc(18px * var(--fs));padding:12px 34px;cursor:pointer;color:#1a1206;background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
   #overlay button:hover{filter:brightness(1.1);}
+  /* T6: Ein gesperrter Knopf auf der Tafel. Dieselben zwei Farben wie
+     #brewBtn:disabled, damit Gesperrtsein im ganzen Haus gleich aussieht.
+     :hover wird ausdruecklich zurueckgenommen, sonst leuchtet der Knopf beim
+     Darueberfahren auf und sieht wieder benutzbar aus. not-allowed statt
+     default, weil dieser eine Knopf ANGEKLICKT werden soll: der Spieler muss
+     merken, dass er nicht geht. Genau darum geht es bei ihm. */
+  #overlay button:disabled{background:#4a3e20;color:#7a6e50;cursor:not-allowed;border-color:#3a2f18;}
+  #overlay button:disabled:hover{filter:none;}
 
   /* =====================================================================
      U9 — Die Hausmitteilung. Der einzige Text im Haus, der von aussen auf
@@ -824,7 +832,7 @@
   /* Ein gesperrter Knopf muss gesperrt aussehen. Die Pille ist immer hell,
      also faellt sie hier weg und der graue Grund von #brewBtn:disabled
      kommt wieder durch. */
-  #brewBtn:disabled{border-image-source:none;}
+  #brewBtn:disabled, #overlay button:disabled{border-image-source:none;}
 
   /* Schliessknopf. Der Kreis mit dem eingepraegten X ersetzt round_brown plus
      ✖-Zeichen. body.cfuiX setzt bakeUiSkin(), nur wenn die Zelle geladen ist —
@@ -11077,6 +11085,12 @@ const ANLAGE2_UMSCHLAG = [
   {id:'ersterRang',       z:'Ein neuer Titel. Der steht Ihnen zu.'},
   {id:'dank',             z:'Sie haben zugesagt. Ich vermerke das.'},
   {id:'ganzGelesen',      z:'Das waren alle Fragen. Ich habe mitgezählt.'},
+  // T6: der einzige Nachhall der Scheinwahl, und er faellt nur, wenn der
+  // Spieler bis zum gesperrten Knopf abgelehnt hat. Kein Vorwurf, keine
+  // Anspielung auf den Schwindel des Hauses: sie stellt fest, dass beide
+  // gezoegert haben, und stellt sich damit auf seine Seite. Der zweite Satz
+  // ist der ganze Punkt, denn sie hat vierzig Jahre lang gezoegert zu fragen.
+  {id:'zoegerlich',       z:'Sie haben lange überlegt. Ich auch.'},
   {id:'akt2',             z:'Zehn Schichten. Sie sind noch hier.'},
   {id:'akt3',             z:'Wir sind länger zusammen als üblich.'},
   {id:'akt4',             z:'Es wird ernst. Ich bleibe, wo ich bin.'},
@@ -14401,8 +14415,9 @@ function toggleInventory(){
 // hat das nicht der Guard, sondern tools/empfang-pruef.mjs beim zweiten Griff
 // zur Tasche: genau dafuer klickt sich der Lauf durch das echte Spiel.
 function anlage2Nachholen(){
-  szeneTafeln([ANLAGE2_AUFTAKT_NACHHOLUNG].concat(ANLAGE2_BLAETTER),
-              {letzterKnopf:'EINSTECKEN', ende: anlage2Angenommen(() => {
+  szeneTafeln([ANLAGE2_AUFTAKT_NACHHOLUNG, ANLAGE2_FRAGE[0]].concat(ANLAGE2_BLAETTER),
+              {letzterKnopf:'EINSTECKEN', wahl:{bei:1, reihe:ANLAGE2_FRAGE},
+               ende: anlage2Angenommen(() => {
                 el('overlay').style.display = 'none';
                 MUS.muffle(false);
                 toggleInventory();
@@ -16836,7 +16851,8 @@ const NEUERUNGEN = {
   // T5: neuer Stempel am selben Tag. Der Vergleich ist ein String-Vergleich,
   // und ohne neuen Wert saehe die T5-Haelfte niemand, der die Mitteilung von
   // heute Morgen schon weggeklickt hat.
-  stand: '2026-08-26-t5',
+  // T6: derselbe Tag, dritter Stempel, aus demselben Grund.
+  stand: '2026-08-26-t6',
   datum: '26. August',
   punkte: [
     {
@@ -16897,6 +16913,15 @@ const NEUERUNGEN = {
       titel: 'Der Anfang zeigt mehr von der Welt',
       was: 'Das Intro hat zwei Blätter dazubekommen: eine Landkarte, auf der die Gegend keine Ortsnamen trägt, sondern Buchstaben, und die Tafel über der Amtstür mit dem Satz, auf dem hier alles steht. Das Einstellungsformular sagt jetzt außerdem, was der Außendienst überhaupt ist.',
       wo: 'Beim ersten Dienstantritt. Wer den hinter sich hat, sieht es nicht noch einmal.',
+    },
+    // --- T6, 26.08.2026 -----------------------------------------------------
+    // Der Punkt sagt, was der Spieler sieht, und nicht, wie es gebaut ist. Die
+    // Pointe steht im dritten Satz und wird nicht erklaert: wer sie beim Lesen
+    // nicht merkt, merkt sie beim Spielen.
+    {
+      titel: 'Sie dürfen entscheiden, ob Sie lesen',
+      was: 'Beim ersten Treffen mit Anlage 2 stellt das Haus Ihnen frei, ob Sie sie lesen möchten. Die Freistellung ist echt. Das Ergebnis steht fest.',
+      wo: 'Gleich nachdem sie sich vorgestellt hat, auf beiden Wegen in den Dienst.',
     },
   ],
 };
@@ -21683,6 +21708,99 @@ const ANLAGE2_AUFTAKT_NACHHOLUNG = {
   regie:'Das Blatt hat gesprochen. Die Tasche bleibt offen.',
 };
 
+// ===========================================================================
+//  T6: Die Entscheidung, die keine ist
+//
+//  Zwischen dem Auftakt und den vier Blaettern steht seit T6 eine Wahl, und sie
+//  ist gefaelscht. Der Spieler darf entscheiden, ob er die Anlage liest. Sagt
+//  er nein, fragt das Haus wieder, und beim fuenften Mal ist der Nein-Knopf
+//  ausgegraut, angeblich wegen eines technischen Fehlers.
+//
+//  Warum das zu dieser Figur gehoert und kein Fremdkoerper ist: Anlage 2 ist
+//  ueber genau eine Eigenschaft definiert, naemlich ungelesen zu sein, und der
+//  Spieler ist ihr erster Leser. Eine Scheinwahl davor ist dieselbe Pointe von
+//  der anderen Seite. Und sie ist die Behoerde in einem Satz: das Haus stellt
+//  Ihnen frei, was es laengst entschieden hat.
+//
+//  DIE ROLLENVERTEILUNG IST DIE GANZE ENTSCHEIDUNG. Ueberredet wird vom AMT,
+//  nicht von ihr. Sie steht daneben und wird zusehends verlegen, distanziert
+//  sich und bittet den Spieler kein einziges Mal. Andersherum waere die Figur
+//  kaputt: eine Anlage, die ums Gelesenwerden bettelt, ist nicht mehr die
+//  Anlage, die nie eine Nachfrage bekommen hat. Der Apparat ist der Taeter,
+//  ihre Wuerde bleibt heil, und deshalb traegt Blatt V ("Sie lesen gerade.")
+//  danach immer noch.
+//
+//  Der Preis bleibt null (T4, Bauteil B2). Ablehnen kostet nichts, bringt
+//  keinen Nachteil und wird nirgends vorgeworfen. Der einzige Nachhall ist
+//  eine einzige Umschlagzeile, und die ist warm.
+//
+//  Die Reihe traegt die Tafelform (blatt/stimme/regie) wie jedes andere Blatt
+//  und laeuft deshalb durch szeneAssert(), Eintrag 'Anlage 2, die Wahl'. Was
+//  das Amt sagt, laeuft gegen dieselbe volle AKTE_SPERRE wie ihre eigenen
+//  Zeilen: die Brandmauer gilt fuer alles, was in ihrer Gegenwart gesagt wird.
+//
+//  ACHTUNG BEIM WEITERSCHREIBEN: Das Feld `blatt` wird ab max-height 660px per
+//  CSS ausgeblendet (.amtLead, siehe dort). Auf einem Telefon im Querformat ist
+//  es weg. Jede Zeile, die den Witz TRAEGT, gehoert deshalb in `stimme` und
+//  nie in `blatt` oder `regie`.
+// ===========================================================================
+const ANLAGE2_FRAGE = [
+  // Stufe 0. Das Amt schweigt noch, sie fragt selbst, und sie fragt ergebnis-
+  // offen. Das muss so sein: die Wahl soll beim ersten Mal echt aussehen.
+  {blatt:'Das Blatt hängt an der Urkunde und wartet. Es hat sich vorgestellt und sagt jetzt nichts mehr, weil es Ihnen die Entscheidung überlassen möchte.',
+   stimme:[{wer:'Anlage 2', z:'Sie können mich lesen. Sie müssen aber nicht.'},
+           {wer:'Anlage 2', z:'Ich sage das, weil es sonst niemand sagt.'}],
+   regie:'Die Klammer hält still. Es ist Ihre Entscheidung.',
+   ja:'LESEN', nein:'Nicht lesen'},
+
+  // Stufe 1. Der Apparat meldet sich zum ersten Mal, hoeflich und in der
+  // Passivform, in der Behoerden Entscheidungen mitteilen, die sie selbst
+  // getroffen haben. Sie merkt sofort, dass ihr das unangenehm ist.
+  {blatt:'Etwas im Papier arbeitet. Nicht das Blatt in Ihrer Hand, sondern das Haus dahinter.',
+   stimme:['Amtlicher Hinweis: Ihre Eingabe wurde erfasst und geprüft.',
+           'Das Ergebnis der Prüfung lautet: Bitte lesen Sie die Anlage.',
+           {wer:'Anlage 2', z:'Das bin nicht ich. Ich hatte gerade erst aufgehört, so zu reden.'},
+           {wer:'Anlage 2', z:'Es muss auch wirklich nicht sein. Wir gehen einfach weiter.'}],
+   regie:'Sie klingt, als sei ihr das unangenehm.',
+   ja:'LESEN', nein:'Trotzdem nicht lesen'},
+
+  // Stufe 2. Die Begruendung. Sie ist formal vollstaendig, inhaltlich leer und
+  // beantwortet die Frage nicht, die gestellt wurde. Genau so klingt ein
+  // Bescheid. Sie rueckt hier zum ersten Mal koerperlich ab.
+  {blatt:'Der Hinweis kommt schneller als beim ersten Mal.',
+   stimme:['Amtlicher Hinweis: Ihre Eingabe wurde erneut erfasst.',
+           'Eine Anlage, die nicht gelesen wird, gilt als beigefügt. Eine Anlage, die gelesen wird, gilt als gelesen. Das Haus bevorzugt den zweiten Zustand.',
+           {wer:'Anlage 2', z:'Ich möchte an dieser Stelle betonen, dass ich damit nichts zu tun habe.'}],
+   regie:'Sie rückt hörbar ein Stück von der Urkunde ab, so weit die Klammer es zulässt.',
+   ja:'LESEN', nein:'Weiterhin nicht lesen'},
+
+  // Stufe 3. Der Apparat laesst die Fassade fallen, und zwar ohne es zu
+  // merken. Zwei Saetze, der zweite hebt den ersten auf. Ihre Zeile darauf ist
+  // die trockenste der Reihe.
+  {blatt:'Diesmal wartet das Haus nicht ab, bis Sie zu Ende gelesen haben.',
+   stimme:['Amtlicher Hinweis: Die Wahlmöglichkeit besteht fort.',
+           'Sie ist nur nicht so gemeint.',
+           {wer:'Anlage 2', z:'Das war jetzt sehr ehrlich für dieses Haus.'}],
+   regie:'Irgendwo fällt eine Tür ins Schloss. Zweimal, weil sie beim ersten Mal nicht zugeht.',
+   ja:'LESEN', nein:'Nicht lesen, endgültig'},
+
+  // Stufe 4. Der gesperrte Knopf und die Behauptung, das sei ein Versehen.
+  //
+  // Die dritte Zeile ist die Pointe des ganzen Abschnitts: die Stoerungsmeldung
+  // ueber das Blatt, das niemand liest, wird dem Blatt beigefuegt. Der Gag
+  // schliesst damit auf der Figur und nicht auf dem Spieler.
+  //
+  // Ihre beiden letzten Zeilen sind der Grund, warum das Ganze nicht gemein
+  // ist. Sie durchschaut den Schwindel, sie profitiert von ihm, und sie traut
+  // sich nicht, sich zu freuen. Kuerzen darf man hier nichts.
+  {blatt:'Der zweite Knopf ist grau geworden.',
+   stimme:['Amtlicher Hinweis: Die Schaltfläche steht vorübergehend nicht zur Verfügung. Ursache: ein technischer Fehler.',
+           'Eine Störungsmeldung wurde aufgenommen und der Anlage beigefügt.',
+           {wer:'Anlage 2', z:'Ein Versehen. Natürlich.'},
+           {wer:'Anlage 2', z:'Ich habe damit nichts zu tun. Ich möchte aber nicht behaupten, dass es mich stört.'}],
+   ja:'LESEN', nein:'Nicht lesen', gesperrt:true},
+];
+
 const INTRO_BLAETTER = [
   {blatt:'Ein Schreiben, zwei Zeilen lang. Daneben liegt dasselbe Schreiben noch einmal, und noch einmal, sechsmal insgesamt, jedes mit einem anderen Vermerk oben rechts.',
    stimme:['Vor vierhundert Jahren hat jemand am anderen Ufer eine Frage gestellt. Sie lautete: Wer räumt das Papier aus dem Fluss?',
@@ -23293,16 +23411,23 @@ function empfangErnennung(){
 // endet mit dem Hinausgehen, und ein eigener Stapel zaehlt seine Blaetter
 // selbst. Wer die Urkunde bekommen hat, faengt hier an zu lesen.
 function anlage2Erstes(){
-  szeneTafeln([ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER),
-              {letzterKnopf:'EINSTECKEN', ende: anlage2Angenommen(empfangEnde)});
+  szeneTafeln([ANLAGE2_AUFTAKT_ERNENNUNG, ANLAGE2_FRAGE[0]].concat(ANLAGE2_BLAETTER),
+              {letzterKnopf:'EINSTECKEN', wahl:{bei:1, reihe:ANLAGE2_FRAGE},
+               ende: anlage2Angenommen(empfangEnde)});
 }
 
 // Der gemeinsame Abschluss beider Wege. Er setzt den einen Merker, der alles
 // weitere traegt, und uebergibt dann an das, was danach kommt: in den Dienst
 // beim ersten Weg, zurueck in den Rucksack beim nachgeholten.
+// T6: Die Reihenfolge in dieser Funktion ist nicht beliebig. anlage2Umschlag()
+// gibt vor dem Merker false zurueck, das Scharfschalten muss also HINTER die
+// Zeile, die ihn setzt. Faellig wird die Zeile nur, wenn der Spieler bis zur
+// letzten Stufe abgelehnt hat, also den gesperrten Knopf gesehen hat. Wer
+// einmal oder gar nicht abgelehnt hat, hoert sie nie.
 function anlage2Angenommen(danach){
-  return () => {
+  return (stufe) => {
     if(!kn.flags.anlage2Da){ kn.flags.anlage2Da = true; saveKn(); }
+    if((stufe | 0) >= ANLAGE2_FRAGE.length - 1) anlage2Umschlag('zoegerlich');
     danach();
   };
 }
@@ -23513,9 +23638,35 @@ let szeneTafelLauf = null;
 // Funktion, die schon allgemein sein sollte. Das Intro benutzt ihn weiter zum
 // Ueberspringen, die vierzig Zwischenbescheide benutzen denselben Knopf, um ans
 // Ende zu springen. Ein Knopf, zwei Bedeutungen, keine zweite Zeichenstelle.
+// T6: opt.wahl haengt eine Entscheidung an GENAU EIN Blatt des Stapels,
+// {bei:<index>, reihe:[...]}. Das Blatt an diesem Index wird dann nicht aus
+// liste gelesen, sondern aus reihe[stufe], und der Nein-Knopf zaehlt die Stufe
+// hoch, ohne den Index zu bewegen.
+//
+// Warum die Wahl am LAUF haengt und nicht am Blatt: szeneAssert() verlangt von
+// jedem Eintrag in liste genau eine der beiden Lesarten (z1/z2 oder
+// blatt/stimme). Ein Platzhalter-Blatt, das nur auf eine Reihe zeigt, traegt
+// keine davon und haette den Guard beim Laden ausgeloest. So steht in liste ein
+// vollwertiges Blatt (reihe[0]), und der Guard sieht nur, was er kennt.
 function szeneTafeln(liste, opt){
-  szeneTafelLauf = {liste, letzterKnopf: opt.letzterKnopf, ende: opt.ende, zweiter: opt.zweiter || null};
+  szeneTafelLauf = {liste, letzterKnopf: opt.letzterKnopf, ende: opt.ende, zweiter: opt.zweiter || null,
+                    wahl: opt.wahl || null, stufe: 0};
   szeneTafel(0);
+}
+
+// Der Nein-Knopf einer Wahl. Eigene Funktion aus demselben Grund wie
+// szeneTafelZweiter(): sie steht im onclick und muss szeneTafelLauf zur
+// Klickzeit lesen, nicht zur Bauzeit.
+//
+// Die Stufe laeuft bis zur letzten und bleibt dort stehen. Die letzte traegt
+// gesperrt:true, ihr Knopf ist also disabled und ruft das hier gar nicht mehr
+// auf; der Deckel ist trotzdem da, damit ein spaeterer Umbau der Reihe nicht
+// ueber ihr Ende hinauslaeuft und undefined zu zeichnen versucht.
+function szeneTafelWahlNein(){
+  const lauf = szeneTafelLauf;
+  if(!lauf || !lauf.wahl) return;
+  lauf.stufe = Math.min(lauf.stufe + 1, lauf.wahl.reihe.length - 1);
+  szeneTafel(lauf.wahl.bei);
 }
 
 // Roemisch, solange die Zaehlung fuer den GANZEN Stapel reicht, sonst arabisch
@@ -23541,12 +23692,29 @@ function szeneTafelZweiter(){
 function szeneTafel(i){
   const lauf = szeneTafelLauf;
   if(!lauf) return;
-  const t = lauf.liste[i];
-  if(!t){ szeneTafelLauf = null; lauf.ende(); return; }
+  // T6: traegt dieses Blatt eine Wahl, kommt sein Inhalt aus der Reihe und
+  // nicht aus liste. liste[i] bleibt trotzdem besetzt und gueltig, damit die
+  // Blattzahl unten und szeneAssert() oben unveraendert rechnen koennen.
+  const wahl = (lauf.wahl && lauf.wahl.bei === i) ? lauf.wahl.reihe[lauf.stufe | 0] : null;
+  const t = wahl || lauf.liste[i];
+  // T6: der Abschluss bekommt die erreichte Stufe mit. Fuer jeden Stapel ohne
+  // Wahl ist sie null, und alle bestehenden ende()-Rueckrufe nehmen ohnehin
+  // kein Argument. Der Anlage-2-Abschluss liest sie, weil szeneTafelLauf hier
+  // eine Zeile spaeter nicht mehr steht.
+  if(!t){ const stufe = lauf.stufe | 0; szeneTafelLauf = null; lauf.ende(stufe); return; }
   const letzte = i === lauf.liste.length - 1;
   // Der zweite Knopf steht nur, solange er etwas zu tun hat: auf dem letzten
   // Blatt gibt es nichts mehr zu ueberspringen und nichts mehr abzukuerzen.
-  const zweiter = (lauf.zweiter && !letzte)
+  //
+  // T6: Die Wahl benutzt dieselbe Zeile fuer ihren Nein-Knopf. Beide koennen
+  // sich nicht begegnen, denn zweiter gehoert dem ganzen Stapel und die Wahl
+  // genau einem Blatt darin; der Anlage-2-Stapel hat keinen zweiten Knopf und
+  // das Intro keine Wahl. Der gesperrte Knopf bleibt STEHEN und verschwindet
+  // nicht: ausgegraut ist die Pointe, weg waere nur ein fehlender Knopf.
+  const zweiter = wahl
+    ? `<div><button ${wahl.gesperrt ? 'disabled' : `onclick="szeneTafelWahlNein()"`}
+         style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:6px;${wahl.gesperrt ? '' : 'opacity:.7;'}">${gEsc(wahl.nein)}</button></div>`
+    : (lauf.zweiter && !letzte)
     ? `<div><button onclick="szeneTafelZweiter()"
          style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:6px;opacity:.7;">${gEsc(lauf.zweiter.t)}</button></div>`
     : '';
@@ -23599,7 +23767,7 @@ function szeneTafel(i){
     </div>
     <hr class="amtRegel unten">
     <p class="amtFuss">Blatt ${szeneBlattZahl(i+1, lauf.liste.length)} von ${szeneBlattZahl(lauf.liste.length, lauf.liste.length)}</p>
-    <button onclick="szeneTafel(${i+1})">${letzte ? lauf.letzterKnopf : 'WEITER'}</button>
+    <button onclick="szeneTafel(${i+1})">${gEsc(wahl ? wahl.ja : letzte ? lauf.letzterKnopf : 'WEITER')}</button>
     ${zweiter}`;
   el('overlay').style.display = 'flex';
   MUS.muffle(true);
@@ -23719,6 +23887,16 @@ function szeneAssert(){
                   {name:'Ernennung', liste:ERNENNUNG_BLAETTER, sperre:AKTE_SPERRE_NAMEN},
                   {name:'Anlage 2', liste:[ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER), sperre:AKTE_SPERRE},
                   {name:'Anlage 2, nachgeholt', liste:[ANLAGE2_AUFTAKT_NACHHOLUNG], sperre:AKTE_SPERRE},
+                  // T6: Die fuenf Stufen der Scheinwahl sind kein Stapel, den
+                  // man durchblaettert, sondern fuenf Fassungen desselben
+                  // Blattes. Geprueft werden muessen sie trotzdem, und zwar
+                  // genau hier: das ist die einzige Stelle, an der die
+                  // Formregeln aus Kapitel 13 und die Brandmauer auf
+                  // Tafeltext treffen. Ohne diesen Eintrag liefen fuenf
+                  // Tafeln ungeprueft. Die Sperre ist die volle, auch fuer
+                  // die Zeilen des AMTES: wer in ihrer Gegenwart spricht,
+                  // spricht unter ihrer Brandmauer.
+                  {name:'Anlage 2, die Wahl', liste:ANLAGE2_FRAGE, sperre:AKTE_SPERRE},
                   {name:'Abspann', liste:abspannBlaetter(), sperre:[]}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);
@@ -24091,7 +24269,7 @@ function anlage2Assert(){
   // schaltet, hoert nie jemand. Sie faellt genau einmal im ganzen Spiel, wer
   // sie vergisst, merkt es also nie.
   const gearmt = ['ersterTod','ersterFeierabend','ersteKammer','ersterBosssieg','ersteEbene',
-                  'ersteSperrablage','ersterRang','dank','ganzGelesen','akt2','akt3','akt4','akt5'];
+                  'ersteSperrablage','ersterRang','dank','ganzGelesen','zoegerlich','akt2','akt3','akt4','akt5'];
   for(const id of gearmt) if(!gesehen.has(id)) fehler('Etwas schaltet eine Umschlagzeile scharf, die es nicht gibt', id);
   for(const id of gesehen) if(gearmt.indexOf(id) < 0) fehler('Eine Umschlagzeile wartet auf ein Ereignis, das sie nie scharf schaltet', id);
 
@@ -24104,8 +24282,14 @@ function anlage2Assert(){
 
   // (7) Die Blaetter. Beide Auftakte fuehren in denselben Stapel, und beide
   // muessen die Tafelform tragen, die szeneTafel() liest.
-  for(const [name, liste] of [['Ernennung', [ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER)],
-                              ['Nachholung', [ANLAGE2_AUFTAKT_NACHHOLUNG].concat(ANLAGE2_BLAETTER)]]){
+  //
+  // T6: die fuenf Stufen der Wahl liegen mitten in diesem Stapel und werden
+  // von szeneTafel() aus derselben Hand gezeichnet. Sie muessen die Tafelform
+  // deshalb genauso tragen, und zwar JEDE von ihnen: gezeigt wird immer nur
+  // eine, ein Formfehler auf Stufe 3 faellt also erst dem Spieler auf, der
+  // dreimal ablehnt.
+  for(const [name, liste] of [['Ernennung', [ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_FRAGE, ANLAGE2_BLAETTER)],
+                              ['Nachholung', [ANLAGE2_AUFTAKT_NACHHOLUNG].concat(ANLAGE2_FRAGE, ANLAGE2_BLAETTER)]]){
     if(liste.length < 4) fehler('Die Einführung ist zu knapp geraten', name, liste.length);
     for(const b of liste){
       if(!b.blatt || !Array.isArray(b.stimme) || !b.stimme.length)
@@ -24164,9 +24348,63 @@ function anlage2Assert(){
     } finally { szene.gefragt = merkG; }
   }
 
+  // (9) T6: die Scheinwahl. Ihre Zeilen laufen durch szeneAssert() wie jedes
+  // andere Tafelblatt; hier steht das, was nur DIESE Reihe betrifft und was
+  // beim spaeteren Weiterschreiben lautlos kaputtginge.
+  //
+  // Der Bogen ist die Sache selbst: eine Reihe, die nicht eskaliert, ist keine
+  // Ueberredung, sondern eine Wiederholung, und ein Nein-Knopf, der nie
+  // gesperrt wird, macht aus der Scheinwahl eine echte.
+  if(!Array.isArray(ANLAGE2_FRAGE) || ANLAGE2_FRAGE.length < 3)
+    fehler('Die Wahl ist zu kurz für einen Bogen', ANLAGE2_FRAGE && ANLAGE2_FRAGE.length);
+  else {
+    // Genau die letzte Stufe sperrt. Sperrte eine fruehere mit, kaeme der
+    // Spieler nicht mehr bis zum Schluss; sperrte keine, liefe die Reihe ins
+    // Leere und der Nein-Knopf bliebe fuer immer anklickbar.
+    ANLAGE2_FRAGE.forEach((s, i) => {
+      const letzte = i === ANLAGE2_FRAGE.length - 1;
+      if(!!s.gesperrt !== letzte)
+        fehler(letzte ? 'Die letzte Stufe der Wahl sperrt den Nein-Knopf nicht'
+                      : 'Eine Stufe vor der letzten sperrt den Nein-Knopf schon', i);
+      if(!s.ja)   fehler('Eine Stufe der Wahl hat keine Beschriftung für Lesen', i);
+      if(!s.nein) fehler('Eine Stufe der Wahl hat keine Beschriftung für Nicht lesen', i);
+    });
+    // Der Ja-Knopf heisst ueberall gleich. Er ist der Ausweg, und ein Ausweg,
+    // der bei jedem Anlauf anders heisst, ist als Ausweg schlechter zu finden.
+    if(new Set(ANLAGE2_FRAGE.map(s => s.ja)).size !== 1)
+      fehler('Der Knopf zum Lesen heißt nicht auf jeder Stufe gleich');
+    // Die anklickbaren Nein-Knoepfe tragen verschiedene Beschriftungen, sonst
+    // steht der Bogen still. Die gesperrte Stufe ist ausgenommen: sie darf zur
+    // ersten zurueckkehren, denn sie ist tot und wird nicht mehr gelesen,
+    // sondern nur noch angesehen.
+    const klickbar = ANLAGE2_FRAGE.filter(s => !s.gesperrt).map(s => s.nein);
+    if(new Set(klickbar).size !== klickbar.length)
+      fehler('Zwei anklickbare Stufen der Wahl tragen dieselbe Beschriftung');
+    // Sie darf in ihrer eigenen Scheinwahl nicht der Antreiber sein. Auf jeder
+    // Stufe ausser der ersten spricht das Amt, und das erkennt man daran, dass
+    // mindestens eine Zeile KEIN Sprecherpaar ist. Faellt das weg, hat jemand
+    // die Rollen vertauscht, und die Figur ist kaputt, ohne dass etwas bricht.
+    for(let i = 1; i < ANLAGE2_FRAGE.length; i++)
+      if(!ANLAGE2_FRAGE[i].stimme.some(z => typeof z === 'string'))
+        fehler('Auf dieser Stufe überredet Anlage 2 selbst statt des Hauses', i);
+  }
+  // Die Wahl haengt an beiden Auftakten und an genau einem Blatt darin. Geprueft
+  // wird am Quelltext der beiden Einstiege, wie szeneAssert() es bei den Merkern
+  // seit SZ2 tut: der Aufruf ist die einzige Quelle, die es dafuer gibt.
+  for(const [name, fn] of [['Ernennung', anlage2Erstes], ['Nachholung', anlage2Nachholen]]){
+    const src = fn.toString();
+    if(!/wahl:\s*\{\s*bei:\s*1,\s*reihe:\s*ANLAGE2_FRAGE\s*\}/.test(src))
+      fehler('Dieser Weg in die Einführung trägt die Wahl nicht hinter dem Auftakt', name);
+    if(!/ANLAGE2_FRAGE\[0\]/.test(src))
+      fehler('Dieser Weg legt die erste Stufe nicht in die Blätterliste', name);
+  }
+
+  // T5 bringt die Ausbrueche in dieselbe Zeile, T6 die Stufen der Wahl. Die
+  // Blattzahl steht auf +2 statt +1: hinter dem Auftakt liegt seit T6 die Wahl.
   const ausbrueche = Object.keys(ANLAGE2_AUSBRUCH).reduce((n, a) => n + ANLAGE2_AUSBRUCH[a].length, 0);
   if(ok) console.log(`T3 Anlage 2: ${Object.keys(ANLAGE2_NOTIZ).length} Anlässe, `
-    + `${ANLAGE2_BEWEGUNG.length} Sprüche in Reihe, ${ANLAGE2_BLAETTER.length + 1} Blätter, `
+    + `${ANLAGE2_BEWEGUNG.length} Sprüche in Reihe, ${ANLAGE2_BLAETTER.length + 2} Blätter, `
+    + `${ANLAGE2_FRAGE.length} Stufen, `
     + `${ANLAGE2_UMSCHLAG.length} Umschläge, ${ausbrueche} Ausbrüche (${rate} geraten), `
     + `Brandmauer in Ordnung.`);
 }
