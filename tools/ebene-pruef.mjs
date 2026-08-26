@@ -174,6 +174,7 @@ const unten = await page.evaluate(() => {
     aufDemEinstieg: Math.abs(player.x - kammer.start.x) < 1 && Math.abs(player.y - kammer.start.y) < 1,
     leiterAmEinstieg: kammer.props.some(p => p.kt === 'treppe' && p.leiter === true),
     waechter, obenWaechter, waechterUnten: waechter.length,
+    modKeineWaechter: !!(kammer.mods[0] && kammer.mods[0].keineWaechter),
     cdUnveraendert: kammer.tuer.cd === cdVorher,
     ereignisUnveraendert: window.__kammerEreignis === ereignisVorher,
     goldUnveraendert: player.gold === goldVorher,
@@ -217,7 +218,21 @@ pruef('der Alte Schrecken bewacht auch die untere Truhe',
 // Dichte misst `ebene-messlauf.mjs` ueber vierzig Kammern. Eine Verteilung
 // gehoert in einen Messlauf und nicht in eine Zeile mit ist und soll.
 pruef('der Aufschlag je Raum steht in der Tabelle', unten.aufschlag >= 1, true);
-pruef('und unten steht wirklich jemand', unten.waechterUnten >= 2, true);
+// T3-Nachlese: dieselbe Berichtigung wie im Absatz darueber, die eine Zeile zu
+// frueh aufgehoert hat. Auch hier stand eine ZAHL gegen ein Soll, und auch
+// diese Zahl haengt am gezogenen Modul: der Merkgang traegt `keineWaechter`
+// und spawnt anders als `welle` auch selbst nichts ("im Merkgang blockieren
+// Wachen die einzige Spur"). Wird er gezogen, steht unten nur die
+// Schatzkammer, und der Lauf meldete einen Fehler, der keiner war.
+//
+// Gemessen statt vermutet, viermal gegen origin/main: 52, 53, 52, 53 von 54.
+//
+// Geprueft wird jetzt die Regel statt der Zahl, und sie ist deterministisch:
+// ein Modul, das Waechter zulaesst, bekommt seinen Aufschlag; eines, das sie
+// verbietet, bekommt keine. Dass ueberhaupt jemand unten steht, sagt schon die
+// bossgeneric-Zeile weiter oben.
+pruef('das Modul unten bekommt seinen Waechteraufschlag',
+      unten.modKeineWaechter || unten.waechterUnten >= 2, true);
 pruef('der Abstieg zaehlt keinen Kammerabschluss', unten.ereignisUnveraendert, true);
 pruef('er laesst die Tuer nicht doppelt nachwachsen', unten.cdUnveraendert, true);
 pruef('und zahlt beim Abstieg selbst nichts aus', unten.goldUnveraendert, true);

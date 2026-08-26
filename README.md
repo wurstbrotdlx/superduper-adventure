@@ -97,7 +97,7 @@ cp -r /tmp/cf-assets/{deco,dungeon,enemies,player,tiles,ui} assets/cf/
 
 Dasselbe tut der CI-Build, nur per Deploy Key (siehe `.github/workflows/pages.yml`). In einer Claude-Code-Websitzung geht das Repo über `add_repo` dazu; wer PNGs **hineinschreiben** will, braucht dabei Schreibrechte, lesend reicht nur zum Prüfen.
 
-**Verifiziert wird im Browser, nicht im Kopf.** Die dritte Mitarbeitsregel unten meint das wörtlich. Server starten, Seite laden, Konsole lesen:
+**Verifiziert wird im Browser, nicht im Kopf.** Wörtlich: Server starten, Seite laden, Konsole lesen:
 
 ```bash
 python3 serve.py &
