@@ -583,7 +583,7 @@
   #knRandnotiz.a2::before{content:'*';color:#ceb699;border-color:#8e7e66;
     transform:rotate(0deg);padding:2px 5px;}
   #knRandnotiz.a2{border-color:#8e7e66;color:#e8dcc0;}
-  /* T5: derselbe Sprecher, aus der Haltung gefallen. Die Marke bleibt stehen,
+  /* T7: derselbe Sprecher, aus der Haltung gefallen. Die Marke bleibt stehen,
      sie ist weiterhin die Beilage; was wegfaellt, ist die Kursive. Kursiv
      liest sich wie ein Randvermerk, und ein Ausbruch ist keiner. Eine Spur
      heller, mehr nicht, und keine Sekunde laenger: zwei Sekunden spaeter
@@ -10809,7 +10809,7 @@ const kn = {
   // vertrauter. Deshalb steht er persistiert bei den uebrigen und nicht als
   // Sitzungsvariable: wer morgen weiterzieht, zieht dort weiter, wo er gestern
   // aufgehoert hat, sonst faengt die Vertrautheit jeden Tag von vorne an.
-  // T5: anlage2Ruhig zaehlt die gefassten Zeilen seit dem letzten Ausbruch. Er
+  // T7: anlage2Ruhig zaehlt die gefassten Zeilen seit dem letzten Ausbruch. Er
   // steht persistiert bei den uebrigen und aus demselben Grund wie anlage2Zug:
   // wer morgen weiterspielt, soll nicht jeden Morgen drei ruhige Zeilen lang
   // auf den ersten Ausbruch warten. Additiv gemergt und damit migrationsfrei.
@@ -10989,7 +10989,7 @@ const ANLAGE2_NOTIZ = {
          'Sauber getroffen. Das können Sie also.',
          'Im Haus hieße das Bearbeitung. Hier: bumm.',
          'Getroffen. Ich habe zugesehen.',
-         // T5: von Stufe 5 auf 3. Die waermsten Zeilen dieser Figur lagen hinter
+         // T7: von Stufe 5 auf 3. Die waermsten Zeilen dieser Figur lagen hinter
          // Gates, die viele Spieler nie erreichen, und eine Zuneigung, die erst
          // nach Stunden anfaengt, ist im Zweifel gar keine.
          {z:'Sie werden besser. Ich merke sowas.', abStufe:3},
@@ -11027,7 +11027,7 @@ const ANLAGE2_NOTIZ = {
                  'Pause. Ich sage keinem was.',
                  'Ich habe Jahrzehnte gewartet. Nur zu.',
                  'Stillstand. Da kenne ich mich aus.',
-                 {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:3},   // T5, siehe crit
+                 {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:3},   // T7, siehe crit
                  {z:'Sie sehen nach. Wie besprochen.', merker:'anlage2Dank'},
                  {z:'Wir zwei. Sonst niemand. Angenehm.', allein:true}],
   // T4: die drei neuen Anlaesse. Sie schliessen die Luecken im Bogen, die T3
@@ -11107,11 +11107,11 @@ const ANLAGE2_UMSCHLAG = [
 // Sie wird vertrauter, nie schaerfer. Kein Eintrag schimpft, keiner belehrt von
 // oben herab, keiner macht sich ueber den lustig, der zieht.
 //
-// T5 hat diesen Satz praezisiert, weil er zu weit gefasst war und dabei die
+// T7 hat diesen Satz praezisiert, weil er zu weit gefasst war und dabei die
 // falsche Sache verboten hat: gemeint ist "nie schaerfer GEGEN DEN SPIELER",
 // nicht "nie laut". Hier in der Bewegungsreihe faellt beides zusammen und der
 // Satz gilt woertlich weiter, denn wer zieht, ist immer der Spieler. Fuer die
-// Anlaesse gilt er ab T5 nur noch in der ersten Fassung: sie darf hochfahren,
+// Anlaesse gilt er ab T7 nur noch in der ersten Fassung: sie darf hochfahren,
 // gegen ein Verfahren, gegen ein Formular, gegen sich selbst. Nie gegen den,
 // der zuhoert. Diese Grenze steht nicht nur hier, sie steht als Pruefung in
 // anlage2Assert() (2c).
@@ -11129,7 +11129,7 @@ const ANLAGE2_BEWEGUNG = [
 ];
 
 // ===========================================================================
-//  T5: Der Ausbruch. Sie hatte einen Käfig und keinen Puls.
+//  T7: Der Ausbruch. Sie hatte einen Käfig und keinen Puls.
 // ===========================================================================
 //
 // Der Befund, der diesen Abschnitt ausgeloest hat, stand nicht in einem Guard,
@@ -11386,7 +11386,7 @@ function knAssertCaps(){
   // Deckel und dieselben sechs Textpruefungen. Er darf nicht laenger sein, nur
   // weil er stiller ist.
   for(const u of ANLAGE2_UMSCHLAG) rows.push([u.z,44]);
-  // T5: der Ausbruch bekommt einen eigenen Deckel, und das ist nicht Bequemlichkeit,
+  // T7: der Ausbruch bekommt einen eigenen Deckel, und das ist nicht Bequemlichkeit,
   // sondern der Befund dieses Abschnitts: 44 fuer alles machte jede Zeile gleich
   // lang, und gleiche Laenge klingt nach gleichem Puls. Der Ausbruch ist kurz
   // (30), die Ruecknahme darf sich Zeit nehmen (40). Die sechs Textpruefungen
@@ -11535,7 +11535,7 @@ let knLastZettelT = -999, knBudgetShown = 0;
 let knLastRandnotizT = -999, knRandLastLine = {};
 let knIdleT = 0, knFrameCtr = 0, knClosingId = null, knNfIdx = -1, knBegruessungPending = null;
 let knCurseWasOn = false;
-// T5: die offene Klammer eines Ausbruchs, {z, at}. Laufzeit und nie
+// T7: die offene Klammer eines Ausbruchs, {z, at}. Laufzeit und nie
 // persistiert, und das ist keine Sparsamkeit: eine Ruecknahme, die einen
 // Neustart uebersteht, faellt zu einem Ausbruch, den niemand mehr gehoert hat.
 // Wer den Browser mitten im Satz schliesst, hat den Satz nicht gehoert.
@@ -11656,7 +11656,7 @@ function knOnZettelClosed(){
 function knShowRandLine(line, wer){
   setTxt('knRandTxt', line);
   const band = el('knRandnotiz');
-  // T5: der Ausbruch traegt beide Klassen. a2 ist die Stimme und bleibt, was
+  // T7: der Ausbruch traegt beide Klassen. a2 ist die Stimme und bleibt, was
   // sie ist; ausbruch legt nur darueber, was an dieser einen Zeile anders ist.
   // Zwei getrennte Klassen waeren zwei Beschreibungen derselben Sprecherin.
   band.classList.toggle('a2', wer === 'a2' || wer === 'a2x');
@@ -11708,7 +11708,7 @@ function anlage2Zeilen(anlass){
     return false;
   }).map(e => typeof e === 'string' ? e : e.z);
 }
-// T5: Wie selten ein Ausbruch ist, entscheidet ein Zaehler und kein Wuerfel.
+// T7: Wie selten ein Ausbruch ist, entscheidet ein Zaehler und kein Wuerfel.
 // Drei gefasste Zeilen, dann darf sie einmal. Das ist mit Absicht ablesbar und
 // nicht zufaellig: eine Figur, die alle paar Minuten hochfaehrt, hat keinen
 // Ausbruch mehr, sondern ein Temperament, und das ist eine andere Figur. Was
@@ -11728,7 +11728,7 @@ function anlage2AusbruchZug(anlass){
 function anlage2Notiz(anlass){
   if(!kn.flags.anlage2Da) return false;      // vor der Aushaendigung gibt es sie nicht
   if(!knLineErlaubt(anlass)) return false;    // Gates vor Pool-Auswahl, hurtMon ist Hot Path
-  // T5: der Ausbruch geht vor, wenn er dran ist. Er braucht keinen freien Pool
+  // T7: der Ausbruch geht vor, wenn er dran ist. Er braucht keinen freien Pool
   // und keine Gate-Auswertung: das Paar steht als Ganzes da, und die zweite
   // Haelfte ist bereits geschrieben. Der Zaehler faellt hier und nur hier.
   const paar = anlage2AusbruchZug(anlass);
@@ -11988,7 +11988,7 @@ function knTick(dt){
     kn.pending.niederlage = false; saveKn();
   }
 
-  // T5: die Ruecknahme eines Ausbruchs, und sie steht ganz vorn, weil sie eine
+  // T7: die Ruecknahme eines Ausbruchs, und sie steht ganz vorn, weil sie eine
   // offene Klammer ist. Alles andere im Band faengt etwas an, sie beendet
   // etwas.
   //
@@ -24120,13 +24120,13 @@ function anlage2Assert(){
     for(const e of ANLAGE2_NOTIZ[anlass]) zeilen.push([typeof e === 'string' ? e : e.z, 'Notiz ' + anlass]);
   for(const l of ANLAGE2_BEWEGUNG) zeilen.push([l, 'Bewegungsspruch']);
   for(const u of ANLAGE2_UMSCHLAG) zeilen.push([u.z, 'Umschlag ' + u.id]);   // T4
-  // T5: beide Haelften des Ausbruchs. Die Ruecknahme gehoert ausdruecklich
+  // T7: beide Haelften des Ausbruchs. Die Ruecknahme gehoert ausdruecklich
   // dazu, denn sie ist die Zeile, in der sie sich erklaert, und genau dort
   // waere ein gesperrtes Wort am naheliegendsten.
   for(const a in ANLAGE2_AUSBRUCH)
     for(const p of ANLAGE2_AUSBRUCH[a]) zeilen.push([p.auf, 'Ausbruch ' + a], [p.zurueck, 'Rücknahme ' + a]);
   zeilen.push([anlage2Tooltip().replace(/<[^>]*>/g, ' '), 'Tooltip']);
-  // T5-Fund, aufgefallen beim Ausloesen der neuen Zweige: bis hierher lief
+  // T7-Fund, aufgefallen beim Ausloesen der neuen Zweige: bis hierher lief
   // diese Schleife ungeprueft auf indexOf. Eine Quelle ohne Text hat den Guard
   // damit ABSTUERZEN lassen, statt ihn melden zu lassen, und weil er auf
   // Skriptebene laeuft, nahm er das halbe Spiel mit. Ein Guard, der an genau
@@ -24165,7 +24165,7 @@ function anlage2Assert(){
     }
   }
 
-  // (2b) T5: der Ausbruch-Kanal. Er wird ueber dieselbe Funktion ausgeliefert
+  // (2b) T7: der Ausbruch-Kanal. Er wird ueber dieselbe Funktion ausgeliefert
   // wie der Kommentarkanal und haengt deshalb an denselben Schluesseln; ein
   // Ausbruch an einem Anlass, den es dort nicht gibt, wuerde nie gerufen und
   // waere derselbe stumme Fall, den (4) fuer die Pools nachhaelt.
@@ -24235,7 +24235,7 @@ function anlage2Assert(){
   // dort fehlt, ist nach dem ersten Laden weg.
   if(!('anlage2Da' in kn.flags)) fehler('Der Merker anlage2Da fehlt in kn.flags');
   if(!('anlage2Zug' in kn.counters)) fehler('Der Zähler anlage2Zug fehlt in kn.counters');
-  // T5: ohne diesen Zaehler in der Vorgabe stuende er nach dem ersten Laden auf
+  // T7: ohne diesen Zaehler in der Vorgabe stuende er nach dem ersten Laden auf
   // undefined, (undefined|0) waere 0, und der Kanal liefe trotzdem. Er liefe
   // nur nie ueber drei hinaus, wenn ihn jemand spaeter nicht mehr schreibt,
   // und dann faellt nie wieder ein Ausbruch. Genau die Art Ausfall, die
@@ -24399,7 +24399,7 @@ function anlage2Assert(){
       fehler('Dieser Weg legt die erste Stufe nicht in die Blätterliste', name);
   }
 
-  // T5 bringt die Ausbrueche in dieselbe Zeile, T6 die Stufen der Wahl. Die
+  // T7 bringt die Ausbrueche in dieselbe Zeile, T6 die Stufen der Wahl. Die
   // Blattzahl steht auf +2 statt +1: hinter dem Auftakt liegt seit T6 die Wahl.
   const ausbrueche = Object.keys(ANLAGE2_AUSBRUCH).reduce((n, a) => n + ANLAGE2_AUSBRUCH[a].length, 0);
   if(ok) console.log(`T3 Anlage 2: ${Object.keys(ANLAGE2_NOTIZ).length} Anlässe, `
