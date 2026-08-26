@@ -1,5 +1,14 @@
 # Bauabschnitt F1: Figurenleben — ERLEDIGT (23.08.2026)
 
+> **Vorspann vom 26.08.2026.** Dieses Dokument beschreibt den Stand vor F1 und bleibt
+> unverändert stehen, wie jedes datierte Dokument des Hauses. Eine Sache darin ist seither
+> überholt, und sie kommt an drei Stellen vor: der Kommentarkanal `RANDNOTIZ` (einmal mit der
+> Zeilenangabe 7272) heißt seit T3 `ANLAGE2_NOTIZ`, `knRandnotiz()` heißt `anlage2Notiz()`,
+> und gesprochen wird er nicht mehr von Knöterich, sondern von Anlage 2. Die Zeilenangabe
+> stimmt seit vielen Bauabschnitten nicht mehr. Den heutigen Stand des Kanals beschreiben
+> `superduper-gameplay-prompt.md` (Abschnitt „Randnotizen"), `phase-t3-anlage2.md` und
+> `phase-t4-charakter.md`.
+
 Der Prompt für die Hintergrundgeschichten aller Figuren, für die Dialoge, die daraus
 entstehen, und für die Gesprächsbäume, in denen sich der Spieler verlaufen darf. Er ist so
 geschrieben, dass eine frische Sitzung ihn allein ausführen kann: alles, was sie wissen

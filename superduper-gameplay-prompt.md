@@ -369,7 +369,7 @@ Reine Charakterzeilen ohne Information. Pro Anlass mindestens 4 Zeilen, nie zwei
 
 **Die sieben Anlass-Schlüssel heißen absichtlich unverändert weiter.** An ihnen hängen der Chor auf der Bank (Lott und Pahl über `letzterAnlass`) und der Langvorgang Hintermühl; hätte der Sprecherwechsel sie umbenannt, wäre beides stumm geworden. **Seit T4 sind es zehn**, dazugekommen sind `niederlage`, `bosssieg` und `ebene`.
 
-Zwei Dinge gelten für jede neue Zeile und gab es zur Abfassung dieses Dokuments nicht: der Gate-Schalter **`allein`** (die Zeile fällt nur, wenn keine Dorffigur in der Nähe steht, Knöterich einzeln gemessen) und **`ANLAGE2_UMSCHLAG`**, zwölf stille Einmalzeilen ohne Pointe und ohne Maske, jede genau einmal im ganzen Spiel.
+Zwei Dinge gelten für jede neue Zeile und gab es zur Abfassung dieses Dokuments nicht: der Gate-Schalter **`allein`** (die Zeile fällt nur, wenn keine Dorffigur in der Nähe steht, Knöterich einzeln gemessen) und **`ANLAGE2_UMSCHLAG`**, dreizehn stille Einmalzeilen ohne Pointe und ohne Maske, jede genau einmal im ganzen Spiel (der Guard lässt vierzehn zu, ein Platz steht frei).
 
 Und über allem die **Brandmauer**: Anlage 2 war beigefügt, nicht eingeweiht, sie kennt den laufenden Fall nicht, und `anlage2Assert()` misst das an jeder ihrer Zeilen einschließlich des Tooltips (`phase-t3-anlage2.md`, `phase-t4-charakter.md`).
 

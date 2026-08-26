@@ -1,9 +1,10 @@
-# Bauabschnitt T5: Die Entscheidung, die keine ist — ERLEDIGT
+# Bauabschnitt T6: Die Entscheidung, die keine ist — ERLEDIGT
 
 Ein Knopf, der nicht funktioniert, und eine Behörde, die behauptet, das sei ein
 Versehen.
 
-T3 hat Anlage 2 gebaut, T4 ihren Charakter benannt. T5 fasst zum ersten Mal den
+T3 hat Anlage 2 gebaut, T4 ihren Charakter benannt, T5 ihr den Amtston genommen.
+T6 fasst zum ersten Mal den
 Erstkontakt selbst an und legt eine Wahl hinein, die keine ist.
 
 ---
@@ -89,11 +90,42 @@ nicht, sich zu freuen.
 
 ---
 
+## 3a. Die Berührung mit T5c, und warum sie den Witz besser macht
+
+T5 ist zwischen Planung und Bau dieses Abschnitts auf `main` gelandet, und T5c
+fasst genau die Tafel an, hinter der die Wahl steht: **Anlage 2 spricht in ihrem
+Auftakt fünf Sätze Amtsdeutsch, den Text, der auf ihr steht, und lässt den Ton
+dann ausdrücklich fallen.**
+
+> **Anlage 2:** Ich rede ab jetzt normal, wenn es Ihnen recht ist.
+
+Direkt danach fängt bei mir das **Amt** an, Amtsdeutsch zu reden. Das ist kein
+Widerspruch, sondern der beste Zufall dieses Abschnitts: der Ton, den sie gerade
+abgelegt hat, kommt sofort zurück, nur aus einer anderen Ecke. Sie hat sich
+davon gelöst, das Haus nicht.
+
+Eine Zeile war nötig, damit die beiden Abschnitte miteinander reden statt
+nebeneinander her. Auf Stufe 1, beim ersten Auftritt des Apparats, sagt sie
+jetzt zuerst:
+
+> **Anlage 2:** Das bin nicht ich. Ich hatte gerade erst aufgehört, so zu reden.
+
+Danach erst kommt ihr „Es muss auch wirklich nicht sein." Ohne diesen Satz
+könnte ein Spieler den amtlichen Hinweis für einen Rückfall von ihr halten, und
+das wäre die Figur zurückgedreht. Mit ihm ist es das Gegenteil: die Distanz, die
+T5c aufgebaut hat, wird auf der nächsten Tafel sofort auf die Probe gestellt und
+hält.
+
+Ihre Zeile auf Stufe 2 („Ich möchte an dieser Stelle betonen, dass ich damit
+nichts zu tun habe") liest sich seither ebenfalls schärfer. Sie ist unverändert.
+
+---
+
 ## 4. Was jetzt da ist
 
-### T5-1. Die Wahl hängt am Lauf, nicht am Blatt
+### T6-1. Die Wahl hängt am Lauf, nicht am Blatt
 
-`szeneTafeln()` nimmt seit T5 ein `opt.wahl` in der Form
+`szeneTafeln()` nimmt seit T6 ein `opt.wahl` in der Form
 `{bei:<index>, reihe:[...]}`. Das Blatt an diesem Index wird dann nicht aus
 `liste` gelesen, sondern aus `reihe[stufe]`, und `szeneTafelWahlNein()` zählt
 die Stufe hoch, ohne den Index zu bewegen.
@@ -116,7 +148,7 @@ kennt.
 auf „Blatt II von VI", und das ist Absicht: das Haus diskutiert, ohne dass der
 Vorgang vorankommt.
 
-### T5-2. Der zweite Knopf, zweimal belegt
+### T6-2. Der zweite Knopf, zweimal belegt
 
 Die Wahl benutzt dieselbe Knopfzeile wie `ÜBERSPRINGEN` aus dem Intro. Beide
 können sich nicht begegnen: `zweiter` gehört dem ganzen Stapel, `wahl` genau
@@ -130,7 +162,7 @@ ein fehlender Knopf. `#overlay button:disabled` trägt dieselben zwei Farben wie
 der Spieler muss merken, dass er nicht geht. Die helle Pille aus U10 wird für
 ihn abgeschaltet, sonst leuchtete er weiter wie ein benutzbarer Knopf.
 
-### T5-3. Der Nachhall, eine Zeile
+### T6-3. Der Nachhall, eine Zeile
 
 `ANLAGE2_UMSCHLAG` hat einen vierzehnten Eintrag, hinter `ganzGelesen`:
 
@@ -150,7 +182,7 @@ keinem Wort und macht keinen Vorwurf. Sie stellt fest, dass beide gezögert
 haben, und stellt sich damit auf seine Seite. Der zweite Satz ist der ganze
 Punkt, denn sie hat vierzig Jahre lang gezögert zu fragen.
 
-### T5-4. Die Stufe überlebt keinen Neustart, mit Absicht
+### T6-4. Die Stufe überlebt keinen Neustart, mit Absicht
 
 Sie lebt in `szeneTafelLauf`, also in der offenen Tafel. Wer mitten im
 Erstkontakt neu lädt, fängt die Wahl von vorne an. Das ist richtig: ein Vorgang,
@@ -268,12 +300,39 @@ gefährdete. Auf 390x844 hält er.
 | Lauf | Ergebnis |
 |---|---|
 | `tools/empfang-pruef.mjs` | **96 von 96** (war 76) |
-| `tools/anlage2-pruef.mjs` | 76 von 76 |
 | `tools/menue-pruef.mjs` | 78 von 78 |
 | `tools/szene-pruef.mjs` | 49 von 49 |
 | `tools/mitteilung-pruef.mjs` | 32 von 32 |
+| `tools/versuchung-pruef.mjs` | 67 von 67 |
+| `tools/anlage2-pruef.mjs` | 74 von 76, siehe unten |
 
-Beim Laden: Konsole still, keine Meldung.
+Beim Laden: Konsole still, keine Meldung. Alle Zahlen auf dem Stand **nach** dem
+Merge von T5, nicht davor.
+
+### Ein Rotstand, der nicht hierher gehoert
+
+`anlage2-pruef.mjs` meldet zweimal dasselbe:
+
+```
+FEHL  sie hat sieben Fragen                    ist=8 soll=7
+FEHL  die sieben Fragen liegen in der Ablage   ist=8 soll=7
+```
+
+**Das ist nicht dieser Bauabschnitt.** T5b hat ihrem Gesprächsbaum die achte
+Frage gegeben („Erklären Sie mir diese Welt."), ohne die beiden Zählzeilen
+nachzuziehen. Nachgemessen statt vermutet, in einem eigenen Worktree gegen
+`origin/main` und über einen zweiten Server: **dort dieselben zwei, ebenfalls
+74 von 76.** Mein Diff fasst `baumAnlage2.fragen` mit keiner Zeile an und
+`tools/anlage2-pruef.mjs` überhaupt nicht.
+
+Die Behebung sind zwei Zahlen, und sie gehört zu T5:
+
+```js
+pruef('sie hat sieben Fragen', …, 7);   →  acht Fragen, 8
+```
+
+Hier nicht mitgemacht, weil ein Bauabschnitt, der fremde Prüfzahlen nachzieht,
+seine eigene Grenze verliert.
 
 **Im Bild durchgespielt**, beide Wege: über die Ernennung einmal glatt
 angenommen, einmal viermal abgelehnt bis zum grauen Knopf, und über

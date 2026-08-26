@@ -141,8 +141,8 @@ async function durchDieVorstellung(page){
 // zweiter kam. Seit die Einfuehrung der Anlage 2 direkt hinter der Ernennung
 // haengt, laufen beide sonst in einer Zaehlung zusammen, und der Lauf koennte
 // nicht mehr sagen, welcher Stapel wie lang ist.
-// T5: Der Helfer kennt jetzt drei Knopfaufschriften statt zwei. Zwischen dem
-// Auftakt der Anlage 2 und ihren Blaettern steht seit T5 die Scheinwahl, und
+// T6: Der Helfer kennt jetzt drei Knopfaufschriften statt zwei. Zwischen dem
+// Auftakt der Anlage 2 und ihren Blaettern steht seit T6 die Scheinwahl, und
 // ihr Weiterknopf heisst LESEN. Ohne diese Alternative faende der Helfer dort
 // keinen Knopf, braeche mit 'weg' ab, und alles hinter der Wahl bliebe
 // ungeprueft, ohne dass ein einziger pruef() rot wuerde.
@@ -214,8 +214,15 @@ async function bisZumEmpfang(page){
   pruef('das erste Introblatt steht', await page.evaluate(() =>
         el('ovPanel').textContent.includes('aus dem Fluss')), true);
 
+  // T5d (26.08.2026): sieben statt fuenf. Die Zahl war eine Zusage aus SZ1
+  // ("Der Anfang wird dadurch nicht laenger"), und T5d nimmt sie bewusst
+  // zurueck: der Anfang traegt seither Kapitel 0 bis 5 der Weltbibel, und zwei
+  // davon hatten kein Blatt. Neu sind die Karte (Kapitel 3, die Landschaft ist
+  // die Ablage, samt dem Kuerzel, das ein Wort ist) und die Tafel ueber der Tuer
+  // (Kapitel 1, das Weltgesetz im Wortlaut, seit dem 26.08.2026 erlaubt).
+  // Die Formregel "Der Anfang erzaehlt" deckt die Laenge ab.
   const tafeln = await durchDenAnriss(page);
-  pruef('das Intro hat fuenf Blaetter', tafeln, 5);
+  pruef('das Intro hat sieben Blaetter', tafeln, 7);
   pruef('danach ist das Overlay weg', await page.evaluate(() => el('overlay').style.display), 'none');
   pruef('und die Buehne faellt fuer den Empfang',
         await page.evaluate(() => el('introBuehne').style.display), 'none');
@@ -282,7 +289,7 @@ async function bisZumEmpfang(page){
   pruef('vor dem Dienst steht noch ein Stapel', await page.evaluate(() =>
         document.getElementById('overlay').style.display), 'flex');
   pruef('Anlage 2 ist noch nicht in der Tasche', await page.evaluate(() => kn.flags.anlage2Da), false);
-  // T5: sechs statt fuenf, weil die Scheinwahl hinter dem Auftakt dazugekommen
+  // T6: sechs statt fuenf, weil die Scheinwahl hinter dem Auftakt dazugekommen
   // ist. Wer hier durchlaeuft, nimmt sie beim ersten Anlauf an.
   const treffen = await durchDenStapel(page, 'EINSTECKEN');
   pruef('das erste Treffen hat sechs Blaetter', treffen, 6);
@@ -387,7 +394,7 @@ async function bisZumEmpfang(page){
   await ctx.close();
 }
 
-// ------------------------------------------- T5: die Entscheidung, die keine ist
+// ------------------------------------------- T6: die Entscheidung, die keine ist
 //
 // Der Erstkontakt bietet an, die Anlage NICHT zu lesen, und nimmt das Nein
 // nicht an. Vier Ablehnungen sind moeglich, die fuenfte Stufe traegt den
@@ -559,7 +566,7 @@ async function bisZumEmpfang(page){
   // kein Zeichendeckel), und genau deshalb gehoert die Frage geprueft, ob sie
   // auf ein Telefon passen. Erwartet wird die Bauform aus SZ4: der Rahmen
   // steht, der Text rollt innen, der Knopf bleibt erreichbar.
-  // T5: gemessen wird der echte Stapel samt Wahl, und die fuenf Stufen werden
+  // T6: gemessen wird der echte Stapel samt Wahl, und die fuenf Stufen werden
   // dabei einzeln durchlaufen. Das ist nicht Gruendlichkeit um ihrer selbst
   // willen: die letzte Stufe ist mit fuenf gesprochenen Zeilen und einer
   // Nachbemerkung das LAENGSTE Blatt des ganzen Anfangs, und sie ist das

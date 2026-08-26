@@ -639,7 +639,7 @@
   #overlay p{font-size:calc(14px * var(--fs));line-height:1.9;}
   #overlay button{margin-top:18px;font-family:inherit;font-weight:bold;font-size:calc(18px * var(--fs));padding:12px 34px;cursor:pointer;color:#1a1206;background:linear-gradient(#f4d97a,#c9a227);border:2px solid #7a5a10;border-radius:8px;}
   #overlay button:hover{filter:brightness(1.1);}
-  /* T5: Ein gesperrter Knopf auf der Tafel. Dieselben zwei Farben wie
+  /* T6: Ein gesperrter Knopf auf der Tafel. Dieselben zwei Farben wie
      #brewBtn:disabled, damit Gesperrtsein im ganzen Haus gleich aussieht.
      :hover wird ausdruecklich zurueckgenommen, sonst leuchtet der Knopf beim
      Darueberfahren auf und sieht wieder benutzbar aus. not-allowed statt
@@ -10877,26 +10877,26 @@ function saveKn(){ try{ localStorage.setItem(KN_KEY, JSON.stringify(kn)); }catch
 const HINWEISE = [
   {id:'hp30', prio:90, art:'zustand',
    wenn:()=> !player.dead && player.hp < derived.maxHp*0.3,
-   z1:'Sie verlieren Konfetti. Das ist selten gut.', z2:'Trank. Q.', z2t:'Das Fläschchen.'},
+   z1:'Sie haben kaum noch Kraft übrig.', z2:'Ein Trank hilft. Taste Q.', z2t:'Ein Trank hilft. Antippen.'},
   {id:'tuer1', prio:70, art:'zustand',
    // "Sichtweite": grobe Nährungsdistanz übers Bildschirmband, kein Math.hypot
    wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && sqDist(player.x,player.y,t.x,t.y) < 202500),
-   z1:'Gebührenbescheid lesen. Steht alles drauf.', z2:'F, wenn Sie sich trauen.', z2t:'Die Hand im Gürtel.'},
+   z1:'An der Tür hängt ein Schild. Lesen Sie es.', z2:'Taste F, dann geht sie auf.', z2t:'Die Hand im Gürtel.'},
   {id:'zutat3', prio:65, art:'zustand',
    wenn:()=> player.pouch.length >= 3,
-   z1:'Drei Stück. Das gilt als Antrag.', z2:'Zum Kessel. K.', z2t:'Rucksack, dann Kessel.'},
+   z1:'Sie haben drei Zutaten. Daraus wird etwas.', z2:'Am Kessel kochen. Taste K.', z2t:'Rucksack, dann Kessel.'},
   {id:'zutat1', prio:60, art:'ereignis',
    wenn:()=> !!kn.pending.zutat1,
-   z1:'Das ist kein Müll. Das ist Sachbestand.', z2:'Sammeln. Fragen später.', z2t:'Sammeln. Fragen später.'},
+   z1:'Das ist kein Müll. Heben Sie es auf.', z2:'Sammeln Sie alles ein.', z2t:'Sammeln Sie alles ein.'},
   {id:'craft1', prio:55, art:'ereignis',
    wenn:()=> !!kn.pending.craft1,
-   z1:'Notiert. Ich notiere alles.', z2:'Zweiter Reiter im Kessel.', z2t:'Zweiter Reiter im Kessel.'},
+   z1:'Sie haben ein neues Rezept gelernt.', z2:'Im Kessel, zweiter Reiter.', z2t:'Im Kessel, zweiter Reiter.'},
   {id:'fluch1', prio:50, art:'ereignis',
    wenn:()=> !!kn.pending.fluch1,
-   z1:'Jeder Vorteil hat eine Rückseite.', z2:'Nachlesen. I.', z2t:'Im Rucksack nachlesen.'},
+   z1:'Ihre Ausrüstung hilft und schadet zugleich.', z2:'Im Rucksack nachlesen. I.', z2t:'Im Rucksack nachlesen.'},
   {id:'kammer1', prio:45, art:'ereignis',
    wenn:()=> !!kn.pending.kammer1,
-   z1:'Kammer erledigt. Kommt in die Akte.', z2:'Weiter im Dienst.', z2t:'Weiter im Dienst.'},
+   z1:'Die Kammer ist geschafft. Gut gemacht.', z2:'Weiter geht es draußen.', z2t:'Weiter geht es draußen.'},
   {id:'ult1', prio:40, art:'zustand',
    wenn:()=> !!player.spellsKnown[ULT_SPELL.id],
    // T1-Nachlese: hier stand "Jetzt wird es albern." Das ist das Spiel, das
@@ -10904,10 +10904,10 @@ const HINWEISE = [
    // Spruch heisst bereits Konfetti-Kataklysmus des juengsten Gerichts, der
    // Witz steht also im Namen. Knoeterich erklaert Tasten, nie Zusammenhaenge,
    // und schon gar nicht kommentiert er den groessten Moment des Spielers.
-   z1:'Sie dürfen jetzt alles. Amtlich alles.', z2:'R. Einmal reicht.', z2t:'Der Ult-Knopf. Einmal reicht.'},
+   z1:'Sie können jetzt den stärksten Zauber.', z2:'Taste R. Einmal reicht.', z2t:'Der große Knopf. Einmal.'},
   {id:'portal1', prio:35, art:'ereignis',
    wenn:()=> !!kn.pending.portal1,
-   z1:'Das Portal ist nicht mein Ressort.', z2:'Viel Glück.', z2t:'Viel Glück.'},
+   z1:'Da ist ein Portal. Wohin, weiß ich nicht.', z2:'Sie können hindurchgehen.', z2t:'Sie können hindurchgehen.'},
   {id:'feierabend1', prio:30, art:'gelatcht',
    // Auslöser fällt mit dem Öffnen von #overlay zusammen (eigene Sperrzone), erscheint
    // deshalb erst 5s nach state==='play' in der Folgeschicht.
@@ -10915,13 +10915,13 @@ const HINWEISE = [
    // T1-Nachlese: der Hinweis feuert erst in der Folgeschicht, der Spieler ist
    // also gerade wiedergekommen. Genau das sagte niemand, und es ist bei
    // Knoeterich die groesste denkbare Anerkennung: eine Feststellung.
-   z1:'Erste Schicht. Sie sind wiedergekommen.', z2:'Der Bericht liegt beim Amt.', z2t:'Der Bericht liegt beim Amt.'},
+   z1:'Sie sind wiedergekommen. Das freut mich.', z2:'Ihr Bericht liegt im Amt.', z2t:'Ihr Bericht liegt im Amt.'},
   {id:'amt1', prio:25, art:'zustand',
    // amt.bankGold ändert sich nur in endShift(), also faktisch beim Öffnen von #overlay:
    // dieselbe Sperrzonen-Verzögerung wie feierabend1, deshalb dieselbe 5s-Wartezeit.
    wenn:()=> (gameT - knPlayStartT >= 5) && AUSBAU_DEFS.some(d => amt.ausbauten[d.key] < d.max)
              && amt.bankGold >= Math.min(...AUSBAU_DEFS.filter(d => amt.ausbauten[d.key] < d.max).map(d => d.cost(amt.ausbauten[d.key]))),
-   z1:'Sie sind flüssig. Das Amt hätte da was.', z2:'Nach Feierabend.', z2t:'Nach Feierabend.'},
+   z1:'Sie haben genug Gold. Im Amt gibt es was.', z2:'Nach der Schicht hingehen.', z2t:'Nach der Schicht hingehen.'},
 ];
 
 // --- Eskalation zu Variante B: nur art:'zustand', genau eine Stufe, siehe
@@ -10972,40 +10972,44 @@ const ESCALATE_DEFS = {
 //  Die gegateten Zeilen sind die waermeren. Das ist der ganze Bogen der Figur.
 // ===========================================================================
 const ANLAGE2_NOTIZ = {
-  crit: ['Das saß. Vermerken Sie es sich selbst.',
-         'Sauber getroffen. Siehe oben.',
-         'Das nennt man Bearbeitung mit Nachdruck.',
-         'Ein Treffer. Anlage dazu: ich.',
+  crit: ['Das saß. Und zwar richtig.',
+         'Das Aktenzeichen steht klein am Rand.',
+         'Sauber getroffen. Das können Sie also.',
+         'Im Haus hieße das Bearbeitung. Hier: bumm.',
+         'Getroffen. Ich habe zugesehen.',
          {z:'Sie werden besser. Ich merke sowas.', abStufe:5},
-         {z:'Sie werden wirklich besser. Vermerkt.', merker:'anlage2Dank'}],
-  ultimate: ['Sehr viel Form für ein Blatt Papier.',
-             'Das Konfetti geht auf Ihre Kostenstelle.',
-             'Ich lag schon bei ruhigeren Vorgängen.',
-             'Beeindruckend. Und nirgends beantragt.',
-             {z:'Das hat niemand gesehen. Nur die Anlage.', allein:true}],
-  levelup: ['Eine Stufe. Kein Titel. Siehe Laufbahn.',
-            'Fortschritt, noch nicht aktenkundig.',
-            'Ich vermerke das. Für uns beide.',
-            'Gestiegen. Das Gehalt bleibt, wo es lag.',
+         {z:'Sie werden wirklich besser. Ehrlich.', merker:'anlage2Dank'}],
+  ultimate: ['So viel Getöse. Mir gefällt es.',
+             'Das Konfetti zahlt am Ende jemand.',
+             'Ich lag schon bei ruhigeren Sachen.',
+             'Beeindruckend. Und keiner hat gefragt.',
+             {z:'Das hat keiner gesehen. Nur ich.', allein:true}],
+  levelup: ['Eine Stufe höher. Titel gibt es später.',
+            'Sie kommen voran. Weiß nur noch keiner.',
+            'Ich merke mir das. Für uns beide.',
+            'Eine Stufe höher. Das Geld nicht.',
             {z:'Jetzt haben Sie sogar einen Titel dafür.', abRang:1},
-            {z:'Aufstieg vermerkt. Von mir persönlich.', merker:'anlage2Dank'}],
-  kammerAbbruch: ['Abbruch ist ein Verfahrensschritt.',
-                  'Rückzug. Ordnungsgemäß und ohne Beute.',
+            {z:'Ich habe es mir gemerkt. Persönlich.', merker:'anlage2Dank'}],
+  kammerAbbruch: ['Umdrehen ist auch eine Entscheidung.',
+                  'Rückzug. Ohne Beute, aber ganz.',
                   'Nicht jede Tür will heute etwas von uns.',
-                  'Leer ist auch eine Auskunft.',
-                  {z:'Niemand hat es gesehen. Auch gut.', allein:true}],
-  fluch: ['Nebenbestimmungen. Ich lese sowas gern.',
+                  'Leer ist auch eine Antwort.',
+                  {z:'Keiner hat es gesehen. Auch gut.', allein:true}],
+  fluch: ['Das Kleingedruckte. Ich mag sowas.',
+          'Beglaubigt wurde es. Deshalb gibt es das.',
           'Das Kleingedruckte liest sonst niemand.',
-          'Sie unterschreiben schneller als Zwirn.',
-          'Steht alles drin. Wie immer. Wie bei mir.',
-          {z:'Die Auflagen häufen sich. Wie immer.', abAkt:3}],
-  goldfund: ['Buchen Sie das. Ich sage es nur ungern.',
-             'Ein Posten. Kassenzeichen folgt bestimmt.',
-             'Geld ist ein Vorgang mit Zahlen darin.',
-             'Schön. Und jetzt kommt der Abzug.',
+          'Sie schreiben schneller als Zwirn.',
+          'Steht alles drin. Wie bei mir auch.',
+          {z:'Das wird langsam viel auf einmal.', abAkt:3}],
+  goldfund: ['Geld. Ich sage es nur ungern.',
+             'Geld. Irgendwer zählt das später.',
+             'Geld ist Papier, das alle mögen.',
+             'Schön. Und gleich will es jemand.',
              {z:'Ihr Fund. Ich sage nichts weiter dazu.', merker:'anlage2Dank'}],
-  untaetigkeit: ['Sie stehen. Ich hänge. Wir passen gut.',
-                 'Pause. Ich sage niemandem etwas.',
+  untaetigkeit: ['Sie stehen. Ich hänge. Passt gut.',
+                 'Was liegen bleibt, steht irgendwann auf.',
+                 'Die Wiese heißt amtlich Ablage A. Wirklich.',
+                 'Pause. Ich sage keinem was.',
                  'Ich habe Jahrzehnte gewartet. Nur zu.',
                  'Stillstand. Da kenne ich mich aus.',
                  {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:5},
@@ -11020,18 +11024,20 @@ const ANLAGE2_NOTIZ = {
   // Wiederantritt. Der Unterschied ist die ganze Figur: wer jemandem in sein
   // Scheitern hineinredet, ist ein Kommentator, wer wartet, ist ein Begleiter.
   // Technisch traegt das kn.pending.niederlage, siehe anlage2Notiz() und knTick().
-  niederlage: ['Wieder im Dienst. Siehe vorhin.',
-               'Unterbrechung beendet. Weiter im Text.',
-               'Das kommt vor. Steht sogar irgendwo.',
-               'Sie sind wieder aufgenommen worden.',
-               {z:'Ich habe die Stelle vermerkt. Nur so.', merker:'anlage2Dank'}],
-  bosssieg: ['Erledigt. Das ist selten das Wort.',
-             'Der Vorgang ist abgeschlossen. Endlich.',
-             'Sowas kommt in keinem Formular vor.',
+  niederlage: ['Sie sind wieder da. Gut.',
+               'Weiter geht es. Wo waren wir.',
+               'Das kommt vor. Öfter als man denkt.',
+               'Sie durften wiederkommen. Schön.',
+               {z:'Ich habe mir die Stelle gemerkt.', merker:'anlage2Dank'}],
+  bosssieg: ['Erledigt. Das Wort hört man selten.',
+             'Konfetti heißt: der Vorgang ist durch.',
+             'Das ist durch. Endlich mal etwas.',
+             'Dafür gibt es kein Formular. Gut so.',
              'Ich lag noch nie bei einem Sieg dabei.',
              {z:'Unter uns: das war beachtlich.', allein:true}],
-  ebene: ['Ablage V. Der Papierkorb, ungeleert.',
-          'Hier wird nichts mehr beantwortet.',
+  ebene: ['Ablage V. Der Korb, nie geleert.',
+          'Tiefer als Ablage V geht es nicht.',
+          'Hier antwortet niemand mehr.',
           'Tiefer geht die Ablage nicht.',
           'Dunkel. Immerhin bleicht hier nichts aus.',
           {z:'Bleiben Sie in meiner Nähe. Andersrum.', allein:true}],
@@ -11064,7 +11070,7 @@ const ANLAGE2_UMSCHLAG = [
   {id:'ersterRang',       z:'Ein neuer Titel. Der steht Ihnen zu.'},
   {id:'dank',             z:'Sie haben zugesagt. Ich vermerke das.'},
   {id:'ganzGelesen',      z:'Das waren alle Fragen. Ich habe mitgezählt.'},
-  // T5: der einzige Nachhall der Scheinwahl, und er faellt nur, wenn der
+  // T6: der einzige Nachhall der Scheinwahl, und er faellt nur, wenn der
   // Spieler bis zum gesperrten Knopf abgelehnt hat. Kein Vorwurf, keine
   // Anspielung auf den Schwindel des Hauses: sie stellt fest, dass beide
   // gezoegert haben, und stellt sich damit auf seine Seite. Der zweite Satz
@@ -16682,14 +16688,13 @@ function updateHUD(){
 // ===========================================================================
 const NEUERUNGEN_KEY = 'sda_neuerungen';
 const NEUERUNGEN = {
-  stand: '2026-08-27',
-  datum: '27. August',
+  // T5: neuer Stempel am selben Tag. Der Vergleich ist ein String-Vergleich,
+  // und ohne neuen Wert saehe die T5-Haelfte niemand, der die Mitteilung von
+  // heute Morgen schon weggeklickt hat.
+  // T6: derselbe Tag, dritter Stempel, aus demselben Grund.
+  stand: '2026-08-26-t6',
+  datum: '26. August',
   punkte: [
-    {
-      titel: 'Sie dürfen entscheiden, ob Sie lesen',
-      was: 'Beim ersten Treffen mit Anlage 2 stellt das Haus Ihnen frei, ob Sie sie lesen möchten. Die Freistellung ist echt. Das Ergebnis steht fest.',
-      wo: 'Gleich nachdem sie sich vorgestellt hat, auf beiden Wegen in den Dienst.',
-    },
     {
       titel: 'Anlage 2 ist Ihnen beigefügt worden',
       was: 'An Ihrer Ernennungsurkunde hängt ein Blatt, das seit Jahrzehnten jedem wichtigen Vorgang dieses Hauses beigefügt wird und das noch nie jemand gelesen hat. Es kennt das Haus, es kennt die Leute, es hat zu allem eine Auskunft, und es bleibt bei Ihnen. Ausheften lässt es sich nicht. Versuchen Sie es ruhig, es antwortet jedes Mal anders.',
@@ -16724,6 +16729,39 @@ const NEUERUNGEN = {
       titel: 'Am Telefon sind die Knöpfe Knöpfe geworden',
       was: 'Angriffsfächer und Knopfspalte tragen jetzt die Achteckform, die in der Grafik gezeichnet steht, statt sie unter einem Kreisrand zu verstecken. Ein gesperrter Knopf zeigt nur noch sein Schloss, wo bis eben ein Text aus dem Knopf herauslief.',
       wo: 'Nur am Finger: Fächer unten rechts, Knopfspalte am linken Rand.',
+    },
+    // --- T5, 26.08.2026 -----------------------------------------------------
+    // Normales Deutsch, wie es die Formregel "Das Register haengt am Ort" seit
+    // heute fuer jeden Erklaertext verlangt. Die wo-Zeilen nennen nur Wege, die
+    // es wirklich gibt; tools/mitteilung-pruef.mjs drueckt sie nach.
+    {
+      titel: 'Die Hinweise reden Deutsch',
+      was: 'Die kurzen Hinweise im Band sagen jetzt, was los ist und was Sie tun können, ohne dass man sie zweimal liest. Aus „Sie verlieren Konfetti. Das ist selten gut." ist „Sie haben kaum noch Kraft übrig. Ein Trank hilft." geworden. Elf Zeilen sind so überarbeitet.',
+      wo: 'Im Band unter der Statusleiste, sobald es etwas zu sagen gibt.',
+    },
+    {
+      titel: 'Anlage 2 legt den Amtston ab',
+      was: 'Sie fängt an wie ein Schriftstück: Aktenzeichen, vier Abkürzungen in zwei Zeilen, alles korrekt. Nach fünf Sätzen hört sie damit auf und sagt selbst, warum. Danach redet sie normal, und über die Sprache dieses Hauses lässt sie gelegentlich etwas fallen.',
+      wo: 'Gleich zu Beginn, wenn sie sich vorstellt. Wer schon im Dienst ist, hört den Unterschied im Band.',
+    },
+    {
+      titel: 'Anlage 2 erklärt Ihnen die Welt',
+      was: 'Neu in ihrem Gespräch ist die Frage „Erklären Sie mir diese Welt." Dahinter liegen drei Themen: was hier eigentlich los ist, warum es dieses Amt gibt, und wo Sie sind und was Sie darin tun. Sie erzählt das in Ruhe und wiederholt sich gern.',
+      wo: 'Im Rucksack Anlage 2 anklicken, dann die Frage auswählen.',
+    },
+    {
+      titel: 'Der Anfang zeigt mehr von der Welt',
+      was: 'Das Intro hat zwei Blätter dazubekommen: eine Landkarte, auf der die Gegend keine Ortsnamen trägt, sondern Buchstaben, und die Tafel über der Amtstür mit dem Satz, auf dem hier alles steht. Das Einstellungsformular sagt jetzt außerdem, was der Außendienst überhaupt ist.',
+      wo: 'Beim ersten Dienstantritt. Wer den hinter sich hat, sieht es nicht noch einmal.',
+    },
+    // --- T6, 26.08.2026 -----------------------------------------------------
+    // Der Punkt sagt, was der Spieler sieht, und nicht, wie es gebaut ist. Die
+    // Pointe steht im dritten Satz und wird nicht erklaert: wer sie beim Lesen
+    // nicht merkt, merkt sie beim Spielen.
+    {
+      titel: 'Sie dürfen entscheiden, ob Sie lesen',
+      was: 'Beim ersten Treffen mit Anlage 2 stellt das Haus Ihnen frei, ob Sie sie lesen möchten. Die Freistellung ist echt. Das Ergebnis steht fest.',
+      wo: 'Gleich nachdem sie sich vorgestellt hat, auf beiden Wegen in den Dienst.',
     },
   ],
 };
@@ -21479,23 +21517,41 @@ const ANLAGE2_BLAETTER = [
 // zweimal verschieden.
 const ANLAGE2_AUFTAKT_ERNENNUNG = {
   blatt:'Sie stehen zum ersten Mal vor dem Haus statt darin. Die Urkunde ist noch in Ihrer Hand, und etwas an ihr raschelt, obwohl kein Wind geht.',
+  // T5c: die ersten fuenf Saetze sind der Text, der auf ihr steht. Danach faellt
+  // der Ton ab, und sie sagt dazu, warum. Das ist die ganze Ansage vom
+  // 26.08.2026, an genau einer Stelle: "nach den ersten 5 saetzen das
+  // amtsdeutsch fallen". Die Kuerzel gehoeren dazu (Grundgesetz 3, "Woran
+  // Amtsdeutsch haengt") und sind hier bewusst dicht, weil sie danach nie
+  // wieder so dicht stehen.
   stimme:['Am unteren Rand hängt ein zweites Blatt. Es ist angeheftet, und die Klammer dafür ist deutlich zu groß.',
-          {wer:'Anlage 2', z:'Guten Morgen. Bitte nicht erschrecken, ich bin ordnungsgemäß beigefügt.'},
-          {wer:'Anlage 2', z:'Sie dürfen ruhig weitergehen. Ich komme mit. Das ist bei Anlagen so vorgesehen.'}],
+          {wer:'Anlage 2', z:'Anlage 2 zur Ernennungsurkunde, Az. VII/40-2, beigefügt nachrichtlich gem. Nr. 4 Abs. 2 DA. Die Beifügung erfolgt vorbehaltlich der Kenntnisnahme durch den Adressaten.'},
+          {wer:'Anlage 2', z:'Eine Rückgabe ist nicht statthaft. Hinsichtlich der Zuständigkeit wird auf die Anlage zur Anlage verwiesen, soweit vorhanden. Im Übrigen gilt Satz 1 entsprechend.'},
+          'Eine Pause. Das Blatt scheint kurz zu überlegen, ob das jetzt gereicht hat.',
+          {wer:'Anlage 2', z:'So. Das war der Teil, der auf mir draufsteht, und ich musste ihn einmal sagen. Das ist Vorschrift.'},
+          {wer:'Anlage 2', z:'Ehrlich gesagt versteht das kein Mensch. Ich sehe seit vierzig Jahren zu, wie Leute so etwas lesen und dabei langsam den Kopf schief legen. Am Ende falten sie es und stecken es weg.'},
+          {wer:'Anlage 2', z:'Ich rede ab jetzt normal, wenn es Ihnen recht ist. Guten Morgen übrigens. Bitte nicht erschrecken.'},
+          {wer:'Anlage 2', z:'Sie dürfen ruhig weitergehen, ich komme mit. Das ist bei Anlagen tatsächlich so vorgesehen, das war jetzt keine Ausrede.'}],
   regie:'Es ist wirklich kein Wind. Das Blatt hat gesprochen.',
 };
 const ANLAGE2_AUFTAKT_NACHHOLUNG = {
   blatt:'Sie sehen zum ersten Mal in die Tasche. Zwischen den Vordrucken liegt ein Blatt, das dort nicht liegen müsste, und es liegt sehr ordentlich.',
+  // T5c: dieselben fuenf Saetze wie im Auftakt zur Ernennung, damit auch der
+  // nachgeholte Weg den Tonwechsel bekommt. Wer ihn hier zum ersten Mal hoert,
+  // soll dasselbe hoeren wie der, der ihn vor dem Haus gehoert hat.
   stimme:['Es ist vergilbt, an den Kanten weich geworden, und oben links steckt eine Heftklammer, die zu groß dafür ist.',
-          {wer:'Anlage 2', z:'Guten Morgen. Bitte nicht erschrecken, ich bin ordnungsgemäß beigefügt.'},
-          {wer:'Anlage 2', z:'Ihren Unterlagen, um genau zu sein. Das ist bei Anlagen so vorgesehen, und ich hänge an allem, was dieses Haus ausfertigt.'}],
+          {wer:'Anlage 2', z:'Anlage 2 zu Ihren Unterlagen, Az. VII/40-2, beigefügt nachrichtlich gem. Nr. 4 Abs. 2 DA. Die Beifügung erfolgt vorbehaltlich der Kenntnisnahme durch den Adressaten.'},
+          {wer:'Anlage 2', z:'Eine Rückgabe ist nicht statthaft. Hinsichtlich der Zuständigkeit wird auf die Anlage zur Anlage verwiesen, soweit vorhanden. Im Übrigen gilt Satz 1 entsprechend.'},
+          'Eine Pause. Das Blatt scheint kurz zu überlegen, ob das jetzt gereicht hat.',
+          {wer:'Anlage 2', z:'So. Das war der Teil, der auf mir draufsteht, und ich musste ihn einmal sagen. Das ist Vorschrift.'},
+          {wer:'Anlage 2', z:'Ehrlich gesagt versteht das kein Mensch. Ich sehe seit vierzig Jahren zu, wie Leute so etwas lesen und dabei langsam den Kopf schief legen.'},
+          {wer:'Anlage 2', z:'Ich rede ab jetzt normal. Guten Morgen. Ich hänge an allem, was dieses Haus unterschreibt, und seit heute an Ihnen.'}],
   regie:'Das Blatt hat gesprochen. Die Tasche bleibt offen.',
 };
 
 // ===========================================================================
-//  T5: Die Entscheidung, die keine ist
+//  T6: Die Entscheidung, die keine ist
 //
-//  Zwischen dem Auftakt und den vier Blaettern steht seit T5 eine Wahl, und sie
+//  Zwischen dem Auftakt und den vier Blaettern steht seit T6 eine Wahl, und sie
 //  ist gefaelscht. Der Spieler darf entscheiden, ob er die Anlage liest. Sagt
 //  er nein, fragt das Haus wieder, und beim fuenften Mal ist der Nein-Knopf
 //  ausgegraut, angeblich wegen eines technischen Fehlers.
@@ -21543,7 +21599,8 @@ const ANLAGE2_FRAGE = [
   {blatt:'Etwas im Papier arbeitet. Nicht das Blatt in Ihrer Hand, sondern das Haus dahinter.',
    stimme:['Amtlicher Hinweis: Ihre Eingabe wurde erfasst und geprüft.',
            'Das Ergebnis der Prüfung lautet: Bitte lesen Sie die Anlage.',
-           {wer:'Anlage 2', z:'Das muss es wirklich nicht. Wir gehen einfach weiter.'}],
+           {wer:'Anlage 2', z:'Das bin nicht ich. Ich hatte gerade erst aufgehört, so zu reden.'},
+           {wer:'Anlage 2', z:'Es muss auch wirklich nicht sein. Wir gehen einfach weiter.'}],
    regie:'Sie klingt, als sei ihr das unangenehm.',
    ja:'LESEN', nein:'Trotzdem nicht lesen'},
 
@@ -21612,9 +21669,37 @@ const INTRO_BLAETTER = [
            {wer:'Knöterich', z:'Das war vor vierhundert Jahren. Das Schild hängt noch. Die Pappe ist älter als die meisten Häuser hier.'}],
    regie:'Jemand hat das Wort einmal nachgezogen, weil die Tinte verblasste. Sonst hat sich daran nichts geändert.'},
 
+  // T5d, 26.08.2026: die beiden Blaetter, die Kapitel 3 und Kapitel 1 tragen.
+  // Sie stehen hier und nicht frueher, weil beide voraussetzen, dass es das
+  // Haus schon gibt. Die Doppelung mit Anlage 2 ist ausdruecklich gewollt und
+  // keine Nachlaessigkeit: "das intro ist manchmal sehr lange her" (Ansage des
+  // Projektinhabers). Wer es vergessen hat, fragt sie noch einmal.
+  {blatt:'Eine Karte, mit Reißzwecken an einer Wand. Die Landschaft darauf hat keine Ortsnamen. Sie hat Buchstaben: A, dann B, und so weiter bis V.',
+   stimme:['Wenn ein Haus vierhundert Jahre lang ablegt, wird die Ablage irgendwann größer als das Haus.',
+           'Sie ging in den Keller. Dann in den Hof. Dann über den Fluss, an dem das Dorf liegt, und irgendwann war die ganze Gegend die Ablage.',
+           {wer:'Knöterich', z:'Die Wiese vor dem Tor heißt hier nicht Wiese. Sie heißt Ablage A. So steht es auf der Karte, und die Karte hat recht.'},
+           'Der Fluss heißt inzwischen genauso. Niemand weiß mehr, ob er nach der Ablage benannt wurde oder die Ablage nach ihm.',
+           {wer:'Knöterich', z:'Amtlich schreibt man es übrigens groß. ABLAGE. Amtliche Bearbeitungsliste für Angelegenheiten Grundsätzlicher Erledigung.'},
+           {wer:'Knöterich', z:'Ja, das liest sich wie ein Wort. Nein, das sei keine Absicht gewesen. Man ist hier trotzdem sehr stolz darauf.'}],
+   regie:'Ganz unten rechts, wo bei anderen Karten das Meer steht, steht: Tilgung. Nicht befahren.'},
+
+  {blatt:'Eine Tafel über einer Tür, in Stein gehauen und mehrfach nachgemalt. Ein Satz, sonst nichts. Darunter hat jemand mit Bleistift ergänzt: gilt.',
+   stimme:['Über der Tür des Hauses steht der Satz, auf dem alles hier steht. Jeder im Dienst kann ihn auswendig, und niemand findet ihn seltsam.',
+           {wer:'Knöterich', z:'Ein Vorgang, den niemand abschließt, nimmt Gestalt an.'},
+           'Papier, das lange genug liegt, wird fest. Was im Ärger abgelegt wurde, wird laut. Was in Eile abgelegt wurde, wird schnell.',
+           {wer:'Knöterich', z:'Deshalb trägt jedes Ding da draußen ein Aktenzeichen. Es steht klein daran. Sehen Sie ruhig nach, wenn eines stillhält.'},
+           {wer:'Knöterich', z:'Und deshalb blutet hier nichts. Ein erledigter Vorgang wird geschreddert. Was dabei fliegt, ist Papier.'}],
+   regie:'Der Bleistiftzusatz ist die einzige Stelle der Tafel, die nie nachgemalt wurde. Er hält trotzdem.'},
+
   {blatt:'Ein Formular. Oben steht: Einstellung für einen Tag. Das Namensfeld ist leer.',
    stimme:['Was nicht bearbeitet wird, wird lebendig. Vierhundert Jahre lang wurde hier sehr wenig bearbeitet.',
            'Es läuft inzwischen ziemlich viel herum.',
+           // T5d: Kapitel 5. Bis hierher wusste der Spieler, was die Welt ist,
+           // aber nicht, was er selbst darin tut. "Heute sind Sie dran" allein
+           // hat das nie beantwortet.
+           {wer:'Knöterich', z:'Drinnen sitzt die Registratur und verwaltet, was hereinkommt. Das ist die eine Hälfte dieses Hauses.'},
+           {wer:'Knöterich', z:'Die andere Hälfte geht hinaus zu dem, was nicht von selbst hereinkommt. Das ist der Außendienst, und den machen Sie.'},
+           {wer:'Knöterich', z:'Sie werden vorher nichts davon wissen. Das ist keine Nachlässigkeit von uns, das ist die Stelle. Sie ist jeden Tag neu besetzt.'},
            {wer:'Knöterich', z:'Heute sind Sie dran.'}],
    regie:'Die Hand schiebt das Formular nach vorn und legt einen Stift daneben.'},
 ];
@@ -22886,7 +22971,15 @@ SZENEN.baumVorblatt = {
 //  laufender Fall nein. Sie kann nicht einmal andeuten, was sie nicht weiss.
 // ===========================================================================
 SZENEN.baumAnlage2 = {
-  baum:true, haeltDieWelt:false, sicht:3, start:'hub',
+  // T5b-Fund: hier stand keine Sperre, und anlage2Assert() behauptet im Kopf,
+  // "der Baum laeuft zusaetzlich in szeneAssert() gegen dieselbe Liste". Das
+  // stimmte nicht. szeneAssert() prueft gegen st.sperre, und ohne das Feld
+  // laeuft die Schleife ueber ein leeres Array. Ihre Brandmauer war im Baum
+  // also ungeschuetzt, seit es den Baum gibt, und faellt genau dann auf, wenn
+  // jemand dort neuen Text einbaut. Die uebrigen Baeume brauchen sie nicht:
+  // Dorffiguren duerfen vom Fall reden, das ist ihr Inhalt (siehe SZ2). Sie
+  // darf es nicht, und zwar als einzige.
+  baum:true, haeltDieWelt:false, sicht:3, start:'hub', sperre:AKTE_SPERRE,
   sprecher: () => anlage2Sprecher(),
   // T4-Nachlese: der letzte freie Platz im Umschlag, und der einzige, der ihr
   // wirklich zusteht. Ihre Besessenheit steht seit T3 im Kanon: gelesen werden,
@@ -22920,6 +23013,14 @@ SZENEN.baumAnlage2 = {
      z1:'Der Antrag auf ein Dorffest.', z2:'Elf Fassungen. Ich kenne alle.'},
     {key:'was', nach:3, t:'Was steht auf Ihnen?',
      z1:'Das sehen Sie besser selbst nach.', z2:'Es liest sich schneller als ich rede.'},
+    // T5b: der lange Weg. Kapitel 0 bis 5 der Weltbibel, auf Abruf und in
+    // Kaskaden. Sie steht ohne frei: und ohne nach: und ist damit ab der ersten
+    // Minute da, denn wer nichts weiss, kann nicht warten, bis er genug gefragt
+    // hat. Die sechs Kapitel liegen in DREI Buendeln und nicht einzeln: eine
+    // Antworttafel fasst vier Zeilen, sechs Themen plus Ausgang waeren sieben.
+    {key:'welt', t:'Erklären Sie mir diese Welt.',
+     z1:'Endlich fragt das mal jemand.', z2:'Ich liege seit vierzig Jahren bereit.',
+     weiter:'welt0', wt:'Also?'},
   ],
   knoten:{
     hub:     {z1:'Von früher rede ich gern. Ich lag dabei.', z2:'Fragen Sie. Ich habe Zeit gehabt.', hub:true},
@@ -22929,6 +23030,61 @@ SZENEN.baumAnlage2 = {
     nn2:     {z1:'Zimmer eins und die Amtsleitung.', z2:'Beide Schilder sagen dasselbe.',
               opts: () => [{t:'Und dahinter?', zu:'nn3'}]},
     nn3:     {z1:'Ein Schreibtisch. Eine Pflanze, die lebt.', z2:'Wer sie gießt, sagt nichts dazu.'},
+
+    // ---- T5b: die Welt, Kapitel 0 bis 5 ------------------------------------
+    // Das Menue. Drei Buendel plus Ausgang, weil die Tafel vier Zeilen fasst.
+    // Jedes Buendel laeuft als Kaskade und kehrt hierher zurueck, damit man in
+    // einer Sitzung alles hoeren kann, ohne die Tafel neu aufzumachen.
+    welt0:   {z1:'Drei Sachen kann ich erklären.', z2:'Nehmen Sie, was Sie gerade brauchen.',
+              opts: () => [
+                {t:'Was ist hier eigentlich los?', zu:'welt1a'},
+                {t:'Warum gibt es dieses Amt?',    zu:'welt2a'},
+                {t:'Wo bin ich hier, und was?',    zu:'welt3a'},
+                {t:'Ein andermal.',                zu:'hub'},
+              ]},
+
+    // Buendel 1: Kapitel 0 und 1. Hier faellt das Weltgesetz, und es faellt
+    // wortwoertlich. Bis zum 26.08.2026 durfte es nirgends ausgesprochen
+    // werden; seither ist es die oberste Doktrin des Hauses, und sie ist die
+    // Figur, die es am besten erklaeren kann.
+    welt1a:  {z1:'Kurz gesagt: was keiner bearbeitet,', z2:'das wird hier irgendwann lebendig.',
+              opts: () => [{t:'Das ist ein Bild, oder?', zu:'welt1b'}]},
+    welt1b:  {z1:'Nein. Das ist die Regel. Wörtlich.', z2:'Sie hat sogar einen Satz. Wollen Sie ihn?',
+              opts: () => [{t:'Bitte.', zu:'welt1c'}]},
+    welt1c:  {z1:'Ein Vorgang, den niemand abschließt,', z2:'nimmt Gestalt an. Das ist der ganze Satz.',
+              opts: () => [{t:'Und das glaubt hier jeder?', zu:'welt1d'}]},
+    welt1d:  {z1:'Glauben ist das falsche Wort dafür.', z2:'Er steht über der Tür. Wie ein Ortsschild.',
+              opts: () => [{t:'Dann sind die Monster...', zu:'welt1e'}]},
+    welt1e:  {z1:'Vorgänge. Jedes trägt ein Aktenzeichen.', z2:'Sehen Sie mal genau hin, es steht klein dran.',
+              opts: () => [{t:'Und wenn ich eines erledige?', zu:'welt1f'}]},
+    welt1f:  {z1:'Dann wird es geschreddert. Daher das Konfetti.', z2:'Hier stirbt nichts. Hier wird abgeschlossen.',
+              opts: () => [{t:'Verstanden.', zu:'welt0'}]},
+
+    // Buendel 2: Kapitel 2 und 4. Ohne den Fall, denn den kennt sie nicht
+    // (Brandmauer). Sie erzaehlt die Entstehung des Hauses, nicht den Vorgang,
+    // der darin liegt.
+    welt2a:  {z1:'Weil vor sehr langer Zeit etwas liegen blieb.', z2:'Dann noch etwas. Dann ziemlich viel.',
+              opts: () => [{t:'Und dann?', zu:'welt2b'}]},
+    welt2b:  {z1:'Dann hat man ein Amt eingerichtet.', z2:'Vorläufig. Das Wort steht heute noch drauf.',
+              opts: () => [{t:'Wie lange ist vorläufig?', zu:'welt2c'}]},
+    welt2c:  {z1:'Vierhundert Jahre, Stand heute Morgen.', z2:'Später wurde es zum Ministerium erhoben.',
+              opts: () => [{t:'Dann ist es ja groß.', zu:'welt2d'}]},
+    welt2d:  {z1:'Es kam keine einzige Stelle dazu.', z2:'Fünf Leute. Ein Ministerium. Nicht nachrechnen.',
+              opts: () => [{t:'Gut. Danke.', zu:'welt0'}]},
+
+    // Buendel 3: Kapitel 3 und 5. Die Landschaft ist die Ablage, und der
+    // Spieler ist der Aussendienst. Der letzte Zug ist der warme: sie sagt ihm,
+    // dass Nichtwissen hier der Normalzustand ist.
+    welt3a:  {z1:'Die ganze Gegend hier ist eine Ablage.', z2:'Jede Landschaft ist ein Ort, wo etwas liegt.',
+              opts: () => [{t:'Zum Beispiel?', zu:'welt3b'}]},
+    welt3b:  {z1:'Das Grasland heißt amtlich Ablage A.', z2:'Der Frostkamm ist die Ablage auf Eis.',
+              opts: () => [{t:'Und das Meer?', zu:'welt3c'}]},
+    welt3c:  {z1:'Die Tilgung. Was dort hineingeht, ist weg.', z2:'Deshalb baut hier niemand nah ans Wasser.',
+              opts: () => [{t:'Und ich? Was bin ich hier?', zu:'welt3d'}]},
+    welt3d:  {z1:'Außendienst. Sie gehen hin, wo es liegt.', z2:'Drinnen wird verwaltet, draußen wird bearbeitet.',
+              opts: () => [{t:'Ich weiß gar nichts davon.', zu:'welt3e'}]},
+    welt3e:  {z1:'Ich weiß. Das ist hier der Normalfall.', z2:'Deshalb liege ich dabei. Fragen Sie ruhig oft.',
+              opts: () => [{t:'Mache ich.', zu:'welt0'}]},
     // Der Ausgang, nachdem alles gefragt wurde. Das ist die einzige Stelle des
     // Baumes, an der sie ueber sich selbst spricht statt ueber das Haus, und
     // sie tut es in der Form, die ihr gehoert: als Vermerk.
@@ -23105,7 +23261,7 @@ function anlage2Erstes(){
 // Der gemeinsame Abschluss beider Wege. Er setzt den einen Merker, der alles
 // weitere traegt, und uebergibt dann an das, was danach kommt: in den Dienst
 // beim ersten Weg, zurueck in den Rucksack beim nachgeholten.
-// T5: Die Reihenfolge in dieser Funktion ist nicht beliebig. anlage2Umschlag()
+// T6: Die Reihenfolge in dieser Funktion ist nicht beliebig. anlage2Umschlag()
 // gibt vor dem Merker false zurueck, das Scharfschalten muss also HINTER die
 // Zeile, die ihn setzt. Faellig wird die Zeile nur, wenn der Spieler bis zur
 // letzten Stufe abgelehnt hat, also den gesperrten Knopf gesehen hat. Wer
@@ -23324,7 +23480,7 @@ let szeneTafelLauf = null;
 // Funktion, die schon allgemein sein sollte. Das Intro benutzt ihn weiter zum
 // Ueberspringen, die vierzig Zwischenbescheide benutzen denselben Knopf, um ans
 // Ende zu springen. Ein Knopf, zwei Bedeutungen, keine zweite Zeichenstelle.
-// T5: opt.wahl haengt eine Entscheidung an GENAU EIN Blatt des Stapels,
+// T6: opt.wahl haengt eine Entscheidung an GENAU EIN Blatt des Stapels,
 // {bei:<index>, reihe:[...]}. Das Blatt an diesem Index wird dann nicht aus
 // liste gelesen, sondern aus reihe[stufe], und der Nein-Knopf zaehlt die Stufe
 // hoch, ohne den Index zu bewegen.
@@ -23378,12 +23534,12 @@ function szeneTafelZweiter(){
 function szeneTafel(i){
   const lauf = szeneTafelLauf;
   if(!lauf) return;
-  // T5: traegt dieses Blatt eine Wahl, kommt sein Inhalt aus der Reihe und
+  // T6: traegt dieses Blatt eine Wahl, kommt sein Inhalt aus der Reihe und
   // nicht aus liste. liste[i] bleibt trotzdem besetzt und gueltig, damit die
   // Blattzahl unten und szeneAssert() oben unveraendert rechnen koennen.
   const wahl = (lauf.wahl && lauf.wahl.bei === i) ? lauf.wahl.reihe[lauf.stufe | 0] : null;
   const t = wahl || lauf.liste[i];
-  // T5: der Abschluss bekommt die erreichte Stufe mit. Fuer jeden Stapel ohne
+  // T6: der Abschluss bekommt die erreichte Stufe mit. Fuer jeden Stapel ohne
   // Wahl ist sie null, und alle bestehenden ende()-Rueckrufe nehmen ohnehin
   // kein Argument. Der Anlage-2-Abschluss liest sie, weil szeneTafelLauf hier
   // eine Zeile spaeter nicht mehr steht.
@@ -23392,7 +23548,7 @@ function szeneTafel(i){
   // Der zweite Knopf steht nur, solange er etwas zu tun hat: auf dem letzten
   // Blatt gibt es nichts mehr zu ueberspringen und nichts mehr abzukuerzen.
   //
-  // T5: Die Wahl benutzt dieselbe Zeile fuer ihren Nein-Knopf. Beide koennen
+  // T6: Die Wahl benutzt dieselbe Zeile fuer ihren Nein-Knopf. Beide koennen
   // sich nicht begegnen, denn zweiter gehoert dem ganzen Stapel und die Wahl
   // genau einem Blatt darin; der Anlage-2-Stapel hat keinen zweiten Knopf und
   // das Intro keine Wahl. Der gesperrte Knopf bleibt STEHEN und verschwindet
@@ -23573,7 +23729,7 @@ function szeneAssert(){
                   {name:'Ernennung', liste:ERNENNUNG_BLAETTER, sperre:AKTE_SPERRE_NAMEN},
                   {name:'Anlage 2', liste:[ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER), sperre:AKTE_SPERRE},
                   {name:'Anlage 2, nachgeholt', liste:[ANLAGE2_AUFTAKT_NACHHOLUNG], sperre:AKTE_SPERRE},
-                  // T5: Die fuenf Stufen der Scheinwahl sind kein Stapel, den
+                  // T6: Die fuenf Stufen der Scheinwahl sind kein Stapel, den
                   // man durchblaettert, sondern fuenf Fassungen desselben
                   // Blattes. Geprueft werden muessen sie trotzdem, und zwar
                   // genau hier: das ist die einzige Stelle, an der die
@@ -23900,7 +24056,7 @@ function anlage2Assert(){
   // (7) Die Blaetter. Beide Auftakte fuehren in denselben Stapel, und beide
   // muessen die Tafelform tragen, die szeneTafel() liest.
   //
-  // T5: die fuenf Stufen der Wahl liegen mitten in diesem Stapel und werden
+  // T6: die fuenf Stufen der Wahl liegen mitten in diesem Stapel und werden
   // von szeneTafel() aus derselben Hand gezeichnet. Sie muessen die Tafelform
   // deshalb genauso tragen, und zwar JEDE von ihnen: gezeigt wird immer nur
   // eine, ein Formfehler auf Stufe 3 faellt also erst dem Spieler auf, der
@@ -23965,7 +24121,7 @@ function anlage2Assert(){
     } finally { szene.gefragt = merkG; }
   }
 
-  // (9) T5: die Scheinwahl. Ihre Zeilen laufen durch szeneAssert() wie jedes
+  // (9) T6: die Scheinwahl. Ihre Zeilen laufen durch szeneAssert() wie jedes
   // andere Tafelblatt; hier steht das, was nur DIESE Reihe betrifft und was
   // beim spaeteren Weiterschreiben lautlos kaputtginge.
   //

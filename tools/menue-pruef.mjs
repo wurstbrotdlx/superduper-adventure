@@ -121,7 +121,7 @@ async function spiel(ctxOpt){
   for(let i = 0; i < 8; i++){
     const weiter = await page.evaluate(() => {
       if(document.getElementById('overlay').style.display !== 'flex') return false;
-      // T5: LESEN kommt dazu, sonst bleibt der Lauf an der Scheinwahl der
+      // T6: LESEN kommt dazu, sonst bleibt der Lauf an der Scheinwahl der
       // Anlage 2 haengen und kaeme nie bis zum Menue. Gleichheit statt
       // Vorkommen, denn "Nicht lesen" steht als zweiter Knopf daneben.
       const b = [...document.querySelectorAll('#ovPanel button')]

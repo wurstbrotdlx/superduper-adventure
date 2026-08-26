@@ -1,4 +1,29 @@
-# Arbeitsauftrag: Das Porträt von Anlage 2 und die Doku-Schuld — OFFEN (26.08.2026)
+# Arbeitsauftrag: Das Porträt von Anlage 2 und die Doku-Schuld — ERLEDIGT (26.08.2026)
+
+**Ausgeführt und ausgeliefert** mit der T4-Nachlese (#67), in drei Commits: das gemalte
+Porträt (`1112c50`), der Nachzug des Gameplay-Prompts (`3470b7b`) und der dreizehnte
+Umschlag (`22f7b43`). Dieser Auftrag bleibt unverändert stehen, wie jedes datierte Dokument
+des Hauses: er beschreibt den Stand vor dem Bauabschnitt, nicht danach.
+
+**Vier Stellen, an denen die Ausführung vom Auftrag abweicht:**
+
+* **Aufgabe 3 ist zur Hälfte erledigt.** Von den zwei freien Umschlagplätzen ist einer
+  gefüllt: der dreizehnte gehört ihr selbst und wird scharf, wenn ihr jemand alle sieben
+  Fragen gestellt hat, gezählt über Sitzungen hinweg in `kn.a2Gefragt`. Der vierzehnte Platz
+  steht weiter leer, und der Guard lässt ihn weiter zu.
+* **Es gibt kein Phasendokument.** Abschnitt 10 verlangt eines; protokolliert wurde
+  stattdessen in den Commit-Nachrichten, so wie bei der T3-Nachlese davor (#63, #64). Dort
+  stehen Befund, Abnahme und die absichtlich ausgelöste Guard-Meldung im Wortlaut: *„T3
+  Anlage 2: Das Feld kn.a2Gefragt fehlt in der Vorgabe."*
+* **Der Vorspann für `superduper-figurenleben-prompt.md` kam später.** Abschnitt 7 hat ihn
+  für den Fall vorgesehen, dass die veraltete Stelle in die Irre führt; die Nachlese hat das
+  Dokument unangetastet gelassen und allein `superduper-gameplay-prompt.md` nachgezogen, wie
+  beauftragt. Der Vorspann steht seit dem Aufräumen danach, mit demselben Datum.
+* **Das Motiv ist beschnitten worden.** Die Generierung setzte das Blatt auf 62 zu 78 Prozent
+  in den Rahmen statt „filling most of the frame"; bei 128 Pixeln zerfiel dadurch die
+  Heftklammer zu einem Krakel, und die Klammer ist laut Kanon die Figur. Beschnitten wurde
+  die Datei (885 im Quadrat, nur Hintergrund) und nicht die Pipeline: ein Ausschnitt-Feld in
+  `figuren-px.py` hätte für einen einzigen Sonderfall ein System gebaut.
 
 ---
 
