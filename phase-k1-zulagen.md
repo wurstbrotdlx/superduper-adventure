@@ -1,4 +1,4 @@
-# Bauabschnitt K1: Die Zulagen
+# Bauabschnitt K1: Die Zulagen — ERLEDIGT
 
 *Stand 24.08.2026. Karten nach dem Aufstieg, drei liegen aus, eine wird
 bewilligt. Getragen wird in der Dienstmappe, und die fasst wenig.*

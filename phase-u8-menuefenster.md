@@ -1,4 +1,4 @@
-## U8: Die zweite Schicht der Oberfläche — die Menüfenster
+## U8: Die zweite Schicht der Oberfläche — die Menüfenster — ERLEDIGT
 
 U7 hat die Oberfläche in zwei Teile geteilt und den ersten gebaut: **die Schicht, die während des
 Spiels dasteht** — Zustand oben links, Karte oben rechts, Daumenring unten links, Fächer unten

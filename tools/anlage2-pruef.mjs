@@ -23,7 +23,7 @@
 //                 Portraet steht in der Tafel, der Ausgang schliesst sauber
 //   Kanal         ihre Notiz erscheint im Band, mit ihrer Marke und nicht mit
 //                 Knoeterichs, und sie schweigt, solange sie nicht da ist
-//   Ausbruch      T5: alle drei gefassten Zeilen faehrt sie einmal hoch, laut
+//   Ausbruch      T6: alle drei gefassten Zeilen faehrt sie einmal hoch, laut
 //                 gekleidet, und die Ruecknahme faellt zwei Sekunden spaeter
 //                 von selbst nach. Die Bank bekommt auch den lauten Anlass
 //   Regler        auf "Dienstlich" schweigt sie, auf "Gespraechig" redet sie
@@ -258,10 +258,10 @@ async function imDienst(page){
     return anlage2Notiz('crit');
   }), false);
 
-  // T5: der Ruhezaehler wird hier ausdruecklich genullt. Ohne die Zeile misst
+  // T6: der Ruhezaehler wird hier ausdruecklich genullt. Ohne die Zeile misst
   // dieser Block nicht mehr "eine Zeile aus ihrem Pool", sondern "eine Zeile
   // aus ihrem Pool, solange kein Ausbruch faellig ist", und das ist eine
-  // andere Zusage. Sie stand bis T5 nur deshalb nicht da, weil es nichts gab,
+  // andere Zusage. Sie stand bis T6 nur deshalb nicht da, weil es nichts gab,
   // was den Pool haette ueberstimmen koennen.
   const notiz = await page.evaluate(() => {
     kn.flags.anlage2Da = true; kn.regler = 'gespraechig';
@@ -304,7 +304,7 @@ async function imDienst(page){
     return anlage2Notiz('goldfund');
   }), true);
 
-  // ---- T5: der Ausbruch --------------------------------------------------
+  // ---- T6: der Ausbruch --------------------------------------------------
   // Der Kanal, der ihr das Temperament gibt. Geprueft wird nicht, dass er
   // existiert (das tut anlage2Assert beim Start), sondern dass er FAELLT, und
   // zwar selten, zweiteilig und ohne die Bank zu verlieren.
@@ -417,10 +417,19 @@ async function imDienst(page){
   pruef('danach steht ihr eine Zeile mehr offen', kipp.nachher > kipp.vorher, true);
 
   // ---- T4-Nachlese: ganz gelesen -----------------------------------------
-  // Ihre Besessenheit ist, EINMAL GANZ gelesen zu werden. Wer alle sieben
-  // Fragen gestellt hat, hat das getan, und seit der Nachlese sagt sie es.
-  // Geprueft wird die Kante und nicht nur das Ergebnis: nach sechs Fragen darf
-  // nichts scharf sein, nach der siebten muss es das.
+  // Ihre Besessenheit ist, EINMAL GANZ gelesen zu werden. Wer ALLE ihre Fragen
+  // gestellt hat, hat das getan, und seit der Nachlese sagt sie es. Geprueft
+  // wird die Kante und nicht nur das Ergebnis: vor der letzten Frage darf
+  // nichts scharf sein, mit der letzten muss es das.
+  //
+  // T6: die Zahl stand hier dreimal als Sieben und wurde abgeschrieben. T5b hat
+  // dem Baum eine achte Frage gegeben ("Erklären Sie mir diese Welt.") und
+  // diesen Lauf nicht mitgezogen, worauf zwei Zeilen rot standen, ohne dass
+  // etwas kaputt war — derselbe Fall, den phase-t1-tonlage.md fuer
+  // mitteilung-pruef.mjs beschrieben hat und den T3 dort behoben hat. Die
+  // Mechanik darunter war immer schon generisch (keys.slice(0, -1)), nur die
+  // Erwartung nicht. Sie liest jetzt aus der Quelle, und wer die neunte Frage
+  // anhaengt, aendert an diesem Lauf nichts mehr.
   //
   // Der Block raeumt hinter sich auf. Er muss zum Messen zwei Felder leeren,
   // und die Zusagen unter ihm lesen dieselben: wer hier den Stand liegen
@@ -446,11 +455,14 @@ async function imDienst(page){
              inTabelle: ANLAGE2_UMSCHLAG.some(u => u.id === 'ganzGelesen'),
              zweimal: (() => { const v = kn.umschlag.ganzGelesen; haken(keys[0]); return kn.umschlag.ganzGelesen === v; })() };
   });
-  pruef('sie hat sieben Fragen', ganz.keys, 7);
-  pruef('nach sechs Fragen ist nichts scharf', ganz.nachSechs, 0);
-  pruef('die siebte schaltet den Umschlag scharf', ganz.nachSieben, 1);
+  // Die untere Schranke bleibt hart: die sieben aus T3 sind Kanon, und wer
+  // versehentlich eine davon loescht, soll es hier erfahren. Nach oben ist der
+  // Baum offen, das ist seit T5b so gewollt.
+  pruef('sie hat mindestens ihre sieben Fragen', ganz.keys >= 7, true);
+  pruef('vor der letzten Frage ist nichts scharf', ganz.nachSechs, 0);
+  pruef('die letzte schaltet den Umschlag scharf', ganz.nachSieben, 1);
   pruef('und die Zeile steht in der Tabelle', ganz.inTabelle, true);
-  pruef('die sieben Fragen liegen in der Ablage', ganz.abgelegt.fragen, 7);
+  pruef('die Ablage hält jede Frage, die der Baum hat', ganz.abgelegt.fragen, ganz.keys);
   pruef('die scharfe Zeile liegt dort ebenfalls', ganz.abgelegt.scharf, 1);
   pruef('eine achte Frage schaltet nichts nach', ganz.zweimal, true);
 

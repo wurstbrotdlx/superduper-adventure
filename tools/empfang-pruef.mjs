@@ -203,8 +203,15 @@ async function bisZumEmpfang(page){
   pruef('das erste Introblatt steht', await page.evaluate(() =>
         el('ovPanel').textContent.includes('aus dem Fluss')), true);
 
+  // T5d (26.08.2026): sieben statt fuenf. Die Zahl war eine Zusage aus SZ1
+  // ("Der Anfang wird dadurch nicht laenger"), und T5d nimmt sie bewusst
+  // zurueck: der Anfang traegt seither Kapitel 0 bis 5 der Weltbibel, und zwei
+  // davon hatten kein Blatt. Neu sind die Karte (Kapitel 3, die Landschaft ist
+  // die Ablage, samt dem Kuerzel, das ein Wort ist) und die Tafel ueber der Tuer
+  // (Kapitel 1, das Weltgesetz im Wortlaut, seit dem 26.08.2026 erlaubt).
+  // Die Formregel "Der Anfang erzaehlt" deckt die Laenge ab.
   const tafeln = await durchDenAnriss(page);
-  pruef('das Intro hat fuenf Blaetter', tafeln, 5);
+  pruef('das Intro hat sieben Blaetter', tafeln, 7);
   pruef('danach ist das Overlay weg', await page.evaluate(() => el('overlay').style.display), 'none');
   pruef('und die Buehne faellt fuer den Empfang',
         await page.evaluate(() => el('introBuehne').style.display), 'none');
