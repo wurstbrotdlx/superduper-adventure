@@ -85,6 +85,21 @@ Lesen. Wer nach der Szene zur Bank geht, hört die Zeile; wer ein zweites Mal fr
 wieder die Grundzeilen. Das ist kein Sonderweg für die Szenen, sondern dasselbe Verhalten,
 das die Bank seit jeher für jeden Anlass hat.
 
+**Nachtrag T3 *(26.08.2026)*: die Bank hört jetzt jemand anderem zu, und merkt es nicht.**
+Bis T2 setzte Knöterichs Randnotiz den Anlass, den Lott und Pahl danach kommentieren. Seit
+T3 tut das **Anlage 2**, denn der Weltkommentar hat mit diesem Bauabschnitt den Sprecher
+gewechselt (`ANLAGE2_NOTIZ` steht, wo `RANDNOTIZ` stand). **Keine Zeile dieser Datei ist
+dafür geändert worden**, und das ist kein Zufall, sondern die Bedingung, unter der der
+Wechsel überhaupt zugelassen war: die sieben Anlass-Schlüssel heißen unverändert `crit`,
+`levelup`, `ultimate`, `fluch`, `goldfund`, `kammerAbbruch` und `untaetigkeit`, und
+`letzterAnlass` wird an derselben Stelle gesetzt wie vorher. Hätte der neue Kanal eigene
+Schlüssel bekommen, wäre der Chor auf dieser Bank verstummt, ohne dass etwas kaputt
+ausgesehen hätte, und der Langvorgang Hintermühl wäre mit ihm hängengeblieben.
+
+Für Lott und Pahl ändert sich damit nichts, und das ist auch inhaltlich richtig: sie
+kommentieren, was gerade geschehen ist, nicht wer es bemerkt hat. Wer die beiden fragt,
+wen sie da eigentlich aufschnappen, bekommt keine Antwort. Sie finden die Frage unhöflich.
+
 ## Zwirn — Bürgermeister Alfons Zwirn
 
 Optik: `cfnpc_bob` (Farmer_Bob, wandert). Heimatanker: Kachel (17, 37), vor dem Amt. **G6:** Anker von (14, 34) verschoben, dort stand er vollständig hinter der Amtsfassade; nicht auf (14, 38), weil er sonst die Kontextaktion der Amtstür überstimmt. Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 2, Schuhe Stufe 2. **G7:** Anker von (16, 38) auf (17, 37), der Anger beginnt jetzt bei y=34, das Amt ist fünfzehn Kacheln breit.
