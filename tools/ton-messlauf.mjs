@@ -57,6 +57,16 @@ const QUELLEN = [
   { name: 'Dorffiguren',      art: 'figur', ausdruck: 'DORF_FIGUREN', jeFigur: true },
   { name: 'Knoeterich',       art: 'figur', ausdruck: 'KN_FIGUR' },
   { name: 'Anlage 2, Band',   art: 'figur', ausdruck: 'ANLAGE2_NOTIZ' },
+  // Der Ausbruch-Kanal, und er steht als EIGENE Quelle statt im Band. Nicht aus
+  // Ordnungsliebe: ein Ausbruch ist die Stelle, an der sie den Amtston am
+  // weitesten hinter sich laesst, und im Band verrechnet waere genau das
+  // unsichtbar. Getrennt gemessen sagt die Zeile etwas.
+  //
+  // Nachgereicht, denn beim Zusammenlegen der beiden parallelen Abschnitte ist
+  // er hier liegengeblieben: zweiundzwanzig Zeilen waren ungemessen, und der
+  // Bericht behauptete dabei eine Vollstaendigkeit, die er nicht hatte. Das ist
+  // derselbe Fall, den der Auftakt vier Zeilen weiter unten beschreibt.
+  { name: 'Anlage 2, Ausbruch', art: 'figur', ausdruck: 'ANLAGE2_AUSBRUCH' },
   { name: 'Anlage 2, Umschlag', art: 'figur', ausdruck: 'ANLAGE2_UMSCHLAG' },
   { name: 'Anlage 2, Bewegung', art: 'figur', ausdruck: 'ANLAGE2_BEWEGUNG' },
   { name: 'Anlage 2, Blaetter', art: 'figur', ausdruck: 'ANLAGE2_BLAETTER' },

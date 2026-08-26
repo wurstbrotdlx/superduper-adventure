@@ -5,7 +5,7 @@ Anlage 2 hatte einen guten Käfig und keinen Puls.
 T3 hat die Figur gebaut, T4 hat ihr die stillen Momente gegeben. Beides steht.
 T5 fasst nichts davon an, sondern behebt etwas, das in beiden Abschnitten
 mitgewachsen ist, ohne dass ein Guard es je gemeldet hätte: sie war
-liebenswürdig, sie war komisch, und sie hatte über sechzig Zeilen lang
+liebenswürdig, sie war komisch, und sie hatte über achtzig Zeilen lang
 denselben Puls.
 
 ---
@@ -26,25 +26,37 @@ ist nur nicht der Grund. Zwei andere Regeln waren es.
 
 ## 2. Der Befund, gemessen und nicht vermutet
 
-Nachgezählt über den gesamten Bestand, den die Figur bis T4 hatte
-(`ANLAGE2_NOTIZ`, `ANLAGE2_BEWEGUNG`, `ANLAGE2_UMSCHLAG`):
+Nachgezählt über den gesamten Bestand der Figur (`ANLAGE2_NOTIZ`,
+`ANLAGE2_BEWEGUNG`, `ANLAGE2_UMSCHLAG`), einmal wie er bis T4 aussah und einmal
+nach den Ton-Eingriffen aus **T5, Der Ton** (`phase-t5-ton.md`), die parallel
+zu diesem Abschnitt entstanden sind:
 
-| | Wert |
-|---|---|
-| Zeilen insgesamt | 77 |
-| kürzeste / längste | 28 / 43 Zeichen |
-| Mittel | 36,3 Zeichen |
-| **Streuung** | **3,2 Zeichen** |
-| Zeilen aus zwei oder mehr Sätzen | 52 von 77, also 68 Prozent |
-| **Zeilen mit einem Ausrufezeichen** | **0** |
+| | bis T4 | nach den Ton-Eingriffen |
+|---|---|---|
+| Zeilen insgesamt | 77 | 83 |
+| kürzeste / längste | 28 / 43 Zeichen | 24 / 43 Zeichen |
+| Mittel | 36,3 Zeichen | 34,9 Zeichen |
+| **Streuung** | **3,2 Zeichen** | **3,9 Zeichen** |
+| Zeilen aus zwei oder mehr Sätzen | 68 Prozent | 69 Prozent |
+| **Zeilen mit einem Ausrufezeichen** | **0** | **0** |
 
-Die letzten beiden Zeilen sind der ganze Befund. Zwei Drittel des Bestands
-folgen derselben Bauform (eine Feststellung, dann ein kurzer zweiter Satz, der
-sie ins Amtliche dreht), die Längen liegen alle im selben Fingerbreit, und in
-siebenundsiebzig Zeilen wird kein einziges Mal jemand laut.
+Die letzten beiden Zeilen sind der ganze Befund, und die zweite Spalte ist der
+Beweis, dass er nicht die Sache des Ton-Abschnitts war. Zwei Drittel des
+Bestands folgen derselben Bauform (eine Feststellung, dann ein kurzer zweiter
+Satz, der sie dreht), die Längen liegen alle im selben Fingerbreit, und in
+dreiundachtzig Zeilen wird kein einziges Mal jemand laut.
+
+**Der Ton-Abschnitt hat jede dieser Zeilen angefasst und keine davon im Puls.**
+Er hat das *Register* abgesenkt, also den Wortschatz, aus dem sie schöpft: aus
+„Ein Treffer. Anlage dazu: ich." wurde „Getroffen. Ich habe zugesehen." Der
+*Puls*, also wie gleichmäßig sie spricht, hat sich dabei um 0,7 Zeichen
+Streuung bewegt, und die Zahl der Ausrufezeichen ist von null auf null
+gegangen. Ein Register lässt sich absenken, ohne einen Takt zu ändern, und
+genau das ist passiert. Deshalb stehen beide Abschnitte nebeneinander, statt
+einander zu ersetzen.
 
 Das ist gut geschrieben und es ist eine Haltung. Aber eine Haltung ist kein
-Temperament, und wer sechzigmal dieselbe Kadenz hört, hört eine Figur, die nie
+Temperament, und wer achtzigmal dieselbe Kadenz hört, hört eine Figur, die nie
 überrascht wird.
 
 ### Die beiden Regeln, die dafür verantwortlich waren
@@ -98,14 +110,14 @@ liest nur den zweiten Satz, und auch der stimmt dann.
 **Eigene Deckel, und das ist der Punkt des Abschnitts.** Der Ausbruch bekommt
 30, die Rücknahme 40, statt einheitlich 44. Gemessen an den neuen Zeilen:
 
-| | Bestand bis T4 | neu in T5 |
+| | gefasster Bestand | neu, der Ausbruch |
 |---|---|---|
-| Länge | 28 bis 43 | 17 bis 37 |
-| Mittel | 36,3 | 28,4 |
-| Streuung | 3,2 | **6,1** |
+| Länge | 24 bis 43 | 17 bis 37 |
+| Mittel | 34,9 | 28,4 |
+| Streuung | 3,9 | **6,1** |
 
-Die Streuung ist das Ergebnis, nicht die Länge. Sie hat sich fast verdoppelt,
-und genau das hört man.
+Die Streuung ist das Ergebnis, nicht die Länge. Sie ist um mehr als die Hälfte
+gestiegen, und genau das hört man.
 
 ### T5-2. Sie darf falsch liegen
 
@@ -239,8 +251,54 @@ horchte nur auf `console.error`. Ein nicht abgefangener `TypeError` kommt als
 `pageerror` und wäre nie sichtbar geworden; die Probe meldete bloß „startet
 nicht", ohne zu sagen, woran. Ein zweiter Anker traf außerdem doppelt
 (`bosssieg:` steht in beiden Tabellen) und verstellte die falsche Stelle, was
-wie ein kaputter Guard aussah und keiner war. Das Skript zählt seine Anker
-jetzt und bricht bei Mehrdeutigkeit ab.
+wie ein kaputter Guard aussah und keiner war. Die Fassung im Repo verstellt
+deshalb **zur Laufzeit** statt am Dateitext, wie es `ebene-fehlversuch.mjs`
+vormacht: keine Anker, keine Mehrdeutigkeit.
+
+### Zwei weitere Funde beim Zusammenlegen der beiden Abschnitte
+
+Sie sind erst aufgefallen, als dieser Abschnitt und **T5, Der Ton**
+zusammengeführt wurden, und beide sind Löcher in einer Messung und nicht im
+Spiel.
+
+**Der Ausbruch-Kanal war im Ton-Messlauf unsichtbar.** `tools/ton-messlauf.mjs`
+führt jede Textquelle einzeln auf; `ANLAGE2_AUSBRUCH` stand nicht darin, und
+zweiundzwanzig Zeilen wären ungemessen geblieben — **derselbe Fall, den der
+Lauf vier Zeilen weiter unten im eigenen Kommentar für den Auftakt beschreibt**
+(„Bis T5c fehlte er hier, und damit fehlte ausgerechnet die Stelle, an der ihre
+fünf amtlichen Sätze stehen"). Eine Textquelle, die kein Lauf erfasst, driftet
+still, und der Bericht behauptet dabei eine Vollständigkeit, die er nicht hat.
+
+Der Kanal steht jetzt als **eigene** Quelle und nicht im Band. Nicht aus
+Ordnungsliebe: ein Ausbruch ist die Stelle, an der sie den Amtston am weitesten
+hinter sich lässt, und im Band verrechnet wäre genau das unsichtbar. Getrennt
+gemessen sagt die Zeile etwas:
+
+```
+Anlage 2, Ausbruch       22 Zeilen    0% amtlich   (Abk 0%, Wort 0%)  knapp 82%
+```
+
+**Was das für T5e heißt, offen gesagt:** die zweiundzwanzig Zeilen senken die
+Gesamtquote der Figurenrede von 13 auf 12 Prozent, der Abstand zum Zielwert
+wächst um einen Punkt. Das ist keine Verschlechterung, die dieser Abschnitt
+verursacht, sondern die korrekte Buchung von Zeilen, die es jetzt gibt. Ihre
+Kürze ist dabei ausdrücklich unbedenklich, denn der Kanon des Ton-Abschnitts
+sagt es selbst: **kurze Sätze sind kein Amtsdeutsch.**
+
+**Und der Prüflauf zählte gegen eine Zahl statt gegen die Quelle.**
+`tools/anlage2-pruef.mjs` prüfte dreimal gegen eine abgeschriebene Sieben. T5b
+hat dem Gesprächsbaum eine achte Frage gegeben („Erklären Sie mir diese
+Welt.") und den Lauf nicht mitgezogen, worauf zwei Zeilen rot standen, ohne
+dass etwas kaputt war. Aus der Sieben ist beim Zusammenlegen zunächst eine Acht
+geworden — und damit stand dieselbe Falle wieder da, denn die neunte Frage
+färbt den Lauf erneut rot.
+
+Repariert im Muster, das dieses Projekt schon zweimal angewandt hat (T1,
+Abschnitt 9 für `mitteilung-pruef.mjs`, umgesetzt in T3, Abschnitt 8): die
+Mechanik darunter war immer schon generisch (`keys.slice(0, -1)` kennt keine
+Zahl), nur die Erwartung nicht. Sie liest jetzt aus der Quelle, die untere
+Schranke von sieben bleibt hart, und wer die neunte Frage anhängt, ändert an
+diesem Lauf nichts mehr.
 
 ---
 
@@ -256,10 +314,9 @@ T3 Anlage 2: 10 Anlässe, 10 Sprüche in Reihe, 5 Blätter, 13 Umschläge,
 11 Ausbrüche (3 geraten), Brandmauer in Ordnung.
 ```
 
-### Das Protokoll: jeder neue Zweig einmal ausgelöst
+### Das Protokoll: jeder neue Zweig einmal ausgelöst, und ab jetzt wieder
 
-Hausbrauch seit T1. Alle zwölf an einer Probefassung ausgelöst, Meldung
-wörtlich:
+Hausbrauch seit T1. Alle zwölf ausgelöst, Meldung wörtlich:
 
 | Probe | Meldung |
 |---|---|
@@ -276,6 +333,19 @@ wörtlich:
 | Der Ruhezähler fehlt in der Vorgabe | `Der Zähler anlage2Ruhig fehlt in kn.counters` |
 | Ausbruch über dem eigenen Deckel | `Zeichendeckel verletzt: "Ja! Und zwar genau da hin, ganz sicher!" 39 > 30` |
 
+**Und dieses Protokoll ist keine Behauptung mehr.** Bis hierher stand eine
+solche Tabelle immer nur im jeweiligen Phasendokument, also als Bericht über
+einen einmaligen Nachmittag. Sie läuft jetzt als
+`tools/anlage2-fehlversuch.mjs`, nach dem Vorbild der drei bestehenden
+`*-fehlversuch.mjs`, und prüft je Zweig **beides**: dass der Guard meldet, und
+dass er nach dem Zurücksetzen wieder still ist. Der zweite Teil ist der
+wichtigere — ein Guard, der nach einer Probe weiter meldet, hält einen Zustand
+fest, den es nicht mehr gibt, und färbt jede spätere Probe ein.
+
+```
+12 von 12 Zweigen melden und schweigen danach wieder.
+```
+
 ---
 
 ## 6. Abnahme
@@ -286,6 +356,8 @@ behauptet, alles gefahren.
 | Lauf | Vorher | Nachher |
 |---|---|---|
 | `tools/anlage2-pruef.mjs` | 76 von 76 | **92 von 92** (16 neue Zusagen) |
+| `tools/anlage2-fehlversuch.mjs` (neu) | — | **12 von 12** Zweigen melden und schweigen danach wieder |
+| `tools/ton-messlauf.mjs` | — | läuft, Ausbruch-Kanal neu erfasst (siehe Abschnitt 4) |
 | `tools/empfang-pruef.mjs` | 76 von 76 | 76 von 76 |
 | `tools/szene-pruef.mjs` | 49 von 49 | 49 von 49 |
 | `tools/menue-pruef.mjs` | 78 von 78 | 78 von 78 |
