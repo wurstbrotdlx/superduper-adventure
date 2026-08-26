@@ -60,6 +60,11 @@ const QUELLEN = [
   { name: 'Anlage 2, Umschlag', art: 'figur', ausdruck: 'ANLAGE2_UMSCHLAG' },
   { name: 'Anlage 2, Bewegung', art: 'figur', ausdruck: 'ANLAGE2_BEWEGUNG' },
   { name: 'Anlage 2, Blaetter', art: 'figur', ausdruck: 'ANLAGE2_BLAETTER' },
+  // Der Auftakt steht in eigenen Konstanten und nicht in ANLAGE2_BLAETTER. Bis
+  // T5c fehlte er hier, und damit fehlte ausgerechnet die Stelle, an der ihre
+  // fuenf amtlichen Saetze stehen. Sie ist als 'dokument' gefuehrt, denn dort
+  // ist der Amtston der Gegenstand: sie liest vor, was auf ihr steht.
+  { name: 'Anlage 2, Auftakt', art: 'dokument', ausdruck: '[ANLAGE2_AUFTAKT_ERNENNUNG, ANLAGE2_AUFTAKT_NACHHOLUNG]' },
   { name: 'Szenen',           art: 'figur', ausdruck: 'SZENEN' },
   { name: 'Langvorgaenge',    art: 'figur', ausdruck: 'LANGVORGAENGE' },
   { name: 'Empfang',          art: 'figur', ausdruck: 'EMPFANG_KNOTEN' },

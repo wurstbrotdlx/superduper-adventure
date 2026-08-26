@@ -4,7 +4,7 @@ Amtsdeutsch hört auf, der Grundton zu sein, und wird die Würze. Anlage 2 hört
 auf, ein Schriftstück zu klingen, und fängt an, ein Mensch zu klingen. Und der
 Anfang erzählt nicht mehr nur die vierhundert Jahre, sondern die Welt.
 
-**Stand: der Kanon steht, T5a ist gebaut, der Rest nicht.** Deshalb OFFEN.
+**Stand: der Kanon steht, T5a und T5c sind gebaut, der Rest nicht.** Deshalb OFFEN.
 
 ---
 
@@ -274,6 +274,69 @@ Abkürzungsanteil der Dorffiguren fällt dadurch von scheinbar 4 auf **1 Prozent
 — das waren die Fehlalarme, und die echte Zahl schärft Befund 2: die
 Abkürzungen liegen praktisch vollständig brach.
 
+## 5b. Was gebaut wurde: T5c
+
+**Der Ton-Abfall sitzt an genau einer Stelle**, und das ist ihr Auftaktblatt.
+Ihre ersten fünf Sätze sind seither der Text, der auf ihr steht:
+
+> Anlage 2 zur Ernennungsurkunde, Az. VII/40-2, beigefügt nachrichtlich gem.
+> Nr. 4 Abs. 2 DA. Die Beifügung erfolgt vorbehaltlich der Kenntnisnahme durch
+> den Adressaten.
+>
+> Eine Rückgabe ist nicht statthaft. Hinsichtlich der Zuständigkeit wird auf die
+> Anlage zur Anlage verwiesen, soweit vorhanden. Im Übrigen gilt Satz 1
+> entsprechend.
+
+Vier Kürzel in zwei Zeilen, und so dicht stehen sie danach nie wieder. Dann
+bricht es ab, und **sie sagt selbst, warum**:
+
+> So. Das war der Teil, der auf mir draufsteht, und ich musste ihn einmal sagen.
+> Das ist Vorschrift.
+>
+> Ehrlich gesagt versteht das kein Mensch. Ich sehe seit vierzig Jahren zu, wie
+> Leute so etwas lesen und dabei langsam den Kopf schief legen. Am Ende falten
+> sie es und stecken es weg.
+>
+> Ich rede ab jetzt normal, wenn es Ihnen recht ist.
+
+Das ist zugleich ihr erstes Lästern über den Amtston und der Beleg dafür, dass
+Grundgesetz 1 für sie nicht gilt: sie tritt aus ihrer eigenen Textsorte heraus
+und kommentiert sie. Beide Auftaktwege haben es, die Ernennung und die
+Nachholung, damit niemand den Wechsel verpasst, nur weil er ihn nachträglich
+findet.
+
+**Dazu 39 Zeilen im Band.** `ANLAGE2_NOTIZ` stammt aus T3, also von vor der
+Ansage, und redete durchgehend amtlich: „Vermerken Sie es sich selbst",
+„Fortschritt, noch nicht aktenkundig", „Abbruch ist ein Verfahrensschritt",
+„Ein Posten. Kassenzeichen folgt bestimmt." Jetzt: „Das saß. Und zwar richtig",
+„Sie kommen voran. Weiß nur noch keiner", „Umdrehen ist auch eine Entscheidung",
+„Geld. Irgendwer zählt das später." Gemessen **von 28 auf 4 Prozent amtlich**.
+
+**Nicht angefasst:** die vier Blätter ihrer Einführung und der Umschlag. Die
+Blätter sind die beste Prosa des Projekts und bereits erzählend statt amtlich
+(„Beigefügt heißt beigefügt. Nicht eingeweiht." · „Das ist keine
+Verschwiegenheit. Das ist mein Berufsstand."), und Blatt 2 spielt den
+Maskenwechsel ohnehin schon aus. Der Umschlag war nie amtlich; dort steht sie
+ohne Maske, ohne Meinung und ohne Zwinkern.
+
+**Eine Kanon-Korrektur an mir selbst.** Die Ansage lautete „nach den ersten 5
+Sätzen", und Kapitel 8 hatte daraus „fünf Blätter" gemacht. Das war eine
+Dehnung, und sie hätte den Abfall an das Ende der ganzen Einführung geschoben.
+Fünf Sätze sind zwei Sprechzeilen; der Wechsel kommt jetzt nach einer halben
+Minute statt nach fünf Blättern, und das Erstaunen braucht genau diesen kurzen
+Vorlauf.
+
+**Ein Fund am Messlauf, und er ist derselbe wie bei T5a.** Der Auftakt steht in
+eigenen Konstanten und nicht in `ANLAGE2_BLAETTER`, war also nicht in den
+Quellen. Der Lauf hat ausgerechnet die Stelle nicht gemessen, an der der ganze
+Bauabschnitt hängt. Sie ist ergänzt und als `dokument` geführt, denn dort ist
+der Amtston der Gegenstand: sie liest vor, was auf ihr steht.
+
+**Abnahme T5c:** `node --check` sauber, alle 39 Bandzeilen unter dem
+Randnotiz-Deckel von 44, im Browser geladen, `anlage2Assert()` meldet „10
+Anlässe, 10 Sprüche in Reihe, 5 Blätter, 13 Umschläge, Brandmauer in Ordnung",
+`szeneAssert()` meldet Sperrvermerk in Ordnung, keine PAGEERROR.
+
 ## 6. Was offen bleibt
 
 Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
@@ -281,10 +344,7 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
 * **T5a, das Register.** Vorgangspuzzle, Hinweise, Ausweis, Probezeit-Hinweise
   und Hausmitteilung auf normales Deutsch. Der kleinste und sicherste Teil, und
   nach Abschnitt 3 der mit dem größten Effekt. Zuerst.
-* **T5c, Anlage 2s Ton-Abfall.** Vor T5b, damit ihre neuen Erklärzeilen nicht im
-  alten Ton entstehen und zweimal geschrieben werden müssen. Ihr Umschlag bleibt
-  unangetastet: er war nie amtlich (15 Prozent, und das sind die
-  Fundstellenvermerke).
+* ~~**T5c, Anlage 2s Ton-Abfall.**~~ **ERLEDIGT**, siehe Abschnitt 5b.
 * **T5b, Anlage 2 als Erklärerin.** Kapitel 0 bis 5 als Randnotizen im Band und
   als Kaskade auf Abruf. Neue Einträge in `ANLAGE2_NOTIZ` und in
   `SZENEN.baumAnlage2`, keine neue Maschine.
