@@ -1,4 +1,4 @@
-# Bauabschnitt T3: Anlage 2, der Sidekick — OFFEN
+# Bauabschnitt T3: Anlage 2, der Sidekick — ERLEDIGT
 
 Das erste Stück dieses Spiels, das mitläuft statt dazustehen.
 
