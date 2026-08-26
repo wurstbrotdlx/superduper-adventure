@@ -16833,7 +16833,10 @@ function updateHUD(){
 // ===========================================================================
 const NEUERUNGEN_KEY = 'sda_neuerungen';
 const NEUERUNGEN = {
-  stand: '2026-08-26',
+  // T5: neuer Stempel am selben Tag. Der Vergleich ist ein String-Vergleich,
+  // und ohne neuen Wert saehe die T5-Haelfte niemand, der die Mitteilung von
+  // heute Morgen schon weggeklickt hat.
+  stand: '2026-08-26-t5',
   datum: '26. August',
   punkte: [
     {
@@ -16870,6 +16873,30 @@ const NEUERUNGEN = {
       titel: 'Am Telefon sind die Knöpfe Knöpfe geworden',
       was: 'Angriffsfächer und Knopfspalte tragen jetzt die Achteckform, die in der Grafik gezeichnet steht, statt sie unter einem Kreisrand zu verstecken. Ein gesperrter Knopf zeigt nur noch sein Schloss, wo bis eben ein Text aus dem Knopf herauslief.',
       wo: 'Nur am Finger: Fächer unten rechts, Knopfspalte am linken Rand.',
+    },
+    // --- T5, 26.08.2026 -----------------------------------------------------
+    // Normales Deutsch, wie es die Formregel "Das Register haengt am Ort" seit
+    // heute fuer jeden Erklaertext verlangt. Die wo-Zeilen nennen nur Wege, die
+    // es wirklich gibt; tools/mitteilung-pruef.mjs drueckt sie nach.
+    {
+      titel: 'Die Hinweise reden Deutsch',
+      was: 'Die kurzen Hinweise im Band sagen jetzt, was los ist und was Sie tun können, ohne dass man sie zweimal liest. Aus „Sie verlieren Konfetti. Das ist selten gut." ist „Sie haben kaum noch Kraft übrig. Ein Trank hilft." geworden. Elf Zeilen sind so überarbeitet.',
+      wo: 'Im Band unter der Statusleiste, sobald es etwas zu sagen gibt.',
+    },
+    {
+      titel: 'Anlage 2 legt den Amtston ab',
+      was: 'Sie fängt an wie ein Schriftstück: Aktenzeichen, vier Abkürzungen in zwei Zeilen, alles korrekt. Nach fünf Sätzen hört sie damit auf und sagt selbst, warum. Danach redet sie normal, und über die Sprache dieses Hauses lässt sie gelegentlich etwas fallen.',
+      wo: 'Gleich zu Beginn, wenn sie sich vorstellt. Wer schon im Dienst ist, hört den Unterschied im Band.',
+    },
+    {
+      titel: 'Anlage 2 erklärt Ihnen die Welt',
+      was: 'Neu in ihrem Gespräch ist die Frage „Erklären Sie mir diese Welt." Dahinter liegen drei Themen: was hier eigentlich los ist, warum es dieses Amt gibt, und wo Sie sind und was Sie darin tun. Sie erzählt das in Ruhe und wiederholt sich gern.',
+      wo: 'Im Rucksack Anlage 2 anklicken, dann die Frage auswählen.',
+    },
+    {
+      titel: 'Der Anfang zeigt mehr von der Welt',
+      was: 'Das Intro hat zwei Blätter dazubekommen: eine Landkarte, auf der die Gegend keine Ortsnamen trägt, sondern Buchstaben, und die Tafel über der Amtstür mit dem Satz, auf dem hier alles steht. Das Einstellungsformular sagt jetzt außerdem, was der Außendienst überhaupt ist.',
+      wo: 'Beim ersten Dienstantritt. Wer den hinter sich hat, sieht es nicht noch einmal.',
     },
   ],
 };
