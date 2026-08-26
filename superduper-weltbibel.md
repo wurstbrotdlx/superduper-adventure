@@ -519,6 +519,30 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 
 **Unter vier Augen.** Ein Teil ihrer Zeilen fällt nur, wenn keine Dorffigur in der Nähe steht, und der Umschlag ausnahmslos. Der Spieler merkt mit der Zeit, dass sie allein anders spricht als vor Publikum. **Sie selbst merkt davon nichts**, und das ist keine Nachlässigkeit, sondern ihr blinder Fleck: eine Anlage, die sich für unwichtig hält, führt keine Buch über ihre Zuhörer. Deshalb wird auch **kein Auftrittsverhalten vor Publikum** gebaut. Sie wird unter vier Augen leiser und echter, nicht in der Menge lauter.
 
+*(Zuwachs T5, 26.08.2026, auf Ansage des Projektinhabers: „die anlage 2 lässt nach den ersten 5 sätzen das amtsdeutsch fallen und redet erstaunlich normal und lästert auch gern mal über dieses amtsdeutsch". Damit bekommt sie die Aufgabe, die bisher niemand hatte: sie erklärt dem Spieler die Welt. Bauabschnitt und Werkzeug siehe `phase-t5-ton.md`.)*
+
+**Die fünf Sätze, und was danach passiert.** Ihre Einführung ist fünf Blätter lang, und auf diesen fünf Blättern spricht sie, wie ein Schriftstück spricht: Urkundenton, vollständig, korrekt, mit Fundstellenvermerk. Das ist der Ton, den jeder von einer Anlage erwartet, und genau deshalb steht er am Anfang. **Ab dem sechsten Satz fällt er ab.** Nicht als Bruch und nicht als Gag, sondern so, wie jemand nach der Begrüßung die Jacke auszieht. Von da an redet sie normales Deutsch, und das ist die einzige Stimme im Haus, die das tut.
+
+* **Warum sie es darf, und niemand sonst.** Sie ist kein Beamter. Sie ist das Papier, auf dem die Beamten schreiben, und Papier hat keine Laufbahn zu verlieren. Alle anderen im Haus sprechen amtlich, weil ihr Amt an ihnen hängt (18.6). An ihr hängt nichts.
+* **Warum es die Figur trägt und nicht nur eine Tonlage ist.** Vierzig Jahre lang war sie die Textsorte, die man beifügt. Der erste Mensch, der sie liest, bekommt nicht die Textsorte, sondern sie. Der Ton-Abfall ist derselbe Vorgang wie der warme Kern, nur hörbar: sie hört auf, Anlage zu sein, sobald jemand zuhört. **Sie sagt das nie**, und es wird an keiner Stelle aufgelöst.
+* **Das Maskenset bleibt geschlossen und bleibt bei fünf.** Was sich ändert, ist sein Status: Urkundenton, Formularton, Aushangton, Vermerk und Rechtsbehelfsbelehrung sind ab T5 **Kostüm statt Haut**. Sie setzt eine Maske auf, wenn sie etwas nachahmt, sagt oft dazu, dass sie es tut, und nimmt sie wieder ab. Eine sechste kommt weiterhin nicht dazu.
+
+**Das Lästern, und seine Grenze.** Sie findet das Amtsdeutsch dieses Hauses umständlich und sagt das. Das ist nach Regel 1 **kein Zwinkern, sondern eine Meinung** (siehe die Klarstellung dort), denn sie sieht nicht aus der Welt heraus, sondern findet etwas darin lästig. Drei Grenzen halten es an seinem Platz:
+
+1. **Gelästert wird über die Sprache, nie über den Sprecher.** „Dieses Wort hat sich jemand ausgedacht, der Zeit hatte." geht. Über Bramsche, die es benutzt, geht nichts (Grundgesetz 4). Wer eine Figur meint, hat die Regel gebrochen, auch wenn er das Formular sagt.
+2. **Sie lästert nie im warmen Moment.** Im Umschlag nicht, in der Bremse nicht, und in den Szenen ohnehin nicht. Der Umschlag ist ohne Maske **und** ohne Meinung: dort stellt sie fest und ordnet ein, sonst nichts.
+3. **Sie lästert nicht gegen die Welt an.** Das Haus bleibt ernst, die Verfahren bleiben in Kraft, und sie hält sich an alle. Eine Anlage, die das Verfahren verachtet, wäre Zynismus (Grundgesetz 8). Eine Anlage, die es umständlich findet und trotzdem befolgt, ist die Figur.
+
+**Sie erklärt die Welt, und ab T5 ist das ihre Hauptaufgabe.** Die Trennung zu Knöterich bleibt scharf und wird durch T5 sogar schärfer: **der Amtston von oben erklärt das Gerät, die Beilage von innen erklärt die Welt.** Neu ist, dass „die Welt" jetzt einen benannten Umfang hat, nämlich **Kapitel 0 bis 5 dieser Weltbibel**: was die Welt ist, was in ihr gilt, woher das Haus kommt, wie die Landschaft zu lesen ist, was das Ministerium ist und was der Spieler darin tut. Sie liefert das auf zwei Wegen, und beide sind derselbe Stoff in zwei Portionsgrößen:
+
+* **Der kurze Weg, ungefragt:** eine Randnotiz im Band, wenn der Spieler zum ersten Mal etwas sieht, das erklärt gehört. Eine Zeile, im Zeichendeckel, ohne Nachfrage und ohne Wiederholung.
+* **Der lange Weg, auf Abruf:** die zweite Bühne. Wer nachfragt, bekommt die Kaskade mit Fußnoten, in ihrer belehrendsten Form, und darf jederzeit gehen (Grundgesetz 12).
+
+**Zwei Sperren gelten dabei unverändert, und sie sind der Grund, warum sie diese Aufgabe überhaupt bekommen darf:**
+
+* **Die Brandmauer.** Kapitel 0 bis 5 sind Weltwissen, und Weltwissen ist genau das, was sie hat. Den laufenden Fall erklärt sie nicht, weil sie ihn nicht kennt. Die Aufgabe passt zur Figur, statt sie aufzuweichen.
+* **Das Weltgesetz bleibt unausgesprochen.** Kapitel 1 sagt, es wird nie erklärt und nie ausgesprochen, und das gilt auch für sie. Sie erzählt die **Folgen**, so viele davon sie will, und sagt den Satz nie. Wer sie danach fragt, bekommt eine Auskunft, die alles beschreibt und nichts benennt. Das ist keine Ausweichbewegung, sondern die Wahrheit dieser Figur: eine Beilage kennt jede Nebenbestimmung und nie die Hauptsache.
+
 
 ---
 
@@ -791,8 +815,20 @@ Die zwölf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schrei
     2. **Aus der Figur heraus.** Das Zwinkern gehört ihr, nicht dem Spiel. Es bleibt in ihrer Sprachmarke, in ihrem Amtsdeutsch und in ihrer Lage. Ein Erzähler, der sich einmischt, ist keine Ausnahme, sondern ein Bruch.
     3. **Nie dort, wo es weh tut.** Nicht in einem warmen Moment (Regel 9), nicht in der Fanfare (Regel 10), nicht in einer Szene, die etwas trägt. Ein Zwinkern an dieser Stelle kostet mehr, als jeder Gag einbringt.
     4. **Die Welt selbst bleibt normal.** Erlaubt ist die einzelne Figur, die kurz herausschaut. Nicht erlaubt ist eine Welt, die sich insgesamt für einen Witz hält: Regel 4 (nie über Menschen lachen) und Regel 8 (kein Zynismus) hängen daran und stehen unverändert.
+
+    **Was kein Zwinkern ist, und deshalb auch nicht gezählt wird** *(Klarstellung mit T5, 26.08.2026, weil Anlage 2 sonst mit ihrer zweiten Zeile ihr Kontingent verbraucht hätte).* Eine Figur, die **die Sprache ihres Hauses** albern findet, zwinkert nicht. Sie hat eine Meinung. Der Unterschied ist scharf und er entscheidet, ob eine Zeile unter diese Regel fällt oder gar nicht erst hierher gehört:
+
+    * **Zwinkern** heißt: die Figur sieht aus der Welt heraus. Sie weiß, dass sie in einem Spiel steht, spricht den Spieler als Spieler an oder bemerkt, dass das hier ein Witz ist. Das ist gezählt, einmal je Figur.
+    * **Meinung** heißt: die Figur bleibt vollständig in der Welt und findet etwas darin lästig. Ein Formular, ein Verfahren, einen Tonfall, eine Vorschrift. Das ist unbegrenzt erlaubt, weil es die Welt nicht verlässt, sondern sie bewohnt. Es fällt unter Regel 4 und nicht unter diese: gelästert wird über Zuständigkeit, nie über einen Menschen.
+
+    Praktisch heißt das: „Ich weiß, das klingt jetzt wie aus einem Formular, aber so heißt das hier nun mal." ist eine Meinung und kostet nichts. „Sie drücken doch gleich wieder auf diese Taste." wäre ein Zwinkern und kostet das eine.
 2. **Der Witz liegt im Verfahren, nicht in der Pointe.** Nicht "Beamter ist faul", sondern "Beamter ist mit vollem Einsatz für die falsche Sache zuständig".
-3. **Amtsdeutsch trifft Alltag.** Der Kontrast trägt alles. "Sie verlieren Konfetti. Das ist selten gut."
+3. **Amtsdeutsch trifft Alltag, und zwar als Würze statt als Grundton.** *(Geändert am 26.08.2026 auf Ansage des Projektinhabers: „das muss gelockert werden, das ist zu hart, 30% beamtendeutsch 70% normal in konversationen, außer bei einzelnen charakteren". Bis dahin lautete die Regel: „Amtsdeutsch trifft Alltag. Der Kontrast trägt alles. ,Sie verlieren Konfetti. Das ist selten gut.'" Die Nummer bleibt stehen, damit die Verweise in den Phasendokumenten weiter zeigen, wohin sie zeigen.)* Der Kontrast trägt weiterhin alles. Was sich ändert, ist das Mischungsverhältnis: **in einem Gespräch sind rund drei von zehn Sätzen amtlich gefärbt und sieben normales Deutsch.** Der Kontrast entsteht dadurch nicht weniger, sondern zum ersten Mal überhaupt, denn wo alles amtlich klingt, gibt es keinen Kontrast, sondern nur eine Tonlage. Vier Punkte dazu:
+
+    1. **Das amtliche Wort steht im normalen Satz, nicht umgekehrt.** „Vorsicht, Sie verlieren Konfetti. Das ist meistens kein gutes Zeichen." trägt, weil der Satz drumherum normal ist. Die alte Beispielzeile trägt nicht, weil beide Hälften amtlich sind und der Spieler nichts hat, woran er den Ton messen könnte.
+    2. **Die Ausnahme ist die Figur, nicht der Anlass.** Einzelne Figuren dürfen fast vollständig amtlich reden, wenn genau das ihre Sprachmarke ist (Kapitel 8): Bramsche liest Klammern mit, Milb stuft ein, Vorblatt ist Reichspapier. Ihr Ton ist dann eine Eigenschaft und keine Hausregel, und er wirkt, weil die anderen anders reden.
+    3. **Der Zielwert gilt je Gespräch, nicht je Zeile.** Drei amtliche Sätze hintereinander sind erlaubt, wenn danach sieben normale kommen. Was nicht geht, ist der gleichmäßig amtliche Teppich über alles.
+    4. **Verständlichkeit schlägt Ton.** Wo ein Kind aussteigt, ist die Zeile falsch, auch wenn sie ein guter Gag wäre. Siehe Regel 6.
 4. **Nie über Menschen lachen, immer über Zuständigkeit.** Keine Figur ist dumm. Jede Figur ist gefangen.
 5. **Absurde Regeln werden konsequent zu Ende befolgt.** Das ist Monkey Island. Wenn Monster gegrüßt werden müssen, dann grüßt man eben.
 6. **Zwei Ebenen in jedem Gag.** Neunjährige verstehen die Situation, Erwachsene den Paragrafen. Beide lachen an derselben Stelle, aus verschiedenen Gründen. Das ist der ganze Trick der Zielgruppe 9 bis 99.
@@ -849,6 +885,13 @@ Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. Der G
 * Zeichendeckel einhalten (Zettelzeile 1 max. 48, Zeile 2 max. 32, Randnotiz max. 44). **Er gilt für Sprechblasen, nicht für Tafelzüge.** *(Nachgetragen mit T1, weil es bis dahin eine ungeschriebene Ausnahme war: `knAssertCaps()` misst die Blasen von `DORF_FIGUREN` und Knöterichs Zettel, `szeneAssert()` misst bei Szenen nur die Antwortzeilen. Der Grund ist die Bauform und nicht Nachlässigkeit: die Gesprächstafel aus U4 ist zweigeteilt und hat zwei feste Zeilen, eine Szenentafel ist eine Urkunde mit rollendem Textkörper. Wer das anders will, ändert nicht diese Zeile, sondern `szeneAssert()`, sonst driftet es wieder auseinander.)*
 * Höchstens eine Taste pro Hinweis.
 * **Der Anfang erzählt.** *(Nachgetragen mit T2, 25.08.2026, auf Ansage des Projektinhabers nach dem ersten Durchspielen: „Es muss noch erzählerischer werden. Es ist zu knapp. Ich verstehe als neuer kaum worum es geht. Es darf ruhig alle Regeln brechen und eine Erzählung werden.")* Die Eingangskette bis zum ersten Schritt im Dorf ist von diesen Formregeln ausgenommen, und zwar bewusst. Sie darf lange Sätze haben, Bilder ausmalen, dieselbe Sache zweimal von zwei Seiten zeigen und länger dauern, als ein Zettel dürfte. Der Grund ist eine Zahl: wer das Spiel zum ersten Mal öffnet, weiß nichts, und alles, was er danach für einen Gag hält, hängt daran, dass er in dieser einen Kette begriffen hat, was ein Vorgang ist, warum es dieses Haus gibt und wie er selbst heißt. Was danach kommt, hält sich wieder an alles hier. **Zwei Dinge gelten auch im Anfang unverändert:** der Sperrvermerk und die Wortsperre der Szene, denn ein Anfang ist die verführerischste Stelle des Spiels, um zu früh zu erklären, worum es eigentlich geht.
+* **Das Register hängt am Ort, nicht am Haus.** *(Nachgetragen mit T5, 26.08.2026, auf Ansage des Projektinhabers: „in den Menüs und erklärtexten sowie geschichtstexten oder welterklärtexten normales deutsch".)* Amtsdeutsch ist die Sprache der **Figuren**, nicht die des Spiels. Wo das Spiel selbst mit dem Spieler redet, redet es normal:
+
+    * **Menüs und Bedienung.** Knopfbeschriftungen, Reiter, Werteliste im Charakterfenster, Optionen, Fehlermeldungen. Der Spielstand-Kasten war seit SP der Vorgriff auf diese Regel und ist seither kein Sonderfall mehr, sondern ihr erster Fall.
+    * **Erklärtexte.** Alles, was eine Mechanik erklärt: Tooltipps, Mechanikhilfe, Hausmitteilung, die Zeilen, mit denen Knöterich das Gerät erklärt. Wer gerade lernt, wie etwas geht, darf nicht gleichzeitig eine Textsorte entschlüsseln.
+    * **Geschichts- und Welterklärtexte.** Chronik, Aktenfunde in ihrer erklärenden Hälfte, alles, was Zusammenhänge herstellt statt sie zu spielen. Die Ausnahme davon ist das **gezeigte Dokument**: ein Zwischenbescheid aus dem Jahr 989 klingt wie ein Zwischenbescheid aus dem Jahr 989, denn dort ist der Amtston der Gegenstand und nicht die Verpackung.
+
+    Die Grenze verläuft an einer einzigen Frage: **Spricht hier jemand, oder spricht das Spiel?** Spricht jemand, gilt Regel 3 samt ihrer Mischung. Spricht das Spiel, gilt normales Deutsch, und zwar ohne Restwürze.
 * **Die Länge ist eine Sprachmarke.** Wie viel eine Figur redet, sagt ihre Sprachmarke in Kapitel 8, nicht eine Hausregel. Beamte dieses Hauses sind in Erklärungen und Belehrungen ausführlich: wer zuständig ist, begründet, und wer begründet, hört so schnell nicht auf. Ausführlich heißt viele kurze Sätze hintereinander, nie lange Zeilen: der Zeichendeckel bleibt, die Länge entsteht als Kaskade über mehrere Tafelzüge, und der Spieler bleibt der Gerade, der weiterklicken darf (Regel 11). Knapp ist ab jetzt eine Auszeichnung: sie gehört den Figuren, deren Marke sie ist (Zapf, Knöterich, Lott, Sturz), und jedem Werkzeugtext (Zettel, Randnotiz, Formular, Schild, Blatt), denn Post begründet ihre eigene Kürze. *(Bis zum 25.08.2026 stand hier: „Kurze Sätze. Zwei sind genug. Drei sind schon zu viel." Als Deckel für alle hat die Regel alle Figuren gleich klingen lassen. Geändert auf Ansage des Projektinhabers, siehe `phase-t1-tonlage.md`.)*
 
 ---
@@ -1170,12 +1213,46 @@ Gerätebezogenes Speichern und Export/Import. Kein Weltbau, sondern ~~der einzig
 
 Ein Blatt vor dem Startbild, das sagt, was sich seit der letzten Schicht geändert hat und wo es zu sehen ist. Der zweite Bauabschnitt außerhalb der Welt: er spricht nicht über das Amt, sondern über das Spiel.
 
-* **Und trotzdem redet er Amtsdeutsch.** Anders als der Speicherkasten aus SP. Das ist kein Widerspruch, sondern dieselbe Frage mit anderer Antwort, weil die Sache eine andere ist: „Spielstand" muss wörtlich dastehen, weil man ihn im Notfall suchen und finden muss. Einen Änderungshinweis sucht niemand — er wird vorgelegt. Was vorgelegt wird, kann das Haus in seiner eigenen Form vorlegen, und das Haus hat dafür eine: die Mitteilung, die umläuft und zur Kenntnis genommen wird. Die SP-Ausnahme bleibt damit die einzige.
+* **Und trotzdem redet er Amtsdeutsch.** Anders als der Speicherkasten aus SP. Das ist kein Widerspruch, sondern dieselbe Frage mit anderer Antwort, weil die Sache eine andere ist: „Spielstand" muss wörtlich dastehen, weil man ihn im Notfall suchen und finden muss. Einen Änderungshinweis sucht niemand — er wird vorgelegt. Was vorgelegt wird, kann das Haus in seiner eigenen Form vorlegen, und das Haus hat dafür eine: die Mitteilung, die umläuft und zur Kenntnis genommen wird. ~~Die SP-Ausnahme bleibt damit die einzige.~~ **Überholt durch T5** (26.08.2026): die Formregel „Das Register hängt am Ort, nicht am Haus" beantwortet diese Frage jetzt für alle Fälle auf einmal, und sie beantwortet sie andersherum. Die Hausmitteilung ist ein Erklärtext über das Spiel, also redet sie normal. Der Abwägung oben ist damit nicht widersprochen, sie ist überholt: sie war richtig, solange jeder Fall einzeln entschieden wurde, und genau das war das Problem. SP war nie eine Ausnahme, sondern der erste Fall einer Regel, die noch niemand aufgeschrieben hatte.
 * **Nichts läuft von selbst ab, auch hier nicht.** Kein Timer, kein Selbstschließen. Das Blatt steht, bis jemand drückt — dieselbe Regel, die für jede Tafel und jede Szene gilt.
 * **Wer zum ersten Mal hier ist, sieht es nicht.** „Neu" ist eine Aussage über ein Vorher. Ein leeres Gerät hat keines und geht durch.
 * **Die Wo-Zeile ist eine Wegbeschreibung und veraltet wie jede.** Wer einen Bauabschnitt ändert, der in einem Punkt genannt ist, ändert den Punkt mit. Am Auslieferungstag zeigte eine Zeile auf einen Gürtelknopf, den U8 zwei Stunden vorher abgeschafft hatte, und kein Guard konnte etwas sagen: ein Fließtext ist für jeden Prüfer im Haus nur ein Fließtext. Der Prüflauf drückt seither, was die Zeilen nennen.
 
 **Abnahme:** Wer die Mitteilung wegklickt, spielt das Spiel unverändert. Kein Speicherschlüssel im Spielstand (der Stempel gehört dem Gerät), kein neues Panel, keine Wirkung auf irgendeinen Wert.
+
+### T1: Die Tonlage — ERLEDIGT (siehe `phase-t1-tonlage.md`)
+
+Die Länge wird eine Sprachmarke, der Anfang kürzer, die Zielgruppe fängt bei neun an. Hierher gehören Grundgesetz 12 („Belehrung ist eine Liebeserklärung"), die Formregel „Die Länge ist eine Sprachmarke" an der Stelle der alten Deckelregel, und Nieselbecks Meldekürzel als benannte Ausnahme vom Kurzform-Gag.
+
+### T2: Der Anfang wird eine Erzählung — ERLEDIGT (siehe `phase-t2-anfang.md`)
+
+Der erste Titel wird verliehen statt vorausgesetzt (Stolzregel 0), und die Eingangskette hört auf, ein Formular zu sein. Dazu die Formregel „Der Anfang erzählt": die Kette bis zum ersten Schritt im Dorf ist von den Formregeln ausgenommen, Sperrvermerk und Wortsperre ausgenommen von der Ausnahme.
+
+### T3: Anlage 2, der Sidekick — ERLEDIGT (siehe `phase-t3-anlage2.md`)
+
+Die siebzehnte Figur und die erste, die mitläuft statt dazustehen. Ein Schriftstück in der Tasche, das die Welt kommentiert. Kanon in Kapitel 8.
+
+### T4: Anlage 2 bekommt einen Charakter — ERLEDIGT (siehe `phase-t4-charakter.md`)
+
+T3 hatte die Figur, T4 benennt, was sie im Inneren zusammenhält: die vier Bauteile (Käfig, Preis, Gefälle, Kipppunkt), das auf fünf geschlossene Maskenset, die Bremse und der Umschlag. Gebaut wurden der Schalter `allein`, drei Anlässe und der Kipppunkt an ihrer formlosen Bitte.
+
+### T5: Der Ton — OFFEN (siehe `phase-t5-ton.md`)
+
+Der Bauabschnitt zur Ansage vom 26.08.2026. **Der Kanon steht seit diesem Datum vollständig**, der Bau ist es nicht, und die Überschrift sagt deshalb OFFEN, bis alle vier Teile stehen.
+
+Was der Kanon schon entschieden hat: Grundgesetz 3 ist auf die Mischung 30/70 umgestellt, Grundgesetz 1 unterscheidet ab jetzt Zwinkern von Meinung, die Formregeln haben mit „Das Register hängt am Ort, nicht am Haus" die Antwort auf eine Frage, die bis dahin je Bauabschnitt einzeln entschieden wurde (SP, U9), und Anlage 2 hat ihren Ton-Abfall, ihr Lästern und ihre Aufgabe als Erklärerin der Welt.
+
+Zu bauen bleiben vier Stücke, und sie sind bewusst getrennt, weil sie verschieden groß und verschieden riskant sind:
+
+* **T5a, das Register.** Menüs, Erklärtexte, Hausmitteilung und Mechanikhilfe auf normales Deutsch. Der kleinste und sicherste Teil: es sind abgegrenzte Textmengen, kein Figurentext hängt daran, und die Zeichendeckel gelten dort ohnehin nicht.
+* **T5b, Anlage 2 als Erklärerin.** Der Stoff aus Kapitel 0 bis 5 in zwei Portionsgrößen: Randnotizen im Band beim ersten Anlass, und die Kaskade auf Abruf über die zweite Bühne aus T4. Neue Einträge in `ANLAGE2_NOTIZ` und im Gesprächsbaum, keine neue Maschine.
+* **T5c, ihr Ton-Abfall.** Die fünf Blätter der Einführung bleiben im Urkundenton, alles danach wird normal. Betrifft ihren Bestand aus T3 und T4, und der Umschlag bleibt unangetastet: er war nie amtlich.
+* **T5d, das Intro trägt Kapitel 0 bis 5.** Auf Ansage: „0 bis 5 muss ins intro". Die neun Blätter aus SZ1 erzählen heute die vierhundert Jahre und sonst nichts. Dazu kommt, was ein neuer Spieler außerdem braucht, um das Erste zu verstehen, was ihm danach begegnet: was die Welt ist (Kapitel 0), woher das Beamten-Ding kommt (2), dass die Landschaft eine Ablage ist (3), was dieses Haus ist (4) und was er selbst darin tut (5). **Von Kapitel 1 gehen die Folgen mit und der Satz nicht** (siehe unten). Die Formregel „Der Anfang erzählt" deckt die Länge bereits ab; der Anfang darf dadurch länger werden, und das ist beabsichtigt.
+* **T5e, die 30/70-Mischung im Bestand.** Der größte Teil und der einzige, der bestehende Zeilen anfasst. Gemessen wird mit `tools/ton-messlauf.mjs`, und **der Lauf ist eine Untergrenze und keine Wahrheit**: er stuft an einer Eichprobe von 43 handbewerteten Zeilen 77 Prozent richtig ein und übersieht dabei viermal so oft eine amtliche Zeile, wie er eine normale falsch meldet. Was er meldet, stimmt also fast immer; was er nicht meldet, kann trotzdem amtlich sein. Für einzelne Quellen und Figuren taugt er damit gut, für eine Gesamtnote nicht. Die Sprachmarken aus Kapitel 8 entscheiden, welche Figur ausgenommen ist, nicht das Gefühl beim Lesen und nicht der Lauf.
+
+**Die eine Grenze, die durch alle fünf läuft:** das Weltgesetz bleibt unausgesprochen (Kapitel 1). Intro und Anlage 2 sind die zwei verführerischsten Stellen des Spiels, es doch einmal hinzuschreiben, und beide dürfen es nicht. Erzählt werden die Folgen, so viele wie nötig: dass Liegengebliebenes aufsteht, dass Monster Aktenzeichen tragen, dass Erledigen Konfetti macht. Der Satz selbst fällt nie. Wer beim Schreiben merkt, dass eine Zeile ihn fast sagt, hat die Stelle gefunden, an der die Welt aufhört zu wirken.
+
+**Reihenfolge und Grund:** T5a zuerst, weil es nichts kaputtmachen kann. T5c vor T5b, weil ihre neuen Erklärzeilen sonst im alten Ton entstünden und zweimal geschrieben werden müssten. T5d nach T5b, weil das Intro und ihre Erklärzeilen denselben Stoff tragen und sich sonst doppeln. T5e zuletzt, weil es die Zahl aus dem Messlauf braucht und weil jede seiner Änderungen an einem Zeichendeckel und einem Guard vorbeimuss.
 
 ### Was wir ausdrücklich nicht bauen
 
@@ -1543,9 +1620,15 @@ Repo, Ordner und Dateinamen bleiben, wie sie sind. Der Titel ist eine Anzeigezei
 Vor dem Einbau, jede Zeile einzeln:
 
 1. Verrät sie Kesselgrammatik oder eine Fluch-Ableitung? Dann raus.
-2. Weiß die Figur, dass sie komisch ist? Dann umschreiben.
+2. Weiß die Figur, dass sie komisch ist? Dann umschreiben. *(Präzisiert mit T5: gemeint ist der Blick aus der Welt heraus. Eine Figur, die etwas **in** ihrer Welt lästig findet, hat eine Meinung und fällt nicht hierunter. Siehe die Klarstellung an Grundgesetz 1.)*
 3. Gedankenstrich, Emoji, Blut? Dann raus.
 4. Zeichendeckel eingehalten, auch in der Touch-Fassung?
 5. Mehr als eine Taste genannt?
 6. Funktioniert die Zeile für eine Neunjährige? Funktioniert sie für eine Neunundneunzigjährige? Wenn nur eins von beidem: umschreiben, nicht streichen.
 7. Lacht die Zeile über eine Person oder über eine Zuständigkeit?
+
+*(Drei Fragen nachgetragen mit T5, 26.08.2026. Sie stehen hinten, damit die Nummern 1 bis 7 zeigen, wohin sie immer zeigten.)*
+
+8. **Spricht hier jemand, oder spricht das Spiel?** Spricht das Spiel, ist jedes amtliche Wort zu viel (Formregel „Das Register hängt am Ort"). Spricht jemand, weiter mit Frage 9.
+9. **Ist das der dritte amtliche Satz hintereinander?** Dann kommen jetzt sieben normale, oder die Figur hat eine Sprachmarke in Kapitel 8, die sie ausnimmt. `tools/ton-messlauf.mjs` sagt, wo eine Figur steht; er sagt es als Untergrenze, also ist eine Figur, die dort schon zu hoch liegt, sicher zu hoch.
+10. **Sagt die Zeile das Weltgesetz?** Auch fast, auch in anderen Worten, auch als Frage? Dann raus. Die Folgen darf sie erzählen, den Satz nicht (Kapitel 1).
