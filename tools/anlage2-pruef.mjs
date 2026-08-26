@@ -450,11 +450,23 @@ async function imDienst(page){
              inTabelle: ANLAGE2_UMSCHLAG.some(u => u.id === 'ganzGelesen'),
              zweimal: (() => { const v = kn.umschlag.ganzGelesen; haken(keys[0]); return kn.umschlag.ganzGelesen === v; })() };
   });
-  pruef('sie hat acht Fragen', ganz.keys, 8);
+  // Die Zahl stand hier als abgeschriebene Sieben, bis T5b die achte Frage
+  // brachte ("Erklären Sie mir diese Welt.") und zwei Zeilen rot standen, ohne
+  // dass etwas kaputt war. Aus der Sieben ist danach eine Acht geworden, und
+  // damit steht dieselbe Falle wieder da: die neunte Frage, die T5e oder ein
+  // spaeterer Abschnitt anhaengt, faerbt den Lauf erneut rot.
+  //
+  // Deshalb liest die Erwartung jetzt aus der Quelle, genau wie
+  // mitteilung-pruef.mjs es seit T3 tut (der Vorschlag dazu steht in
+  // phase-t1-tonlage.md, Abschnitt 9). Die Mechanik darunter war immer schon
+  // generisch, keys.slice(0, -1) kennt keine Zahl; nur die Erwartung kannte
+  // eine. Die untere Schranke bleibt hart: die sieben aus T3 sind Kanon, und
+  // wer versehentlich eine davon loescht, soll es hier erfahren.
+  pruef('sie hat mindestens ihre sieben Fragen', ganz.keys >= 7, true);
   pruef('vor der letzten ist nichts scharf', ganz.vorLetzter, 0);
   pruef('die letzte schaltet den Umschlag scharf', ganz.mitLetzter, 1);
   pruef('und die Zeile steht in der Tabelle', ganz.inTabelle, true);
-  pruef('die acht Fragen liegen in der Ablage', ganz.abgelegt.fragen, 8);
+  pruef('die Ablage hält jede Frage, die der Baum hat', ganz.abgelegt.fragen, ganz.keys);
   pruef('die scharfe Zeile liegt dort ebenfalls', ganz.abgelegt.scharf, 1);
   pruef('eine wiederholte Frage schaltet nichts nach', ganz.zweimal, true);
 
