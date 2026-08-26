@@ -10869,26 +10869,26 @@ function saveKn(){ try{ localStorage.setItem(KN_KEY, JSON.stringify(kn)); }catch
 const HINWEISE = [
   {id:'hp30', prio:90, art:'zustand',
    wenn:()=> !player.dead && player.hp < derived.maxHp*0.3,
-   z1:'Sie verlieren Konfetti. Das ist selten gut.', z2:'Trank. Q.', z2t:'Das Fläschchen.'},
+   z1:'Sie haben kaum noch Kraft übrig.', z2:'Ein Trank hilft. Taste Q.', z2t:'Ein Trank hilft. Antippen.'},
   {id:'tuer1', prio:70, art:'zustand',
    // "Sichtweite": grobe Nährungsdistanz übers Bildschirmband, kein Math.hypot
    wenn:()=> !kammer && currentLevel === 1 && kammerTueren.some(t => t.cd <= 0 && sqDist(player.x,player.y,t.x,t.y) < 202500),
-   z1:'Gebührenbescheid lesen. Steht alles drauf.', z2:'F, wenn Sie sich trauen.', z2t:'Die Hand im Gürtel.'},
+   z1:'An der Tür hängt ein Schild. Lesen Sie es.', z2:'Taste F, dann geht sie auf.', z2t:'Die Hand im Gürtel.'},
   {id:'zutat3', prio:65, art:'zustand',
    wenn:()=> player.pouch.length >= 3,
-   z1:'Drei Stück. Das gilt als Antrag.', z2:'Zum Kessel. K.', z2t:'Rucksack, dann Kessel.'},
+   z1:'Sie haben drei Zutaten. Daraus wird etwas.', z2:'Am Kessel kochen. Taste K.', z2t:'Rucksack, dann Kessel.'},
   {id:'zutat1', prio:60, art:'ereignis',
    wenn:()=> !!kn.pending.zutat1,
-   z1:'Das ist kein Müll. Das ist Sachbestand.', z2:'Sammeln. Fragen später.', z2t:'Sammeln. Fragen später.'},
+   z1:'Das ist kein Müll. Heben Sie es auf.', z2:'Sammeln Sie alles ein.', z2t:'Sammeln Sie alles ein.'},
   {id:'craft1', prio:55, art:'ereignis',
    wenn:()=> !!kn.pending.craft1,
-   z1:'Notiert. Ich notiere alles.', z2:'Zweiter Reiter im Kessel.', z2t:'Zweiter Reiter im Kessel.'},
+   z1:'Sie haben ein neues Rezept gelernt.', z2:'Im Kessel, zweiter Reiter.', z2t:'Im Kessel, zweiter Reiter.'},
   {id:'fluch1', prio:50, art:'ereignis',
    wenn:()=> !!kn.pending.fluch1,
-   z1:'Jeder Vorteil hat eine Rückseite.', z2:'Nachlesen. I.', z2t:'Im Rucksack nachlesen.'},
+   z1:'Ihre Ausrüstung hilft und schadet zugleich.', z2:'Im Rucksack nachlesen. I.', z2t:'Im Rucksack nachlesen.'},
   {id:'kammer1', prio:45, art:'ereignis',
    wenn:()=> !!kn.pending.kammer1,
-   z1:'Kammer erledigt. Kommt in die Akte.', z2:'Weiter im Dienst.', z2t:'Weiter im Dienst.'},
+   z1:'Die Kammer ist geschafft. Gut gemacht.', z2:'Weiter geht es draußen.', z2t:'Weiter geht es draußen.'},
   {id:'ult1', prio:40, art:'zustand',
    wenn:()=> !!player.spellsKnown[ULT_SPELL.id],
    // T1-Nachlese: hier stand "Jetzt wird es albern." Das ist das Spiel, das
@@ -10896,10 +10896,10 @@ const HINWEISE = [
    // Spruch heisst bereits Konfetti-Kataklysmus des juengsten Gerichts, der
    // Witz steht also im Namen. Knoeterich erklaert Tasten, nie Zusammenhaenge,
    // und schon gar nicht kommentiert er den groessten Moment des Spielers.
-   z1:'Sie dürfen jetzt alles. Amtlich alles.', z2:'R. Einmal reicht.', z2t:'Der Ult-Knopf. Einmal reicht.'},
+   z1:'Sie können jetzt den stärksten Zauber.', z2:'Taste R. Einmal reicht.', z2t:'Der große Knopf. Einmal.'},
   {id:'portal1', prio:35, art:'ereignis',
    wenn:()=> !!kn.pending.portal1,
-   z1:'Das Portal ist nicht mein Ressort.', z2:'Viel Glück.', z2t:'Viel Glück.'},
+   z1:'Da ist ein Portal. Wohin, weiß ich nicht.', z2:'Sie können hindurchgehen.', z2t:'Sie können hindurchgehen.'},
   {id:'feierabend1', prio:30, art:'gelatcht',
    // Auslöser fällt mit dem Öffnen von #overlay zusammen (eigene Sperrzone), erscheint
    // deshalb erst 5s nach state==='play' in der Folgeschicht.
@@ -10907,13 +10907,13 @@ const HINWEISE = [
    // T1-Nachlese: der Hinweis feuert erst in der Folgeschicht, der Spieler ist
    // also gerade wiedergekommen. Genau das sagte niemand, und es ist bei
    // Knoeterich die groesste denkbare Anerkennung: eine Feststellung.
-   z1:'Erste Schicht. Sie sind wiedergekommen.', z2:'Der Bericht liegt beim Amt.', z2t:'Der Bericht liegt beim Amt.'},
+   z1:'Sie sind wiedergekommen. Das freut mich.', z2:'Ihr Bericht liegt im Amt.', z2t:'Ihr Bericht liegt im Amt.'},
   {id:'amt1', prio:25, art:'zustand',
    // amt.bankGold ändert sich nur in endShift(), also faktisch beim Öffnen von #overlay:
    // dieselbe Sperrzonen-Verzögerung wie feierabend1, deshalb dieselbe 5s-Wartezeit.
    wenn:()=> (gameT - knPlayStartT >= 5) && AUSBAU_DEFS.some(d => amt.ausbauten[d.key] < d.max)
              && amt.bankGold >= Math.min(...AUSBAU_DEFS.filter(d => amt.ausbauten[d.key] < d.max).map(d => d.cost(amt.ausbauten[d.key]))),
-   z1:'Sie sind flüssig. Das Amt hätte da was.', z2:'Nach Feierabend.', z2t:'Nach Feierabend.'},
+   z1:'Sie haben genug Gold. Im Amt gibt es was.', z2:'Nach der Schicht hingehen.', z2t:'Nach der Schicht hingehen.'},
 ];
 
 // --- Eskalation zu Variante B: nur art:'zustand', genau eine Stufe, siehe

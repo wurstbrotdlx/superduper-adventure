@@ -4,8 +4,7 @@ Amtsdeutsch hört auf, der Grundton zu sein, und wird die Würze. Anlage 2 hört
 auf, ein Schriftstück zu klingen, und fängt an, ein Mensch zu klingen. Und der
 Anfang erzählt nicht mehr nur die vierhundert Jahre, sondern die Welt.
 
-**Stand: der Kanon steht, der Bau nicht.** Dieser Abschnitt hat entschieden und
-gemessen, gebaut hat er noch nichts am Spiel. Deshalb OFFEN.
+**Stand: der Kanon steht, T5a ist gebaut, der Rest nicht.** Deshalb OFFEN.
 
 ---
 
@@ -20,6 +19,18 @@ gemessen, gebaut hat er noch nichts am Spiel. Deshalb OFFEN.
 > geschichtstexten oder welterklärtexten normales deutsch, die anlage 2 lässt
 > nach den ersten 5 sätzen das amtsdeutsch fallen und redet erstaunlich normal
 > und lästert auch gern mal über dieses amtsdeutsch
+
+**Drei Nachträge am selben Tag**, jeder eine Kanon-Entscheidung für sich:
+
+> regel 1 gilt für anlage 2 nicht
+
+> kapitel 1 das weltgesetz wird nie ausgesprochen fällt, das weltgesetz darf
+> ausgesprochen und erklärt und belehrt werden sogar als oberste doktrine
+
+> löse das amtsdeutsch selten über die gramatik, kurze sätze sind kein
+> amtsdeutsch! ich bin beamter ich weiß das, wir lieben abkürzungen und
+> abkürzungen zu erklären. […] das darf von mir aus ein nebencharakter sein
+> aber nicht alle.
 
 Das „was du hier aufgeschrieben hast" bezieht sich auf ein Regelregister über
 Kapitel 0 bis 19, das unmittelbar vorher entstanden war. Gemeint ist damit
@@ -38,13 +49,20 @@ haben.
    Begründung, die der Sache erst ihren Sinn gibt: **wo alles amtlich klingt,
    gibt es keinen Kontrast, sondern nur eine Tonlage.** Die harte Beispielzeile
    steht als Gegenbeispiel weiter da, weil sie genau zeigt, was nicht mehr geht.
-2. **Grundgesetz 1 präzisiert, nicht aufgeweicht.** Neu ist die Unterscheidung
-   zwischen **Zwinkern** (die Figur sieht aus der Welt heraus, gezählt, einmal
-   je Figur) und **Meinung** (die Figur findet etwas in ihrer Welt lästig,
-   unbegrenzt). Ohne diese Zeile hätte Anlage 2 ihr Kontingent mit dem zweiten
-   Lästersatz verbraucht, und die Prüfliste hätte jede weitere Zeile
-   herausgeworfen. Der Eingriff war nicht optional, sondern die Voraussetzung
-   dafür, dass die Ansage überhaupt umsetzbar ist.
+2. **Grundgesetz 1: Anlage 2 ist ganz ausgenommen.** Zuerst war das als
+   Unterscheidung zwischen **Zwinkern** (aus der Welt heraussehen, gezählt) und
+   **Meinung** (etwas in der Welt lästig finden, unbegrenzt) gebaut, damit
+   Anlage 2 ihr Kontingent nicht mit dem zweiten Lästersatz verbraucht. Der
+   Projektinhaber hat das durch die klarere Ansage ersetzt: **Regel 1 gilt für
+   sie nicht.** Sie darf zwinkern, den Spieler ansprechen und aus der Welt
+   heraussehen, ohne Zählung. Die Unterscheidung bleibt trotzdem stehen, weil
+   sie für die übrigen Figuren eine echte Frage klärt.
+
+   Vier Dinge halten die Ausnahme an ihrem Platz, und alle standen schon in
+   Kapitel 8: Grundgesetz 4, 8 und 9 gelten unverändert; sie bleibt Figur statt
+   Erzählerstimme; **keine andere Figur hört sie** (sie schreibt ins Band des
+   Spielers, die Welt bleibt für alle anderen normal); und im Umschlag zwinkert
+   sie nicht.
 3. **Neue Formregel: „Das Register hängt am Ort, nicht am Haus."** Menüs,
    Erklärtexte, Geschichts- und Welterklärtexte reden normales Deutsch.
    Ausgenommen bleibt das **gezeigte Dokument**: ein Zwischenbescheid von 989
@@ -52,7 +70,25 @@ haben.
 4. **Anlage 2 bekommt ihren Ton-Abfall.** Fünf Blätter Urkundenton, danach
    normales Deutsch. Das Maskenset bleibt geschlossen und bleibt bei fünf, es
    wechselt nur den Status: **Kostüm statt Haut.**
-5. **Die Prüfliste bekommt drei Fragen** (8, 9, 10) und eine Präzisierung an
+5. **Kapitel 1: das Weltgesetz wird ausgesprochen.** „Sie wird nie erklärt, nie
+   ausgesprochen" fällt. Der Satz ist ab jetzt die **oberste Doktrin des
+   Hauses**: er steht über der Tür, jeder kann ihn aufsagen, er wird zitiert,
+   ausgelegt und in Fortbildungen wiederholt. Das macht die Welt nicht kleiner,
+   sondern komischer, und Grundgesetz 5 sagt warum: eine Behörde, die ihre
+   eigene magische Rechtsgrundlage vollkommen ernst nimmt und nie auf den
+   Gedanken kommt, dass daran etwas merkwürdig ist, trägt weiter als ein
+   Geheimnis. Grundgesetz 1 bleibt dadurch unangetastet.
+6. **Grundgesetz 3 bekommt „Woran Amtsdeutsch hängt".** Abkürzungen zuerst,
+   Fachvokabular danach, Grammatik kaum, Kürze gar nicht. Der Abkürzungs-Gag
+   wird vom Randmotiv zum **Hauptträger** und bekommt eine vierte Wurzel: das
+   Kürzel, das ein Wort ist (Muster ZET). Dieses Haus hat dafür einen Fundus,
+   weil seine Grundbegriffe schon Wörter sind, die Ablage und die Anlage.
+7. **Die Formregel „Die Länge ist eine Sprachmarke" wird verschärft.** T1 hatte
+   die Knappheit vier Figuren zugesprochen; das waren drei zu viel. Sie bleibt
+   einer Nebenfigur, vorgeschlagen ist **Zapf**. Knöterich verliert sie ohnehin
+   über das Register, Lott und Pahl behalten ihren Wechselrhythmus ohne die
+   Kürze.
+8. **Die Prüfliste bekommt vier Fragen** (8 bis 11) und eine Präzisierung an
    Frage 2. Die Nummern 1 bis 7 bleiben, wohin sie zeigten.
 
 **Zwei Konflikte mussten dabei aufgelöst werden, statt sie stehen zu lassen:**
@@ -62,80 +98,95 @@ haben.
   sie andersherum. Der Satz ist jetzt durchgestrichen und mit Begründung
   überholt. Die alte Abwägung war richtig, solange jeder Fall einzeln entschieden
   wurde, und genau das war das Problem.
-* **Kapitel 1 sagt, das Weltgesetz wird nie ausgesprochen.** Der Auftrag legt
-  Kapitel 0 bis 5 ins Intro und in Anlage 2s Mund, und Kapitel 1 ist eins davon.
-  Aufgelöst so: **die Folgen werden erzählt, der Satz fällt nie.** Das ist keine
-  Ausweichbewegung, sondern die Wahrheit dieser Figur. Eine Beilage kennt jede
-  Nebenbestimmung und nie die Hauptsache.
+* **Kapitel 1 sagte, das Weltgesetz werde nie ausgesprochen.** Zuerst war das
+  aufgelöst als „die Folgen werden erzählt, der Satz fällt nie". Der
+  Projektinhaber hat den Widerspruch dann an der Wurzel entschieden: der Satz
+  fällt, das Gesetz wird Doktrin. **Was an seine Stelle tritt, ist der
+  Sperrvermerk:** wie die Welt funktioniert, darf jeder wissen; was in dieser
+  einen Akte steht, nicht. Wer beides verwechselt, verrät mit der Physik den
+  Plot.
 
 ## 3. Der Fund: wie amtlich das Spiel heute wirklich ist
 
 Der wichtigste Abschnitt dieses Dokuments, und er ist so entstanden, wie es
 dieses Projekt verlangt: erst messen, dann behaupten.
 
-**Erster Versuch, und er war falsch.** Die erste Fassung von
-`tools/ton-messlauf.mjs` erkannte Amtsdeutsch an einer Wortliste: Vorgang,
-Vermerk, Bescheid, zuständig, gemäß, vorbehaltlich. Ergebnis über die gesamte
-Figurenrede: **6 Prozent amtlich.** Damit hätte das Spiel weit unter dem
-Zielwert von 30 gelegen, und die Ansage des Projektinhabers hätte ins Leere
-gezeigt.
+**Zwei Fehlversuche, und der zweite war der lehrreiche.**
 
-**Die Gegenprobe hat das widerlegt.** 43 Zeilen aus dem Bestand, gezogen als
-jede 23. aus `DORF_FIGUREN`, `ANLAGE2_NOTIZ` und `KN_FIGUR`, von Hand
-eingestuft: **18 von 43 klingen nach Amt, also 42 Prozent.** Der Lauf lag um
-den Faktor sieben daneben.
+**Erster Versuch: Wortliste.** Amtsdeutsch erkannt an Vorgang, Vermerk, gemäß,
+zuständig. Ergebnis über die gesamte Figurenrede: **6 Prozent.** Damit hätte
+das Spiel weit unter dem Zielwert gelegen und die Ansage ins Leere gezeigt.
 
-**Der Grund ist eine Erkenntnis über dieses Spiel.** Das Amtsdeutsch steckt
-hier fast nie im Vokabular, sondern im **Satzbau**, und dafür gibt es einen
-handfesten Grund: der Zeichendeckel von 44 lässt gar keine Behördenwörter zu.
-Der Ton ist deshalb in die Form gewandert:
+**Zweiter Versuch: Satzbau.** Die Gegenprobe an 43 handbewerteten Zeilen sagte
+42 Prozent, also lag der Lauf um den Faktor sieben daneben. Der Schluss damals:
+das Amtsdeutsch stecke im Satzbau, weil der Zeichendeckel von 44 keine
+Behördenwörter zulässt. Ellipse, Definitionssatz, Partizip, Vorfeld wurden als
+Amtsmuster gewertet. Trefferquote danach: 77 Prozent.
 
-| Muster | Beispiel aus dem Bestand |
-|---|---|
-| Ellipse ohne Subjekt | „Antrag für heute erledigt." · „Steht in meinem Bericht." |
-| Definitionssatz | „Ordnung ist, was man wiederfindet." · „Stehen ist keine Verzögerung." |
-| Partizip trägt den Satz | „Berechtigt, wie meistens." · „Notiert." |
-| Vorangestelltes Vorfeld | „Zum Rückblick: elf Jahre Dorffest." · „In welcher Sache?" |
-| Wiederholung als Definition | „Zustellung bleibt Zustellung." |
+**Der Projektinhaber hat das korrigiert, und er weiß es von Berufs wegen:**
 
-Keines dieser Muster enthält ein einziges Amtswort. Eine Wortliste ist dagegen
-blind, und **jeder Prüfer, der Ton an Vokabular misst, wird dieses Spiel
-falsch einschätzen.**
+> löse das amtsdeutsch selten über die gramatik, kurze sätze sind kein
+> amtsdeutsch! ich bin beamter ich weiß das, wir lieben abkürzungen und
+> abkürzungen zu erklären. abkürzungen die bestehende wörter bilden wie zb
+> ZET zentrales Experten Team. diese kurzen sätze machen das unglaublich
+> schwer kontext zu verstehen, oder den inhalt. das darf von mir aus ein
+> nebencharakter sein aber nicht alle.
 
-**Die zweite Fassung misst Duktus mit und trifft 33 von 43** (77 Prozent), bei
-einer aufschlussreichen Asymmetrie: zwei Fehlalarme, acht Übersehene. Der Lauf
-ist damit **konservativ**. Was er meldet, ist fast immer amtlich; was er nicht
-meldet, kann es trotzdem sein. Jede seiner Zahlen ist eine **Untergrenze**, und
-er sagt das bei jedem Start selbst.
+Das war der Punkt. **Amtsdeutsch hängt an Abkürzungen und Fachvokabular, nicht
+an Grammatik, und Kürze ist überhaupt kein Amtsdeutsch.** Drei Zeilen der
+Eichprobe mussten daraufhin ihr Handurteil wechseln: „Steht in meinem Bericht.",
+„Bei der Übergabe. Nur die." und „Reich geworden, wenn auch vorübergehend."
+waren allein wegen ihrer Ellipse als amtlich geführt. An keiner von ihnen ist
+etwas amtlich außer der Kürze. Der Handanteil fiel damit von 42 auf **35
+Prozent**.
+
+**Die dritte Fassung prüft Abkürzungen zuerst, Amtswörter danach, und wertet
+Grammatik nur noch verstärkend.** Sie trifft **42 von 43** (98 Prozent) bei
+**null Fehlalarmen**. Der Sprung von 77 auf 98 ist die Bestätigung: nicht die
+Heuristik war zu grob, der Maßstab war falsch.
 
 ### Was dabei über das Spiel herauskam
 
-Untergrenzen, mit dem Faktor 1,5 aus der Eichprobe grob hochzurechnen:
+Zwei Befunde, und der zweite ist der größere.
 
-| Quelle | gemessen | Soll | Befund |
+**Befund 1: das Amtliche sitzt fast nur dort, wo das Spiel selbst spricht.**
+
+| Quelle | amtlich | davon Abk. | Soll |
 |---|---|---|---|
-| Vorgangspuzzle | 57 % | 0 % | **Spielstimme, redet Amt.** Höchster Wert im ganzen Spiel |
-| Dorffest-Absagen | 68 % | 30 % | Figurenrede, deutlich zu hoch |
-| Knöterich | 56 % | 30 % | nur 16 Zeilen in `KN_FIGUR`, Menge zu klein für ein Urteil |
-| Langvorgänge | 55 % | 30 % | 29 Zeilen |
-| Ausweis | 33 % | 0 % | Spielstimme, 3 Zeilen |
-| Probezeit-Hinweise | 30 % | 0 % | Spielstimme |
-| Hinweise | 19 % | 0 % | Spielstimme, 27 Zeilen |
-| Dorffiguren | 17 % | 30 % | die große Masse, 941 Zeilen |
-| Szenen | 15 % | 30 % | 719 Zeilen |
-| **Figurenrede gesamt** | **19 %** | **30 %** | 2001 Zeilen |
+| Vorgangspuzzle | 57 % | 0 % | 0 %, Spielstimme |
+| Knöterich | 69 % | 6 % | 0 % für seine Erklärtexte |
+| Hinweise | 19 % | 4 % | 0 %, Spielstimme |
+| Hausmitteilung | 20 % | 13 % | 0 %, Spielstimme |
+| Probezeit-Hinweise | 20 % | 0 % | 0 %, Spielstimme |
+| Dorffiguren (941 Zeilen) | 13 % | 4 % | 30 % |
+| Anlage 2, Band | 28 % | 4 % | entfällt, siehe T5c |
 
-**Der Befund in einem Satz: der Durchschnitt ist nicht das Problem, die Spitzen
-sind es.** Die Masse der Figurenrede liegt eher unter dem Zielwert als darüber.
-Was hart wirkt, sind einzelne sehr amtliche Nester und vor allem die Stellen,
-an denen **das Spiel selbst** spricht: Vorgangspuzzle, Hinweise, Ausweis,
-Probezeit-Hinweise. Genau dort tut es am meisten weh, weil dort niemand eine
-Figur ist, deren Sprachmarke das entschuldigt.
+**Befund 2, und er ist der eigentliche: das Spiel ist zu knapp, nicht zu
+amtlich.** Der Lauf misst seit T5 die Knappheit getrennt, als Anteil der Zeilen
+aus höchstens sechs Wörtern:
 
-Damit ist die Ansage des Projektinhabers bestätigt und zugleich geschärft: Es
-geht nicht darum, überall Amtsdeutsch abzuziehen. Es geht darum, es aus den
-Erklärtexten herauszunehmen und in den Gesprächen dort zu lassen, wo es hin
-gehört.
+| Quelle | knapp |
+|---|---|
+| Gutachter | 90 % |
+| Hinweise | 85 % |
+| Dorffiguren | **78 %** |
+| Knöterich | 75 % |
+| Praktikumsbericht | 75 % |
+| Anlage 2, Band | 67 % |
+
+**Vier von fünf Zeilen der Dorffiguren bestehen aus höchstens sechs Wörtern.**
+Das ist die Zahl hinter „unglaublich schwer Kontext zu verstehen", und sie
+erklärt zugleich, warum die erste Messung Amtsdeutsch im Satzbau zu finden
+glaubte: sie hat die Knappheit gemessen und für einen Ton gehalten.
+
+**Damit dreht sich der Auftrag von T5e um.** Es geht nicht darum, Amtsdeutsch
+abzuziehen, sondern:
+
+1. die **Kaskaden** zu bauen, die seit T1 möglich sind und kaum benutzt werden,
+2. die **Abkürzungen** einzusetzen, die mit 4 Prozent praktisch brachliegen,
+   obwohl sie laut Kanon der Hauptträger des Amtstons sind,
+3. und die **Spielstimme** aus dem Amtsdeutsch herauszuholen (T5a).
+
 
 ## 4. Das Werkzeug und seine Grenze
 
@@ -174,16 +225,54 @@ fiel auf, dass `KN_FIGUR` nur 16 sprechende Zeilen trägt. Knöterichs eigentlic
 Text steht in `DIENSTBLATT` und den Dienstzetteln. Wer künftig „Knöterichs Ton"
 messen will, misst mit `KN_FIGUR` allein den falschen Ausschnitt.
 
-## 5. Was gebaut wurde
+## 5. Was gebaut wurde: T5a
 
-Am Spiel: nichts. Das ist Absicht und steht so im Kanon-Eintrag. Geändert wurden
-`superduper-weltbibel.md` (fünf Eingriffe, Abschnitt 2), `README.md` und dieses
-Dokument, dazu `tools/ton-messlauf.mjs` als neues Werkzeug.
+**Die elf Zeilen in `HINWEISE` reden normales Deutsch.** Das ist die Tabelle,
+aus der auch die Zeile stammt, die der Auftrag als zu hart bezeichnet hat:
 
-Der Grund für den Zuschnitt ist die Zahl aus Abschnitt 3: **2001 Zeilen
-Figurenrede.** Ein Bauabschnitt, der Kanon ändert und im selben Zug tausend
-Zeilen umschreibt, ist nicht prüfbar. Und ohne den Messlauf hätte er sie in die
-falsche Richtung umgeschrieben, nämlich nach Vokabular statt nach Duktus.
+| | vorher | nachher |
+|---|---|---|
+| hp30 | „Sie verlieren Konfetti. Das ist selten gut." / „Trank. Q." | „Sie haben kaum noch Kraft übrig." / „Ein Trank hilft. Taste Q." |
+| tuer1 | „Gebührenbescheid lesen. Steht alles drauf." | „An der Tür hängt ein Schild. Lesen Sie es." |
+| zutat3 | „Drei Stück. Das gilt als Antrag." | „Sie haben drei Zutaten. Daraus wird etwas." |
+| craft1 | „Notiert. Ich notiere alles." | „Sie haben ein neues Rezept gelernt." |
+| ult1 | „Sie dürfen jetzt alles. Amtlich alles." | „Sie können jetzt den stärksten Zauber." |
+
+Gemessen: **von 19 auf 0 Prozent amtlich, von 85 auf 63 Prozent knapp.** Die
+verbleibende Knappheit sitzt in den z2-Zeilen, und dort gehört sie hin: ein
+Tastenhinweis ist ein Werkzeugtext, und Werkzeugtexte begründen ihre eigene
+Kürze (Formregel „Die Länge ist eine Sprachmarke").
+
+**Was NICHT angefasst wurde, und warum das der eigentliche Ertrag von T5a ist.**
+Vor dem Umschreiben wurde jede Quelle gelesen, und dabei stellte sich heraus,
+dass **drei von fünf falsch einsortiert waren**:
+
+* **`VORGANG_PUZZLE`** (57 Prozent amtlich) ist keine Spielstimme, sondern
+  Erzähltext über den Hauptvorgang. „Er braucht einen Stift. Das Dienstsiegel
+  liegt bereit." Die Sätze sind normal gebaut, nur die Substantive sind amtlich,
+  weil die **Handlung** amtlich ist. Knappheit: 0 Prozent. Der Text ist gut.
+* **`AUSWEIS_TEXTE`** ist ein Dienstausweis, also ein gezeigtes Dokument.
+  „Der Ausweis ist bei Dienstschluss unaufgefordert zurückzugeben." ist genau
+  das, was auf einem Dienstausweis steht.
+* **`PROBEZEIT_HINWEISE`** sind Nörgels Tipps. Dort spricht eine Figur, keine
+  Spielstimme.
+
+Alle drei sind im Messlauf umsortiert. **Wer sie nach der ersten Einsortierung
+umgeschrieben hätte, hätte funktionierenden Text kaputt gemacht**, und keine
+Messung hätte es gemeldet. Die Frage der Formregel lautet nicht „steht das im
+Menü", sondern „spricht hier jemand".
+
+**Zwei Fehler im Messlauf sind dabei aufgefallen und behoben:** er hielt
+Tastennamen (`Taste Q.`) für Abkürzungen, und er hielt jedes kurze Wort am
+Satzende (`Müll.`, `Gold.`) für ein Kürzel. Beide meldeten ausgerechnet die
+Zeilen als amtlich, die T5a gerade normal gemacht hatte. Eine echte Abkürzung
+geht klein oder mit Ziffer weiter, ein Satzende geht groß weiter.
+
+**Abnahme T5a:** `node --check` sauber, alle Zeichendeckel eingehalten (z1 max
+43 von 48, z2 max 27 von 32), im Browser geladen und alle Guards still. Der
+Abkürzungsanteil der Dorffiguren fällt dadurch von scheinbar 4 auf **1 Prozent**
+— das waren die Fehlalarme, und die echte Zahl schärft Befund 2: die
+Abkürzungen liegen praktisch vollständig brach.
 
 ## 6. Was offen bleibt
 
@@ -201,31 +290,28 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   `SZENEN.baumAnlage2`, keine neue Maschine.
 * **T5d, das Intro trägt Kapitel 0 bis 5.** Nach T5b, weil beide denselben Stoff
   tragen und sich sonst doppeln.
-* **T5e, die Mischung im Bestand.** Zuletzt, und gezielt: die Nester aus der
-  Tabelle in Abschnitt 3, nicht der Durchschnitt. Die Dorffiguren und die Szenen
-  liegen bereits **unter** dem Zielwert; wer dort Amtsdeutsch abzieht, macht es
-  schlechter statt besser.
-
-**Eine Frage bleibt offen und gehört dem Projektinhaber.** Der Zielwert von 30
-Prozent stammt aus der Ansage, die Messung sagt 19 Prozent als Untergrenze und
-42 Prozent nach Handprobe. Beides zusammen heißt: das Spiel liegt heute
-ungefähr dort, wo es hin soll, und der Eindruck „zu hart" kommt woanders her,
-nämlich aus den Erklärtexten und aus einzelnen Nestern. Ob T5e danach überhaupt
-noch gebraucht wird, entscheidet sich am besten **nach** T5a, wenn die
-Spielstimme normal redet und man den Rest zum ersten Mal ohne dieses Rauschen
-hört.
+* **T5e, die Kaskaden und die Abkürzungen.** Der größte Teil, und nach der
+  Korrektur vom 26.08.2026 ist er ein anderer als geplant. Nicht Amtsdeutsch
+  abziehen, sondern **Knappheit abbauen und Abkürzungen einsetzen**: 78 Prozent
+  der Dorffiguren-Zeilen haben höchstens sechs Wörter, und nur 4 Prozent tragen
+  ein Kürzel. Beides zieht in dieselbe Richtung, denn eine aufgelöste Abkürzung
+  ist von selbst eine Kaskade: Kürzel, Nachfrage, Langform, Fußnote. Der
+  Zeichendeckel von 44 bleibt und ist nicht der Gegner; die Länge entsteht über
+  mehrere Tafelzüge, und die Maschine dafür steht seit T1.
 
 ## 7. Abnahme
 
 Was dieser Abschnitt liefert, ist nachprüfbar:
 
-* `node tools/ton-messlauf.mjs --eichung` meldet 33 von 43 richtig, 2 Fehlalarme,
-  8 Übersehene, und die zehn Fehleinstufungen im Klartext.
+* `node tools/ton-messlauf.mjs --eichung` meldet **42 von 43 richtig, 0
+  Fehlalarme, 1 Übersehene**, und die eine Fehleinstufung im Klartext. Die
+  Eichprobe trägt ihre drei nachträglich gedrehten Urteile mit Begründung.
 * Der Lauf durchquert 31 Textquellen und nennt die nicht gefundenen beim Namen,
   statt sie stillschweigend zu überspringen. Eine umbenannte Tabelle fällt damit
   nicht lautlos heraus.
 * Die Weltbibel widerspricht sich an keiner Stelle mehr selbst: die U9-Zeile ist
-  überholt statt stehen gelassen, Grundgesetz 1 deckt Anlage 2s Lästern ab, und
-  Kapitel 1 bleibt trotz Kapitel 0 bis 5 im Intro unausgesprochen.
+  überholt statt stehen gelassen, Grundgesetz 1 nimmt Anlage 2 ausdrücklich aus,
+  Kapitel 1 sagt sein Gesetz jetzt laut, und an seine Stelle als Grenze tritt
+  der Sperrvermerk auf die Akte.
 * `index.html` ist unverändert. Kein Guard kann durch diesen Abschnitt anders
   melden als vorher.

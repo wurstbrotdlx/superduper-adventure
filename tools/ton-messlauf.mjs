@@ -16,11 +16,20 @@
 // deshalb weder auf frameNo noch auf assetsReady. Im frischen Klon ohne
 // assets/cf/ laeuft er unveraendert durch.
 //
-// WAS ER NICHT IST: eine Wahrheit. Amtsdeutsch zu erkennen ist eine Heuristik
-// aus Wortliste, Nominalstil und Satzbaumustern, und sie irrt in beide
-// Richtungen. Sie ist trotzdem besser als das Gefuehl beim Lesen, weil sie
-// jedes Mal gleich irrt und damit Veraenderung sichtbar macht. Wer eine
-// Einstufung nicht glaubt, ruft --treffer und sieht die Zeilen selbst.
+// WORAN ER MISST, und das ist die Korrektur vom 26.08.2026: Amtsdeutsch haengt
+// an ABKUERZUNGEN, dann an Fachvokabular, kaum an Grammatik, und ueberhaupt
+// nicht an Kuerze. Die zweite Fassung dieses Laufs hat Ellipsen und
+// Definitionssaetze als Amtsmuster gewertet und kam auf 77 Prozent Trefferquote.
+// Die dritte prueft Kuerzel zuerst und kommt auf 98. Der Sprung ist die
+// Bestaetigung: nicht die Heuristik war zu grob, der Massstab war falsch.
+//
+// KNAPPHEIT wird getrennt ausgewiesen und zaehlt NICHT als amtlich. Sie ist ein
+// Verstaendlichkeitsmass: "diese kurzen saetze machen das unglaublich schwer
+// kontext zu verstehen". Seit T5 darf nur noch eine Nebenfigur so reden.
+//
+// WAS ER NICHT IST: eine Wahrheit. Wer eine Einstufung nicht glaubt, ruft
+// --treffer und sieht die Zeilen selbst, oder --eichung und sieht, wo der Lauf
+// gegen die handbewerteten 43 Zeilen danebenliegt.
 //
 // AUSGENOMMENE FIGUREN. Grundgesetz 3 nimmt Figuren aus, deren Sprachmarke der
 // Amtston selbst ist (Kapitel 8). Sie stehen unten in SPRACHMARKE_AMTLICH und
@@ -72,14 +81,19 @@ const QUELLEN = [
   { name: 'Hinweise',         art: 'spiel', ausdruck: 'HINWEISE' },
   { name: 'Speicherkasten',   art: 'spiel', ausdruck: 'SPEICHER_HINWEIS' },
   { name: 'Menuefenster',     art: 'spiel', ausdruck: 'GROSSFENSTER' },
-  { name: 'Ausweis',          art: 'spiel', ausdruck: 'AUSWEIS_TEXTE' },
-  { name: 'Probezeit-Hinweise', art: 'spiel', ausdruck: 'PROBEZEIT_HINWEISE' },
-  { name: 'Vorgangspuzzle',   art: 'spiel', ausdruck: 'VORGANG_PUZZLE' },
+  // Nach T5a umsortiert. Beim Hinsehen vor dem Umschreiben stellte sich heraus,
+  // dass drei dieser Quellen keine Spielstimme sind. Wer sie nach der ersten
+  // Einsortierung umgeschrieben haette, haette funktionierenden Text kaputt
+  // gemacht. Die Frage der Formregel lautet nicht "steht das im Menue", sondern
+  // "spricht hier jemand".
+  { name: 'Probezeit-Hinweise', art: 'figur', ausdruck: 'PROBEZEIT_HINWEISE' },   // Noergels Tipps, eine Figur spricht
 
   // --- Gezeigtes Dokument: ausgenommen, der Amtston ist hier der Gegenstand ---
   { name: 'Intro-Blaetter',   art: 'dokument', ausdruck: 'INTRO_BLAETTER' },
   { name: 'Ernennungsurkunde', art: 'dokument', ausdruck: 'ERNENNUNG_BLAETTER' },
   { name: 'Zulagenkarten',    art: 'dokument', ausdruck: 'ZULAGE' },
+  { name: 'Ausweis',          art: 'dokument', ausdruck: 'AUSWEIS_TEXTE' },       // ein Dienstausweis ist ein Dokument
+  { name: 'Vorgangspuzzle',   art: 'dokument', ausdruck: 'VORGANG_PUZZLE' },      // Erzaehltext ueber Amtshandlungen: die Amtswoerter sind der Gegenstand
 ];
 
 // ---------------------------------------------------------------------------
@@ -100,6 +114,39 @@ const STARK = [
   /\bin\s+kenntnis\s+(zu\s+)?setzen\b/i, /\bzu\s+den\s+akten\b/i, /\bab\s?zeichnen\b/i,
   /\bdienstauf(sicht|trag)/i, /\bamtlich/i, /\bbeizufuegen|\bbeizufügen/i,
   /\bordnungsgemäß|\bordnungsgemaess/i, /\bveranlassung/i, /\berledigungsvermerk/i,
+];
+
+// Nachtrag 26.08.2026, auf Ansage des Projektinhabers (Beamter von Beruf):
+// "loese das amtsdeutsch selten ueber die gramatik, kurze saetze sind kein
+// amtsdeutsch". Die Liste hier war zu eng. Was den Ton in diesem Spiel wirklich
+// traegt, sind Amtswoerter im weiteren Sinn, und davon fehlten die haeufigsten.
+const STARK_NACHTRAG = [
+  /\bbestand(s|es)?\b/i, /\bdeckblatt/i, /\bvorläufig/i, /\bberechtigt/i,
+  /\bauf\s+probe\b/i, /\bim\s+dienst\b/i, /\bnotier/i, /\bverzöger/i,
+  /\banhängig/i, /\bordentlich\s+erworben\b/i, /\bbetriebsrisiko/i,
+  /\bzustell/i, /\bübergabe/i, /\bbeanstand/i, /\bvermerkt\b/i, /\bnachweis/i,
+  /\bin\s+welcher\s+sache\b/i, /\bzur\s+sache\b/i, /\bzu\s+protokoll\b/i,
+  /\bdienstlich/i, /\bbefugnis/i, /\bbefugt\b/i, /\bstatthaft\b/i,
+  /\bversagt\b/i, /\bentpflicht/i, /\bbeschieden\b/i, /\bnachrichtlich\b/i,
+];
+STARK.push(...STARK_NACHTRAG);
+
+// ABKUERZUNGEN: der eigentliche Hauptträger, und er fehlte ganz. "wir lieben
+// abkuerzungen und abkuerzungen zu erklaeren." Eine Zeile mit Kuerzel ist
+// amtlich, egal wie sie gebaut ist.
+const ABKUERZUNG = [
+  // "a. D." "N. N." "z. B." "i. V." Zwei Initialen mit Punkten.
+  { n: 'initialen', r: /\b[a-zA-ZÄÖÜ]\.\s?[a-zA-ZÄÖÜ]\./ },
+  // "Mg. 3" "Anm. dazu" "Nr. 7" "Abs. 2". Ein abgekuerztes Wort, erkennbar
+  // daran, dass es klein oder mit Ziffer weitergeht. Ein Satz, der auf ein
+  // kurzes Wort endet ("Heben Sie es auf. Das ist..."), geht gross weiter und
+  // ist keine Abkuerzung. Ohne diese Bedingung meldete der Lauf "Muell." und
+  // "Gold." als Kuerzel, also ausgerechnet die Zeilen, die T5a normal gemacht hat.
+  { n: 'kurzwort', r: /\b[A-ZÄÖÜ][a-zäöüß]{1,3}\.\s+[a-zäöüß0-9]/ },
+  // "ZET" "RMD" Versalkuerzel ab zwei Buchstaben, nicht am Satzanfang allein.
+  { n: 'versalien', r: /\b[A-ZÄÖÜ]{2,}\b/ },
+  // "zu Haenden" ist in diesem Haus die ausgeschriebene Abkuerzung.
+  { n: 'zuhaenden', r: /\bzu\s+Händen\b/ },
 ];
 
 // SCHWACH: zwei Treffer machen eine Zeile amtlich. Einzeln stehen sie auch in
@@ -174,7 +221,19 @@ function nominalStil(zeile) {
 // Rueckgabe: [] wenn normal, sonst die Gruende. Der erste Grund traegt die
 // Klasse ('wort' oder 'duktus'), damit die Auswertung beide getrennt zaehlen
 // kann. Beide Wege gelten, denn beide klingen fuer den Spieler nach Amt.
+// Tastennamen sind keine Abkuerzungen. "Taste Q." "F, wenn Sie wollen." Ein
+// einzelner Grossbuchstabe mit Punkt ist in diesem Spiel eine Taste, und ein
+// Tastenhinweis ist ein Werkzeugtext. Ohne diese Ausnahme meldet der Lauf jeden
+// Bedienhinweis als amtlich, gerade nachdem T5a ihn normal gemacht hat.
+const TASTE = /(\bTaste\s+[A-Z]\b|\b[A-Z]\.(?=\s|$)|\b[A-Z],\s)/;
+
 function istAmtlich(zeile) {
+  // 1. Abkuerzung. Der Hauptträger, deshalb zuerst und ohne Zweitbedingung.
+  const ohneTasten = zeile.replace(TASTE, ' ');
+  const abk = ABKUERZUNG.filter(a => a.r.test(ohneTasten)).map(a => a.n);
+  if (abk.length) return ['abkuerzung', ...abk];
+
+  // 2. Amtswort.
   for (const r of STARK)
     if (r.test(zeile)) return ['wort', 'stark:' + r.source.slice(0, 22)];
 
@@ -185,18 +244,39 @@ function istAmtlich(zeile) {
   if (nom >= 3) schwachGefunden.push('nominalstil:' + nom);
   if (schwachGefunden.length >= 2) return ['wort', ...schwachGefunden];
 
+  // 3. Duktus. Ab dem 26.08.2026 nur noch VERSTAERKEND und nie allein:
+  // "kurze saetze sind kein amtsdeutsch". Ein Grammatikmuster zaehlt nur, wenn
+  // ohnehin schon ein Amtswort dasteht. Vorher gaben zwei Muster allein den
+  // Ausschlag, und das hat Zeilen wie "Bei der Uebergabe. Nur die." amtlich
+  // genannt, obwohl daran nichts amtlich ist ausser der Kuerze.
+  if (!schwachGefunden.length) return [];
   const stark = DUKTUS_STARK.filter(d => d.pruef ? d.pruef(zeile) : d.r.test(zeile)).map(d => d.n);
-  if (stark.length) return ['duktus', ...stark, ...schwachGefunden];
-
   const schwach = DUKTUS_SCHWACH.filter(d => d.r.test(zeile)).map(d => d.n);
-  if (schwach.length >= 2 || (schwach.length === 1 && schwachGefunden.length >= 1))
-    return ['duktus', ...schwach, ...schwachGefunden];
+  if (stark.length + schwach.length >= 1)
+    return ['duktus', ...stark, ...schwach, ...schwachGefunden];
 
   return [];
 }
 
+// Knappheit, getrennt gemessen. Sie ist KEIN Mass fuer Amtsdeutsch, sondern
+// fuer Verstaendlichkeit: "diese kurzen saetze machen das unglaublich schwer
+// kontext zu verstehen". Die Formregel "Die Laenge ist eine Sprachmarke" laesst
+// sie seit T5 nur noch einer Nebenfigur durchgehen.
+function istKnapp(zeile) {
+  const saetze = zeile.split(/(?<=[.!?…])\s+/).filter(s => /[a-zäöüß]/i.test(s));
+  if (!saetze.length) return false;
+  const woerter = zeile.split(/\s+/).length;
+  return woerter <= 6 && saetze.every(s => s.split(/\s+/).length <= 5);
+}
+
 // ---------------------------------------------------------------------------
 // Die Eichprobe. 43 Zeilen aus dem Bestand, von Hand eingestuft am 26.08.2026,
+// und am selben Tag EIN ZWEITES MAL eingestuft, nachdem der Projektinhaber den
+// Massstab korrigiert hat: Amtsdeutsch haengt an Abkuerzungen und Fachwoertern,
+// nicht an Satzbau, und Kuerze ist ueberhaupt kein Amtsdeutsch. Drei Zeilen
+// haben dadurch ihr Urteil gewechselt (12, 15, 34 der ersten Fassung); sie
+// waren nur wegen ihrer Ellipse als amtlich gefuehrt. Handanteil dadurch von
+// 42 auf 35 Prozent.
 // gezogen als jede 23. Zeile aus DORF_FIGUREN, ANLAGE2_NOTIZ und KN_FIGUR,
 // damit die Auswahl nicht am Anfang der Tabellen klebt.
 //
@@ -221,10 +301,10 @@ const EICHPROBE = [
   ['Kaffee ist ein Betriebsrisiko.', 'A'],                // genau die Mischung, die Regel 3 will
   ['Gut. Ich habe zwei Hände.', 'N'],
   ['Es kostet Zeit.', 'N'],
-  ['Steht in meinem Bericht.', 'A'],
+  ['Steht in meinem Bericht.', 'N'],  // T5-Korrektur: nur elliptisch, kein Amtswort
   ['Auf jedem Deckblatt steht: vorläufig.', 'A'],
   ['Zustellung bleibt Zustellung.', 'A'],
-  ['Bei der Übergabe. Nur die.', 'A'],
+  ['Bei der Übergabe. Nur die.', 'N'],  // T5-Korrektur: Kuerze ist kein Amtsdeutsch
   ['Berechtigt, wie meistens.', 'A'],
   ['Auf Probe ist im Dienst.', 'A'],
   ['Krawatte sitzt. Habe ich geprüft.', 'N'],
@@ -243,7 +323,7 @@ const EICHPROBE = [
   ['Die Bank hält warm, wenn man ihr Zeit gibt.', 'N'],
   ['Wachsen ist ein guter Beruf, sagt man.', 'N'],
   ['Notieren Sie das, Lott.', 'A'],
-  ['Reich geworden, wenn auch vorübergehend.', 'A'],      // Zweifel: Partizip plus Einschraenkung
+  ['Reich geworden, wenn auch vorübergehend.', 'N'],  // T5-Korrektur: Duktus ohne Amtswort
   ['Lott sieht nur den Mantel.', 'N'],
   ['Das ist bemerkenswert.', 'N'],
   ['Stehen ist keine Verzögerung.', 'A'],
@@ -364,6 +444,10 @@ if (eich.falschPositiv <= 3 && eich.falschNegativ > eich.falschPositiv) {
   console.log('  Richtungen. Die Zahlen unten sind eine Richtung und keine Messung.');
   console.log('  Als Zielwert taugt dann nur die Handprobe, siehe `phase-t5-ton.md`.');
 }
+console.log('\n  "knapp" ist KEIN Mass fuer Amtsdeutsch, sondern fuer Verstaendlichkeit:');
+console.log('  Anteil der Zeilen aus hoechstens sechs Woertern. Seit T5 darf nur noch');
+console.log('  eine Nebenfigur so reden (Formregel "Die Laenge ist eine Sprachmarke").');
+console.log('  Ein Ausrufezeichen markiert alles ueber 45 Prozent.');
 console.log('\nMit --eichung die Fehleinstufungen sehen, mit --treffer die Zeilen je Quelle.\n');
 
 if (args.includes('--eichung')) {
@@ -386,7 +470,8 @@ for (const q of QUELLEN) {
   const amtlich = bewertet.filter(r => r.gruende.length);
   const anteil = amtlich.length / bewertet.length;
   const ueberWort = bewertet.filter(r => r.gruende[0] === 'wort').length / bewertet.length;
-  const ueberDuktus = bewertet.filter(r => r.gruende[0] === 'duktus').length / bewertet.length;
+  const ueberAbk = bewertet.filter(r => r.gruende[0] === 'abkuerzung').length / bewertet.length;
+  const knapp = bewertet.filter(r => istKnapp(r.z)).length / bewertet.length;
 
   const zielHier = q.art === 'figur' ? ZIEL : (q.art === 'spiel' ? 0 : null);
   let marke = '     ';
@@ -399,7 +484,8 @@ for (const q of QUELLEN) {
 
   console.log(`  ${q.name.padEnd(22)} ${String(bewertet.length).padStart(4)} Zeilen  `
             + `${pro(anteil)} amtlich ${balken(anteil)}${marke}`
-            + `  (Wort ${pro(ueberWort).trim()}, Duktus ${pro(ueberDuktus).trim()})`
+            + `  (Abk ${pro(ueberAbk).trim()}, Wort ${pro(ueberWort).trim()})`
+            + `  knapp ${pro(knapp).trim()}${knapp > 0.45 ? ' !' : ''}`
             + (q.art === 'dokument' ? '  ausgenommen: gezeigtes Dokument' : ''));
 
   if (q.art === 'figur') { gesamtZeilen += bewertet.length; gesamtAmtlich += amtlich.length; }
