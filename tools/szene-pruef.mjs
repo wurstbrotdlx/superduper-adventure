@@ -74,6 +74,15 @@ async function frisch(opt){
   // Regel des Hauses. Geprueft wird jetzt die Regel: die zwei Pflichtfelder
   // immer, die zwei anderen als Paar, das ein Baum weglaesst und jede andere
   // Szene traegt.
+  //
+  // EINE AUSNAHME, seit T5b (26.08.2026): baumAnlage2 traegt sehr wohl eine
+  // Sperre. Der Satz oben ("ein Baum darf die spaeteren Akte nennen") gilt fuer
+  // Dorffiguren, denn der Fall ist ihr Inhalt. Anlage 2 hat als einzige Figur
+  // eine Brandmauer: sie kennt das Haus und nicht den Vorgang (Kapitel 8). Ihr
+  // Baum lief bis T5b ohne Sperre, obwohl anlage2Assert() im Kopf das Gegenteil
+  // behauptet, und dieser Lauf hat die Luecke als Soll festgeschrieben statt
+  // sie zu melden. Beides ist korrigiert.
+  const BAUM_MIT_SPERRE = ['baumAnlage2'];
   const form = await page.evaluate(() => {
     const raus = {};
     for(const k in SZENEN){
@@ -93,7 +102,8 @@ async function frisch(opt){
     delete ist.baum;   // steht im Namen der Zeile, nicht im Vergleich: ein Feld,
                        // das nie fehlschlagen kann, gehoert nicht ins Soll.
     pruef(`${k}${baum ? ' (Baum)' : ''}: Tabellenform vollstaendig`, ist,
-          {sprecher:true, knoten:true, ende: !baum, sperre: !baum});
+          {sprecher:true, knoten:true, ende: !baum,
+           sperre: !baum || BAUM_MIT_SPERRE.includes(k)});
   }
 
   // Erreichbarkeit als Graph. Gerechnet wird auf der Tabelle, nicht gespielt:

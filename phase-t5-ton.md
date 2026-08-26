@@ -4,7 +4,7 @@ Amtsdeutsch hört auf, der Grundton zu sein, und wird die Würze. Anlage 2 hört
 auf, ein Schriftstück zu klingen, und fängt an, ein Mensch zu klingen. Und der
 Anfang erzählt nicht mehr nur die vierhundert Jahre, sondern die Welt.
 
-**Stand: der Kanon steht, T5a, T5c und T5b sind gebaut. Offen bleiben T5d und T5e.** Deshalb OFFEN.
+**Stand: der Kanon steht, T5a bis T5d sind gebaut. Offen bleibt T5e.** Deshalb OFFEN.
 
 ---
 
@@ -398,6 +398,64 @@ zurück zum Menü oder zum Hub**, keine Antwortliste über vier Zeilen, keine
 Tafelzeile über 48 Zeichen (zwei mussten dafür gekürzt werden). Alle sechs
 Bandzeilen unter dem Randnotiz-Deckel von 44.
 
+## 5d. Was gebaut wurde: T5d
+
+**Fünf Introblätter wurden sieben.** Das Intro erzählte bis dahin die
+vierhundert Jahre und sonst nichts; von Kapitel 0 bis 5 fehlten **1, 3 und 5**
+ganz oder fast.
+
+* **Die Karte** (neu, Kapitel 3). Eine Landkarte ohne Ortsnamen, nur Buchstaben
+  von A bis V. Sie erklärt, dass die Ablage über den Keller, den Hof und den
+  Fluss gewachsen ist, bis die ganze Gegend die Ablage war. Und sie trägt **das
+  Kürzel, das ein Wort ist**: ABLAGE, Amtliche Bearbeitungsliste für
+  Angelegenheiten Grundsätzlicher Erledigung. Knöterich löst es ungefragt auf
+  und schiebt hinterher: „Ja, das liest sich wie ein Wort. Nein, das sei keine
+  Absicht gewesen. Man ist hier trotzdem sehr stolz darauf." Das ist das
+  ZET-Muster aus Regel 3, an seinem ersten Einsatzort.
+* **Die Tafel über der Tür** (neu, Kapitel 1). Das Weltgesetz im Wortlaut, als
+  das, was es seit dem 26.08.2026 ist: die oberste Doktrin. Darunter hat jemand
+  mit Bleistift „gilt" ergänzt, und das ist die einzige Stelle der Tafel, die
+  nie nachgemalt wurde.
+* **Das Einstellungsformular** (erweitert, Kapitel 5). Bis dahin endete das
+  Intro mit „Heute sind Sie dran." und hatte damit nie gesagt, was der Spieler
+  eigentlich tut. Jetzt: drinnen verwaltet die Registratur, draußen geht der
+  Außendienst zu dem, was nicht von selbst hereinkommt. Samt dem Satz, der die
+  ganze Anlage des Spiels trägt: „Sie werden vorher nichts davon wissen. Das ist
+  keine Nachlässigkeit von uns, das ist die Stelle."
+
+**Die Doppelung mit Anlage 2 ist gewollt**, und das ist eine Kanon-Korrektur:
+hier stand als Reihenfolgegrund „damit sie sich nicht doppeln". Der
+Projektinhaber hat das aufgehoben: „doch doch es darf sich doppeln, das intro
+ist manchmal sehr lange her." Das Intro läuft einmal, Anlage 2 ist immer da.
+
+### Drei Funde, und alle drei kamen von Prüfläufen, nicht vom Lesen
+
+1. **Der Guard hat einen Text abgelehnt, und er hatte recht.** Die erste Fassung
+   der Backronym-Zeile lautete „Ja, das ergibt ein Wort." `szeneAssert()` meldet
+   daraufhin **„Kesselgrammatik im Text Intro Blatt 5"**: das Wort *ergibt* steht
+   in `PRUEF_GEHEIM`, weil es sonst die Rezeptlogik des Kessels verrät. Der Guard
+   kann nicht wissen, dass hier von einem Kürzel die Rede ist, und **genau das
+   ist der Sinn einer Wortsperre**. Umformuliert zu „das liest sich wie ein
+   Wort", was ohnehin genauer ist.
+2. **`tools/szene-pruef.mjs` hatte die T5b-Lücke als Soll festgeschrieben.** Der
+   Lauf erwartete `sperre: !baum`, also: kein Baum trägt eine Wortsperre. Mit
+   `sperre:AKTE_SPERRE` an `baumAnlage2` fiel er auf 48 von 49. Der erwartete
+   Wert war die alte Annahme, nicht die Regel: Dorffiguren dürfen vom Fall
+   reden, Anlage 2 nicht. `BAUM_MIT_SPERRE` führt sie jetzt als die eine
+   Ausnahme. **Der Start-Guard war bei alldem still** — diese Lücke sieht nur der
+   dedizierte Lauf.
+3. **`tools/empfang-pruef.mjs` hielt die SZ1-Zusage „fünf Blätter".** Sie ist mit
+   T5d bewusst zurückgenommen, in der Weltbibel durchgestrichen und im Lauf auf
+   sieben gesetzt. Wichtiger als die Zahl ist, was derselbe Lauf danach meldet:
+   **„die Tafel steht auf dem Telefon im Bild"** — die zwei neuen, langen Blätter
+   passen auf 390x844.
+
+**Abnahme T5d:** `node --check` sauber, alle Guards still. `szeneAssert()` meldet
+7 Introblätter. `tools/szene-pruef.mjs` **49 von 49**, `tools/empfang-pruef.mjs`
+**76 von 76**, beide inklusive der Telefonprüfung. Der Amtsanteil der
+Introblätter steht bei 39 Prozent und ist ausgenommen: dort ist der Amtston der
+Gegenstand, die Blätter **sind** die Dokumente. Knappheit 2 Prozent.
+
 ## 6. Was offen bleibt
 
 Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
@@ -407,8 +465,7 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   nach Abschnitt 3 der mit dem größten Effekt. Zuerst.
 * ~~**T5c, Anlage 2s Ton-Abfall.**~~ **ERLEDIGT**, siehe Abschnitt 5b.
 * ~~**T5b, Anlage 2 als Erklärerin.**~~ **ERLEDIGT**, siehe Abschnitt 5c.
-* **T5d, das Intro trägt Kapitel 0 bis 5.** Nach T5b, weil beide denselben Stoff
-  tragen und sich sonst doppeln.
+* ~~**T5d, das Intro trägt Kapitel 0 bis 5.**~~ **ERLEDIGT**, siehe Abschnitt 5d.
 * **T5e, die Kaskaden und die Abkürzungen.** Der größte Teil, und nach der
   Korrektur vom 26.08.2026 ist er ein anderer als geplant. Nicht Amtsdeutsch
   abziehen, sondern **Knappheit abbauen und Abkürzungen einsetzen**: 78 Prozent
