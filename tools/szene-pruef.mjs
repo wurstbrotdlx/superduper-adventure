@@ -170,9 +170,14 @@ async function frisch(opt){
     namenSindTeilmenge:   AKTE_SPERRE_NAMEN.every(n => AKTE_SPERRE.includes(n)),
     namenKuerzer:         AKTE_SPERRE_NAMEN.length < AKTE_SPERRE.length,
     // Das Intro zeigt Papiere und nennt keinen Namen. Beides gegengeprueft.
-    introZeigtPapiere:    INTRO_BLAETTER.some(b => (b.stimme || []).some(z => z.includes('Ausfertigung'))),
+    // T2: eine gesprochene Zeile ist seit SZ4 ein String ODER ein Paar aus
+    // Sprecher und Satz. Das Intro trug bis T2 nur Strings, deshalb ist es hier
+    // nie aufgefallen; seit der Anfang erzaehlt, spricht Knoeterich in den
+    // Blaettern mit. Beide Formen werden vor der Pruefung auf Text gebracht.
+    introZeigtPapiere:    INTRO_BLAETTER.some(b => (b.stimme || []).some(z => (typeof z === 'string' ? z : z.wer + ' ' + z.z).includes('Ausfertigung'))),
     introNenntKeinenNamen: INTRO_BLAETTER.every(b =>
       [b.blatt, b.regie, ...(b.stimme || [])].filter(Boolean)
+        .map(z => typeof z === 'string' ? z : z.wer + ' ' + z.z)
         .every(z => AKTE_SPERRE_NAMEN.every(n => !z.includes(n)))),
   }));
   pruef('die Wortsperre haengt an der Szene', sperren,
@@ -212,7 +217,7 @@ async function frisch(opt){
                                        hasTouch: true, deviceScaleFactor: 2 });
   await page.evaluate(() => startGame());
   await page.waitForTimeout(300);
-  for(let i = 0; i < 3; i++){
+  for(let i = 0; i < 6; i++){
     await page.evaluate(() => { gespraechFertigTippen(); const o = szeneOptionen(); if(o.length) o[0].tun(); });
     await page.waitForTimeout(200);
   }

@@ -20750,33 +20750,120 @@ const AKTE_SPERRE_NAMEN = ['Nachtrag', 'Trepp', 'Sturz', 'Schattenfürst', 'Amts
 //  die vorgelesenen Zeilen. regie ist die Nachbemerkung, was die Hand danach
 //  tut. Alles drei ist freier Panel-Text ohne Zeichendeckel, wie die Tafeln
 //  vorher auch.
-const INTRO_BLAETTER = [
-  {blatt:'Ein Schreiben, zwei Zeilen lang. Daneben dasselbe Schreiben, sechsmal, jedes mit einem anderen Vermerk oben rechts.',
-   stimme:['Wer räumt das Papier aus dem Fluss? Um Nachricht wird gebeten.',
-           'Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.',
-           'Auf keinem steht ein Ausgang.'],
-   regie:'Ganz unten auf dem letzten, in anderer Schrift: Es ist eine kurze Frage.'},
+// --- T2: Die Ernennung ------------------------------------------------------
+//
+//  Der Befund des Projektinhabers, nachgespielt: "Der Gag mit dem Titel zuendet
+//  nicht. Der Titel wurde nicht eingefuehrt bzw am Anfang verliehen."
+//
+//  Er hat recht, und die Luecke ist groesser, als sie aussieht. Das Spiel traegt
+//  seit W6 eine vollstaendige Befoerderungszeremonie (RANG_URKUNDE,
+//  rangZeremonieBlock): vierzehn Zeilen Urkunde, "Auf die Form!", der Amtsmarsch
+//  mit Fagott, der nach dem dritten Takt abbricht. Sie feuert zum ersten Mal bei
+//  Schicht ZEHN. Der erste Titel dagegen, Monsterangelegenheitenanwaerter,
+//  wurde nie verliehen. Er stand als Feld im Vordruck, und der Vordruck ist seit
+//  E1 der freiwillige Weg: wer durchklickt, hat ihn nie gesehen.
+//
+//  Damit stand jeder Titel-Gag des Spiels ohne Aufbau da. Zwirn redet den
+//  Spieler eine Stufe zu hoch an (Kapitel 18.5), Bramsche liest die Klammern
+//  laut mit, Lott und Pahl sagen "Der Neue", und die Stolzregeln in 18.6 bauen
+//  darauf, dass ein Titel in dieser Welt alles ist. Wer seinen eigenen nie
+//  bekommen hat, hoert davon nichts.
+//
+//  Die Ernennung schliesst das. Sie ist die Schwester der Befoerderung und
+//  benutzt dieselbe Form, weil es dasselbe Haus ist, das sie aufmacht
+//  (Humor-Grundgesetz 10). Nur der Anlass ist kleiner, und genau darin liegt
+//  der Witz: derselbe Prunk fuer eine Stelle, die heute Abend auslaeuft.
+const ERNENNUNG_URKUNDE = () => [
+  'Gemäß Geschäftsordnung des Monstral Ministeriums, Abteilung Personal, wird hiermit bezeugt:',
+  'Der Dienstposten Außendienst, Sachgebiet 7, wird mit Wirkung von heute besetzt.',
+  `Amtsbezeichnung: ${rangNameVon(0)}.`,
+  `Laufbahngruppe: ${RANG_GRUPPEN[RAENGE[0].g]}.`,
+  `Dienstverhältnis: ${RANG_VERH[RAENGE[0].v]}.`,
+  'Die Besetzung betrifft den Dienstposten, nicht die Person, die ihn heute bekleidet.',
+  'Die Person wird gebeten, das nicht persönlich zu nehmen.',
+  'Beschäftigungsdauer: ein Tag. Eine Verlängerung wäre eine Neubesetzung.',
+  'Ein Widerspruch ist nicht vorgesehen. Ein Widerspruch war noch nie vorgesehen.',
+  'Vordermühl, heute.',
+  'Gezeichnet: Bürgermeister Alfons Zwirn, in Vertretung der Amtsleitung.',
+  'Die Amtsleitung ist mit N. N. besetzt und war zur Unterschrift nicht erreichbar.',
+  'Amtssiegel angebracht. Es wackelt etwas.',
+];
 
-  {blatt:'Ein Bericht mit einer Tabelle. Darunter ein Abkommen, drei Unterschriftsfelder, zwei davon ausgefüllt.',
-   stimme:['Acht Jahre. Verluste an Bearbeitungskapazität: erheblich.',
-           'Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort.',
-           'Der Friede wurde in dreifacher Ausfertigung aufgesetzt. Die dritte war für die andere Seite.'],
+// Die Zeremonie als Tafelstapel. Freier Panel-Text wie das Intro, also ohne
+// Zeichendeckel; die Formregeln aus Kapitel 13 gelten weiter, und die Laenge
+// folgt seit T1 der Sprachmarke. Hier fuehrt sie das Haus, und das Haus ist
+// ausfuehrlich, wenn es feierlich wird.
+const ERNENNUNG_BLAETTER = [
+  {blatt:'Zwirn kommt herein, ohne anzuklopfen. Er trägt eine Mappe vor sich her, mit beiden Händen, wie man eine Torte trägt.',
+   stimme:[{wer:'Zwirn', z:'Da sind Sie ja. Wunderbar. Wirklich wunderbar.'},
+           {wer:'Zwirn', z:'Ich mache das gleich richtig, wenn Sie erlauben. Es dauert einen Moment und ist die Sache wert.'},
+           {wer:'Knöterich', z:'Er macht es immer richtig. Setzen Sie sich trotzdem nicht hin.'}],
+   regie:'Er legt die Mappe auf den Tisch, richtet sie zweimal gerade und öffnet sie erst dann.'},
+
+  {blatt:'URKUNDE ÜBER DIE BESETZUNG EINES DIENSTPOSTENS. Ein Bogen, dicker als nötig, mit einer Bordüre, die ihn nichts angeht.',
+   stimme: ERNENNUNG_URKUNDE(),
+   regie:'Zwirn liest jede Zeile laut vor. Auch die mit der Amtsleitung. Besonders die mit der Amtsleitung.'},
+
+  {blatt:'Zwirn hält Ihnen die Urkunde hin. Das ist der Rechtsakt, nicht die Rede. Die Rede kommt danach.',
+   stimme:[{wer:'Zwirn', z:'Hiermit sind Sie Monsterangelegenheitenanwärter. Sprechen Sie es ruhig einmal nach, das hilft.'},
+           {wer:'Zwirn', z:'Es ist der unterste Rang, den dieses Haus zu vergeben hat, und es ist ein Rang. Das ist der Unterschied zu vorhin.'},
+           {wer:'Knöterich', z:'Vorhin waren Sie niemand. Das ist keine Unhöflichkeit, das ist Verwaltung.'}],
+   regie:'Irgendwo im Haus setzt der Amtsmarsch ein. Fagott, wie immer.'},
+
+  {blatt:'Alle im Raum stehen auf. Knöterich zuletzt und mit einem Geräusch, das er nicht kommentiert.',
+   stimme:['„Auf die Form!“ Sie sagen es gleichzeitig, und sie meinen es.',
+           'Nach dem dritten Takt bricht der Marsch ab. Niemand erklärt, warum. Niemand fragt.',
+           'Zwirn schüttelt Ihnen die Hand, lange, und sagt dabei nichts mehr.'],
+   regie:'Knöterich schreibt etwas in seine Kladde. Es ist ein Wort. Es ist wahrscheinlich „Notiert“.'},
+
+  // Der Auftrag, in klaren Worten. Bis T2 stand er nur in einer freiwilligen
+  // Empfangsfrage, und wer sie nicht stellte, stand ohne ihn im Dorf. Kein
+  // Questmarker, kein Ort, keine Richtung (Kapitel 14) — aber ein Verfahren,
+  // und ein Verfahren ist in diesem Haus dasselbe wie ein Auftrag.
+  {blatt:'Knöterich bringt Sie zur Tür. Auf dem Weg dorthin redet er schneller als vorher.',
+   stimme:[{wer:'Knöterich', z:'Draußen läuft Unbearbeitetes herum. Sie gehen hin und bearbeiten es. Danach ist es bearbeitet.'},
+           {wer:'Knöterich', z:'Bearbeiten heißt nicht totschlagen. Totschlagen kann jeder, das erledigt nichts. Ein Vorgang will eine Antwort.'},
+           {wer:'Knöterich', z:'Sie grüßen also zuerst. Dann sehen Sie nach, was für eine Art Vorgang es ist. Dann geben Sie ihm, was ihm zusteht.'},
+           {wer:'Knöterich', z:'Wenn Sie nicht weiterwissen, fragen Sie im Dorf. Alle hier wissen etwas, und keiner sagt es unaufgefordert.'}],
+   regie:'Er hält Ihnen die Tür auf. Draußen ist es hell und viel zu ruhig für einen Ort, an dem angeblich ziemlich viel herumläuft.'},
+
+  {blatt:'Auf der Schwelle kommt Ihnen ein Mann mit einem Postsack entgegen. Der Sack ist voll. Er drückt sich an Ihnen vorbei, entschuldigt sich zweimal und geht weiter.',
+   stimme:[{wer:'Knöterich', z:'Nicht heute. Der hat seine eigene Sache, und die ist älter als Ihre.'},
+           'Er sieht dem Mann nach, bis der um die Ecke ist.',
+           {wer:'Knöterich', z:'Ihre Stelle läuft heute Abend aus. Machen Sie etwas daraus.'}],
+   regie:'Dann geht er zurück an seinen Tisch und drückt wieder etwas fest, das nicht liegen bleiben will.'},
+];
+
+const INTRO_BLAETTER = [
+  {blatt:'Ein Schreiben, zwei Zeilen lang. Daneben liegt dasselbe Schreiben noch einmal, und noch einmal, sechsmal insgesamt, jedes mit einem anderen Vermerk oben rechts.',
+   stimme:['Vor vierhundert Jahren hat jemand am anderen Ufer eine Frage gestellt. Sie lautete: Wer räumt das Papier aus dem Fluss?',
+           {wer:'Knöterich', z:'Eine kleine Frage. Zwei Zeilen. So fängt alles an, was später groß wird.'},
+           'Sie wurde weitergereicht, abgelegt, angemahnt und wieder abgelegt. Erinnerung. Zweite Erinnerung. Mahnung. Zweite Mahnung. Letzte Mahnung.',
+           'Auf keinem der sechs Blätter steht ein Ausgang.'],
+   regie:'Ganz unten auf dem letzten, in anderer Schrift und sehr klein: Es ist eine kurze Frage.'},
+
+  {blatt:'Ein Bericht mit einer Tabelle, sehr sachlich gehalten. Darunter ein Abkommen mit drei Unterschriftsfeldern. Zwei davon sind ausgefüllt.',
+   stimme:['Aus der Frage wurden acht Jahre. Der Bericht nennt sie nicht beim Namen, er zählt nur die Verluste an Bearbeitungskapazität. Sie waren erheblich.',
+           {wer:'Knöterich', z:'Es hat auf beiden Seiten nie jemand etwas anderes gewollt als eine Antwort. Das ist das Traurigste daran.'},
+           'Am Ende wurde ein Friede aufgesetzt, in dreifacher Ausfertigung. Eine für uns, eine fürs Archiv, eine für die andere Seite.'],
    regie:'Die andere Seite war nicht da. Ihr sollte der Termin schriftlich mitgeteilt werden.'},
 
-  {blatt:'Ein Umschlag. Die Anschrift ist ein Gekritzel.',
-   stimme:['Der Bote konnte sie nicht lesen.',
-           'Er hat den Umschlag nicht weggeworfen. Er hebt ihn auf, bis er ihn lesen kann.'],
-   regie:'Die Hand legt ihn nicht auf den Stapel. Sie legt ihn beiseite.'},
+  {blatt:'Ein Umschlag, vergilbt und an den Kanten weich geworden. Die Anschrift ist ein Gekritzel, geschrieben mit einer Feder, die zu viel Tinte hatte.',
+   stimme:['Die dritte Ausfertigung ging auf den Postweg. Der Bote konnte die Anschrift nicht lesen.',
+           'Er hat sie nicht weggeworfen. Er hat sie behalten, bis er sie lesen kann, und als das nicht geschah, hat er sie seinem Sohn gegeben.',
+           {wer:'Knöterich', z:'Der Sohn konnte sie auch nicht lesen. Sieben Mal ist das inzwischen so gegangen.'}],
+   regie:'Die Hand legt den Umschlag nicht auf den Stapel. Sie legt ihn beiseite, wie man etwas beiseitelegt, das man noch braucht.'},
 
-  {blatt:'Ein handgeschriebenes Schild. Darauf steht: Provisorium.',
-   stimme:['Für die abschließende Bearbeitung ist eine Stelle einzurichten.',
-           'Die Stelle ist vorläufig.',
-           'Das war vor vierhundert Jahren.']},
+  {blatt:'Ein handgeschriebenes Schild, mit zwei Nägeln an einer Wand befestigt. Darauf steht ein einziges Wort: Provisorium.',
+   stimme:['Solange der Friede nicht vollständig ist, gilt er als schwebend. Für die abschließende Bearbeitung war eine Stelle einzurichten.',
+           'Die Stelle wurde eingerichtet. Vorläufig, wie es ausdrücklich hieß.',
+           {wer:'Knöterich', z:'Das war vor vierhundert Jahren. Das Schild hängt noch. Die Pappe ist älter als die meisten Häuser hier.'}],
+   regie:'Jemand hat das Wort einmal nachgezogen, weil die Tinte verblasste. Sonst hat sich daran nichts geändert.'},
 
   {blatt:'Ein Formular. Oben steht: Einstellung für einen Tag. Das Namensfeld ist leer.',
-   stimme:['Was nicht bearbeitet wird, wird lebendig.',
+   stimme:['Was nicht bearbeitet wird, wird lebendig. Vierhundert Jahre lang wurde hier sehr wenig bearbeitet.',
            'Es läuft inzwischen ziemlich viel herum.',
-           'Heute sind Sie dran.'],
+           {wer:'Knöterich', z:'Heute sind Sie dran.'}],
    regie:'Die Hand schiebt das Formular nach vorn und legt einen Stift daneben.'},
 ];
 
@@ -20904,19 +20991,36 @@ const EMPFANG_KNOTEN = {
   // sondern ein Mann, der seit vierzig Jahren Buch führt und einmal im Leben
   // erzählen darf. Humor-Grundgesetz 1 bleibt dadurch unangetastet.
   vorstellung1: {
-    z1:'Sie sind zu früh. Das ist selten.',
-    z2:'Mein Name ist Knöterich. Amtsrat.',
-    opts: () => [{t:'Guten Morgen.', zu:'vorstellung2'}],
+    z1:'Einen Moment. Ich habe hier etwas, das nicht liegen bleiben will.',
+    z2:'Knöterich, Amtsrat. Sie sind zu früh, das ist selten und wird vermerkt.',
+    opts: () => [{t:'Was haben Sie da?', zu:'vorstellung2'}],
   },
   vorstellung2: {
-    z1:'Außer Dienst. Das gehört zum Namen.',
-    z2:'Meine Entpflichtung wurde nie bearbeitet.',
-    opts: () => [{t:'Dann sind Sie im Dienst.', zu:'vorstellung3'}],
+    z1:'Eine Anfrage zur Reinigung einer Brücke. Gestellt vor sechs Jahren.',
+    z2:'Seit vorgestern hat sie Zähne. Kleine noch. Es geht schnell, wenn niemand hinsieht.',
+    opts: () => [{t:'Papier bekommt Zähne?', zu:'vorstellung3'}],
   },
+  // Der Satz, den ein neuer Spieler braucht, und bis T2 stand er nirgends im
+  // Pflichtweg: was ein Monster in dieser Welt ueberhaupt ist.
   vorstellung3: {
-    z1:'Ich bin beides. Das ist kein Widerspruch.',
-    z2:'Das ist Verwaltung. Setzen Sie sich nicht hin.',
-    opts: () => [{t:'Was geschieht hier?', tun:() => empfangAnriss()}],
+    z1:'Papier nicht. Ein Vorgang. Ein Vorgang ist eine Frage, die jemand gestellt hat.',
+    z2:'Wird sie beantwortet, ist sie erledigt. Wird sie es nie, wird sie ungeduldig. Und irgendwann steht sie auf und sucht selber jemanden.',
+    opts: () => [{t:'Und dann?', zu:'vorstellung4'}],
+  },
+  vorstellung4: {
+    z1:'Dann läuft sie draußen herum und sucht einen, der zuständig ist. Wählerisch ist dabei keine.',
+    z2:'Wir nennen sie Monster. Das ist kürzer als die Wahrheit und höflicher als das, was das Dorf sagt.',
+    opts: () => [{t:'Wer ist wir?', zu:'vorstellung5'}],
+  },
+  vorstellung5: {
+    z1:'Das Ministerium für Monsterangelegenheiten. Fünf Beschäftigte, ein Kater, ein Schild aus Pappe.',
+    z2:'Und ich. Amtsrat außer Dienst. Und im Dienst. Das ist kein Widerspruch, das ist Verwaltung.',
+    opts: () => [{t:'Beides gleichzeitig?', zu:'vorstellung6'}],
+  },
+  vorstellung6: {
+    z1:'Meine Entpflichtung wurde nie bearbeitet. Sie liegt in demselben Fach wie alles andere hier.',
+    z2:'Setzen Sie sich nicht hin. Bevor Sie hinausgehen, müssen Sie wissen, warum es dieses Haus überhaupt gibt.',
+    opts: () => [{t:'Dann erzählen Sie.', tun:() => empfangAnriss()}],
   },
 
   gruss: {
@@ -20947,7 +21051,7 @@ const EMPFANG_KNOTEN = {
     z1:'Vermerkt. Auf die Laufbahn wirkt es nicht.',
     z2:'Unten unterschreiben. Oben ist für die Leitung.',
     opts: () => [
-      {t:'Dienst antreten.',       tun:() => empfangEnde()},
+      {t:'Dienst antreten.',       tun:() => empfangErnennung()},
       {t:'Erst den Vordruck.',     tun:() => empfangVordruck()},
       {t:'Ich hätte noch Fragen.', zu:'gruss', wenn:() => szeneOffen().length > 0},
     ],
@@ -22118,6 +22222,16 @@ function empfangVordruck(){
 
 // Unterschrift ohne Umweg über die drei Blätter. Derselbe Aufruf, den auch der
 // Knopf auf Blatt 3 auslöst, und damit derselbe Merker in kn.seen.
+// T2: Die Ernennung laeuft zwischen Unterschrift und erstem Schritt. Die Buehne
+// kommt dafuer zurueck, wie beim Intro: es ist ein Rechtsakt des Hauses, und das
+// Haus macht keinen Rechtsakt vor laufender Weltkulisse. Danach faellt beides,
+// die Buehne und die Tafel, und der Dienst beginnt.
+function empfangErnennung(){
+  szeneTafelZu();
+  buehneAn();
+  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'HINAUSGEHEN', ende: empfangEnde});
+}
+
 function empfangEnde(){
   empfangSchliessen();
   dienstAntritt();
@@ -22506,7 +22620,11 @@ function szeneAssert(){
   // besteht aus ihnen. Geprueft wird bei beiden dasselbe, naemlich dass jedes
   // Blatt genau eine der beiden Lesarten traegt und dass die Blattzahl
   // darstellbar bleibt (dreizehn liegt ueber ROEMISCH, zaehlt also arabisch).
+  // T2: Die Ernennung ist der dritte Stapel. Sie traegt dieselbe Sperre wie das
+  // Intro: sie darf das Haus feiern, aber keinen Namen nennen, den der Spieler
+  // noch nicht kennen darf. Zwirn ist kein gesperrter Name, er steht im Dorf.
   const stapel = [{name:'Intro', liste:INTRO_BLAETTER, sperre:AKTE_SPERRE_NAMEN},
+                  {name:'Ernennung', liste:ERNENNUNG_BLAETTER, sperre:AKTE_SPERRE_NAMEN},
                   {name:'Abspann', liste:abspannBlaetter(), sperre:[]}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);

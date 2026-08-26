@@ -126,8 +126,10 @@ async function durchDenAnriss(page){
   for(let i = 0; i < 12; i++){
     const weiter = await page.evaluate(() => {
       if(document.getElementById('overlay').style.display !== 'flex') return false;
+      // T2: HINAUSGEHEN ist der letzte Knopf der Ernennung, wie ANKLOPFEN der
+      // letzte des Intros ist. Derselbe Stapel, derselbe Durchlauf.
       const b = [...document.querySelectorAll('#ovPanel button')]
-                  .find(x => /WEITER|ANKLOPFEN/.test(x.textContent));
+                  .find(x => /WEITER|ANKLOPFEN|HINAUSGEHEN/.test(x.textContent));
       if(!b) return false;
       b.click(); return true;
     });
@@ -161,7 +163,7 @@ async function bisZumEmpfang(page){
   pruef('Knoeterich nennt zuerst seinen Namen',
         (await gesagt(page)).includes('Knöterich'), true);
   const beats = await durchDieVorstellung(page);
-  pruef('die Vorstellung hat drei Zuege', beats, 3);
+  pruef('die Vorstellung hat sechs Zuege', beats, 6);
 
   // Waehrend der Tafeln, nicht danach: mit der letzten faellt die Buehne, und
   // eine Messung hinterher haette genau das nicht gesehen.
@@ -227,6 +229,12 @@ async function bisZumEmpfang(page){
   await waehle(page, 'Weiblich');
   pruef('die Angabe ist uebernommen', await page.evaluate(() => amt.gestalt), 'w');
   await waehle(page, 'Dienst antreten');
+  // T2: zwischen Unterschrift und erstem Schritt liegt jetzt die Ernennung.
+  // Dieselbe Tafelmaschine wie das Intro, deshalb derselbe Durchlauf.
+  const ernennung = await durchDenAnriss(page);
+  pruef('die Ernennung hat sechs Blaetter', ernennung, 6);
+  pruef('die Urkunde nennt die Amtsbezeichnung', await page.evaluate(() =>
+        ERNENNUNG_URKUNDE().some(z => z.includes(rangNameVon(0)))), true);
   await page.waitForTimeout(1500);
   pruef('das Spiel laeuft', await page.evaluate(() => state), 'play');
   pruef('die Einstellung ist vermerkt', await page.evaluate(() => kn.seen.einstellung), true);
