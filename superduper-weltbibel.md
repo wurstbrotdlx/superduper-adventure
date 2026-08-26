@@ -500,6 +500,23 @@ Existiert bereits im Code. Hier bekommt er seinen Grund.
 
 *(Zuwachs T3.)* **Anlage** ist im Reich ein Aktenhausname (siehe Anlage 3 oben, Zuwachs W11). Auf Reichspapier gelesen ist sie damit das zweite Kind desselben Adelshauses und die ältere Schwester des Katers, der auf den Akten der Registratorin schläft. **Im Spiel wird das nie aufgelöst**, genau wie beim Kater: die Pointe steht im Kanon, nicht im Mund einer Figur. Sichtbar wird höchstens das Verhalten. Sie nennt den Kater einmal "den Dritten" und erklärt es nicht.
 
+*(Zuwachs T4, 26.08.2026. Die Figur stand seit T3, aber sie stand als Sammlung von Zeilen. T4 benennt, was sie im Inneren zusammenhält, und baut die zwei Systeme, die dazu gefehlt haben. Herleitung und Werkzeug siehe `phase-t4-charakter.md`.)*
+
+**Die vier Bauteile.** Jede Figur, die mitläuft und redet, braucht diese vier benannt, sonst ist sie nur ein Effekt:
+
+* **Der Käfig, also was sie nicht darf.** Dreifach, und alle drei sind im Spiel sichtbar und nicht bloß gedacht: die Heftklammer (sie kann nicht weggehen, sichtbar bei jedem Bewegungsversuch), die Brandmauer (sie kann den Fall nicht verraten, sichtbar an ihrem Schweigen in den Szenen), und ihr Werkstoff (sie ist Papier und kann nichts tun, sichtbar daran, dass sie in keinem Kampf hilft). **Der Käfig ist die Figur, nicht die Show.** Wer ihn aufmacht, hat einen lustigen Effekt und keine Anlage mehr.
+* **Der Preis, also was eine Äußerung kostet.** Nichts. Sie darf reden, so viel sie will, und **genau deshalb muss der Käfig hart bleiben**. Ein Ausdrucksbudget ohne Handlungssperre löst die Aufgaben des Spielers, und dann ist die Spannung weg. Ein Verdachts- oder Geduldszähler wird für sie **nicht** gebaut: er würde das Reden bestrafen, und das Reden ist das Einzige, was sie hat.
+* **Das Gefälle, also der Wissensvorsprung.** Es läuft in beide Richtungen, und das ist die Bauart dieser Figur: Über Haus, Leute und Verfahren weiß sie mehr als der Spieler. Über den laufenden Fall weiß der Spieler mehr als sie. Dazu das dritte Gefälle, das ihr blinder Fleck ist: der Spieler sieht sofort, dass ihr jemand zuhört, und sie bemerkt es nie.
+* **Der Kipppunkt, also wann die Show aufhört.** Er wird von einer Spieleraktion ausgelöst und nie von einem Zähler oder einer Uhr: Der Spieler nimmt ihre formlose Bitte an ("Sehen Sie ab und zu nach, ob ich noch da bin."). Danach ist sie im Band wärmer. Sie sagt dazu nichts, sie ist es nur.
+
+**Das Maskenset ist geschlossen, und es sind fünf.** Urkundenton, Formularton, Aushangton, Vermerk, Rechtsbehelfsbelehrung. **Es kommt keine sechste dazu.** Das sind Textsorten und keine Personen: Sie ahmt nach, was sie mitgelesen hat, nicht wen sie kennt. Eine Maske, die einen Menschen nachmacht, wäre Spott über eine Person und fiele unter Grundgesetz 4.
+
+**Die Bremse, also wann sie schweigt.** Diese Liste ist so wichtig wie ihre Zeilen: in den erzählten Szenen (die Brandmauer an ihrer engsten Stelle), bei Tonstellung "Dienstlich" und "Schweigt" (sie kommentiert die Welt und ist nie dienstlich), während ein Kammermodul läuft, solange ein Dienstzettel steht, und im Moment der Niederlage selbst. Zum letzten Punkt: **Sie redet dem Spieler nicht in sein Scheitern hinein.** Sie sagt ihren Satz erst beim Wiederantritt, und das ist der Unterschied zwischen einem Begleiter und einem Kommentator.
+
+**Der Umschlag.** Eine kleine, eigene Menge von Zeilen, **jede genau einmal im ganzen Spiel**, an Ereignissen mit Gewicht: der erste Tod, die Rückkehr danach, der erste Sieg über einen Endgegner, das erste Betreten der zweiten Ebene, die Annahme ihrer Bitte. Sie sind kurz, ohne Pointe, ohne Maske, und sie stehen sichtbar anders im Band als alles andere, was sie sagt. **Wer beim Schreiben dieser Zeilen den Reflex verspürt, doch noch eine Pointe anzuhängen, muss ihn aushalten: genau das Weglassen ist hier die Figur.** Ihr Gefühl spricht sie auch hier nicht aus (siehe warmer Kern); sie stellt fest und ordnet ein, wie auf dem fünften Blatt ihrer Einführung.
+
+**Unter vier Augen.** Ein Teil ihrer Zeilen fällt nur, wenn keine Dorffigur in der Nähe steht, und der Umschlag ausnahmslos. Der Spieler merkt mit der Zeit, dass sie allein anders spricht als vor Publikum. **Sie selbst merkt davon nichts**, und das ist keine Nachlässigkeit, sondern ihr blinder Fleck: eine Anlage, die sich für unwichtig hält, führt keine Buch über ihre Zuhörer. Deshalb wird auch **kein Auftrittsverhalten vor Publikum** gebaut. Sie wird unter vier Augen leiser und echter, nicht in der Menge lauter.
+
 
 ---
 

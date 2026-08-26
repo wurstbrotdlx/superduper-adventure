@@ -1224,6 +1224,36 @@ Wer im Haus welche Formulare erfindet. Warum der Amtsmarsch nach dem dritten Tak
 Was in vierzig Dienstberichten immer gleich blieb. Alles Haus, alles Leute, alles Verfahren.
 Nichts über den Fall.
 
+**Was sie zusammenhält.** *(Nachtrag T4, 26.08.2026.)* Vier Dinge, und sie stehen hier, weil
+eine Figur ohne sie eine Sammlung von Zeilen ist. **Der Käfig:** die Klammer, die Brandmauer
+und der Werkstoff. Sie kann nicht weggehen, sie kann den Fall nicht verraten, und sie kann
+nichts tun, weil sie Papier ist. **Der Preis:** keiner. Reden kostet sie nichts, und darum
+muss der Käfig hart bleiben. **Das Gefälle:** Über das Haus weiß sie mehr als der Spieler,
+über den Fall weiß er mehr als sie, und über ihre Zuhörer weiß er alles und sie nichts.
+**Der Kipppunkt:** wenn jemand ihre formlose Bitte annimmt. Danach ist sie wärmer und sagt
+kein Wort darüber.
+
+**Fünf Masken, mehr nicht.** Urkundenton, Formularton, Aushangton, Vermerk,
+Rechtsbehelfsbelehrung. Das Set ist geschlossen. Es sind Textsorten und keine Menschen: sie
+ahmt nach, was sie mitgelesen hat, und sie macht niemanden nach.
+
+**Wann sie den Mund hält.** In den erzählten Szenen. Bei den Tonstellungen Dienstlich und
+Schweigt. Während ein Kammermodul läuft. Solange ein Dienstzettel steht. Und im Moment, in
+dem der Spieler unterliegt. Der letzte Punkt ist der wichtigste und der einzige, der nicht
+aus der Technik folgt, sondern aus ihr selbst: **sie redet niemandem in sein Scheitern
+hinein.** Sie wartet, bis er wieder antritt, und sagt es dann.
+
+**Der Umschlag.** Ein Dutzend Zeilen, jede genau einmal, an den Stellen mit Gewicht: der
+erste Tod, die Rückkehr, der erste erlegte Endgegner, die zweite Ebene, die angenommene
+Bitte. Kurz, ohne Pointe, ohne Maske. Sie fallen nur, wenn niemand sonst in der Nähe ist,
+und sie stehen anders im Band als alles andere. Die Bauform steht schon auf dem fünften
+Blatt ihrer Einführung: **eine Feststellung, dann eine höfliche Einordnung, und kein Wort
+darüber, was sie dabei empfindet.**
+
+**Unter vier Augen ist sie anders.** Ein Teil ihrer Zeilen fällt nur, wenn keine Dorffigur
+in der Nähe steht. Der Spieler bemerkt das mit der Zeit. Sie bemerkt es nie, und das ist
+derselbe blinde Fleck wie oben: wer sich für unwichtig hält, zählt seine Zuhörer nicht.
+
 **Prüfnotiz.** Ein Fund, und er ist eine Entscheidung: **Anlage 2 bekommt kein eigenes
 Kürzel.** Die Abkürzungstabelle unten steht auf zwölf, „mehr nicht", und ein dreizehntes
 hätte diese Zusage gebrochen. Der Verzicht ist die bessere Pointe und passt zur Figur: wer
