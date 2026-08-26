@@ -110,6 +110,28 @@ async function spiel(ctxOpt){
     await btn.click({ force: true });
     await page.waitForTimeout(200);
   }
+  // T3: Dieser Lauf geht über den Vordruck und sieht die Ernennung deshalb
+  // nicht, und mit ihr nicht das erste Treffen mit Anlage 2. Das wird beim
+  // ersten Griff zur Tasche nachgeholt (toggleInventory), und dieser Lauf
+  // greift danach mehrfach zur Tasche, um das Menü zu prüfen. Einmal vorweg
+  // durchgeklickt, damit er das Menü prüft und nicht den Anfang. Die
+  // Einführung selbst steht in empfang-pruef.mjs und anlage2-pruef.mjs.
+  await page.evaluate(() => toggleInventory());
+  await page.waitForTimeout(300);
+  for(let i = 0; i < 8; i++){
+    const weiter = await page.evaluate(() => {
+      if(document.getElementById('overlay').style.display !== 'flex') return false;
+      const b = [...document.querySelectorAll('#ovPanel button')]
+                  .find(x => /WEITER|EINSTECKEN/.test(x.textContent));
+      if(!b) return false;
+      b.click(); return true;
+    });
+    if(!weiter) break;
+    await page.waitForTimeout(200);
+  }
+  await page.evaluate(() => { if(invOpen) toggleInventory(); });
+  await page.waitForTimeout(200);
+
   await page.evaluate(() => {
     window.__schlaege = 0;
     const alt = tryAttack;

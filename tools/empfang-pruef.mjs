@@ -31,6 +31,18 @@
 //   einmalig      der zweite Dienstantritt zeigt keinen Empfang mehr
 //   Telefon       Tafel und Antwortliste stehen auf 390x844 im Bild
 //
+// Dazu die Zusagen von T2 und T3, die am selben Anfang haengen:
+//
+//   Ernennung     sechs Blaetter zwischen Unterschrift und erstem Schritt, die
+//                 Urkunde nennt die Amtsbezeichnung (T2)
+//   Anlage 2      die Urkunde kuendigt sie an, danach fuehren fuenf Blaetter sie
+//                 ein, und mit EINSTECKEN liegt sie in der Tasche (T3)
+//   Nachholung    wer ueber den Vordruck geht, sieht die Ernennung nie. Der
+//                 erste Griff zur Tasche holt die Einfuehrung nach, genau
+//                 einmal (T3)
+//   Telefon       auch die fuenf Blaetter der Anlage 2 halten Rahmen und Knopf
+//                 auf 390x844 im Bild (T3)
+//
 // Wie menue-pruef.mjs und gespraech-pruef.mjs stellt dieser Lauf fest statt zu
 // messen: jede Zeile ist ein Soll-Ist-Vergleich, Exit-Code 1 bei der ersten
 // Abweichung.
@@ -119,27 +131,41 @@ async function durchDieVorstellung(page){
   return beats;
 }
 
-// Durch die Anrisstafeln bis in die Szene. Geklickt wird der WEITER-Knopf und
-// nicht der letzte im Panel: der letzte waere ÜBERSPRINGEN.
-async function durchDenAnriss(page){
+// Durch EINEN Tafelstapel. Geklickt wird der WEITER-Knopf und nicht der letzte
+// im Panel: der letzte waere ÜBERSPRINGEN. Der Durchlauf endet, sobald der
+// Schlussknopf dieses Stapels geklickt wurde, und gibt die Zahl der Blaetter
+// zurueck.
+//
+// T3: der Schlussknopf ist ein Parameter geworden. Vorher stand er als
+// Alternative im Regex, und das reichte, solange hinter einem Stapel nie ein
+// zweiter kam. Seit die Einfuehrung der Anlage 2 direkt hinter der Ernennung
+// haengt, laufen beide sonst in einer Zaehlung zusammen, und der Lauf koennte
+// nicht mehr sagen, welcher Stapel wie lang ist.
+async function durchDenStapel(page, ende){
   let tafeln = 0;
-  for(let i = 0; i < 12; i++){
-    const weiter = await page.evaluate(() => {
-      if(document.getElementById('overlay').style.display !== 'flex') return false;
-      // T2: HINAUSGEHEN ist der letzte Knopf der Ernennung, wie ANKLOPFEN der
-      // letzte des Intros ist. Derselbe Stapel, derselbe Durchlauf.
+  for(let i = 0; i < 14; i++){
+    const r = await page.evaluate((endeStr) => {
+      if(document.getElementById('overlay').style.display !== 'flex') return 'weg';
       const b = [...document.querySelectorAll('#ovPanel button')]
-                  .find(x => /WEITER|ANKLOPFEN|HINAUSGEHEN/.test(x.textContent));
-      if(!b) return false;
-      b.click(); return true;
-    });
-    if(!weiter) break;
+                  .find(x => /WEITER/.test(x.textContent) || x.textContent.includes(endeStr));
+      if(!b) return 'weg';
+      const letzt = b.textContent.includes(endeStr);
+      b.click(); return letzt ? 'ende' : 'weiter';
+    }, ende);
+    if(r === 'weg') break;
     tafeln++;
     await page.waitForTimeout(220);
+    if(r === 'ende') break;
   }
   await page.waitForTimeout(200);
-  await fertigGetippt(page);          // der Gruss laeuft noch ein
   return tafeln;
+}
+
+// Das Intro, und danach laeuft der Gruss noch ein.
+async function durchDenAnriss(page){
+  const n = await durchDenStapel(page, 'ANKLOPFEN');
+  await fertigGetippt(page);
+  return n;
 }
 
 // Der ganze Anfang am Stueck, bis die Gespraechstafel des Empfangs steht.
@@ -231,10 +257,23 @@ async function bisZumEmpfang(page){
   await waehle(page, 'Dienst antreten');
   // T2: zwischen Unterschrift und erstem Schritt liegt jetzt die Ernennung.
   // Dieselbe Tafelmaschine wie das Intro, deshalb derselbe Durchlauf.
-  const ernennung = await durchDenAnriss(page);
+  const ernennung = await durchDenStapel(page, 'HINAUSGEHEN');
   pruef('die Ernennung hat sechs Blaetter', ernennung, 6);
   pruef('die Urkunde nennt die Amtsbezeichnung', await page.evaluate(() =>
         ERNENNUNG_URKUNDE().some(z => z.includes(rangNameVon(0)))), true);
+  // T3: die Urkunde kuendigt ihre Anlage an, eine Tafel bevor die Anlage
+  // spricht. Zwirn liest die Zeile laut vor wie jede andere.
+  pruef('die Urkunde nennt ihre Anlage', await page.evaluate(() =>
+        ERNENNUNG_URKUNDE().some(z => /Anlagen: eine/.test(z))), true);
+
+  // T3: und dahinter, vor dem ersten Schritt ins Dorf, das erste Treffen.
+  // Eigener Stapel, eigener Schlussknopf, und danach ist sie in der Tasche.
+  pruef('vor dem Dienst steht noch ein Stapel', await page.evaluate(() =>
+        document.getElementById('overlay').style.display), 'flex');
+  pruef('Anlage 2 ist noch nicht in der Tasche', await page.evaluate(() => kn.flags.anlage2Da), false);
+  const treffen = await durchDenStapel(page, 'EINSTECKEN');
+  pruef('das erste Treffen hat fuenf Blaetter', treffen, 5);
+  pruef('Anlage 2 ist jetzt in der Tasche', await page.evaluate(() => kn.flags.anlage2Da), true);
   await page.waitForTimeout(1500);
   pruef('das Spiel laeuft', await page.evaluate(() => state), 'play');
   pruef('die Einstellung ist vermerkt', await page.evaluate(() => kn.seen.einstellung), true);
@@ -305,6 +344,29 @@ async function bisZumEmpfang(page){
         await page.evaluate(() => el('introBuehne').style.display), 'none');
   pruef('und das HUD ist wieder da',
         await page.evaluate(() => getComputedStyle(el('hud')).display !== 'none'), true);
+
+  // T3: Dieser Weg umgeht die Ernennung und damit das erste Treffen. Ein
+  // Spieler ohne Anlage 2 waere ein Spiel ohne die Haelfte seiner Stimme,
+  // deshalb holt der erste Blick in die Tasche es nach. Dasselbe gilt fuer
+  // jeden Spielstand, der aelter ist als dieser Bauabschnitt.
+  pruef('ohne Ernennung ist sie noch nicht da', await page.evaluate(() => kn.flags.anlage2Da), false);
+  await page.evaluate(() => toggleInventory());
+  await page.waitForTimeout(400);
+  pruef('der erste Griff zur Tasche holt sie nach', await page.evaluate(() =>
+        document.getElementById('overlay').style.display === 'flex' && !invOpen), true);
+  const nachgeholt = await durchDenStapel(page, 'EINSTECKEN');
+  pruef('auch nachgeholt sind es fuenf Blaetter', nachgeholt, 5);
+  await page.waitForTimeout(400);
+  pruef('danach ist sie da', await page.evaluate(() => kn.flags.anlage2Da), true);
+  pruef('und der Rucksack steht offen', await page.evaluate(() => invOpen), true);
+  pruef('sie liegt als Kachel darin', await page.evaluate(() =>
+        !!document.querySelector('#bagGrid .anlage2Slot')), true);
+  // Und zwar genau einmal: der zweite Griff oeffnet nur noch die Tasche.
+  await page.evaluate(() => toggleInventory());
+  await page.evaluate(() => toggleInventory());
+  await page.waitForTimeout(300);
+  pruef('der zweite Griff zeigt keine Einfuehrung mehr', await page.evaluate(() =>
+        invOpen && document.getElementById('overlay').style.display !== 'flex'), true);
   pruef('Konsole still (Vordruckweg)', laut, []);
   await ctx.close();
 }
@@ -370,6 +432,34 @@ async function bisZumEmpfang(page){
   pruef('die Tafel steht auf dem Telefon im Bild', lage.drin, true);
   pruef('keine Antwort laeuft ueber den Rand', lage.zeilenDrin, true);
   pruef('vier Antworten auch dort', lage.anzahl, 4);
+
+  // T3: dieselbe Messung fuer die Blaetter der Anlage 2. Sie sind die
+  // laengsten Tafelzuege des Anfangs (Formregel "Der Anfang erzaehlt", also
+  // kein Zeichendeckel), und genau deshalb gehoert die Frage geprueft, ob sie
+  // auf ein Telefon passen. Erwartet wird die Bauform aus SZ4: der Rahmen
+  // steht, der Text rollt innen, der Knopf bleibt erreichbar.
+  await page.evaluate(() => szeneTafeln([ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER),
+                                        {letzterKnopf:'EINSTECKEN', ende: () => {}}));
+  await page.waitForTimeout(300);
+  const a2 = [];
+  for(let i = 0; i < 5; i++){
+    a2.push(await page.evaluate(() => {
+      const b = [...document.querySelectorAll('#ovPanel button')].pop().getBoundingClientRect();
+      const p = el('ovPanel').getBoundingClientRect();
+      return { knopfDrin: b.top >= 0 && b.bottom <= innerHeight + 0.5,
+               rahmenDrin: p.left >= -1 && p.right <= innerWidth + 1,
+               seiteRollt: document.documentElement.scrollHeight > innerHeight + 4 };
+    }));
+    await page.evaluate(() => {
+      const b = [...document.querySelectorAll('#ovPanel button')]
+                  .find(x => /WEITER|EINSTECKEN/.test(x.textContent));
+      if(b) b.click();
+    });
+    await page.waitForTimeout(200);
+  }
+  pruef('jedes Blatt der Anlage 2 haelt den Knopf im Bild', a2.every(x => x.knopfDrin), true);
+  pruef('kein Blatt laeuft seitlich ueber', a2.every(x => x.rahmenDrin), true);
+  pruef('die Seite rollt dabei nicht', a2.every(x => !x.seiteRollt), true);
   pruef('Konsole still (Telefon)', laut, []);
   await ctx.close();
 }
