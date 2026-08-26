@@ -583,6 +583,14 @@
   #knRandnotiz.a2::before{content:'*';color:#ceb699;border-color:#8e7e66;
     transform:rotate(0deg);padding:2px 5px;}
   #knRandnotiz.a2{border-color:#8e7e66;color:#e8dcc0;}
+  /* T4: dasselbe Band, dieselbe Stimme, keine Maske. Der Umschlag ist die
+     Stelle, an der Anlage 2 aufhoert zu kommentieren und nur noch feststellt.
+     Deshalb faellt die Marke weg: eine Beilage verweist auf etwas, und hier
+     verweist sie auf nichts. Gedaempft und ohne Kursive, damit der Satz nicht
+     wie ein Randvermerk aussieht, sondern wie ein Satz. Wer die drei Baender
+     nebeneinander sieht, liest die Rangfolge, ohne dass jemand sie erklaert. */
+  #knRandnotiz.umschlag::before{content:none;}
+  #knRandnotiz.umschlag{border-color:#5c5344;color:#cfc6b0;font-style:normal;}
   body.bossvis #knZettel,body.bossvis #knRandnotiz{top:78px;}
 
   /* --- Symbolschloss (Kammer-Modul, Phase 2) --- */
@@ -9284,6 +9292,10 @@ function loadLevel2(){
   refreshFloor(); // Map ändert sich optisch in Schatten-Biom
   floaters.push({x:player.x, y:player.y-40, txt:'MASSENVORGANG ERÖFFNET', col:'#ff0055', t:4.0, big:true});
   auftragEreignis('ablage');   // W4
+  // T4: Ablage V, der ungeleerte Papierkorb. Hier unten steht keine Dorffigur,
+  // anlage2Allein() gibt auf dieser Ebene deshalb ohne Messung wahr zurueck.
+  anlage2Notiz('ebene');
+  anlage2Umschlag('ersteEbene');
 }
 
 function moveEnt(e,dx,dy){
@@ -9603,6 +9615,11 @@ function killMon(m){
   // Zustellung wäre ein Questmarker, siehe den Kommentar an winGame().
   if(m.def.boss && !kammer){
     el('bossbar').style.display='none'; MUS.swell();
+    // T4: der einzige Sieg, den dieses Haus kennt. Der Umschlag wird nur
+    // vermerkt und faellt spaeter: hier laeuft gerade eine Fanfare, und wer in
+    // eine Fanfare hineinspricht, hat die Bremse nicht verstanden.
+    anlage2Notiz('bosssieg');
+    anlage2Umschlag('ersterBosssieg');
     if(vorgangVertagt()){
       floaters.push({x:m.x, y:m.y-46, txt:VERTAGT_ZEILEN[0], col:'#ff0055', t:4.5, big:true});
       floaters.push({x:m.x, y:m.y-24, txt:VERTAGT_ZEILEN[1], col:'#c9b98a', t:5.0});
@@ -9705,6 +9722,18 @@ function hurtPlayer(raw){
   floaters.push({x:player.x, y:player.y-24, txt:String(d), col:'#ffe14d', t:0.8, big:true});
   if(player.hp<=0){
     player.hp=0; player.dead=true;
+    // T4: Anlage 2 sagt hier nichts, und das ist die Entscheidung, nicht die
+    // Beschraenkung. Zwei Gruende, und der zweite ist der wichtigere:
+    // technisch liegt in diesem Moment ein Overlay ueber dem Band und
+    // knLineErlaubt() sperrt bei player.dead ohnehin; menschlich redet man
+    // niemandem in sein Scheitern hinein. Vermerkt wird der Anlass trotzdem,
+    // ausgeliefert beim Wiederantritt (knTick, unten). Das Muster ist
+    // kn.pending.feierabend1 aus der Schichtuebergabe, und es traegt hier noch
+    // mehr: der Vermerk ueberlebt sogar, wenn jemand den Browser auf dem
+    // Feierabendbildschirm schliesst.
+    kn.pending.niederlage = true;
+    anlage2Umschlag('ersterTod');
+    saveKn();
     if(CONFIG.schichtModus){ state='feierabend'; endShift('tod'); }
     else { state='dead'; showDead(); }
   }
@@ -10738,6 +10767,18 @@ const knNpc = {key:'knoeterich', figur:KN_FIGUR, x:KN_POS.x, y:KN_POS.y,
 
 const kn = {
   seen:{}, pending:{}, varB:{}, escReady:{},
+  // T4: der Umschlag. Jede dieser Zeilen faellt genau einmal im ganzen Spiel,
+  // und deshalb reicht ein Merker je Zeile nicht: eine Zeile kann faellig sein,
+  // ohne schon gefallen zu sein (der erste Tod schaltet sie scharf, gezeigt wird
+  // sie erst beim Wiederantritt, und dazwischen kann jemand den Browser
+  // schliessen). Zwei Werte statt eines Wahrheitswerts loesen das:
+  //   1  faellig, aber noch nicht gezeigt
+  //   2  gezeigt, fuer immer verbraucht
+  // Geschrieben wird ausschliesslich von anlage2Umschlag() und
+  // anlage2UmschlagTick(), und die pruefen den Schluessel gegen
+  // ANLAGE2_UMSCHLAG. Damit ist die Menge durch die Tabelle gedeckelt und
+  // waechst nicht, wie kn.history es ohne seinen Cap taete.
+  umschlag:{},
   // T3: anlage2Zug zaehlt die Versuche, Anlage 2 aus der Tasche zu bewegen. Er
   // ist der einzige Zaehler, der eine Reihenfolge traegt statt einer Menge: die
   // Sprueche kommen der Reihe nach, nicht zufaellig, und die Reihe wird
@@ -10776,7 +10817,14 @@ const kn = {
          // ersten Rucksackoeffnen prueft ihn ebenfalls. Kein zweites Feld im
          // Spielstand, kein Eintrag in player.bag: sie belegt kein Fach, sie
          // steckt an der Urkunde.
-         anlage2Da:false},
+         anlage2Da:false,
+         // T4: der Kipppunkt. Wer im Gespraechsbaum ihre formlose Bitte annimmt
+         // ("Sehen Sie ab und zu nach, ob ich noch da bin."), setzt ihn, und
+         // zwar ueber szeneEnde(key, merker) wie baumEimer und die drei Szenen.
+         // Er gibt kein Gold, keine Erfahrung und keinen Vorteil, er oeffnet
+         // ausschliesslich waermere Zeilen (Schalter merker). Das ist die
+         // Belohnung, die ein Baum geben darf, siehe F1d weiter oben.
+         anlage2Dank:false},
   wissensluecke:{zauber:false, kochen:false, kammer:false, befaehigung:false},   // je Wissenslücke höchstens ein Steckenbleib-Schub, für immer
   beats:{beat1:false, beat2:false, beat3:false},
   regler:'gespraechig',            // 'gespraechig' | 'dienstlich' | 'schweigt' — Dienstzettel laufen in jeder Stellung
@@ -10788,6 +10836,12 @@ const kn = {
     const o = JSON.parse(raw); if(!o || typeof o !== 'object') return;
     if(o.seen) kn.seen = o.seen;
     if(o.pending) kn.pending = o.pending;
+    // T4: uebernommen wie kn.seen und nicht per Object.assign, denn die
+    // Schluessel sind dynamisch. NICHT gegen ANLAGE2_UMSCHLAG gefiltert: die
+    // Tabelle steht zweihundert Zeilen weiter unten, loadKn() laeuft hier auf
+    // Skriptebene, und ein Zugriff von hier waere die Temporal Dead Zone.
+    // Aufgeraeumt wird stattdessen beim Schreiben, siehe anlage2Umschlag().
+    if(o.umschlag) kn.umschlag = o.umschlag;
     if(o.varB) kn.varB = o.varB;
     if(o.escReady) kn.escReady = o.escReady;
     if(o.counters) Object.assign(kn.counters, o.counters);
@@ -10905,34 +10959,98 @@ const ANLAGE2_NOTIZ = {
          'Sauber getroffen. Siehe oben.',
          'Das nennt man Bearbeitung mit Nachdruck.',
          'Ein Treffer. Anlage dazu: ich.',
-         {z:'Sie werden besser. Ich merke sowas.', abStufe:5}],
+         {z:'Sie werden besser. Ich merke sowas.', abStufe:5},
+         {z:'Sie werden wirklich besser. Vermerkt.', merker:'anlage2Dank'}],
   ultimate: ['Sehr viel Form für ein Blatt Papier.',
              'Das Konfetti geht auf Ihre Kostenstelle.',
              'Ich lag schon bei ruhigeren Vorgängen.',
-             'Beeindruckend. Und nirgends beantragt.'],
+             'Beeindruckend. Und nirgends beantragt.',
+             {z:'Das hat niemand gesehen. Nur die Anlage.', allein:true}],
   levelup: ['Eine Stufe. Kein Titel. Siehe Laufbahn.',
             'Fortschritt, noch nicht aktenkundig.',
             'Ich vermerke das. Für uns beide.',
             'Gestiegen. Das Gehalt bleibt, wo es lag.',
-            {z:'Jetzt haben Sie sogar einen Titel dafür.', abRang:1}],
+            {z:'Jetzt haben Sie sogar einen Titel dafür.', abRang:1},
+            {z:'Aufstieg vermerkt. Von mir persönlich.', merker:'anlage2Dank'}],
   kammerAbbruch: ['Abbruch ist ein Verfahrensschritt.',
                   'Rückzug. Ordnungsgemäß und ohne Beute.',
                   'Nicht jede Tür will heute etwas von uns.',
-                  'Leer ist auch eine Auskunft.'],
+                  'Leer ist auch eine Auskunft.',
+                  {z:'Niemand hat es gesehen. Auch gut.', allein:true}],
   fluch: ['Nebenbestimmungen. Ich lese sowas gern.',
           'Das Kleingedruckte liest sonst niemand.',
           'Sie unterschreiben schneller als Zwirn.',
-          'Steht alles drin. Wie immer. Wie bei mir.'],
+          'Steht alles drin. Wie immer. Wie bei mir.',
+          {z:'Die Auflagen häufen sich. Wie immer.', abAkt:3}],
   goldfund: ['Buchen Sie das. Ich sage es nur ungern.',
              'Ein Posten. Kassenzeichen folgt bestimmt.',
              'Geld ist ein Vorgang mit Zahlen darin.',
-             'Schön. Und jetzt kommt der Abzug.'],
+             'Schön. Und jetzt kommt der Abzug.',
+             {z:'Ihr Fund. Ich sage nichts weiter dazu.', merker:'anlage2Dank'}],
   untaetigkeit: ['Sie stehen. Ich hänge. Wir passen gut.',
                  'Pause. Ich sage niemandem etwas.',
                  'Ich habe Jahrzehnte gewartet. Nur zu.',
                  'Stillstand. Da kenne ich mich aus.',
-                 {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:5}],
+                 {z:'Wir zwei stehen hier ganz gut zusammen.', abSchicht:5},
+                 {z:'Sie sehen nach. Wie besprochen.', merker:'anlage2Dank'},
+                 {z:'Wir zwei. Sonst niemand. Angenehm.', allein:true}],
+  // T4: die drei neuen Anlaesse. Sie schliessen die Luecken im Bogen, die T3
+  // offengelassen hat, und zwar die drei schwersten Momente des Spiels: die
+  // Niederlage, der Sieg ueber einen Endgegner und der Abstieg ins Schattenland.
+  //
+  // Zur Niederlage, denn sie ist die Entscheidung, an der diese Figur haengt:
+  // Anlage 2 sagt hier NICHTS im Moment des Scheiterns. Sie sagt es beim
+  // Wiederantritt. Der Unterschied ist die ganze Figur: wer jemandem in sein
+  // Scheitern hineinredet, ist ein Kommentator, wer wartet, ist ein Begleiter.
+  // Technisch traegt das kn.pending.niederlage, siehe anlage2Notiz() und knTick().
+  niederlage: ['Wieder im Dienst. Siehe vorhin.',
+               'Unterbrechung beendet. Weiter im Text.',
+               'Das kommt vor. Steht sogar irgendwo.',
+               'Sie sind wieder aufgenommen worden.',
+               {z:'Ich habe die Stelle vermerkt. Nur so.', merker:'anlage2Dank'}],
+  bosssieg: ['Erledigt. Das ist selten das Wort.',
+             'Der Vorgang ist abgeschlossen. Endlich.',
+             'Sowas kommt in keinem Formular vor.',
+             'Ich lag noch nie bei einem Sieg dabei.',
+             {z:'Unter uns: das war beachtlich.', allein:true}],
+  ebene: ['Ablage V. Der Papierkorb, ungeleert.',
+          'Hier wird nichts mehr beantwortet.',
+          'Tiefer geht die Ablage nicht.',
+          'Dunkel. Immerhin bleicht hier nichts aus.',
+          {z:'Bleiben Sie in meiner Nähe. Andersrum.', allein:true}],
 };
+
+// T4: der Umschlag. Zehn bis vierzehn Zeilen, jede genau einmal im ganzen
+// Spiel, an den Stellen mit Gewicht. Das ist die Gegenmenge zum Kanal oben:
+// dort Pools, aus denen gezogen wird, hier eine Liste, aus der verbraucht wird.
+//
+// Drei Regeln, und die dritte ist die schwerste:
+//   1. kurz, ohne Pointe, ohne Maske
+//   2. nur unter vier Augen (anlage2UmschlagTick prueft anlage2Allein())
+//   3. KEIN Wort darueber, was sie dabei empfindet
+// Die Bauform steht auf dem fuenften Blatt ihrer Einfuehrung und heisst dort
+// "Sie lesen gerade.": eine Feststellung, dann eine hoefliche Einordnung, und
+// dann Schluss. Wer beim Schreiben den Reflex verspuert, doch noch eine Pointe
+// anzuhaengen, muss ihn aushalten. Genau das Weglassen ist hier die Figur.
+//
+// Die Reihenfolge ist die Auslieferungsfolge, wenn mehreres zugleich faellig
+// ist. Jedes id braucht eine Stelle im Code, die es scharf schaltet, sonst ist
+// es eine Zeile, die nie jemand hoert; anlage2Assert() prueft das gegen die
+// Liste ANLAGE2_UMSCHLAG_GEARMT wie den Kanal gegen "gerufen".
+const ANLAGE2_UMSCHLAG = [
+  {id:'ersterTod',        z:'Sie waren kurz weg. Ich nicht.'},
+  {id:'ersterFeierabend', z:'Feierabend. Ich bleibe in der Tasche.'},
+  {id:'ersteKammer',      z:'Ein verschlossener Vorgang. Vorsicht.'},
+  {id:'ersterBosssieg',   z:'Das war groß. Ich sage sonst nichts.'},
+  {id:'ersteEbene',       z:'Es ist still hier. Das kenne ich.'},
+  {id:'ersteSperrablage', z:'Tiefer war ich noch nie beigefügt.'},
+  {id:'ersterRang',       z:'Ein neuer Titel. Der steht Ihnen zu.'},
+  {id:'dank',             z:'Sie haben zugesagt. Ich vermerke das.'},
+  {id:'akt2',             z:'Zehn Schichten. Sie sind noch hier.'},
+  {id:'akt3',             z:'Wir sind länger zusammen als üblich.'},
+  {id:'akt4',             z:'Es wird ernst. Ich bleibe, wo ich bin.'},
+  {id:'akt5',             z:'Was auch kommt: die Klammer hält.'},
+];
 
 // Die Sprueche beim Versuch, sie aus der Tasche zu bewegen. Der Projektinhaber
 // hat sie ausdruecklich bestellt ("wenn man es bewegen will gibt's n Spruch.
@@ -11019,6 +11137,22 @@ const ZUSATZ_SCHALTER = {
                        : w === 'antritt' ? shiftT > 0.75 * CONFIG.schichtDauer
                                          : shiftT < 0.25 * CONFIG.schichtDauer,
               pruef: w => (w === 'antritt' || w === 'feierabend') ? null : 'nennt eine Schichtphase, die es nicht gibt: ' + w},
+  // T4: der elfte Schalter, und der erste, der nicht den Fortschritt liest,
+  // sondern den Ort. Eine so gegatete Zeile faellt nur, wenn keine Dorffigur in
+  // der Naehe steht. Das ist Anlage 2s zweite Bühne: unter vier Augen wird sie
+  // leiser und echter, in Hoerweite bleibt sie die Beilage.
+  //
+  // Der Schalter kennt nur den Wert true. Ein "allein:false" waere die Aussage
+  // "diese Zeile faellt nur vor Publikum", und die gibt es bei ihr nicht: sie
+  // BEMERKT ihr Publikum nicht (der blinde Fleck, siehe figuren-leben.md). Wer
+  // hier false schreibt, hat die Figur missverstanden, und pruef sagt es ihm.
+  //
+  // frei ruft anlage2Allein(), deklariert im T3-Block weiter unten. Das ist
+  // erlaubt und dieselbe Bauart wie lang -> langFertig(): frei laeuft erst zur
+  // Laufzeit. pruef fasst dagegen keinen Spielzustand an, es prueft nur den
+  // Wert, und darf deshalb in knAssertCaps() auf Skriptebene laufen.
+  allein:    {frei: w => !w || anlage2Allein(),
+              pruef: w => w === true ? null : 'allein kennt nur true, nicht: ' + w},
 };
 
 // Woher ein Anlass kommt. Ein Pool an einer Figur, den nichts auslöst, ist eine
@@ -11123,6 +11257,10 @@ function knAssertCaps(){
   // hier geht es nur um den Text. Dasselbe fuer die Bewegungssprueche.
   for(const anlass in ANLAGE2_NOTIZ) for(const e of ANLAGE2_NOTIZ[anlass]) rows.push([typeof e === 'string' ? e : e.z, 44]);
   for(const l of ANLAGE2_BEWEGUNG) rows.push([l,44]);
+  // T4: der Umschlag steht im selben Band und laeuft deshalb durch denselben
+  // Deckel und dieselben sechs Textpruefungen. Er darf nicht laenger sein, nur
+  // weil er stiller ist.
+  for(const u of ANLAGE2_UMSCHLAG) rows.push([u.z,44]);
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
   // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
   // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
@@ -11373,12 +11511,19 @@ function knOnZettelClosed(){
 // Fussnotenmarke) und an der Farbe. Die Klasse wird bei jeder Zeile neu
 // gesetzt, nicht nur hinzugefuegt: sonst behaelt das Band die Marke der
 // vorigen Stimme.
+// T4: eine dritte Stimme im selben Band, und sie ist dieselbe Figur. Der
+// Umschlag ist Anlage 2 ohne Maske: keine Marke davor (die Fussnotenmarke
+// gehoert der Beilage, die etwas beifuegt, und hier fuegt sie nichts bei),
+// gedaempfte Farbe, und laenger stehend. Fuenf statt drei Sekunden, weil diese
+// Zeilen nichts kommentieren, was gerade passiert, sondern etwas feststellen,
+// was gerade vorbei ist. Wer sie ueberliest, hat sie fuer immer ueberlesen.
 function knShowRandLine(line, wer){
   setTxt('knRandTxt', line);
   const band = el('knRandnotiz');
   band.classList.toggle('a2', wer === 'a2');
+  band.classList.toggle('umschlag', wer === 'u');
   band.classList.add('show');
-  knRand.active = true; knRandHideAt = gameT + 3;
+  knRand.active = true; knRandHideAt = gameT + (wer === 'u' ? 5 : 3);
   knLastRandnotizT = gameT;
 }
 // Seiteneffektfrei, wird auf dem Notiz-Pfad bewusst zweimal ausgewertet.
@@ -11444,6 +11589,78 @@ function anlage2Bewegung(){
   const n = ANLAGE2_BEWEGUNG.length, i = kn.counters.anlage2Zug | 0;
   kn.counters.anlage2Zug = i + 1; saveKn();
   return i < n ? ANLAGE2_BEWEGUNG[i] : ANLAGE2_BEWEGUNG[n - 3 + ((i - n) % 3)];
+}
+
+// ===========================================================================
+//  T4: die zweite Buehne. Unter vier Augen ist sie eine andere.
+// ===========================================================================
+//
+// Steht hier unten und nicht bei der Schaltertabelle, weil sie npcs, figDa()
+// und KN_POS liest und alle drei erst spaeter deklariert sind. Gerufen wird sie
+// ausschliesslich zur Laufzeit (ZUSATZ_SCHALTER.allein.frei und der Umschlag),
+// nie auf Skriptebene, und damit ist die Temporal Dead Zone kein Thema.
+//
+// Der Radius ist die Sichtweite ueber das Bildschirmband, dieselbe Groesse, mit
+// der HINWEISE die Tuer des Amtes anmeldet. Quadriert verglichen, weil eine
+// Wurzel je Dorffigur und Zeile Unsinn waere (dieselbe Regel wie im Wandern).
+//
+// Drei Faelle geben ohne Messung wahr zurueck, und alle drei sind keine
+// Abkuerzung, sondern die Wahrheit: in einer Kammer ist npcs geleert, auf der
+// zweiten Ebene wird das Dorf weder gezeichnet noch angeboten, und in beiden
+// Faellen steht dort tatsaechlich niemand. Knoeterich steht ausserhalb von
+// npcs und muss einzeln gefragt werden. Wer ihn vergisst, ist "allein" mitten
+// auf dem Dorfplatz.
+//
+// Monster zaehlen nicht. Ein Vorgang ist kein Publikum.
+const A2_ALLEIN_R2 = 450 * 450;
+function anlage2Allein(){
+  if(kammer || currentLevel !== 1) return true;
+  if(sqDist(player.x, player.y, KN_POS.x, KN_POS.y) < A2_ALLEIN_R2) return false;
+  for(const n of npcs)
+    if(figDa(n.figur) && sqDist(player.x, player.y, n.x, n.y) < A2_ALLEIN_R2) return false;
+  return true;
+}
+
+// Eine Umschlagzeile scharf schalten. Gezeigt wird sie hier NICHT: der Moment,
+// in dem sie faellig wird, ist fast nie der Moment, in dem sie gelesen werden
+// kann (beim Tod liegt ein Overlay ueber dem Band, beim Bosssieg laeuft eine
+// Fanfare, und in Hoerweite einer Dorffigur sagt sie sowieso nichts). Deshalb
+// nur ein Vermerk, und die Auslieferung uebernimmt der Takt.
+//
+// Unbekannte ids sind ein No-Op und kein Fehler: das haelt kn.umschlag auf die
+// Tabelle gedeckelt, auch wenn ein spaeterer Bauabschnitt eine Zeile umbenennt.
+function anlage2Umschlag(id){
+  if(!kn.flags.anlage2Da) return false;
+  if(!ANLAGE2_UMSCHLAG.some(u => u.id === id)) return false;
+  if(kn.umschlag[id]) return false;            // faellig oder laengst verbraucht
+  kn.umschlag[id] = 1; saveKn();
+  return true;
+}
+
+// Die Auslieferung, einmal je Takt. Sie nimmt den ersten faelligen Eintrag in
+// Tabellenreihenfolge, und sie nimmt ihn nur, wenn niemand zuhoert.
+//
+// Die Bedingungen sind mit Absicht dieselben wie fuer jede andere Zeile
+// (knLineErlaubt: Tonstellung, Spielzustand, Vierzig-Sekunden-Takt, kein
+// Dienstzettel, kein laufendes Kammermodul) und eine mehr. Ein eigener,
+// laxerer Weg waere bequemer und falsch: eine Zeile, die durch den Regler
+// bricht, ist eine Zeile, die der Spieler abgestellt hat.
+//
+// letzterAnlass bleibt unberuehrt. Die Bank auf dem Dorfplatz kommentiert seit
+// W3, was gerade bemerkt wurde, und ein Umschlag wird nicht bemerkt: er faellt
+// nur, wenn niemand in der Naehe ist, und Lott und Pahl haetten sonst eine
+// Meinung zu etwas, das sie nicht gehoert haben koennen.
+function anlage2UmschlagTick(){
+  if(!kn.flags.anlage2Da) return false;
+  for(const u of ANLAGE2_UMSCHLAG){
+    if(kn.umschlag[u.id] !== 1) continue;
+    if(!knLineErlaubt('umschlag')) return false;
+    if(!anlage2Allein()) return false;
+    kn.umschlag[u.id] = 2; saveKn();
+    knShowRandLine(u.z, 'u');
+    return true;
+  }
+  return false;
 }
 
 // 18.5: Knöterich spricht immer vollständig, immer korrekt, immer inklusive
@@ -11589,6 +11806,19 @@ function knTick(dt){
   knIdleT = (state === 'play' && !player.dead) ? knIdleT + dt : 0;
   knUpdateBubble();
 
+  // T4: der Wiederantritt nach einer Niederlage. Er steht VOR der Begruessung,
+  // und die Reihenfolge ist eine Entscheidung: beide konkurrieren um denselben
+  // Vierzig-Sekunden-Takt, und wer gerade gefallen ist, soll den Satz zu seiner
+  // Niederlage hoeren und nicht die Begruessung zur neuen Schicht.
+  //
+  // Die fuenf Sekunden sind dieselbe Karenz wie beim Dienstzettel 'feierabend1':
+  // wer eben erst wieder angetreten ist, laedt noch. knPlayStartT wird von
+  // startShift() UND respawnPlayer() gesetzt, damit gilt das fuer beide
+  // Rueckwege, den mit Schichtuhr und den ohne.
+  if(kn.pending.niederlage && gameT - knPlayStartT >= 5 && anlage2Notiz('niederlage')){
+    kn.pending.niederlage = false; saveKn();
+  }
+
   if(knBegruessungPending && knShowLineGated('begruessung', knBegruessungPending)) knBegruessungPending = null;
 
   if(knZettel.active && gameT >= knZettelHideAt){
@@ -11623,6 +11853,13 @@ function knTick(dt){
   if(knIdleT < 50) knStuckArmed = true;
   if(knIdleT < 25) knIdleNotizDone = false;
   else if(!knIdleNotizDone && anlage2Notiz('untaetigkeit')) knIdleNotizDone = true;
+
+  // T4: der Umschlag ganz zuletzt, und das ist seine Rangfolge. Alles andere im
+  // Band hat einen Anlass, der gerade eben passiert ist; eine Umschlagzeile
+  // wartet ohnehin schon und kann eine Minute laenger warten. Sie prueft
+  // zusaetzlich, dass niemand in der Naehe steht, und faellt deshalb an manchen
+  // Tagen gar nicht. Auch das ist Absicht: was selten ist, wiegt.
+  anlage2UmschlagTick();
 }
 
 // Regler im Inventar unter "Ton": Dienstzettel laufen in jeder Stellung, nur
@@ -12015,6 +12252,7 @@ function betreteKammer(tuer){
   if(kammer || currentLevel !== 1 || tuer.cd > 0) return;
   knIdleT = 0;
   if(!kn.flags.hatKammerBetreten){ kn.flags.hatKammerBetreten = true; saveKn(); }
+  anlage2Umschlag('ersteKammer');   // T4
   owSave = {mapCopy: map.slice(), trees, decos: decos.slice(), critters: critters.slice(),
             npcs: npcs.slice(), monsters: monsters.slice(), drops: drops.slice(), boss, portal,
             level: currentLevel, px: player.x, py: player.y};
@@ -12137,6 +12375,7 @@ function steigeAb(){
   // Schichtuhr haengt (s. phase-m4-zweite-ebene.md, Abschnitt Messung).
   const kinds = waehleModuleBudget(KAM_EBENE2_BUDGET, 1);
   baueEbene(k, kinds);
+  anlage2Umschlag('ersteSperrablage');   // T4
   sfx.warp(); addShake(14, 0.6);
   floaters.push({x: player.x, y: player.y - 46, txt: 'DIE SPERRABLAGE · EBENE ' + (k.ebene + 1),
                  col:'#c77dff', t: 3.0, big: true});
@@ -16826,6 +17065,19 @@ function endShift(reason){
   // ist der einzige Rekordwert, den die Schichtbegrüßung nennen darf.
   kn.pending.feierabend1 = true;
   if(shiftKillsTotal > kn.counters.maxKillsSchicht) kn.counters.maxKillsSchicht = shiftKillsTotal;
+  // T4: sechs Umschlaege haengen an dieser einen Stelle, und das ist kein
+  // Sammelsurium, sondern die Folge davon, dass hier die Schicht hochgezaehlt
+  // wird. Akt und Rang werden im Haus grundsaetzlich ABGELEITET gelesen und nie
+  // als zweites Feld gefuehrt (aktStand, rangStufe); wer die Schwellen
+  // woanders abfaengt, baut die zweite Wahrheit, die W5/W6 gekostet haben.
+  //
+  // Gezeigt wird davon jetzt nichts. Der Bildschirm gehoert gerade dem
+  // Dienstbericht, und das Band liegt darunter. Faellig geschaltet halten die
+  // Zeilen bis zur naechsten ruhigen Minute unter vier Augen, notfalls Tage.
+  anlage2Umschlag('ersterFeierabend');
+  if(rangStufe() >= 1) anlage2Umschlag('ersterRang');
+  const akt = aktStand();
+  for(let a = 2; a <= akt; a++) anlage2Umschlag('akt' + a);
   saveKn();
 
   const killLines = Object.keys(shiftKillsByType).sort((a,b) => shiftKillsByType[b]-shiftKillsByType[a])
@@ -22546,8 +22798,18 @@ SZENEN.baumAnlage2 = {
                 {t:'Bitte sehr.', zu:'dank'},
                 {t:'Später vielleicht.', zu:'kein'},
               ]},
+    // T4: der Kipppunkt der Figur, und er liegt genau hier. Wer zusagt, setzt
+    // den Merker anlage2Dank, und der oeffnet ihre waermeren Zeilen im Band.
+    // Kein Gold, keine Erfahrung, kein Vorteil: die Belohnung ist, dass sie
+    // anders mit einem spricht. Ausgeloest wird er von einer Spieleraktion und
+    // nie von einer Uhr, denn eine Figur, die nach zwanzig Minuten von selbst
+    // zutraulich wird, hat nichts erlebt, sondern nur gewartet.
+    //
+    // Der Weg ist szeneEnde(key, merker), dieselbe Mechanik wie bei baumEimer
+    // und den vier Szenen. Wer die Tafel stattdessen mit dem Kreuz schliesst,
+    // latcht nicht: das Zusagen ist der Ausgang und nicht das Anschauen.
     dank:    {z1:'Sehen Sie ab und zu nach, ob ich noch da bin.', z2:'Mehr nicht. Es genügt völlig.',
-              opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumAnlage2')}]},
+              opts: () => [{t:'Auf Wiedersehen.', tun: () => { anlage2Umschlag('dank'); szeneEnde('baumAnlage2', 'anlage2Dank'); }}]},
     kein:    {z1:'Selbstverständlich. Sie ist formlos.', z2:'Formlose Bitten verjähren nicht.',
               opts: () => [{t:'Auf Wiedersehen.', tun: () => szeneEnde('baumAnlage2')}]},
   },
@@ -23263,12 +23525,19 @@ function szeneAssert(){
   // (9) SZ2: jeder Merker, den eine Szene setzt, muss im Spielstand angelegt
   // sein. Sonst schreibt szeneEnde() ein Feld, das startShift() nicht kennt,
   // und die Szene liefe nach dem naechsten Laden noch einmal.
+  //
+  // T4: die Zeichenklasse hiess bis hierher [a-zA-Z] und war damit blind fuer
+  // jeden Namen mit einer Ziffer darin. Aufgefallen ist es, als der erste
+  // solche dazukam: szeneEnde('baumAnlage2', 'anlage2Dank') fiel aus dem
+  // Filter, und der Guard meldete nichts, weil er nichts fand. Ein Guard, der
+  // stumm ins Leere prueft, ist schlimmer als keiner, denn er beruhigt.
+  // Die acht bestehenden Zwei-Argument-Aufrufe bleiben unberuehrt gruen.
   for(const key in SZENEN){
     const q = String(SZENEN[key].ende || '') + Object.keys(SZENEN[key].knoten)
       .map(k => String(SZENEN[key].knoten[k].opts || '')).join('');
-    const m = q.match(/szeneEnde\('[a-zA-Z]+',\s*'([a-zA-Z]+)'\)/g) || [];
+    const m = q.match(/szeneEnde\('[a-zA-Z0-9]+',\s*'([a-zA-Z0-9]+)'\)/g) || [];
     for(const treffer of m){
-      const merker = treffer.match(/'([a-zA-Z]+)'\)$/)[1];
+      const merker = treffer.match(/'([a-zA-Z0-9]+)'\)$/)[1];
       if(!(merker in kn.flags)) fehler('Szene setzt einen Merker, den der Spielstand nicht kennt', key, merker);
     }
   }
@@ -23334,6 +23603,7 @@ function anlage2Assert(){
   for(const anlass in ANLAGE2_NOTIZ)
     for(const e of ANLAGE2_NOTIZ[anlass]) zeilen.push([typeof e === 'string' ? e : e.z, 'Notiz ' + anlass]);
   for(const l of ANLAGE2_BEWEGUNG) zeilen.push([l, 'Bewegungsspruch']);
+  for(const u of ANLAGE2_UMSCHLAG) zeilen.push([u.z, 'Umschlag ' + u.id]);   // T4
   zeilen.push([anlage2Tooltip().replace(/<[^>]*>/g, ' '), 'Tooltip']);
   for(const [t, wo] of zeilen)
     for(const w of AKTE_SPERRE)
@@ -23366,7 +23636,11 @@ function anlage2Assert(){
   // Kanal hat mit T3 den Sprecher gewechselt, nicht die Schluessel: die Bank
   // haengt mit ihren eigenen Pools an denselben, und ein umbenannter Schluessel
   // wuerde Lott und Pahl verstummen lassen, ohne dass etwas kaputt aussieht.
-  const gerufen = ['crit','levelup','ultimate','fluch','goldfund','kammerAbbruch','untaetigkeit'];
+  // T4 hat drei Anlaesse dazugelegt. niederlage wird nicht dort gerufen, wo er
+  // entsteht, sondern beim Wiederantritt aus kn.pending; fuer diese Pruefung
+  // ist das derselbe Fall, denn gerufen wird er.
+  const gerufen = ['crit','levelup','ultimate','fluch','goldfund','kammerAbbruch','untaetigkeit',
+                   'niederlage','bosssieg','ebene'];
   for(const a of gerufen) if(!(a in ANLAGE2_NOTIZ)) fehler('Ein Anlass wird gerufen, hat aber keinen Pool', a);
   for(const a in ANLAGE2_NOTIZ) if(gerufen.indexOf(a) < 0) fehler('Ein Pool wartet auf einen Anlass, den nichts auslöst', a);
 
@@ -23382,6 +23656,43 @@ function anlage2Assert(){
   // dort fehlt, ist nach dem ersten Laden weg.
   if(!('anlage2Da' in kn.flags)) fehler('Der Merker anlage2Da fehlt in kn.flags');
   if(!('anlage2Zug' in kn.counters)) fehler('Der Zähler anlage2Zug fehlt in kn.counters');
+  // T4: dasselbe fuer den Kipppunkt und den Umschlagspeicher. Der Merker muss
+  // ausserdem in kn.flags stehen, weil ZUSATZ_SCHALTER.merker.pruef jede Zeile
+  // dagegen haelt, die ihn nennt.
+  if(!('anlage2Dank' in kn.flags)) fehler('Der Merker anlage2Dank fehlt in kn.flags');
+  if(!kn.umschlag || typeof kn.umschlag !== 'object') fehler('Das Feld kn.umschlag fehlt in der Vorgabe');
+
+  // (6b) Der Umschlag. Er ist die einzige Textquelle der Figur, die VERBRAUCHT
+  // wird statt gezogen, und deshalb prueft sich hier anderes als bei den Pools:
+  // nicht ob genug da ist, sondern ob jede Zeile genau einmal erreichbar ist.
+  if(ANLAGE2_UMSCHLAG.length < 10 || ANLAGE2_UMSCHLAG.length > 14)
+    fehler('Der Umschlag liegt außerhalb von zehn bis vierzehn Zeilen', ANLAGE2_UMSCHLAG.length);
+  const gesehen = new Set();
+  for(const u of ANLAGE2_UMSCHLAG){
+    if(typeof u.id !== 'string' || !/^[a-zA-Z0-9]+$/.test(u.id)){ fehler('Eine Umschlagzeile trägt keine brauchbare id', u.id); continue; }
+    if(gesehen.has(u.id)) fehler('Zwei Umschlagzeilen tragen dieselbe id', u.id);
+    gesehen.add(u.id);
+    if(typeof u.z !== 'string' || !u.z) fehler('Eine Umschlagzeile hat keinen Text', u.id);
+    // Kein Gate am Umschlag. Er ist per Bauart einmalig und nur unter vier
+    // Augen; ein Schalter daneben waere eine zweite Bedingung an derselben
+    // Zeile und damit eine zweite Wahrheit darueber, wann sie faellt.
+    const extra = Object.keys(u).filter(k => k !== 'id' && k !== 'z');
+    if(extra.length) fehler('Eine Umschlagzeile trägt ein Gate, das ihr nicht zusteht', u.id, extra.join());
+  }
+  // Und dieselbe Symmetrie wie beim Kanal: eine Zeile, die nichts scharf
+  // schaltet, hoert nie jemand. Sie faellt genau einmal im ganzen Spiel, wer
+  // sie vergisst, merkt es also nie.
+  const gearmt = ['ersterTod','ersterFeierabend','ersteKammer','ersterBosssieg','ersteEbene',
+                  'ersteSperrablage','ersterRang','dank','akt2','akt3','akt4','akt5'];
+  for(const id of gearmt) if(!gesehen.has(id)) fehler('Etwas schaltet eine Umschlagzeile scharf, die es nicht gibt', id);
+  for(const id of gesehen) if(gearmt.indexOf(id) < 0) fehler('Eine Umschlagzeile wartet auf ein Ereignis, das sie nie scharf schaltet', id);
+
+  // (6c) Der Schalter fuer die zweite Buehne. Steht er nicht in der Tabelle,
+  // faellt jede allein-gegatete Zeile stumm aus anlage2Zeilen() heraus, und
+  // zwar ohne Fehler: die Schleife dort findet einfach keinen bekannten
+  // Schalter und gibt false zurueck. Genau die Art Ausfall, die man erst ein
+  // halbes Jahr spaeter bemerkt.
+  if(!('allein' in ZUSATZ_SCHALTER)) fehler('Der Schalter allein fehlt in ZUSATZ_SCHALTER');
 
   // (7) Die Blaetter. Beide Auftakte fuehren in denselben Stapel, und beide
   // muessen die Tafelform tragen, die szeneTafel() liest.
@@ -23432,11 +23743,22 @@ function anlage2Assert(){
       if(!raus.length) fehler('Kein Knoten führt aus dem Baum heraus');
       for(const o of raus)
         if(o.t !== 'Auf Wiedersehen.') fehler('Ein Ausgang lautet nicht wörtlich "Auf Wiedersehen."', o.t);
+
+      // (8b) T4: der Kipppunkt haengt an genau einem Ausgang, dem des
+      // dank-Knotens. Geprueft wird am Quelltext der Option und nicht am
+      // Merkerstand, denn der Merker ist zur Startzeit natuerlich false. Faellt
+      // die Verdrahtung heraus, verliert die Figur ihre Entwicklung, ohne dass
+      // irgendetwas kaputt aussieht: die waermeren Zeilen gaebe es dann zwar,
+      // aber nichts wuerde sie je oeffnen.
+      const dankOpts = (b.knoten.dank && b.knoten.dank.opts) ? b.knoten.dank.opts() : [];
+      const latcht = dankOpts.some(o => o && typeof o.tun === 'function' && /anlage2Dank/.test(o.tun.toString()));
+      if(!latcht) fehler('Die angenommene Bitte setzt den Merker anlage2Dank nicht');
     } finally { szene.gefragt = merkG; }
   }
 
   if(ok) console.log(`T3 Anlage 2: ${Object.keys(ANLAGE2_NOTIZ).length} Anlässe, `
-    + `${ANLAGE2_BEWEGUNG.length} Sprüche in Reihe, ${ANLAGE2_BLAETTER.length + 1} Blätter, Brandmauer in Ordnung.`);
+    + `${ANLAGE2_BEWEGUNG.length} Sprüche in Reihe, ${ANLAGE2_BLAETTER.length + 1} Blätter, `
+    + `${ANLAGE2_UMSCHLAG.length} Umschläge, Brandmauer in Ordnung.`);
 }
 anlage2Assert();
 

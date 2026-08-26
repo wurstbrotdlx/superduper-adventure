@@ -297,15 +297,126 @@ async function imDienst(page){
 
   // Die Gates. Eine gegatete Zeile taucht erst auf, wenn ihre Bedingung gilt,
   // und die ungegateten stehen von der ersten Minute an bereit.
+  //
+  // T4: der crit-Pool traegt seit diesem Abschnitt zwei Gates statt einem, die
+  // Stufe und den Kipppunkt. Wer hier nur die Stufe setzt, misst nicht mehr
+  // "alle Zeilen sind offen", sondern "alle bis auf die neue", und bekommt
+  // einen Fehlschlag, der wie ein Fehler aussieht und keiner ist.
   const gate = await page.evaluate(() => {
     const vorher = anlage2Zeilen('crit').length;
     const alle = ANLAGE2_NOTIZ.crit.length;
     player.level = 20;
+    kn.flags.anlage2Dank = true;
     const nachher = anlage2Zeilen('crit').length;
+    kn.flags.anlage2Dank = false;
     return { vorher, nachher, alle };
   });
   pruef('gegatete Zeilen fehlen anfangs', gate.vorher < gate.alle, true);
   pruef('und kommen dazu, wenn die Bedingung gilt', gate.nachher, gate.alle);
+
+  // ---- T4: der Kipppunkt -------------------------------------------------
+  // Die angenommene Bitte ist die einzige Stelle, an der eine Spieleraktion
+  // die Figur dauerhaft veraendert. Geprueft wird beides: dass der Merker
+  // faellt, und dass er wirklich Zeilen oeffnet. Ein Merker, den niemand
+  // liest, waere ein Haken ohne Bild.
+  const kipp = await page.evaluate(() => {
+    kn.flags.anlage2Dank = false;
+    const vorher = anlage2Zeilen('untaetigkeit').length;
+    const opt = SZENEN.baumAnlage2.knoten.dank.opts()[0];
+    opt.tun();
+    return { gesetzt: kn.flags.anlage2Dank, vorher, nachher: anlage2Zeilen('untaetigkeit').length,
+             text: opt.t };
+  });
+  pruef('die angenommene Bitte setzt den Merker', kipp.gesetzt, true);
+  pruef('und ihr Ausgang heisst wie jeder andere', kipp.text, 'Auf Wiedersehen.');
+  pruef('danach steht ihr eine Zeile mehr offen', kipp.nachher > kipp.vorher, true);
+
+  // ---- T4: die zweite Buehne ---------------------------------------------
+  // Unter vier Augen ist sie eine andere. Gemessen wird an der Entfernung zu
+  // Knoeterich, der als einziger nicht in npcs steht: genau ihn zu vergessen
+  // waere der Fehler, den man im Dorf nie bemerkt.
+  const allein = await page.evaluate(() => {
+    const merk = {x: player.x, y: player.y};
+    player.x = KN_POS.x; player.y = KN_POS.y;
+    const beiIhm = anlage2Allein();
+    player.x = merk.x; player.y = merk.y;
+    return { beiIhm, schalter: 'allein' in ZUSATZ_SCHALTER };
+  });
+  pruef('der Schalter steht in der Tabelle', allein.schalter, true);
+  pruef('in Knoeterichs Naehe ist sie nicht allein', allein.beiIhm, false);
+
+  // ---- T4: der Umschlag --------------------------------------------------
+  // Er wird verbraucht statt gezogen. Drei Zusagen: er faellt, er faellt genau
+  // einmal, und er sieht anders aus als alles andere, was sie sagt.
+  const um = await page.evaluate(async () => {
+    kn.flags.anlage2Da = true; kn.umschlag = {}; kn.regler = 'gespraechig';
+    kammer = null;
+    knLastRandnotizT = -999;
+    const id = ANLAGE2_UMSCHLAG[0].id;
+    const gearmt = anlage2Umschlag(id);
+    const zweimal = anlage2Umschlag(id);          // schon faellig, kein zweites Mal
+    // Weit weg von allem, damit anlage2Allein() wahr wird.
+    const merk = {x: player.x, y: player.y};
+    player.x = 60 * 32; player.y = 300 * 32;
+    const gefallen = anlage2UmschlagTick();
+    const band = document.getElementById('knRandnotiz');
+    const optik = { umschlag: band.classList.contains('umschlag'), a2: band.classList.contains('a2'),
+                    marke: getComputedStyle(band, '::before').content };
+    const stand = kn.umschlag[id];
+    knLastRandnotizT = -999;
+    const nochmal = anlage2UmschlagTick();        // verbraucht, faellt nie wieder
+    player.x = merk.x; player.y = merk.y;
+    return { gearmt, zweimal, gefallen, stand, optik, nochmal,
+             text: document.getElementById('knRandTxt').textContent, soll: ANLAGE2_UMSCHLAG[0].z };
+  });
+  pruef('der Umschlag laesst sich scharf schalten', um.gearmt, true);
+  pruef('aber nicht zweimal', um.zweimal, false);
+  pruef('und faellt unter vier Augen', um.gefallen, true);
+  pruef('mit dem Text der Tabelle', um.text, um.soll);
+  pruef('danach ist er verbraucht', um.stand, 2);
+  pruef('und faellt kein zweites Mal', um.nochmal, false);
+  pruef('das Band traegt seine stille Kleidung', um.optik.umschlag, true);
+  pruef('und nicht ihre Fussnotenmarke', um.optik.a2, false);
+  pruef('die Marke faellt ganz weg', um.optik.marke, 'none');
+
+  // Und er ueberlebt den Neustart, in beiden Staenden. Das ist der Grund fuer
+  // die Zweiwertigkeit: ein faelliger Umschlag, der beim Schliessen des
+  // Browsers verfaellt, ist eine Zeile, die niemand je hoert.
+  const nachLaden = await page.evaluate(() => {
+    kn.umschlag = {ersterTod: 1, dank: 2}; saveKn();
+    const roh = JSON.parse(localStorage.getItem(KN_KEY));
+    return roh.umschlag;
+  });
+  pruef('beide Staende stehen im Spielstand', nachLaden, {ersterTod: 1, dank: 2});
+
+  // ---- T4: die drei neuen Anlaesse ---------------------------------------
+  const neu = await page.evaluate(() => {
+    const r = {};
+    for(const a of ['niederlage','bosssieg','ebene']){
+      knLastRandnotizT = -999;
+      r[a] = anlage2Notiz(a) && document.getElementById('knRandnotiz').classList.contains('a2');
+    }
+    return r;
+  });
+  pruef('die Niederlage hat ihre Zeilen', neu.niederlage, true);
+  pruef('der Bosssieg auch', neu.bosssieg, true);
+  pruef('und die zweite Ebene', neu.ebene, true);
+
+  // Der Wiederantritt: die Zeile zur Niederlage haengt an kn.pending und faellt
+  // erst, wenn der Spieler wieder steht. Sie im Moment des Scheiterns zu sagen
+  // waere die Figur, die dieses Haus nicht will.
+  const spaet = await page.evaluate(() => {
+    kn.pending.niederlage = true; knLastRandnotizT = -999;
+    knPlayStartT = gameT;                 // gerade erst angetreten
+    knTick(0.016);
+    const sofort = kn.pending.niederlage;
+    knPlayStartT = gameT - 10;            // zehn Sekunden spaeter
+    knLastRandnotizT = -999;
+    knTick(0.016);
+    return { sofort, danach: kn.pending.niederlage };
+  });
+  pruef('beim Wiederantritt schweigt sie noch', spaet.sofort, true);
+  pruef('und sagt es wenige Sekunden spaeter', spaet.danach, false);
 
   pruef('Konsole still (Kanal)', laut, []);
   await ctx.close();
