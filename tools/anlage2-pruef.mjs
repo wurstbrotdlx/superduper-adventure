@@ -332,8 +332,14 @@ async function imDienst(page){
   pruef('danach steht ihr eine Zeile mehr offen', kipp.nachher > kipp.vorher, true);
 
   // ---- T4-Nachlese: ganz gelesen -----------------------------------------
-  // Ihre Besessenheit ist, EINMAL GANZ gelesen zu werden. Wer alle sieben
-  // Fragen gestellt hat, hat das getan, und seit der Nachlese sagt sie es.
+  // Ihre Besessenheit ist, EINMAL GANZ gelesen zu werden. Wer alle ihre Fragen
+  // gestellt hat, hat das getan, und seit der Nachlese sagt sie es.
+  //
+  // T6-Nachlese: die Zahl steht hier als feste Erwartung und ist damit eine
+  // Stolperdrahtzeile, keine Rechnung. T5b hat ihr die achte Frage gegeben
+  // ("Erklaeren Sie mir diese Welt.") und diese beiden Zeilen nicht nachgezogen;
+  // der Lauf stand seither auf 74 von 76. Genau dafuer ist die feste Zahl da:
+  // wer ihren Baum anfasst, soll hier anhalten muessen.
   // Geprueft wird die Kante und nicht nur das Ergebnis: nach sechs Fragen darf
   // nichts scharf sein, nach der siebten muss es das.
   //
@@ -361,13 +367,13 @@ async function imDienst(page){
              inTabelle: ANLAGE2_UMSCHLAG.some(u => u.id === 'ganzGelesen'),
              zweimal: (() => { const v = kn.umschlag.ganzGelesen; haken(keys[0]); return kn.umschlag.ganzGelesen === v; })() };
   });
-  pruef('sie hat sieben Fragen', ganz.keys, 7);
-  pruef('nach sechs Fragen ist nichts scharf', ganz.nachSechs, 0);
-  pruef('die siebte schaltet den Umschlag scharf', ganz.nachSieben, 1);
+  pruef('sie hat acht Fragen', ganz.keys, 8);
+  pruef('vor der letzten Frage ist nichts scharf', ganz.nachSechs, 0);
+  pruef('die letzte schaltet den Umschlag scharf', ganz.nachSieben, 1);
   pruef('und die Zeile steht in der Tabelle', ganz.inTabelle, true);
-  pruef('die sieben Fragen liegen in der Ablage', ganz.abgelegt.fragen, 7);
+  pruef('die acht Fragen liegen in der Ablage', ganz.abgelegt.fragen, 8);
   pruef('die scharfe Zeile liegt dort ebenfalls', ganz.abgelegt.scharf, 1);
-  pruef('eine achte Frage schaltet nichts nach', ganz.zweimal, true);
+  pruef('eine weitere Frage schaltet nichts nach', ganz.zweimal, true);
 
   // ---- T4: die zweite Buehne ---------------------------------------------
   // Unter vier Augen ist sie eine andere. Gemessen wird an der Entfernung zu

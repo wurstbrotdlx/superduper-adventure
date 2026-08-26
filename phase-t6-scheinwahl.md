@@ -300,43 +300,74 @@ gefährdete. Auf 390x844 hält er.
 | Lauf | Ergebnis |
 |---|---|
 | `tools/empfang-pruef.mjs` | **96 von 96** (war 76) |
+| `tools/anlage2-pruef.mjs` | **76 von 76** (stand auf 74, siehe unten) |
 | `tools/menue-pruef.mjs` | 78 von 78 |
 | `tools/szene-pruef.mjs` | 49 von 49 |
 | `tools/mitteilung-pruef.mjs` | 32 von 32 |
 | `tools/versuchung-pruef.mjs` | 67 von 67 |
-| `tools/anlage2-pruef.mjs` | 74 von 76, siehe unten |
 
 Beim Laden: Konsole still, keine Meldung. Alle Zahlen auf dem Stand **nach** dem
 Merge von T5, nicht davor.
 
-### Ein Rotstand, der nicht hierher gehoert
+### Eine fremde Prüfzahl, doch nachgezogen
 
-`anlage2-pruef.mjs` meldet zweimal dasselbe:
+`anlage2-pruef.mjs` stand auf 74 von 76, mit zweimal `sieben Fragen, ist=8`. T5b
+hatte ihrem Baum die achte Frage gegeben („Erklären Sie mir diese Welt.") und
+die beiden Zählzeilen nicht mitgenommen. Nachgemessen statt vermutet, in einem
+eigenen Worktree gegen `origin/main`: **dort dieselben zwei.**
 
-```
-FEHL  sie hat sieben Fragen                    ist=8 soll=7
-FEHL  die sieben Fragen liegen in der Ablage   ist=8 soll=7
-```
+Erst hier draußen gelassen, dann auf Ansage doch mitgenommen. Die Zahl bleibt
+eine feste Erwartung und wird **nicht** aus der Quelle gerechnet: sie ist als
+Stolperdraht gemeint, und genau als solcher hat sie funktioniert. Wer ihren Baum
+anfasst, soll hier anhalten müssen. Der Kommentar darüber sagt das jetzt.
 
-**Das ist nicht dieser Bauabschnitt.** T5b hat ihrem Gesprächsbaum die achte
-Frage gegeben („Erklären Sie mir diese Welt."), ohne die beiden Zählzeilen
-nachzuziehen. Nachgemessen statt vermutet, in einem eigenen Worktree gegen
-`origin/main` und über einen zweiten Server: **dort dieselben zwei, ebenfalls
-74 von 76.** Mein Diff fasst `baumAnlage2.fragen` mit keiner Zeile an und
-`tools/anlage2-pruef.mjs` überhaupt nicht.
+Vier Nachbarzeilen heißen dabei nicht mehr „die siebte" und „nach sechs Fragen",
+sondern „die letzte" und „vor der letzten". Dieselbe Prüfung, nur ohne Zahl im
+Namen, damit die nächste Frage nicht wieder vier Zeilen veraltet.
 
-Die Behebung sind zwei Zahlen, und sie gehört zu T5:
+---
 
-```js
-pruef('sie hat sieben Fragen', …, 7);   →  acht Fragen, 8
-```
+## 7a. Was das Hinsehen ergeben hat, und was es nicht ergeben hat
 
-Hier nicht mitgemacht, weil ein Bauabschnitt, der fremde Prüfzahlen nachzieht,
-seine eigene Grenze verliert.
+Die Prüfläufe klicken sich durch den Erstkontakt, aber sie sehen ihn nicht an.
+Zwölf Bildschirmabzüge auf 1100x760 und 390x844, jede Stufe einzeln.
 
-**Im Bild durchgespielt**, beide Wege: über die Ernennung einmal glatt
-angenommen, einmal viermal abgelehnt bis zum grauen Knopf, und über
-`Erst den Vordruck` in die Nachholung, wo dieselbe Wahl steht.
+**Der gesperrte Knopf sieht gesperrt aus.** Gemessen statt betrachtet:
+`rgb(74,62,32)` auf `rgb(122,110,80)`, `cursor: not-allowed`, `disabled`, auf
+beiden Größen. LESEN bleibt daneben golden. Der Blattzähler steht auf allen fünf
+Stufen auf „Blatt II von VI".
+
+**Und ein Fund, den kein Guard sehen kann.** Der Textkasten der Tafel läuft über,
+und die letzten Zeilen der fünften Stufe standen unter der Kante. Betroffen war
+ausgerechnet die wärmste Zeile der Figur. Der bestehende Lauf hatte das nicht
+gemerkt, weil er prüft, ob der **Knopf** im Bild steht, und der stand.
+
+Nachgemessen über fünf Fenstergrößen, `scrollHeight` gegen `clientHeight`, und
+das Ergebnis dreht die Sache um:
+
+| Blatt | 1100x760 | 390x844 |
+|---|---|---|
+| Auftakt (T5c) | +1168 px | +1163 px |
+| Stufe 1 | +90 px | +76 px |
+| Stufe 2 | +60 px | +74 px |
+| **Stufe 5, vorher** | **+231 px** | **+170 px** |
+| **Stufe 5, jetzt** | **+117 px** | **+20 px** |
+| Blatt 3 bis 6 (T3) | +425 bis +599 px | +364 bis +642 px |
+
+**Der Überlauf ist der Normalfall dieses Stapels und keine Neuerung von T6.**
+Der Auftakt läuft um mehr als tausend Pixel über, die vier Blätter aus T3 um
+vierhundert bis sechshundert. Rollen im Inneren der Urkunde ist seit SZ4 die
+beschlossene Bauform.
+
+Trotzdem nachgebessert, und zwar aus einem Grund, der nur für diese eine Tafel
+gilt: **auf allen anderen Blättern steht unten WEITER, auf dieser steht eine
+Entscheidung.** Wer nicht rollt, wählt, ohne ihre Antwort gelesen zu haben. Die
+fünfte Stufe hat deshalb ihre Regieangabe abgegeben und zwei Amtszeilen zu einer
+zusammengezogen; kein Wort von ihr ist gestrichen. Der Überlauf ist damit
+halbiert und auf dem Telefon praktisch weg.
+
+Auf 1100x760 bleiben 117 Pixel. Weiter zu kürzen hieße, die Pointe gegen einen
+Maßstab zu stutzen, den kein anderes Blatt dieses Stapels erfüllt.
 
 ---
 
