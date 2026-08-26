@@ -10965,6 +10965,7 @@ const ESCALATE_DEFS = {
 // ===========================================================================
 const ANLAGE2_NOTIZ = {
   crit: ['Das saß. Und zwar richtig.',
+         'Das Aktenzeichen steht klein am Rand.',
          'Sauber getroffen. Das können Sie also.',
          'Im Haus hieße das Bearbeitung. Hier: bumm.',
          'Getroffen. Ich habe zugesehen.',
@@ -10987,6 +10988,7 @@ const ANLAGE2_NOTIZ = {
                   'Leer ist auch eine Antwort.',
                   {z:'Keiner hat es gesehen. Auch gut.', allein:true}],
   fluch: ['Das Kleingedruckte. Ich mag sowas.',
+          'Beglaubigt wurde es. Deshalb gibt es das.',
           'Das Kleingedruckte liest sonst niemand.',
           'Sie schreiben schneller als Zwirn.',
           'Steht alles drin. Wie bei mir auch.',
@@ -10997,6 +10999,8 @@ const ANLAGE2_NOTIZ = {
              'Schön. Und gleich will es jemand.',
              {z:'Ihr Fund. Ich sage nichts weiter dazu.', merker:'anlage2Dank'}],
   untaetigkeit: ['Sie stehen. Ich hänge. Passt gut.',
+                 'Was liegen bleibt, steht irgendwann auf.',
+                 'Die Wiese heißt amtlich Ablage A. Wirklich.',
                  'Pause. Ich sage keinem was.',
                  'Ich habe Jahrzehnte gewartet. Nur zu.',
                  'Stillstand. Da kenne ich mich aus.',
@@ -11018,11 +11022,13 @@ const ANLAGE2_NOTIZ = {
                'Sie durften wiederkommen. Schön.',
                {z:'Ich habe mir die Stelle gemerkt.', merker:'anlage2Dank'}],
   bosssieg: ['Erledigt. Das Wort hört man selten.',
+             'Konfetti heißt: der Vorgang ist durch.',
              'Das ist durch. Endlich mal etwas.',
              'Dafür gibt es kein Formular. Gut so.',
              'Ich lag noch nie bei einem Sieg dabei.',
              {z:'Unter uns: das war beachtlich.', allein:true}],
   ebene: ['Ablage V. Der Korb, nie geleert.',
+          'Tiefer als Ablage V geht es nicht.',
           'Hier antwortet niemand mehr.',
           'Tiefer geht die Ablage nicht.',
           'Dunkel. Immerhin bleicht hier nichts aus.',
@@ -22790,7 +22796,15 @@ SZENEN.baumVorblatt = {
 //  laufender Fall nein. Sie kann nicht einmal andeuten, was sie nicht weiss.
 // ===========================================================================
 SZENEN.baumAnlage2 = {
-  baum:true, haeltDieWelt:false, sicht:3, start:'hub',
+  // T5b-Fund: hier stand keine Sperre, und anlage2Assert() behauptet im Kopf,
+  // "der Baum laeuft zusaetzlich in szeneAssert() gegen dieselbe Liste". Das
+  // stimmte nicht. szeneAssert() prueft gegen st.sperre, und ohne das Feld
+  // laeuft die Schleife ueber ein leeres Array. Ihre Brandmauer war im Baum
+  // also ungeschuetzt, seit es den Baum gibt, und faellt genau dann auf, wenn
+  // jemand dort neuen Text einbaut. Die uebrigen Baeume brauchen sie nicht:
+  // Dorffiguren duerfen vom Fall reden, das ist ihr Inhalt (siehe SZ2). Sie
+  // darf es nicht, und zwar als einzige.
+  baum:true, haeltDieWelt:false, sicht:3, start:'hub', sperre:AKTE_SPERRE,
   sprecher: () => anlage2Sprecher(),
   // T4-Nachlese: der letzte freie Platz im Umschlag, und der einzige, der ihr
   // wirklich zusteht. Ihre Besessenheit steht seit T3 im Kanon: gelesen werden,
@@ -22824,6 +22838,14 @@ SZENEN.baumAnlage2 = {
      z1:'Der Antrag auf ein Dorffest.', z2:'Elf Fassungen. Ich kenne alle.'},
     {key:'was', nach:3, t:'Was steht auf Ihnen?',
      z1:'Das sehen Sie besser selbst nach.', z2:'Es liest sich schneller als ich rede.'},
+    // T5b: der lange Weg. Kapitel 0 bis 5 der Weltbibel, auf Abruf und in
+    // Kaskaden. Sie steht ohne frei: und ohne nach: und ist damit ab der ersten
+    // Minute da, denn wer nichts weiss, kann nicht warten, bis er genug gefragt
+    // hat. Die sechs Kapitel liegen in DREI Buendeln und nicht einzeln: eine
+    // Antworttafel fasst vier Zeilen, sechs Themen plus Ausgang waeren sieben.
+    {key:'welt', t:'Erklären Sie mir diese Welt.',
+     z1:'Endlich fragt das mal jemand.', z2:'Ich liege seit vierzig Jahren bereit.',
+     weiter:'welt0', wt:'Also?'},
   ],
   knoten:{
     hub:     {z1:'Von früher rede ich gern. Ich lag dabei.', z2:'Fragen Sie. Ich habe Zeit gehabt.', hub:true},
@@ -22833,6 +22855,61 @@ SZENEN.baumAnlage2 = {
     nn2:     {z1:'Zimmer eins und die Amtsleitung.', z2:'Beide Schilder sagen dasselbe.',
               opts: () => [{t:'Und dahinter?', zu:'nn3'}]},
     nn3:     {z1:'Ein Schreibtisch. Eine Pflanze, die lebt.', z2:'Wer sie gießt, sagt nichts dazu.'},
+
+    // ---- T5b: die Welt, Kapitel 0 bis 5 ------------------------------------
+    // Das Menue. Drei Buendel plus Ausgang, weil die Tafel vier Zeilen fasst.
+    // Jedes Buendel laeuft als Kaskade und kehrt hierher zurueck, damit man in
+    // einer Sitzung alles hoeren kann, ohne die Tafel neu aufzumachen.
+    welt0:   {z1:'Drei Sachen kann ich erklären.', z2:'Nehmen Sie, was Sie gerade brauchen.',
+              opts: () => [
+                {t:'Was ist hier eigentlich los?', zu:'welt1a'},
+                {t:'Warum gibt es dieses Amt?',    zu:'welt2a'},
+                {t:'Wo bin ich hier, und was?',    zu:'welt3a'},
+                {t:'Ein andermal.',                zu:'hub'},
+              ]},
+
+    // Buendel 1: Kapitel 0 und 1. Hier faellt das Weltgesetz, und es faellt
+    // wortwoertlich. Bis zum 26.08.2026 durfte es nirgends ausgesprochen
+    // werden; seither ist es die oberste Doktrin des Hauses, und sie ist die
+    // Figur, die es am besten erklaeren kann.
+    welt1a:  {z1:'Kurz gesagt: was keiner bearbeitet,', z2:'das wird hier irgendwann lebendig.',
+              opts: () => [{t:'Das ist ein Bild, oder?', zu:'welt1b'}]},
+    welt1b:  {z1:'Nein. Das ist die Regel. Wörtlich.', z2:'Sie hat sogar einen Satz. Wollen Sie ihn?',
+              opts: () => [{t:'Bitte.', zu:'welt1c'}]},
+    welt1c:  {z1:'Ein Vorgang, den niemand abschließt,', z2:'nimmt Gestalt an. Das ist der ganze Satz.',
+              opts: () => [{t:'Und das glaubt hier jeder?', zu:'welt1d'}]},
+    welt1d:  {z1:'Glauben ist das falsche Wort dafür.', z2:'Er steht über der Tür. Wie ein Ortsschild.',
+              opts: () => [{t:'Dann sind die Monster...', zu:'welt1e'}]},
+    welt1e:  {z1:'Vorgänge. Jedes trägt ein Aktenzeichen.', z2:'Sehen Sie mal genau hin, es steht klein dran.',
+              opts: () => [{t:'Und wenn ich eines erledige?', zu:'welt1f'}]},
+    welt1f:  {z1:'Dann wird es geschreddert. Daher das Konfetti.', z2:'Hier stirbt nichts. Hier wird abgeschlossen.',
+              opts: () => [{t:'Verstanden.', zu:'welt0'}]},
+
+    // Buendel 2: Kapitel 2 und 4. Ohne den Fall, denn den kennt sie nicht
+    // (Brandmauer). Sie erzaehlt die Entstehung des Hauses, nicht den Vorgang,
+    // der darin liegt.
+    welt2a:  {z1:'Weil vor sehr langer Zeit etwas liegen blieb.', z2:'Dann noch etwas. Dann ziemlich viel.',
+              opts: () => [{t:'Und dann?', zu:'welt2b'}]},
+    welt2b:  {z1:'Dann hat man ein Amt eingerichtet.', z2:'Vorläufig. Das Wort steht heute noch drauf.',
+              opts: () => [{t:'Wie lange ist vorläufig?', zu:'welt2c'}]},
+    welt2c:  {z1:'Vierhundert Jahre, Stand heute Morgen.', z2:'Später wurde es zum Ministerium erhoben.',
+              opts: () => [{t:'Dann ist es ja groß.', zu:'welt2d'}]},
+    welt2d:  {z1:'Es kam keine einzige Stelle dazu.', z2:'Fünf Leute. Ein Ministerium. Nicht nachrechnen.',
+              opts: () => [{t:'Gut. Danke.', zu:'welt0'}]},
+
+    // Buendel 3: Kapitel 3 und 5. Die Landschaft ist die Ablage, und der
+    // Spieler ist der Aussendienst. Der letzte Zug ist der warme: sie sagt ihm,
+    // dass Nichtwissen hier der Normalzustand ist.
+    welt3a:  {z1:'Die ganze Gegend hier ist eine Ablage.', z2:'Jede Landschaft ist ein Ort, wo etwas liegt.',
+              opts: () => [{t:'Zum Beispiel?', zu:'welt3b'}]},
+    welt3b:  {z1:'Das Grasland heißt amtlich Ablage A.', z2:'Der Frostkamm ist die Ablage auf Eis.',
+              opts: () => [{t:'Und das Meer?', zu:'welt3c'}]},
+    welt3c:  {z1:'Die Tilgung. Was dort hineingeht, ist weg.', z2:'Deshalb baut hier niemand nah ans Wasser.',
+              opts: () => [{t:'Und ich? Was bin ich hier?', zu:'welt3d'}]},
+    welt3d:  {z1:'Außendienst. Sie gehen hin, wo es liegt.', z2:'Drinnen wird verwaltet, draußen wird bearbeitet.',
+              opts: () => [{t:'Ich weiß gar nichts davon.', zu:'welt3e'}]},
+    welt3e:  {z1:'Ich weiß. Das ist hier der Normalfall.', z2:'Deshalb liege ich dabei. Fragen Sie ruhig oft.',
+              opts: () => [{t:'Mache ich.', zu:'welt0'}]},
     // Der Ausgang, nachdem alles gefragt wurde. Das ist die einzige Stelle des
     // Baumes, an der sie ueber sich selbst spricht statt ueber das Haus, und
     // sie tut es in der Form, die ihr gehoert: als Vermerk.

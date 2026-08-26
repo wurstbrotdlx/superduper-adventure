@@ -4,7 +4,7 @@ Amtsdeutsch hört auf, der Grundton zu sein, und wird die Würze. Anlage 2 hört
 auf, ein Schriftstück zu klingen, und fängt an, ein Mensch zu klingen. Und der
 Anfang erzählt nicht mehr nur die vierhundert Jahre, sondern die Welt.
 
-**Stand: der Kanon steht, T5a und T5c sind gebaut, der Rest nicht.** Deshalb OFFEN.
+**Stand: der Kanon steht, T5a, T5c und T5b sind gebaut. Offen bleiben T5d und T5e.** Deshalb OFFEN.
 
 ---
 
@@ -337,6 +337,67 @@ Randnotiz-Deckel von 44, im Browser geladen, `anlage2Assert()` meldet „10
 Anlässe, 10 Sprüche in Reihe, 5 Blätter, 13 Umschläge, Brandmauer in Ordnung",
 `szeneAssert()` meldet Sperrvermerk in Ordnung, keine PAGEERROR.
 
+## 5c. Was gebaut wurde: T5b
+
+**Der lange Weg: sechzehn neue Knoten in ihrem Gesprächsbaum.** Kapitel 0 bis 5
+auf Abruf, erreichbar über eine neue Hub-Frage „Erklären Sie mir diese Welt."
+Sie steht ohne `frei:` und ohne `nach:` und ist damit **ab der ersten Minute
+da** — wer nichts weiß, kann nicht warten, bis er genug gefragt hat.
+
+**Drei Bündel statt sechs Kapitel, und der Grund ist die Tafel.** Eine
+Antwortliste fasst vier Zeilen; sechs Themen plus Ausgang wären sieben gewesen.
+Die Bündel:
+
+| Bündel | Kapitel | Kaskade |
+|---|---|---|
+| „Was ist hier eigentlich los?" | 0 und 1 | sechs Züge, endet beim Konfetti |
+| „Warum gibt es dieses Amt?" | 2 und 4 | vier Züge, endet bei „Fünf Leute. Ein Ministerium." |
+| „Wo bin ich hier, und was?" | 3 und 5 | fünf Züge, endet warm |
+
+**Das Weltgesetz fällt wortwörtlich**, und zwar in der Mitte des ersten Bündels:
+
+> Nein. Das ist die Regel. Wörtlich. Sie hat sogar einen Satz. Wollen Sie ihn?
+>
+> **Ein Vorgang, den niemand abschließt, nimmt Gestalt an.** Das ist der ganze Satz.
+>
+> Glauben ist das falsche Wort dafür. Er steht über der Tür. Wie ein Ortsschild.
+
+Bis zum 26.08.2026 war das verboten. Seither ist es die oberste Doktrin des
+Hauses, und sie ist die Figur, die sie am besten erklären kann: nicht weil sie
+klüger wäre, sondern weil sie als einzige nichts zu verlieren hat.
+
+**Der kurze Weg: sechs Erklärzeilen im Band**, an bestehende Anlässe gehängt
+statt an einen neuen Auslöser. „Das Aktenzeichen steht klein am Rand." (crit)
+· „Was liegen bleibt, steht irgendwann auf." (untaetigkeit) · „Die Wiese heißt
+amtlich Ablage A. Wirklich." · „Konfetti heißt: der Vorgang ist durch."
+(bosssieg). Kein neuer Kanal, keine neue Maschine, wie der Kanon es verlangt.
+
+**Der Fund, und er ist der wichtigste dieses Bauabschnitts.** `baumAnlage2`
+trug **keine Wortsperre**, und `anlage2Assert()` behauptet in seinem Kopf das
+Gegenteil: „Der Baum laeuft zusaetzlich in szeneAssert() gegen dieselbe Liste."
+Das stimmte nicht. `szeneAssert()` prüft gegen `st.sperre`, und ohne das Feld
+läuft die Schleife über ein leeres Array. **Ihre Brandmauer war im Baum
+ungeschützt, seit es den Baum gibt.** Aufgefallen ist es genau dann, als zum
+ersten Mal jemand neuen Text dort einbaute. `sperre:AKTE_SPERRE` steht jetzt
+dran und meldet beim Start „Sperrvermerk in Ordnung".
+
+Die übrigen dreizehn Bäume brauchen sie nicht und bekommen sie nicht:
+Dorffiguren dürfen vom Fall reden, das ist ihr Inhalt (SZ2). Anlage 2 darf es
+nicht, und zwar als einzige.
+
+**Nebenwirkung, bewusst in Kauf genommen:** `ganzGelesen` prüft
+`fragen.every(...)`, also sind es jetzt acht Fragen statt sieben. Wer sie ganz
+gelesen haben will, muss auch gefragt haben, was sie über die Welt weiß. Das
+ist inhaltlich richtig: die Welterklärung ist Teil von ihr, nicht ein Anhang.
+
+**Abnahme T5b:** `node --check` sauber. `szeneAssert()` meldet 104 Fragen und
+177 Knoten (vorher 103 und 161), Sperrvermerk und Antwortdeckel in Ordnung.
+`anlage2Assert()` meldet Brandmauer in Ordnung. Ein eigener Pfadlauf über den
+neuen Zweig: **alle 16 Knoten erreichbar, keine Sackgasse, jeder Pfad führt
+zurück zum Menü oder zum Hub**, keine Antwortliste über vier Zeilen, keine
+Tafelzeile über 48 Zeichen (zwei mussten dafür gekürzt werden). Alle sechs
+Bandzeilen unter dem Randnotiz-Deckel von 44.
+
 ## 6. Was offen bleibt
 
 Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
@@ -345,9 +406,7 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   und Hausmitteilung auf normales Deutsch. Der kleinste und sicherste Teil, und
   nach Abschnitt 3 der mit dem größten Effekt. Zuerst.
 * ~~**T5c, Anlage 2s Ton-Abfall.**~~ **ERLEDIGT**, siehe Abschnitt 5b.
-* **T5b, Anlage 2 als Erklärerin.** Kapitel 0 bis 5 als Randnotizen im Band und
-  als Kaskade auf Abruf. Neue Einträge in `ANLAGE2_NOTIZ` und in
-  `SZENEN.baumAnlage2`, keine neue Maschine.
+* ~~**T5b, Anlage 2 als Erklärerin.**~~ **ERLEDIGT**, siehe Abschnitt 5c.
 * **T5d, das Intro trägt Kapitel 0 bis 5.** Nach T5b, weil beide denselben Stoff
   tragen und sich sonst doppeln.
 * **T5e, die Kaskaden und die Abkürzungen.** Der größte Teil, und nach der
