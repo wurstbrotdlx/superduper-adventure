@@ -1236,7 +1236,25 @@ Ein Blatt vor dem Startbild, das sagt, was sich seit der letzten Schicht geände
 * **Was hinter der Tür mit dem Schild ist.** *(W11.)* Es gibt eine Tür, ein Schild und einen Stapel Post davor. Mehr wird nie gezeigt.
 * **Was Konrad zu Händen Aufschub vortragen wollte.** *(W11.)* Er weiß es selbst nicht mehr genau. Es war wichtig.
 
-**Und was offen ist, weil es noch nicht gebaut wurde** *(Stand SZ2, kein Vorsatz, sondern eine Liste)*: von den neun Szenen aus `weltgeschichte.md`, Kapitel 8, noch fünf — der Stopfen, Vorblatts Ankunft, die Versuchung, die Zustellung und der Abspann (Szenen 1 bis 4 stehen, siehe Kapitel 14, SZ1 und SZ2); die Blattserien G, H und I; die Langvorgänge 10 bis 13; Konrad zu Händen Aufschub und alles, was Hochablage zeigt; und Knöterichs Zuwachs, der bewusst nicht in seine Zeilen gegangen ist, weil er Tasten erklärt und keine Zusammenhänge.
+**Und was offen ist, weil es noch nicht gebaut wurde** *(Stand SZ2, kein Vorsatz, sondern eine Liste; **der Stand ist überholt, siehe den Nachtrag darunter**)*: von den neun Szenen aus `weltgeschichte.md`, Kapitel 8, noch fünf — der Stopfen, Vorblatts Ankunft, die Versuchung, die Zustellung und der Abspann (Szenen 1 bis 4 stehen, siehe Kapitel 14, SZ1 und SZ2); die Blattserien G, H und I; die Langvorgänge 10 bis 13; Konrad zu Händen Aufschub und alles, was Hochablage zeigt; und Knöterichs Zuwachs, der bewusst nicht in seine Zeilen gegangen ist, weil er Tasten erklärt und keine Zusammenhänge.
+
+*(Nachtrag T3, 26.08.2026. Die Liste darüber steht auf dem Stand von SZ2 und ist an drei
+Stellen überholt; sie bleibt stehen, weil sie zeigt, wo das Projekt damals stand, und
+bekommt hier ihre Berichtigung statt einer Umschreibung.)*
+
+* **Die fünf Szenen sind alle gebaut.** Der Stopfen und Vorblatts Ankunft mit SZ3, die
+  Versuchung, die Zustellung und der Abspann mit SZ4. Beide Bauabschnitte stehen auf
+  ERLEDIGT, damit sind alle neun Szenen aus `weltgeschichte.md`, Kapitel 8, im Spiel.
+* **Serie I steht ebenfalls**, sie kam mit dem Stopfen (SZ3). Offen bleiben die Blattserien
+  G und H.
+* **Von den dreizehn Langvorgängen sind acht gebaut.** Der Rest ist offen, die Aussage
+  stimmt also sinngemäß weiter, nur nicht mit den Nummern.
+
+Unverändert offen: die Blattserien G und H, die übrigen Langvorgänge, Konrad zu Händen
+Aufschub und alles, was Hochablage zeigt. Und Knöterichs Zuwachs, jetzt mit einem Grund
+mehr: seit T3 hat er überhaupt keinen Weltkommentar mehr, den spricht Anlage 2. Er erklärt
+Tasten, nie Zusammenhänge, und das ist seit diesem Bauabschnitt nicht mehr nur eine
+Designregel über ihn, sondern der Zuschnitt seines Kanals.
 
 ---
 
