@@ -273,6 +273,8 @@ Neues Zeichentyp-Tag `DRAW_ALTER` in der Konstantenzeile neben `DRAW_KESSEL` (~3
 | Dienstzettel | DOM-Knoten | Zettel oben im Bild, Stempel plus Kopf als Briefmarke, 2 Zeilen | 6 Sekunden |
 | Randnotiz | DOM-Knoten | eine Zeile, nur Stempel, kein Kopf | 3 Sekunden |
 
+**Seit T3 und T4 überholt, was die Randnotiz angeht.** Der Kanal gehört nicht mehr Knöterich, sondern Anlage 2, und das Band trägt heute drei Kleidungen auf **einer** Fläche statt eines Stapels: Knöterichs Vermerk mit `§` in Amtsgold und schräg, Anlage 2 mit `*` in Papierfarbe und gerade, und seit T4 der **Umschlag** ganz ohne Marke, gedämpft und fünf Sekunden statt drei. Unterschieden wird an Marke und Farbe, nicht an einem zweiten Knoten (`phase-t3-anlage2.md`, `phase-t4-charakter.md`).
+
 **Die Blase ist ausdrücklich Canvas, nicht DOM.** Sie hängt an einer Weltposition auf einer scrollenden Karte; ein DOM-Knoten müsste der Kamera pro Frame folgen, und der vorgeschriebene Dirty-Check würde nie greifen. Vorbild ist der vorhandene `floaters`-Zeichner (~3624), der ebenfalls in Weltkoordinaten innerhalb des Kamera-Transforms zeichnet. Textzeilen kommen aus Modulvariablen, keine Closure und keine Allokation pro Frame.
 
 **Blasen-Reichweite: 150 Pixel** (`sqDist < 22500`, kein `Math.hypot`). Muss größer sein als die 97 Pixel vom Spawn zum Kessel, sonst kommt Beat 1 nie. Blase erscheint beim Eintritt in den Radius, verschwindet beim Austritt. Steht kein Beat und keine Wiederholung an, zeigt die Blase nichts.
@@ -363,6 +365,14 @@ Prio 20, einmal **pro Wissenslücke** über die Lebenszeit (nicht pro Sitzung, n
 
 Reine Charakterzeilen ohne Information. Pro Anlass mindestens 4 Zeilen, nie zweimal dieselbe hintereinander. Jede neu erfundene Zeile ist vor dem Einbau gegen Grundgesetz Regel 1 und den Zeichendeckel zu prüfen.
 
+**Seit T3 überholt: der Kanal hat den Sprecher gewechselt.** Aus `RANDNOTIZ` wurde `ANLAGE2_NOTIZ`, aus `knRandnotiz()` wurde `anlage2Notiz()`, und die Zeilen in der Tabelle unten sind Knöterichs Fassung von vor T3. Die Arbeitsteilung ist seither scharf: der Amtston von oben erklärt das Gerät, die Beilage von innen erklärt die Welt, und Anlage 2 erklärt **keine Taste**.
+
+**Die sieben Anlass-Schlüssel heißen absichtlich unverändert weiter.** An ihnen hängen der Chor auf der Bank (Lott und Pahl über `letzterAnlass`) und der Langvorgang Hintermühl; hätte der Sprecherwechsel sie umbenannt, wäre beides stumm geworden. **Seit T4 sind es zehn**, dazugekommen sind `niederlage`, `bosssieg` und `ebene`.
+
+Zwei Dinge gelten für jede neue Zeile und gab es zur Abfassung dieses Dokuments nicht: der Gate-Schalter **`allein`** (die Zeile fällt nur, wenn keine Dorffigur in der Nähe steht, Knöterich einzeln gemessen) und **`ANLAGE2_UMSCHLAG`**, zwölf stille Einmalzeilen ohne Pointe und ohne Maske, jede genau einmal im ganzen Spiel.
+
+Und über allem die **Brandmauer**: Anlage 2 war beigefügt, nicht eingeweiht, sie kennt den laufenden Fall nicht, und `anlage2Assert()` misst das an jeder ihrer Zeilen einschließlich des Tooltips (`phase-t3-anlage2.md`, `phase-t4-charakter.md`).
+
 | Anlass | Hook | Zeilen |
 |---|---|---|
 | Crit | `hurtMon()`, an der vorhandenen 70ms-Bremse (~1555) | Vermerkt. · Das war unnötig laut. · Aktenzeichen folgt. · Ich habe nichts gesehen. |
@@ -402,7 +412,7 @@ Neu anzulegen in `sda_knoeterich_v1`, alle über die Lebenszeit: `traenke`, `kam
 
 **Taktung:** höchstens eine Randnotiz pro 40 Sekunden, nie gleichzeitig mit einem Dienstzettel, nie im Rätselmodul. Im Kampf und im Bosskampf ausdrücklich erlaubt, dort sind sie am komischsten.
 
-**Regler.** Im Inventar unter „Ton" (dort stehen seit Phase 2 schon Musik und Lautstärke; seit dem dritten U8-Nachtrag stehen sie in den **Optionen** (`O`), einem eigenen Fenster, je in einer eigenen Kachel; die DOM-Ids sind dieselben geblieben) ein Dreifach-Schalter **Knöterich: Gesprächig / Dienstlich / Schweigt**, Standard Gesprächig, Stellung überlebt den Reload.
+**Regler.** Im Inventar unter „Ton" (dort stehen seit Phase 2 schon Musik und Lautstärke; seit dem dritten U8-Nachtrag stehen sie in den **Optionen** (`O`), einem eigenen Fenster, je in einer eigenen Kachel; die DOM-Ids sind dieselben geblieben) ein Dreifach-Schalter **Knöterich: Gesprächig / Dienstlich / Schweigt**, Standard Gesprächig, Stellung überlebt den Reload. **Seit T3 überholt:** der Schalter heißt im Menü **„Wie gesprächig das Haus ist“** und nicht mehr nach Knöterich, denn er steuert seit dem Sprecherwechsel beide Stimmen. Die drei Stellungen sind geblieben. Anlage 2 kommentiert die Welt und ist damit nie „dienstlich“: in dieser Stellung schweigt sie ganz.
 
 * Gesprächig: alles.
 * Dienstlich: alle Randnotizen aus, **außer** der Schichtbegrüßung.
@@ -430,7 +440,7 @@ Beachte den vorhandenen Kommentar über `CFX.gruss`: der Fluch Grußpflicht biet
 
 ### Technik
 
-* Zwei Datentabellen, keine verstreuten `if`-Blöcke: `HINWEISE[]` mit `{id, prio, art, wenn(), z1, z2, z2t, varB}` und `RANDNOTIZ[anlass]` mit den Pools. Wie in Phase 1 gilt: Tabellen müssen vor ihrer ersten Verwendung stehen, sonst TDZ-Fehler.
+* Zwei Datentabellen, keine verstreuten `if`-Blöcke: `HINWEISE[]` mit `{id, prio, art, wenn(), z1, z2, z2t, varB}` und `RANDNOTIZ[anlass]` mit den Pools. *(Seit T3 heißt die zweite Tabelle `ANLAGE2_NOTIZ`, seit T4 steht `ANLAGE2_UMSCHLAG` daneben. Die TDZ-Warnung gilt für beide unverändert und ist in T4 das erste Risiko der Bauliste gewesen.)* Wie in Phase 1 gilt: Tabellen müssen vor ihrer ersten Verwendung stehen, sonst TDZ-Fehler.
 * **Drei Auswertungsarten**, das ist der Kern der Zustandsmaschine:
   * `zustand` — `wenn()` ist ein Prädikat, wird geprüft und vor der Anzeige nachgeprüft. Kann eskalieren.
   * `ereignis` — der Auslöser ist punktuell. Er setzt am Ereignisort ein persistentes Pending-Flag; `wenn()` liest nur dieses Flag. Keine Nachprüfung, keine Eskalation.
