@@ -106,6 +106,16 @@ stehen für seine Randnotizen zur Verfügung): die Buchführung selbst. Das Wort
 und was es genau bedeutet. Warum ein Ruhestand ein Vorgang ist. Die Gießkanne, ohne
 Antwort.
 
+*(T3, 26.08.2026.)* Randnotizen hat er seit diesem Bauabschnitt keine mehr. Sie waren
+Weltkommentar und keine Bedienung, und damit gehörten sie nach der ältesten Designregel
+dieses Projekts nicht ihm: **er erklärt Tasten, nie Zusammenhänge.** Alle sieben Anlässe
+sind an Anlage 2 gegangen. Was bleibt, ist sein eigener Kanal und der ist unangetastet:
+zwölf Dienstzettel, sechs zweite Stufen, die drei Beats, die Schichtbegrüßung, die
+Trank-Gags und der Schubs, wenn jemand steckenbleibt. Der Gesprächsstoff oben bleibt
+deshalb gültig, er hat nur eine Ausspielstelle weniger. **Und das ist ein Gewinn für die
+Figur:** ein Mann, der alles weiß und nichts sagen darf, wird glaubwürdiger, je weniger er
+nebenbei bemerkt.
+
 **Prüfnotiz.** Kein Fund. Der Sperrvermerk ist an dieser Figur der schärfste im Spiel und
 hier zweifach beachtet: weder der Inhalt des Vorgangs 1 noch die Rangfolge des Hauses
 steht in einem Feld, das in Spieltext übergehen darf. Die harte Designregel „Knöterich

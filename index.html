@@ -11267,8 +11267,10 @@ let knLastRandnotizT = -999, knRandLastLine = {};
 let knIdleT = 0, knFrameCtr = 0, knClosingId = null, knNfIdx = -1, knBegruessungPending = null;
 let knCurseWasOn = false;
 // Je Ruhephase genau ein Steckenbleib-Schubs (gameplay:346/448) und genau eine
-// Untätigkeits-Randnotiz. knIdleT bleibt die eine monotone Uhr für beide Schwellen
+// Zeile zur Untätigkeit. knIdleT bleibt die eine monotone Uhr für beide Schwellen
 // (25s Notiz, 50s Schubs, gameplay:380); die Einmaligkeit hängt an diesen Merkern.
+// T3: den Schubs gibt weiter Knöterich, die Zeile zur Untätigkeit sagt seit
+// diesem Abschnitt Anlage 2. Zwei Stimmen, dieselbe Uhr.
 let knStuckArmed = true, knIdleNotizDone = false;
 const knBubble = {visible:false, text1:'', text2:'', wasIn:false, enterT:0};
 const knZettel = {active:false};
@@ -11291,8 +11293,10 @@ function knAllDone(){
     && kn.flags.hatGezaubert && kn.flags.hatGekocht && kn.flags.hatKammerBetreten;
 }
 
-// Sperrzonen gelten nur für Dienstzettel, nicht für Randnotizen und nicht für
-// die spielerausgelöste Wiederholung (Nachfragen).
+// Sperrzonen gelten nur für Dienstzettel, nicht für die Zeilen im oberen Band
+// und nicht für die spielerausgelöste Wiederholung (Nachfragen). Seit T3 stehen
+// im Band zwei Stimmen, und für beide gilt dasselbe: ein Dienstzettel drängt
+// sich nicht in ein offenes Fenster, eine Bemerkung am Rand darf es.
 function knSperrzone(){
   if(invOpen || charakterOpen || spellTreeOpen || kesselOpen || optionenOpen || schlossOpen || amtFensterOpen) return true;
   if(document.getElementById('overlay').style.display === 'flex') return true;

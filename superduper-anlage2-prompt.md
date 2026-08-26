@@ -1,4 +1,27 @@
-# Arbeitsauftrag T3: Anlage 2, der Sidekick
+# Arbeitsauftrag T3: Anlage 2, der Sidekick — ERLEDIGT (26.08.2026)
+
+**Ausgeführt und ausgeliefert.** Was daraus geworden ist, steht in
+`phase-t3-anlage2.md`; der Kanon der Figur in Weltbibel Kapitel 8 und 18.5 sowie in
+`figuren-leben.md`. Dieser Auftrag bleibt unverändert stehen, wie jedes datierte Dokument
+des Hauses: er beschreibt den Stand vor dem Bauabschnitt, nicht danach.
+
+**Drei Stellen, an denen die Ausführung vom Auftrag abweicht**, jede mit Grund im
+Phasendokument:
+
+* **Abschnitt 2 beschreibt einen Vor-U2-Stand.** „Ohne Grafiken startet das Spiel nicht,
+  `bakeUiSkin` wirft beim Laden" stimmt seit U2 nicht mehr: es wird gefragt statt
+  zugegriffen, und ohne Grafikpaket startet das Spiel mit CSS-Ersatzwerten. Für die
+  Abnahme braucht man das Paket trotzdem, sonst melden zwei Guards und die Konsole ist
+  nicht still.
+* **Anlage 2 hat kein eigenes Amtskürzel bekommen.** Abschnitt 4 ließ das offen; die
+  Abkürzungstabelle in `figuren-leben.md` steht auf zwölf, „mehr nicht", und der Verzicht
+  ist die bessere Pointe: wer gelesen werden will, kürzt nichts ab.
+* **Der bekannte Rotstand ist doch behoben worden.** Abschnitt 9 hielt fest, dass
+  `mitteilung-pruef` (29 von 32) nicht Sache dieses Abschnitts ist. Der Pflichteintrag in
+  `NEUERUNGEN` hätte ihn auf 27 gedrückt, also wurde der seit T1 fertige Fixvorschlag
+  umgesetzt. Steht auf 32 von 32.
+
+---
 
 **An die nächste Session im Repo `wurstbrotdlx/superduper-adventure`.** Dieser Text ist dein vollständiger Auftrag. Er wurde am Ende von Bauabschnitt T2 geschrieben, unmittelbar nachdem der Projektinhaber das Konzept „Anlage 2" angenommen hat. Alles, was von ihm wörtlich zitiert ist, steht in Anführungszeichen und ist bindend. Der Projektinhaber schreibt Deutsch, du antwortest Deutsch.
 
