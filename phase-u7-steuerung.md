@@ -1,4 +1,4 @@
-## U7: Die erste Schicht der Oberfläche — Spiel und Steuerung
+## U7: Die erste Schicht der Oberfläche — Spiel und Steuerung — ERLEDIGT
 
 Der Wunsch war eine überarbeitete Oberfläche, und zwar in zwei Teilen: **zuerst die Schicht,
 die während des Spiels dasteht** — Zustand, Karte, Gehen, Schlagen —, **danach die Menüs**
