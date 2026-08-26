@@ -141,13 +141,24 @@ async function durchDieVorstellung(page){
 // zweiter kam. Seit die Einfuehrung der Anlage 2 direkt hinter der Ernennung
 // haengt, laufen beide sonst in einer Zaehlung zusammen, und der Lauf koennte
 // nicht mehr sagen, welcher Stapel wie lang ist.
+// T5: Der Helfer kennt jetzt drei Knopfaufschriften statt zwei. Zwischen dem
+// Auftakt der Anlage 2 und ihren Blaettern steht seit T5 die Scheinwahl, und
+// ihr Weiterknopf heisst LESEN. Ohne diese Alternative faende der Helfer dort
+// keinen Knopf, braeche mit 'weg' ab, und alles hinter der Wahl bliebe
+// ungeprueft, ohne dass ein einziger pruef() rot wuerde.
+//
+// Verglichen wird auf GLEICHHEIT und nicht auf Vorkommen: der Nein-Knopf
+// derselben Tafel heisst "Nicht lesen" und enthaelt damit ebenfalls "lesen".
+// Ein unverankertes /LESEN/i haette je nach Reihenfolge den falschen Knopf
+// erwischt und die Wahl abgelehnt statt angenommen.
 async function durchDenStapel(page, ende){
   let tafeln = 0;
   for(let i = 0; i < 14; i++){
     const r = await page.evaluate((endeStr) => {
       if(document.getElementById('overlay').style.display !== 'flex') return 'weg';
       const b = [...document.querySelectorAll('#ovPanel button')]
-                  .find(x => /WEITER/.test(x.textContent) || x.textContent.includes(endeStr));
+                  .find(x => ['WEITER', 'LESEN'].includes(x.textContent.trim())
+                             || x.textContent.includes(endeStr));
       if(!b) return 'weg';
       const letzt = b.textContent.includes(endeStr);
       b.click(); return letzt ? 'ende' : 'weiter';
@@ -271,9 +282,14 @@ async function bisZumEmpfang(page){
   pruef('vor dem Dienst steht noch ein Stapel', await page.evaluate(() =>
         document.getElementById('overlay').style.display), 'flex');
   pruef('Anlage 2 ist noch nicht in der Tasche', await page.evaluate(() => kn.flags.anlage2Da), false);
+  // T5: sechs statt fuenf, weil die Scheinwahl hinter dem Auftakt dazugekommen
+  // ist. Wer hier durchlaeuft, nimmt sie beim ersten Anlauf an.
   const treffen = await durchDenStapel(page, 'EINSTECKEN');
-  pruef('das erste Treffen hat fuenf Blaetter', treffen, 5);
+  pruef('das erste Treffen hat sechs Blaetter', treffen, 6);
   pruef('Anlage 2 ist jetzt in der Tasche', await page.evaluate(() => kn.flags.anlage2Da), true);
+  // Wer gleich liest, bekommt den Nachhall der Scheinwahl nicht. Er gehoert
+  // denen, die bis zum gesperrten Knopf abgelehnt haben.
+  pruef('wer gleich liest, hoert nichts davon', await page.evaluate(() => !!kn.umschlag.zoegerlich), false);
   await page.waitForTimeout(1500);
   pruef('das Spiel laeuft', await page.evaluate(() => state), 'play');
   pruef('die Einstellung ist vermerkt', await page.evaluate(() => kn.seen.einstellung), true);
@@ -355,7 +371,7 @@ async function bisZumEmpfang(page){
   pruef('der erste Griff zur Tasche holt sie nach', await page.evaluate(() =>
         document.getElementById('overlay').style.display === 'flex' && !invOpen), true);
   const nachgeholt = await durchDenStapel(page, 'EINSTECKEN');
-  pruef('auch nachgeholt sind es fuenf Blaetter', nachgeholt, 5);
+  pruef('auch nachgeholt sind es sechs Blaetter', nachgeholt, 6);
   await page.waitForTimeout(400);
   pruef('danach ist sie da', await page.evaluate(() => kn.flags.anlage2Da), true);
   pruef('und der Rucksack steht offen', await page.evaluate(() => invOpen), true);
@@ -368,6 +384,111 @@ async function bisZumEmpfang(page){
   pruef('der zweite Griff zeigt keine Einfuehrung mehr', await page.evaluate(() =>
         invOpen && document.getElementById('overlay').style.display !== 'flex'), true);
   pruef('Konsole still (Vordruckweg)', laut, []);
+  await ctx.close();
+}
+
+// ------------------------------------------- T5: die Entscheidung, die keine ist
+//
+// Der Erstkontakt bietet an, die Anlage NICHT zu lesen, und nimmt das Nein
+// nicht an. Vier Ablehnungen sind moeglich, die fuenfte Stufe traegt den
+// gesperrten Knopf und die Behauptung, das sei ein technischer Fehler.
+//
+// Geprueft wird hier das Verhalten und nicht der Wortlaut: dass die Wahl
+// ueberhaupt steht, dass jede Ablehnung eine ANDERE Tafel bringt (sonst waere
+// es keine Ueberredung, sondern eine Schleife), dass der Stapel dabei nicht
+// vorankommt, dass am Ende wirklich disabled dasteht und ein Klick darauf
+// nichts tut, und dass LESEN aus jeder Stufe heraus weiterfuehrt.
+//
+// Die Wortlaute selbst haengen an szeneAssert() und anlage2Assert(), die beim
+// Laden mitlaufen; ein Lauf, der Saetze abschreibt, waere beim naechsten
+// Feilen am Text rot, ohne dass etwas kaputt ist.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
+
+  // Der Zustand der offenen Tafel, so wie ein Mensch ihn sieht: die
+  // Knopfaufschriften, ob der zweite gesperrt ist, und die Blattzahl im Fuss.
+  const tafel = () => page.evaluate(() => {
+    const bs = [...document.querySelectorAll('#ovPanel button')];
+    const fuss = document.querySelector('#ovPanel .amtFuss');
+    return {
+      knoepfe: bs.map(b => b.textContent.trim()),
+      gesperrt: bs.length > 1 ? bs[1].disabled : null,
+      fuss: fuss ? fuss.textContent.trim() : null,
+      text: (document.querySelector('#ovPanel div') || {}).textContent || '',
+    };
+  });
+  const ablehnen = async () => {
+    await page.evaluate(() => {
+      const b = [...document.querySelectorAll('#ovPanel button')][1];
+      if(b) b.click();
+    });
+    await page.waitForTimeout(200);
+  };
+
+  // Der kuerzeste Weg bis hinter die Ernennung. Die Treppe und die Pflanze
+  // gehoeren dem Block weiter oben, hier zaehlt nur, was danach kommt.
+  await bisZumEmpfang(page);
+  await waehle(page, 'Wo unterschreibe ich');
+  await waehle(page, 'Weiblich');
+  await waehle(page, 'Dienst antreten');
+  await durchDenStapel(page, 'HINAUSGEHEN');
+
+  // Blatt I ist ihr Auftakt. Er hat noch keine Wahl, sondern nur WEITER.
+  const auftakt = await tafel();
+  pruef('der Auftakt traegt noch keine Wahl', auftakt.knoepfe, ['WEITER']);
+  await page.evaluate(() => document.querySelector('#ovPanel button').click());
+  await page.waitForTimeout(200);
+
+  // Blatt II ist die Wahl. Beide Knoepfe stehen, der zweite ist anklickbar.
+  const stufe0 = await tafel();
+  pruef('dahinter steht die Wahl', stufe0.knoepfe.length, 2);
+  pruef('und der Lesen-Knopf heisst LESEN', stufe0.knoepfe[0], 'LESEN');
+  pruef('der Nein-Knopf ist anfangs anklickbar', stufe0.gesperrt, false);
+  pruef('die Wahl steht auf Blatt II von VI', stufe0.fuss, 'Blatt II von VI');
+
+  // Vier Ablehnungen. Jede bringt eine andere Tafel, und der Fuss bewegt sich
+  // dabei nicht: das Haus diskutiert, ohne dass der Vorgang vorankommt.
+  const stufen = [stufe0];
+  for(let i = 0; i < 4; i++){ await ablehnen(); stufen.push(await tafel()); }
+
+  pruef('jede Ablehnung bringt eine andere Tafel',
+        new Set(stufen.map(s => s.text)).size, 5);
+  pruef('die Nein-Beschriftung wandert mit',
+        new Set(stufen.slice(0, 4).map(s => s.knoepfe[1])).size, 4);
+  pruef('der Blattzaehler bewegt sich dabei nicht',
+        stufen.every(s => s.fuss === 'Blatt II von VI'), true);
+  pruef('der Lesen-Knopf heisst durchgehend gleich',
+        new Set(stufen.map(s => s.knoepfe[0])).size, 1);
+
+  // Die fuenfte Stufe. Der Knopf steht noch da, er ist nur tot.
+  const letzte = stufen[4];
+  pruef('nach der vierten Ablehnung ist der Nein-Knopf gesperrt', letzte.gesperrt, true);
+  pruef('er steht aber noch da', letzte.knoepfe.length, 2);
+  pruef('das Haus nennt es einen technischen Fehler',
+        /technischer Fehler/.test(letzte.text), true);
+
+  // Ein Klick darauf bewegt nichts. Das ist die Zusage, um die es geht.
+  await ablehnen();
+  const nachKlick = await tafel();
+  // Als Wahrheitswert und nicht als Textvergleich: sonst stuenden beide
+  // Fassungen der ganzen Tafel im Protokoll und machten es unlesbar.
+  pruef('ein Klick auf den gesperrten Knopf bewegt nichts', nachKlick.text === letzte.text, true);
+  pruef('und der Stapel steht weiter auf Blatt II', nachKlick.fuss, 'Blatt II von VI');
+
+  // LESEN fuehrt auch von der letzten Stufe aus weiter, und zwar in Blatt III.
+  await page.evaluate(() => document.querySelector('#ovPanel button').click());
+  await page.waitForTimeout(220);
+  pruef('LESEN fuehrt weiter in die Einfuehrung',
+        (await tafel()).fuss, 'Blatt III von VI');
+
+  // Wer bis zum gesperrten Knopf abgelehnt hat, bekommt den Nachhall.
+  await durchDenStapel(page, 'EINSTECKEN');
+  await page.waitForTimeout(400);
+  pruef('Anlage 2 liegt trotzdem in der Tasche',
+        await page.evaluate(() => kn.flags.anlage2Da), true);
+  pruef('und der zaehe Weg schaltet seine Umschlagzeile scharf',
+        await page.evaluate(() => kn.umschlag.zoegerlich), 1);
+  pruef('Konsole still (die Wahl)', laut, []);
   await ctx.close();
 }
 
@@ -438,25 +559,48 @@ async function bisZumEmpfang(page){
   // kein Zeichendeckel), und genau deshalb gehoert die Frage geprueft, ob sie
   // auf ein Telefon passen. Erwartet wird die Bauform aus SZ4: der Rahmen
   // steht, der Text rollt innen, der Knopf bleibt erreichbar.
-  await page.evaluate(() => szeneTafeln([ANLAGE2_AUFTAKT_ERNENNUNG].concat(ANLAGE2_BLAETTER),
-                                        {letzterKnopf:'EINSTECKEN', ende: () => {}}));
+  // T5: gemessen wird der echte Stapel samt Wahl, und die fuenf Stufen werden
+  // dabei einzeln durchlaufen. Das ist nicht Gruendlichkeit um ihrer selbst
+  // willen: die letzte Stufe ist mit fuenf gesprochenen Zeilen und einer
+  // Nachbemerkung das LAENGSTE Blatt des ganzen Anfangs, und sie ist das
+  // einzige mit zwei Knoepfen untereinander. Wenn irgendwo der Knopf unter den
+  // Fensterrand rutscht, dann dort.
+  //
+  // Gemessen wird der UNTERSTE Knopf (.pop()), auf den Stufen also der
+  // Nein-Knopf. Genau der ist der gefaehrdete.
+  await page.evaluate(() => szeneTafeln([ANLAGE2_AUFTAKT_ERNENNUNG, ANLAGE2_FRAGE[0]].concat(ANLAGE2_BLAETTER),
+                                        {letzterKnopf:'EINSTECKEN', wahl:{bei:1, reihe:ANLAGE2_FRAGE},
+                                         ende: () => {}}));
   await page.waitForTimeout(300);
   const a2 = [];
-  for(let i = 0; i < 5; i++){
-    a2.push(await page.evaluate(() => {
-      const b = [...document.querySelectorAll('#ovPanel button')].pop().getBoundingClientRect();
-      const p = el('ovPanel').getBoundingClientRect();
-      return { knopfDrin: b.top >= 0 && b.bottom <= innerHeight + 0.5,
-               rahmenDrin: p.left >= -1 && p.right <= innerWidth + 1,
-               seiteRollt: document.documentElement.scrollHeight > innerHeight + 4 };
-    }));
-    await page.evaluate(() => {
-      const b = [...document.querySelectorAll('#ovPanel button')]
-                  .find(x => /WEITER|EINSTECKEN/.test(x.textContent));
-      if(b) b.click();
-    });
+  const messen = () => page.evaluate(() => {
+    const b = [...document.querySelectorAll('#ovPanel button')].pop().getBoundingClientRect();
+    const p = el('ovPanel').getBoundingClientRect();
+    return { knopfDrin: b.top >= 0 && b.bottom <= innerHeight + 0.5,
+             rahmenDrin: p.left >= -1 && p.right <= innerWidth + 1,
+             seiteRollt: document.documentElement.scrollHeight > innerHeight + 4 };
+  });
+  const weiter = async (welcher) => {
+    await page.evaluate((w) => {
+      const bs = [...document.querySelectorAll('#ovPanel button')];
+      const b = w === 'nein' ? bs[1] : bs[0];
+      if(b && !b.disabled) b.click();
+    }, welcher);
     await page.waitForTimeout(200);
+  };
+
+  a2.push(await messen());               // Blatt I, der Auftakt
+  await weiter('ja');
+  for(let i = 0; i < 5; i++){            // Blatt II in allen fuenf Fassungen
+    a2.push(await messen());
+    if(i < 4) await weiter('nein');
   }
+  await weiter('ja');
+  for(let i = 0; i < 4; i++){            // Blatt III bis VI
+    a2.push(await messen());
+    await weiter('ja');
+  }
+  pruef('alle zehn Fassungen wurden gemessen', a2.length, 10);
   pruef('jedes Blatt der Anlage 2 haelt den Knopf im Bild', a2.every(x => x.knopfDrin), true);
   pruef('kein Blatt laeuft seitlich ueber', a2.every(x => x.rahmenDrin), true);
   pruef('die Seite rollt dabei nicht', a2.every(x => !x.seiteRollt), true);
