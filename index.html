@@ -10779,6 +10779,14 @@ const kn = {
   // ANLAGE2_UMSCHLAG. Damit ist die Menge durch die Tabelle gedeckelt und
   // waechst nicht, wie kn.history es ohne seinen Cap taete.
   umschlag:{},
+  // T4-Nachlese: welche ihrer sieben Fragen schon gestellt wurden, ueber
+  // Sitzungen hinweg. szene.gefragt kennt nur die offene Tafel und faengt bei
+  // jedem Betreten von vorne an; ihre Besessenheit ist aber, EINMAL GANZ
+  // gelesen zu werden, und das ist keine Sitzungsfrage. Geschrieben wird
+  // ausschliesslich aus dem gestellt-Haken ihres Baumes, die Schluessel sind
+  // die sieben aus fragen[]. Damit ist auch dieses Feld durch eine Tabelle
+  // gedeckelt und waechst nicht.
+  a2Gefragt:{},
   // T3: anlage2Zug zaehlt die Versuche, Anlage 2 aus der Tasche zu bewegen. Er
   // ist der einzige Zaehler, der eine Reihenfolge traegt statt einer Menge: die
   // Sprueche kommen der Reihe nach, nicht zufaellig, und die Reihe wird
@@ -10842,6 +10850,7 @@ const kn = {
     // Skriptebene, und ein Zugriff von hier waere die Temporal Dead Zone.
     // Aufgeraeumt wird stattdessen beim Schreiben, siehe anlage2Umschlag().
     if(o.umschlag) kn.umschlag = o.umschlag;
+    if(o.a2Gefragt) kn.a2Gefragt = o.a2Gefragt;
     if(o.varB) kn.varB = o.varB;
     if(o.escReady) kn.escReady = o.escReady;
     if(o.counters) Object.assign(kn.counters, o.counters);
@@ -11046,6 +11055,7 @@ const ANLAGE2_UMSCHLAG = [
   {id:'ersteSperrablage', z:'Tiefer war ich noch nie beigefügt.'},
   {id:'ersterRang',       z:'Ein neuer Titel. Der steht Ihnen zu.'},
   {id:'dank',             z:'Sie haben zugesagt. Ich vermerke das.'},
+  {id:'ganzGelesen',      z:'Das waren alle Fragen. Ich habe mitgezählt.'},
   {id:'akt2',             z:'Zehn Schichten. Sie sind noch hier.'},
   {id:'akt3',             z:'Wir sind länger zusammen als üblich.'},
   {id:'akt4',             z:'Es wird ernst. Ich bleibe, wo ich bin.'},
@@ -22764,6 +22774,21 @@ SZENEN.baumVorblatt = {
 SZENEN.baumAnlage2 = {
   baum:true, haeltDieWelt:false, sicht:3, start:'hub',
   sprecher: () => anlage2Sprecher(),
+  // T4-Nachlese: der letzte freie Platz im Umschlag, und der einzige, der ihr
+  // wirklich zusteht. Ihre Besessenheit steht seit T3 im Kanon: gelesen werden,
+  // EINMAL, GANZ, von einem Menschen. Wer alle sieben Fragen gestellt hat, hat
+  // genau das getan, und bis heute sagte sie nichts dazu.
+  //
+  // Gezaehlt wird ueber Sitzungen hinweg und nicht in szene.gefragt: wer heute
+  // vier Fragen stellt und morgen die restlichen drei, hat sie trotzdem ganz
+  // gelesen. Der Haken schreibt jeden Schluessel genau einmal und prueft danach
+  // gegen fragen[] statt gegen eine Zahl, damit eine achte Frage den Moment
+  // nicht aus Versehen unerreichbar macht.
+  gestellt: key => {
+    if(kn.a2Gefragt[key]) return;
+    kn.a2Gefragt[key] = true; saveKn();
+    if(SZENEN.baumAnlage2.fragen.every(f => kn.a2Gefragt[f.key])) anlage2Umschlag('ganzGelesen');
+  },
   fragen:[
     {key:'wer', t:'Was sind Sie genau?',
      z1:'Eine Anlage. Zweite von dreien.', z2:'Die Erste liegt nicht vor.'},
@@ -22894,7 +22919,10 @@ function szeneKnoten(key){
   const d = szeneDef();
   if(!d) return;
   const frage = szeneFrage(key);
-  if(frage) szene.gefragt.add(key);
+  // T4-Nachlese: ein optionaler Haken je Szene, gleiche Bauart wie d.ende. Die
+  // Maschine meldet nur, DASS eine Frage gestellt wurde; was daraus folgt,
+  // steht bei der Szene und nicht hier. Bisher benutzt ihn genau eine.
+  if(frage){ szene.gefragt.add(key); if(d.gestellt) d.gestellt(key); }
   szene.knoten = key;
   const k = d.knoten[key] || frage;
   if(!k){ if(d.ende) d.ende(); return; }       // unerreichbar, szeneAssert() prüft das
@@ -23661,6 +23689,7 @@ function anlage2Assert(){
   // dagegen haelt, die ihn nennt.
   if(!('anlage2Dank' in kn.flags)) fehler('Der Merker anlage2Dank fehlt in kn.flags');
   if(!kn.umschlag || typeof kn.umschlag !== 'object') fehler('Das Feld kn.umschlag fehlt in der Vorgabe');
+  if(!kn.a2Gefragt || typeof kn.a2Gefragt !== 'object') fehler('Das Feld kn.a2Gefragt fehlt in der Vorgabe');
 
   // (6b) Der Umschlag. Er ist die einzige Textquelle der Figur, die VERBRAUCHT
   // wird statt gezogen, und deshalb prueft sich hier anderes als bei den Pools:
@@ -23683,7 +23712,7 @@ function anlage2Assert(){
   // schaltet, hoert nie jemand. Sie faellt genau einmal im ganzen Spiel, wer
   // sie vergisst, merkt es also nie.
   const gearmt = ['ersterTod','ersterFeierabend','ersteKammer','ersterBosssieg','ersteEbene',
-                  'ersteSperrablage','ersterRang','dank','akt2','akt3','akt4','akt5'];
+                  'ersteSperrablage','ersterRang','dank','ganzGelesen','akt2','akt3','akt4','akt5'];
   for(const id of gearmt) if(!gesehen.has(id)) fehler('Etwas schaltet eine Umschlagzeile scharf, die es nicht gibt', id);
   for(const id of gesehen) if(gearmt.indexOf(id) < 0) fehler('Eine Umschlagzeile wartet auf ein Ereignis, das sie nie scharf schaltet', id);
 

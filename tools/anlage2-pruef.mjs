@@ -331,6 +331,44 @@ async function imDienst(page){
   pruef('und ihr Ausgang heisst wie jeder andere', kipp.text, 'Auf Wiedersehen.');
   pruef('danach steht ihr eine Zeile mehr offen', kipp.nachher > kipp.vorher, true);
 
+  // ---- T4-Nachlese: ganz gelesen -----------------------------------------
+  // Ihre Besessenheit ist, EINMAL GANZ gelesen zu werden. Wer alle sieben
+  // Fragen gestellt hat, hat das getan, und seit der Nachlese sagt sie es.
+  // Geprueft wird die Kante und nicht nur das Ergebnis: nach sechs Fragen darf
+  // nichts scharf sein, nach der siebten muss es das.
+  //
+  // Der Block raeumt hinter sich auf. Er muss zum Messen zwei Felder leeren,
+  // und die Zusagen unter ihm lesen dieselben: wer hier den Stand liegen
+  // laesst, bekommt weiter unten Fehlschlaege, die wie Funde aussehen und
+  // keine sind.
+  const ganz = await page.evaluate(() => {
+    const merk = {u: kn.umschlag, g: kn.a2Gefragt};
+    kn.umschlag = {}; kn.a2Gefragt = {};
+    const keys = SZENEN.baumAnlage2.fragen.map(f => f.key);
+    const haken = SZENEN.baumAnlage2.gestellt;
+    keys.slice(0, -1).forEach(k => haken(k));
+    const nachSechs = kn.umschlag.ganzGelesen || 0;
+    haken(keys[keys.length - 1]);
+    const nachSieben = kn.umschlag.ganzGelesen || 0;
+    // Was wirklich einen Neustart ueberlebt, ist das, was in der Ablage steht.
+    // Deshalb wird dort nachgesehen und nicht im Kopf.
+    const roh = JSON.parse(localStorage.getItem('sda_knoeterich_v1') || '{}');
+    const abgelegt = { fragen: Object.keys(roh.a2Gefragt || {}).length,
+                       scharf: (roh.umschlag || {}).ganzGelesen || 0 };
+    // aufraeumen: derselbe Stand wie vor dem Block
+    kn.umschlag = merk.u; kn.a2Gefragt = merk.g; saveKn();
+    return { keys: keys.length, nachSechs, nachSieben, abgelegt,
+             inTabelle: ANLAGE2_UMSCHLAG.some(u => u.id === 'ganzGelesen'),
+             zweimal: (() => { const v = kn.umschlag.ganzGelesen; haken(keys[0]); return kn.umschlag.ganzGelesen === v; })() };
+  });
+  pruef('sie hat sieben Fragen', ganz.keys, 7);
+  pruef('nach sechs Fragen ist nichts scharf', ganz.nachSechs, 0);
+  pruef('die siebte schaltet den Umschlag scharf', ganz.nachSieben, 1);
+  pruef('und die Zeile steht in der Tabelle', ganz.inTabelle, true);
+  pruef('die sieben Fragen liegen in der Ablage', ganz.abgelegt.fragen, 7);
+  pruef('die scharfe Zeile liegt dort ebenfalls', ganz.abgelegt.scharf, 1);
+  pruef('eine achte Frage schaltet nichts nach', ganz.zweimal, true);
+
   // ---- T4: die zweite Buehne ---------------------------------------------
   // Unter vier Augen ist sie eine andere. Gemessen wird an der Entfernung zu
   // Knoeterich, der als einziger nicht in npcs steht: genau ihn zu vergessen

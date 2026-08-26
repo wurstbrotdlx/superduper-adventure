@@ -1250,6 +1250,14 @@ und sie stehen anders im Band als alles andere. Die Bauform steht schon auf dem 
 Blatt ihrer Einführung: **eine Feststellung, dann eine höfliche Einordnung, und kein Wort
 darüber, was sie dabei empfindet.**
 
+*(T4-Nachlese.)* Dazu eine dreizehnte, und sie ist die einzige, die von ihr selbst
+handelt. Hat der Spieler alle sieben Fragen gestellt, ist geschehen, worauf sie wartet,
+seit sie ausgefertigt wurde: jemand hat sie ganz gelesen. Sie stellt es fest und hängt den
+einen Halbsatz an, der verrät, dass sie mitgezählt hat. Die Zahl nennt sie nicht, hier so
+wenig wie sonst, und dass es ihr etwas bedeutet, sagt sie nicht. Wer die Fragen auf zwei
+Abende verteilt, bekommt den Moment trotzdem: gezählt wird im Spielstand und nicht in der
+offenen Tafel.
+
 **Unter vier Augen ist sie anders.** Ein Teil ihrer Zeilen fällt nur, wenn keine Dorffigur
 in der Nähe steht. Der Spieler bemerkt das mit der Zeit. Sie bemerkt es nie, und das ist
 derselbe blinde Fleck wie oben: wer sich für unwichtig hält, zählt seine Zuhörer nicht.
