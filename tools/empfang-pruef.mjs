@@ -35,10 +35,14 @@
 //
 // Dazu die Zusagen von T2 und T3, die am selben Anfang haengen:
 //
-//   Ernennung     sechs Blaetter zwischen Unterschrift und erstem Schritt, die
-//                 Urkunde nennt die Amtsbezeichnung (T2)
-//   Anlage 2      die Urkunde kuendigt sie an, danach fuehren fuenf Blaetter sie
-//                 ein, und mit EINSTECKEN liegt sie in der Tasche (T3)
+//   Ernennung     sechs Blaetter zwischen Unterschrift und Dienstantritt, die
+//                 Urkunde nennt die Amtsbezeichnung (T2). Seit AN4 endet der
+//                 Anfang hier: der erste freie Schritt liegt direkt dahinter
+//   Anlage 2      die Urkunde kuendigt sie an, und seit AN4 meldet sie sich
+//                 erst VOR dem Haus, nach dem Schritt hinaus. Danach fuehren
+//                 fuenf Blaetter sie ein, mit EINSTECKEN liegt sie in der
+//                 Tasche (T3). Der Merker anlage2Wartet traegt sie ueber die
+//                 Luecke und wird beim ersten Hinausgehen verbraucht (AN4)
 //   Nachholung    wer ueber den Vordruck geht, sieht die Ernennung nie. Der
 //                 erste Griff zur Tasche holt die Einfuehrung nach, genau
 //                 einmal (T3)
@@ -357,7 +361,7 @@ async function bisZumEmpfang(page){
   await waehle(page, 'Dienst antreten');
   // T2: zwischen Unterschrift und erstem Schritt liegt jetzt die Ernennung.
   // Dieselbe Tafelmaschine wie das Intro, deshalb derselbe Durchlauf.
-  const ernennung = await durchDenStapel(page, 'HINAUSGEHEN');
+  const ernennung = await durchDenStapel(page, 'ÜBERNEHMEN');
   pruef('die Ernennung hat sechs Blaetter', ernennung, 6);
   pruef('die Urkunde nennt die Amtsbezeichnung', await page.evaluate(() =>
         ERNENNUNG_URKUNDE().some(z => z.includes(rangNameVon(0)))), true);
@@ -366,11 +370,27 @@ async function bisZumEmpfang(page){
   pruef('die Urkunde nennt ihre Anlage', await page.evaluate(() =>
         ERNENNUNG_URKUNDE().some(z => /Anlagen: eine/.test(z))), true);
 
-  // T3: und dahinter, vor dem ersten Schritt ins Dorf, das erste Treffen.
-  // Eigener Stapel, eigener Schlussknopf, und danach ist sie in der Tasche.
-  pruef('vor dem Dienst steht noch ein Stapel', await page.evaluate(() =>
-        document.getElementById('overlay').style.display), 'flex');
+  // AN4: Hier stand die Erwartung, dass vor dem Dienst noch ein Stapel steht.
+  // Seit AN4 steht dort keiner mehr: die Ernennung endet, wo der Rechtsakt
+  // endet, und der Dienst faengt an. Aus einer Zusage werden fuenf, und jede
+  // einzelne davon war vorher in dem einen 'flex' mitversteckt.
+  pruef('nach der Ernennung laeuft der Dienst', await page.evaluate(() => state), 'play');
+  pruef('und kein Stapel steht mehr davor', await page.evaluate(() =>
+        document.getElementById('overlay').style.display), 'none');
+  pruef('der Spieler steht dabei in der Amtsstube', await page.evaluate(() => innen && innen.key), 'amt');
   pruef('Anlage 2 ist noch nicht in der Tasche', await page.evaluate(() => kn.flags.anlage2Da), false);
+  pruef('sie wartet aber an der Urkunde', await page.evaluate(() => kn.flags.anlage2Wartet), true);
+
+  // AN4: Der erste freie Schritt ist der Schritt hinaus (AN2), und erst
+  // dahinter meldet sich die Anlage 2. Damit stimmt ihr erster Satz wieder
+  // woertlich: "Sie stehen zum ersten Mal vor dem Haus statt darin."
+  const schritt1 = await hinaus(page);
+  pruef('der erste freie Schritt heisst "Hinausgehen"', schritt1.txt, 'Hinausgehen');
+  pruef('und er ist der Weg aus dem Haus', schritt1.hausaus, true);
+  pruef('danach steht der Spieler draussen', await page.evaluate(() => innen), null);
+  pruef('und dort meldet sich die Anlage 2', await page.evaluate(() =>
+        document.getElementById('overlay').style.display), 'flex');
+  pruef('der Merker ist damit verbraucht', await page.evaluate(() => kn.flags.anlage2Wartet), false);
   // T6: sechs statt fuenf, weil die Scheinwahl hinter dem Auftakt dazugekommen
   // ist. Wer hier durchlaeuft, nimmt sie beim ersten Anlauf an.
   const treffen = await durchDenStapel(page, 'EINSTECKEN');
@@ -385,8 +405,59 @@ async function bisZumEmpfang(page){
   pruef('die Szene ist beendet', await page.evaluate(() => empfangAktiv || gespraechOffen), false);
   pruef('das HUD ist wieder da', await page.evaluate(() => getComputedStyle(el('hud')).display !== 'none'), true);
   pruef('das Kreuz ist wieder da', await page.evaluate(() => el('gespraechZu').style.display), '');
+
+  // AN4: Genau einmal. Ein Merker, der erst im Abschluss des Stapels
+  // verbraucht wuerde, liesse den Erstkontakt bei jedem weiteren Hinausgehen
+  // wiederkommen, sobald ein Spieler den Stapel einmal nicht zu Ende blaettert.
+  // Geprueft wird am zweiten Weg durch dieselbe Tuer.
+  pruef('ein zweiter Gang durch die Tuer wiederholt nichts', await page.evaluate(() => {
+    const h = INN_HAEUSER.find(x => x.raum.key === 'amt');
+    betreteHaus(h);
+    for(let i = 0; i < 30; i++) update(1/60);
+    aktSperre = 0;
+    for(let i = 0; i < 10; i++) update(1/60);
+    fuehreAktion();
+    return document.getElementById('overlay').style.display;
+  }), 'none');
+
+  // AN4: Und der Auslöser haengt an fuehreAktion() und nicht an
+  // verlasseHaus(). Sonst zoege ein Schichtende aus der Amtsstube heraus den
+  // Stapel aus einem Reset-Pfad, und ein Tod im Haus ebenso. Geprueft mit
+  // gesetztem Merker, damit die Zusage etwas wert ist.
+  pruef('ein Schichtende aus dem Haus loest sie nicht aus', await page.evaluate(() => {
+    kn.flags.anlage2Wartet = true;
+    const h = INN_HAEUSER.find(x => x.raum.key === 'amt');
+    betreteHaus(h);
+    startShift();                       // ruft verlasseHaus() von innen
+    const auf = document.getElementById('overlay').style.display === 'flex';
+    kn.flags.anlage2Wartet = false; saveKn();
+    return auf;
+  }), false);
+
   pruef('Konsole still (Desktop)', laut, []);
   await ctx.close();
+}
+
+// AN4: Der Schritt vor die Tuer, so wie ein Spieler ihn geht.
+//
+// Erst muss die Uhr laufen: scanAktion() steigt aus, solange aktSperre steht,
+// und dienstAntritt() setzt sie auf eine halbe Sekunde. Sechzig Rahmen sind
+// eine ganze und damit sicher darueber. Ausgeloest wird ueber fuehreAktion(),
+// also ueber die Taste -- nicht ueber verlasseHaus(). Die uebrigen Laeufe
+// rufen verlasseHaus() direkt, weil sie nur schnell ins Dorf wollen; dieser
+// hier prueft den Weg selbst und darf ihn deshalb nicht abkuerzen.
+//
+// Gibt zurueck, WAS angeboten wurde, damit die Zusage aus AN2 ("der erste freie
+// Schritt ist der Schritt hinaus") am Angebot geprueft wird und nicht daran,
+// dass hinterher zufaellig etwas passiert ist.
+async function hinaus(page){
+  const angebot = await page.evaluate(() => {
+    for(let i = 0; i < 60; i++) update(1/60);
+    return { art: aktArt, txt: aktTxt, hausaus: aktArt === AKT_HAUSAUS };
+  });
+  if(angebot.hausaus) await page.evaluate(() => fuehreAktion());
+  await page.waitForTimeout(300);
+  return angebot;
 }
 
 // ------------------------------------------------- der Weg ueber den Vordruck
@@ -455,6 +526,20 @@ async function bisZumEmpfang(page){
   // deshalb holt der erste Blick in die Tasche es nach. Dasselbe gilt fuer
   // jeden Spielstand, der aelter ist als dieser Bauabschnitt.
   pruef('ohne Ernennung ist sie noch nicht da', await page.evaluate(() => kn.flags.anlage2Da), false);
+  // AN4: und sie wartet auch nicht an der Tuer. Der Merker wird am Ende der
+  // Ernennung gesetzt, und die hat dieser Weg nie gesehen -- der Schritt aus
+  // dem Haus bleibt hier also stumm, und der Rucksack unten holt nach wie vor
+  // alles nach.
+  pruef('sie wartet auch nicht an der Tuer', await page.evaluate(() => kn.flags.anlage2Wartet), false);
+  pruef('der Schritt hinaus bleibt auf diesem Weg stumm', await page.evaluate(() => {
+    const h = INN_HAEUSER.find(x => x.raum.key === 'amt');
+    if(!innen) betreteHaus(h);
+    for(let i = 0; i < 30; i++) update(1/60);
+    aktSperre = 0;
+    for(let i = 0; i < 10; i++) update(1/60);
+    fuehreAktion();
+    return document.getElementById('overlay').style.display;
+  }), 'none');
   await page.evaluate(() => toggleInventory());
   await page.waitForTimeout(400);
   pruef('der erste Griff zur Tasche holt sie nach', await page.evaluate(() =>
@@ -525,7 +610,12 @@ async function bisZumEmpfang(page){
   // Stapel rot macht. Ein Helfer, der null Blaetter blaettert, kam hier
   // ungestraft durch.
   pruef('die Ernennung blaettert auch auf diesem Weg sechs Blaetter',
-        await durchDenStapel(page, 'HINAUSGEHEN'), 6);
+        await durchDenStapel(page, 'ÜBERNEHMEN'), 6);
+  // AN4: und auch dieser Block muss jetzt erst vor die Tuer. Vorher stand die
+  // Wahl unmittelbar hinter der Ernennung; ohne diesen Schritt greift der
+  // Klick unten in ein leeres Panel und der ganze Lauf stirbt mit einem
+  // TypeError, samt der zwanzig Pruefungen der Bloecke danach.
+  pruef('auch hier fuehrt der erste freie Schritt hinaus', (await hinaus(page)).hausaus, true);
 
   // Blatt I ist ihr Auftakt. Er hat noch keine Wahl, sondern nur WEITER.
   const auftakt = await tafel();
