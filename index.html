@@ -5777,10 +5777,27 @@ const DORF_FIGUREN = [
   // komposit:true, weil G8 das für alle acht Wandernden entschieden hat und ein
   // halber Stand schlimmer ist als beide Antworten. Wer das Blatt für die
   // bessere Zeichnung hält, streicht hier ein Wort.
-  {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', kurz:'Wirt Fass', tx:24, ty:38, opt:'wander', sheet:'bruno', komposit:true,
-   // kurzes schwarzes Haar, offenes stumpfrotes Hemd. G9: das Karohemd
-   // (Lumberjack) ist die Form mit offenem Kragen und passt zum Wirt mit
-   // Lederschürze besser als das schlichte.
+  {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', kurz:'Wirt Fass', tx:24, ty:38, opt:'wander', sheet:'bruno',
+   // Der Einzige des Ensembles ohne komposit:true, und das ist eine
+   // Entscheidung, keine Lücke. Das Pack hat einen fertigen Wirt, und er heißt
+   // Bartender_Bruno — der Wirt dieses Dorfes heißt Bruno Fass. Der Name stand
+   // seit W3 in der Tabelle, das Blatt lag seit dem Nachreichen des Pakets im
+   // Ordner, und dass beides dasselbe ist, hat drei Bauabschnitte lang niemand
+   // nachgesehen.
+   //
+   // Der Preis ist benannt und bezahlt: G8 hat komposit:true eingeführt, damit
+   // Porträt und Weltfigur nicht auseinanderlaufen, und hier tun sie es. Das
+   // Porträt zeigt einen schwergewichtigen Mann mit vollem dunklem Haar, das
+   // Blatt einen mit Halbglatze und Schnauzbart. Beides ist derselbe Wirt in
+   // Lederschürze, beides ist unverwechselbar er, und beides ist gemalt worden,
+   // ohne vom anderen zu wissen. Wer das nicht will, schreibt komposit:true
+   // wieder in diese Zeile und hat das Komposit zurück.
+   //
+   // gestalt bleibt stehen und ist kein Rest: ohne Grafikpaket gibt es das
+   // Packblatt nicht, und dann läuft er wieder als Komposit. Kurzes schwarzes
+   // Haar, offenes stumpfrotes Hemd; das Karohemd (Lumberjack) ist die Form mit
+   // offenem Kragen und passt zum Wirt mit Lederschürze besser als das
+   // schlichte.
    gestalt:{hair:'h3', haarFarbe:'#2d1b0e', hemd:'karo', hemdFarbe:'#793530', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Wie war der Tag da draußen?', z2:'Setz dich. Bleib ein bisschen.'},

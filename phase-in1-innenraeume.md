@@ -559,10 +559,13 @@ beides: die Stelle ist durchsichtig, und vom Objekt fehlt nichts.
 
 ### Was weiter offen ist
 
-* **`NPCs (Premade)/Bartender_Bruno.png`.** Das Pack hat einen fertigen Wirt, und
-  der Wirt in diesem Dorf heißt Bruno Fass. Ein Figurensprite zu tauschen ist
+* ~~**`NPCs (Premade)/Bartender_Bruno.png`.** Das Pack hat einen fertigen Wirt,
+  und der Wirt in diesem Dorf heißt Bruno Fass. Ein Figurensprite zu tauschen ist
   aber kein Dekopunkt, sondern ein Eingriff in die Figurentabelle — das ist eine
-  eigene Entscheidung und kein Nebenbei.
+  eigene Entscheidung und kein Nebenbei.~~ **Entschieden am 27.08.2026:** „Ja
+  nimm Bruno." Ein gestrichenes `komposit:true` in seiner Zeile, sonst nichts —
+  das Blatt lag seit dem Nachreichen des Pakets im Ordner. Einzelheiten und der
+  Preis in `phase-g8-figurenfarben.md`, G8-4.
 * **`Carpets.png`.** Teppiche bräuchten eine flache Ebene unter den Möbeln. Ein
   Feld trägt ein Zeichen, und ein Teppich unter einem Tisch wären zwei.
 * **Fenster in Amt und Registratur.** Beide haben die Nordwand voller Regale.

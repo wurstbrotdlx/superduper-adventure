@@ -211,9 +211,13 @@ Fußlinie: `orc_chief` hat `ay:30`, gemessen im Kessel und nicht im Dorf.
   Trepp und Nieselbeck auf dem Kopf sitzt, und Vorblatts fast schwarzer Mantel.
 - **Milbs Frisur.** Siehe G10-4. Der Strohhut ist weg; ob `h5` über der Glatze
   als Kappe durchgeht, braucht eine Entscheidung am Bild, keine Messung.
-- **Fass und sein Paketblatt.** Bartender_Bruno ist konzeptionell die bessere
+- ~~**Fass und sein Paketblatt.** Bartender_Bruno ist konzeptionell die bessere
   Zeichnung für einen Wirt. Er läuft jetzt trotzdem als Komposit; ein
-  gestrichenes `komposit:true` dreht das um.
+  gestrichenes `komposit:true` dreht das um.~~ **Erledigt am 27.08.2026, nach
+  IN1:** das Flag ist gestrichen, er läuft auf `Bartender_Bruno`. Den Ausschlag
+  gab nicht die bessere Zeichnung, sondern der Name — der Wirt heißt seit W3
+  Bruno Fass. Der Preis (Halbglatze und Schnauzbart im Blatt, volles dunkles
+  Haar im Porträt) steht in `phase-g8-figurenfarben.md`, G8-4.
 - **Nörgel und das Empfangsbekenntnis** teilen sich ein Blatt. Wenn das zu nah
   aneinander liegt, trennt sie ein `tint` auf Nörgels Zeile.
 - **Die anderen Völker.** `CF_RIGS` hat vier Goblins, Skelette, Ritter und
