@@ -67,7 +67,12 @@ const ZIEL_WOERTER = 400;   // Masterplan Fassung 2, Bauabschnitte, A0
 const WELTGESETZ_WOERTLICH = /vorgang,?\s+den\s+niemand\s+abschlie(?:ß|ss)t/i;
 const WELTGESETZ_SINN = [
   /was\s+liegen\s+bleibt,?\s+steht\s+irgendwann\s+auf/i,
-  /was\s+keiner\s+bearbeitet,?[\s\S]{0,40}lebendig/i,
+  /was\s+keiner\s+bearbeitet,?[\s\S]{0,40}lebendig/i,   // Szene welt1a
+  // AN3-Nachlese: das Startbild sagt "Was NICHT bearbeitet WIRD, wird
+  // lebendig." Das Muster darueber verlangt "keiner" und traf es deshalb
+  // nicht -- eine Umschreibung, die der Lauf zwei Bauabschnitte lang
+  // uebersehen hat, weil sie ein Wort anders lautet als die andere.
+  /was\s+nicht\s+bearbeitet\s+wird,?\s+wird\s+lebendig/i,
 ];
 
 const pw = (await import(process.env.PLAYWRIGHT_PFAD || 'playwright')).default;
@@ -465,6 +470,20 @@ async function alleWeltgesetzStellen(){
       sammle(d.knoten, 'Szene ' + k, 0);
       sammle(d.fragen, 'Szene ' + k + ', Fragen', 0);
     }
+    // AN3-Nachlese: das Startbild. Es ist KEIN Leseapparat und taucht deshalb
+    // in keiner Route auf -- aber es steht vor jedem einzelnen Start, und sein
+    // Untertitel traegt den Satz sinngemaess. Ein Lauf, der nur Tabellen
+    // ansieht, meldet ihn nicht, und dadurch las sich die Null auf dem
+    // Pflichtweg schaerfer, als sie ist.
+    //
+    // Gemessen statt aus dem Quelltext gegriffen: die Seite wird wirklich
+    // gebaut und danach abgelesen. Absatzweise, damit im Bericht der Satz
+    // steht und nicht das halbe Startbild.
+    try {
+      showStartScreen();
+      for(const p of document.querySelectorAll('#ovPanel p, #ovPanel h1, #ovPanel h3'))
+        sammle((p.textContent || '').trim(), 'Startbild (vor jedem Start)', 0);
+    } catch(e){}
     return raus;
   }, { w: [WELTGESETZ_WOERTLICH.source, 'i'], sinn: WELTGESETZ_SINN.map(r => [r.source, 'i']) });
   await ctx.close();
@@ -555,7 +574,7 @@ if(laeufe.pflicht && laeufe.springer && !laeufe.pflicht.abbruch && !laeufe.sprin
   const nachOrt = {};
   for(const t of weltgesetzStellen) (nachOrt[t.wo] = nachOrt[t.wo] || []).push(t);
   console.log('DAS WELTGESETZ VOR SCHICHT 5, alle erreichbaren Stellen');
-  console.log('  Erwartet nach Masterplan: 3 (T5d Kacheln, W8 Vordruck, T5b Anlage 2).\n  Seit AN3 ist die erste davon kein Blatt mehr, sondern die Tafel ueber der Tuer.');
+  console.log('  Erwartet nach Masterplan: 3 (T5d Kacheln, W8 Vordruck, T5b Anlage 2).\n  Seit AN3 ist die erste davon kein Blatt mehr, sondern die Tafel ueber der Tuer.\n  Das Startbild steht VOR jeder Route und ist kein Leseapparat: es zaehlt hier mit,\n  aber nicht in der Zeile "faellt auf diesem Weg" weiter oben.');
   for(const wo of Object.keys(nachOrt)){
     const arten = [...new Set(nachOrt[wo].map(t => t.art))].join('+');
     console.log(`  ${(wo + ' ').padEnd(38, '.')} ${z(nachOrt[wo].length, 2)} Zeile(n), ${arten}`);

@@ -227,3 +227,29 @@ Ebenso weiter offen: **der Dienstbericht am Schichtende**, zweitmeistgesehener T
 Spiels und immer noch eine Tabelle. Er hätte von der Urkundenoptik aus E2 unmittelbar
 etwas, denn er ist der Ort, an dem das Haus dem Spieler jeden Abend eine Abrechnung
 ausstellt.
+
+
+---
+
+## Nachtrag 27.08.2026: die Bühne ist seit AN2 der Raum
+
+E2 hat die schwarze Bühne gebaut und dafür einen Grund genannt: die Tafel soll
+das Einzige im Bild sein. **AN2 hat die Bühne ersetzt** — der Empfang spielt
+seither in der Amtsstube, `empfangStarten()` ruft `betreteHaus()` statt
+`buehneAn()`.
+
+**E2 wird damit nicht aufgegeben, sondern anders eingelöst**, und das ist die
+Kanon-Entscheidung, die hiermit nachgezogen ist: der Raum **steht still**.
+`state` ist `'szene'`, `update(dt)` steigt in Zeile zwei aus, niemand läuft,
+die Uhr geht nicht. Ein Raum, in dem sich nichts bewegt, ist kein
+Hintergrundrauschen, sondern ein Bild. Die Bedingung wird dabei **strenger**
+geprüft als vorher: eine schwarze Fläche konnte nur da sein, ein stillstehender
+Raum muss vier Dinge zugleich einhalten (`empfang-pruef`, seit AN2 vier
+Prüfungen statt einer).
+
+**Was von E2 unangetastet bleibt:** die Ernennung läuft weiter auf Schwarz
+(`empfangErnennung()` ruft `buehneAn()`), denn sie ist ein Rechtsakt des
+Hauses, und das Haus macht keinen Rechtsakt vor laufender Weltkulisse (T2).
+`buehneAn()` liefert die Titelkarte heute nur noch dafür.
+
+Begründung im einzelnen: `phase-an2-amtsstube.md`.
