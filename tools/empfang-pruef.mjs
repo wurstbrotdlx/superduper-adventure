@@ -54,6 +54,29 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || 
 
 const zeilen = [];
 let fehl = 0;
+
+// RIEGEL (27.08.2026, INTRO-MESSUNG Pruefung 4): Das Protokoll gehoert dem Lauf
+// und nicht seinem guten Ende. Bis hierher stand der Druck ganz unten, und eine
+// ungefangene Ausnahme mittendrin nahm ihn mit -- Exit-Code 1, ein Stapelabzug,
+// und keine Zeile darueber, was geprueft wurde und was nicht. Nachgestellt:
+// null von 96 Zeilen, wenn der Lauf vor seinem Ende stirbt.
+//
+// Der ABBRUCH-Hinweis ist dabei nicht die Zierde, sondern der Kern. Ohne ihn
+// meldet ein abgebrochener Lauf "40 von 40 Pruefungen bestanden", und das liest
+// sich wie ein sauberer Durchlauf, obwohl der ganze Rest nie gelaufen ist.
+let berichtet = false, fertig = false;
+function bericht(){
+  if(berichtet) return;
+  berichtet = true;
+  console.log(zeilen.join('\n'));
+  console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Pruefungen bestanden.`);
+  if(!fertig) console.log(
+      'ABBRUCH: der Lauf ist vor seinem Ende gestorben. Die Zeile darueber zaehlt nur,\n'
+    + 'was bis dahin lief -- alles danach ist UNGEPRUEFT und nicht etwa in Ordnung.\n'
+    + 'Die Ursache steht als Ausnahme darunter.');
+}
+process.on('exit', bericht);
+
 function pruef(name, ist, soll){
   const ok = JSON.stringify(ist) === JSON.stringify(soll);
   if(!ok) fehl++;
@@ -151,22 +174,44 @@ async function durchDieVorstellung(page){
 // derselben Tafel heisst "Nicht lesen" und enthaelt damit ebenfalls "lesen".
 // Ein unverankertes /LESEN/i haette je nach Reihenfolge den falschen Knopf
 // erwischt und die Wahl abgelehnt statt angenommen.
+//
+// RIEGEL (27.08.2026, INTRO-MESSUNG Pruefung 4): Bis hierher faltete dieser
+// Helfer ZWEI verschiedene Lagen in dasselbe 'weg':
+//
+//   das Overlay ist zu          -> der Stapel ist durch, Schleifenende, richtig
+//   das Overlay steht, kein Knopf -> ein Fund, der wie ein Schleifenende aussah
+//
+// Der zweite Fall brach still ab. Nachgemessen: faellt 'LESEN' aus der Liste,
+// meldet der Lauf zwoelf Abweichungen, und KEINE davon nennt den Knopf -- sie
+// lauten "ist=1 soll=6" und "ist=\"menu\" soll=\"play\"" und schicken den Leser
+// nach ANLAGE2_BLAETTER. Heisst der Weiterknopf ganz anders, stirbt der Lauf
+// vorher an einer Ausnahme woanders.
+//
+// Ab hier sind die beiden Lagen getrennt, und die zweite WIRFT, mit dem
+// Wortlaut der Knoepfe, die wirklich dastehen. Das Protokoll ueberlebt den Wurf
+// (siehe bericht() oben), die Meldung nennt also die Ursache und das bis dahin
+// Gepruefte steht darueber.
 async function durchDenStapel(page, ende){
   let tafeln = 0;
   for(let i = 0; i < 14; i++){
     const r = await page.evaluate((endeStr) => {
-      if(document.getElementById('overlay').style.display !== 'flex') return 'weg';
-      const b = [...document.querySelectorAll('#ovPanel button')]
-                  .find(x => ['WEITER', 'LESEN'].includes(x.textContent.trim())
-                             || x.textContent.includes(endeStr));
-      if(!b) return 'weg';
+      if(document.getElementById('overlay').style.display !== 'flex') return {lage:'zu'};
+      const knoepfe = [...document.querySelectorAll('#ovPanel button')];
+      const b = knoepfe.find(x => ['WEITER', 'LESEN'].includes(x.textContent.trim())
+                                  || x.textContent.includes(endeStr));
+      if(!b) return {lage:'kein-knopf', da: knoepfe.map(x => x.textContent.trim())};
       const letzt = b.textContent.includes(endeStr);
-      b.click(); return letzt ? 'ende' : 'weiter';
+      b.click(); return {lage: letzt ? 'ende' : 'weiter'};
     }, ende);
-    if(r === 'weg') break;
+    if(r.lage === 'zu') break;
+    if(r.lage === 'kein-knopf')
+      throw new Error(`durchDenStapel: die Tafel steht, aber kein Weiterknopf passt. `
+        + `Gesucht wurde WEITER, LESEN oder "${ende}"; auf der Tafel steht `
+        + `${JSON.stringify(r.da)}. Nach ${tafeln} Blatt/Blaettern. `
+        + `Wer hier eine Beschriftung geaendert hat, aendert sie auch in dieser Liste.`);
     tafeln++;
     await page.waitForTimeout(220);
-    if(r === 'ende') break;
+    if(r.lage === 'ende') break;
   }
   await page.waitForTimeout(200);
   return tafeln;
@@ -438,7 +483,12 @@ async function bisZumEmpfang(page){
   await waehle(page, 'Wo unterschreibe ich');
   await waehle(page, 'Weiblich');
   await waehle(page, 'Dienst antreten');
-  await durchDenStapel(page, 'HINAUSGEHEN');
+  // RIEGEL: der Rueckgabewert wurde hier weggeworfen, und damit fehlte genau die
+  // Pruefung, die an den vier anderen Aufrufstellen einen stehengebliebenen
+  // Stapel rot macht. Ein Helfer, der null Blaetter blaettert, kam hier
+  // ungestraft durch.
+  pruef('die Ernennung blaettert auch auf diesem Weg sechs Blaetter',
+        await durchDenStapel(page, 'HINAUSGEHEN'), 6);
 
   // Blatt I ist ihr Auftakt. Er hat noch keine Wahl, sondern nur WEITER.
   const auftakt = await tafel();
@@ -489,7 +539,10 @@ async function bisZumEmpfang(page){
         (await tafel()).fuss, 'Blatt III von VI');
 
   // Wer bis zum gesperrten Knopf abgelehnt hat, bekommt den Nachhall.
-  await durchDenStapel(page, 'EINSTECKEN');
+  // RIEGEL: auch hier fiel der Rueckgabewert weg. Der Lauf steht auf Blatt III
+  // von VI, es bleiben also vier Blaetter bis EINSTECKEN.
+  pruef('von Blatt III bis EINSTECKEN sind es vier Blaetter',
+        await durchDenStapel(page, 'EINSTECKEN'), 4);
   await page.waitForTimeout(400);
   pruef('Anlage 2 liegt trotzdem in der Tasche',
         await page.evaluate(() => kn.flags.anlage2Da), true);
@@ -616,6 +669,6 @@ async function bisZumEmpfang(page){
 }
 
 await browser.close();
-console.log(zeilen.join('\n'));
-console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Pruefungen bestanden.`);
+fertig = true;
+bericht();
 process.exit(fehl ? 1 : 0);

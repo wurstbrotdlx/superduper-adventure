@@ -65,6 +65,29 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || 
 
 const zeilen = [];
 let fehl = 0;
+
+// RIEGEL (27.08.2026, INTRO-MESSUNG Pruefung 4): Das Protokoll gehoert dem Lauf
+// und nicht seinem guten Ende. Bis hierher stand der Druck ganz unten, und eine
+// ungefangene Ausnahme mittendrin nahm ihn mit -- Exit-Code 1, ein Stapelabzug,
+// und keine Zeile darueber, was geprueft wurde und was nicht. Nachgestellt:
+// null von 96 Zeilen, wenn der Lauf vor seinem Ende stirbt.
+//
+// Der ABBRUCH-Hinweis ist dabei nicht die Zierde, sondern der Kern. Ohne ihn
+// meldet ein abgebrochener Lauf "40 von 40 Pruefungen bestanden", und das liest
+// sich wie ein sauberer Durchlauf, obwohl der ganze Rest nie gelaufen ist.
+let berichtet = false, fertig = false;
+function bericht(){
+  if(berichtet) return;
+  berichtet = true;
+  console.log(zeilen.join('\n'));
+  console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Pruefungen bestanden.`);
+  if(!fertig) console.log(
+      'ABBRUCH: der Lauf ist vor seinem Ende gestorben. Die Zeile darueber zaehlt nur,\n'
+    + 'was bis dahin lief -- alles danach ist UNGEPRUEFT und nicht etwa in Ordnung.\n'
+    + 'Die Ursache steht als Ausnahme darunter.');
+}
+process.on('exit', bericht);
+
 function pruef(name, ist, soll){
   const ok = JSON.stringify(ist) === JSON.stringify(soll);
   if(!ok) fehl++;
@@ -118,20 +141,17 @@ async function spiel(ctxOpt){
   // Einführung selbst steht in empfang-pruef.mjs und anlage2-pruef.mjs.
   await page.evaluate(() => toggleInventory());
   await page.waitForTimeout(300);
-  for(let i = 0; i < 8; i++){
-    const weiter = await page.evaluate(() => {
-      if(document.getElementById('overlay').style.display !== 'flex') return false;
-      // T6: LESEN kommt dazu, sonst bleibt der Lauf an der Scheinwahl der
-      // Anlage 2 haengen und kaeme nie bis zum Menue. Gleichheit statt
-      // Vorkommen, denn "Nicht lesen" steht als zweiter Knopf daneben.
-      const b = [...document.querySelectorAll('#ovPanel button')]
-                  .find(x => ['WEITER', 'EINSTECKEN', 'LESEN'].includes(x.textContent.trim()));
-      if(!b) return false;
-      b.click(); return true;
-    });
-    if(!weiter) break;
-    await page.waitForTimeout(200);
-  }
+  const weggeklickt = await stapelWegklicken(page);
+  // RIEGEL (27.08.2026, INTRO-MESSUNG Pruefung 4): DAS ist die Zeile, die den
+  // ganzen Fall gefangen haette, und sie fehlte. Der Zweck dieser Schleife ist,
+  // dass die Tafel danach WEG ist -- geprueft wurde das nie. Findet sie ihren
+  // Knopf nicht, blieb der Stapel stehen, und der Lauf prueft das Menue durch
+  // ein Modalfenster hindurch. Ob das auffaellt, hing davon ab, was die
+  // naechste Pruefung zufaellig anfasst; nachgestellt lief er in einen
+  // Zeitablauf auf #bagGrid, und der nennt die Ursache nicht.
+  if(await page.evaluate(() => document.getElementById('overlay').style.display === 'flex'))
+    throw new Error(`stapelWegklicken: nach ${weggeklickt} Tafel(n) steht das Overlay immer noch. `
+      + `Alles, was dieser Lauf danach prueft, saehe das Menue durch eine Tafel hindurch.`);
   await page.evaluate(() => { if(invOpen) toggleInventory(); });
   await page.waitForTimeout(200);
 
@@ -141,6 +161,40 @@ async function spiel(ctxOpt){
     window.tryAttack = tryAttack = function(...a){ window.__schlaege++; return alt.apply(this, a); };
   });
   return { page, ctx, laut };
+}
+
+// Den Tafelstapel wegklicken, der vor dem Menue steht.
+//
+// RIEGEL (27.08.2026): Das war bis hierher eine namenlose Schleife mitten im
+// Aufbau -- kein Name, kein Rueckgabewert, keine Pruefung, nur `if(!weiter)
+// break;`. Sie ist die stillste Stelle beider Pruefstaende gewesen: ALLE 78
+// Pruefungen dieses Laufs haengen an ihr, und keine einzige lief vor ihr.
+//
+// Sie trennt jetzt dieselben zwei Lagen wie durchDenStapel() in
+// empfang-pruef.mjs: Overlay zu heisst fertig, Overlay offen ohne passenden
+// Knopf heisst Fund und wirft.
+async function stapelWegklicken(page){
+  let tafeln = 0;
+  for(let i = 0; i < 8; i++){
+    const r = await page.evaluate(() => {
+      if(document.getElementById('overlay').style.display !== 'flex') return {lage:'zu'};
+      // T6: LESEN kommt dazu, sonst bleibt der Lauf an der Scheinwahl der
+      // Anlage 2 haengen und kaeme nie bis zum Menue. Gleichheit statt
+      // Vorkommen, denn "Nicht lesen" steht als zweiter Knopf daneben.
+      const knoepfe = [...document.querySelectorAll('#ovPanel button')];
+      const b = knoepfe.find(x => ['WEITER', 'EINSTECKEN', 'LESEN'].includes(x.textContent.trim()));
+      if(!b) return {lage:'kein-knopf', da: knoepfe.map(x => x.textContent.trim())};
+      b.click(); return {lage:'weiter'};
+    });
+    if(r.lage === 'zu') break;
+    if(r.lage === 'kein-knopf')
+      throw new Error(`stapelWegklicken: die Tafel steht, aber kein Weiterknopf passt. `
+        + `Gesucht wurde WEITER, EINSTECKEN oder LESEN; auf der Tafel steht `
+        + `${JSON.stringify(r.da)}. Nach ${tafeln} Blatt/Blaettern.`);
+    tafeln++;
+    await page.waitForTimeout(200);
+  }
+  return tafeln;
 }
 
 const stand = p => p.evaluate(() => ({
@@ -431,6 +485,6 @@ for(const vp of [
 }
 
 await browser.close();
-console.log(zeilen.join('\n'));
-console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Pruefungen bestanden.`);
+fertig = true;
+bericht();
 process.exit(fehl ? 1 : 0);

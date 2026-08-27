@@ -296,10 +296,45 @@ hängt an `SZENE_ANLASS`, und der Empfang steht dort nicht: er endet über `empf
 * **Prüfung 1 bis 3 sind an der laufenden Maschine gemessen, aber mit direkten Aufrufen.** Dass `betreteHaus()` im Intro trägt, ist gemessen; dass ein Spieler dort hineinkäme, ist ausdrücklich **widerlegt** (`scanAktion()` läuft nicht bei `state === 'menu'`).
 * **Prüfung 4 ist an Kopien nachgestellt**, nicht an einem echten A3-Umbau. Welche Knopfbeschriftung dort wirklich entsteht, ist noch nicht entschieden. Die beiden nachgestellten Fälle sind die zwei plausiblen Enden.
 
+## Nachtrag am selben Tag: Riegel 1 und 2 gebaut
+
+Entschieden und gebaut, bevor A1 den Anfang umhängt — denn genau das wird diese Läufe brechen.
+
+**Riegel 1, das Protokoll überlebt den Absturz.** Beim Bauen stellte sich heraus, dass das Problem breiter ist als die zwei Läufe aus Prüfung 4: **15 Werkzeuge** sammeln ihre Zeilen in einem Feld und drucken erst ganz unten, zusammen **699 `pruef()`-Aufrufstellen**. Alle 15 haben jetzt ein `bericht()` an `process.on('exit')`.
+
+Dabei fiel ein zweiter Fehlstand auf, der schlimmer ist als der erste: ein abgebrochener Lauf hätte jetzt **„40 von 40 Prüfungen bestanden"** gemeldet — die Schlusszeile zählt ja nur, was gelaufen ist. Das liest sich wie ein sauberer Durchlauf. Deshalb trägt `bericht()` einen ABBRUCH-Hinweis, der ausspricht, dass alles danach **ungeprüft und nicht etwa in Ordnung** ist.
+
+Zwei Sonderfälle mussten von Hand nach: in `szene-pruef.mjs` liest `bericht()` die Konsolenkiste `laut`, die erst später angelegt wurde — ein Absturz beim Browserstart hätte den Bericht selbst werfen lassen und die Ursache verdeckt, die er zeigen soll (`laut` steht jetzt davor). Und `innen-tuer-messlauf.mjs` hat mit `--profil` einen Ausgang, der absichtlich nur das Braunprofil druckt; ohne ein `berichtet = true` hätte er ab jetzt einen Abbruch gemeldet, den es nicht gibt.
+
+**Riegel 2, der Stapelhelfer wird laut.** `durchDenStapel()` faltete zwei Lagen in dasselbe `'weg'`: „Overlay zu, Stapel durch" (richtig) und „Overlay steht, kein Knopf passt" (ein Fund, der wie ein Schleifenende aussah). Getrennt, und die zweite wirft jetzt. Dazu die zwei Aufrufstellen, die den Rückgabewert wegwarfen, mit ihrer Blattzahlprüfung: **96 → 98 Prüfungen.** Die zwei Zahlen (6 und 4) stehen nicht als Behauptung da, der Lauf hat sie bestätigt.
+
+In `menue-pruef.mjs` heißt die namenlose Schleife jetzt `stapelWegklicken()`, gibt ihre Blattzahl zurück, und **danach steht die eine Zeile, die den ganzen Fall gefangen hätte**: dass das Overlay hinterher wirklich zu ist. Das war der Zweck der Schleife und war nie geprüft.
+
+**Nachgestellt, dieselben drei Varianten wie in Prüfung 4:**
+
+| Variante | vorher | nachher |
+|---|---|---|
+| `LESEN` fällt weg (T6-Fall) | 84 ok / 12 FEHL, keine nennt den Knopf | 34 Protokollzeilen + ABBRUCH + `durchDenStapel: die Tafel steht, aber kein Weiterknopf passt` |
+| `WEITER` heißt anders (A3-Fall) | **0 ok, 0 FEHL, kein Protokoll** | 7 Protokollzeilen + ABBRUCH + benannte Ursache |
+| `menue-pruef` dasselbe | 0/0, Zeitablauf auf `#bagGrid` | ABBRUCH + `stapelWegklicken: …` an der richtigen Stelle |
+
+Die Meldung nennt inzwischen sogar die Beschriftungen, die wirklich dastehen — im T6-Fall `["LESEN","Nicht lesen"]`, womit der Leser die Wortliste als Ursache sofort sieht, statt bei `ist=1 soll=6` in `ANLAGE2_BLAETTER` zu suchen.
+
+**Was Riegel 1 nebenbei sichtbar gemacht hat.** Vier Läufe sind in diesem Klon nicht grün, und zwar **schon vor dieser Änderung** — an den unveränderten Fassungen von `HEAD` mit identischen Zahlen und Exit-Codes nachgeprüft, es ist keine Regression:
+
+| Lauf | | Ursache |
+|---|---|---|
+| `ebene-pruef` | 53/54 | `die Leiter ist geladen ist=false` |
+| `gespraech-pruef` | 87/89 | zwei Porträt-/Blattzeilen fallen auf Ersatz zurück |
+| `szene-pruef` | 49/49, Exit 1 | Konsole meldet `Sprite fehlt: assets/cf/player/…` |
+| `innen-pruef` | 16/18, **Absturz** | `TypeError: Cannot read properties of undefined (reading 'img')` |
+
+Alle vier sind dieselbe Lage: **`assets/cf/` liegt in diesem Klon nicht vor** (Lizenz, siehe `.gitignore`), es enthält nur `manifest.json` und zwei Textdateien. Der Fall bei `innen-pruef` ist dabei der, für den Riegel 1 gebaut ist: vorher gab er nur einen Stapelabzug und **keine einzige Protokollzeile** her, jetzt stehen 16 geprüfte Zeilen, der ABBRUCH-Hinweis und die Ursache da. Angefasst wurde keiner der vier — das ist eine Grafiklage und kein Fund dieser Sitzung.
+
 ## Offen
 
 - [ ] A1 entscheiden: wandert die Amtsstuben-Szene vor oder hinter `startShift()`? Davon hängen Prüfung 1 (181 Pixel) und Prüfung 2 (Nörgel oder niemand) gemeinsam ab.
 - [ ] Entscheiden, welchen der beiden Wege die Tester gegangen sind (Abschnitt 4). Die Rückmeldung nennt die Dienstanweisung, und die liegt nur auf einem davon.
-- [ ] Riegel 1 und 2 aus Prüfung 4 vor A3 setzen.
+- [x] **Riegel 1 und 2 aus Prüfung 4 gesetzt** (27.08.2026, siehe unten).
 - [ ] Kürzel-Kollision `A1` ff. gegenprüfen — steht weiter offen, A0 hat nur `A0` vergeben.
 - [ ] Doku-Nachlese: die sieben Blätter (Nebenbefund).
