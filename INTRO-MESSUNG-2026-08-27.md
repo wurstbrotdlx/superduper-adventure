@@ -272,6 +272,22 @@ Punkt 1 und 2 sind billig genug, um vor A3 zu stehen. Punkt 3 ist die eigentlich
 
 Sichtbar falsch wird davon nichts: `szeneBlattZahl()` zählt römisch, solange der Stapel unter zehn bleibt, und sieben bleibt darunter. Aber die Begründung bei `:24927` (*„Das Intro ist zu neunt und bleibt damit römisch"*) steht auf einer Zahl, die es nicht mehr gibt. Die Prüfläufe selbst sind in Ordnung — `empfang-pruef.mjs` prüft gegen sieben und ist grün. **Nicht angefasst**, A0 ändert nichts; gehört in die Doku-Nachlese von A1.
 
+## Nachgemessen gegen T8
+
+Während dieser Sitzung ist **T8 auf `main` gelandet** (`4c50fd1`, „Anlage 2 bekommt die drei Szenen-Anlässe", PR #79) und hat `index.html` um 180 Zeilen erweitert. Die Zahlen oben waren damit gegen `0c778c8` gemessen und einen Commit alt. Ein Messlauf, der gegen einen überholten Stand misst, ist genau das, wogegen A0 gebaut ist, also ist `main` in den Branch gemergt und **nachgemessen** worden.
+
+**Keine einzige Kennzahl bewegt sich.** Alle vier Routen liefern dieselben Wörter, Lesestufen, Erklärstücke, Wahlen, Blöcke und Weltgesetz-Stellen wie vorher.
+
+Das ist auch die Erklärung wert, denn es hätte anders sein können: T8 fasst `ANLAGE2_AUSBRUCH`, `knShowRandLine()`, `anlage2Notiz()`, `anlage2Assert()` und `szeneEnde()` an — also den **Band- und Kommentarkanal** der Anlage 2, nicht ihren Erstkontakt. Die eine Zeile in `szeneEnde()`
+
+```js
+if(SZENE_ANLASS[key]) anlage2Szene(SZENE_ANLASS[key]);
+```
+
+hängt an `SZENE_ANLASS`, und der Empfang steht dort nicht: er endet über `empfangEnde()` → `dienstAntritt()` und läuft gar nicht durch `szeneEnde()`. Keine der gemessenen Tabellen — `INTRO_BLAETTER`, `ERNENNUNG_BLAETTER`, `ANLAGE2_BLAETTER`, `ANLAGE2_FRAGE`, `EMPFANG_KNOTEN`, `DIENSTBLATT` — steht im Diff.
+
+**Der Befund gilt also für `main` in seinem heutigen Stand**, nicht nur für den, gegen den er entstanden ist.
+
 ## Was diese Messung nicht kann
 
 * **Sie misst Wörter, keine Zeit.** Wie lange jemand an 950 Wörtern sitzt, hängt vom Leser ab. Die Zahl ist als Vergleichsmaß gebaut, nicht als Sekundenangabe.
