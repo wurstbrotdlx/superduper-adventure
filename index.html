@@ -8719,6 +8719,19 @@ const cam={x:0,y:0}, mouse={x:0,y:0, wx:0, wy:0, moved:false};
 // jedes Mal wenn der Spieler gesetzt (statt gelaufen) wird: Spielstart, Schicht-
 // beginn, Wiedereinstieg nach dem Tod, Sprung ins Schattenland. betreteKammer()
 // machte genau das schon immer von Hand (:4703), jetzt brauchen es alle.
+//
+// "Alle" heißt ausdrücklich auch die beiden WEGE ZURÜCK, und dort ist der
+// Schwenk nicht nur lästig: verlasseKammer() und verlasseHaus() setzen den
+// Spieler von einem Innenraum an eine Tür, die irgendwo auf der Karte steht.
+// Was die Kamera dabei überstreicht, bäckt der Chunk-Cache Block für Block als
+// eigenes 256er-Canvas (getChunk()), und zwar für nichts: gezeigt wird davon
+// kein einziger Frame lang etwas, das jemand ansehen will. Auf dem Schirm ist
+// das verschenkte Arbeit, auf Android-Chrome ist es der Fehler — dort ist der
+// Canvas-Speicher der Seite gedeckelt, eine misslungene Allokation liefert ein
+// LEERES Canvas statt eines Fehlers, und dieses leere Canvas landet im Cache.
+// Wer so aus einer Kammer kommt, steht danach in einer schwarzen Welt und
+// bekommt sie erst beim nächsten refreshFloor() zurück. Gemessen in
+// tools/kammerausgang-messlauf.mjs.
 function camSnap(){ cam.x = player.x - canvas.width/2; cam.y = player.y - canvas.height/2; }
 
 // Zielpunkt für Tastatur/Klick: solange die Maus nie bewegt wurde (reines WASD-Spiel),
@@ -12768,6 +12781,14 @@ function verlasseKammer(){
   player.kampfT = 0;      // Nüchternheitsgebot darf nicht über den Kammerausgang hinaus wirken
   kammer = null; owSave = null; aktSperre = 0.5;
   if(schlossOpen) schlossZu();
+  // Der Weg hinein schneidet (baueEbene setzt die Kamera dort von Hand), der Weg
+  // hinaus muss es auch. Ohne diese Zeile lerpt die Kamera vom Kammervorraum
+  // quer über die Karte zurück zur Tür — die Kammer liegt immer bei KAM_X0, die
+  // Tür irgendwo in ihrem Band, das sind regelmäßig mehrere tausend Pixel. Was
+  // dabei durchs Bild zieht, bäckt sich als Boden-Chunk fest; die Begründung,
+  // warum das auf dem Telefon nicht nur Arbeit, sondern ein schwarzes Bild ist,
+  // steht bei camSnap(). verlasseHaus() (IN1) hat die Zeile von Anfang an.
+  camSnap();
   setStyle('bossbar', 'display', boss && !boss.dead ? 'block' : 'none');
   refreshFloor();
   sfx.warp();
