@@ -33,6 +33,29 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || 
 
 const zeilen = [];
 let fehl = 0;
+
+// RIEGEL (27.08.2026, INTRO-MESSUNG Pruefung 4): Das Protokoll gehoert dem Lauf
+// und nicht seinem guten Ende. Bis hierher stand der Druck ganz unten, und eine
+// ungefangene Ausnahme mittendrin nahm ihn mit -- Exit-Code 1, ein Stapelabzug,
+// und keine Zeile darueber, was geprueft wurde und was nicht. Nachgestellt:
+// null von 96 Zeilen, wenn der Lauf vor seinem Ende stirbt.
+//
+// Der ABBRUCH-Hinweis ist dabei nicht die Zierde, sondern der Kern. Ohne ihn
+// meldet ein abgebrochener Lauf "40 von 40 Pruefungen bestanden", und das liest
+// sich wie ein sauberer Durchlauf, obwohl der ganze Rest nie gelaufen ist.
+let berichtet = false, fertig = false;
+function bericht(){
+  if(berichtet) return;
+  berichtet = true;
+  console.log(zeilen.join('\n'));
+  console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Prüfungen bestanden.`);
+  if(!fertig) console.log(
+      'ABBRUCH: der Lauf ist vor seinem Ende gestorben. Die Zeile darueber zaehlt nur,\n'
+    + 'was bis dahin lief -- alles danach ist UNGEPRUEFT und nicht etwa in Ordnung.\n'
+    + 'Die Ursache steht als Ausnahme darunter.');
+}
+process.on('exit', bericht);
+
 function pruef(name, ist, soll){
   const ok = JSON.stringify(ist) === JSON.stringify(soll);
   if(!ok) fehl++;
@@ -377,7 +400,7 @@ for(const [name, ist] of gegenprobe) pruef(name, ist, true);
 
 pruef('die Konsole bleibt still', laut, []);
 
-console.log(zeilen.join('\n'));
-console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Prüfungen bestanden.`);
 await browser.close();
+fertig = true;
+bericht();
 process.exit(fehl ? 1 : 0);

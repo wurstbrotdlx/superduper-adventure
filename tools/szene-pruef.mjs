@@ -33,13 +33,41 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || 
 
 const zeilen = [];
 let fehl = 0;
+// Vor bericht() angelegt und nicht erst bei frisch(): der Abbruchbericht liest
+// laut, und ein Absturz beim Browserstart faende die Kiste sonst in der
+// zeitlichen Totzone -- der Bericht wuerfe dann selbst und verdeckte die
+// Ursache, die er zeigen soll.
+const laut = [];
+
+// RIEGEL (27.08.2026, INTRO-MESSUNG Pruefung 4): Das Protokoll gehoert dem Lauf
+// und nicht seinem guten Ende. Bis hierher stand der Druck ganz unten, und eine
+// ungefangene Ausnahme mittendrin nahm ihn mit -- Exit-Code 1, ein Stapelabzug,
+// und keine Zeile darueber, was geprueft wurde und was nicht. Nachgestellt:
+// null von 96 Zeilen, wenn der Lauf vor seinem Ende stirbt.
+//
+// Der ABBRUCH-Hinweis ist dabei nicht die Zierde, sondern der Kern. Ohne ihn
+// meldet ein abgebrochener Lauf "40 von 40 Pruefungen bestanden", und das liest
+// sich wie ein sauberer Durchlauf, obwohl der ganze Rest nie gelaufen ist.
+let berichtet = false, fertig = false;
+function bericht(){
+  if(berichtet) return;
+  berichtet = true;
+  console.log(zeilen.join('\n'));
+  if(laut.length){ console.log('\nKonsole:'); for(const l of laut) console.log('  ' + l); }
+  console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Pruefungen bestanden.`);
+  if(!fertig) console.log(
+      'ABBRUCH: der Lauf ist vor seinem Ende gestorben. Die Zeile darueber zaehlt nur,\n'
+    + 'was bis dahin lief -- alles danach ist UNGEPRUEFT und nicht etwa in Ordnung.\n'
+    + 'Die Ursache steht als Ausnahme darunter.');
+}
+process.on('exit', bericht);
+
 function pruef(name, ist, soll){
   const ok = JSON.stringify(ist) === JSON.stringify(soll);
   if(!ok) fehl++;
   zeilen.push(`${ok ? 'ok  ' : 'FEHL'}  ${name.padEnd(56)} ist=${JSON.stringify(ist)} soll=${JSON.stringify(soll)}`);
 }
 
-const laut = [];
 async function frisch(opt){
   const ctx = await browser.newContext(opt);
   const page = await ctx.newPage();
@@ -418,7 +446,6 @@ async function frisch(opt){
 }
 
 await browser.close();
-console.log(zeilen.join('\n'));
-if(laut.length){ console.log('\nKonsole:'); for(const l of laut) console.log('  ' + l); }
-console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Pruefungen bestanden.`);
+fertig = true;
+bericht();
 process.exit(fehl || laut.length ? 1 : 0);
