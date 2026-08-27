@@ -357,3 +357,38 @@ Damit lautet die Reihe: `A0` Messlauf → `AN1` Reihenfolge → `AN5` Kladde →
 - [x] **Riegel 1 und 2 aus Prüfung 4 gesetzt** (27.08.2026, siehe unten).
 - [x] **Kürzel-Kollision gegengeprüft und entschieden** (27.08.2026, siehe unten): die Bauabschnitte heißen `AN1` bis `AN7`, `A0` bleibt `A0`.
 - [ ] Doku-Nachlese: die sieben Blätter (Nebenbefund).
+
+---
+
+## Nachtrag 27.08.2026: was AN1 bis AN3 von dieser Liste erledigt haben
+
+Die Messung oben bleibt, wie sie am Messtag entstanden ist — sie ist ein
+Befund und kein laufendes Dokument. Was seither entschieden oder gebaut wurde,
+steht hier, damit die Liste „Offen" nicht länger zum Nachlaufen einlädt.
+
+* **A1 (heute AN1) ist entschieden:** die Szene läuft **hinter** `startShift()`.
+  Damit sind Prüfung 1 (die 181 Pixel) und Prüfung 2 (Nörgel oder niemand)
+  beide vom Tisch — siehe `phase-an1-reihenfolge.md`. Wer im Raum steht, ist
+  seit AN2 eine Angabe (`innenBesetzung`) und kein Nebeneffekt der Schichtuhr.
+* **Riegel 3 aus Prüfung 4 steht** (AN3): `empfang-pruef` und `menue-pruef`
+  suchen ihren Weiterknopf am `onclick` statt am Wortlaut und prüfen nach jedem
+  Klick, dass sich die Blattzahl bewegt hat. Gebaut **vor** dem Schnitt, weil
+  AN3 genau diesen Knopf umbenennt (`ANKLOPFEN` → `ZUR SACHE`).
+* **Die Doku-Nachlese ist erledigt** (AN3), mit einer Berichtigung an diesem
+  Bericht: es waren **neun** Stellen und nicht sieben. Übersehen hatte A0 die
+  Kommentare bei `abspannBlaetter()` und in `szeneTafel()`. Acht stehen jetzt
+  auf vier; die neunte (README-Eintrag zu SZ1) beschreibt den Stand von damals
+  und bleibt bei neun.
+* **Die Hauptzahl hat sich bewegt:** 2342 → **1967** auf dem Pflichtweg, die
+  Wand vor der ersten echten Wahl von 13 Lesetafeln auf 10. Der längste
+  Leseblock ist seither **nicht mehr das Intro**, sondern `Ernennung bis
+  Anlage 2` mit 751 Wörtern — das ist der Ort, den AN4 anfasst.
+* **Weiter offen:** welchen der beiden Wege die Tester gegangen sind. Für AN3
+  war die Frage nachweislich ohne Belang (der Kachelstapel liegt vor der
+  Verzweigung, beide Routen fielen um dieselben 375 Wörter); für AN4 wird sie
+  gebraucht, denn Anlage 2 liegt nur auf dem einen und die Dienstanweisung nur
+  auf dem anderen Weg.
+* **Neu offen seit AN3:** das Weltgesetz fällt auf dem Pflichtweg **nicht mehr**
+  (1 → 0). Erreichbar bleibt es an drei Stellen, die erste davon ist jetzt die
+  Tafel über der Tür. Begründung und Gegenrechnung in
+  `phase-an3-requisiten.md`.

@@ -13100,6 +13100,16 @@ const INN_MOEBEL = {
   '#': {},
   'A': {name:'Ausgang',        frei:true},
   'F': {name:'Fackel',         frei:true, wand:true},
+  // AN3: die beiden Wandstuecke, die bis dahin Introblaetter waren. Sie haengen
+  // (frei:true, die Wand sperrt ohnehin, und die Tafel haengt ueber dem Weg
+  // hinaus, unter dem man durchgeht). akt:'requisit' sagt nur, DASS sie etwas
+  // tragen; WAS sie tragen, steht in REQUISITEN und wird ueber requisit
+  // nachgeschlagen -- eine Zeichenkette an zwei Orten waere die F1-Falle.
+  //
+  // 'K' waere der Buchstabe fuer Karte gewesen und ist seit IN1 die Kiste,
+  // also bekommt sie 'C'. 'G' ist die Gesetzestafel.
+  'G': {name:'Tafel über der Tür', frei:true, wand:true, akt:'requisit', requisit:'gesetz'},
+  'C': {name:'Karte der Ablage',   frei:true, wand:true, akt:'requisit', requisit:'karte'},
   'W': {name:'Spinnwebe',      frei:true, wand:true},
   'N': {name:'Fenster',        frei:true, wand:true},
   'Q': {name:'Flaschenbord',   frei:true, wand:true},
@@ -13130,11 +13140,18 @@ const INN_RAEUME = {
   // Dr. Sturz, auf ihm die Pflanze, in ihm die zweite Schublade. Links das
   // Dienstpult, an dem man Feierabend nimmt. Dazwischen Platz, und das ist der
   // Punkt des Raumes: er ist zu groß für die zwei Leute, die noch da sind.
+  //
+  // AN3: an der Nordwand hängt zwischen den Regalen die Karte der Ablage, über
+  // dem Weg hinaus die Tafel mit dem Weltgesetz. Beide standen bis dahin als
+  // Introblätter da und wurden vorgelesen; jetzt hängen sie da und werden
+  // gelesen, von dem, der hinsieht. Die Tafel hängt über der Tür und nicht
+  // neben ihr, weil genau das ihr Satz ist: sie steht über der Tür des Hauses,
+  // und jeder im Dienst geht auf dem Weg nach draußen darunter durch.
   amt: {
     name: 'Amtsstube',
     plan: [
       '#################',
-      '#FRRRRRRRRRRRRRF#',
+      '#FRRRRRCcRRRRRRF#',
       '#...............#',
       '#.Dd.......Ss...#',
       '#...............#',
@@ -13142,7 +13159,7 @@ const INN_RAEUME = {
       '#...............#',
       '#..Ee.......O...#',
       '#...............#',
-      '#...............#',
+      '#......Gg.......#',
       '#######AA########',
     ],
     // Wer zum Feierabend hier drinsteht. Nörgel sitzt seit einundvierzig Jahren
@@ -13268,7 +13285,8 @@ function betreteHaus(haus){
     if(z === '.') continue;
     let breit = 1;
     while(r.zeichen(rx + breit, ry) === z.toLowerCase()) breit++;
-    const o = {z, x: tileMid(wx) + (breit-1)*TS/2, y: (wy+1)*TS, breit, name: m.name, akt: m.akt};
+    const o = {z, x: tileMid(wx) + (breit-1)*TS/2, y: (wy+1)*TS, breit, name: m.name, akt: m.akt,
+               requisit: m.requisit};   // AN3: welches Blatt dieses Wandstueck traegt
     if(z === 'A'){ if(!innen.tuer) innen.tuer = o; continue; } // die Schwelle wird nicht gezeichnet
     innen.moebel.push(o);
   }
@@ -13588,6 +13606,55 @@ function drawInnenMoebelGezeichnet(o){
                  // Webe stand, ist kein Zeichenfehler dieser Stelle: er lag im
                  // Blatt. schnittSaeubern() nimmt ihn beim Laden heraus.
       drawSprite('dun_cobweb', 0, o.x, o.y - 2*TS, WELT_SC);
+      break;
+    }
+    case 'G': {  // AN3, die Tafel ueber der Tuer. Stein statt Holz: ein heller
+                 // Block mit dunkler Fase, darauf eine Zeile, die als Zeile
+                 // lesbar ist und nicht als Wort -- bei 32 Pixeln Kachelmass
+                 // waere jeder echte Buchstabe ein Fleck. Was sie sagt, sagt
+                 // sie beim Ansehen.
+                 //
+                 // Sie haengt ueber der Tuer, also ueber ihrer eigenen
+                 // Fusslinie nach oben gezeichnet wie jedes Wandstueck. Der
+                 // Bleistiftzusatz darunter ist der einzige helle Strich, der
+                 // nicht mittig sitzt: nachgetragen, nicht gesetzt.
+      const gb = Math.min(b - 6, 52), gx = o.x - gb/2, gy = o.y - 30;
+      ctx.fillStyle = '#2b2118'; ctx.fillRect(gx - 2, gy - 2, gb + 4, 24);
+      ctx.fillStyle = '#8d8577'; ctx.fillRect(gx, gy, gb, 20);
+      ctx.fillStyle = '#a49b8b'; ctx.fillRect(gx + 1, gy + 1, gb - 2, 9);
+      ctx.fillStyle = '#3c332a';
+      ctx.fillRect(gx + 5, gy + 6, gb - 10, 2);
+      ctx.fillRect(gx + 5, gy + 11, gb - 14, 2);
+      ctx.fillStyle = '#d9cf9a'; ctx.fillRect(gx + 7, gy + 16, 9, 1);
+      break;
+    }
+    case 'C': {  // AN3, die Karte der Ablage. Buettenpapier mit vier
+                 // Reisszwecken, ein paar Flurgrenzen und die Buchstaben als
+                 // Punkte -- dieselbe Ueberlegung wie bei der Tafel: eine Karte
+                 // ist auf dieser Entfernung eine Flaeche mit Linien darauf,
+                 // und was daraufsteht, steht beim Ansehen da.
+                 //
+                 // Sie haengt im Wandband wie das Fenster, also eine Kachel
+                 // ueber der eigenen Fusslinie. Der dunkle Streifen unten ist
+                 // die Legende; unten rechts bleibt eine leere Ecke, und das
+                 // ist die, in der bei anderen Karten das Meer steht.
+      const cb = b - 6, cx = o.x - cb/2, cy = o.y - TS - 30;
+      ctx.fillStyle = '#2b2118'; ctx.fillRect(cx - 2, cy - 2, cb + 4, 42);
+      ctx.fillStyle = '#cfc099'; ctx.fillRect(cx, cy, cb, 38);
+      ctx.strokeStyle = '#8a7a52'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx + 3, cy + 22);  ctx.lineTo(cx + 14, cy + 12); ctx.lineTo(cx + 26, cy + 17);
+      ctx.moveTo(cx + 8, cy + 6);   ctx.lineTo(cx + 20, cy + 9);  ctx.lineTo(cx + cb - 5, cy + 5);
+      ctx.stroke();
+      ctx.fillStyle = '#6a5f44';                       // die Buchstaben, als Punkte
+      const ch = tileHash(Math.round(o.x), Math.round(o.y));
+      for(let i = 0; i < 7; i++)
+        ctx.fillRect(cx + 4 + ((ch >> i) % 5) + i*7, cy + 8 + ((ch >> (i+3)) % 14), 2, 2);
+      ctx.fillStyle = '#8a7a52'; ctx.fillRect(cx + 2, cy + 31, cb - 12, 2);   // Legende
+      ctx.fillStyle = '#c8a35a';                                             // Reisszwecken
+      for(const [px, py] of [[cx + 2, cy + 2], [cx + cb - 4, cy + 2],
+                             [cx + 2, cy + 34], [cx + cb - 4, cy + 34]])
+        ctx.fillRect(px, py, 2, 2);
       break;
     }
     case 'N': {  // Fenster, gemalt: ein Rahmen, dahinter der Abendhimmel als
@@ -14508,7 +14575,11 @@ let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
 const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12, AKT_ABSTIEG=13, AKT_STOPFEN=14,
       // IN1: hinein, hinaus, und die zweite Schublade. AKT_AMT bleibt, was es
       // war — nur steht es seither am Dienstpult drinnen statt an der Fassade.
-      AKT_HAUS=15, AKT_HAUSAUS=16, AKT_SCHUBLADE=17;
+      AKT_HAUS=15, AKT_HAUSAUS=16, AKT_SCHUBLADE=17,
+      // AN3: ein Wandstueck ansehen, das etwas traegt. Eine Zahl fuer beide
+      // Requisiten und nicht eine je Stueck: was angesehen wird, steht am
+      // Moebel (o.requisit), nicht an der Sprungmarke.
+      AKT_REQUISIT=18;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -14536,6 +14607,20 @@ function scanAktion(dt){
       // Bedingung ist wörtlich dieselbe wie in schubladeBlock() — sie steht
       // nicht zweimal da, sie wird dort gelesen.
       if(o.akt === 'schublade' && schubladeBlock()) aktBiete(o.x, o.y, AKT_SCHUBLADE, null, 'Die zweite Schublade');
+      // AN3: Ein Wandstueck ueber der Schwelle darf die Schwelle nicht
+      // ueberbieten. Die Tafel haengt 36 Pixel ueber der Tuer, der Spieler
+      // steht nach dem Dienstantritt 40 davor -- ohne diese Bedingung waere
+      // "Ansehen" die erste Bedienmoeglichkeit seines Dienstes und nicht
+      // "Hinausgehen", und der erste freie Schritt aus AN2 waere keiner mehr.
+      // Gemessen, nicht befuerchtet: 17,9 Pixel gegen 40.
+      //
+      // Das ist dieselbe aktBiete-Falle, die W5 am Schattenfuersten gestellt
+      // hat, und dieselbe Antwort: naeher gewinnt, und naeher ist hier das
+      // Falsche. Wer die Tafel lesen will, tritt einen Schritt von der Tuer
+      // zurueck, und das ist genau das, was man vor einem Schild ueber einer
+      // Tuer ohnehin tut.
+      if(o.akt === 'requisit' && aktArt !== AKT_HAUSAUS)
+        aktBiete(o.x, o.y, AKT_REQUISIT, o, 'Ansehen');
     }
     return;
   }
@@ -14622,6 +14707,7 @@ function fuehreAktion(){
     case AKT_HAUS:    betreteHaus(aktObj); break;
     case AKT_HAUSAUS: verlasseHaus(); break;
     case AKT_SCHUBLADE: schubladeOeffnen(); break;
+    case AKT_REQUISIT:  requisitAnsehen(aktObj && aktObj.requisit); break;
     case AKT_ZUSTELLEN: zustellen(); break;
   }
 }
@@ -19985,8 +20071,10 @@ const vorgangAnhaengig = () => CONFIG.schichtModus && kn.flags.szeneVersuchung;
 // Der Abspann, dreizehn Bilder, aus weltgeschichte.md, Kapitel 8, Szene 9.
 // Kein neues Bauteil: das ist der Tafelstapel aus SZ1, und der Kommentar dort
 // hat diesen Stapel beim Namen genannt, lange bevor es ihn gab ("dieselbe
-// Optik blaettert das Intro und spaeter den Abspann"). Neun Blaetter am Anfang,
-// dreizehn am Ende, dazwischen liegt das ganze Spiel.
+// Optik blaettert das Intro und spaeter den Abspann"). Vier Blaetter am Anfang,
+// dreizehn am Ende, dazwischen liegt das ganze Spiel. (Die Vier ist seit AN3
+// die Zahl; SZ1 hatte neun, T1 kuerzte auf fuenf, T5d brachte zwei zurueck,
+// AN3 hat drei zu Requisiten gemacht.)
 //
 // Eine Funktion und keine Tabelle, weil Bild 7 den Strangzustand liest, genau
 // wie der Abspanntext es seit W5 tat. Die Bildfolge selbst ist fest; was sich
@@ -22941,7 +23029,7 @@ const AKTE_SPERRE_NAMEN = ['Nachtrag', 'Trepp', 'Sturz', 'Schattenfürst', 'Amts
 //  vierhundert Jahre alt ist. Und heute Sie.
 //
 //  Die Reihenfolge aus E2 traegt es zusaetzlich: erst der Mann, dann seine
-//  Geschichte. Nach der Vorstellung sind diese neun Blaetter nicht die Stimme
+//  Geschichte. Nach der Vorstellung sind diese vier Blaetter nicht die Stimme
 //  eines Erzaehlers, sondern SEIN Bericht, und der Empfang setzt danach mit
 //  "So weit der Bestand" genau dort auf.
 //
@@ -23230,6 +23318,66 @@ const ANLAGE2_FRAGE = [
    ja:'LESEN', nein:'Nicht lesen', gesperrt:true},
 ];
 
+// AN3: WAS EIN GEGENSTAND TRAEGT, SPRICHT DER TEXT NICHT MEHR AUS.
+//
+// Drei der sieben Introblaetter waren Beschreibungen von Dingen, die es im
+// Raum gibt: eine Karte an der Wand, eine Tafel ueber einer Tuer, ein Formular
+// auf dem Tisch. Solange der Anfang auf schwarzem Grund lief, MUSSTE der Text
+// sie aussprechen, denn es gab kein Bild, in dem sie haetten stehen koennen.
+// Seit AN2 spielt der Anfang in der Amtsstube. Ein Blatt, das ein Ding
+// beschreibt, das danebenhaengt, ist seither eine Dopplung, und sie kostet:
+// drei von sieben Introblaettern, und die liegen auf dem Pflichtweg alle vor
+// der ersten echten Wahl des Spiels (INTRO-MESSUNG, A0). Gemessen am Ablauf
+// und nicht an der Tabelle: der Pflichtweg faellt dadurch von 2342 auf 1967
+// Woerter, die Wand vor der ersten Wahl von 13 Lesetafeln auf 10.
+//
+// Die beiden Wandstuecke haengen jetzt im Grundriss (INN_MOEBEL 'C' und 'G')
+// und tragen ihren Text selbst. Gelesen wird er von dem, der hinsieht: nach
+// dem Dienstantritt, auf dem Weg hinaus, freiwillig und nicht auf dem
+// Pflichtweg. Das dritte Blatt, das Formular, ist gar kein Wandstueck -- es
+// IST der Vordruck, den schluss seit W8 anbietet, und was auf ihm stand, ist
+// eine Empfangsfrage geworden (EMPFANG_FRAGEN, Schluessel haelften).
+//
+// Was hier NICHT steht, ist die Chronik: die vier Blaetter von der kleinen
+// Frage bis zum Provisorium bleiben im Intro stehen. Sie beschreiben keine
+// Gegenstaende im Raum, sondern vierhundert Jahre, und fuer sie ist die
+// Erstbelehrung nach Akt I vorgesehen (AN6). Wer sie hier mit wegnimmt, nimmt
+// dem Anfang seinen Grund und nicht seine Laenge.
+//
+// Die Sperre ist dieselbe wie beim Intro (AKTE_SPERRE_NAMEN, siehe
+// szeneAssert): es ist dasselbe Material. Ein Ding darf zeigen, was ein
+// Dokument zeigen darf, und einen Namen so wenig nennen wie das Blatt, aus dem
+// es kommt.
+const REQUISITEN = {
+  // Kapitel 1, das Weltgesetz im Wortlaut. Das Blatt dazu trug 124 Woerter und
+  // sagte in dreien davon, dass eine Tafel ueber einer Tuer haengt. Sie haengt
+  // jetzt ueber der Tuer; die drei Woerter sind damit erledigt, und was der
+  // Satz nach sich zieht (jedes Ding traegt ein Aktenzeichen, hier blutet
+  // nichts), ist zu zwei Empfangsfragen geworden, statt hier mitgetragen zu
+  // werden. Ein Stein sagt einen Satz, er haelt keinen Vortrag.
+  gesetz: {
+    name:   'Die Tafel über der Tür',
+    knopf:  'WEGSEHEN',
+    blatt:  'In Stein gehauen und mehrfach nachgemalt. Ein Satz, sonst nichts.',
+    stimme: ['Ein Vorgang, den niemand abschließt, nimmt Gestalt an.',
+             'Darunter, mit Bleistift und in anderer Handschrift: gilt.'],
+    regie:  'Der Bleistiftzusatz ist die einzige Stelle der Tafel, die nie nachgemalt wurde. Er hält trotzdem.',
+  },
+  // Kapitel 3, die Landschaft ist die Ablage. Das Blatt erzaehlte, WIE die
+  // Ablage ueber das Haus hinauswuchs (Keller, Hof, ueber den Fluss) -- das ist
+  // Chronik und gehoert zu den vier Blaettern, also spaeter in die
+  // Erstbelehrung. Was hier bleibt, ist, was die Karte selbst zeigt: keine
+  // Ortsnamen, Buchstaben, und unten rechts das Wort, das kein Meer ist.
+  karte: {
+    name:   'Die Karte an der Wand',
+    knopf:  'WEGSEHEN',
+    blatt:  'Mit Reißzwecken an der Wand. Die Landschaft darauf hat keine Ortsnamen. Sie hat Buchstaben: A, dann B, und so weiter bis V.',
+    stimme: ['Die Wiese vor dem Tor heißt hier nicht Wiese. Sie heißt Ablage A.',
+             'In der Legende, klein und zweimal unterstrichen: Amtliche Bearbeitungsliste für Angelegenheiten Grundsätzlicher Erledigung.'],
+    regie:  'Ganz unten rechts, wo bei anderen Karten das Meer steht, steht: Tilgung. Nicht befahren.',
+  },
+};
+
 const INTRO_BLAETTER = [
   {blatt:'Ein Schreiben, zwei Zeilen lang. Daneben liegt dasselbe Schreiben noch einmal, und noch einmal, sechsmal insgesamt, jedes mit einem anderen Vermerk oben rechts.',
    stimme:['Vor vierhundert Jahren hat jemand am anderen Ufer eine Frage gestellt. Sie lautete: Wer räumt das Papier aus dem Fluss?',
@@ -23253,42 +23401,30 @@ const INTRO_BLAETTER = [
   {blatt:'Ein handgeschriebenes Schild, mit zwei Nägeln an einer Wand befestigt. Darauf steht ein einziges Wort: Provisorium.',
    stimme:['Solange der Friede nicht vollständig ist, gilt er als schwebend. Für die abschließende Bearbeitung war eine Stelle einzurichten.',
            'Die Stelle wurde eingerichtet. Vorläufig, wie es ausdrücklich hieß.',
-           {wer:'Knöterich', z:'Das war vor vierhundert Jahren. Das Schild hängt noch. Die Pappe ist älter als die meisten Häuser hier.'}],
+           {wer:'Knöterich', z:'Das war vor vierhundert Jahren. Das Schild hängt noch. Die Pappe ist älter als die meisten Häuser hier.'},
+           // AN3: der Zeiger auf die Tafel, und zwar der einzige Satz, den
+           // dieser Bauabschnitt dem Pflichtweg HINZUFUEGT. Er ist noetig,
+           // weil eine Requisite, die niemand bemerkt, nichts traegt: das
+           // Weltgesetz haengt seit AN3 ueber der Tuer statt auf einem Blatt
+           // zu stehen, und ohne diese Zeile faende es nur, wer im Raum
+           // herumprobiert. Er sagt, WO der Satz steht, und nicht, WIE er
+           // lautet -- genau das ist die Regel des Masterplans, und deshalb
+           // meldet der Messlauf fuer den Pflichtweg weiterhin null Stellen.
+           {wer:'Knöterich', z:'Der Satz, auf dem das alles steht, hängt über der Tür. Sehen Sie ihn sich an, bevor Sie hinausgehen.'}],
    regie:'Jemand hat das Wort einmal nachgezogen, weil die Tinte verblasste. Sonst hat sich daran nichts geändert.'},
 
-  // T5d, 26.08.2026: die beiden Blaetter, die Kapitel 3 und Kapitel 1 tragen.
-  // Sie stehen hier und nicht frueher, weil beide voraussetzen, dass es das
-  // Haus schon gibt. Die Doppelung mit Anlage 2 ist ausdruecklich gewollt und
-  // keine Nachlaessigkeit: "das intro ist manchmal sehr lange her" (Ansage des
-  // Projektinhabers). Wer es vergessen hat, fragt sie noch einmal.
-  {blatt:'Eine Karte, mit Reißzwecken an einer Wand. Die Landschaft darauf hat keine Ortsnamen. Sie hat Buchstaben: A, dann B, und so weiter bis V.',
-   stimme:['Wenn ein Haus vierhundert Jahre lang ablegt, wird die Ablage irgendwann größer als das Haus.',
-           'Sie ging in den Keller. Dann in den Hof. Dann über den Fluss, an dem das Dorf liegt, und irgendwann war die ganze Gegend die Ablage.',
-           {wer:'Knöterich', z:'Die Wiese vor dem Tor heißt hier nicht Wiese. Sie heißt Ablage A. So steht es auf der Karte, und die Karte hat recht.'},
-           'Der Fluss heißt inzwischen genauso. Niemand weiß mehr, ob er nach der Ablage benannt wurde oder die Ablage nach ihm.',
-           {wer:'Knöterich', z:'Amtlich schreibt man es übrigens groß. ABLAGE. Amtliche Bearbeitungsliste für Angelegenheiten Grundsätzlicher Erledigung.'},
-           {wer:'Knöterich', z:'Ja, das liest sich wie ein Wort. Nein, das sei keine Absicht gewesen. Man ist hier trotzdem sehr stolz darauf.'}],
-   regie:'Ganz unten rechts, wo bei anderen Karten das Meer steht, steht: Tilgung. Nicht befahren.'},
-
-  {blatt:'Eine Tafel über einer Tür, in Stein gehauen und mehrfach nachgemalt. Ein Satz, sonst nichts. Darunter hat jemand mit Bleistift ergänzt: gilt.',
-   stimme:['Über der Tür des Hauses steht der Satz, auf dem alles hier steht. Jeder im Dienst kann ihn auswendig, und niemand findet ihn seltsam.',
-           {wer:'Knöterich', z:'Ein Vorgang, den niemand abschließt, nimmt Gestalt an.'},
-           'Papier, das lange genug liegt, wird fest. Was im Ärger abgelegt wurde, wird laut. Was in Eile abgelegt wurde, wird schnell.',
-           {wer:'Knöterich', z:'Deshalb trägt jedes Ding da draußen ein Aktenzeichen. Es steht klein daran. Sehen Sie ruhig nach, wenn eines stillhält.'},
-           {wer:'Knöterich', z:'Und deshalb blutet hier nichts. Ein erledigter Vorgang wird geschreddert. Was dabei fliegt, ist Papier.'}],
-   regie:'Der Bleistiftzusatz ist die einzige Stelle der Tafel, die nie nachgemalt wurde. Er hält trotzdem.'},
-
-  {blatt:'Ein Formular. Oben steht: Einstellung für einen Tag. Das Namensfeld ist leer.',
-   stimme:['Was nicht bearbeitet wird, wird lebendig. Vierhundert Jahre lang wurde hier sehr wenig bearbeitet.',
-           'Es läuft inzwischen ziemlich viel herum.',
-           // T5d: Kapitel 5. Bis hierher wusste der Spieler, was die Welt ist,
-           // aber nicht, was er selbst darin tut. "Heute sind Sie dran" allein
-           // hat das nie beantwortet.
-           {wer:'Knöterich', z:'Drinnen sitzt die Registratur und verwaltet, was hereinkommt. Das ist die eine Hälfte dieses Hauses.'},
-           {wer:'Knöterich', z:'Die andere Hälfte geht hinaus zu dem, was nicht von selbst hereinkommt. Das ist der Außendienst, und den machen Sie.'},
-           {wer:'Knöterich', z:'Sie werden vorher nichts davon wissen. Das ist keine Nachlässigkeit von uns, das ist die Stelle. Sie ist jeden Tag neu besetzt.'},
-           {wer:'Knöterich', z:'Heute sind Sie dran.'}],
-   regie:'Die Hand schiebt das Formular nach vorn und legt einen Stift daneben.'},
+  // AN3, 27.08.2026: Hier standen die drei Blaetter, die Gegenstaende
+  // beschrieben -- die Karte (Kapitel 3), die Tafel ueber der Tuer (Kapitel 1)
+  // und das Einstellungsformular (Kapitel 5). Sie sind nicht gestrichen,
+  // sondern umgezogen: die beiden ersten haengen als Requisiten in der
+  // Amtsstube (REQUISITEN oben, INN_MOEBEL 'C' und 'G'), das Formular war
+  // immer schon der Vordruck und sagt seinen Inhalt jetzt als Empfangsfrage.
+  //
+  // Was hier steht, ist die Chronik und nur sie: eine kleine Frage, acht
+  // Jahre, ein Brief, den niemand lesen konnte, eine Stelle auf Zeit. Vier
+  // Blaetter, kein Gegenstand darunter, der im Raum steht. Fuer sie ist die
+  // Erstbelehrung nach Akt I vorgesehen (AN6); bis dahin bleiben sie hier,
+  // denn ohne sie hat der Anfang keinen Grund mehr, nur weniger Woerter.
 ];
 
 // Nach wievielen Fragen sich der Blick im Raum umsieht. Drei ist gemessen und
@@ -23355,6 +23491,34 @@ const EMPFANG_FRAGEN = [
   {key:'laeuft', frei:'arbeit', t:'Es läuft von selbst herum?',
    z1:'Was lange genug liegen bleibt, steht auf.',
    z2:'Das ist keine Redensart. Das ist Aktenkunde.'},
+
+  // AN3: die drei Fragen, die aus zwei Introblaettern kommen.
+  //
+  // haelften traegt, was auf dem Formularblatt stand und sonst nirgends steht:
+  // dass dieses Haus zwei Haelften hat und der Spieler die zweite ist. Der
+  // Rest jenes Blattes stand ohnehin doppelt -- "was nicht bearbeitet wird,
+  // wird lebendig" ist arbeit und laeuft, "heute sind Sie dran" ist gruss.
+  //
+  // zeichen und erledigt tragen die beiden Folgesaetze der Gesetzestafel. Sie
+  // stehen nicht auf der Tafel, weil ein Stein einen Satz sagt und keinen
+  // Vortrag haelt, und sie stehen hier statt im Pflichtweg, weil beides
+  // Auskunft ueber die Arbeit ist: wer fragt, bekommt sie, wer nicht fragt,
+  // sieht es draussen selbst. Genau das ist der Tausch, den AN3 macht --
+  // erzaehlen gegen zeigen.
+  //
+  // Alle drei haengen an arbeit und nicht an null: sie sind Antworten auf eine
+  // Frage nach dem Dienst und stuenden ohne sie zusammenhanglos auf der Tafel.
+  {key:'haelften', frei:'arbeit', t:'Wer arbeitet hier noch?',
+   z1:'Drinnen sitzt die Registratur und verwaltet, was hereinkommt.',
+   z2:'Die andere Hälfte geht hinaus. Das ist der Außendienst, und den machen Sie.'},
+
+  {key:'zeichen', frei:'laeuft', t:'Woran erkenne ich eines?',
+   z1:'Am Aktenzeichen. Es steht klein daran.',
+   z2:'Sehen Sie ruhig nach, wenn eines stillhält.'},
+
+  {key:'erledigt', frei:'laeuft', t:'Wenn ich eines erledige?',
+   z1:'Dann wird es geschreddert.',
+   z2:'Was dabei fliegt, ist Papier. Hier blutet nichts.'},
 
   {key:'anlage', frei:null, t:'Was steht in Anlage 1?',
    z1:'Anlage 1 liegt nicht vor.',
@@ -25061,7 +25225,7 @@ function szeneTafelZu(){
 // Pointe. Deshalb darf hier nichts bescheiden aussehen.
 // SZ1: Der laufende Tafelstapel. Liste, Beschriftung des letzten Knopfes und
 // was danach geschieht, stehen als Zustand daneben und nicht als Literal in der
-// Zeichenfunktion. Damit blaettert dieselbe Optik das Intro (neun Blaetter) und
+// Zeichenfunktion. Damit blaettert dieselbe Optik das Intro (vier Blaetter) und
 // spaeter den Abspann (dreizehn Bilder), ohne dass eine zweite Zeichenstelle
 // entsteht. Der Aufsteller ist eine Modulvariable und kein Feld an szene: ein
 // Tafelstapel kann auch ausserhalb einer Szene laufen, das Intro tut es.
@@ -25110,10 +25274,26 @@ function szeneTafelWahlNein(){
 // Absturzes, aber eine Fussnote, die aussieht wie einer. Gefunden im Bild, nicht
 // im Guard.
 //
-// Das Intro ist zu neunt und bleibt damit roemisch, die Anrisstafeln waren es zu
+// Das Intro ist zu viert und bleibt damit roemisch, die Anrisstafeln waren es zu
 // fuenft, und die vierzig Zwischenbescheide aus Szene 3 zaehlen arabisch. Das
 // ist auch inhaltlich richtig: eine Urkunde zaehlt roemisch, ein Stapel
 // Zwischenbescheide ist eine Menge.
+//
+// AN3-Nachlese: hier stand "zu neunt", und die Neun gab es seit T1 nicht mehr.
+// Sichtbar falsch wurde davon nichts (ROEMISCH reicht bis zehn, und sieben wie
+// vier liegen darunter), aber eine Begruendung, die auf einer Zahl steht, die
+// es nicht gibt, ist keine.
+//
+// Nachgezaehlt statt abgeschrieben: es waren NEUN Stellen, nicht sieben --
+// sechs in index.html, eine im Kopf von empfang-pruef, zwei in der README. A0
+// hatte sieben aufgelistet und die beiden Kommentare im Abspann und in
+// szeneTafel() uebersehen. Acht davon stehen jetzt auf vier; die neunte ist
+// der README-Eintrag zu SZ1, und die bleibt bei neun, weil sie beschreibt,
+// was SZ1 damals gebaut hat, und nicht, was heute dasteht.
+//
+// Ein Requisit traegt seine Blattzahl uebrigens als "Blatt I von I". Die
+// roemische Zaehlung gilt damit auch fuer den Einzelfall, und das ist die
+// Pointe und nicht ihr Preis.
 const szeneBlattZahl = (n, gesamt) => (gesamt < ROEMISCH.length ? ROEMISCH[n] : String(n));
 
 // Der zweite Knopf des laufenden Stapels. Eigene Funktion, weil sie im onclick
@@ -25160,7 +25340,7 @@ function szeneTafel(i){
   // dieselbe Behoerde ist, die sie aufmacht (Humor-Grundgesetz 10).
   //
   // SZ4: eine gesprochene Zeile darf sagen, wer sie sagt. Das Intro braucht es
-  // nicht (eine Stimme, neun Blaetter), der Abspann schon: Bild 11 ist eine
+  // nicht (eine Stimme, vier Blaetter), der Abspann schon: Bild 11 ist eine
   // Wechselrede, und ohne Namen davor gehoerten alle fuenf Zeilen derselben
   // Person. Der String bleibt die einfache Form, das Paar ist die Ausnahme.
   // SZ4: der Inhalt rollt, der Rahmen nicht. Bis hierher wuchs das Blatt mit
@@ -25207,11 +25387,48 @@ function szeneTafel(i){
   MUS.muffle(true);
 }
 
-// Der Anfang benutzt den Stapel fuer das Intro. Neun Blaetter, danach der
+// AN3: Ein Wandstueck ansehen.
+//
+// Kein neuer Leseapparat, sondern der Tafelstapel aus SZ1 mit genau einem
+// Blatt. Das ist Absicht und kein Sparzug: dieses Haus macht aus allem eine
+// Urkunde (Humor-Grundgesetz 10), und "Blatt I von I" ueber einem Schild, das
+// ueber einer Tuer haengt, ist die Pointe und nicht ihr Preis.
+//
+// Die Welt haelt an, solange das Blatt steht, und zwar ueber denselben
+// szeneStateVorher, den haeltDieWelt-Szenen seit SZ2 benutzen -- nicht ueber
+// ein zweites Merkfeld daneben. Sie laeuft ueber szeneAus() wieder an, und
+// dessen aktSperre ist genau das, was hier gebraucht wird: ohne sie loeste der
+// Tastendruck, der das Blatt schliesst, im selben Moment das naechste "Ansehen"
+// aus, denn der Spieler steht ja noch davor.
+//
+// Waehrend des Anfangs ist das alles unerreichbar: scanAktion() steigt bei
+// state !== 'play' aus (A0, Pruefung 1), es gibt also keine Kontextaktion,
+// solange der Empfang laeuft. Ein Requisit ist damit gelesen ODER Anfang, nie
+// beides -- und das ist der ganze Zweck von AN3.
+function requisitAnsehen(key){
+  const r = REQUISITEN[key];
+  if(!r || szeneTafelLauf) return;
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  szeneTafeln([r], {letzterKnopf: r.knopf, ende: () => { el('overlay').style.display = 'none'; szeneAus(); }});
+}
+
+// Der Anfang benutzt den Stapel fuer das Intro. Vier Blaetter, danach der
 // Empfang. Das ist derselbe Uebergang wie vorher, nur mit anderem Inhalt.
+//
+// AN3: Der Schlussknopf hiess ANKLOPFEN. Das war richtig, solange das Intro
+// auf schwarzem Grund lief und das Dorf danach aufging -- man stand vor dem
+// Haus und klopfte. Seit AN2 steht der Spieler waehrend des ganzen Anfangs IN
+// der Amtsstube, und Knoeterich hat ihn sechs Knoten lang angesprochen;
+// angeklopft hat er nie und kann es auch nicht mehr. Der Knopf sagt jetzt, was
+// der naechste Knoten tut: gruss faengt mit "So weit der Bestand. Jetzt zu
+// Ihnen." an, also ZUR SACHE.
+//
+// Dass diese Umbenennung gefahrlos ist, ist der Zweck von Riegel 3: bis AN3
+// suchten empfang-pruef und menue-pruef ihren Weiterknopf am Wortlaut, und die
+// Wortliste kannte ANKLOPFEN. Sie suchen ihn jetzt am onclick.
 function empfangAnriss(){
   szeneTafelZu();
-  szeneTafeln(INTRO_BLAETTER, {letzterKnopf:'ANKLOPFEN', ende: empfangGespraech,
+  szeneTafeln(INTRO_BLAETTER, {letzterKnopf:'ZUR SACHE', ende: empfangGespraech,
                                zweiter:{t:'ÜBERSPRINGEN', tun: () => empfangUeberspringen()}});
 }
 
@@ -25367,6 +25584,12 @@ function szeneAssert(){
                   // die Zeilen des AMTES: wer in ihrer Gegenwart spricht,
                   // spricht unter ihrer Brandmauer.
                   {name:'Anlage 2, die Wahl', liste:ANLAGE2_FRAGE, sperre:AKTE_SPERRE},
+                  // AN3: die beiden Requisiten. Sie laufen durch dieselbe
+                  // Zeichenstelle wie jedes Blatt und muessen deshalb auch
+                  // durch dieselbe Pruefung -- ein Wandstueck, das man ansehen
+                  // kann, ist ein Blatt mit einem Ort davor. Sperre wie beim
+                  // Intro, denn es IST das Material des Intros.
+                  {name:'Requisiten', liste:Object.values(REQUISITEN), sperre:AKTE_SPERRE_NAMEN},
                   {name:'Abspann', liste:abspannBlaetter(), sperre:[]}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);
@@ -25391,6 +25614,22 @@ function szeneAssert(){
         if(t.regie) text(t.regie, wo + ' Nachbemerkung', st.sperre);
       }
     });
+  }
+
+  // AN3: ein Requisit ohne Knopfaufschrift stuende mit einem leeren Knopf da,
+  // und der Stapel-Block oben prueft nur den Text der Blaetter. Dazu die
+  // Gegenprobe von der anderen Seite: jedes Wandstueck mit akt:'requisit' muss
+  // auf ein Blatt zeigen, das es gibt. Ein Tippfehler im Schluessel faellt
+  // sonst erst auf, wenn ein Spieler davorsteht und nichts passiert.
+  for(const k in REQUISITEN){
+    if(!REQUISITEN[k].knopf) fehler('Requisit ohne Knopfaufschrift', k);
+    if(!REQUISITEN[k].name)  fehler('Requisit ohne Namen', k);
+  }
+  for(const z in INN_MOEBEL){
+    const m = INN_MOEBEL[z];
+    if(m.akt !== 'requisit') continue;
+    if(!m.requisit) fehler('Wandstück ohne Blatt', z);
+    else if(!REQUISITEN[m.requisit]) fehler('Wandstück zeigt auf ein Blatt, das es nicht gibt', z, m.requisit);
   }
 
   // Ab hier je Szene. Der Laufzustand wird gespiegelt und exakt

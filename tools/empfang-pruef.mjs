@@ -14,9 +14,11 @@
 //                 und vor den Tafeln (E2)
 //   Buehne        das Dorf ist waehrend des ganzen Anfangs verdeckt und steht
 //                 erst wieder da, wenn der Empfang beginnt (E2)
-//   Intro         neun Blaetter, einzeln weitergeklickt, nichts laeuft von
+//   Intro         vier Blaetter, einzeln weitergeklickt, nichts laeuft von
 //                 selbst ab; ÜBERSPRINGEN fuehrt auf den Vordruck und nicht
-//                 am Kanon vorbei
+//                 am Kanon vorbei. Seit AN3 sind es vier statt sieben: die
+//                 drei Blaetter, die Gegenstaende beschrieben, haengen jetzt
+//                 als Requisiten in der Amtsstube
 //   Vordruck      blaettert statt zu rollen, keine Seite laeuft ueber (E2)
 //   Szene         oeffnet in der U3-Tafel, nennt Knoeterich, zeichnet sein
 //                 Portraet und bietet vier Antworten
@@ -154,64 +156,86 @@ async function durchDieVorstellung(page){
   return beats;
 }
 
-// Durch EINEN Tafelstapel. Geklickt wird der WEITER-Knopf und nicht der letzte
-// im Panel: der letzte waere ÜBERSPRINGEN. Der Durchlauf endet, sobald der
-// Schlussknopf dieses Stapels geklickt wurde, und gibt die Zahl der Blaetter
-// zurueck.
+let letzterSchluss = null;   // Riegel 3: die Aufschrift des zuletzt geklickten Schlussknopfes
+
+// RIEGEL 3 (27.08.2026, AN3): Der Knopf wird am onclick gesucht und nicht mehr
+// am Wortlaut. Das ist die dritte und eigentliche Antwort auf Pruefung 4 der
+// INTRO-MESSUNG; Riegel 1 (Protokoll ueberlebt den Absturz) und Riegel 2 (der
+// Helfer wirft mit Klartext) stehen seit A0 und bleiben, wo sie sind.
 //
-// T3: der Schlussknopf ist ein Parameter geworden. Vorher stand er als
-// Alternative im Regex, und das reichte, solange hinter einem Stapel nie ein
-// zweiter kam. Seit die Einfuehrung der Anlage 2 direkt hinter der Ernennung
-// haengt, laufen beide sonst in einer Zaehlung zusammen, und der Lauf koennte
-// nicht mehr sagen, welcher Stapel wie lang ist.
-// T6: Der Helfer kennt jetzt drei Knopfaufschriften statt zwei. Zwischen dem
-// Auftakt der Anlage 2 und ihren Blaettern steht seit T6 die Scheinwahl, und
-// ihr Weiterknopf heisst LESEN. Ohne diese Alternative faende der Helfer dort
-// keinen Knopf, braeche mit 'weg' ab, und alles hinter der Wahl bliebe
-// ungeprueft, ohne dass ein einziger pruef() rot wuerde.
+// Warum jetzt: AN3 fasst genau diese Knoepfe an. Der Schlussknopf des Intros
+// hiess ANKLOPFEN, solange der Anfang auf schwarzem Grund lief und das Dorf
+// danach aufging. Seit AN2 steht der Spieler waehrend des Anfangs IN der
+// Amtsstube, angeklopft hat er also nie; AN3 benennt ihn um. Mit der alten
+// Wortliste haette dieser eine Umbenennung 98 Pruefungen mitgenommen.
 //
-// Verglichen wird auf GLEICHHEIT und nicht auf Vorkommen: der Nein-Knopf
-// derselben Tafel heisst "Nicht lesen" und enthaelt damit ebenfalls "lesen".
-// Ein unverankertes /LESEN/i haette je nach Reihenfolge den falschen Knopf
-// erwischt und die Wahl abgelehnt statt angenommen.
+// Woran der Knopf erkennbar ist: an dem, was er TUT. Weiterknopf, LESEN und
+// Schlussknopf tragen alle dasselbe onclick="szeneTafel(n)" und unterscheiden
+// sich nur in der Aufschrift. Der zweite Knopf ruft szeneTafelZweiter()
+// (UEBERSPRINGEN) oder szeneTafelWahlNein() (der Nein-Knopf der Scheinwahl)
+// und faellt damit von selbst heraus, ohne dass eine Liste ihn ausschliessen
+// muss. Genau daran ist die alte Fassung zweimal fast gescheitert: erst am
+// unverankerten /LESEN/i, das "Nicht lesen" mittraf, dann an der Frage, ob
+// UEBERSPRINGEN der letzte Knopf im Panel ist.
 //
-// RIEGEL (27.08.2026, INTRO-MESSUNG Pruefung 4): Bis hierher faltete dieser
-// Helfer ZWEI verschiedene Lagen in dasselbe 'weg':
+// Wo ein Stapel aufhoert, sagt die Maschine selbst: szeneTafel(i) wird auf
+// Blatt i-1 gezeichnet, das letzte Blatt traegt also n === liste.length. Der
+// Parameter `ende` ist damit fuer die Navigation NICHT mehr tragend -- er
+// steht noch als Erwartung in der Fehlermeldung und wird an der Aufrufstelle
+// mit einem eigenen pruef() belegt. Der Unterschied ist der Zweck des Riegels:
+// eine Umbenennung macht ab jetzt EINE Pruefung rot, statt den Lauf zu toeten.
 //
-//   das Overlay ist zu          -> der Stapel ist durch, Schleifenende, richtig
-//   das Overlay steht, kein Knopf -> ein Fund, der wie ein Schleifenende aussah
-//
-// Der zweite Fall brach still ab. Nachgemessen: faellt 'LESEN' aus der Liste,
-// meldet der Lauf zwoelf Abweichungen, und KEINE davon nennt den Knopf -- sie
-// lauten "ist=1 soll=6" und "ist=\"menu\" soll=\"play\"" und schicken den Leser
-// nach ANLAGE2_BLAETTER. Heisst der Weiterknopf ganz anders, stirbt der Lauf
-// vorher an einer Ausnahme woanders.
-//
-// Ab hier sind die beiden Lagen getrennt, und die zweite WIRFT, mit dem
-// Wortlaut der Knoepfe, die wirklich dastehen. Das Protokoll ueberlebt den Wurf
-// (siehe bericht() oben), die Meldung nennt also die Ursache und das bis dahin
-// Gepruefte steht darueber.
+// Dazu die zweite Haelfte, die A0 als Punkt 3 verlangt hat: nach jedem Klick
+// wird nachgesehen, dass sich die Lage wirklich bewegt hat. Ein Knopf, der da
+// ist und nichts tut, sah bisher aus wie ein Knopf, der weiterblaettert.
 async function durchDenStapel(page, ende){
   let tafeln = 0;
   for(let i = 0; i < 14; i++){
-    const r = await page.evaluate((endeStr) => {
+    const r = await page.evaluate(() => {
       if(document.getElementById('overlay').style.display !== 'flex') return {lage:'zu'};
       const knoepfe = [...document.querySelectorAll('#ovPanel button')];
-      const b = knoepfe.find(x => ['WEITER', 'LESEN'].includes(x.textContent.trim())
-                                  || x.textContent.includes(endeStr));
-      if(!b) return {lage:'kein-knopf', da: knoepfe.map(x => x.textContent.trim())};
-      const letzt = b.textContent.includes(endeStr);
-      b.click(); return {lage: letzt ? 'ende' : 'weiter'};
-    }, ende);
+      let b = null, n = -1;
+      for(const x of knoepfe){
+        const m = /^\s*szeneTafel\((\d+)\)\s*$/.exec(x.getAttribute('onclick') || '');
+        if(m){ b = x; n = +m[1]; break; }
+      }
+      if(!b) return {lage:'kein-knopf',
+                     da: knoepfe.map(x => `${x.textContent.trim()} [${x.getAttribute('onclick') || 'ohne onclick'}]`)};
+      const gesamt = (typeof szeneTafelLauf !== 'undefined' && szeneTafelLauf)
+                     ? szeneTafelLauf.liste.length : -1;
+      if(gesamt < 0) return {lage:'kein-lauf'};
+      const txt = b.textContent.trim();
+      b.click();
+      return {lage: n >= gesamt ? 'ende' : 'weiter', n, gesamt, txt};
+    });
     if(r.lage === 'zu') break;
     if(r.lage === 'kein-knopf')
-      throw new Error(`durchDenStapel: die Tafel steht, aber kein Weiterknopf passt. `
-        + `Gesucht wurde WEITER, LESEN oder "${ende}"; auf der Tafel steht `
-        + `${JSON.stringify(r.da)}. Nach ${tafeln} Blatt/Blaettern. `
-        + `Wer hier eine Beschriftung geaendert hat, aendert sie auch in dieser Liste.`);
+      throw new Error(`durchDenStapel: die Tafel steht, aber kein Knopf ruft szeneTafel(n). `
+        + `Auf der Tafel steht ${JSON.stringify(r.da)}. Nach ${tafeln} Blatt/Blaettern, `
+        + `erwartet war zuletzt "${ende}". Wer die Zeichenstelle umgebaut hat, `
+        + `aendert dieses Muster mit -- die Aufschrift allein traegt hier nichts mehr.`);
+    if(r.lage === 'kein-lauf')
+      throw new Error(`durchDenStapel: die Tafel steht, aber szeneTafelLauf ist leer. `
+        + `Nach ${tafeln} Blatt/Blaettern, erwartet war zuletzt "${ende}". `
+        + `Ein Blatt ohne Aufsteller kann seine Blattzahl nicht kennen.`);
     tafeln++;
     await page.waitForTimeout(220);
+    letzterSchluss = r.txt;
     if(r.lage === 'ende') break;
+    // Hat der Klick die Lage bewegt? Ein Knopf, der steht und nichts tut, ist
+    // von einem, der weiterblaettert, sonst nicht zu unterscheiden.
+    const jetzt = await page.evaluate(() => {
+      if(document.getElementById('overlay').style.display !== 'flex') return {zu:true};
+      for(const x of document.querySelectorAll('#ovPanel button')){
+        const m = /^\s*szeneTafel\((\d+)\)\s*$/.exec(x.getAttribute('onclick') || '');
+        if(m) return {zu:false, n:+m[1]};
+      }
+      return {zu:false, n:-1};
+    });
+    if(!jetzt.zu && jetzt.n === r.n)
+      throw new Error(`durchDenStapel: der Klick auf Blatt ${r.n} von ${r.gesamt} `
+        + `("${r.txt}") hat die Tafel nicht bewegt, sie steht danach auf derselben Blattzahl. `
+        + `Nach ${tafeln} Blatt/Blaettern.`);
   }
   await page.waitForTimeout(200);
   return tafeln;
@@ -267,15 +291,20 @@ async function bisZumEmpfang(page){
   pruef('das erste Introblatt steht', await page.evaluate(() =>
         el('ovPanel').textContent.includes('aus dem Fluss')), true);
 
-  // T5d (26.08.2026): sieben statt fuenf. Die Zahl war eine Zusage aus SZ1
-  // ("Der Anfang wird dadurch nicht laenger"), und T5d nimmt sie bewusst
-  // zurueck: der Anfang traegt seither Kapitel 0 bis 5 der Weltbibel, und zwei
-  // davon hatten kein Blatt. Neu sind die Karte (Kapitel 3, die Landschaft ist
-  // die Ablage, samt dem Kuerzel, das ein Wort ist) und die Tafel ueber der Tuer
-  // (Kapitel 1, das Weltgesetz im Wortlaut, seit dem 26.08.2026 erlaubt).
-  // Die Formregel "Der Anfang erzaehlt" deckt die Laenge ab.
+  // AN3 (27.08.2026): vier statt sieben. T5d hatte auf sieben erhoeht, weil
+  // der Anfang seither Kapitel 0 bis 5 der Weltbibel traegt; drei dieser
+  // Blaetter beschrieben aber Gegenstaende, die es im Raum gibt -- die Karte
+  // (Kapitel 3), die Tafel ueber der Tuer (Kapitel 1) und das Formular
+  // (Kapitel 5). Solange der Anfang auf schwarzem Grund lief, MUSSTE der Text
+  // sie aussprechen; seit AN2 haengen sie da. Sie sind nicht gestrichen,
+  // sondern umgezogen, und was hier steht, ist die Chronik und nur sie.
   const tafeln = await durchDenAnriss(page);
-  pruef('das Intro hat sieben Blaetter', tafeln, 7);
+  pruef('das Intro hat vier Blaetter', tafeln, 4);
+  // Riegel 3: die Aufschrift des Schlussknopfes wird geprueft und nicht mehr
+  // zum Finden benutzt. Wer sie aendert, macht ab jetzt genau DIESE Zeile rot,
+  // statt den Lauf vor seiner ersten Pruefung sterben zu lassen. AN3 ist genau
+  // dieser Fall: ANKLOPFEN hiess er, solange man vor dem Haus stand.
+  pruef('und sein Schlussknopf heisst ZUR SACHE', letzterSchluss, 'ZUR SACHE');
   pruef('danach ist das Overlay weg', await page.evaluate(() => el('overlay').style.display), 'none');
   pruef('und die Buehne faellt fuer den Empfang',
         await page.evaluate(() => el('introBuehne').style.display), 'none');
@@ -501,7 +530,8 @@ async function bisZumEmpfang(page){
   // Blatt I ist ihr Auftakt. Er hat noch keine Wahl, sondern nur WEITER.
   const auftakt = await tafel();
   pruef('der Auftakt traegt noch keine Wahl', auftakt.knoepfe, ['WEITER']);
-  await page.evaluate(() => document.querySelector('#ovPanel button').click());
+  await page.evaluate(() => [...document.querySelectorAll('#ovPanel button')]
+    .find(x => /^\s*szeneTafel\(\d+\)\s*$/.test(x.getAttribute('onclick') || '')).click());
   await page.waitForTimeout(200);
 
   // Blatt II ist die Wahl. Beide Knoepfe stehen, der zweite ist anklickbar.
@@ -566,9 +596,15 @@ async function bisZumEmpfang(page){
   await starteAnfang(page);
   await durchDieVorstellung(page);          // E2: ÜBERSPRINGEN steht erst auf den Tafeln
   await page.waitForTimeout(200);
-  await page.evaluate(() => {
-    [...document.querySelectorAll('#ovPanel button')].find(b => /ÜBERSPRINGEN/.test(b.textContent)).click();
+  // Riegel 3: der zweite Knopf ruft szeneTafelZweiter(). Seine Aufschrift
+  // wird gleich darunter geprueft statt zum Finden benutzt.
+  const zweiter = await page.evaluate(() => {
+    const b = [...document.querySelectorAll('#ovPanel button')]
+      .find(x => /^\s*szeneTafelZweiter\(\)\s*$/.test(x.getAttribute('onclick') || ''));
+    if(!b) return null;
+    const t = b.textContent.trim(); b.click(); return t;
   });
+  pruef('der zweite Knopf der Anrisstafel heisst UEBERSPRINGEN', zweiter, 'ÜBERSPRINGEN');
   await page.waitForTimeout(500);
   pruef('ÜBERSPRINGEN fuehrt auf den Vordruck',
         (await page.textContent('#ovPanel')).includes('EINSTELLUNGSVERFÜGUNG'), true);
@@ -607,7 +643,8 @@ async function bisZumEmpfang(page){
   await durchDieVorstellung(page);
   await page.waitForTimeout(200);
   pruef('die Anrisstafel passt ins Bild', await page.evaluate(() => {
-    const b = [...document.querySelectorAll('#ovPanel button')].find(x => /WEITER/.test(x.textContent));
+    const b = [...document.querySelectorAll('#ovPanel button')]
+      .find(x => /^\s*szeneTafel\(\d+\)\s*$/.test(x.getAttribute('onclick') || ''));
     const r = b.getBoundingClientRect();
     return r.top >= 0 && r.bottom <= innerHeight;
   }), true);
