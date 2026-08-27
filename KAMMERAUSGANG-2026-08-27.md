@@ -71,7 +71,7 @@ Dazu der Kommentar an `camSnap()`, der die Wege **zurück** jetzt ausdrücklich 
 * **`CHUNK_CAP` bleibt bei 96.** Der Deckel war nicht das Problem; das sichtbare Gitter braucht auf dem Telefon 24 bis 35 Blöcke, der Deckel hat also weiterhin fast das Dreifache Luft. Wer ihn wegen dieses Fundes senkt, behandelt das Symptom.
 * **Kein Bake-Budget je Frame.** Ein Deckel auf „so viele Chunks darf ein Frame backen" hätte dieselbe Lawine gebremst, aber jeden legitimen Schnitt — Schichtbeginn, Wiedereinstieg, Hauseingang — mit sichtbar nachwachsendem Boden bezahlt. Ein Schnitt, der einen Frame lang halb schwarz ist, ist kein Schnitt.
 * **Keine Prüfung auf leere Chunk-Canvas.** Sie wäre ein `getImageData()` je Block, also genau die Sorte Kosten, wegen der es den Cache gibt.
-* **Keine Zeile in `NEUERUNGEN`.** Der Hausbrauch trägt dort *Runden* ein und stempelt dabei den Stand neu, was allen die ganze Mitteilung noch einmal vorlegt. Wenn der nächste Abschnitt ohnehin stempelt, gehört ein Punkt dazu — der Satz stünde da: *„Am Telefon bleibt die Welt nach dem Verlassen einer Kammer sichtbar."*
+* ~~Keine Zeile in `NEUERUNGEN`.~~ **Nachgetragen am selben Tag, nach dem Merge.** Der erste Stand dieses Berichts hat den Punkt zurückgestellt, weil ein neuer Stempel allen die ganze Mitteilung noch einmal vorlegt und eine Berichtigung kein Bauabschnitt ist. Das war die falsche Abwägung: der Fehler war sichtbar, er wurde gemeldet, und wer ihn gesehen hat, soll lesen können, dass er weg ist. Der Punkt heißt *„Der Weg aus der Kammer führt wieder ins Bild"*, der Stand steht auf `2026-08-27-kam`.
 
 ## 6. Eine Beobachtung zum gemeldeten Bild
 
