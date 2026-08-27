@@ -322,6 +322,14 @@ gehen auf", rund 2600 neue Zeilen in derselben Datei). `index.html` hat sich
 dabei ohne Konflikt zusammengefügt, und das ist noch keine Aussage darüber, ob
 es läuft — deshalb ist die ganze Abnahme danach ein zweites Mal gelaufen.
 
+Dasselbe noch einmal beim Nachziehen des Kammerausgangs (`dcd98d1` und
+`430b7cb`): `index.html` automatisch zusammengefügt, README von Hand, danach
+alles wieder gefahren. Zusätzlich der Messlauf aus dem neuen Abschnitt
+(`kammerausgang-messlauf.mjs`, „Alles in Ordnung") und `ebene-pruef.mjs`, weil
+beide an der Kammer hängen. Letzterer steht bei 53 von 54 mit `die Leiter ist
+geladen` — derselbe fehlende Blattstand aus `assets/cf/` wie unten, bekannt
+seit T3, Abschnitt 9.
+
 **Zwei Rotstände, und beide gehören der Umgebung und nicht dem Code.**
 Gemessen statt vermutet, jeweils mit weggelegter Änderung im selben
 Verzeichnis:
