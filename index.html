@@ -4815,6 +4815,22 @@ let owSave = null;      // eingefrorene Oberwelt, solange eine Kammer läuft
 // Karte überschreiben, beim Hinausgehen zurückholen.
 let innen = null;       // betretener Innenraum oder null
 let innenSave = null;   // eingefrorene Oberwelt, solange ein Innenraum offen ist
+// AN2: Wer im Raum steht, ist normalerweise eine Frage der Uhr — figDrinnen()
+// liest innenZeit(), und die sagt "Feierabend oder nicht". Fuer den Anfang
+// trifft das zweimal daneben, und A0 hat beide Male gemessen: vor dem
+// Dienstantritt stand Noergel da, obwohl er nicht soll, und seit AN1 steht
+// niemand da, obwohl einer soll.
+//
+// Statt einer Sonderregel in betreteHaus() eine ANGABE: wer hier etwas
+// hineinlegt, besetzt den naechsten betretenen Raum damit und die Uhr
+// schweigt. Genau eine Stelle setzt es (empfangStarten) und genau eine nimmt
+// es zurueck (dienstAntritt), so wie beim state des Anfangs.
+//
+// Es traegt fertige npcs-Eintraege und keine Schluessel, denn der Anfang
+// braucht Knoeterich, und der steht nicht in DORF_FIGUREN — er ist KN_FIGUR,
+// eine eigene Groesse mit eigenem Blatt und eigenem Baum. Ueber Schluessel
+// waere er hier nicht zu erreichen.
+let innenBesetzung = null;
 const map = new Uint8Array(MW*MH);
 const inB = (x,y)=> x>=0 && y>=0 && x<MW && y<MH;
 const T = (x,y)=> map[x+y*MW];
@@ -12037,8 +12053,17 @@ const A2_ALLEIN_R2 = 450 * 450;
 function anlage2Allein(){
   if(kammer) return true;
   // IN1: In einem Innenraum steht sehr wohl Publikum, es ist nur ein anderes.
-  // Knoeterich bleibt draussen, deshalb wird er drinnen nicht gefragt; npcs
-  // traegt drinnen die Leute des Raumes und draussen die des Dorfes.
+  // npcs traegt drinnen die Leute des Raumes und draussen die des Dorfes.
+  //
+  // AN2-Berichtigung: hier stand "Knoeterich bleibt draussen, deshalb wird er
+  // drinnen nicht gefragt". Das gilt seit AN2 nicht mehr -- im Anfang steht er
+  // in der Amtsstube. Die Rechnung unten traegt es trotzdem, und zwar ohne
+  // Zutun: er liegt dort als npcs-Eintrag, figHier() laesst ihn drinnen
+  // durch, und die Schleife findet ihn. Nachgemessen am laufenden Spiel,
+  // direkt neben ihm und quer durch den Raum: beide Male "nicht allein".
+  // Die zwei KN_POS-Zeilen darunter bleiben, wofuer sie gebaut sind -- fuer
+  // draussen, wo er kein npcs-Eintrag ist, sondern von drawAlter() gezeichnet
+  // wird.
   if(!innen && currentLevel !== 1) return true;
   if(!innen && sqDist(player.x, player.y, KN_POS.x, KN_POS.y) < A2_ALLEIN_R2) return false;
   for(const n of npcs)
@@ -13253,7 +13278,16 @@ function betreteHaus(haus){
   // dieselbe Figur, dieselben Zeilen, derselbe Gesprächsbaum, nur an einem
   // anderen Ort. fest:true, weil ein Wirt hinter seiner Theke nicht wandert.
   npcs.length = 0;
-  for(const p of r.leute){
+  // AN2: Liegt eine Besetzung vor, gilt sie und die Uhr schweigt. Sie traegt
+  // fertige Eintraege, hier wird nur noch die Kachel in Weltpixel gerechnet —
+  // dieselbe Rechnung wie unten, damit die beiden Wege nicht auseinanderlaufen.
+  if(innenBesetzung){
+    for(const p of innenBesetzung)
+      npcs.push({...p.npc, homeX:tileMid(INN_X0+p.tx), homeY:(INN_Y0+p.ty)*TS + TS - 6,
+                 x:tileMid(INN_X0+p.tx), y:(INN_Y0+p.ty)*TS + TS - 6,
+                 fest:true, flip:false, vx:0, vy:0, restT:0, phase:0});
+  }
+  else for(const p of r.leute){
     const fig = DORF_FIGUREN.find(f => f.key === p.key);
     if(!fig || !figDa(fig) || !figDrinnen(fig)) continue;
     const {idle, walk} = npcBlaetter(fig);
@@ -22721,7 +22755,22 @@ function dienstblattHtml(b, ziel, seite){
 function showDienstblatt(nr, ziel, seite){
   const i = clamp(nr | 0, 1, DIENSTBLATT_ANZ);
   const b = DIENSTBLATT[i - 1];
-  el('overlay').style.display = 'flex';   // die Waage braucht ein sichtbares Overlay
+  // Die Waage braucht ein sichtbares Overlay -- UND die Klasse, die das Blatt
+  // breit macht. Sie stand bis AN2 als letzte Zeile dieser Funktion, also
+  // HINTER der Messung, und das ist eine Zeile zu spaet: `body.vordruckOffen
+  // #overlay .panel` setzt width:min(760px,92vw), und ohne sie misst
+  // dienstblattSeiten() gegen ein schmaleres Blatt, bricht seltener um,
+  // schaetzt jede Blockhoehe zu klein und packt zu viel auf eine Seite.
+  //
+  // Aufgefallen ist das erst durch AN2, und es war nie ein AN2-Fehler: die
+  // Regel steht doppelt, `body.introBuehne #overlay .panel` traegt dieselbe
+  // Breite, und der Vordruck lief bis dahin immer auf der schwarzen Buehne.
+  // Die falsche Reihenfolge war gedeckt, solange zufaellig eine zweite Klasse
+  // dasselbe tat. Seit der Empfang in der Amtsstube spielt, faellt sie weg --
+  // und zwei Seiten von Blatt 1 liefen ueber. Gemessen, dreimal von drei
+  // Laeufen, gegen null von drei davor.
+  el('overlay').style.display = 'flex';
+  document.body.classList.add('vordruckOffen');
   const anz = dienstblattSeiten(b, ziel).length;
   const sIdx = clamp(seite | 0, 0, anz - 1);
   const klein = 'font-size:calc(13px * var(--fs));padding:9px 20px;margin:10px 6px 0;';
@@ -22743,7 +22792,7 @@ function showDienstblatt(nr, ziel, seite){
     ? `<div><button onclick="dienstblattEnde('${ziel}')" style="font-size:calc(11px * var(--fs));padding:6px 14px;margin-top:8px;">SCHLIESSEN</button></div>` : '';
   el('ovPanel').innerHTML = dienstblattHtml(b, ziel, sIdx) + `<div>${zurueck}${weiter}</div>${raus}`;
   el('overlay').style.display = 'flex';
-  document.body.classList.add('vordruckOffen');
+  document.body.classList.add('vordruckOffen');   // steht oben schon, hier als Netz
 }
 
 // Unterschrift. Der Merker liegt in kn.seen, dem Speicher, der ohnehin schon
@@ -22769,6 +22818,11 @@ function dienstAntritt(){
   state = 'play'; updateHUD();
   knPlayStartT = gameT;
   aktSperre = 0.5;   // der Klick auf UNTERSCHREIBEN ist keine Kontextaktion
+  // AN2: Die Sonderbesetzung gilt fuer den Anfang und nur fuer ihn. Ab hier
+  // entscheidet wieder die Uhr, wer in einem Raum steht. Der Spieler bleibt
+  // dabei, wo er ist — in der Amtsstube, mit Knoeterich daneben und dem Weg
+  // hinaus an der Schwelle. DAS ist der erste freie Schritt.
+  innenBesetzung = null;
 }
 
 function dienstblattEnde(ziel){
@@ -25200,7 +25254,29 @@ function empfangStarten(){
   // stellt, nur dass die Welt jetzt schon dahinter steht statt erst danach.
   state = 'szene';
   document.body.classList.add('szeneLaeuft');
-  buehneAn();
+  // AN2: Die Buehne ist der Raum. Hier stand buehneAn(), also Schwarz mit
+  // Siegel; jetzt steht der Spieler in der Amtsstube, und Knoeterich steht
+  // darin. E2 verlangt "die Tafel ist das Einzige im Bild", und die Bedingung
+  // ist erfuellt, weil der Raum STILLSTEHT: state ist 'szene', update(dt)
+  // steigt aus, niemand laeuft, die Uhr geht nicht. Ein Raum, in dem sich
+  // nichts bewegt, ist kein Hintergrundrauschen, sondern ein Bild.
+  //
+  // Der harte Schnitt ist Absicht und kein Sparzug: kein Weg zur Tuer, kein
+  // Suchspiel. betreteHaus() wird gerufen und nicht angeboten, das ginge auch
+  // gar nicht — scanAktion() steht still, solange die Szene laeuft.
+  //
+  // Die Ernennung geht weiter auf Schwarz (empfangErnennung ruft buehneAn).
+  // Das ist T2 und bleibt unangetastet: "es ist ein Rechtsakt des Hauses, und
+  // das Haus macht keinen Rechtsakt vor laufender Weltkulisse."
+  const amtHaus = INN_HAEUSER.find(h => h.raum.key === 'amt');
+  if(amtHaus){
+    // Genau einer steht da, und es ist der, der spricht. Noergel bleibt
+    // draussen vor: zu Dienstbeginn sitzt er nicht auf Feierabend, und eine
+    // zweite Gestalt im Bild waere das Rauschen, gegen das E2 gebaut wurde.
+    // Wer das anders entscheidet, legt ihn hier dazu und sonst nirgends.
+    innenBesetzung = [{npc: knNpc, tx: 8, ty: 6}];
+    betreteHaus(amtHaus);
+  }
   el('overlay').style.display = 'none';
   MUS.goto('office'); MUS.muffle(false);
   szeneOeffnen('empfang', SZENEN.empfang.start);

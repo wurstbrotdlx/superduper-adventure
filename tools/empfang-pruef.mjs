@@ -239,9 +239,17 @@ async function bisZumEmpfang(page){
   await starteAnfang(page);
   pruef('der Anfang beginnt in der Tafel, nicht im Overlay',
         await page.evaluate(() => gespraechOffen && el('overlay').style.display !== 'flex'), true);
-  pruef('die Buehne steht', await page.evaluate(() => el('introBuehne').style.display), 'block');
-  pruef('das Dorf ist verdeckt', await page.evaluate(() =>
-        getComputedStyle(el('introBuehne')).backgroundColor !== 'rgba(0, 0, 0, 0)'), true);
+  // AN2: Die Buehne ist der Raum. Hier stand bis dahin, dass introBuehne steht
+  // und das Dorf verdeckt -- beides war die schwarze Flaeche aus E2. Der
+  // Empfang spielt jetzt in der Amtsstube, und E2s Bedingung ("die Tafel ist
+  // das Einzige im Bild") wird nicht aufgegeben, sondern anders eingeloest:
+  // der Raum STEHT STILL. Geprueft wird deshalb dasselbe Versprechen an der
+  // neuen Stelle, und zwar strenger als vorher -- eine schwarze Flaeche konnte
+  // nur da sein, ein stillstehender Raum muss vier Dinge zugleich einhalten.
+  pruef('die Amtsstube ist die Buehne', await page.evaluate(() => innen && innen.key), 'amt');
+  pruef('das Dorf ist nicht im Bild', await page.evaluate(() => currentLevel), 4);
+  pruef('und Knoeterich steht darin', await page.evaluate(() => npcs.map(n => n.key)), ['knoeterich']);
+  pruef('der Raum steht still', await page.evaluate(() => state), 'szene');
   pruef('Knoeterich nennt zuerst seinen Namen',
         (await gesagt(page)).includes('Knöterich'), true);
   const beats = await durchDieVorstellung(page);
@@ -249,8 +257,8 @@ async function bisZumEmpfang(page){
 
   // Waehrend der Tafeln, nicht danach: mit der letzten faellt die Buehne, und
   // eine Messung hinterher haette genau das nicht gesehen.
-  pruef('die Buehne traegt auch die Tafeln',
-        await page.evaluate(() => el('introBuehne').style.display), 'block');
+  pruef('die Amtsstube traegt auch die Tafeln',
+        await page.evaluate(() => (innen && innen.key) + '/' + state), 'amt/szene');
   // SZ1: Die fuenf Anrisstafeln aus E1 sind durch die neun Introblaetter aus
   // weltgeschichte.md ersetzt. Das sind die beiden einzigen Zusagen dieses
   // Laufs, die sich dadurch geaendert haben, und beide beschreiben Inhalt, der
@@ -566,10 +574,11 @@ async function bisZumEmpfang(page){
         (await page.textContent('#ovPanel')).includes('EINSTELLUNGSVERFÜGUNG'), true);
   pruef('und beendet die Szene', await page.evaluate(() => empfangAktiv), false);
   // E2: Hier ist der Empfang noch nicht gelaufen, der Vordruck gehoert also
-  // noch zum Anfang: schwarz bleibt schwarz, das HUD bleibt weg, und beides
-  // endet erst mit der Unterschrift.
-  pruef('die Buehne traegt auch den uebersprungenen Vordruck',
-        await page.evaluate(() => el('introBuehne').style.display), 'block');
+  // noch zum Anfang. Seit AN2 heisst das nicht mehr "schwarz bleibt schwarz",
+  // sondern "der Raum bleibt stehen": die Amtsstube traegt auch diesen
+  // Vordruck, das HUD bleibt weg, und beides endet erst mit der Unterschrift.
+  pruef('die Amtsstube traegt auch den uebersprungenen Vordruck',
+        await page.evaluate(() => (innen && innen.key) + '/' + state), 'amt/szene');
   pruef('das HUD bleibt dabei weg',
         await page.evaluate(() => getComputedStyle(el('hud')).display), 'none');
 

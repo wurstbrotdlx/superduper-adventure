@@ -375,7 +375,13 @@ async function frisch(opt){
     await page.waitForTimeout(150);
   }
   await page.waitForTimeout(400);
+  // AN2: hinaus aus der Amtsstube. Der Anfang endet seit AN2 drinnen, und
+  // dieser Block spielt Szene 2 im Dorf -- drinnen stuende Umlauf gar nicht in
+  // npcs, und der Lauf griffe ins Leere.
+  await page.evaluate(() => { if(innen) verlasseHaus(); });
+  await page.waitForTimeout(250);
   pruef('der Dienst laeuft', await page.evaluate(() => state), 'play');
+  pruef('und zwar im Dorf, nicht mehr im Haus', await page.evaluate(() => !!innen), false);
 
   // Szene 2 spielen: Akt II erzwingen, Umlauf ansprechen.
   const lauf = await page.evaluate(async () => {
