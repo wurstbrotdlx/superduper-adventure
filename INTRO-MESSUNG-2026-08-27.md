@@ -388,7 +388,36 @@ steht hier, damit die Liste „Offen" nicht länger zum Nachlaufen einlädt.
   Verzweigung, beide Routen fielen um dieselben 375 Wörter); für AN4 wird sie
   gebraucht, denn Anlage 2 liegt nur auf dem einen und die Dienstanweisung nur
   auf dem anderen Weg.
-* **Neu offen seit AN3:** das Weltgesetz fällt auf dem Pflichtweg **nicht mehr**
-  (1 → 0). Erreichbar bleibt es an drei Stellen, die erste davon ist jetzt die
-  Tafel über der Tür. Begründung und Gegenrechnung in
-  `phase-an3-requisiten.md`.
+* **Entschieden seit AN3:** das Weltgesetz fällt auf dem Pflichtweg **nicht
+  mehr** (1 → 0), der Wortlaut hängt über der Tür. Das bleibt so. Erreichbar ist
+  es an **vier** Stellen, siehe die Berichtigung zu Abschnitt 6 unten.
+
+---
+
+## Zweiter Nachtrag, 27.08.2026: die Testerfrage ist beantwortet
+
+**Die Mehrzahl der Tester drückte `ÜBERSPRINGEN` auf der ersten Introtafel** —
+auf genau dem Bauzustand, den dieser Bericht misst: schwarze Bühne, 13 Lesetafeln
+und 950 Wörter vor der ersten echten Wahl. **Seit AN1 bis AN3 wird nicht mehr
+übersprungen.** (Angabe des Projektinhabers, berichtet und nicht am Gerät
+beobachtet; als solche ausgewiesen.)
+
+Damit ist der Pflichtweg die Hauptzahl — so, wie Abschnitt 1 es angenommen hat,
+jetzt aber belegt statt vermutet. Und die drei Bauabschnitte haben bewirkt, wofür
+sie gebaut wurden: die Wand ist von 13 Lesetafeln auf 10 gefallen, und der
+Abbruch am ersten Blatt hat aufgehört.
+
+**Berichtigung an Abschnitt 4.** Dort steht, die Dienstanweisung liege „nur auf
+einem der beiden Wege". Das gilt **nur innerhalb des Anfangs**. Im Spiel ist sie
+ab dem ersten Dienstantritt jederzeit erreichbar: auf dem Startbild
+(`index.html:18463`, der Knopf erscheint, sobald `kn.seen.einstellung` steht)
+und im Schichtabschluss-Panel des Amts (`:26660`). Dass die Rückmeldung sie
+nennt, war deshalb **nie ein Widerspruch** zum Pflichtweg. Die Frage, die AN3 und
+AN4 aufgehalten hat, hatte von Anfang an eine harmlose Antwort.
+
+**Berichtigung an Abschnitt 6.** Dort stehen drei erreichbare Stellen des
+Weltgesetzes. Es sind **vier**: das Startbild trägt den Satz sinngemäß, vor jedem
+Start (`index.html:18452`). `intro-pruef` hat ihn zwei Bauabschnitte lang
+übersehen, weil er nur Tabellen ansah und weil sein Sinn-Muster ein Wort anders
+lautete als der Satz. Behoben; der Lauf zählt das Startbild jetzt mit und sagt
+dazu, dass es vor den Routen steht und nicht in ihnen.

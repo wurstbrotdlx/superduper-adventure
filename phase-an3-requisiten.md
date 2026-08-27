@@ -136,6 +136,29 @@ Fundstelle.
 Wer das anders entscheidet, hat zwei Zeilen zu ändern: den Zeiger auf Blatt 4
 und den Eintrag `gesetz` in `REQUISITEN`.
 
+### Nachtrag am selben Tag: die Null ist weniger scharf, und die Entscheidung steht
+
+**Der Messlauf hatte einen blinden Fleck, vor UND nach AN3.** Auf dem Startbild
+steht, vor jedem einzelnen Start:
+
+> Was nicht bearbeitet wird, wird lebendig.  (`index.html:18452`)
+
+Das ist das Weltgesetz sinngemäß, und `intro-pruef` hat es nie gezählt.
+Zwei unabhängige Gründe: `alleWeltgesetzStellen()` sammelte nur aus **Tabellen**,
+nie aus dem Startbild, und das Sinn-Muster verlangte „was **keiner** bearbeitet"
+(gebaut für die Szene `welt1a`), während der Untertitel „was **nicht**
+bearbeitet wird" sagt. Beides ist behoben; der Lauf meldet jetzt **vier**
+erreichbare Orte statt drei und nennt das Startbild beim Namen.
+
+Die Zahl „auf dem Pflichtweg 0" oben bleibt richtig — das Startbild ist kein
+Leseapparat und steht **vor** jeder Route, nicht in ihr. Aber die Lesart ändert
+sich: **jeder Spieler liest den Satz sinngemäß, bevor er „Dienst antreten"
+drückt.** Die Entscheidung dieses Abschnitts ist damit weniger folgenreich, als
+der Text darüber sie darstellt.
+
+**Entschieden: es bleibt so.** Der Wortlaut hängt über der Tür, die Umschreibung
+steht auf dem Startbild. Der Punkt ist kein offener mehr.
+
 ## Riegel 3, und warum er vor dem Schnitt stehen musste
 
 A0 hat drei Riegel benannt; Riegel 1 und 2 stehen seither, Riegel 3 war offen:
