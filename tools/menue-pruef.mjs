@@ -178,21 +178,40 @@ async function stapelWegklicken(page){
   for(let i = 0; i < 8; i++){
     const r = await page.evaluate(() => {
       if(document.getElementById('overlay').style.display !== 'flex') return {lage:'zu'};
-      // T6: LESEN kommt dazu, sonst bleibt der Lauf an der Scheinwahl der
-      // Anlage 2 haengen und kaeme nie bis zum Menue. Gleichheit statt
-      // Vorkommen, denn "Nicht lesen" steht als zweiter Knopf daneben.
+      // RIEGEL 3 (AN3): der Knopf wird am onclick gesucht, nicht am Wortlaut.
+      // Die alte Liste musste jede neue Aufschrift kennen (T6 brachte LESEN,
+      // AN3 benennt den Schlussknopf des Intros um); szeneTafel(n) tragen sie
+      // alle. Der zweite Knopf ruft szeneTafelZweiter() bzw.
+      // szeneTafelWahlNein() und faellt damit von selbst heraus.
       const knoepfe = [...document.querySelectorAll('#ovPanel button')];
-      const b = knoepfe.find(x => ['WEITER', 'EINSTECKEN', 'LESEN'].includes(x.textContent.trim()));
-      if(!b) return {lage:'kein-knopf', da: knoepfe.map(x => x.textContent.trim())};
-      b.click(); return {lage:'weiter'};
+      let b = null, n = -1;
+      for(const x of knoepfe){
+        const m = /^\s*szeneTafel\((\d+)\)\s*$/.exec(x.getAttribute('onclick') || '');
+        if(m){ b = x; n = +m[1]; break; }
+      }
+      if(!b) return {lage:'kein-knopf',
+                     da: knoepfe.map(x => `${x.textContent.trim()} [${x.getAttribute('onclick') || 'ohne onclick'}]`)};
+      b.click(); return {lage:'weiter', n};
     });
     if(r.lage === 'zu') break;
     if(r.lage === 'kein-knopf')
-      throw new Error(`stapelWegklicken: die Tafel steht, aber kein Weiterknopf passt. `
-        + `Gesucht wurde WEITER, EINSTECKEN oder LESEN; auf der Tafel steht `
-        + `${JSON.stringify(r.da)}. Nach ${tafeln} Blatt/Blaettern.`);
+      throw new Error(`stapelWegklicken: die Tafel steht, aber kein Knopf ruft szeneTafel(n). `
+        + `Auf der Tafel steht ${JSON.stringify(r.da)}. Nach ${tafeln} Blatt/Blaettern.`);
     tafeln++;
     await page.waitForTimeout(200);
+    // Hat der Klick die Lage bewegt? Ein Stapel, der auf derselben Blattzahl
+    // stehen bleibt, laeuft hier sonst achtmal durch und meldet acht Tafeln.
+    const jetzt = await page.evaluate(() => {
+      if(document.getElementById('overlay').style.display !== 'flex') return {zu:true};
+      for(const x of document.querySelectorAll('#ovPanel button')){
+        const m = /^\s*szeneTafel\((\d+)\)\s*$/.exec(x.getAttribute('onclick') || '');
+        if(m) return {zu:false, n:+m[1]};
+      }
+      return {zu:false, n:-1};
+    });
+    if(!jetzt.zu && jetzt.n === r.n)
+      throw new Error(`stapelWegklicken: der Klick auf Blatt ${r.n} hat die Tafel nicht bewegt. `
+        + `Nach ${tafeln} Blatt/Blaettern.`);
   }
   return tafeln;
 }

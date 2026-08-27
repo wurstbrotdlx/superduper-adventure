@@ -448,6 +448,11 @@ async function alleWeltgesetzStellen(){
       for(const v of (Array.isArray(wert) ? wert : Object.values(wert))) sammle(v, wo, tiefe + 1);
     };
     sammle(INTRO_BLAETTER, 'Intro-Blaetter (T5d)', 0);
+    // AN3: die Requisiten in der Amtsstube. Sie sind eine erreichbare Stelle
+    // wie jede andere -- nur steht davor ein Schritt und kein Klick. Ohne
+    // diesen Aufruf meldete der Lauf nach AN3 zwei Orte statt drei und laese
+    // sich wie "das Weltgesetz ist geloescht worden"; es ist umgezogen.
+    if(typeof REQUISITEN !== 'undefined') sammle(REQUISITEN, 'Requisiten in der Amtsstube (AN3)', 0);
     sammle(DIENSTBLATT, 'Vordruck A 1 (W8)', 0);
     sammle(ERNENNUNG_BLAETTER, 'Ernennungsurkunde (T2)', 0);
     sammle([ANLAGE2_AUFTAKT_ERNENNUNG, ANLAGE2_AUFTAKT_NACHHOLUNG, ANLAGE2_FRAGE, ANLAGE2_BLAETTER],
@@ -550,7 +555,7 @@ if(laeufe.pflicht && laeufe.springer && !laeufe.pflicht.abbruch && !laeufe.sprin
   const nachOrt = {};
   for(const t of weltgesetzStellen) (nachOrt[t.wo] = nachOrt[t.wo] || []).push(t);
   console.log('DAS WELTGESETZ VOR SCHICHT 5, alle erreichbaren Stellen');
-  console.log('  Erwartet nach Masterplan: 3 (T5d Kacheln, W8 Vordruck, T5b Anlage 2).');
+  console.log('  Erwartet nach Masterplan: 3 (T5d Kacheln, W8 Vordruck, T5b Anlage 2).\n  Seit AN3 ist die erste davon kein Blatt mehr, sondern die Tafel ueber der Tuer.');
   for(const wo of Object.keys(nachOrt)){
     const arten = [...new Set(nachOrt[wo].map(t => t.art))].join('+');
     console.log(`  ${(wo + ' ').padEnd(38, '.')} ${z(nachOrt[wo].length, 2)} Zeile(n), ${arten}`);
