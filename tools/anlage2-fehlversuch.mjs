@@ -142,6 +142,99 @@ await probe('Ausbruch über dem eigenen Deckel', 'Zeichendeckel verletzt',
   () => { ANLAGE2_AUSBRUCH.crit[0].auf = window.__merkD; },
   'knAssertCaps');
 
+// ---- T8: der Szenenkanal ---------------------------------------------------
+// Dreizehn Zweige mehr, und sie wiegen schwerer als die zwoelf davor: eine
+// Szenenzeile faellt GENAU EINMAL pro Spielstand. Was hier durchrutscht,
+// bemerkt niemand beim zweiten Hoeren, denn ein zweites Mal gibt es nicht.
+
+// (13) Eine Szenenzeile an einem Anlass, den keine Szene setzt. Sie laege
+// vollstaendig und richtig geschrieben da und wuerde nie gerufen.
+await probe('Szenenzeile an einem fremden Anlass', 'wartet auf einen Anlass, den keine Szene setzt',
+  () => { ANLAGE2_SZENE.regenschauer = {z1:'Es tropft schon wieder.', z2:'Papier mag das nicht.'}; },
+  () => { delete ANLAGE2_SZENE.regenschauer; });
+
+// (14) Die Entscheidung dieses Abschnitts, und die einzige, die man mit der
+// besten Absicht kaputtmacht: bei der Entklammerung schweigt sie. Die Zeile
+// unten ist die, die einem dazu einfaellt, und sie ist gut. Sie darf trotzdem
+// nicht da stehen.
+await probe('Eine Zeile bei der Entklammerung', 'Bei der Entklammerung schweigt sie',
+  () => { ANLAGE2_SZENE.vorblatt = {z1:'Er hatte eine Klammer.', z2:'Ganz wie ich.'}; },
+  () => { delete ANLAGE2_SZENE.vorblatt; });
+
+// (15) Dasselbe im lauten Kanal. Zwei Tabellen, eine Entscheidung.
+await probe('Ein Ausbruch auf einem Szenen-Anlass', 'steht auf einem Szenen-Anlass',
+  () => { ANLAGE2_AUSBRUCH.umlauf = [{auf:'Vierzehn Türme!', zurueck:'Verzeihung. Nicht mein Weg.'}]; },
+  () => { delete ANLAGE2_AUSBRUCH.umlauf; });
+
+// (16) Und die Gegenrichtung zum Schweigen. Ohne sie waere die Stille bei
+// Vorblatt nicht von der Stille zu unterscheiden, die entsteht, wenn jemand
+// eine Szene dazubaut und die Zeile vergisst, und dann bewiese (14) nichts.
+await probe('Eine Szene ohne ihre Zeile', 'Eine Szene endet, und sie sagt nichts dazu',
+  () => { window.__merkU = ANLAGE2_SZENE.umlauf; delete ANLAGE2_SZENE.umlauf; },
+  () => { ANLAGE2_SZENE.umlauf = window.__merkU; });
+
+// (17) Ein Anlass, der auf eine Liste zeigt statt auf ein Paar. Die Bauart des
+// Kanals ist "genau ein Paar", und sie steht in der Form der Tabelle; wer sie
+// nach dem Vorbild des Ausbruchs zur Liste macht, bricht sie geraeuschlos.
+await probe('Ein Szenen-Anlass mit einer Liste', 'trägt kein Paar',
+  () => { window.__merkL = ANLAGE2_SZENE.hintermuehl;
+          ANLAGE2_SZENE.hintermuehl = [{z1:'Er hat etwas gesagt.', z2:'Mehr weiß ich nicht.'}]; },
+  () => { ANLAGE2_SZENE.hintermuehl = window.__merkL; });
+
+// (18) Eine Szenenzeile ohne Text.
+await probe('Szenenzeile ohne Text', 'Eine Szenenzeile hat keinen Text',
+  () => { const p = ANLAGE2_SZENE.umlauf; window.__merkZ1 = p.z1; p.z1 = ''; },
+  () => { ANLAGE2_SZENE.umlauf.z1 = window.__merkZ1; });
+
+// (19) Eine Szenenzeile ohne zweite Haelfte. Trifft zugleich die Schleife der
+// Brandmauer, und die ist genau der Fall, an dem sie in T7 ABGESTUERZT ist
+// statt zu melden. Der Zweig laeuft hier auf einer Quelle, die es damals noch
+// nicht gab: der Typcheck von damals traegt also weiter.
+await probe('Szenenzeile ohne zweite Hälfte', 'keine zweite Hälfte',
+  () => { const p = ANLAGE2_SZENE.hintermuehl; window.__merkZ2 = p.z2; delete p.z2; },
+  () => { ANLAGE2_SZENE.hintermuehl.z2 = window.__merkZ2; });
+
+// (20) Ein Gate an einer Szenenzeile. Der Kanal hat genau eine Bedingung, und
+// die heisst: die Szene ist zu Ende. Ein Schalter daneben waere eine zweite.
+await probe('Szenenzeile mit einem Feld, das es nicht gibt', 'trägt ein Feld, das es nicht gibt',
+  () => { ANLAGE2_SZENE.umlauf.raten = true; },
+  () => { delete ANLAGE2_SZENE.umlauf.raten; });
+
+// (21) Die Brandmauer ueber der zweiten Haelfte. Die Szenenzeilen fallen in dem
+// Moment, in dem die Akte selbst spricht, und wer eine dazuschreibt, hat die
+// Szene frisch im Kopf und ihre Unwissenheit nicht.
+await probe('Szenenzeile mit einem Wort aus der Akte', 'Brandmauer verletzt',
+  () => { const p = ANLAGE2_SZENE.hintermuehl; window.__merkB = p.z2; p.z2 = 'Der Sturz steht in der Liste.'; },
+  () => { ANLAGE2_SZENE.hintermuehl.z2 = window.__merkB; });
+
+// (22) Der Deckel. 44 auf beiden Haelften, wie im Kommentarkanal und nicht wie
+// im Ausbruch, und er liegt in knAssertCaps().
+await probe('Szenenzeile über dem Deckel', 'Zeichendeckel verletzt',
+  () => { const p = ANLAGE2_SZENE.umlauf; window.__merkDS = p.z1;
+          p.z1 = 'Umlauf. So heißt auch mein ganzer Weg bis hierher.'; },
+  () => { ANLAGE2_SZENE.umlauf.z1 = window.__merkDS; },
+  'knAssertCaps');
+
+// (23) und (24) sind der T8-Fund: ANLASS_QUELLEN behauptet seit SZ3 im
+// Kommentar, die Anlaesse der Szenen zu fuehren und "dort gegengeprueft" zu
+// werden. Geprueft wurde bis T8 nichts. Beide Richtungen laufen jetzt.
+await probe('ANLASS_QUELLEN führt einen Anlass zu viel', 'ANLASS_QUELLEN führt einen Anlass, den keine Szene setzt',
+  () => { ANLASS_QUELLEN.push('regenschauer'); },
+  () => { ANLASS_QUELLEN.pop(); });
+
+await probe('Eine Szene setzt einen unbekannten Anlass', 'den ANLASS_QUELLEN nicht führt',
+  () => { window.__merkS = SZENE_ANLASS.umlauf; SZENE_ANLASS.umlauf = 'muehlenbach'; },
+  () => { SZENE_ANLASS.umlauf = window.__merkS; });
+
+// (25) Und der Weg, auf dem vorblatt seinen Anlass setzt. Er laeuft nicht ueber
+// SZENE_ANLASS, sondern direkt in vorblattAngekommen(), und gelesen wird er aus
+// dem Quelltext. Faellt die Zeile dort heraus, verstummt der Chor auf der Bank
+// an der groessten Stelle des vierten Aktes, ohne dass etwas kaputt aussieht.
+await probe('Die Entklammerung setzt keinen Anlass mehr', 'der Chor auf der Bank verstummt',
+  () => { window.__merkV = vorblattAngekommen;
+          vorblattAngekommen = function(){ kn.flags.szeneVorblatt = true; saveKn(); szeneAus(); }; },
+  () => { vorblattAngekommen = window.__merkV; });
+
 await browser.close();
 console.log(zeilen.join('\n'));
 console.log(`\n${zeilen.length - fehl} von ${zeilen.length} Zweigen melden und schweigen danach wieder.`);
