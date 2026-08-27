@@ -153,6 +153,10 @@ Wer den Innenraumsatz eines Tages danebenlegt, tauscht `INN_SAETZE` und die
 Möbelzeichner und lässt alles andere stehen. Bis dahin ist es nicht perfekt, und
 begehbar war der Punkt.
 
+*(Der Tag war derselbe. Was ab hier steht, beschreibt den Stand ohne die
+Blätter — er ist seit der Nachlese der Ersatzweg und nicht mehr die einzige
+Fassung. Siehe Abschnitt 9.)*
+
 ### Zwei Funde beim Hinsehen
 
 **Erstens: eine Amtsstube voller Birken.** `trees` und `decos` werden von der
@@ -259,27 +263,108 @@ nur bekannte Zeichen, keine Fortsetzung ohne Anfang, Bewohner auf begehbarem
 Boden und in `DORF_FIGUREN`, ein gemessenes `tuerDx` je betretbarem Haus, die
 Schwelle innerhalb des Fußabdrucks, und Grundrisse, die auf die Karte passen.
 
-`tools/innen-pruef.mjs` misst siebzehn Dinge am laufenden Spiel:
+`tools/innen-pruef.mjs` misst neunzehn Dinge am laufenden Spiel:
 
 ```
-17 von 17 Pruefungen bestanden.
+19 von 19 Pruefungen bestanden.
 ```
 
 Darunter der Rundweg aus Abschnitt 7, die Sperrung jedes einzelnen Möbelfeldes
 gegen den Grundriss, der Tagesablauf in beiden Richtungen (zum Feierabend
 drinnen und nicht draußen, davor umgekehrt), die vier Kontextangebote, die
-Schublade in Akt I und in Akt III, das Gespräch im Haus, die Speichersperre und
-`startShift()`, das den Spieler aus dem Haus holt.
+Schublade in Akt I und in Akt III, das Gespräch im Haus, die Speichersperre,
+`startShift()`, das den Spieler aus dem Haus holt, und seit der Nachlese der
+Ersatzweg ohne die Innenraumblätter.
 
 `tools/innen-tuer-messlauf.mjs` misst neun Dinge an den drei Blättern (siehe
 Abschnitt 2).
 
-## 9. Bewusst offen
+## 9. Nachlese am selben Tag: die Blätter kamen doch (27.08.2026)
 
-* **Der Innenraumsatz.** `Houses_Interiors` und `House_Decor` liegen im
-  Manifest und nicht im Repo. Sobald sie danebenliegen, werden aus dem
-  überfärbten Kammerboden Dielen, und aus den gezeichneten Möbeln Blätter. Der
-  Grundriss und alles andere bleibt.
+Abschnitt 4 endet mit dem Satz, wer den Innenraumsatz eines Tages danebenlege,
+tausche `INN_SAETZE` und die Möbelzeichner und lasse alles andere stehen. Der Tag
+war derselbe. Der Projektinhaber hat das Pack nachgereicht, mit dem Satz *„Etwas
+spät ich weiß aber guck mal trotzdem drüber ob du noch was brauchen kannst."*
+
+Gebraucht wurden zwölf Dateien, zusammen 7 KB, und **alles andere ist stehen
+geblieben** — Grundriss, Möbeltabelle, Kollision, Tagesablauf, Guard, Prüflauf.
+Der Satz stimmte.
+
+### Was das Pack zeichnet, und was das Haus behält
+
+`tools/innen-zellen.mjs` legt die zwölf nach `assets/cf/innen/`: sechs ganze
+Blätter (Boden, drei Wandfüller, Regale, Kamin) und sechs geschnittene Zellen
+(Tisch, Stuhl, Dienstpult, zwei Schreibtische, Pflanze). Die Koordinatentabelle
+steht im Quelltext, `--pruef` rechnet sie nach — dieselbe Haltung wie bei
+`tools/ui-zellen.mjs`, und aus demselben Grund: von Hand geschnitten heißt nicht
+nachprüfbar.
+
+Geschnitten wird, wo aus einem großen Blatt eine einzige Zelle gebraucht wird.
+Aus `Tables.png` (14 KB) genau ein Tisch, aus `House_Plants.png` (15 KB) genau
+eine Pflanze; ganz eingebacken wären das 29 KB für zwei Möbel.
+
+Sieben Buchstaben des Grundrisses zeichnen seither aus dem Pack: `R` Regal,
+`T` Tisch, `Z` Stuhl, `D` Dienstpult, `S` Schreibtisch, `E` Kommode, `H` Kamin.
+
+**Vier bleiben gezeichnet, und das ist kein Rest, sondern ein Befund.** Die
+**Theke** hat im Pack kein Gegenstück: `Kitchen.png` ist eine Frontansicht, also
+Hängeschränke von vorn gesehen, und ein Küchenschrank ist ohnehin keine
+Schankstube. Die **Bank** auch nicht: `Chairs.png` hat Sofas, und ein Sofa ist
+keine Wirtshausbank. Dazu der **Aktenstapel** und die **Spinnwebe**. Sie haben
+mit der Nachlese trotzdem etwas bekommen — das Gewicht der Packmöbel: dicke
+Platte, geschlossener Unterbau, dunkle Kontur. Die dünne Fassung las sich neben
+einem echten Tisch als schwebendes Brett.
+
+### Der Ersatzweg bleibt, und er wird ausgelöst
+
+Alle zwölf Blätter sind mit `optional:true` registriert. Das ist keine Vorsicht,
+sondern eine Reihenfolgefrage: die lizenzierte Grafik kommt im Pages-Build aus
+einem zweiten Repo, und bis die zwölf dort liegen, gibt es sie im ausgelieferten
+Spiel nicht. Fehlen sie, fällt `drawInnenMoebel()` auf
+`drawInnenMoebelGezeichnet()` zurück und `innenTile()` auf die überfärbten
+Kammerblätter — also auf genau die Fassung, die auf den Bildern in diesem
+Dokument steht.
+
+`tools/innen-pruef.mjs` löst den Weg aus: es nimmt die zwölf Blätter zur Laufzeit
+aus `SHEETS`, backt jede Kachel jedes Raumes neu und zeichnet jedes Möbel. Ein
+Ersatzweg, den niemand auslöst, ist eine Behauptung.
+
+### Drei Funde aus dem Bild
+
+**Erstens: eine Ziegelwand bis zum Bildrand ist kein Raum.** Die Fülltexturen
+sind nahtlos, und der erste Lauf hat sie über die ganze Karte gekachelt. Das Bild
+war ein Muster, keine Stube. Mauerwerk bekommt seither genau der Rand, den der
+Grundriss selbst zeichnet; außerhalb seines Rechtecks bleibt es dunkel. Denselben
+Satz hat die Kammer seit G1 im Kommentar stehen — *„Der Rest der Karte bleibt
+gebackene Dunkelheit"* —, nur stand dort nicht, warum.
+
+**Zweitens: ein Boden wird nicht gestreut.** `Wood_Floor_Tiles.png` legt vier
+16er-Zellen zu einem 32er-Muster zusammen. Per `tileHash` gestreut wie das Gras
+draußen, zerfällt der Verband. Drinnen liegt ein Boden, also wird er an der
+Weltposition festgemacht (`x & 1`, `y & 1`). Dasselbe gilt für die Wandfüller,
+nur modulo ihrer Zellenzahl.
+
+**Drittens: die erste Pflanze war ein Kaktus.** Die linke Spalte von
+`House_Plants.png` ist eine Kakteenspalte, und ein Kaktus ist die Pflanze, die
+man gerade **nicht** gießt. Das ist ein anderer Witz als der, um den es hier
+geht. Genommen wurde die dritte Spalte, eine buschige Blattpflanze im Tontopf.
+
+### Was die Räume seither unterscheidet
+
+| Raum | Wand | Boden |
+|---|---|---|
+| **Amtsstube** | grauer Bruchstein, wie der Sockel des Inn-Blattes | warmer Ziegel |
+| **Zum Letzten Stempel** | Ziegelbraun | dunkle Dielen |
+| **Registratur** | roter Ziegel | kalter Stein |
+
+Kalt an den Wänden und warm unter den Füßen im Amt, rundum Holz im Wirtshaus,
+kalter Stein zwischen roten Ziegeln in der Registratur. Man erkennt den Raum
+beim Betreten, ohne die Ortszeile zu lesen — und dazu kommt ein weicher dunkler
+Saum auf jeder Bodenkachel, über der eine Wand steht. Das ist der billigste
+Trick, mit dem eine Wand von oben Höhe bekommt.
+
+## 10. Bewusst offen
+
 * **Ein zweites Stockwerk.** `Wood_Stairs` steht im Manifest. Eine Treppe ohne
   oberes Geschoss wäre dieselbe Behauptung, die M3 bei der Leiter abgelehnt hat.
 * **Fenster.** Von innen sieht kein Raum nach draußen. Das Paket hat ein

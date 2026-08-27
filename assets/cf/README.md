@@ -453,6 +453,55 @@ schlechter als acht fremde. Begruendung je Posten in `phase-u11-sinnbilder.md` u
 setzt die zugehoerigen CSS-Variablen dann nicht, und die Menues fallen auf den
 CSS-Anstrich aus U1 zurueck. Geprueft, siehe Pruefprotokoll dort.
 
+### Von der IN1-Nachlese gebraucht (`innen/`)
+
+Zwölf Dateien, zusammen 7 KB. Sie entstehen nicht von Hand, sondern mit
+`node tools/innen-zellen.mjs`; die Koordinatentabelle steht dort im Quelltext und
+`--pruef` rechnet sie nach. Dieselbe Haltung wie bei `tools/ui-zellen.mjs`:
+gemessen, nicht geraten.
+
+Aus `Cute_Fantasy/Buildings/Houses_Interiors/`, ganze Blätter:
+
+| Ziel | Quelle | Maße | wofür |
+|---|---|---|---|
+| `innen/boden.png` | `Wood_Floor_Tiles.png` | 128×128 | Böden aller drei Räume, als 2×2-Muster gelesen |
+| `innen/wand_holz.png` | `Wood_Wall_Fillers.png` | 64×32 | Wand im Wirtshaus |
+| `innen/wand_stein.png` | `Stone_Wall_Fillers.png` | 32×32 | Wand im Amt |
+| `innen/wand_ziegel.png` | `Brick_Wall_Fillers.png` | 32×32 | Wand in der Registratur |
+
+Aus `Cute_Fantasy/Buildings/House_Decor/`, ganze Blätter:
+
+| Ziel | Quelle | Maße | wofür |
+|---|---|---|---|
+| `innen/regale.png` | `BookShelves.png` | 192×112 | Aktenregale, schmal (14×30) und breit (30×30) |
+| `innen/kamin.png` | `Fireplaces.png` | 96×48 | Herdfeuer, der mittlere der drei |
+
+Und geschnitten, weil aus einem großen Blatt je eine einzige Zelle gebraucht wird
+(aus `Tables.png` genau ein Tisch, aus `House_Plants.png` genau eine Pflanze —
+ganz eingebacken wären das 29 KB für zwei Möbel):
+
+| Ziel | Quelle | Ausschnitt | wofür |
+|---|---|---|---|
+| `innen/tisch.png` | `Tables.png` | 72,88 34×33 | Wirtshaustisch, zwei Kacheln breit |
+| `innen/stuhl.png` | `Chairs.png` | 18,40 12×23 | Der freigehaltene Platz |
+| `innen/pult.png` | `Furniture_Other.png` | 0,283 32×21 | Dienstpult im Amt |
+| `innen/schreibtisch.png` | `Furniture_Other.png` | 128,283 32×21 | Der Schreibtisch der Amtsleitung |
+| `innen/kommode.png` | `Furniture_Other.png` | 32,283 32×21 | Nörgels Schreibtisch, Bramsches Pult |
+| `innen/pflanze.png` | `House_Plants.png` | 32,2 16×30 | Die Pflanze auf dem Schreibtisch |
+
+**Alle zwölf sind im Spiel als `optional` registriert.** Das ist kein
+Sicherheitsnetz aus Vorsicht, sondern eine Reihenfolgefrage: die lizenzierte
+Grafik kommt im Pages-Build aus `wurstbrotdlx/superduper-adventure-assets`, und
+bis die zwölf dort liegen, gibt es sie im ausgelieferten Spiel nicht. Fehlen sie,
+fällt IN1 auf seine gezeichnete Fassung zurück (überfärbte Kammerblätter, Möbel
+aus ctx-Grundformen) statt leere Räume zu zeigen. `tools/innen-pruef.mjs` löst
+diesen Weg ausdrücklich aus, damit er keine Behauptung bleibt.
+
+Was **nicht** aus dem Pack kommt, obwohl es Innenraumblätter gibt: die Theke im
+Wirtshaus, die Bank, der Aktenstapel. `Kitchen.png` ist eine Frontansicht
+(Hängeschränke von vorn), `Chairs.png` hat Sofas statt Wirtshausbänke, und ein
+Küchenschrank ist ohnehin keine Schankstube. Die drei bleiben gezeichnet.
+
 ## Kopierkonvention
 
 - Originaldateinamen aus `Graphics/` behalten.

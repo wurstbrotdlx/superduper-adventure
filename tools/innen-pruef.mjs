@@ -201,6 +201,35 @@ pruef('startShift() holt den Spieler aus dem Haus', await page.evaluate(() => {
   return {innen: !!innen, level: currentLevel};
 }), {innen: false, level: 1});
 
+// --- Der Ersatzweg: ohne die geschnittenen Blaetter laeuft es weiter ---------
+// Die zwoelf Innenraumblaetter sind als optional registriert, weil die
+// lizenzierte Grafik im Pages-Build aus einem zweiten Repo kommt und dort erst
+// ankommen muss. Ein Ersatzweg, den niemand ausloest, ist eine Behauptung —
+// hier wird er ausgeloest.
+pruef('ohne die Innenraumblaetter baeckt jede Kachel trotzdem', await page.evaluate(() => {
+  const weg = {};
+  for(const k of Object.keys(SHEETS)) if(k.startsWith('innen_')){ weg[k] = SHEETS[k]; delete SHEETS[k]; }
+  for(const k of Object.keys(INN_CACHE)) delete INN_CACHE[k];
+  const leer = [];
+  for(const h of INN_HAEUSER){
+    betreteHaus(h);
+    const r = innen.raum;
+    for(let ry = 0; ry < r.h; ry++) for(let rx = 0; rx < r.w; rx++)
+      if(!innenTile(INN_X0 + rx, INN_Y0 + ry)) leer.push(`${r.key} ${rx},${ry}`);
+    for(const o of innen.moebel) drawInnenMoebel(o);      // wirft, wenn ein Ersatzweg fehlt
+    verlasseHaus();
+  }
+  Object.assign(SHEETS, weg);
+  for(const k of Object.keys(INN_CACHE)) delete INN_CACHE[k];
+  return {blaetter: Object.keys(weg).length, leer};
+}), {blaetter: 12, leer: []});
+
+// --- Und mit den Blaettern kommt das Pack durch ------------------------------
+pruef('mit den Blaettern zeichnen sieben Moebel aus dem Pack', await page.evaluate(() => {
+  const da = Object.keys(INN_SPRITE).filter(z => innenBlattDa(INN_SPRITE[z]));
+  return {sprite: da.sort(), boden: innenBlattDa('innen_boden'), pflanze: innenBlattDa('innen_pflanze')};
+}), {sprite: ['D', 'E', 'H', 'R', 'S', 'T', 'Z'], boden: true, pflanze: true});
+
 pruef('Konsole still', laut, []);
 
 await ctx.close();

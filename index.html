@@ -3461,6 +3461,40 @@ addSheet('dun_pot', 'cf/dungeon/Objects/pot.png', 1, 'grid', {fw:14, fh:16, ax:7
 addSheet('dun_cobweb', 'cf/dungeon/Objects/cobweb.png', 1, 'grid', {fw:18, fh:16, ax:9, ay:0});
 
 // ===========================================================================
+//  IN1-Nachlese: die echten Innenraumblaetter.
+// ===========================================================================
+// IN1 hat die drei Raeume ohne sie gebaut, weil sie im Repo nicht lagen (das
+// Pack hat sie, `assets/cf/` traegt aber nur, was das Spiel laedt, und die
+// Rohbibliothek liegt aus Lizenzgruenden nirgends). Boden und Wand waren
+// deshalb warm ueberfaerbte Kammerblaetter, die Moebel gezeichnet wie der
+// Kessel. Seit die Blaetter vorliegen, schneidet sie `tools/innen-zellen.mjs`
+// nach `assets/cf/innen/` — zwoelf Dateien, zusammen 7 KB.
+//
+// **Alle zwoelf sind optional.** Das ist kein Sicherheitsnetz aus Vorsicht,
+// sondern eine Reihenfolgefrage: die lizenzierte Grafik kommt im Pages-Build
+// aus einem zweiten Repo, und bis die zwoelf Dateien dort liegen, gibt es sie
+// im ausgelieferten Spiel nicht. `opt.optional` sagt loadAssets(), dass die
+// Luecke erwartet ist (sonst stuenden zwoelf `Sprite fehlt`-Zeilen in jeder
+// Konsole, und davor warnt G6 ausdruecklich), und drawInnenMoebel() faellt
+// dann auf die gezeichnete Fassung zurueck. Wer die Dateien hat, sieht das
+// Pack; wer sie nicht hat, sieht IN1 wie am ersten Tag.
+const INN_OPT = {optional: true};
+addSheet('innen_boden',       'cf/innen/boden.png',       1, 'raw',  INN_OPT);
+addSheet('innen_wand_holz',   'cf/innen/wand_holz.png',   1, 'raw',  INN_OPT);
+addSheet('innen_wand_stein',  'cf/innen/wand_stein.png',  1, 'raw',  INN_OPT);
+addSheet('innen_wand_ziegel', 'cf/innen/wand_ziegel.png', 1, 'raw',  INN_OPT);
+addSheet('innen_regale',      'cf/innen/regale.png',      1, 'raw',  INN_OPT);
+addSheet('innen_kamin',       'cf/innen/kamin.png',       1, 'raw',  INN_OPT);
+// Die geschnittenen Einzelmoebel als 'grid' mit einem Frame: Anker Fussmitte,
+// damit drawSprite() sie wie jedes andere Moebel auf seine Fusslinie stellt.
+addSheet('innen_tisch',        'cf/innen/tisch.png',        1, 'grid', {fw:34, fh:33, ax:17, ay:33, optional:true});
+addSheet('innen_stuhl',        'cf/innen/stuhl.png',        1, 'grid', {fw:12, fh:23, ax:6,  ay:23, optional:true});
+addSheet('innen_pult',         'cf/innen/pult.png',         1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
+addSheet('innen_schreibtisch', 'cf/innen/schreibtisch.png', 1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
+addSheet('innen_kommode',      'cf/innen/kommode.png',      1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
+addSheet('innen_pflanze',      'cf/innen/pflanze.png',      1, 'grid', {fw:16, fh:30, ax:8,  ay:30, optional:true});
+
+// ===========================================================================
 //  U5: Die Figurenportraets. Seit U4 zeigt die obere Tafelhaelfte einen
 //  Ausschnitt aus dem laufenden Sprite, weil das Grafikpack keine Portraets
 //  hat. Das Ensemble hat seit dem Bilderlauf vom 22.08. eigene: gemalt, nicht
@@ -12720,44 +12754,107 @@ function verlasseKammer(){
 // ist ohnehin komplett überschrieben, solange man drinnen ist.
 const INN_X0 = 4, INN_Y0 = 34;
 
-// Die Kachelsätze. satz zeigt in DUN_SET (0 = Dungeon_1, 1 = Dungeon_2), tint
-// ist die Überfärbung [Farbe, Deckung]. Ohne sie stünde das Dorf innen in
-// Kerkerblau; ein Wirtshaus in Kerkerblau wäre kein Wirtshaus, sondern eine
-// Zelle mit Bänken. Gebacken wird wie bei bakeCfTile(), nur über das
-// Kammerblatt statt über die Bodentiles.
-// boden und wand sind getrennt, und die Wand ist in jedem Raum die dunklere von
-// beiden. Der erste Anlauf gab beiden dieselbe Farbe und der Wand nur ein paar
-// Prozent mehr Deckung — im laufenden Bild las sich der Raum dann als Lichtung
-// mit Möbeln darauf, weil eine Wand, die so hell ist wie der Boden, keine Wand
-// ist, sondern eine Fläche. Derselbe Fund wie bei DUN_SET Satz 2: im Zweifel
-// trägt die Helligkeit die Bedeutung, nicht die Textur.
+// Die Kachelsaetze. `boden` und `wand` nennen das geschnittene Blatt (siehe
+// tools/innen-zellen.mjs) und die linke obere Zelle des 2x2-Musters darin;
+// `ersatz` ist der Weg von IN1, als es die Blaetter noch nicht gab: ein
+// Kammerblatt aus DUN_SET, warm ueberfaerbt.
+//
+// Warum je Raum ein anderes Paar: die drei Raeume sollen sich beim Betreten
+// unterscheiden lassen, ohne dass jemand die Ortszeile liest. Und jedes Paar
+// hat einen Grund. Das Amt bekommt den grauen Bruchstein, den auch der Sockel
+// seines Blattes traegt, auf warmem Ziegelboden — kalt an den Waenden, warm
+// unter den Fuessen. Das Wirtshaus ist rundum Holz. Die Registratur steht auf
+// kaltem Stein zwischen roten Ziegeln, was ein Archiv sein darf.
+//
+// Die Boden-Zellen sind bewusst als 2x2-Muster gelesen und nicht per tileHash
+// gestreut: das Blatt legt vier 16er-Zellen zu EINEM 32er-Muster zusammen, und
+// eine gehashte Streuung zerschnitte den Verband, den sie bilden. Gestreut wird
+// draussen, wo Gras Gras ist; drinnen liegt ein Boden.
 const INN_SAETZE = {
-  amt:         {satz:1, boden:['#b98f52', 0.42], wand:['#2b2119', 0.72]},   // Papier und altes Holz
-  wirtshaus:   {satz:0, boden:['#a2622f', 0.46], wand:['#241610', 0.74]},   // warmes Braun, Feuerschein
-  registratur: {satz:1, boden:['#9a8f6a', 0.44], wand:['#26221a', 0.72]},   // Staub auf Stein
+  amt:         {boden:['innen_boden', 32,  0], wand:['innen_wand_stein'],
+                ersatz:{satz:1, boden:['#b98f52', 0.42], wand:['#2b2119', 0.72]}},
+  wirtshaus:   {boden:['innen_boden',  0, 32], wand:['innen_wand_holz'],
+                ersatz:{satz:0, boden:['#a2622f', 0.46], wand:['#241610', 0.74]}},
+  registratur: {boden:['innen_boden',  0, 64], wand:['innen_wand_ziegel'],
+                ersatz:{satz:1, boden:['#9a8f6a', 0.44], wand:['#26221a', 0.72]}},
 };
+// Liegen die geschnittenen Blaetter ueberhaupt da? Einmal gefragt statt je
+// Kachel: die Antwort aendert sich nach loadAssets() nicht mehr.
+const innenBlattDa = k => !!(SHEETS[k] && SHEETS[k].img);
+
 const INN_CACHE = {};
-function bakeInnenTile(raumKey, uv, wand){
-  const ck = raumKey + ',' + uv[0] + ',' + uv[1] + ',' + (wand ? 'w' : 'b');
+// Die Dunkelheit hinter der Wand. Eine einzige gebackene Kachel, kein Blatt:
+// sie ist ueberall dieselbe und soll es auch sein.
+let innenDunkelC = null;
+function bakeInnenDunkel(){
+  if(innenDunkelC) return innenDunkelC;
+  const c = makeCanvas(TS, TS), cc = c.getContext('2d');
+  cc.fillStyle = '#0d0a08'; cc.fillRect(0, 0, TS, TS);
+  return (innenDunkelC = c);
+}
+// wand: die Fuellblaetter sind nahtlose Texturen. Gezeichnet wird deshalb nach
+// Weltposition (x,y modulo Zellenzahl) und nicht nach Hash — sonst zerfaellt
+// ein durchgehender Mauerverband in Flicken.
+// schatten: eine Bodenkachel, ueber der eine Wand steht, bekommt oben einen
+// weichen dunklen Saum. Das ist der billigste Trick, mit dem eine Wand von oben
+// Hoehe bekommt, und er kostet eine gebackene Zweitfassung je Kachel.
+function bakeInnenTile(raumKey, uv, wand, schatten){
+  const ck = raumKey + ',' + uv[0] + ',' + uv[1] + ',' + (uv[2] || '') + (wand ? 'w' : 'b') + (schatten ? 's' : '');
   if(INN_CACHE[ck]) return INN_CACHE[ck];
   const satz = INN_SAETZE[raumKey];
-  const sheet = SHEETS[uv[2] || DUN_SET[satz.satz].key]; if(!sheet) return null;
+  const echt = wand ? satz.wand[0] : satz.boden[0];
   const c = makeCanvas(TS, TS), cc = c.getContext('2d');
   cc.imageSmoothingEnabled = false;
-  cc.drawImage(sheet.img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
-  cc.globalCompositeOperation = 'source-atop';
-  const t = wand ? satz.wand : satz.boden;
-  cc.globalAlpha = t[1];
-  cc.fillStyle = t[0];
-  cc.fillRect(0, 0, TS, TS);
+  if(innenBlattDa(echt)){
+    cc.drawImage(SHEETS[echt].img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
+  } else {
+    // Ersatzweg: dasselbe Kammerblatt und dieselbe Ueberfaerbung wie in IN1.
+    const e = satz.ersatz;
+    const sheet = SHEETS[uv[2] || DUN_SET[e.satz].key]; if(!sheet) return null;
+    cc.drawImage(sheet.img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
+    cc.globalCompositeOperation = 'source-atop';
+    const t = wand ? e.wand : e.boden;
+    cc.globalAlpha = t[1]; cc.fillStyle = t[0];
+    cc.fillRect(0, 0, TS, TS);
+    cc.globalCompositeOperation = 'source-over'; cc.globalAlpha = 1;
+  }
+  if(schatten){
+    const g = cc.createLinearGradient(0, 0, 0, TS*0.4);
+    g.addColorStop(0, 'rgba(0,0,0,0.42)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    cc.fillStyle = g; cc.fillRect(0, 0, TS, TS*0.4);
+  }
   INN_CACHE[ck] = c;
   return c;
 }
-// Die Kachel für (x,y) im Innenraum. Ruft dieselbe Ringlogik wie die Kammer
-// (dunWallTile kennt Kanten und Ecken), nur mit eigenem Bäcker.
+// Die Kachel fuer (x,y) im Innenraum.
 function innenTile(x, y){
-  const ds = DUN_SET[INN_SAETZE[innen.key].satz];
-  if(T(x,y) !== G_WALL) return bakeInnenTile(innen.key, ds.floor[tileHash(x,y) % ds.floor.length], false);
+  const satz = INN_SAETZE[innen.key];
+  const wand = T(x,y) === G_WALL;
+  if(!wand){
+    const untermWand = T(x, y-1) === G_WALL;
+    // Der 2x2-Verband des Blattes, an der Weltposition festgemacht.
+    if(innenBlattDa(satz.boden[0]))
+      return bakeInnenTile(innen.key, [satz.boden[1] + (x & 1)*16, satz.boden[2] + (y & 1)*16], false, untermWand);
+    const ds = DUN_SET[satz.ersatz.satz];
+    return bakeInnenTile(innen.key, ds.floor[tileHash(x,y) % ds.floor.length], false, untermWand);
+  }
+  if(innenBlattDa(satz.wand[0])){
+    // Mauerwerk bekommt genau der Rand, den der Grundriss selbst zeichnet; alles
+    // ausserhalb seines Rechtecks bleibt dunkel. Das ist derselbe Satz, mit dem
+    // baueWandProps() seit G1 die Kammer begrenzt ("Der Rest der Karte bleibt
+    // gebackene Dunkelheit") — und der erste Lauf mit den echten Blaettern hat
+    // gezeigt, warum er dort steht: eine Ziegeltextur ueber die ganze Karte
+    // fuellt den Schirm, und ein Raum, dessen Wand bis zum Bildrand weitergeht,
+    // ist kein Raum mehr, sondern ein Muster.
+    const r = innen.raum;
+    if(x < INN_X0 || y < INN_Y0 || x >= INN_X0 + r.w || y >= INN_Y0 + r.h) return bakeInnenDunkel();
+    const s = SHEETS[satz.wand[0]];
+    const sp = Math.max(1, Math.round(s.img.width / 16)), ze = Math.max(1, Math.round(s.img.height / 16));
+    return bakeInnenTile(innen.key, [(((x % sp) + sp) % sp)*16, (((y % ze) + ze) % ze)*16], true, false);
+  }
+  // Ersatzweg: die Ringlogik der Kammer, die Kanten und Ecken kennt.
+  const ds = DUN_SET[satz.ersatz.satz];
   const n = walkT(x,y-1), e = walkT(x+1,y), s = walkT(x,y+1), w = walkT(x-1,y);
   let uv = null;
   if(s && !n && !e && !w) uv = ds.edgeS;
@@ -12770,7 +12867,7 @@ function innenTile(x, y){
     else if(walkT(x+1,y-1)) uv = ds.eckNE;
     else if(walkT(x-1,y-1)) uv = ds.eckNW;
   }
-  return bakeInnenTile(innen.key, uv || ds.wall[tileHash(x,y) % ds.wall.length], true);
+  return bakeInnenTile(innen.key, uv || ds.wall[tileHash(x,y) % ds.wall.length], true, false);
 }
 
 // --- Die Möbel -------------------------------------------------------------
@@ -13034,7 +13131,103 @@ function innenBeine(x, y, spann, hoch, dick){
   ctx.fillRect(x - spann/2, y - hoch, dick, hoch);
   ctx.fillRect(x + spann/2 - dick, y - hoch, dick, hoch);
 }
+// IN1-Nachlese: was das Pack hergibt, zeichnet das Pack. Was es nicht hergibt,
+// zeichnet das Haus weiter selbst — die Theke einer Schankstube, eine Bank, ein
+// Aktenstapel und eine Spinnwebe stehen in keinem Innenraumblatt, und ein
+// Kuechenschrank ist keine Theke.
+//
+// Jeder Eintrag hier ist ein Griff ins Blatt; fehlt das Blatt, faellt derselbe
+// Buchstabe in drawInnenMoebelGezeichnet() zurueck. Der Ersatzweg ist keine
+// Ruine: bis zur Nachlese war er die einzige Fassung, und er sieht so aus wie
+// die Bilder im Phasendokument.
+const INN_SPRITE = {
+  R: 'innen_regale', T: 'innen_tisch', Z: 'innen_stuhl',
+  D: 'innen_pult',   S: 'innen_schreibtisch', E: 'innen_kommode',
+  H: 'innen_kamin',
+};
 function drawInnenMoebel(o){
+  const blatt = INN_SPRITE[o.z];
+  if(!blatt || !innenBlattDa(blatt)){ drawInnenMoebelGezeichnet(o); return; }
+  const b = o.breit * TS;
+  ctx.save();
+  switch(o.z){
+    case 'R': {  // Aktenregal. Das Blatt hat schmal (14x30) und breit (30x30),
+                 // beide mit farbigen Ruecken. Ein Feld nimmt das schmale, zwei
+                 // Felder das breite — die Registratur bekommt damit denselben
+                 // Verband, den ihr Grundriss ohnehin zeichnet.
+      innenSchatten(o.x, o.y - 2, b*0.38);
+      const s = SHEETS.innen_regale;
+      if(o.breit >= 2) ctx.drawImage(s.img, 17, 1, 30, 30, o.x - 30, o.y - 62, 60, 60);
+      else             ctx.drawImage(s.img,  1, 1, 14, 30, o.x - 14, o.y - 62, 28, 60);
+      break;
+    }
+    case 'H': {  // Herdfeuer: der mittlere der drei Kamine, brauner Ziegel. Die
+                 // Flamme kommt weiter aus fire1 — der Kamin bringt eine dunkle
+                 // Feuerstelle mit, aber keine Animation, und eine Flamme bleibt
+                 // im ganzen Spiel dieselbe Flamme.
+      innenSchatten(o.x, o.y - 2, b*0.40);
+      ctx.drawImage(SHEETS.innen_kamin.img, 32, 0, 32, 48, o.x - 32, o.y - 96, 64, 96);
+      drawSprite('fire1', animFrame('fire1', gameT, 10), o.x, o.y - 6, 1.3);
+      break;
+    }
+    case 'T':
+      innenSchatten(o.x, o.y - 3, b*0.34);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      if(innen.key === 'wirtshaus'){
+        // Nicht jeder Tisch ist gedeckt. Der Krug steht fest je Feld, sonst
+        // raeumte die Schankstube bei jedem Bild ab und deckte neu ein.
+        const hh = tileHash(Math.round(o.x), Math.round(o.y));
+        for(let i = 0; i < 2; i++){
+          if((hh >> (i*2)) % 3 === 0) continue;
+          const kx = o.x - b/4 + i*(b/2), ky = o.y - 44;
+          ctx.fillStyle = '#d8c98f'; ctx.fillRect(kx - 4, ky, 8, 9);
+          ctx.fillStyle = '#b9a87a'; ctx.fillRect(kx - 4, ky, 8, 3);
+          ctx.fillStyle = '#8a7a52'; ctx.fillRect(kx + 4, ky + 2, 2, 4);
+        }
+      }
+      break;
+    case 'Z':    // Der freigehaltene Platz. Der Schimmer darueber bleibt: er ist
+                 // das Einzige an diesem Stuhl, was ihn von den anderen abhebt,
+                 // und er wird nirgends erklaert.
+      innenSchatten(o.x, o.y - 2, 9);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      ctx.globalAlpha = 0.10 + 0.06*Math.sin(gameT*0.9);
+      ctx.fillStyle = '#f4d97a';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 26, 15, 10, 0, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
+      break;
+    case 'S': {  // Der Schreibtisch der Amtsleitung. Das Blatt bringt die zwei
+                 // Schubladen mit, die IN1 von Hand malen musste; die untere ist
+                 // die zweite. Darauf die Pflanze, am aeusseren Rand, wo sie
+                 // jemand hinstellt, der sie giessen will.
+      innenSchatten(o.x, o.y - 3, b*0.40);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      // Die Pflanze steht auf der Tischplatte, nicht dahinter: ihre Fusslinie
+      // liegt auf der Oberkante des Schreibtischblattes (21 Pixel mal WELT_SC),
+      // ein Stueck vom Rand weg, wo jemand sie hinstellt, der sie giessen will,
+      // ohne sich dazwischenzudraengen.
+      if(innenBlattDa('innen_pflanze'))
+        drawSprite('innen_pflanze', 0, o.x + b/2 - 19, o.y - 21*WELT_SC + 4, WELT_SC);
+      break;
+    }
+    case 'D':
+    case 'E':
+      innenSchatten(o.x, o.y - 3, b*0.40);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      if(o.z === 'D'){   // Klingel auf dem Dienstpult
+        ctx.fillStyle = '#d8c98f';
+        ctx.beginPath(); ctx.arc(o.x + b/2 - 11, o.y - 45, 4, Math.PI, 0); ctx.fill();
+        ctx.fillStyle = '#a8925c'; ctx.fillRect(o.x + b/2 - 16, o.y - 45, 10, 2);
+      } else {           // Papier auf dem Schreibtisch, an dem gearbeitet wird
+        ctx.fillStyle = '#e6dcc0'; ctx.fillRect(o.x - b/2 + 8, o.y - 48, 13, 5);
+        ctx.fillStyle = '#cfc3a0'; ctx.fillRect(o.x - b/2 + 10, o.y - 46, 13, 5);
+      }
+      break;
+  }
+  ctx.restore();
+}
+
+function drawInnenMoebelGezeichnet(o){
   const b = o.breit * TS;
   ctx.save();
   switch(o.z){
@@ -13080,18 +13273,26 @@ function drawInnenMoebel(o){
       drawSprite('camp_pot', animFrame('camp_pot', gameT, 6), o.x, o.y - 12, WELT_SC);
       break;
     }
-    case 'X':    // Theke. Ein durchgehendes Brett auf einem geschlossenen
-                 // Unterbau, vorne dunkel, oben hell — mehr braucht eine Theke
-                 // nicht, um eine zu sein.
-      innenSchatten(o.x, o.y - 2, b*0.42);
-      ctx.fillStyle = '#4d3018'; ctx.fillRect(o.x - b/2 + 1, o.y - 20, b - 2, 18);
-      innenPlatte(o.x, o.y - 20, b, 9, '#c08a45', '#8a5c2c');
+    case 'X':    // Theke. Sie bleibt gezeichnet, und zwar nicht aus Trotz: das
+                 // Pack hat keinen Tresen von oben. Kitchen.png ist eine
+                 // Frontansicht (Haengeschraenke, von vorn gesehen), und ein
+                 // Kuechenschrank ist ohnehin keine Schankstube.
+                 // Gewicht wie die Packmoebel: geschlossener Unterbau, kraeftige
+                 // Platte, dunkle Kontur. Die duenne Fassung davor las sich neben
+                 // einem echten Tisch als schwebendes Brett.
+      innenSchatten(o.x, o.y - 2, b*0.44);
+      ctx.fillStyle = '#5c3a1c'; ctx.fillRect(o.x - b/2 + 1, o.y - 26, b - 2, 24);
+      ctx.fillStyle = '#4a2e15';
+      for(let i = 1; i*16 < b - 2; i++) ctx.fillRect(o.x - b/2 + i*16, o.y - 24, 2, 20);
+      innenPlatte(o.x, o.y - 26, b, 11, '#c08a45', '#7d5326');
+      ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+      ctx.strokeRect(Math.round(o.x - b/2) + 0.5, Math.round(o.y - 26) + 0.5, Math.round(b) - 1, 25);
       break;
-    case 'T': {  // Tisch: eine hohe Platte auf vier Beinen, und im Wirtshaus
-                 // steht etwas darauf. Der erste Anlauf war ein Brett mit einem
-                 // Schatten darunter, und im Bild sah ein Tisch aus wie eine
-                 // Bank und eine Bank wie ein Tisch. Von oben unterscheidet die
-                 // beiden nicht die Breite, sondern die Höhe — und ein gedeckter
+    case 'T': {  // Tisch: Platte auf vier Beinen, hoch genug, dass man die Beine
+                 // sieht. Der erste Anlauf war ein Brett mit einem Schatten
+                 // darunter, und im Bild sah ein Tisch aus wie eine Bank und
+                 // eine Bank wie ein Tisch. Von oben unterscheidet die beiden
+                 // nicht die Breite, sondern die Höhe — und ein gedeckter
                  // Tisch sagt es in einem Blick.
       innenSchatten(o.x, o.y - 3, b*0.34);
       innenBeine(o.x, o.y - 3, b - 10, 18, 5);
@@ -13109,9 +13310,11 @@ function drawInnenMoebel(o){
       break;
     }
     case 'B':    // Bank: halb so hoch, schmaler, dunkler. Zwei Beine statt vier.
-      innenSchatten(o.x, o.y - 3, b*0.28);
-      innenBeine(o.x, o.y - 3, b - 18, 8, 4);
-      innenPlatte(o.x, o.y - 11, b - 14, 7, INN_HOLZ_HELL, INN_HOLZ_DUNKEL);
+                 // Auch sie bleibt gezeichnet — Chairs.png hat Sofas, und ein
+                 // Sofa ist keine Wirtshausbank.
+      innenSchatten(o.x, o.y - 3, b*0.30);
+      innenBeine(o.x, o.y - 3, b - 16, 10, 5);
+      innenPlatte(o.x, o.y - 13, b - 10, 9, '#9a7343', INN_HOLZ_DUNKEL);
       break;
     case 'Z': {  // Der freigehaltene Platz. Ein Stuhl mit Lehne, ein Handbreit
                  // vom Tisch abgerückt, und darüber ein Schimmer, der kommt und
