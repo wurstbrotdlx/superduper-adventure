@@ -202,7 +202,7 @@ pruef('startShift() holt den Spieler aus dem Haus', await page.evaluate(() => {
 }), {innen: false, level: 1});
 
 // --- Der Ersatzweg: ohne die geschnittenen Blaetter laeuft es weiter ---------
-// Die neunzehn Innenraumblaetter sind als optional registriert, weil die
+// Die zwanzig Innenraumblaetter sind als optional registriert, weil die
 // lizenzierte Grafik im Pages-Build aus einem zweiten Repo kommt und dort erst
 // ankommen muss. Ein Ersatzweg, den niemand ausloest, ist eine Behauptung —
 // hier wird er ausgeloest.
@@ -222,17 +222,48 @@ pruef('ohne die Innenraumblaetter baeckt jede Kachel trotzdem', await page.evalu
   Object.assign(SHEETS, weg);
   for(const k of Object.keys(INN_CACHE)) delete INN_CACHE[k];
   return {blaetter: Object.keys(weg).length, leer};
-}), {blaetter: 19, leer: []});
+}), {blaetter: 20, leer: []});
 
 // --- Und mit den Blaettern kommt das Pack durch ------------------------------
 // Zwoelf Moebelzeichen greifen ins Pack; die drei Auflagen (Pflanze, Kerze,
 // Flasche) haengen an keinem Zeichen, weil sie auf einem Moebel stehen und
 // nicht auf einem Feld. Sie werden hier einzeln nachgesehen.
-pruef('mit den Blaettern zeichnen zwoelf Moebel aus dem Pack', await page.evaluate(() => {
+pruef('mit den Blaettern zeichnen dreizehn Moebel aus dem Pack', await page.evaluate(() => {
   const da = Object.keys(INN_SPRITE).filter(z => innenBlattDa(INN_SPRITE[z]));
   return {sprite: da.sort(), boden: innenBlattDa('innen_boden'),
           auflagen: ['innen_pflanze', 'innen_kerze', 'innen_flasche'].every(innenBlattDa)};
-}), {sprite: ['B', 'D', 'E', 'H', 'N', 'P', 'R', 'S', 'T', 'U', 'V', 'Z'], boden: true, auflagen: true});
+}), {sprite: ['B', 'D', 'E', 'H', 'L', 'N', 'P', 'R', 'S', 'T', 'U', 'V', 'Z'], boden: true, auflagen: true});
+
+// --- Die zwei G1-Schnittfehler sind weg -------------------------------------
+// crate.png und cobweb.png haben je ein paar Pixel des Nachbarobjekts aus
+// Dungeon_Objects.png mitgeschnitten; sie standen als dunkler Strich neben
+// jeder Kiste und jeder Spinnwebe. schnittSaeubern() nimmt sie beim Laden
+// heraus. Gemessen wird am Alphakanal des gebackenen Blattes — die Stelle muss
+// durchsichtig sein, und das Objekt selbst muss noch da sein.
+pruef('die G1-Schnittfehler stehen nicht mehr im Blatt', await page.evaluate(() => {
+  const punkt = (key, x, y) => {
+    const s = SHEETS[key];
+    if(!s || !s.img) return 'Blatt fehlt';
+    const c = document.createElement('canvas');
+    c.width = s.img.width; c.height = s.img.height;
+    const g = c.getContext('2d'); g.drawImage(s.img, 0, 0);
+    return g.getImageData(x, y, 1, 1).data[3];
+  };
+  // Wieviel steht ueberhaupt noch im Blatt? Ein Flicken, der zu viel wegnimmt,
+  // faellt hier auf: die Zahl der undurchsichtigen Pixel ist an den Dateien
+  // abgezaehlt (Kiste 244, Webe 66) und darf nur um die geflickten fallen.
+  const voll = key => {
+    const s = SHEETS[key];
+    const c = document.createElement('canvas');
+    c.width = s.img.width; c.height = s.img.height;
+    const g = c.getContext('2d'); g.drawImage(s.img, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height).data;
+    let n = 0; for(let i = 3; i < d.length; i += 4) if(d[i] > 8) n++;
+    return n;
+  };
+  return {kisteFleck: punkt('dun_crate',  19, 2), kisteVoll: voll('dun_crate')  > 200,
+          webeFleck:  punkt('dun_cobweb',  0, 13), webeVoll:  voll('dun_cobweb') > 50};
+}), {kisteFleck: 0, kisteVoll: true, webeFleck: 0, webeVoll: true});
 
 // --- Die Schankstube ist eingerichtet ---------------------------------------
 // Der Nachlese-Grundriss steht in index.html; hier steht, was er tragen MUSS.
@@ -249,11 +280,19 @@ pruef('die Schankstube hat Theke, Hocker, Faesser und Uhr', await page.evaluate(
   const z = innen.moebel.find(o => o.z === 'Z');
   const nah = Math.min(...innen.moebel.filter(o => o.z === 'U')
     .map(o => Math.abs(o.x - z.x)/TS + Math.abs(o.y - z.y)/TS));
+  // Sitzt der Rauchfang in der Wand? Der Kamin ist drei Kacheln hoch und wird
+  // ueber seiner Fusslinie nach oben gezeichnet; ueber ihm muessen deshalb zwei
+  // Wandreihen liegen, sonst endet sein Rauchfang mitten im Raum.
+  const kamin = innen.moebel.find(o => o.z === 'H');
+  const kx = Math.round(kamin.x/TS) - INN_X0, ky = Math.round(kamin.y/TS) - INN_Y0 - 1;
+  const ueber = [innen.raum.zeichen(kx, ky-1), innen.raum.zeichen(kx, ky-2)].join('');
   const ergebnis = {theke: n('X'), hocker: n('U'), fass: n('V'), uhr: n('P'),
-                    fenster: n('N'), bank: n('B'), tisch: n('T'), nachbar: nah};
+                    fenster: n('N'), bank: n('B'), tisch: n('T'), bord: n('Q'),
+                    scheite: n('L'), nachbar: nah, ueberDemKamin: ueber};
   verlasseHaus();
   return ergebnis;
-}), {theke: 1, hocker: 3, fass: 3, uhr: 1, fenster: 2, bank: 2, tisch: 2, nachbar: 1});
+}), {theke: 1, hocker: 3, fass: 3, uhr: 1, fenster: 2, bank: 2, tisch: 2, bord: 1,
+     scheite: 1, nachbar: 1, ueberDemKamin: '##'});
 
 pruef('Konsole still', laut, []);
 

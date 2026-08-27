@@ -3507,6 +3507,44 @@ addSheet('innen_flasche',      'cf/innen/flasche.png',      1, 'grid', {fw:7,  f
 // einen Raum machen. Das Fenster haengt in der Wand, die Uhr steht am Boden.
 addSheet('innen_fenster',      'cf/innen/fenster.png',      1, 'grid', {fw:14, fh:21, ax:7,  ay:21, optional:true});
 addSheet('innen_standuhr',     'cf/innen/standuhr.png',     1, 'grid', {fw:14, fh:30, ax:7,  ay:30, optional:true});
+addSheet('innen_scheit',       'cf/innen/scheit.png',       1, 'grid', {fw:25, fh:11, ax:12, ay:11, optional:true});
+
+// --- Zwei Schnittfehler aus G1 ausbessern -----------------------------------
+// Drei Requisiten sind in G1 von Hand aus Dungeon_Objects.png geschnitten
+// worden: crate, pot, cobweb. Zwei der drei Schnitte haben am Rand ein paar
+// Pixel des Nachbarobjekts mitgenommen. Gemessen an der Alphamaske der beiden
+// Dateien, nicht geschätzt:
+//
+//   crate.png   Spalte 19, Zeilen 0..5    sechs Pixel
+//   cobweb.png  Spalte 0,  Zeilen 11..15  fünf Pixel
+//
+// Im Bild standen sie als dunkler Strich neben jeder Kiste und jeder
+// Spinnwebe — im Verlies genauso wie in den Innenräumen. Gefunden beim
+// Aufräumen der Schankstube: erst sah es aus wie ein Zeichenfehler von IN1,
+// dann lag es in der Datei.
+//
+// Ausgebessert wird hier und nicht in der Datei, und zwar mit Absicht. Die
+// lizenzierte Grafik liegt in einem zweiten Repo; ein von Hand nachgemaltes
+// PNG wäre genau die Sorte Änderung, die später niemand mehr nachrechnen kann.
+// Diese vier Zahlen kann man nachrechnen — tools/innen-pruef.mjs tut es.
+const SCHNITT_FLICKEN = {
+  dun_crate:  [[19, 0, 1, 6]],
+  dun_cobweb: [[0, 11, 1, 5]],
+};
+function schnittSaeubern(){
+  for(const key in SCHNITT_FLICKEN){
+    const s = SHEETS[key];
+    if(!s || !s.img) continue;
+    try {
+      const c = document.createElement('canvas');
+      c.width = s.img.width; c.height = s.img.height;
+      const g = c.getContext('2d');
+      g.drawImage(s.img, 0, 0);
+      for(const [x, y, w, h] of SCHNITT_FLICKEN[key]) g.clearRect(x, y, w, h);
+      s.img = c;
+    } catch(e){ console.warn('schnittSaeubern:', key, 'nicht ausbesserbar (' + e.name + ')'); }
+  }
+}
 
 // ===========================================================================
 //  U5: Die Figurenportraets. Seit U4 zeigt die obere Tafelhaelfte einen
@@ -12901,6 +12939,7 @@ const INN_MOEBEL = {
   'F': {name:'Fackel',         frei:true, wand:true},
   'W': {name:'Spinnwebe',      frei:true, wand:true},
   'N': {name:'Fenster',        frei:true, wand:true},
+  'Q': {name:'Flaschenbord',   frei:true, wand:true},
   'R': {name:'Aktenregal'},
   'K': {name:'Kiste'},
   'O': {name:'Krug'},
@@ -12911,6 +12950,7 @@ const INN_MOEBEL = {
   'B': {name:'Bank'},
   'U': {name:'Hocker'},
   'V': {name:'Fass'},
+  'L': {name:'Holzscheite'},
   'P': {name:'Pendeluhr'},
   'X': {name:'Theke'},
   'H': {name:'Herdfeuer'},
@@ -12971,9 +13011,9 @@ const INN_RAEUME = {
     name: 'Zum Letzten Stempel',
     plan: [
       '###############',
-      '#FN.W.....W.NF#',
-      '#VV...........#',
-      '#.Xxxxx...Hh..#',
+      '#FN.Qqq.W.##NF#',
+      '#VV.......HhLl#',
+      '#.Xxxxx.......#',
       '#..UUUZ......P#',
       '#.............#',
       '#..Tt....Tt...#',
@@ -13136,13 +13176,38 @@ function verlasseHaus(){
 // den Farben des Hauses. Jedes Möbel steht auf seiner Fußlinie (y = Unterkante
 // des Feldes) und geht damit in dieselbe y-Sortierung wie Spieler und Figuren —
 // man läuft hinter einem Regal her und wird davon verdeckt.
-const INN_HOLZ = '#6b4526', INN_HOLZ_HELL = '#8f6136', INN_HOLZ_DUNKEL = '#3d2716';
+// Die Holzleiter. Sie ist keine Erfindung, sie ist gemessen: `tools/`-Nachlese
+// hat aus tisch.png, bank.png, fass.png und standuhr.png die Farbhistogramme
+// gezogen, und alle vier benutzen dieselben sechs Werte. Wer daneben etwas in
+// einem anderen Braun malt, malt in einem anderen Spiel — die erste Fassung der
+// Theke war gelblich und stach neben dem Packtisch heraus wie ein Fremdkörper.
+//
+//   #3f2832  Kontur       #743f39  tiefster Schatten   #8a4836  Schatten
+//   #91533b  Mittelton    #b86f50  hell                #bf6f4a  Deckfläche
+//   #c78160  Glanzkante   #e69c69  Lichtkante
+const INN_HOLZ = '#91533b', INN_HOLZ_HELL = '#bf6f4a', INN_HOLZ_DUNKEL = '#3f2832';
+const INN_HOLZ_TIEF = '#743f39', INN_HOLZ_SCHATTEN = '#8a4836', INN_HOLZ_GLANZ = '#c78160';
 // Eigener Schatten statt drawShadowEllipse(): der ist fuer Figuren auf Gras
 // gebaut (35 % Schwarz, halbe Hoehe) und liest sich auf einem Dielenboden als
 // Pfuetze. Drinnen faellt Licht von der Decke, also flacher und blasser.
 function innenSchatten(x, y, rx){
   ctx.fillStyle = 'rgba(0,0,0,0.20)';
   ctx.beginPath(); ctx.ellipse(x, y, rx, rx*0.26, 0, 0, Math.PI*2); ctx.fill();
+}
+// Der Schein, den ein offenes Feuer auf den Boden davor wirft. Er atmet, aber
+// langsam und flach (0.86 bis 1.00), sonst flackert der halbe Raum im Takt
+// einer Kerze. Kein Schatten unter dem Kamin: was an der Wand steht und selbst
+// leuchtet, wirft keinen Schatten nach vorn.
+function innenFeuerschein(x, y, rx){
+  const g = ctx.createRadialGradient(x, y, 0, x, y, rx);
+  g.addColorStop(0,   'rgba(255,176,84,0.30)');
+  g.addColorStop(0.5, 'rgba(255,150,66,0.13)');
+  g.addColorStop(1,   'rgba(255,140,60,0)');
+  ctx.save();
+  ctx.globalAlpha = 0.86 + 0.14*Math.sin(gameT*2.1);
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(x, y, rx, rx*0.60, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
 }
 function innenBrett(x, y, w, h, oben, unten){
   ctx.fillStyle = unten; ctx.fillRect(x - w/2, y - h, w, h);
@@ -13205,7 +13270,7 @@ const INN_SPRITE = {
   R: 'innen_regale', T: 'innen_tisch', Z: 'innen_stuhl',
   D: 'innen_pult',   S: 'innen_schreibtisch', E: 'innen_kommode',
   H: 'innen_kamin',  B: 'innen_bank', U: 'innen_hocker', V: 'innen_fass',
-  N: 'innen_fenster', P: 'innen_standuhr',
+  N: 'innen_fenster', P: 'innen_standuhr', L: 'innen_scheit',
 };
 function drawInnenMoebel(o){
   const blatt = INN_SPRITE[o.z];
@@ -13227,7 +13292,14 @@ function drawInnenMoebel(o){
                  // Flamme kommt weiter aus fire1 — der Kamin bringt eine dunkle
                  // Feuerstelle mit, aber keine Animation, und eine Flamme bleibt
                  // im ganzen Spiel dieselbe Flamme.
-      innenSchatten(o.x, o.y - 2, b*0.40);
+                 //
+                 // Das Blatt ist 48 Pixel hoch und damit drei Kacheln: unten
+                 // die Feuerstelle, darueber der Mantel, oben der Rauchfang.
+                 // Der Rauchfang gehoert IN die Wand, nicht davor — deshalb
+                 // steht der Kamin in Zeile 2, und die Nordwand springt in
+                 // Zeile 1 um zwei Felder vor. Ein Rauchfang, der mitten im
+                 // Raum endet, ist ein Ofenrohr.
+      innenFeuerschein(o.x, o.y + 12, 46);
       ctx.drawImage(SHEETS.innen_kamin.img, 32, 0, 32, 48, o.x - 32, o.y - 96, 64, 96);
       drawSprite('fire1', animFrame('fire1', gameT, 10), o.x, o.y - 6, 1.3);
       break;
@@ -13267,6 +13339,14 @@ function drawInnenMoebel(o){
                  // heisst, und sagt kein Wort dazu.
       innenSchatten(o.x, o.y - 2, 10);
       drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      break;
+    case 'L':    // Holzscheite neben dem Kamin. Drei Stueck, zwei unten und
+                 // eins quer darueber: so liegt Holz, das jemand abgelegt hat.
+                 // Ein Kamin, neben dem kein Holz liegt, brennt aus sich selbst.
+      innenSchatten(o.x, o.y - 3, b*0.32);
+      drawSprite(blatt, 0, o.x - 7, o.y,      WELT_SC);
+      drawSprite(blatt, 0, o.x + 7, o.y - 1,  WELT_SC);
+      drawSprite(blatt, 0, o.x,     o.y - 17, WELT_SC);
       break;
     case 'Z':    // Der freigehaltene Platz. Der Schimmer darueber bleibt: er ist
                  // das Einzige an diesem Stuhl, was ihn von den anderen abhebt,
@@ -13315,12 +13395,29 @@ function drawInnenMoebelGezeichnet(o){
   switch(o.z){
     case 'F':   // Wandfackel. Dieselbe Bauart wie in der Kammer, damit eine
                 // Flamme im ganzen Spiel eine Flamme bleibt.
+                //
+                // Der Halter, den IN1 darunter gemalt hat, ist weg: das
+                // fire1-Blatt bringt seinen eigenen mit, und darunter hat es
+                // durchsichtigen Rand. Der gemalte Riegel hing deshalb einen
+                // halben Kachelabstand unter der Fackel in der Luft.
       drawSprite('fire1', animFrame('fire1', gameT + o.x*0.01, 10), o.x, o.y - 22, 1.2);
-      ctx.fillStyle = '#3a2f22'; ctx.fillRect(o.x - 3, o.y - 22, 6, 14);
       break;
-    case 'W':
-      drawSprite('dun_cobweb', 0, o.x, o.y - TS + 2, WELT_SC);
+    case 'W': {  // Spinnwebe, oben in der Wand statt unten auf den Dielen.
+                 //
+                 // Zwei Dinge sind hier gemessen. Erstens der Anker: das
+                 // G1-Blatt traegt ay:0, seine Bezugslinie ist also die
+                 // OBERkante. IN1 hat sie wie eine Fusslinie behandelt, und die
+                 // Webe hing eine ganze Kachel zu tief — auf dem Boden, wo eine
+                 // Spinnwebe wie ein Fleck aussieht. Zwei Kacheln hoch gesetzt
+                 // sitzt sie im Wandband, mit ihrem Gespinst genau in der Ecke
+                 // zwischen Wand und Diele.
+                 //
+                 // Der dunkelblaue Strich, der bis heute links neben jeder
+                 // Webe stand, ist kein Zeichenfehler dieser Stelle: er lag im
+                 // Blatt. schnittSaeubern() nimmt ihn beim Laden heraus.
+      drawSprite('dun_cobweb', 0, o.x, o.y - 2*TS, WELT_SC);
       break;
+    }
     case 'N': {  // Fenster, gemalt: ein Rahmen, dahinter der Abendhimmel als
                  // Verlauf, davor ein Sprossenkreuz. Dieselben drei Farben, die
                  // im Blatt uebereinanderliegen — Violett, Rosa, Orange.
@@ -13378,11 +13475,45 @@ function drawInnenMoebelGezeichnet(o){
       break;
     case 'H': {  // Herdfeuer mit dem Topf darüber. Das Blatt gibt es seit W-Lager
                  // (camp_pot), es hing bisher nur im Lager der Beschwerden.
-      innenSchatten(o.x, o.y - 2, b*0.38);
-      ctx.fillStyle = '#4a4038'; ctx.fillRect(o.x - b/2 + 3, o.y - 20, b - 6, 18);
-      ctx.fillStyle = '#2b2622'; ctx.fillRect(o.x - b/2 + 6, o.y - 17, b - 12, 15);
+                 //
+                 // Auch die gemalte Fassung braucht seit dem Umzug an die Wand
+                 // ihren Rauchfang: die Nordwand springt hier um zwei Felder
+                 // vor, und ohne Mantel und Fang stünde dort eine Wandnase ohne
+                 // Grund. Trapez nach oben, wie im Blatt.
+      innenFeuerschein(o.x, o.y + 12, 46);
+      ctx.fillStyle = '#7c4a2c';
+      ctx.beginPath();
+      ctx.moveTo(o.x - b/2 + 2, o.y - 30); ctx.lineTo(o.x + b/2 - 2, o.y - 30);
+      ctx.lineTo(o.x + 13, o.y - 78);      ctx.lineTo(o.x - 13, o.y - 78);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#5e3720'; ctx.fillRect(o.x - 13, o.y - 96, 26, 18);
+      ctx.fillStyle = '#9a6440'; ctx.fillRect(o.x - b/2 + 1, o.y - 34, b - 2, 7);
+      ctx.fillStyle = '#4a4038'; ctx.fillRect(o.x - b/2 + 3, o.y - 27, b - 6, 25);
+      ctx.fillStyle = '#2b2622'; ctx.fillRect(o.x - b/2 + 7, o.y - 23, b - 14, 21);
       drawSprite('fire1', animFrame('fire1', gameT, 10), o.x, o.y - 4, 1.4);
       drawSprite('camp_pot', animFrame('camp_pot', gameT, 6), o.x, o.y - 12, WELT_SC);
+      break;
+    }
+    case 'Q': {  // Flaschenbord hinter der Theke. Es hängt an der Wand wie die
+                 // Fackel: die Fußlinie liegt eine Kachel über der eigenen.
+                 //
+                 // Ein Brett mit Flaschen darauf ist das Zeichen, an dem ein
+                 // Bild eine Schankstube von einer Stube unterscheidet — jede
+                 // gemalte Schänke, die man kennt, hat eins hinter dem Wirt.
+                 // Es bleibt gezeichnet: das Pack hat Regale mit Buchrücken,
+                 // und ein Bücherregal hinter einer Theke ist eine Bibliothek.
+                 // Die Flaschen darauf kommen aus dem Pack, wenn es da ist.
+      const qy = o.y - TS + 4;
+      innenBrett(o.x, qy, b - 8, 7, INN_HOLZ, INN_HOLZ_DUNKEL);
+      const qh = tileHash(Math.round(o.x), Math.round(o.y));
+      for(let i = 0; i < 5; i++){
+        if((qh >> i) % 5 === 0) continue;          // nicht jeder Platz ist besetzt
+        const bx = Math.round(o.x - b/2 + 12 + i*((b - 24)/4));
+        if(innenBlattDa('innen_flasche')){ drawSprite('innen_flasche', 0, bx, qy - 4, WELT_SC); continue; }
+        ctx.fillStyle = i % 2 ? '#8a3a30' : '#4a6a3a'; ctx.fillRect(bx - 3, qy - 22, 6, 15);
+        ctx.fillStyle = '#e6dcc0';                  ctx.fillRect(bx - 3, qy - 18, 6, 4);
+        ctx.fillStyle = i % 2 ? '#5f271f' : '#33492a'; ctx.fillRect(bx - 1, qy - 27, 2, 5);
+      }
       break;
     }
     case 'X': {  // Theke. Sie bleibt gezeichnet, und zwar nicht aus Trotz: das
@@ -13393,10 +13524,18 @@ function drawInnenMoebelGezeichnet(o){
                  // Platte, dunkle Kontur. Die duenne Fassung davor las sich neben
                  // einem echten Tisch als schwebendes Brett.
       innenSchatten(o.x, o.y - 2, b*0.44);
-      ctx.fillStyle = '#5c3a1c'; ctx.fillRect(o.x - b/2 + 1, o.y - 26, b - 2, 24);
-      ctx.fillStyle = '#4a2e15';
-      for(let i = 1; i*16 < b - 2; i++) ctx.fillRect(o.x - b/2 + i*16, o.y - 24, 2, 20);
-      innenPlatte(o.x, o.y - 26, b, 11, '#c08a45', '#7d5326');
+      // Unterbau: senkrechte Bretter, alle sechzehn Pixel eine Fuge, unten eine
+      // Sockelleiste. Das ist der Unterschied zwischen einer Theke und einem
+      // Brett auf Beinen — sie ist vorn zu, man sieht nicht darunter durch.
+      ctx.fillStyle = INN_HOLZ_SCHATTEN; ctx.fillRect(o.x - b/2 + 1, o.y - 26, b - 2, 24);
+      ctx.fillStyle = INN_HOLZ_TIEF;
+      for(let i = 1; i*16 < b - 2; i++) ctx.fillRect(o.x - b/2 + i*16, o.y - 24, 2, 19);
+      ctx.fillStyle = INN_HOLZ_TIEF;  ctx.fillRect(o.x - b/2 + 1, o.y - 6, b - 2, 4);
+      ctx.fillStyle = INN_HOLZ;       ctx.fillRect(o.x - b/2 + 1, o.y - 7, b - 2, 2);
+      innenPlatte(o.x, o.y - 26, b, 11, INN_HOLZ_HELL, INN_HOLZ_SCHATTEN);
+      // Glanzkante auf der Deckfläche: eine Linie, und aus dem Rechteck wird
+      // eine Platte, über die tausendmal ein Ärmel gewischt hat.
+      ctx.fillStyle = INN_HOLZ_GLANZ; ctx.fillRect(o.x - b/2 + 2, o.y - 36, b - 4, 2);
       ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
       ctx.strokeRect(Math.round(o.x - b/2) + 0.5, Math.round(o.y - 26) + 0.5, Math.round(b) - 1, 25);
       // Auf der Theke stehen zwei Flaschen aus dem Pack, am rechten Ende — am
@@ -13443,6 +13582,18 @@ function drawInnenMoebelGezeichnet(o){
       ctx.fillStyle = '#b4544a';
       ctx.beginPath(); ctx.ellipse(o.x, o.y - 17, 8, 4, 0, 0, Math.PI*2); ctx.fill();
       break;
+    case 'L': {  // Holzscheite, gemalt: drei Rollen mit heller Schnittflaeche.
+      innenSchatten(o.x, o.y - 3, b*0.32);
+      const legen = (lx, ly) => {
+        ctx.fillStyle = INN_HOLZ_TIEF;     ctx.fillRect(lx - 22, ly - 20, 44, 18);
+        ctx.fillStyle = INN_HOLZ;          ctx.fillRect(lx - 22, ly - 20, 44, 8);
+        ctx.fillStyle = '#e6c79a';         ctx.fillRect(lx + 14, ly - 18, 8, 14);
+        ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+        ctx.strokeRect(Math.round(lx - 22) + 0.5, Math.round(ly - 20) + 0.5, 43, 17);
+      };
+      legen(o.x - 7, o.y); legen(o.x + 7, o.y - 1); legen(o.x, o.y - 17);
+      break;
+    }
     case 'V':    // Fass: Daubenkoerper mit zwei Reifen, Deckel obendrauf.
                  // Bauchig heisst hier, dass die Mitte einen Strich breiter ist
                  // als Boden und Deckel; mehr braucht ein Fass nicht.
@@ -17954,7 +18105,7 @@ const NEUERUNGEN = {
     // drinnen jemand steht. Die wo-Zeilen nennen nur Wege, die es gibt.
     {
       titel: 'Drei Häuser stehen jetzt offen',
-      was: 'Das Amt, die Registratur und das Gasthaus Zum Letzten Stempel haben ein Inneres bekommen. Man geht hinein, man läuft darin herum, man geht wieder hinaus. Im Amt steht der Schreibtisch, an dem vor Ihnen jemand gearbeitet hat, und auf ihm die Pflanze, die noch lebt. Im Wirtshaus brennen Kerzen auf den Tischen, hinter der Theke stehen Fässer, an der Ostwand geht eine Standuhr, und durch die zwei Fenster in der Nordwand sieht man den Abend.',
+      was: 'Das Amt, die Registratur und das Gasthaus Zum Letzten Stempel haben ein Inneres bekommen. Man geht hinein, man läuft darin herum, man geht wieder hinaus. Im Amt steht der Schreibtisch, an dem vor Ihnen jemand gearbeitet hat, und auf ihm die Pflanze, die noch lebt. Im Wirtshaus brennt das Feuer im Kamin, daneben liegt das Holz, hinter der Theke stehen die Fässer und darüber das Flaschenbord, an der Ostwand geht eine Standuhr, und durch die zwei Fenster in der Nordwand sieht man den Abend.',
       wo: 'An der gemalten Tür der drei Häuser steht Betreten. Der Feierabend liegt seither drinnen, am Dienstpult.',
     },
     {
@@ -26672,6 +26823,7 @@ loadAssets().then(() => {
   // Skriptstart und hat allen Wandernden ihren CF_NPCS-Key gegeben, auch denen,
   // deren Datei gar nicht im Paket liegt. Jetzt ist bekannt, was wirklich da ist.
   npcBlaetterNachziehen();
+  schnittSaeubern();          // IN1-Nachlese: die zwei G1-Schnittfehler, vor jeder Messung
   assertRigRegistrations();   // GW26c: jetzt sind npc_baked_bramsche/_lott/_pahl da
   npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
   dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst

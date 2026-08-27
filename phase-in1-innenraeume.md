@@ -400,10 +400,29 @@ müssen.
 | `flasche.png` | `House_Decor/Placeable_Decoration.png` 4,3 7×11 | Auflage auf der Theke |
 | `fenster.png` | `House_Decor/windows.png` 1,7 14×21 | `N` — zwei in der Nordwand |
 | `standuhr.png` | `House_Decor/Clocks.png` 17,1 14×30 | `P` — an der Ostwand |
+| `scheit.png` | `Outdoor decoration/Outdoor_Decor.png` 68,115 25×11 | `L` — Holz neben dem Kamin |
 
-Der Grundriss trägt jetzt zwei neue Möbelzeichen (`V` Fass, `P` Pendeluhr), ein
-neues Wandzeichen (`N` Fenster) — und `B` und `U` greifen ins Pack statt in
+Der Grundriss trägt jetzt vier neue Möbelzeichen (`V` Fass, `P` Pendeluhr,
+`L` Holzscheite, `U` Hocker) und zwei neue Wandzeichen (`N` Fenster,
+`Q` Flaschenbord) — und `B` greift ins Pack statt in
 `drawInnenMoebelGezeichnet()`. Alles andere ist wieder stehen geblieben.
+
+So sieht die Schankstube am Ende aus. Die zwei `#` in Zeile 1 sind kein
+Tippfehler, sondern die Kaminwange — dazu unten mehr:
+
+```
+'###############',
+'#FN.Qqq.W.##NF#',      Fenster, Flaschenbord, Kaminwange, Fackeln
+'#VV.......HhLl#',      Fässer hinter der Theke, Kamin und Holz an der Wand
+'#.Xxxxx.......#',      die Theke
+'#..UUUZ......P#',      drei Hocker, der freigehaltene Platz, die Standuhr
+'#.............#',      die leere Reihe, damit man an die Theke treten kann
+'#..Tt....Tt...#',
+'#..Bb....Bb...#',
+'#.K.......V.K.#',
+'#.............#',
+'######AA#######',
+```
 
 ### Der Fund, der weh tut: „das Pack hat kein X"
 
@@ -441,12 +460,102 @@ Reihe hat einen Nachbarn.
 
 ### Geprüft
 
-`tools/innen-pruef.mjs` steht bei 20 Prüfungen (vorher 19). Neu ist die
+`tools/innen-pruef.mjs` steht bei 21 Prüfungen (vorher 19). Neu sind die
 Einrichtung der Schankstube — Theke, drei Hocker, drei Fässer, eine Uhr, zwei
-Fenster, zwei Bänke, zwei Tische, und der Abstand des freigehaltenen Platzes zur
-Hockerreihe. Der Ersatzweg nimmt jetzt neunzehn Blätter zur Laufzeit aus
-`SHEETS` statt zwölf, und zwölf Möbelzeichen zeichnen aus dem Pack statt sieben.
-Die fünfzehn anderen Prüfläufe sind unverändert grün.
+Fenster, zwei Bänke, zwei Tische, Flaschenbord, Holzscheite, der Abstand des
+freigehaltenen Platzes zur Hockerreihe und die zwei Wandreihen über dem Kamin —
+und die Prüfung der zwei ausgebesserten G1-Schnitte. Der Ersatzweg nimmt jetzt
+zwanzig Blätter zur Laufzeit aus `SHEETS` statt zwölf, und dreizehn
+Möbelzeichen zeichnen aus dem Pack statt sieben. Die fünfzehn anderen Prüfläufe
+sind unverändert grün.
+
+### Die Feuerstelle gehört in die Wand
+
+Der Projektinhaber, nach dem ersten Bild: *„Die Feuerstelle / Kamin kann ganz
+nach hinten an die Wand."* Er hatte recht, und der Grund steht im Blatt.
+`Fireplaces.png` ist 48 Pixel hoch, also **drei Kacheln**: unten die Feuerstelle,
+darüber der Mantel, oben der **Rauchfang**. Ein Rauchfang, der mitten im Raum
+endet, ist ein Ofenrohr. Er muss ins Mauerwerk.
+
+Die Lösung braucht keine neue Zeichenebene, nur zwei Zeilen Grundriss. Der Kamin
+steht jetzt in **Zeile 2**, und die Nordwand **springt in Zeile 1 um zwei Felder
+vor** (`##` mitten in der Zeile). Weil ein Möbel über seiner Fußlinie nach oben
+gezeichnet wird, deckt das drei Kacheln hohe Blatt genau diese zwei Wandfelder
+plus die Wandreihe darüber ab: der Rauchfang steckt im Mauerwerk, die
+Feuerstelle steht auf dem Boden davor. Die vorgezogene Wand ist außerdem das,
+was sie im Bild sein soll — eine Kaminwange, hinter der man nicht durchlaufen
+kann. `innen-pruef.mjs` misst seither nach, dass über dem Kamin zwei Wandreihen
+liegen.
+
+Dazu ein Feuerschein auf dem Boden davor (`innenFeuerschein()`): ein flacher
+Radialverlauf, der zwischen 0,86 und 1,00 atmet. Flacher als eine Kerze — sonst
+flackert der halbe Raum im Takt eines Teelichts.
+
+### Recherche: woran man eine gemalte Schankstube erkennt
+
+Auf die Aufforderung, bei anderen Retro-Spielen nachzusehen, was so ein Raum
+braucht. Der Befund aus dem Stardrop Saloon (*Stardew Valley*) und den
+einschlägigen Pixel-Tavernen-Paketen ist erstaunlich einheitlich, und das Spiel
+hatte zwei der vier Dinge noch nicht:
+
+| Zeichen einer Schänke | vorher | jetzt |
+|---|---|---|
+| Kamin **in** der Rückwand | davor | in der Wand |
+| **Flaschenbord** hinter dem Wirt | fehlte | `Q`, drei Felder, Zeile 1 |
+| Tresen mit geschlossenem Unterbau | dünnes Brett | Bretter, Sockelleiste, Glanzkante |
+| Hocker am Tresen | fehlte | drei, seit dem ersten Nachtrag |
+
+Das Flaschenbord bleibt **gezeichnet**, und diesmal ist die Begründung geprüft:
+das Pack hat Regale mit Buchrücken, und ein Bücherregal hinter einer Theke ist
+eine Bibliothek. Die Flaschen darauf kommen aus dem Pack.
+
+### Die Farbleiter ist gemessen, nicht erfunden
+
+Die erste Theke war gelblich (`#c08a45`) und stach neben dem Packtisch heraus
+wie ein Fremdkörper. Ein Histogrammlauf über `tisch.png`, `bank.png`,
+`fass.png` und `standuhr.png` zeigte, dass alle vier **dieselben sechs Werte**
+benutzen:
+
+```
+#3f2832  Kontur      #743f39  tiefster Schatten   #8a4836  Schatten
+#91533b  Mittelton   #b86f50  hell                #bf6f4a  Deckfläche
+#c78160  Glanzkante  #e69c69  Lichtkante
+```
+
+`INN_HOLZ`, `INN_HOLZ_HELL` und `INN_HOLZ_DUNKEL` stehen seither auf diesen
+Werten, dazu drei neue. Wer daneben in einem anderen Braun malt, malt in einem
+anderen Spiel.
+
+### Drei Fehler, die keine Zeichenfehler waren
+
+**Erstens: der Halter unter der Fackel.** IN1 hat unter jede Wandfackel einen
+Riegel gemalt. Das `fire1`-Blatt bringt seinen eigenen Halter mit und hat
+darunter durchsichtigen Rand — der gemalte Riegel hing deshalb einen halben
+Kachelabstand unter der Fackel in der Luft. Ersatzlos weg.
+
+**Zweitens: der Anker der Spinnwebe.** Das G1-Blatt trägt `ay:0`, seine
+Bezugslinie ist die **Ober**kante. IN1 hat sie wie eine Fußlinie behandelt, und
+die Webe hing eine ganze Kachel zu tief — auf den Dielen, wo eine Spinnwebe wie
+ein Fleck aussieht.
+
+**Drittens, und das ist der eigentliche Fund: zwei Schnittfehler aus G1.** Neben
+jeder Kiste und jeder Spinnwebe stand ein dunkler Strich. Er sah aus wie ein
+Zeichenfehler dieses Bauabschnitts, lag aber in der Datei. Die drei Requisiten
+(`crate`, `pot`, `cobweb`) sind in G1 von Hand aus `Dungeon_Objects.png`
+geschnitten worden, und zwei der drei Schnitte haben am Rand ein paar Pixel des
+Nachbarobjekts mitgenommen:
+
+```
+crate.png   Spalte 19, Zeilen 0..5    sechs Pixel
+cobweb.png  Spalte 0,  Zeilen 11..15  fünf Pixel
+```
+
+Gemessen an der Alphamaske der beiden Dateien. Sie standen dort seit G1 — im
+Verlies genauso wie in den Innenräumen. `schnittSaeubern()` nimmt sie beim Laden
+heraus, in vier Zahlen, die man nachrechnen kann; die Dateien selbst bleiben
+unangetastet, denn ein von Hand nachgemaltes PNG in einem zweiten Repo wäre
+genau die Sorte Änderung, die später niemand mehr prüft. `innen-pruef.mjs` misst
+beides: die Stelle ist durchsichtig, und vom Objekt fehlt nichts.
 
 ### Was weiter offen ist
 
@@ -459,3 +568,6 @@ Die fünfzehn anderen Prüfläufe sind unverändert grün.
 * **Fenster in Amt und Registratur.** Beide haben die Nordwand voller Regale.
   Wer dort ein Fenster will, nimmt ein Regal weg — und das Amt ist zu leer, nicht
   zu voll.
+* **Der Schnitt selbst.** `schnittSaeubern()` ist ein Verband, keine Heilung. Wer
+  `Dungeon_Objects.png` einmal danebenlegt, schneidet die drei Requisiten neu und
+  wirft die Flickentabelle weg.

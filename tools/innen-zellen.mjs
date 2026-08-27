@@ -130,6 +130,11 @@ const TABELLE = [
   // offenes Fach, und ein offenes Fach in einer Uhr sieht aus wie ein Schaden.
   {ziel:'standuhr.png', quelle:`${DECOR}/Clocks.png`,       art:'zelle', r:[17, 1, 14, 30],
    wofuer:'Standuhr im Wirtshaus. Es heisst Zum Letzten Stempel'},
+  // Outdoor_Decor.png hat eine ganze Zeile liegender Staemme. Die meisten
+  // tragen Moos und Pflaenzchen — die sind seit Jahren nicht bewegt worden.
+  // Genommen ist der eine blanke: ein Scheit, das jemand hereingetragen hat.
+  {ziel:'scheit.png',   quelle:`${AUSSEN}/Outdoor_Decor.png`, art:'zelle', r:[68, 115, 25, 11],
+   wofuer:'Holzscheite neben dem Kamin'},
 ];
 
 // --- PNG lesen und schreiben, dieselbe Bauart wie innen-tuer-messlauf.mjs ----

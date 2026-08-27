@@ -455,7 +455,7 @@ CSS-Anstrich aus U1 zurueck. Geprueft, siehe Pruefprotokoll dort.
 
 ### Von der IN1-Nachlese gebraucht (`innen/`)
 
-Neunzehn Dateien, zusammen 9 KB. Sie entstehen nicht von Hand, sondern mit
+Zwanzig Dateien, zusammen 9 KB. Sie entstehen nicht von Hand, sondern mit
 `node tools/innen-zellen.mjs`; die Koordinatentabelle steht dort im Quelltext und
 `--pruef` rechnet sie nach. Dieselbe Haltung wie bei `tools/ui-zellen.mjs`:
 gemessen, nicht geraten.
@@ -501,8 +501,9 @@ mehr Deko für „Zum Letzten Stempel" hergibt. Es gab sie:
 | `innen/flasche.png` | `House_Decor/Placeable_Decoration.png` | 4,3 7×11 | Flasche auf der Theke |
 | `innen/fenster.png` | `House_Decor/windows.png` | 1,7 14×21 | Fenster mit Abendhimmel, Nordwand |
 | `innen/standuhr.png` | `House_Decor/Clocks.png` | 17,1 14×30 | Standuhr im „Letzten Stempel" |
+| `innen/scheit.png` | `Outdoor decoration/Outdoor_Decor.png` | 68,115 25×11 | Holzscheite neben dem Kamin |
 
-**Alle neunzehn sind im Spiel als `optional` registriert.** Das ist kein
+**Alle zwanzig sind im Spiel als `optional` registriert.** Das ist kein
 Sicherheitsnetz aus Vorsicht, sondern eine Reihenfolgefrage: die lizenzierte
 Grafik kommt im Pages-Build aus `wurstbrotdlx/superduper-adventure-assets`, und
 bis sie dort liegen, gibt es sie im ausgelieferten Spiel nicht. Fehlen sie,
