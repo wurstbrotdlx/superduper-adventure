@@ -18050,8 +18050,11 @@ const NEUERUNGEN = {
   // heute Morgen schon weggeklickt hat.
   // T6: derselbe Tag, dritter Stempel, aus demselben Grund.
   // IN1: vierter Stempel am selben Tag, gleiche Begruendung.
-  stand: '2026-08-26-in1',
-  datum: '26. August',
+  // Kammerausgang: neuer Tag, also reicht das Datum als Stempel. Der Zusatz
+  // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
+  // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
+  stand: '2026-08-27-kam',
+  datum: '27. August',
   punkte: [
     {
       titel: 'Anlage 2 ist Ihnen beigefügt worden',
@@ -18133,6 +18136,17 @@ const NEUERUNGEN = {
       titel: 'Zum Feierabend geht das Dorf hinein',
       was: 'Im letzten Viertel Ihrer Schicht sind drei Leute nicht mehr auf dem Anger: Wirt Fass steht dann hinter seiner Theke, Registratorin Bramsche zwischen ihren Regalen und Nörgel an seinem Schreibtisch. Wer sie abends sprechen will, muss ihnen nachgehen.',
       wo: 'In den drei Häusern, sobald die Dienstuhr unter ein Viertel gefallen ist.',
+    },
+    // --- Kammerausgang, 27.08.2026 ------------------------------------------
+    // Eine Berichtigung und kein Bauabschnitt. Sie steht hier trotzdem, weil
+    // sie gemeldet wurde und weil sie sichtbar war: wer auf dem Telefon aus
+    // einer Kammer kam, stand in einer schwarzen Welt und hat sich das nicht
+    // eingebildet. Der Punkt sagt, was man jetzt sieht, und nicht, welche
+    // Zeile gefehlt hat — das steht in KAMMERAUSGANG-2026-08-27.md.
+    {
+      titel: 'Der Weg aus der Kammer führt wieder ins Bild',
+      was: 'Wer eine Kammer verließ, wurde bisher in einem langen Flug quer über die Karte zu seiner Tür zurückgetragen. Am Telefon konnte dabei der Boden wegbleiben: die Welt war schwarz, und sie kam erst mit der nächsten Kammer zurück. Jetzt steht man ohne Flug vor der Tür, und der Boden steht mit.',
+      wo: 'An jeder Kammertür, sobald Sie über die Ausgangsrune im Vorraum oder über 🏳️ Abbruch hinausgehen.',
     },
   ],
 };
