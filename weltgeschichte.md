@@ -1342,6 +1342,8 @@ Drei Dinge aus Kapitel 8 sind dabei anders geworden, als sie hier stehen, und da
 * **Szene 2 hängt an Kordula Umlauf, nicht am Gasthaus.** Ein Gasthaus als betretbares Gebäude gibt es nicht; Fass und Umlauf stehen ohnehin nebeneinander im Dorf, und er wirft seine zwei Sätze über den Sprecherwechsel ein.
 * **Szene 3 hängt im Amtspanel**, neben der Gießkanne, weil die Amtsstube kein begehbares Inneres hat. Sturz' Schreibtisch steht dort bereits als Text, die zweite Schublade ist eine zweite anklickbare Zeile daneben.
 
+*(Berichtigt am 26.08.2026, Bauabschnitt IN1, s. `phase-in1-innenraeume.md`. **Die beiden Begründungen gelten nicht mehr, die Anhänger bleiben.** Das Gasthaus „Zum Letzten Stempel" und die Amtsstube sind seit IN1 betretbare Gebäude, dazu die Registratur. Fass steht zum Feierabend hinter seiner Theke und Umlauf ab Akt II an einem Tisch im selben Raum — Szene 2 hängt weiter an ihr, spielt aber seither dort, wo dieses Kapitel sie ansetzt. Sturz' Schreibtisch steht nicht mehr nur als Text im Panel, sondern als Möbel in der Amtsstube, und die zweite Schublade ist dort eine Kontextaktion; die Zeile im Panel bleibt daneben stehen und ruft dieselbe Szene, denn sie läuft ohnehin genau einmal.)*
+
 Den Nachklang tragen Lott und Pahl, mit zwei neuen Anlässen (`umlauf`, `hintermuehl`), gebaut wie ihre Kampfanlässe und genau einmal fallend. Einzelheiten in `phase-sz2-gespraechsszenen.md`.
 
 **Die übrigen fünf Szenen sind entworfen und nicht gebaut.** SZ3 nimmt den Stopfen und Vorblatts Ankunft samt Serie I, SZ4 die Versuchung, die Zustellung und den Abspann.

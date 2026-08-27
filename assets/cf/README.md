@@ -453,6 +453,74 @@ schlechter als acht fremde. Begruendung je Posten in `phase-u11-sinnbilder.md` u
 setzt die zugehoerigen CSS-Variablen dann nicht, und die Menues fallen auf den
 CSS-Anstrich aus U1 zurueck. Geprueft, siehe Pruefprotokoll dort.
 
+### Von der IN1-Nachlese gebraucht (`innen/`)
+
+Zwanzig Dateien, zusammen 9 KB. Sie entstehen nicht von Hand, sondern mit
+`node tools/innen-zellen.mjs`; die Koordinatentabelle steht dort im Quelltext und
+`--pruef` rechnet sie nach. Dieselbe Haltung wie bei `tools/ui-zellen.mjs`:
+gemessen, nicht geraten.
+
+Aus `Cute_Fantasy/Buildings/Houses_Interiors/`, ganze Blätter:
+
+| Ziel | Quelle | Maße | wofür |
+|---|---|---|---|
+| `innen/boden.png` | `Wood_Floor_Tiles.png` | 128×128 | Böden aller drei Räume, als 2×2-Muster gelesen |
+| `innen/wand_holz.png` | `Wood_Wall_Fillers.png` | 64×32 | Wand im Wirtshaus |
+| `innen/wand_stein.png` | `Stone_Wall_Fillers.png` | 32×32 | Wand im Amt |
+| `innen/wand_ziegel.png` | `Brick_Wall_Fillers.png` | 32×32 | Wand in der Registratur |
+
+Aus `Cute_Fantasy/Buildings/House_Decor/`, ganze Blätter:
+
+| Ziel | Quelle | Maße | wofür |
+|---|---|---|---|
+| `innen/regale.png` | `BookShelves.png` | 192×112 | Aktenregale, schmal (14×30) und breit (30×30) |
+| `innen/kamin.png` | `Fireplaces.png` | 96×48 | Herdfeuer, der mittlere der drei |
+
+Und geschnitten, weil aus einem großen Blatt je eine einzige Zelle gebraucht wird
+(aus `Tables.png` genau ein Tisch, aus `House_Plants.png` genau eine Pflanze —
+ganz eingebacken wären das 29 KB für zwei Möbel):
+
+| Ziel | Quelle | Ausschnitt | wofür |
+|---|---|---|---|
+| `innen/tisch.png` | `Tables.png` | 72,88 34×33 | Wirtshaustisch, zwei Kacheln breit |
+| `innen/stuhl.png` | `Chairs.png` | 18,40 12×23 | Der freigehaltene Platz |
+| `innen/pult.png` | `Furniture_Other.png` | 0,283 32×21 | Dienstpult im Amt |
+| `innen/schreibtisch.png` | `Furniture_Other.png` | 128,283 32×21 | Der Schreibtisch der Amtsleitung |
+| `innen/kommode.png` | `Furniture_Other.png` | 32,283 32×21 | Nörgels Schreibtisch, Bramsches Pult |
+| `innen/pflanze.png` | `House_Plants.png` | 32,2 16×30 | Die Pflanze auf dem Schreibtisch |
+
+Und sieben weitere aus der **zweiten Nachlese**, auf die Frage, ob das Pack noch
+mehr Deko für „Zum Letzten Stempel" hergibt. Es gab sie:
+
+| Ziel | Quelle | Ausschnitt | wofür |
+|---|---|---|---|
+| `innen/fass.png` | `Outdoor decoration/barrels.png` | 49,13 15×19 | Fass in der Schankstube. Der Wirt heißt Fass |
+| `innen/bank.png` | `Outdoor decoration/Benches.png` | 33,6 31×21 | Wirtshausbank, zwei Kacheln breit |
+| `innen/hocker.png` | `House_Decor/Indoor_Decor.png` | 83,50 9×13 | Barhocker an der Theke |
+| `innen/kerze.png` | `House_Decor/Placeable_Decoration.png` | 5,132 6×11 | Kerze auf dem Wirtshaustisch |
+| `innen/flasche.png` | `House_Decor/Placeable_Decoration.png` | 4,3 7×11 | Flasche auf der Theke |
+| `innen/fenster.png` | `House_Decor/windows.png` | 1,7 14×21 | Fenster mit Abendhimmel, Nordwand |
+| `innen/standuhr.png` | `House_Decor/Clocks.png` | 17,1 14×30 | Standuhr im „Letzten Stempel" |
+| `innen/scheit.png` | `Outdoor decoration/Outdoor_Decor.png` | 68,115 25×11 | Holzscheite neben dem Kamin |
+
+**Alle zwanzig sind im Spiel als `optional` registriert.** Das ist kein
+Sicherheitsnetz aus Vorsicht, sondern eine Reihenfolgefrage: die lizenzierte
+Grafik kommt im Pages-Build aus `wurstbrotdlx/superduper-adventure-assets`, und
+bis sie dort liegen, gibt es sie im ausgelieferten Spiel nicht. Fehlen sie,
+fällt IN1 auf seine gezeichnete Fassung zurück (überfärbte Kammerblätter, Möbel
+aus ctx-Grundformen) statt leere Räume zu zeigen. `tools/innen-pruef.mjs` löst
+diesen Weg ausdrücklich aus, damit er keine Behauptung bleibt.
+
+Was **nicht** aus dem Pack kommt: die Theke im Wirtshaus und der Aktenstapel.
+`Kitchen.png` und `Kitchen_Furniture.png` sind Frontansichten (Hängeschränke,
+Herde, Spülen von vorn gesehen), und ein Küchenschrank ist ohnehin keine
+Schankstube. Die zwei bleiben gezeichnet.
+
+Die Bank stand bis zur zweiten Nachlese in dieser Liste, mit der Begründung,
+`Chairs.png` habe nur Sofas. Das stimmte — nur lag die Bank nicht dort, sondern
+in `Outdoor decoration/`. Eine Bank ist eine Bank, drinnen wie draußen. Wer hier
+schreibt „das Pack hat kein X", hat in genau einem Ordner nachgesehen.
+
 ## Kopierkonvention
 
 - Originaldateinamen aus `Graphics/` behalten.

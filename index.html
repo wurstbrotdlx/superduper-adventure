@@ -3268,11 +3268,18 @@ addSheet('cf_bolt', 'cf/deco/Other/Skeleton_Mage_Projectile.png', 8, 'grid', {fw
 // Ränder (Inn_Blue 10px links, Barn 13px), und mit dem vollen Rechteck gerechnet
 // meldet der Guard Verdeckungen, die es auf dem Schirm nicht gibt. Werte per
 // Alpha-Bounding-Box am PNG gemessen, gleiche Methode wie überall sonst hier.
+// IN1: tuerDx ist der Versatz der GEMALTEN Tür gegenüber dem Fußanker, in
+// Blattpixeln. Er steht nur bei den drei Häusern, die man betreten kann, und er
+// ist gemessen und nicht gemittelt: die drei Blätter setzen ihre Tür an drei
+// verschiedene Stellen (Inn links der Mitte, House_2 weit links, House_3 rechts).
+// Wer stattdessen die Mitte des Fußabdrucks nimmt, lässt den Spieler durch die
+// Hauswand gehen, während die gemalte Tür daneben zu bleibt. Gemessen am
+// gerasterten Blatt, nachgerechnet von `tools/innen-tuer-messlauf.mjs`.
 const CF_BLD = {
-  amt:     {file:'Inn_Blue.png',              fw:240, fh:192, ax:120, ay:190, deck:{l:-110, r:120, o:-186, u:-11}},
+  amt:     {file:'Inn_Blue.png',              fw:240, fh:192, ax:120, ay:190, deck:{l:-110, r:120, o:-186, u:-11}, tuerDx:-16},
   haus1:   {file:'House_1_Wood_Base_Red.png', fw:96,  fh:128, ax:48,  ay:126, deck:{l:-35,  r:35,  o:-125, u:-11}},
-  haus2:   {file:'House_2_Wood_Base_Blue.png',fw:144, fh:128, ax:72,  ay:126, deck:{l:-59,  r:61,  o:-125, u:-11}},
-  haus3:   {file:'House_3_Stone_Base_Blue.png',fw:144,fh:128, ax:72,  ay:126, deck:{l:-61,  r:59,  o:-125, u:-11}},
+  haus2:   {file:'House_2_Wood_Base_Blue.png',fw:144, fh:128, ax:72,  ay:126, deck:{l:-59,  r:61,  o:-125, u:-11}, tuerDx:-33},
+  haus3:   {file:'House_3_Stone_Base_Blue.png',fw:144,fh:128, ax:72,  ay:126, deck:{l:-61,  r:59,  o:-125, u:-11}, tuerDx:17},
   markt:   {file:'Market_Stalls.png',         fw:192, fh:48,  ax:96,  ay:46,  deck:{l:-95,  r:95,  o:-36,  u:2}},
   scheune: {file:'Barn_Base_Red.png',         fw:128, fh:144, ax:64,  ay:142, deck:{l:-51,  r:51,  o:-128, u:-11}},
 };
@@ -3452,6 +3459,92 @@ addSheet('dun_chest', 'cf/dungeon/Objects/Chest_anim.png', 8, 'grid', {fw:32, fh
 addSheet('dun_crate', 'cf/dungeon/Objects/crate.png', 1, 'grid', {fw:20, fh:26, ax:10, ay:25});
 addSheet('dun_pot', 'cf/dungeon/Objects/pot.png', 1, 'grid', {fw:14, fh:16, ax:7, ay:15});
 addSheet('dun_cobweb', 'cf/dungeon/Objects/cobweb.png', 1, 'grid', {fw:18, fh:16, ax:9, ay:0});
+
+// ===========================================================================
+//  IN1-Nachlese: die echten Innenraumblaetter.
+// ===========================================================================
+// IN1 hat die drei Raeume ohne sie gebaut, weil sie im Repo nicht lagen (das
+// Pack hat sie, `assets/cf/` traegt aber nur, was das Spiel laedt, und die
+// Rohbibliothek liegt aus Lizenzgruenden nirgends). Boden und Wand waren
+// deshalb warm ueberfaerbte Kammerblaetter, die Moebel gezeichnet wie der
+// Kessel. Seit die Blaetter vorliegen, schneidet sie `tools/innen-zellen.mjs`
+// nach `assets/cf/innen/` — zwoelf Dateien, zusammen 7 KB.
+//
+// **Alle zwoelf sind optional.** Das ist kein Sicherheitsnetz aus Vorsicht,
+// sondern eine Reihenfolgefrage: die lizenzierte Grafik kommt im Pages-Build
+// aus einem zweiten Repo, und bis die zwoelf Dateien dort liegen, gibt es sie
+// im ausgelieferten Spiel nicht. `opt.optional` sagt loadAssets(), dass die
+// Luecke erwartet ist (sonst stuenden zwoelf `Sprite fehlt`-Zeilen in jeder
+// Konsole, und davor warnt G6 ausdruecklich), und drawInnenMoebel() faellt
+// dann auf die gezeichnete Fassung zurueck. Wer die Dateien hat, sieht das
+// Pack; wer sie nicht hat, sieht IN1 wie am ersten Tag.
+const INN_OPT = {optional: true};
+addSheet('innen_boden',       'cf/innen/boden.png',       1, 'raw',  INN_OPT);
+addSheet('innen_wand_holz',   'cf/innen/wand_holz.png',   1, 'raw',  INN_OPT);
+addSheet('innen_wand_stein',  'cf/innen/wand_stein.png',  1, 'raw',  INN_OPT);
+addSheet('innen_wand_ziegel', 'cf/innen/wand_ziegel.png', 1, 'raw',  INN_OPT);
+addSheet('innen_regale',      'cf/innen/regale.png',      1, 'raw',  INN_OPT);
+addSheet('innen_kamin',       'cf/innen/kamin.png',       1, 'raw',  INN_OPT);
+// Die geschnittenen Einzelmoebel als 'grid' mit einem Frame: Anker Fussmitte,
+// damit drawSprite() sie wie jedes andere Moebel auf seine Fusslinie stellt.
+addSheet('innen_tisch',        'cf/innen/tisch.png',        1, 'grid', {fw:34, fh:33, ax:17, ay:33, optional:true});
+addSheet('innen_stuhl',        'cf/innen/stuhl.png',        1, 'grid', {fw:12, fh:23, ax:6,  ay:23, optional:true});
+addSheet('innen_pult',         'cf/innen/pult.png',         1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
+addSheet('innen_schreibtisch', 'cf/innen/schreibtisch.png', 1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
+addSheet('innen_kommode',      'cf/innen/kommode.png',      1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
+addSheet('innen_pflanze',      'cf/innen/pflanze.png',      1, 'grid', {fw:16, fh:30, ax:8,  ay:30, optional:true});
+// Zweite Nachlese, auf die Frage nach mehr Deko fuer den Letzten Stempel. Das
+// Fass und die Bank standen im Ordner "Outdoor decoration" — deshalb hat der
+// erste Durchgang durch die Innenraumordner sie nicht gefunden, und deshalb
+// stand im Phasendokument, das Pack habe keine Wirtshausbank. Es hat eine.
+addSheet('innen_fass',         'cf/innen/fass.png',         1, 'grid', {fw:15, fh:19, ax:7,  ay:19, optional:true});
+addSheet('innen_bank',         'cf/innen/bank.png',         1, 'grid', {fw:31, fh:21, ax:15, ay:21, optional:true});
+addSheet('innen_hocker',       'cf/innen/hocker.png',       1, 'grid', {fw:9,  fh:13, ax:4,  ay:13, optional:true});
+// Zwei Auflagen, keine Moebel: sie stehen auf einem Tisch oder auf der Theke.
+addSheet('innen_kerze',        'cf/innen/kerze.png',        1, 'grid', {fw:6,  fh:11, ax:3,  ay:11, optional:true});
+addSheet('innen_flasche',      'cf/innen/flasche.png',      1, 'grid', {fw:7,  fh:11, ax:3,  ay:11, optional:true});
+// Fenster und Standuhr: die zwei Blaetter, die aus einem Kasten mit Moebeln
+// einen Raum machen. Das Fenster haengt in der Wand, die Uhr steht am Boden.
+addSheet('innen_fenster',      'cf/innen/fenster.png',      1, 'grid', {fw:14, fh:21, ax:7,  ay:21, optional:true});
+addSheet('innen_standuhr',     'cf/innen/standuhr.png',     1, 'grid', {fw:14, fh:30, ax:7,  ay:30, optional:true});
+addSheet('innen_scheit',       'cf/innen/scheit.png',       1, 'grid', {fw:25, fh:11, ax:12, ay:11, optional:true});
+
+// --- Zwei Schnittfehler aus G1 ausbessern -----------------------------------
+// Drei Requisiten sind in G1 von Hand aus Dungeon_Objects.png geschnitten
+// worden: crate, pot, cobweb. Zwei der drei Schnitte haben am Rand ein paar
+// Pixel des Nachbarobjekts mitgenommen. Gemessen an der Alphamaske der beiden
+// Dateien, nicht geschätzt:
+//
+//   crate.png   Spalte 19, Zeilen 0..5    sechs Pixel
+//   cobweb.png  Spalte 0,  Zeilen 11..15  fünf Pixel
+//
+// Im Bild standen sie als dunkler Strich neben jeder Kiste und jeder
+// Spinnwebe — im Verlies genauso wie in den Innenräumen. Gefunden beim
+// Aufräumen der Schankstube: erst sah es aus wie ein Zeichenfehler von IN1,
+// dann lag es in der Datei.
+//
+// Ausgebessert wird hier und nicht in der Datei, und zwar mit Absicht. Die
+// lizenzierte Grafik liegt in einem zweiten Repo; ein von Hand nachgemaltes
+// PNG wäre genau die Sorte Änderung, die später niemand mehr nachrechnen kann.
+// Diese vier Zahlen kann man nachrechnen — tools/innen-pruef.mjs tut es.
+const SCHNITT_FLICKEN = {
+  dun_crate:  [[19, 0, 1, 6]],
+  dun_cobweb: [[0, 11, 1, 5]],
+};
+function schnittSaeubern(){
+  for(const key in SCHNITT_FLICKEN){
+    const s = SHEETS[key];
+    if(!s || !s.img) continue;
+    try {
+      const c = document.createElement('canvas');
+      c.width = s.img.width; c.height = s.img.height;
+      const g = c.getContext('2d');
+      g.drawImage(s.img, 0, 0);
+      for(const [x, y, w, h] of SCHNITT_FLICKEN[key]) g.clearRect(x, y, w, h);
+      s.img = c;
+    } catch(e){ console.warn('schnittSaeubern:', key, 'nicht ausbesserbar (' + e.name + ')'); }
+  }
+}
 
 // ===========================================================================
 //  U5: Die Figurenportraets. Seit U4 zeigt die obere Tafelhaelfte einen
@@ -4715,6 +4808,13 @@ const G_BEACH=15;
 // Kartenbau und fragt `kammer` ab — eine spätere let-Deklaration wäre ein TDZ-Fehler.
 let kammer = null;      // aktive Kammer oder null (Oberwelt)
 let owSave = null;      // eingefrorene Oberwelt, solange eine Kammer läuft
+// IN1: derselbe Grund, dieselbe Stelle. innen wird von computeTile() und
+// miniColor() gelesen, und beide laufen schon beim Kartenbau. Der Innenraum ist
+// bewusst NICHT als Kammer gebaut: eine Kammer hat Module, Tore und Wächter, ein
+// Wohnzimmer hat Möbel. Was beide teilen, ist der Trick — Oberwelt einfrieren,
+// Karte überschreiben, beim Hinausgehen zurückholen.
+let innen = null;       // betretener Innenraum oder null
+let innenSave = null;   // eingefrorene Oberwelt, solange ein Innenraum offen ist
 const map = new Uint8Array(MW*MH);
 const inB = (x,y)=> x>=0 && y>=0 && x<MW && y<MH;
 const T = (x,y)=> map[x+y*MW];
@@ -4793,7 +4893,8 @@ function inVillagePx(x, y){ return inVillageT(Math.floor(x/TS), Math.floor(y/TS)
 // seit G4 üblich). sheet zeigt auf die oben registrierten 'big'-Decos. amt:true
 // markiert das Gebäude, das scanAktion()/AKT_AMT anbietet. Literale bewusst im
 // alten 80er-Raster belassen (vgl. figuren-dorf.md) — die Schleife danach
-// verschiebt sie einmalig um DORF_DX/DORF_DY, bevor AMT_TUER daraus abgeleitet wird.
+// verschiebt sie einmalig um DORF_DX/DORF_DY, bevor bldTuer() daraus die
+// Türpunkte ableitet.
 // G6: bld zeigt auf den Eintrag in CF_BLD, der Maße, Anker und Deckfläche hält.
 // sheet bleibt als Zeichenschlüssel stehen und wird daraus abgeleitet, damit
 // nirgends ein Gebäudename zweimal getippt steht.
@@ -4831,20 +4932,36 @@ const imLager = (tx,ty)=> tx >= LAGER.x0-1 && tx <= LAGER.x1+1 && ty >= LAGER.y0
 // Fußlinie auf y=34, Südzeile (zwei Häuser, Scheune) auf y=52, dazwischen der
 // Anger mit Kessel und Knöterich. Zwischen den Gebäuden bleibt je eine Kachel
 // Durchgang, damit man das Dorf nicht nur an den Enden verlassen kann.
+// IN1: `innen` nennt den Raum hinter der Tür (Schlüssel in INN_RAEUME weiter
+// unten). Drei von sechs Gebäuden haben einen, und welche drei, ist keine
+// Geschmacksfrage: die Weltgeschichte nennt genau diese drei Orte in einem Satz,
+// als der Postregen fällt — "Sie kommen im Amt an, im Gasthaus, in der
+// Registratur, auf dem Dorfplatz." Der Dorfplatz war immer da. Die anderen drei
+// waren bis hier Text.
 const VILLAGE_BUILDINGS = [
-  {bld:'amt',     x0:5,  y0:30, w:15, h:4, amt:true},
+  {bld:'amt',     x0:5,  y0:30, w:15, h:4, amt:true, innen:'amt'},
   {bld:'haus1',   x0:-2, y0:30, w:6,  h:4},
   {bld:'markt',   x0:21, y0:32, w:12, h:2},
-  {bld:'haus2',   x0:1,  y0:48, w:9,  h:4},
-  {bld:'haus3',   x0:12, y0:48, w:9,  h:4},
+  {bld:'haus2',   x0:1,  y0:48, w:9,  h:4, innen:'registratur'},
+  {bld:'haus3',   x0:12, y0:48, w:9,  h:4, innen:'wirtshaus'},
   {bld:'scheune', x0:23, y0:48, w:8,  h:4},
 ];
 for(const b of VILLAGE_BUILDINGS){ b.x0 += DORF_DX; b.y0 += DORF_DY; b.sheet = `cfbld_${b.bld}`; }
-// Fußpunkt der Amt-Tür für die Kontext-Aktion (Mitte der Südkante des Footprints).
-const AMT_TUER = (() => {
-  const b = VILLAGE_BUILDINGS.find(b => b.amt);
-  return {x: (b.x0 + b.w/2)*TS, y: (b.y0 + b.h)*TS - 2};
-})();
+// IN1: Fußpunkt der gemalten Tür, in Weltpixeln. x kommt aus CF_BLD.tuerDx (dem
+// gemessenen Versatz im Blatt, siehe dort), y ist die Fußlinie des Gebäudes.
+// Die zwei Pixel Abzug sind dieselben wie bei AMT_TUER seit G5: der Punkt soll
+// vor der Schwelle liegen und nicht auf ihr.
+function bldTuer(b){
+  const g = CF_BLD[b.bld], mitte = (b.x0 + b.w/2)*TS;
+  return {x: mitte + (g.tuerDx || 0)*WELT_SC, y: (b.y0 + b.h)*TS - 2};
+}
+// AMT_TUER stand hier seit G5 und war der Fußpunkt der Amt-Tür für die
+// Kontextaktion — berechnet als Mitte der Südkante des Fußabdrucks. Seit IN1
+// gibt es ihn nicht mehr, und zwar aus zwei Gründen: die Tür ist keine
+// Sonderregel des Amts mehr (drei Häuser haben eine, alle über bldTuer), und
+// die Mitte der Südkante war ohnehin daneben. Das Amt ist fünfzehn Kacheln
+// breit, seine gemalte Tür sitzt zwei Kacheln links der Mitte. Aufgefallen ist
+// das nie, weil ein Panel keine Schwelle hat, durch die man danebengehen kann.
 // G6: Wo das Gebäudesprite auf der Karte wirklich Farbe hat, in Weltpixeln, und
 // bei welchem y es einsortiert wird. Eine Figur ist genau dann von diesem Haus
 // verdeckt, wenn ihr Sprite hier hineinragt UND ihr eigenes y kleiner ist als
@@ -6363,6 +6480,8 @@ function computeTile(x, y){
   const t = T(x,y);
   if(kammer){                                    // Kammer: nur Boden und Wand, kein Biom
     return t === G_WALL ? dunWallTile(kammer.set, x, y) : dunFloorTile(kammer.set, x, y);
+  } else if(innen){                              // IN1: Innenraum, warm überfärbtes Kammerblatt
+    return innenTile(x, y);
   } else if(currentLevel === 2){                 // Schattenland: echtes Pilzland-Lila statt Umfärbung
     // Der Ozean braucht hier einen EIGENEN Zweig: dieser Ast wird vor jedem
     // Kacheltyp-Test erreicht, sonst würde die Tilgung im Schattenland als
@@ -6478,6 +6597,9 @@ const MINI_COL = {
 function miniColorFor(x, y){
   const t = T(x,y);
   if(kammer) return t === G_WALL ? MINI_COL.wand : MINI_COL.pfad;
+  // IN1: Möbel (G_BLOCK) zählen auf der Karte als Wand. Ein Regal, durch das
+  // die Karte einen Weg zeigt, wäre eine falsche Auskunft.
+  if(innen) return (t === G_WALL || t === G_BLOCK) ? MINI_COL.wand : MINI_COL.pfad;
   if(currentLevel === 2){
     if(t === G_OCEAN) return MINI_COL.schattenmeer;
     return (t===G_PATH || t===G_WALL) ? MINI_COL.schattenpfad : MINI_COL.pilz;
@@ -11783,10 +11905,14 @@ function anlage2Bewegung(){
 // Monster zaehlen nicht. Ein Vorgang ist kein Publikum.
 const A2_ALLEIN_R2 = 450 * 450;
 function anlage2Allein(){
-  if(kammer || currentLevel !== 1) return true;
-  if(sqDist(player.x, player.y, KN_POS.x, KN_POS.y) < A2_ALLEIN_R2) return false;
+  if(kammer) return true;
+  // IN1: In einem Innenraum steht sehr wohl Publikum, es ist nur ein anderes.
+  // Knoeterich bleibt draussen, deshalb wird er drinnen nicht gefragt; npcs
+  // traegt drinnen die Leute des Raumes und draussen die des Dorfes.
+  if(!innen && currentLevel !== 1) return true;
+  if(!innen && sqDist(player.x, player.y, KN_POS.x, KN_POS.y) < A2_ALLEIN_R2) return false;
   for(const n of npcs)
-    if(figDa(n.figur) && sqDist(player.x, player.y, n.x, n.y) < A2_ALLEIN_R2) return false;
+    if(figHier(n.figur) && sqDist(player.x, player.y, n.x, n.y) < A2_ALLEIN_R2) return false;
   return true;
 }
 
@@ -12647,6 +12773,1015 @@ function verlasseKammer(){
   sfx.warp();
 }
 
+// ===========================================================================
+//  IN1: Innenräume — drei Türen, die aufgehen
+// ===========================================================================
+// Zwei Stellen im Kanon sind ausdrücklich als Notlösung notiert, und beide
+// nennen denselben Grund:
+//
+//   weltgeschichte.md: "Ein Gasthaus als betretbares Gebäude gibt es nicht;
+//   Fass und Umlauf stehen ohnehin nebeneinander im Dorf."
+//   weltgeschichte.md: "Szene 3 hängt im Amtspanel, neben der Gießkanne, weil
+//   die Amtsstube kein begehbares Inneres hat."
+//
+// Ab hier hat sie eins. Gebaut ist das mit dem Trick, den betreteKammer() seit
+// G1 benutzt: die Oberwelt wird eingefroren, die Karte überschrieben, und beim
+// Hinausgehen kommt alles zurück. Was hier NICHT von der Kammer kommt, ist der
+// Rest — kein Modul, kein Tor, kein Wächter, keine Truhe. Ein Innenraum ist ein
+// gezeichneter Grundriss mit Möbeln darin, und das ist absichtlich das ganze
+// Verfahren: was man betreten kann, muss nichts von einem herrschen wollen.
+//
+// **Das Blattmaterial ist das, was da war.** Das Grafikpaket hat einen
+// vollständigen Innenraumsatz (Houses_Interiors, House_Decor: Betten, Regale,
+// Tische, Kamine, eine ganze Küche) — nur liegt davon keine einzige Datei im
+// Repo, weil `assets/cf/` seit G5 ausschließlich trägt, was das Spiel lädt.
+// Boden und Wand kommen deshalb aus den Kammerblättern, warm überfärbt, und
+// die Möbel sind gezeichnet wie der Kessel und die Grube im Steinfeld: mit
+// ctx-Grundformen, in den Farben des Hauses. Wer den Innenraumsatz eines Tages
+// dazulegt, tauscht INN_SAETZE und die Möbelzeichner und lässt alles andere
+// stehen. Bis dahin ist es nicht perfekt, aber es ist begehbar, und begehbar
+// war der Punkt.
+
+// Der Grundriss liegt an derselben Stelle der Karte wie eine Kammer — die Karte
+// ist ohnehin komplett überschrieben, solange man drinnen ist.
+const INN_X0 = 4, INN_Y0 = 34;
+
+// Die Kachelsaetze. `boden` und `wand` nennen das geschnittene Blatt (siehe
+// tools/innen-zellen.mjs) und die linke obere Zelle des 2x2-Musters darin;
+// `ersatz` ist der Weg von IN1, als es die Blaetter noch nicht gab: ein
+// Kammerblatt aus DUN_SET, warm ueberfaerbt.
+//
+// Warum je Raum ein anderes Paar: die drei Raeume sollen sich beim Betreten
+// unterscheiden lassen, ohne dass jemand die Ortszeile liest. Und jedes Paar
+// hat einen Grund. Das Amt bekommt den grauen Bruchstein, den auch der Sockel
+// seines Blattes traegt, auf warmem Ziegelboden — kalt an den Waenden, warm
+// unter den Fuessen. Das Wirtshaus ist rundum Holz. Die Registratur steht auf
+// kaltem Stein zwischen roten Ziegeln, was ein Archiv sein darf.
+//
+// Die Boden-Zellen sind bewusst als 2x2-Muster gelesen und nicht per tileHash
+// gestreut: das Blatt legt vier 16er-Zellen zu EINEM 32er-Muster zusammen, und
+// eine gehashte Streuung zerschnitte den Verband, den sie bilden. Gestreut wird
+// draussen, wo Gras Gras ist; drinnen liegt ein Boden.
+const INN_SAETZE = {
+  amt:         {boden:['innen_boden', 32,  0], wand:['innen_wand_stein'],
+                ersatz:{satz:1, boden:['#b98f52', 0.42], wand:['#2b2119', 0.72]}},
+  wirtshaus:   {boden:['innen_boden',  0, 32], wand:['innen_wand_holz'],
+                ersatz:{satz:0, boden:['#a2622f', 0.46], wand:['#241610', 0.74]}},
+  registratur: {boden:['innen_boden',  0, 64], wand:['innen_wand_ziegel'],
+                ersatz:{satz:1, boden:['#9a8f6a', 0.44], wand:['#26221a', 0.72]}},
+};
+// Liegen die geschnittenen Blaetter ueberhaupt da? Einmal gefragt statt je
+// Kachel: die Antwort aendert sich nach loadAssets() nicht mehr.
+const innenBlattDa = k => !!(SHEETS[k] && SHEETS[k].img);
+
+const INN_CACHE = {};
+// Die Dunkelheit hinter der Wand. Eine einzige gebackene Kachel, kein Blatt:
+// sie ist ueberall dieselbe und soll es auch sein.
+let innenDunkelC = null;
+function bakeInnenDunkel(){
+  if(innenDunkelC) return innenDunkelC;
+  const c = makeCanvas(TS, TS), cc = c.getContext('2d');
+  cc.fillStyle = '#0d0a08'; cc.fillRect(0, 0, TS, TS);
+  return (innenDunkelC = c);
+}
+// wand: die Fuellblaetter sind nahtlose Texturen. Gezeichnet wird deshalb nach
+// Weltposition (x,y modulo Zellenzahl) und nicht nach Hash — sonst zerfaellt
+// ein durchgehender Mauerverband in Flicken.
+// schatten: eine Bodenkachel, ueber der eine Wand steht, bekommt oben einen
+// weichen dunklen Saum. Das ist der billigste Trick, mit dem eine Wand von oben
+// Hoehe bekommt, und er kostet eine gebackene Zweitfassung je Kachel.
+function bakeInnenTile(raumKey, uv, wand, schatten){
+  const ck = raumKey + ',' + uv[0] + ',' + uv[1] + ',' + (uv[2] || '') + (wand ? 'w' : 'b') + (schatten ? 's' : '');
+  if(INN_CACHE[ck]) return INN_CACHE[ck];
+  const satz = INN_SAETZE[raumKey];
+  const echt = wand ? satz.wand[0] : satz.boden[0];
+  const c = makeCanvas(TS, TS), cc = c.getContext('2d');
+  cc.imageSmoothingEnabled = false;
+  if(innenBlattDa(echt)){
+    cc.drawImage(SHEETS[echt].img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
+  } else {
+    // Ersatzweg: dasselbe Kammerblatt und dieselbe Ueberfaerbung wie in IN1.
+    const e = satz.ersatz;
+    const sheet = SHEETS[uv[2] || DUN_SET[e.satz].key]; if(!sheet) return null;
+    cc.drawImage(sheet.img, uv[0], uv[1], 16, 16, 0, 0, TS, TS);
+    cc.globalCompositeOperation = 'source-atop';
+    const t = wand ? e.wand : e.boden;
+    cc.globalAlpha = t[1]; cc.fillStyle = t[0];
+    cc.fillRect(0, 0, TS, TS);
+    cc.globalCompositeOperation = 'source-over'; cc.globalAlpha = 1;
+  }
+  if(schatten){
+    const g = cc.createLinearGradient(0, 0, 0, TS*0.4);
+    g.addColorStop(0, 'rgba(0,0,0,0.42)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    cc.fillStyle = g; cc.fillRect(0, 0, TS, TS*0.4);
+  }
+  INN_CACHE[ck] = c;
+  return c;
+}
+// Die Kachel fuer (x,y) im Innenraum.
+function innenTile(x, y){
+  const satz = INN_SAETZE[innen.key];
+  const wand = T(x,y) === G_WALL;
+  if(!wand){
+    const untermWand = T(x, y-1) === G_WALL;
+    // Der 2x2-Verband des Blattes, an der Weltposition festgemacht.
+    if(innenBlattDa(satz.boden[0]))
+      return bakeInnenTile(innen.key, [satz.boden[1] + (x & 1)*16, satz.boden[2] + (y & 1)*16], false, untermWand);
+    const ds = DUN_SET[satz.ersatz.satz];
+    return bakeInnenTile(innen.key, ds.floor[tileHash(x,y) % ds.floor.length], false, untermWand);
+  }
+  if(innenBlattDa(satz.wand[0])){
+    // Mauerwerk bekommt genau der Rand, den der Grundriss selbst zeichnet; alles
+    // ausserhalb seines Rechtecks bleibt dunkel. Das ist derselbe Satz, mit dem
+    // baueWandProps() seit G1 die Kammer begrenzt ("Der Rest der Karte bleibt
+    // gebackene Dunkelheit") — und der erste Lauf mit den echten Blaettern hat
+    // gezeigt, warum er dort steht: eine Ziegeltextur ueber die ganze Karte
+    // fuellt den Schirm, und ein Raum, dessen Wand bis zum Bildrand weitergeht,
+    // ist kein Raum mehr, sondern ein Muster.
+    const r = innen.raum;
+    if(x < INN_X0 || y < INN_Y0 || x >= INN_X0 + r.w || y >= INN_Y0 + r.h) return bakeInnenDunkel();
+    const s = SHEETS[satz.wand[0]];
+    const sp = Math.max(1, Math.round(s.img.width / 16)), ze = Math.max(1, Math.round(s.img.height / 16));
+    return bakeInnenTile(innen.key, [(((x % sp) + sp) % sp)*16, (((y % ze) + ze) % ze)*16], true, false);
+  }
+  // Ersatzweg: die Ringlogik der Kammer, die Kanten und Ecken kennt.
+  const ds = DUN_SET[satz.ersatz.satz];
+  const n = walkT(x,y-1), e = walkT(x+1,y), s = walkT(x,y+1), w = walkT(x-1,y);
+  let uv = null;
+  if(s && !n && !e && !w) uv = ds.edgeS;
+  else if(n && !s && !e && !w) uv = ds.edgeN;
+  else if(e && !n && !s && !w) uv = ds.edgeE;
+  else if(w && !n && !s && !e) uv = ds.edgeW;
+  else if(!n && !e && !s && !w){
+    if(walkT(x+1,y+1)) uv = ds.eckSE;
+    else if(walkT(x-1,y+1)) uv = ds.eckSW;
+    else if(walkT(x+1,y-1)) uv = ds.eckNE;
+    else if(walkT(x-1,y-1)) uv = ds.eckNW;
+  }
+  return bakeInnenTile(innen.key, uv || ds.wall[tileHash(x,y) % ds.wall.length], true, false);
+}
+
+// --- Die Möbel -------------------------------------------------------------
+// Ein Zeichen im Grundriss ist ein Feld. Großbuchstabe = hier fängt ein Möbel
+// an, Kleinbuchstabe desselben Zeichens = dasselbe Möbel geht weiter. Ein Tisch
+// über zwei Felder heißt also 'Tt', und der Zeichner bekommt seine Breite
+// mitgeteilt statt sie zu raten. Das ist die billigste Fassung, die keine
+// zweite Tabelle braucht: der Grundriss IST die Tabelle, und zwei Möbel können
+// nicht auf demselben Feld stehen, weil ein Feld ein Zeichen trägt.
+//
+// frei:true heißt begehbar. Das gilt für alles, was an der Wand hängt (Fackel,
+// Spinnwebe — die Wand sperrt ohnehin) und für die Schwelle.
+const INN_MOEBEL = {
+  '.': {frei:true},
+  '#': {},
+  'A': {name:'Ausgang',        frei:true},
+  'F': {name:'Fackel',         frei:true, wand:true},
+  'W': {name:'Spinnwebe',      frei:true, wand:true},
+  'N': {name:'Fenster',        frei:true, wand:true},
+  'Q': {name:'Flaschenbord',   frei:true, wand:true},
+  'R': {name:'Aktenregal'},
+  'K': {name:'Kiste'},
+  'O': {name:'Krug'},
+  'D': {name:'Dienstpult',     akt:'pult'},
+  'S': {name:'Schreibtisch der Amtsleitung', akt:'schublade'},
+  'E': {name:'Schreibtisch'},
+  'T': {name:'Tisch'},
+  'B': {name:'Bank'},
+  'U': {name:'Hocker'},
+  'V': {name:'Fass'},
+  'L': {name:'Holzscheite'},
+  'P': {name:'Pendeluhr'},
+  'X': {name:'Theke'},
+  'H': {name:'Herdfeuer'},
+  'Y': {name:'Aktenstapel'},
+  'Z': {name:'Der freigehaltene Platz'},
+};
+
+// --- Die drei Grundrisse ---------------------------------------------------
+// Jede Zeile ist eine Kachelreihe, alle gleich lang, Rand rundherum Wand, und
+// genau ein Ausgang in der Südwand — dort, wo draußen die gemalte Tür sitzt.
+// innenAssert() rechnet all das nach.
+const INN_RAEUME = {
+  // Die leere Stelle, jetzt mit Fußboden. Rechts steht der Schreibtisch von
+  // Dr. Sturz, auf ihm die Pflanze, in ihm die zweite Schublade. Links das
+  // Dienstpult, an dem man Feierabend nimmt. Dazwischen Platz, und das ist der
+  // Punkt des Raumes: er ist zu groß für die zwei Leute, die noch da sind.
+  amt: {
+    name: 'Amtsstube',
+    plan: [
+      '#################',
+      '#FRRRRRRRRRRRRRF#',
+      '#...............#',
+      '#.Dd.......Ss...#',
+      '#...............#',
+      '#.K............K#',
+      '#...............#',
+      '#..Ee.......O...#',
+      '#...............#',
+      '#...............#',
+      '#######AA########',
+    ],
+    // Wer zum Feierabend hier drinsteht. Nörgel sitzt seit einundvierzig Jahren
+    // auf Probe an diesem Schreibtisch; dass er der Letzte im Haus ist, muss
+    // niemand sagen, man sieht es.
+    leute: [{key:'noergel', tx:3, ty:8}],
+  },
+  // Zum Letzten Stempel. Die Theke, dahinter Fass, daneben der Platz, den er
+  // freihält (Grundzeile 4: "Ich halte einen Platz frei."). Er ist ein Stuhl
+  // und bleibt ein Stuhl; erklärt wird er nicht.
+  //
+  // Zweite Nachlese: drei Hocker an der Theke, damit der freigehaltene Platz
+  // einer in einer Reihe ist statt der einzige Sitz im Raum — allein steht er
+  // da wie ein Denkmal, in der Reihe fällt erst auf, dass auf ihm niemand
+  // sitzt. Dahinter zwei Fässer, eins bei den Kisten; der Wirt heißt Fass, und
+  // das Haus macht daraus kein Wortspiel, es stellt ihm nur welche hin.
+  //
+  // Dafür ist der dritte Tisch gegangen, und zwar gemessen, nicht aus Geschmack:
+  // ein Möbel wird über seiner Fußlinie nach oben gezeichnet, ein Tisch zwei
+  // Kacheln hoch. Die Hockerreihe in Zeile 4 verschwand vollständig hinter den
+  // Tischen in Zeile 5. Zwischen Theke und Tischen liegt jetzt eine leere Reihe
+  // — die Luft, die eine Schankstube ohnehin braucht, damit man an die Theke
+  // treten kann, ohne über eine Bank zu steigen.
+  //
+  // Zwei Fenster in der Nordwand und eine Standuhr an der Ostwand. Die Fenster
+  // zeigen Abend, weil man zum Feierabend hineingeht; die Uhr steht in einem
+  // Haus, das "Zum Letzten Stempel" heißt, und sagt kein Wort dazu.
+  wirtshaus: {
+    name: 'Zum Letzten Stempel',
+    plan: [
+      '###############',
+      '#FN.Qqq.W.##NF#',
+      '#VV.......HhLl#',
+      '#.Xxxxx.......#',
+      '#..UUUZ......P#',
+      '#.............#',
+      '#..Tt....Tt...#',
+      '#..Bb....Bb...#',
+      '#.K.......V.K.#',
+      '#.............#',
+      '######AA#######',
+    ],
+    // Umlauf isst schnell und redet schneller, und die Weltgeschichte setzt das
+    // ausdrücklich hierher: "Einmal in diesem Akt sitzt eine fremde Frau im
+    // Letzten Stempel." Ab Akt II sitzt sie da, wo sie hingehört.
+    leute: [{key:'fass', tx:3, ty:2}, {key:'umlauf', tx:9, ty:4}],
+  },
+  // Ordnung ist, was man wiederfindet. Sechs Regalblöcke, zwei Gänge, hinten
+  // ein Pult und ein Stapel, auf dem Anlage 3 schläft.
+  registratur: {
+    name: 'Registratur',
+    plan: [
+      '#############',
+      '#FRRRRRRRRRF#',
+      '#...........#',
+      '#.Rr.Rr.Rr..#',
+      '#.Rr.Rr.Rr..#',
+      '#...........#',
+      '#.Rr.Rr.Rr..#',
+      '#.Rr.Rr.Rr..#',
+      '#...........#',
+      '#.Ee.....Y..#',
+      '#####AA######',
+    ],
+    leute: [{key:'bramsche', tx:2, ty:8}],
+  },
+};
+// Breite und Höhe stehen nicht in der Tabelle, sie stehen im Grundriss. Eine
+// zweite Zahl daneben wäre die F1-Falle: eine Zahl an zwei Orten.
+for(const k in INN_RAEUME){
+  const r = INN_RAEUME[k];
+  r.key = k; r.w = r.plan[0].length; r.h = r.plan.length;
+  r.zeichen = (rx, ry) => (r.plan[ry] || '')[rx] || '#';
+}
+
+// Welches Gebäude hat welchen Raum, und wo ist seine Schwelle in der Oberwelt?
+const INN_HAEUSER = VILLAGE_BUILDINGS.filter(b => b.innen)
+  .map(b => ({b, raum: INN_RAEUME[b.innen], tuer: bldTuer(b)}));
+
+// --- Wer ist gerade drinnen? -----------------------------------------------
+// Eine Figur steht in ihrem Haus, wenn Feierabend ist. Der Schalter ist nicht
+// neu erfunden: es ist derselbe, den die Gesprächsbäume seit F1 als
+// phase:'feierabend' benutzen — letztes Viertel der Schicht. Ohne Schichtuhr
+// ist immer Feierabend, und das ist keine Ausrede, sondern die Wahrheit über
+// das freie Spiel: dort hört kein Tag auf, also geht auch niemand mehr heim.
+//
+// Das ist der ganze Tagesablauf, den dieser Bauabschnitt hat. Er reicht für
+// den Zweck: Fass steht tagsüber auf dem Anger und abends hinter seiner Theke,
+// und niemand steht zweimal gleichzeitig irgendwo.
+function innenZeit(){ return !CONFIG.schichtModus || shiftT < 0.25 * CONFIG.schichtDauer; }
+const figDrinnen = fig => !!(fig && fig.innenHaus && innenZeit());
+// Steht diese Figur da, wo der Spieler gerade ist? Draußen heißt das "nicht
+// drinnen", drinnen heißt es "sie wurde beim Betreten hier hingestellt".
+const figHier = fig => figDa(fig) && (!!innen || !figDrinnen(fig));
+// Rückverweis von der Figur auf ihr Haus, einmal gesetzt statt bei jeder Frage
+// über drei Tabellen gesucht.
+for(const k in INN_RAEUME)
+  for(const p of INN_RAEUME[k].leute){
+    const f = DORF_FIGUREN.find(f => f.key === p.key);
+    if(f) f.innenHaus = k;
+  }
+
+// --- Hinein ----------------------------------------------------------------
+function betreteHaus(haus){
+  if(innen || kammer || currentLevel !== 1) return;
+  innenSave = {mapCopy: map.slice(), trees, decos: decos.slice(), critters: critters.slice(),
+               npcs: npcs.slice(), monsters: monsters.slice(), drops: drops.slice(), boss, portal,
+               level: currentLevel, px: player.x, py: player.y};
+  const r = haus.raum;
+  innen = {key: r.key, raum: r, haus, moebel: [], tuer: null};
+  currentLevel = 4;
+
+  map.fill(G_WALL);
+  for(let ry = 0; ry < r.h; ry++) for(let rx = 0; rx < r.w; rx++){
+    const z = r.zeichen(rx, ry), m = INN_MOEBEL[z.toUpperCase()] || {};
+    const wx = INN_X0 + rx, wy = INN_Y0 + ry;
+    if(z === '#') continue;                                   // Wand bleibt Wand
+    // Begehbar ist der Boden; ein Möbel sperrt sein Feld als G_BLOCK. G_BLOCK
+    // steht nicht in der WALKABLE-Whitelist, damit ist die Kollision erledigt,
+    // und computeTile() malt es trotzdem als Boden — das Möbel liegt darüber.
+    setT(wx, wy, (m.frei || z === '.') ? G_PATH : G_BLOCK);
+    if(z !== z.toUpperCase()) continue;                        // Fortsetzung: kein zweites Möbel
+    if(z === '.') continue;
+    let breit = 1;
+    while(r.zeichen(rx + breit, ry) === z.toLowerCase()) breit++;
+    const o = {z, x: tileMid(wx) + (breit-1)*TS/2, y: (wy+1)*TS, breit, name: m.name, akt: m.akt};
+    if(z === 'A'){ if(!innen.tuer) innen.tuer = o; continue; } // die Schwelle wird nicht gezeichnet
+    innen.moebel.push(o);
+  }
+  innen.moebel.sort((a,b) => a.y - b.y);
+
+  // Die Leute. Sie kommen aus DORF_FIGUREN, nicht aus einer zweiten Liste —
+  // dieselbe Figur, dieselben Zeilen, derselbe Gesprächsbaum, nur an einem
+  // anderen Ort. fest:true, weil ein Wirt hinter seiner Theke nicht wandert.
+  npcs.length = 0;
+  for(const p of r.leute){
+    const fig = DORF_FIGUREN.find(f => f.key === p.key);
+    if(!fig || !figDa(fig) || !figDrinnen(fig)) continue;
+    const {idle, walk} = npcBlaetter(fig);
+    npcs.push({key:fig.key, figur:fig, homeX:tileMid(INN_X0+p.tx), homeY:(INN_Y0+p.ty)*TS + TS - 6,
+               x:tileMid(INN_X0+p.tx), y:(INN_Y0+p.ty)*TS + TS - 6, sheetIdle:idle, sheetWalk:walk,
+               fest:true, tint:fig.tint||null, tintA:fig.tintA,
+               flip:false, vx:0, vy:0, restT:0, phase:rr(0,10),
+               bubbleIdx:-1, bubbleText1:'', bubbleText2:'', bubbleHideAt:0});
+  }
+  // Der Wald muss raus. trees und decos sind die Oberwelt und werden von der
+  // Zeichenliste ohne Levelprüfung gelesen — die Kammer räumt sie seit G1 an
+  // derselben Stelle (baueWandProps() setzt trees auf die Wandfelsen um). Wer
+  // das vergisst, steht in einer Amtsstube voller Birken. Genau so stand sie
+  // beim ersten Lauf da.
+  trees = []; decos.length = 0; critters.length = 0;
+  monsters.length = 0; boss = null; lockedTarget = null;
+  drops.length = 0; corpses.length = 0; floaters.length = 0;
+  projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
+  portal = null;
+  // Eine Kachel über der Schwelle, nicht auf ihr: sonst führt der erste Druck
+  // auf F sofort wieder hinaus (dieselbe Falle wie bei k.start in baueEbene).
+  player.x = innen.tuer.x; player.y = innen.tuer.y - TS - 8;
+  camSnap();
+  setStyle('bossbar', 'display', 'none');
+  refreshFloor();
+  sfx.warp();
+  aktSperre = 0.5;
+  floaters.push({x: player.x, y: player.y - 46, txt: r.name.toUpperCase(), col:'#f4d97a', t: 2.6, big: true});
+}
+
+// --- Hinaus ----------------------------------------------------------------
+function verlasseHaus(){
+  if(!innen || !innenSave) return;
+  const tuer = innen.haus.tuer;
+  map.set(innenSave.mapCopy);
+  trees = innenSave.trees;
+  decos.length = 0; for(const d of innenSave.decos) decos.push(d);
+  critters.length = 0; for(const c of innenSave.critters) critters.push(c);
+  npcs.length = 0; for(const n of innenSave.npcs) npcs.push(n);
+  monsters.length = 0; for(const m of innenSave.monsters) monsters.push(m);
+  drops.length = 0; for(const d of innenSave.drops) drops.push(d);
+  corpses.length = 0; floaters.length = 0;
+  projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
+  boss = innenSave.boss; portal = innenSave.portal;
+  currentLevel = innenSave.level; lockedTarget = null;
+  player.x = tuer.x; player.y = tuer.y + TS;                  // vor der Tür, nicht in ihr
+  player.kampfT = 0;
+  innen = null; innenSave = null; aktSperre = 0.5;
+  gespraechSchliessen();
+  camSnap();
+  setStyle('bossbar', 'display', boss && !boss.dead ? 'block' : 'none');
+  refreshFloor();
+  sfx.warp();
+}
+
+// --- Die Möbel zeichnen ----------------------------------------------------
+// Gezeichnet wird wie der Kessel und die Grube im Steinfeld: ctx-Grundformen in
+// den Farben des Hauses. Jedes Möbel steht auf seiner Fußlinie (y = Unterkante
+// des Feldes) und geht damit in dieselbe y-Sortierung wie Spieler und Figuren —
+// man läuft hinter einem Regal her und wird davon verdeckt.
+// Die Holzleiter. Sie ist keine Erfindung, sie ist gemessen: `tools/`-Nachlese
+// hat aus tisch.png, bank.png, fass.png und standuhr.png die Farbhistogramme
+// gezogen, und alle vier benutzen dieselben sechs Werte. Wer daneben etwas in
+// einem anderen Braun malt, malt in einem anderen Spiel — die erste Fassung der
+// Theke war gelblich und stach neben dem Packtisch heraus wie ein Fremdkörper.
+//
+//   #3f2832  Kontur       #743f39  tiefster Schatten   #8a4836  Schatten
+//   #91533b  Mittelton    #b86f50  hell                #bf6f4a  Deckfläche
+//   #c78160  Glanzkante   #e69c69  Lichtkante
+const INN_HOLZ = '#91533b', INN_HOLZ_HELL = '#bf6f4a', INN_HOLZ_DUNKEL = '#3f2832';
+const INN_HOLZ_TIEF = '#743f39', INN_HOLZ_SCHATTEN = '#8a4836', INN_HOLZ_GLANZ = '#c78160';
+// Eigener Schatten statt drawShadowEllipse(): der ist fuer Figuren auf Gras
+// gebaut (35 % Schwarz, halbe Hoehe) und liest sich auf einem Dielenboden als
+// Pfuetze. Drinnen faellt Licht von der Decke, also flacher und blasser.
+function innenSchatten(x, y, rx){
+  ctx.fillStyle = 'rgba(0,0,0,0.20)';
+  ctx.beginPath(); ctx.ellipse(x, y, rx, rx*0.26, 0, 0, Math.PI*2); ctx.fill();
+}
+// Der Schein, den ein offenes Feuer auf den Boden davor wirft. Er atmet, aber
+// langsam und flach (0.86 bis 1.00), sonst flackert der halbe Raum im Takt
+// einer Kerze. Kein Schatten unter dem Kamin: was an der Wand steht und selbst
+// leuchtet, wirft keinen Schatten nach vorn.
+function innenFeuerschein(x, y, rx){
+  const g = ctx.createRadialGradient(x, y, 0, x, y, rx);
+  g.addColorStop(0,   'rgba(255,176,84,0.30)');
+  g.addColorStop(0.5, 'rgba(255,150,66,0.13)');
+  g.addColorStop(1,   'rgba(255,140,60,0)');
+  ctx.save();
+  ctx.globalAlpha = 0.86 + 0.14*Math.sin(gameT*2.1);
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(x, y, rx, rx*0.60, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function innenBrett(x, y, w, h, oben, unten){
+  ctx.fillStyle = unten; ctx.fillRect(x - w/2, y - h, w, h);
+  ctx.fillStyle = oben;  ctx.fillRect(x - w/2, y - h, w, Math.max(2, h*0.34));
+  ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+  ctx.strokeRect(Math.round(x - w/2) + 0.5, Math.round(y - h) + 0.5, Math.round(w) - 1, Math.round(h) - 1);
+}
+// Eine waagerechte Platte, von schraeg oben gesehen: die Flaeche oben hell, die
+// Vorderkante darunter dunkel. Das ist der Unterschied zwischen einem Moebel und
+// einem Rechteck — ohne die Kante liegt alles flach auf dem Boden.
+function innenPlatte(x, y, w, dick, oben, kante){
+  ctx.fillStyle = kante; ctx.fillRect(x - w/2, y - dick + 5, w, dick - 3);
+  ctx.fillStyle = oben;  ctx.fillRect(x - w/2, y - dick, w, 6);
+  ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+  ctx.strokeRect(Math.round(x - w/2) + 0.5, Math.round(y - dick) + 0.5, Math.round(w) - 1, dick + 1);
+}
+// Zwei oder vier Beine, je nachdem wie breit das Moebel ist. Sie stehen auf der
+// Fusslinie und tragen die Platte, die darueber gezeichnet wird.
+function innenBeine(x, y, spann, hoch, dick){
+  ctx.fillStyle = INN_HOLZ_DUNKEL;
+  ctx.fillRect(x - spann/2, y - hoch, dick, hoch);
+  ctx.fillRect(x + spann/2 - dick, y - hoch, dick, hoch);
+}
+// Was auf einem Wirtshaustisch steht. Fest je Feld (tileHash statt
+// Math.random), sonst raeumte die Schankstube bei jedem Bild ab und deckte neu
+// ein. Beide Zeichenwege rufen dieselbe Hand: ein Tisch aus dem Pack und ein
+// gemalter Tisch werden gleich gedeckt, nur auf verschiedener Hoehe.
+//
+// Der Krug bleibt gemalt — das Pack hat Flaschen und Kelche, aber keinen
+// Tonkrug von oben. Die Kerze kommt aus dem Pack; fehlt ihr Blatt, steht auf
+// dem Tisch eben keine, denn eine gemalte Kerze waere in diesem Massstab ein
+// Strich mit einem Punkt darueber.
+function innenGedeck(x, y, b, oben){
+  const hh = tileHash(Math.round(x), Math.round(y));
+  for(let i = 0; i < 2; i++){
+    if((hh >> (i*2)) % 3 === 0) continue;                        // nicht jeder Tisch ist gedeckt
+    const kx = x - b/4 + i*(b/2);
+    ctx.fillStyle = '#d8c98f'; ctx.fillRect(kx - 4, oben, 8, 9);  // Krug
+    ctx.fillStyle = '#b9a87a'; ctx.fillRect(kx - 4, oben, 8, 3);
+    ctx.fillStyle = '#8a7a52'; ctx.fillRect(kx + 4, oben + 2, 2, 4);
+  }
+  if((hh >> 5) % 3 && innenBlattDa('innen_kerze'))
+    drawSprite('innen_kerze', 0, x, oben + 9, WELT_SC);
+}
+// IN1-Nachlese: was das Pack hergibt, zeichnet das Pack. Was es nicht hergibt,
+// zeichnet das Haus weiter selbst — die Theke einer Schankstube, ein
+// Aktenstapel und eine Spinnwebe stehen in keinem Blatt, und ein Kuechenschrank
+// ist keine Theke.
+//
+// Die Bank stand hier bis zur zweiten Nachlese in derselben Liste. Sie war
+// nicht in den Innenraumordnern, sie war in "Outdoor decoration" — eine Bank
+// ist eine Bank, drinnen wie draussen. Wer hier eine Zeile schreibt, die sagt
+// "das Pack hat kein X", hat in genau einem Ordner nachgesehen.
+//
+// Jeder Eintrag hier ist ein Griff ins Blatt; fehlt das Blatt, faellt derselbe
+// Buchstabe in drawInnenMoebelGezeichnet() zurueck. Der Ersatzweg ist keine
+// Ruine: bis zur Nachlese war er die einzige Fassung, und er sieht so aus wie
+// die Bilder im Phasendokument.
+const INN_SPRITE = {
+  R: 'innen_regale', T: 'innen_tisch', Z: 'innen_stuhl',
+  D: 'innen_pult',   S: 'innen_schreibtisch', E: 'innen_kommode',
+  H: 'innen_kamin',  B: 'innen_bank', U: 'innen_hocker', V: 'innen_fass',
+  N: 'innen_fenster', P: 'innen_standuhr', L: 'innen_scheit',
+};
+function drawInnenMoebel(o){
+  const blatt = INN_SPRITE[o.z];
+  if(!blatt || !innenBlattDa(blatt)){ drawInnenMoebelGezeichnet(o); return; }
+  const b = o.breit * TS;
+  ctx.save();
+  switch(o.z){
+    case 'R': {  // Aktenregal. Das Blatt hat schmal (14x30) und breit (30x30),
+                 // beide mit farbigen Ruecken. Ein Feld nimmt das schmale, zwei
+                 // Felder das breite — die Registratur bekommt damit denselben
+                 // Verband, den ihr Grundriss ohnehin zeichnet.
+      innenSchatten(o.x, o.y - 2, b*0.38);
+      const s = SHEETS.innen_regale;
+      if(o.breit >= 2) ctx.drawImage(s.img, 17, 1, 30, 30, o.x - 30, o.y - 62, 60, 60);
+      else             ctx.drawImage(s.img,  1, 1, 14, 30, o.x - 14, o.y - 62, 28, 60);
+      break;
+    }
+    case 'H': {  // Herdfeuer: der mittlere der drei Kamine, brauner Ziegel. Die
+                 // Flamme kommt weiter aus fire1 — der Kamin bringt eine dunkle
+                 // Feuerstelle mit, aber keine Animation, und eine Flamme bleibt
+                 // im ganzen Spiel dieselbe Flamme.
+                 //
+                 // Das Blatt ist 48 Pixel hoch und damit drei Kacheln: unten
+                 // die Feuerstelle, darueber der Mantel, oben der Rauchfang.
+                 // Der Rauchfang gehoert IN die Wand, nicht davor — deshalb
+                 // steht der Kamin in Zeile 2, und die Nordwand springt in
+                 // Zeile 1 um zwei Felder vor. Ein Rauchfang, der mitten im
+                 // Raum endet, ist ein Ofenrohr.
+      innenFeuerschein(o.x, o.y + 12, 46);
+      ctx.drawImage(SHEETS.innen_kamin.img, 32, 0, 32, 48, o.x - 32, o.y - 96, 64, 96);
+      drawSprite('fire1', animFrame('fire1', gameT, 10), o.x, o.y - 6, 1.3);
+      break;
+    }
+    case 'T':
+      innenSchatten(o.x, o.y - 3, b*0.34);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      if(innen.key === 'wirtshaus') innenGedeck(o.x, o.y, b, o.y - 44);
+      break;
+    case 'B':    // Bank. Das Blatt ist 31 Pixel breit und deckt damit genau die
+                 // zwei Felder, die der Grundriss ihr gibt. Auf einem einzelnen
+                 // Feld waere sie doppelt so breit wie das Feld — dort steht
+                 // sie ungestreckt, statt in den Nachbarn hineinzuragen.
+      innenSchatten(o.x, o.y - 3, b*0.30);
+      drawSprite(blatt, 0, o.x, o.y, o.breit >= 2 ? WELT_SC : 1);
+      break;
+    case 'U':    // Barhocker: klein, rot gepolstert, drei nebeneinander an der
+                 // Theke. Sie tragen den freigehaltenen Platz — allein steht er
+                 // da wie ein Denkmal, in der Reihe faellt erst auf, dass auf
+                 // ihm niemand sitzt.
+      innenSchatten(o.x, o.y - 2, 8);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      break;
+    case 'V':    // Fass. Der Wirt heisst Fass, und das Haus macht daraus kein
+                 // Wortspiel: es stellt ihm nur welche in die Ecke.
+      innenSchatten(o.x, o.y - 2, 12);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      break;
+    case 'N':    // Fenster. Es haengt in der Wand, nicht im Raum: seine
+                 // Fusslinie liegt eine Kachel ueber der eigenen, sonst stuende
+                 // es auf dem Boden. Was dahinter zu sehen ist, ist Abend —
+                 // hineingegangen wird zum Feierabend, und dann steht draussen
+                 // genau diese Stunde.
+      drawSprite(blatt, 0, o.x, o.y - TS + 8, WELT_SC);
+      break;
+    case 'P':    // Standuhr. Sie steht in einem Haus, das "Zum Letzten Stempel"
+                 // heisst, und sagt kein Wort dazu.
+      innenSchatten(o.x, o.y - 2, 10);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      break;
+    case 'L':    // Holzscheite neben dem Kamin. Drei Stueck, zwei unten und
+                 // eins quer darueber: so liegt Holz, das jemand abgelegt hat.
+                 // Ein Kamin, neben dem kein Holz liegt, brennt aus sich selbst.
+      innenSchatten(o.x, o.y - 3, b*0.32);
+      drawSprite(blatt, 0, o.x - 7, o.y,      WELT_SC);
+      drawSprite(blatt, 0, o.x + 7, o.y - 1,  WELT_SC);
+      drawSprite(blatt, 0, o.x,     o.y - 17, WELT_SC);
+      break;
+    case 'Z':    // Der freigehaltene Platz. Der Schimmer darueber bleibt: er ist
+                 // das Einzige an diesem Stuhl, was ihn von den anderen abhebt,
+                 // und er wird nirgends erklaert.
+      innenSchatten(o.x, o.y - 2, 9);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      ctx.globalAlpha = 0.10 + 0.06*Math.sin(gameT*0.9);
+      ctx.fillStyle = '#f4d97a';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 26, 15, 10, 0, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
+      break;
+    case 'S': {  // Der Schreibtisch der Amtsleitung. Das Blatt bringt die zwei
+                 // Schubladen mit, die IN1 von Hand malen musste; die untere ist
+                 // die zweite. Darauf die Pflanze, am aeusseren Rand, wo sie
+                 // jemand hinstellt, der sie giessen will.
+      innenSchatten(o.x, o.y - 3, b*0.40);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      // Die Pflanze steht auf der Tischplatte, nicht dahinter: ihre Fusslinie
+      // liegt auf der Oberkante des Schreibtischblattes (21 Pixel mal WELT_SC),
+      // ein Stueck vom Rand weg, wo jemand sie hinstellt, der sie giessen will,
+      // ohne sich dazwischenzudraengen.
+      if(innenBlattDa('innen_pflanze'))
+        drawSprite('innen_pflanze', 0, o.x + b/2 - 19, o.y - 21*WELT_SC + 4, WELT_SC);
+      break;
+    }
+    case 'D':
+    case 'E':
+      innenSchatten(o.x, o.y - 3, b*0.40);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      if(o.z === 'D'){   // Klingel auf dem Dienstpult
+        ctx.fillStyle = '#d8c98f';
+        ctx.beginPath(); ctx.arc(o.x + b/2 - 11, o.y - 45, 4, Math.PI, 0); ctx.fill();
+        ctx.fillStyle = '#a8925c'; ctx.fillRect(o.x + b/2 - 16, o.y - 45, 10, 2);
+      } else {           // Papier auf dem Schreibtisch, an dem gearbeitet wird
+        ctx.fillStyle = '#e6dcc0'; ctx.fillRect(o.x - b/2 + 8, o.y - 48, 13, 5);
+        ctx.fillStyle = '#cfc3a0'; ctx.fillRect(o.x - b/2 + 10, o.y - 46, 13, 5);
+      }
+      break;
+  }
+  ctx.restore();
+}
+
+function drawInnenMoebelGezeichnet(o){
+  const b = o.breit * TS;
+  ctx.save();
+  switch(o.z){
+    case 'F':   // Wandfackel. Dieselbe Bauart wie in der Kammer, damit eine
+                // Flamme im ganzen Spiel eine Flamme bleibt.
+                //
+                // Der Halter, den IN1 darunter gemalt hat, ist weg: das
+                // fire1-Blatt bringt seinen eigenen mit, und darunter hat es
+                // durchsichtigen Rand. Der gemalte Riegel hing deshalb einen
+                // halben Kachelabstand unter der Fackel in der Luft.
+      drawSprite('fire1', animFrame('fire1', gameT + o.x*0.01, 10), o.x, o.y - 22, 1.2);
+      break;
+    case 'W': {  // Spinnwebe, oben in der Wand statt unten auf den Dielen.
+                 //
+                 // Zwei Dinge sind hier gemessen. Erstens der Anker: das
+                 // G1-Blatt traegt ay:0, seine Bezugslinie ist also die
+                 // OBERkante. IN1 hat sie wie eine Fusslinie behandelt, und die
+                 // Webe hing eine ganze Kachel zu tief — auf dem Boden, wo eine
+                 // Spinnwebe wie ein Fleck aussieht. Zwei Kacheln hoch gesetzt
+                 // sitzt sie im Wandband, mit ihrem Gespinst genau in der Ecke
+                 // zwischen Wand und Diele.
+                 //
+                 // Der dunkelblaue Strich, der bis heute links neben jeder
+                 // Webe stand, ist kein Zeichenfehler dieser Stelle: er lag im
+                 // Blatt. schnittSaeubern() nimmt ihn beim Laden heraus.
+      drawSprite('dun_cobweb', 0, o.x, o.y - 2*TS, WELT_SC);
+      break;
+    }
+    case 'N': {  // Fenster, gemalt: ein Rahmen, dahinter der Abendhimmel als
+                 // Verlauf, davor ein Sprossenkreuz. Dieselben drei Farben, die
+                 // im Blatt uebereinanderliegen — Violett, Rosa, Orange.
+      const fx = o.x - 14, fy = o.y - TS - 26, fb = 28, fh2 = 42;
+      ctx.fillStyle = '#3a2a1e'; ctx.fillRect(fx - 2, fy - 2, fb + 4, fh2 + 4);
+      const g = ctx.createLinearGradient(0, fy, 0, fy + fh2);
+      g.addColorStop(0, '#8f7bb0'); g.addColorStop(0.55, '#e2a2a0'); g.addColorStop(1, '#f2cf9e');
+      ctx.fillStyle = g; ctx.fillRect(fx, fy, fb, fh2);
+      ctx.fillStyle = '#a9784a';
+      ctx.fillRect(fx + fb/2 - 2, fy, 4, fh2); ctx.fillRect(fx, fy + fh2/2 - 2, fb, 4);
+      break;
+    }
+    case 'P': {  // Standuhr, gemalt: hoher Kasten, helles Zifferblatt, ein
+                 // Pendel, das steht. Es steht, weil das Blatt seines auch
+                 // stehen laesst — zwei Fassungen desselben Moebels duerfen
+                 // sich nicht darin unterscheiden, ob die Zeit laeuft.
+      innenSchatten(o.x, o.y - 2, 10);
+      ctx.fillStyle = '#3a2a20'; ctx.fillRect(o.x - 14, o.y - 60, 28, 58);
+      ctx.fillStyle = '#7a4e26'; ctx.fillRect(o.x - 11, o.y - 57, 22, 52);
+      ctx.fillStyle = '#e6dcc0';
+      ctx.beginPath(); ctx.arc(o.x, o.y - 44, 9, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#3a2a20'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(o.x, o.y - 44); ctx.lineTo(o.x, o.y - 50);
+      ctx.moveTo(o.x, o.y - 44); ctx.lineTo(o.x + 5, o.y - 42); ctx.stroke();
+      ctx.fillStyle = '#5a3a1c'; ctx.fillRect(o.x - 8, o.y - 30, 16, 24);
+      ctx.fillStyle = '#c8a35a';
+      ctx.fillRect(o.x - 1, o.y - 28, 2, 14);
+      ctx.beginPath(); ctx.arc(o.x, o.y - 12, 4, 0, Math.PI*2); ctx.fill();
+      break;
+    }
+    case 'R': {  // Aktenregal: drei Böden, darauf Aktenrücken in den Farben des
+                 // Hauses. Die Rücken stehen fest je Feld (tileHash statt
+                 // Math.random), sonst flackerte die Registratur bei jedem Bild.
+      innenSchatten(o.x, o.y - 2, b*0.40);
+      innenBrett(o.x, o.y - 2, b - 4, 46, INN_HOLZ_HELL, INN_HOLZ);
+      const h = tileHash(Math.round(o.x), Math.round(o.y));
+      const farben = ['#b9a07a', '#8f6136', '#7a6a94', '#9a8a5f', '#a8523a'];
+      for(let reihe = 0; reihe < 3; reihe++){
+        const ry = o.y - 44 + reihe*14;
+        ctx.fillStyle = INN_HOLZ_DUNKEL; ctx.fillRect(o.x - b/2 + 2, ry + 10, b - 4, 2);
+        for(let i = 0; i < Math.round(b/5) - 1; i++){
+          ctx.fillStyle = farben[(h >> (reihe*3 + i)) % farben.length];
+          ctx.fillRect(o.x - b/2 + 4 + i*5, ry + 2 - (i % 3), 4, 8 + (i % 3));
+        }
+      }
+      break;
+    }
+    case 'K':
+      innenSchatten(o.x, o.y - 2, 12);
+      drawSprite('dun_crate', 0, o.x, o.y, WELT_SC);
+      break;
+    case 'O':
+      innenSchatten(o.x, o.y - 2, 8);
+      drawSprite('dun_pot', 0, o.x, o.y - 2, WELT_SC);
+      break;
+    case 'H': {  // Herdfeuer mit dem Topf darüber. Das Blatt gibt es seit W-Lager
+                 // (camp_pot), es hing bisher nur im Lager der Beschwerden.
+                 //
+                 // Auch die gemalte Fassung braucht seit dem Umzug an die Wand
+                 // ihren Rauchfang: die Nordwand springt hier um zwei Felder
+                 // vor, und ohne Mantel und Fang stünde dort eine Wandnase ohne
+                 // Grund. Trapez nach oben, wie im Blatt.
+      innenFeuerschein(o.x, o.y + 12, 46);
+      ctx.fillStyle = '#7c4a2c';
+      ctx.beginPath();
+      ctx.moveTo(o.x - b/2 + 2, o.y - 30); ctx.lineTo(o.x + b/2 - 2, o.y - 30);
+      ctx.lineTo(o.x + 13, o.y - 78);      ctx.lineTo(o.x - 13, o.y - 78);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#5e3720'; ctx.fillRect(o.x - 13, o.y - 96, 26, 18);
+      ctx.fillStyle = '#9a6440'; ctx.fillRect(o.x - b/2 + 1, o.y - 34, b - 2, 7);
+      ctx.fillStyle = '#4a4038'; ctx.fillRect(o.x - b/2 + 3, o.y - 27, b - 6, 25);
+      ctx.fillStyle = '#2b2622'; ctx.fillRect(o.x - b/2 + 7, o.y - 23, b - 14, 21);
+      drawSprite('fire1', animFrame('fire1', gameT, 10), o.x, o.y - 4, 1.4);
+      drawSprite('camp_pot', animFrame('camp_pot', gameT, 6), o.x, o.y - 12, WELT_SC);
+      break;
+    }
+    case 'Q': {  // Flaschenbord hinter der Theke. Es hängt an der Wand wie die
+                 // Fackel: die Fußlinie liegt eine Kachel über der eigenen.
+                 //
+                 // Ein Brett mit Flaschen darauf ist das Zeichen, an dem ein
+                 // Bild eine Schankstube von einer Stube unterscheidet — jede
+                 // gemalte Schänke, die man kennt, hat eins hinter dem Wirt.
+                 // Es bleibt gezeichnet: das Pack hat Regale mit Buchrücken,
+                 // und ein Bücherregal hinter einer Theke ist eine Bibliothek.
+                 // Die Flaschen darauf kommen aus dem Pack, wenn es da ist.
+      const qy = o.y - TS + 4;
+      innenBrett(o.x, qy, b - 8, 7, INN_HOLZ, INN_HOLZ_DUNKEL);
+      const qh = tileHash(Math.round(o.x), Math.round(o.y));
+      for(let i = 0; i < 5; i++){
+        if((qh >> i) % 5 === 0) continue;          // nicht jeder Platz ist besetzt
+        const bx = Math.round(o.x - b/2 + 12 + i*((b - 24)/4));
+        if(innenBlattDa('innen_flasche')){ drawSprite('innen_flasche', 0, bx, qy - 4, WELT_SC); continue; }
+        ctx.fillStyle = i % 2 ? '#8a3a30' : '#4a6a3a'; ctx.fillRect(bx - 3, qy - 22, 6, 15);
+        ctx.fillStyle = '#e6dcc0';                  ctx.fillRect(bx - 3, qy - 18, 6, 4);
+        ctx.fillStyle = i % 2 ? '#5f271f' : '#33492a'; ctx.fillRect(bx - 1, qy - 27, 2, 5);
+      }
+      break;
+    }
+    case 'X': {  // Theke. Sie bleibt gezeichnet, und zwar nicht aus Trotz: das
+                 // Pack hat keinen Tresen von oben. Kitchen.png ist eine
+                 // Frontansicht (Haengeschraenke, von vorn gesehen), und ein
+                 // Kuechenschrank ist ohnehin keine Schankstube.
+                 // Gewicht wie die Packmoebel: geschlossener Unterbau, kraeftige
+                 // Platte, dunkle Kontur. Die duenne Fassung davor las sich neben
+                 // einem echten Tisch als schwebendes Brett.
+      innenSchatten(o.x, o.y - 2, b*0.44);
+      // Unterbau: senkrechte Bretter, alle sechzehn Pixel eine Fuge, unten eine
+      // Sockelleiste. Das ist der Unterschied zwischen einer Theke und einem
+      // Brett auf Beinen — sie ist vorn zu, man sieht nicht darunter durch.
+      ctx.fillStyle = INN_HOLZ_SCHATTEN; ctx.fillRect(o.x - b/2 + 1, o.y - 26, b - 2, 24);
+      ctx.fillStyle = INN_HOLZ_TIEF;
+      for(let i = 1; i*16 < b - 2; i++) ctx.fillRect(o.x - b/2 + i*16, o.y - 24, 2, 19);
+      ctx.fillStyle = INN_HOLZ_TIEF;  ctx.fillRect(o.x - b/2 + 1, o.y - 6, b - 2, 4);
+      ctx.fillStyle = INN_HOLZ;       ctx.fillRect(o.x - b/2 + 1, o.y - 7, b - 2, 2);
+      innenPlatte(o.x, o.y - 26, b, 11, INN_HOLZ_HELL, INN_HOLZ_SCHATTEN);
+      // Glanzkante auf der Deckfläche: eine Linie, und aus dem Rechteck wird
+      // eine Platte, über die tausendmal ein Ärmel gewischt hat.
+      ctx.fillStyle = INN_HOLZ_GLANZ; ctx.fillRect(o.x - b/2 + 2, o.y - 36, b - 4, 2);
+      ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+      ctx.strokeRect(Math.round(o.x - b/2) + 0.5, Math.round(o.y - 26) + 0.5, Math.round(b) - 1, 25);
+      // Auf der Theke stehen zwei Flaschen aus dem Pack, am rechten Ende — am
+      // linken steht der Wirt. Ihre Fusslinie liegt auf der Deckflaeche der
+      // Platte (o.y-26 minus 11 Pixel Dicke, plus die 6 Pixel Deckflaeche):
+      // davor stuenden sie vor der Theke, dahinter in der Wand.
+      //
+      // Ohne Wuerfel, anders als beim Gedeck. Es gibt genau eine Theke im
+      // Spiel, und ein tileHash ueber ein einziges Feld ist kein Zufall,
+      // sondern eine Muenze, die einmal geworfen und dann fuer immer
+      // liegengelassen wird. Der erste Anlauf warf sie und bekam eine
+      // Schankstube ohne eine einzige Flasche.
+      if(innenBlattDa('innen_flasche'))
+        for(let i = 0; i < 2; i++)
+          drawSprite('innen_flasche', 0, o.x + b/2 - 17 - i*15, o.y - 32, WELT_SC);
+      break;
+    }
+    case 'T': {  // Tisch: Platte auf vier Beinen, hoch genug, dass man die Beine
+                 // sieht. Der erste Anlauf war ein Brett mit einem Schatten
+                 // darunter, und im Bild sah ein Tisch aus wie eine Bank und
+                 // eine Bank wie ein Tisch. Von oben unterscheidet die beiden
+                 // nicht die Breite, sondern die Höhe — und ein gedeckter
+                 // Tisch sagt es in einem Blick.
+      innenSchatten(o.x, o.y - 3, b*0.34);
+      innenBeine(o.x, o.y - 3, b - 10, 18, 5);
+      innenPlatte(o.x, o.y - 21, b - 4, 15, '#c08c47', '#7d5326');
+      if(innen.key === 'wirtshaus') innenGedeck(o.x, o.y, b, o.y - 30);
+      break;
+    }
+    case 'B':    // Bank: halb so hoch, schmaler, dunkler. Zwei Beine statt vier.
+                 // Von oben unterscheidet eine Bank und einen Tisch nicht die
+                 // Breite, sondern die Hoehe.
+      innenSchatten(o.x, o.y - 3, b*0.30);
+      innenBeine(o.x, o.y - 3, b - 16, 10, 5);
+      innenPlatte(o.x, o.y - 13, b - 10, 9, '#9a7343', INN_HOLZ_DUNKEL);
+      break;
+    case 'U':    // Barhocker: rundes Polster auf einem Bein. Rot, weil das
+                 // Polster im Blatt rot ist — der Ersatzweg zeigt dasselbe
+                 // Wirtshaus wie das Pack, nur mit weniger Pixeln.
+      innenSchatten(o.x, o.y - 2, 7);
+      ctx.fillStyle = INN_HOLZ_DUNKEL; ctx.fillRect(o.x - 2, o.y - 14, 4, 12);
+      ctx.fillStyle = '#8a3a30';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 15, 9, 5, 0, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#b4544a';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 17, 8, 4, 0, 0, Math.PI*2); ctx.fill();
+      break;
+    case 'L': {  // Holzscheite, gemalt: drei Rollen mit heller Schnittflaeche.
+      innenSchatten(o.x, o.y - 3, b*0.32);
+      const legen = (lx, ly) => {
+        ctx.fillStyle = INN_HOLZ_TIEF;     ctx.fillRect(lx - 22, ly - 20, 44, 18);
+        ctx.fillStyle = INN_HOLZ;          ctx.fillRect(lx - 22, ly - 20, 44, 8);
+        ctx.fillStyle = '#e6c79a';         ctx.fillRect(lx + 14, ly - 18, 8, 14);
+        ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+        ctx.strokeRect(Math.round(lx - 22) + 0.5, Math.round(ly - 20) + 0.5, 43, 17);
+      };
+      legen(o.x - 7, o.y); legen(o.x + 7, o.y - 1); legen(o.x, o.y - 17);
+      break;
+    }
+    case 'V':    // Fass: Daubenkoerper mit zwei Reifen, Deckel obendrauf.
+                 // Bauchig heisst hier, dass die Mitte einen Strich breiter ist
+                 // als Boden und Deckel; mehr braucht ein Fass nicht.
+      innenSchatten(o.x, o.y - 2, 12);
+      ctx.fillStyle = '#7a4e26'; ctx.fillRect(o.x - 12, o.y - 30, 24, 28);
+      ctx.fillStyle = '#8f6136'; ctx.fillRect(o.x - 13, o.y - 24, 26, 16);
+      ctx.fillStyle = '#5a3a1c';
+      ctx.fillRect(o.x - 13, o.y - 26, 26, 3); ctx.fillRect(o.x - 13, o.y - 11, 26, 3);
+      ctx.fillStyle = '#a9784a';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 30, 12, 5, 0, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 30, 12, 5, 0, 0, Math.PI*2); ctx.stroke();
+      break;
+    case 'Z': {  // Der freigehaltene Platz. Ein Stuhl mit Lehne, ein Handbreit
+                 // vom Tisch abgerückt, und darüber ein Schimmer, der kommt und
+                 // geht. Er wird nirgends erklärt und nirgends benannt; wer ihn
+                 // anspricht, bekommt Fass' vierte Grundzeile und sonst nichts.
+      innenSchatten(o.x, o.y - 2, 10);
+      ctx.fillStyle = INN_HOLZ_DUNKEL;
+      ctx.fillRect(o.x - 8, o.y - 11, 3, 9); ctx.fillRect(o.x + 5, o.y - 11, 3, 9);
+      innenBrett(o.x, o.y - 11, 20, 6, INN_HOLZ_HELL, INN_HOLZ);
+      innenBrett(o.x, o.y - 17, 20, 14, INN_HOLZ, INN_HOLZ_DUNKEL);
+      ctx.globalAlpha = 0.10 + 0.06*Math.sin(gameT*0.9);
+      ctx.fillStyle = '#f4d97a';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 16, 15, 9, 0, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
+      break;
+    }
+    case 'D':    // Dienstpult: Theke mit Klingel. Hier nimmt man Feierabend.
+      innenSchatten(o.x, o.y - 2, b*0.41);
+      ctx.fillStyle = '#4d3018'; ctx.fillRect(o.x - b/2 + 1, o.y - 22, b - 2, 20);
+      innenPlatte(o.x, o.y - 22, b, 9, '#b09053', '#7d6234');
+      ctx.fillStyle = '#d8c98f';
+      ctx.beginPath(); ctx.arc(o.x + b/2 - 9, o.y - 29, 4, Math.PI, 0); ctx.fill();
+      break;
+    case 'E':    // Ein Schreibtisch, an dem gearbeitet wird: Papier drauf.
+      innenSchatten(o.x, o.y - 2, b*0.40);
+      innenBrett(o.x, o.y - 2, b - 2, 20, '#8f6136', INN_HOLZ);
+      ctx.fillStyle = '#e6dcc0'; ctx.fillRect(o.x - b/2 + 6, o.y - 26, 13, 5);
+      ctx.fillStyle = '#cfc3a0'; ctx.fillRect(o.x - b/2 + 8, o.y - 24, 13, 5);
+      break;
+    case 'S': {  // Der Schreibtisch der Amtsleitung. Unberührt seit vierzig
+                 // Jahren, mit der Pflanze darauf, die lebt (Weltbibel: "Auf dem
+                 // Schreibtisch steht eine Pflanze. Sie lebt."). Zwei Schubladen
+                 // übereinander, und die untere ist die zweite. Sie steht einen
+                 // Strich vor statt offen: sie klemmt.
+      innenSchatten(o.x, o.y - 2, b*0.41);
+      innenBrett(o.x, o.y - 2, b - 2, 26, '#a07a4a', '#6b4526');
+      const sw = Math.round(b*0.42), sx0 = o.x - b/2 + 7;
+      for(let i = 0; i < 2; i++){
+        const sy = o.y - 21 + i*9;
+        ctx.fillStyle = '#59391f'; ctx.fillRect(sx0 - (i ? 1 : 0), sy, sw + (i ? 2 : 0), 7);
+        ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+        ctx.strokeRect(sx0 - (i ? 1 : 0) + 0.5, sy + 0.5, sw + (i ? 2 : 0) - 1, 6);
+        ctx.fillStyle = '#d8c98f';                          // Griff
+        ctx.fillRect(sx0 + sw/2 - 4, sy + 2, 8, 2);
+      }
+      // Die Pflanze, am äußersten Rand des Tisches: dort stellt sie jemand hin,
+      // der sie gießen will, ohne sich dazwischenzudrängen. Sie atmet, weil sie
+      // lebt, und das ist der einzige Satz, den dieser Raum über sie sagt.
+      const px = o.x + b/2 - 13, py = o.y - 27;
+      innenSchatten(px, o.y - 3, 7);
+      ctx.fillStyle = '#8a5a3c'; ctx.fillRect(px - 7, py - 1, 14, 11);
+      ctx.fillStyle = '#a9704b'; ctx.fillRect(px - 8, py - 3, 16, 4);
+      ctx.strokeStyle = '#3f7a3c'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(px, py - 2); ctx.lineTo(px, py - 12); ctx.stroke();
+      for(let i = 0; i < 5; i++){
+        const a = -Math.PI/2 + (i-2)*0.62 + Math.sin(gameT*0.6 + i*1.3)*0.07;
+        const bx = px + Math.cos(a)*9, by = py - 13 + Math.sin(a)*8;
+        ctx.fillStyle = i % 2 ? '#4f9a4a' : '#63b355';
+        ctx.beginPath(); ctx.ellipse(bx, by, 7, 3.4, a, 0, Math.PI*2); ctx.fill();
+      }
+      break;
+    }
+    case 'Y': {  // Aktenstapel, und darauf schläft Anlage 3. Sie schläft laut
+                 // Bramsche "auf der richtigen Akte", und Bramsche weckt sie
+                 // nicht. Hier wird sie auch nicht geweckt.
+      innenSchatten(o.x, o.y - 2, 11);
+      for(let i = 0; i < 5; i++){
+        ctx.fillStyle = i % 2 ? '#e6dcc0' : '#cfc3a0';
+        ctx.fillRect(o.x - 11 + (i % 2), o.y - 6 - i*4, 22, 4);
+      }
+      if(!npcs.some(n => n.key === 'bramsche')) drawAnlage3(o.x, o.y - 29);
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+// Der Ausgang, flach auf dem Boden: eine Schwelle mit Licht von draußen. Sie
+// geht nicht in die y-Sortierung, sie liegt darunter (dieselbe Regel wie bei
+// drawStopfen()).
+function drawInnenSchwelle(){
+  const o = innen.tuer; if(!o || !vis(o.x, o.y)) return;
+  const b = o.breit * TS, x0 = o.x - b/2, y0 = o.y - TS;
+  ctx.save();
+  // Der Durchgang selbst: Tageslicht von draußen, das auf der Schwelle liegt
+  // und ein Stück in den Raum reicht. Es atmet leicht, damit die Tür nicht wie
+  // ein Loch im Boden aussieht.
+  const g = ctx.createLinearGradient(0, y0 + TS, 0, y0 - TS*1.2);
+  g.addColorStop(0, 'rgba(250,232,182,0.42)');
+  g.addColorStop(1, 'rgba(250,232,182,0)');
+  ctx.globalAlpha = 0.85 + 0.15*Math.sin(gameT*1.3);
+  ctx.fillStyle = g;
+  ctx.fillRect(x0, y0 - TS*1.2, b, TS*2.2);
+  ctx.globalAlpha = 1;
+  // Pfosten und Schwellbrett. Zwei Striche, und aus dem Loch wird eine Tür.
+  ctx.fillStyle = INN_HOLZ_DUNKEL;
+  ctx.fillRect(x0 - 3, y0 - 4, 4, TS + 4);
+  ctx.fillRect(x0 + b - 1, y0 - 4, 4, TS + 4);
+  ctx.fillStyle = '#8a5a3c'; ctx.fillRect(x0 - 3, y0 + TS - 5, b + 6, 5);
+  ctx.fillStyle = '#a9704b'; ctx.fillRect(x0 - 3, y0 + TS - 5, b + 6, 2);
+  ctx.restore();
+}
+
+// ===========================================================================
+//  IN1-Guard. Läuft auf Skriptebene wie dorfMassstabAssert(): alles, was er
+//  misst, steht in den Tabellen und braucht kein einziges Bild.
+//  Wirft nie, meldet nur.
+// ===========================================================================
+function innenAssert(){
+  let ok = true;
+  const warnen = (m, ...r) => { ok = false; console.warn('IN1 Innenraum:', m, ...r); };
+  for(const h of INN_HAEUSER){
+    const r = h.raum;
+    if(!r){ warnen(`${h.b.bld} nennt einen Raum, den es nicht gibt: ${h.b.innen}`); continue; }
+    // (1) Rechteckig? Ein Grundriss mit einer kurzen Zeile hat ein Loch in der
+    //     Wand, und durch das Loch läuft man in eine Karte voller G_WALL.
+    for(let ry = 0; ry < r.h; ry++)
+      if(r.plan[ry].length !== r.w)
+        warnen(`${r.key}: Zeile ${ry} ist ${r.plan[ry].length} Zeichen lang, der Raum ${r.w}`);
+    // (2) Rundherum zu? Bis auf den Ausgang.
+    for(let rx = 0; rx < r.w; rx++){
+      if(r.zeichen(rx, 0) !== '#') warnen(`${r.key}: Nordwand hat bei ${rx} ein ${r.zeichen(rx,0)}`);
+      const s = r.zeichen(rx, r.h-1);
+      if(s !== '#' && s !== 'A') warnen(`${r.key}: Südwand hat bei ${rx} ein ${s}`);
+    }
+    for(let ry = 0; ry < r.h; ry++)
+      if(r.zeichen(0, ry) !== '#' || r.zeichen(r.w-1, ry) !== '#')
+        warnen(`${r.key}: Seitenwand offen in Zeile ${ry}`);
+    // (3) Genau ein Ausgang, und er liegt in der Südwand.
+    let tuerN = 0, tuerX = [];
+    for(let ry = 0; ry < r.h; ry++) for(let rx = 0; rx < r.w; rx++)
+      if(r.zeichen(rx, ry) === 'A'){
+        tuerN++; tuerX.push(rx);
+        if(ry !== r.h-1) warnen(`${r.key}: Ausgang liegt in Zeile ${ry} statt in der Südwand`);
+      }
+    if(!tuerN) warnen(`${r.key}: kein Ausgang, das ist eine Zelle`);
+    if(tuerN && Math.max(...tuerX) - Math.min(...tuerX) !== tuerN - 1)
+      warnen(`${r.key}: der Ausgang ist auf ${tuerN} Felder verteilt, die nicht nebeneinanderliegen`);
+    // (4) Kennt der Grundriss nur Zeichen, für die es ein Möbel gibt?
+    for(let ry = 0; ry < r.h; ry++) for(let rx = 0; rx < r.w; rx++){
+      const z = r.zeichen(rx, ry);
+      if(!INN_MOEBEL[z.toUpperCase()]) warnen(`${r.key}: unbekanntes Zeichen '${z}' bei ${rx},${ry}`);
+      // Eine Fortsetzung ohne Anfang ist ein Möbel, das im Nichts beginnt.
+      if(z !== z.toUpperCase() && r.zeichen(rx-1, ry).toUpperCase() !== z.toUpperCase())
+        warnen(`${r.key}: '${z}' bei ${rx},${ry} setzt nichts fort`);
+    }
+    // (5) Steht jeder Hausbewohner auf begehbarem Boden, und gibt es ihn?
+    for(const p of r.leute){
+      const z = r.zeichen(p.tx, p.ty);
+      const m = INN_MOEBEL[z.toUpperCase()] || {};
+      if(!m.frei && z !== '.') warnen(`${r.key}: ${p.key} steht auf '${z}' bei ${p.tx},${p.ty}`);
+      if(!DORF_FIGUREN.some(f => f.key === p.key)) warnen(`${r.key}: ${p.key} steht in keiner Figurentabelle`);
+    }
+    // (6) Sitzt die Schwelle unter der gemalten Tür? Gemessen wird der Abstand
+    //     zwischen dem Türpunkt und der Mitte des Fußabdrucks — er MUSS von
+    //     null verschieden sein, sonst steht wieder die geratene Mitte da.
+    if(CF_BLD[h.b.bld].tuerDx === undefined)
+      warnen(`${h.b.bld} ist betretbar, aber sein Blatt hat kein gemessenes tuerDx`);
+    // (7) Liegt die Schwelle innerhalb des Fußabdrucks? Eine Tür neben dem Haus
+    //     wäre eine Tür in die Wiese.
+    const tx = Math.floor(h.tuer.x / TS);
+    if(tx < h.b.x0 || tx >= h.b.x0 + h.b.w)
+      warnen(`${h.b.bld}: die Tür liegt bei Kachel ${tx}, das Haus bei ${h.b.x0}..${h.b.x0+h.b.w-1}`);
+  }
+  // (8) Passt der größte Grundriss noch auf die Karte?
+  for(const k in INN_RAEUME){
+    const r = INN_RAEUME[k];
+    if(INN_X0 + r.w >= MW || INN_Y0 + r.h >= MH) warnen(`${k} passt nicht auf die Karte`);
+  }
+  // (9) Trägt jede Figur mit innenHaus auch wirklich einen Raum, den es gibt?
+  for(const f of DORF_FIGUREN)
+    if(f.innenHaus && !INN_RAEUME[f.innenHaus]) warnen(`${f.key} wohnt in einem Haus, das es nicht gibt`);
+  if(ok) console.log('IN1 Innenraum: in Ordnung (' + INN_HAEUSER.length + ' Türen).');
+}
+innenAssert();
+
 // --- Belohnung: hängt ausschließlich am Tier des Schildes --------------------
 // M4-Befund: der dritte Parameter fehlte, und deshalb zahlte die Sperrablage in
 // Substantiven von Gegnern, die in ihr gar nicht stehen. `KAM_WAECHTER` ist das
@@ -13198,7 +14333,10 @@ let aktArt = 0, aktObj = null, aktTxt = '', aktD2 = 0, aktSperre = 0;
 // AKT_NPC angesprochen wie jede andere Figur; das Nachschlagen ist eine Antwort
 // in seiner Tafel geworden. Die 9 bleibt frei und wird nicht nachbesetzt: die
 // Zahlen sind Sprungmarken in einem switch und stehen in keinem Spielstand.
-const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12, AKT_ABSTIEG=13, AKT_STOPFEN=14;
+const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AUSGANG=6, AKT_RESET=7, AKT_GRUSS=8, AKT_AMT=10, AKT_NPC=11, AKT_ZUSTELLEN=12, AKT_ABSTIEG=13, AKT_STOPFEN=14,
+      // IN1: hinein, hinaus, und die zweite Schublade. AKT_AMT bleibt, was es
+      // war — nur steht es seither am Dienstpult drinnen statt an der Fassade.
+      AKT_HAUS=15, AKT_HAUSAUS=16, AKT_SCHUBLADE=17;
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -13215,6 +14353,20 @@ function scanAktion(dt){
   if(aktSperre > 0) aktSperre -= dt;
   aktArt = 0; aktObj = null; aktD2 = 58*58;
   if(state !== 'play' || player.dead || aktSperre > 0) return;
+  // IN1: drinnen gibt es weder Monster noch Kammertüren noch das Schattenland.
+  // Was es gibt, sind Leute, Möbel mit einer Aufschrift und der Weg hinaus.
+  if(innen){
+    aktBiete(innen.tuer.x, innen.tuer.y, AKT_HAUSAUS, null, 'Hinausgehen');
+    for(const n of npcs) if(figDa(n.figur)) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');
+    for(const o of innen.moebel){
+      if(o.akt === 'pult' && CONFIG.schichtModus) aktBiete(o.x, o.y, AKT_AMT, null, 'Amtsstube');
+      // Die klemmende Schublade bietet sich nur an, solange sie klemmt. Die
+      // Bedingung ist wörtlich dieselbe wie in schubladeBlock() — sie steht
+      // nicht zweimal da, sie wird dort gelesen.
+      if(o.akt === 'schublade' && schubladeBlock()) aktBiete(o.x, o.y, AKT_SCHUBLADE, null, 'Die zweite Schublade');
+    }
+    return;
+  }
   if(!kammer){
     // W5: "Zustellen" am Schattenfürsten. Vor dem Grußpflicht-Block geprüft: boss.x/
     // boss.y sind echte Weltkoordinaten (nie player.x/player.y — Distanz 0 schlägt
@@ -13239,14 +14391,20 @@ function scanAktion(dt){
     aktBiete(KN_POS.x, KN_POS.y, AKT_NPC, knNpc, 'Ansprechen');
     // W3: eigene Weltposition je Figur. W11: wer erst ab einem spaeteren Akt im
     // Dorf steht, ist vorher auch nicht ansprechbar.
-    for(const n of npcs) if(figDa(n.figur)) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');
+    for(const n of npcs) if(figHier(n.figur)) aktBiete(n.x, n.y, AKT_NPC, n, 'Ansprechen');
     for(const t of kammerTueren) if(t.cd <= 0) aktBiete(t.x, t.y, AKT_TUER, t, 'Betreten');
   // SZ3: die brummende Stelle. Sie bietet nur an, was gerade dran ist, und bei
   // Stufe 2 gar nichts — dort fehlt Zapf, und der steht im Dorf. Eine Aktion,
   // die anbietet, was sie nicht kann, ist schlimmer als keine.
   { const t = stopfenAktionText();
     if(t) aktBiete(STOPFEN.x, STOPFEN.y, AKT_STOPFEN, null, t); }
-    if(CONFIG.schichtModus) aktBiete(AMT_TUER.x, AMT_TUER.y, AKT_AMT, null, 'Amtsstube');   // G5: Dorf-Gebäude
+    // IN1: Die drei Türen. Sie stehen auch im freien Spiel offen — ein Haus zu
+    // betreten hat mit der Schichtuhr nichts zu tun. Was drinnen an der Uhr
+    // hängt (das Dienstpult, der Feierabend), prüft sie selbst.
+    // Bis hierhin bot das Amt an dieser Stelle direkt sein Panel an. Das tut es
+    // jetzt drinnen, am Dienstpult: der Weg zum Feierabend ist um drei Schritte
+    // länger geworden, und dafür hat er einen Ort.
+    for(const h of INN_HAEUSER) aktBiete(h.tuer.x, h.tuer.y, AKT_HAUS, h, 'Betreten');
     return;
   }
   const k = kammer;
@@ -13289,6 +14447,9 @@ function fuehreAktion(){
     // selbst, die Ausnahme ist weg.
     case AKT_NPC:     gespraechOeffnen(aktObj); break;
     case AKT_AMT:     amtFensterOeffnen(); break;
+    case AKT_HAUS:    betreteHaus(aktObj); break;
+    case AKT_HAUSAUS: verlasseHaus(); break;
+    case AKT_SCHUBLADE: schubladeOeffnen(); break;
     case AKT_ZUSTELLEN: zustellen(); break;
   }
 }
@@ -13780,7 +14941,11 @@ function gespraechTick(dt){
     // es dich noch?" hat bei ihm keinen Sinn, die Frage "stehst du noch neben
     // mir?" schon: sein Eintrag traegt KN_POS in x/y, die Entfernung wird also
     // gegen dieselben Zahlen gemessen wie bei jeder Dorffigur.
-    if(!n || state !== 'play' || currentLevel !== 1 || kammer ||
+    // IN1: drinnen ist currentLevel 4 und das Gespraech trotzdem gueltig. Die
+    // Frage, die diese Zeile stellt, ist nicht "welche Ebene", sondern "steht
+    // die Figur noch neben mir" — npcs.indexOf() beantwortet sie in beiden
+    // Welten, und beim Hineingehen wie beim Hinausgehen wird npcs getauscht.
+    if(!n || state !== 'play' || (currentLevel !== 1 && !innen) || kammer ||
        (n !== knNpc && npcs.indexOf(n) < 0) || sqDist(player.x, player.y, n.x, n.y) > GESPRAECH_WEG_Q){
       gespraechSchliessen(); return;
     }
@@ -15206,7 +16371,10 @@ function update(dt){
     // G5: Dorf-Zone übersteuert die Oberwelt-Musik, solange der Spieler im
     // Dorf-Rechteck steht — zoneForLevel() selbst bleibt unangetastet (kennt
     // Kammer/Schattenland-Vorrang weiterhin nicht, das ist hier nicht betroffen).
-    const inVillage = currentLevel === 1 && !kammer && inVillagePx(player.x, player.y);
+    // IN1: drinnen bleibt die Dorfmusik an. Ein Wirtshaus ist kein Waldrand,
+    // und die Tuer ist zwei Schritte weit weg — ein Zonenwechsel beim
+    // Hineingehen und derselbe beim Hinausgehen waere ein Blenden pro Tuer.
+    const inVillage = (currentLevel === 1 && !kammer && inVillagePx(player.x, player.y)) || !!innen;
     MUS.goto(bossFight && currentLevel === 2 ? 'boss' : inVillage ? 'village' : zoneForLevel(currentLevel));
     MUS.layer('gefahr', !player.dead && player.hp < derived.maxHp*0.3);
     MUS.setOvertime(CONFIG.schichtModus
@@ -15301,7 +16469,10 @@ function update(dt){
     // zweimal dieselbe Zahl in einem Bild ist keine doppelte Auskunft, sondern
     // eine halbe. Auf einem stehenden Telefon war sie ausserdem genau der
     // Zusatz, der die Zeile auf zwei Zeilen brach.
-    setTxt('zone', inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage'   // G5
+    // IN1: drinnen nennt das Band den Raum. "Vordermühl an der Ablage" waere
+    // draussen richtig und drinnen die Auskunft, die man gerade nicht braucht.
+    setTxt('zone', innen ? '📍 ' + innen.raum.name
+                 : inVillagePx(player.x, player.y) ? '📍 Vordermühl an der Ablage'   // G5
                  : amStrand      ? '📍 Küste, Am Rand der Tilgung'
                  : zb === 'snow'  ? '📍 Frostkamm, Die Eisablage'
                  : zb === 'sand'  ? '📍 Aschewüste, Der Brandabschnitt'
@@ -15740,7 +16911,7 @@ let frameNo = 0;
 // Zeichenliste: feste Einträge aus einem Pool, damit pro Frame weder Objekte noch
 // Closures anfallen (das war bei voller Horde der größte GC-Verursacher).
 const DRAW_TREE=0, DRAW_DECO=1, DRAW_CRITTER=2, DRAW_CORPSE=3, DRAW_MON=4, DRAW_PLAYER=5, DRAW_KESSEL=6,
-      DRAW_KAMOBJ=7, DRAW_KAMTUER=8, DRAW_ALTER=9, DRAW_NPC=10;
+      DRAW_KAMOBJ=7, DRAW_KAMTUER=8, DRAW_ALTER=9, DRAW_NPC=10, DRAW_INNEN=11;   // IN1: Möbel
 const drawPool = [], drawList = [];
 let drawCount = 0;
 const byY = (a,b)=> a.y - b.y;
@@ -15938,10 +17109,14 @@ function render(){
   drawStopfen();
   if(currentLevel === 1){                               // Hoftiere, Dorf-Staffage, Kessel, Knöterich und Kammertüren, alle nur hier
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
-    for(const n of npcs) if(figDa(n.figur) && vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
+    for(const n of npcs) if(figHier(n.figur) && vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
     if(vis(KESSEL.x, KESSEL.y)) pushDraw(KESSEL.y, DRAW_KESSEL, null);
     if(vis(KN_POS.x, KN_POS.y)) pushDraw(KN_POS.y, DRAW_ALTER, null);
     for(const t of kammerTueren) if(vis(t.x, t.y)) pushDraw(t.y, DRAW_KAMTUER, t);
+  } else if(innen){                                     // IN1: Schwelle flach, Möbel und Leute y-sortiert
+    drawInnenSchwelle();
+    for(const o of innen.moebel) if(vis(o.x, o.y)) pushDraw(o.y, DRAW_INNEN, o);
+    for(const n of npcs) if(figDa(n.figur) && vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
   } else if(kammer){
     for(const p of kammer.props) if(vis(p.x, p.y)) pushDraw(p.y, DRAW_KAMOBJ, p);
   }
@@ -16006,6 +17181,7 @@ function render(){
                       if(o.bubbleText1 && gameT < o.bubbleHideAt && gespraech.npc !== o && !szeneAktiv)
                         drawBubble(o.x, o.y, o.bubbleText1, o.bubbleText2);
                       break; }
+      case DRAW_INNEN:   drawInnenMoebel(o); break;
       case DRAW_CORPSE:  drawCorpse(o); break;
       case DRAW_MON:     drawMon(o); break;
       case DRAW_KESSEL:  drawKessel(); break;
@@ -16852,7 +18028,8 @@ const NEUERUNGEN = {
   // und ohne neuen Wert saehe die T5-Haelfte niemand, der die Mitteilung von
   // heute Morgen schon weggeklickt hat.
   // T6: derselbe Tag, dritter Stempel, aus demselben Grund.
-  stand: '2026-08-26-t6',
+  // IN1: vierter Stempel am selben Tag, gleiche Begruendung.
+  stand: '2026-08-26-in1',
   datum: '26. August',
   punkte: [
     {
@@ -16922,6 +18099,19 @@ const NEUERUNGEN = {
       titel: 'Sie dürfen entscheiden, ob Sie lesen',
       was: 'Beim ersten Treffen mit Anlage 2 stellt das Haus Ihnen frei, ob Sie sie lesen möchten. Die Freistellung ist echt. Das Ergebnis steht fest.',
       wo: 'Gleich nachdem sie sich vorgestellt hat, auf beiden Wegen in den Dienst.',
+    },
+    // --- IN1, 26.08.2026 ----------------------------------------------------
+    // Zwei Punkte, weil es zwei Dinge sind: dass man hineinkommt, und dass
+    // drinnen jemand steht. Die wo-Zeilen nennen nur Wege, die es gibt.
+    {
+      titel: 'Drei Häuser stehen jetzt offen',
+      was: 'Das Amt, die Registratur und das Gasthaus Zum Letzten Stempel haben ein Inneres bekommen. Man geht hinein, man läuft darin herum, man geht wieder hinaus. Im Amt steht der Schreibtisch, an dem vor Ihnen jemand gearbeitet hat, und auf ihm die Pflanze, die noch lebt. Im Wirtshaus brennt das Feuer im Kamin, daneben liegt das Holz, hinter der Theke stehen die Fässer und darüber das Flaschenbord, an der Ostwand geht eine Standuhr, und durch die zwei Fenster in der Nordwand sieht man den Abend.',
+      wo: 'An der gemalten Tür der drei Häuser steht Betreten. Der Feierabend liegt seither drinnen, am Dienstpult.',
+    },
+    {
+      titel: 'Zum Feierabend geht das Dorf hinein',
+      was: 'Im letzten Viertel Ihrer Schicht sind drei Leute nicht mehr auf dem Anger: Wirt Fass steht dann hinter seiner Theke, Registratorin Bramsche zwischen ihren Regalen und Nörgel an seinem Schreibtisch. Wer sie abends sprechen will, muss ihnen nachgehen.',
+      wo: 'In den drei Häusern, sobald die Dienstuhr unter ein Viertel gefallen ist.',
     },
   ],
 };
@@ -17018,6 +18208,7 @@ function showDead(){
 
 function respawnPlayer(){
   if(kammer) verlasseKammer();      // Tod in der Kammer: erst die Oberwelt zurückholen, dann respawnen
+  if(innen) verlasseHaus();         // IN1: dasselbe fuer den Innenraum, sonst bliebe innenSave stehen
   currentLevel = 1; schattenlandActive = false; shadowKills = 0; boss = null; portal = null;
   monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   particles.length = 0; corpses.length = 0; floaters.length = 0;
@@ -17133,6 +18324,7 @@ const JAHRES_BONI = [
 // dem Amt-Panel) benutzt — ein einziger, getesteter Reset-Pfad statt zweier.
 function startShift(){
   if(kammer) verlasseKammer();
+  if(innen) verlasseHaus();         // IN1: eine neue Schicht faengt draussen an
   currentLevel = 1; schattenlandActive = false; shadowKills = 0; boss = null; portal = null;
   monsters.length = 0; drops.length = 0; projectiles.length = 0; enemyBolts.length = 0; magicEffects.length = 0;
   particles.length = 0; corpses.length = 0; floaters.length = 0;
@@ -17477,7 +18669,7 @@ function zutatenGeklemmt(arr){
 // Überstunden — dort läuft die Schicht schon aus, und ein Spielstand mit
 // abgelaufener Uhr wäre ein Fortsetzen in den sofortigen Feierabend.
 function spielstandErlaubt(){
-  return CONFIG.schichtModus && state === 'play' && !kammer && currentLevel === 1
+  return CONFIG.schichtModus && state === 'play' && !kammer && !innen && currentLevel === 1
       && !player.dead && !szeneAktiv && !shiftEndPending;
 }
 
@@ -17809,6 +19001,10 @@ function speicherGrund(){
   if(!CONFIG.schichtModus) return 'Im freien Spiel gibt es keine Schicht zum Speichern.';
   if(state !== 'play') return 'Erst weiterspielen, dann speichern.';
   if(kammer) return 'In einer Kammer wird nicht gespeichert. Erst hinaus.';
+  // IN1: derselbe Grund wie bei der Kammer. Der Spielstand kennt die Oberwelt;
+  // ein Stand, der in einem Innenraum steht, muesste den Raum mitsichern, und
+  // ein halb gesicherter Ort ist schlimmer als keiner.
+  if(innen) return 'In einem Haus wird nicht gespeichert. Erst hinaus.';
   if(currentLevel !== 1) return 'Im Schattenland wird nicht gespeichert. Erst zurück.';
   if(player.dead) return 'Nach dem Dienstende gibt es nichts mehr zu sichern.';
   if(shiftEndPending) return 'Die Schicht läuft schon aus. Der Feierabend kommt von selbst.';
@@ -25627,6 +26823,7 @@ loadAssets().then(() => {
   // Skriptstart und hat allen Wandernden ihren CF_NPCS-Key gegeben, auch denen,
   // deren Datei gar nicht im Paket liegt. Jetzt ist bekannt, was wirklich da ist.
   npcBlaetterNachziehen();
+  schnittSaeubern();          // IN1-Nachlese: die zwei G1-Schnittfehler, vor jeder Messung
   assertRigRegistrations();   // GW26c: jetzt sind npc_baked_bramsche/_lott/_pahl da
   npcAnkerAssert();           // braucht dieselbe Reihenfolge: liest die drei Komposite mit
   dorfSichtAssert();          // G6: und danach, weil er die zugewiesenen Blätter misst

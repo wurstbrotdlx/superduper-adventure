@@ -17,6 +17,7 @@ assets/cf/enemies/
 assets/cf/tiles/
 assets/cf/deco/
 assets/cf/ui/
+assets/cf/innen/
 
 # Build-Artefakte, enthalten die eingebackene Grafik. GitHub Pages liefert seit
 # .github/workflows/pages.yml über den Actions-Weg aus, nicht mehr aus docs/ im

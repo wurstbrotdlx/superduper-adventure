@@ -154,7 +154,7 @@ Die Bewilligung des Dorffestes ist im Jahr 1004 erteilt worden. Sie steckt seith
 
 ## Bramsche — Registratorin Ottilie Bramsche
 
-Optik: Held-Komposit (`gestalt`: Haar h3 schwarz, Oberteil/Hose Stufe 2 Königsblau), stehend. Heimatanker: Kachel (21, 36). Der Kater Anlage 3 wird als einfache liegende Form direkt neben ihr gezeichnet, kein eigener Sprite, keine eigene Kontextaktion. **G7:** Anker von (18, 37) auf (21, 36), sie steht weiter am Ostrand des Amts, jetzt neben den Marktständen.
+Optik: Held-Komposit (`gestalt`: Haar h3 schwarz, Oberteil/Hose Stufe 2 Königsblau), stehend. Heimatanker: Kachel (21, 36). Der Kater Anlage 3 wird als einfache liegende Form direkt neben ihr gezeichnet, kein eigener Sprite, keine eigene Kontextaktion. **G7:** Anker von (18, 37) auf (21, 36), sie steht weiter am Ostrand des Amts, jetzt neben den Marktständen. **IN1:** zum Feierabend steht sie in der Registratur (Haus 2 der Südzeile), zwischen ihren Regalen. Anlage 3 wandert mit ihr; auf dem Aktenstapel im Raum schläft der Kater nur, wenn sie nicht da ist.
 
 ### Grundzeilen (Kreislauf)
 
@@ -330,7 +330,7 @@ Seine Amtsbezeichnung lautet Schattenlandzustellungsbevollmächtigter. Ein Bevol
 
 ## Nörgel — Sachbearbeiter auf Probe
 
-Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: Kachel (1, 36). Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 0, Schuhe Stufe 3. **G7:** Anker von (8, 38) auf (1, 36), Nordwestecke des Angers, neben Haus 1.
+Optik: `cfnpc_mike` (Miner_Mike, wandert, leichte grüne Tönung). Heimatanker: Kachel (1, 36). Ersatzgestalt, falls das Blatt fehlt: Haar h1, Oberteil/Hose Stufe 0, Schuhe Stufe 3. **G7:** Anker von (8, 38) auf (1, 36), Nordwestecke des Angers, neben Haus 1. **IN1:** zum Feierabend sitzt er an seinem Schreibtisch in der Amtsstube. Er ist dann der Einzige im Haus, und das ist der ganze Kommentar dazu.
 
 **Nachtrag G9/G10/U6 zur Optik.** Die Zeile oben ist überholt und bleibt als Stand stehen. G9 hat die Tönung durch einen eigenen Hautton ersetzt (`#949341`, färbt Gesicht und Hände statt der ganzen Figur), G10 hat ihn auf ein Monsterrig gestellt, weil er ein Kobold ist und das Helden-Rig keine spitzen Ohren hat, und U6 hat das Rig berichtigt: nicht `orc_chief`, sondern `goblin_maceman` im Maßstab der Grünhaut (`rigSc` 1,8 = `sc` 1,5 mal `psc` 1,2 aus `MONDEF.goblin`). Er trägt damit exakt das Sprite der Gegner, über die er unten sagt „Grünhaut. Wie ich.", und steht gut halb so hoch wie die Menschen um ihn herum. Das Komposit aus `gestalt` bleibt der Rückfallweg ohne Grafikpaket.
 
@@ -487,7 +487,7 @@ Pommer führt eine Liste der Dinge, die er ausgegeben hat, ohne dass sie beantra
 
 ## Fass — Wirt Bruno Fass, Gasthaus „Zum Letzten Stempel“
 
-Optik: `cfnpc_bruno` (Bartender_Bruno, wandert). Heimatanker: Kachel (24, 38). Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h3 (kurz schwarz), Oberteil Stufe 0 (rot), Hose Stufe 2 (blau), Schuhe Stufe 2. **G7:** Anker von (20, 39) auf (24, 38), Ostseite, vor den Marktständen.
+Optik: `cfnpc_bruno` (Bartender_Bruno, wandert). Heimatanker: Kachel (24, 38). Das Blatt liegt nicht im Grafikpaket, er läuft als Held-Komposit: Haar h3 (kurz schwarz), Oberteil Stufe 0 (rot), Hose Stufe 2 (blau), Schuhe Stufe 2. **G7:** Anker von (20, 39) auf (24, 38), Ostseite, vor den Marktständen. **IN1:** zum Feierabend steht er nicht mehr dort, sondern hinter seiner Theke im Gasthaus (Haus 3 der Südzeile ist seither betretbar). Der Anker gilt für den Rest der Schicht unverändert.
 
 ### Grundzeilen (Kreislauf)
 
