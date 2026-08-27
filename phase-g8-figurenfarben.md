@@ -149,6 +149,33 @@ liegt.
 > das ohne Grafikpaket nicht von einem gewöhnlichen Fehlen zu unterscheiden.
 > Nachgetragen in G10.
 
+> **Berichtigung (27.08.2026, nach IN1).** Es sind wieder sieben von acht.
+> **Wirt Fass** hat sein `komposit:true` verloren, und diesmal absichtlich: das
+> Pack hat einen fertigen Wirt, und der heißt `Bartender_Bruno`. Der Wirt dieses
+> Dorfes heißt seit W3 **Bruno Fass**. Der Name stand in der Tabelle, das Blatt
+> lag seit dem Nachreichen des Pakets im Ordner, und dass beides dasselbe ist,
+> hat drei Bauabschnitte lang niemand nachgesehen.
+>
+> Der Preis, den dieser Abschnitt mit `komposit:true` gerade vermeiden wollte,
+> ist damit bei einer Figur bezahlt und benannt: das Porträt zeigt einen
+> schwergewichtigen Mann mit vollem dunklem Haar, das Blatt einen mit Halbglatze
+> und Schnauzbart. Beides ist ein Wirt in Lederschürze, beides ist
+> unverwechselbar er, und beides ist gemalt worden, ohne vom anderen zu wissen.
+> Rückgängig wie überall: `komposit:true` zurück in die Zeile.
+>
+> **Nachtrag vom selben Tag:** rückgängig wird es nicht. Der Projektinhaber hat
+> die Figur so abgenommen und löst den Widerspruch von der anderen Seite —
+> *„später tausche ich das portrait noch aus zu einem ohne haare"*. Damit ist die
+> Reihenfolge dieses Abschnitts einmal umgedreht: bisher hat immer das Porträt
+> entschieden und das Paketblatt weichen müssen, hier entscheidet das Paketblatt
+> und das Porträt zieht nach. Bis es soweit ist, steht der Widerspruch im Bild.
+>
+> `tools/figurenfarben-messlauf.mjs` misst seither den Weg, den `npcBlaetter()`
+> wirklich nimmt, statt bei jeder Figur ein gebackenes Blatt zu erwarten. Die
+> drei Farbprüfungen gelten nur noch für Komposite — an einem Packblatt lässt
+> sich nichts einstellen, das ist der ganze Punkt des Flags. Wer auf einem
+> Packblatt läuft, steht dafür als Hinweiszeile im Lauf.
+
 Das ist eine Zeile in `DORF_FIGUREN` und keine Weiche im Code. Wer bei einer
 Figur das Paketblatt für die bessere Zeichnung hält, streicht dort das Flag und
 bekommt es zurück; `CF_NPCS` steht unverändert und die acht Blätter bleiben

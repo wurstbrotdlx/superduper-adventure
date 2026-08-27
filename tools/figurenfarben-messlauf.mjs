@@ -228,10 +228,31 @@ const figuren = await page.evaluate(() => {
   // Traegt die Welt ueberhaupt Grafik? Ein Blatt des Helden-Rigs reicht als Probe.
   if(!SHEETS['cfbody_idle'] || !SHEETS['cfbody_idle'].img) return {grafik:false};
 
-  const ohneHaar = [], ohneHemd = [], ohneBlatt = [], ohneHaut = [];
-  const alle = [{key:'knoeterich', blatt:EMPFANG_BLATT, gestalt:KN_GESTALT},
-                ...DORF_FIGUREN.map(f => ({key:f.key, blatt:`npc_baked_${f.key}`, gestalt:f.gestalt}))];
+  const ohneHaar = [], ohneHemd = [], ohneBlatt = [], ohneHaut = [], aufPaket = [];
+  // Nachgezogen am 27.08.2026: "jede Figur" hiess hier bis dahin "jede Figur
+  // laeuft als Komposit". Seit Wirt Fass auf Bartender_Bruno steht, stimmt das
+  // nicht mehr — und das ist eine Entscheidung und kein Ausfall.
+  //
+  // Die Bedingung darunter ist keine zweite Meinung, sondern dieselbe Zeile wie
+  // in bakeAllNpcSheets(): gebacken wird, wer fest steht, wer komposit:true
+  // traegt, oder wessen Packblatt fehlt. Wer stattdessen auf einem Packblatt
+  // laeuft, braucht kein gebackenes — er braucht sein Packblatt, und genau das
+  // wird bei ihm gemessen.
+  //
+  // Die drei Farbpruefungen gelten weiter nur fuer Komposite. An einem
+  // Packblatt laesst sich nichts einstellen; dass Haar- und Hemdfarbe des
+  // Portraets dort NICHT ankommen, ist der Preis, den komposit:true sonst
+  // vermeidet, und er steht bei Fass ausdruecklich in der Figurenzeile.
+  const gebacken = f => f.opt === 'fest' || f.komposit || !SHEETS[`cfnpc_${f.sheet}_idle`];
+  const alle = [{key:'knoeterich', blatt:EMPFANG_BLATT, gestalt:KN_GESTALT, komposit:true},
+                ...DORF_FIGUREN.map(f => ({key:f.key, blatt:`npc_baked_${f.key}`, gestalt:f.gestalt,
+                                           komposit:gebacken(f), paket:`cfnpc_${f.sheet}_idle`}))];
   for(const f of alle){
+    if(!f.komposit){
+      if(!blatt(f.paket)) ohneBlatt.push(`${f.key} (${f.paket})`);
+      else aufPaket.push(`${f.key}\u2192${f.paket.replace(/^cfnpc_|_idle$/g, '')}`);
+      continue;
+    }
     const d = blatt(f.blatt);
     if(!d){ ohneBlatt.push(f.key); continue; }
     if(f.gestalt.haarFarbe && !trifft(d, f.gestalt.haarFarbe)) ohneHaar.push(f.key);
@@ -281,7 +302,7 @@ const figuren = await page.evaluate(() => {
       else if(slot === 'hut') ohneHut.push(`${f.key}.hut=${form}`);
       else ohneEbene.push(`${f.key}.${slot}=${form}`);
     }
-  return {grafik:true, ohneBlatt, ohneHaar, ohneHemd, ohneHaut, ohneEbene, ersatzEbene, ohneHut, falsch, figuren:alle.length,
+  return {grafik:true, ohneBlatt, ohneHaar, ohneHemd, ohneHaut, ohneEbene, ersatzEbene, ohneHut, falsch, aufPaket, figuren:alle.length,
           huete:alle.filter(f => f.gestalt.hut).length,
           komposit:wander.filter(f => f.komposit).length, wander:wander.length};
 });
@@ -293,7 +314,14 @@ if(!figuren.grafik){
   console.log('  nichts ueber die Figuren. Mit Grafikpaket wiederholen.');
 } else {
   console.log(`\nTeil 2 — die Figuren (${figuren.figuren} Komposite, ${figuren.komposit} von ${figuren.wander} Wandernden auf komposit:true, ${figuren.huete} mit Hut)\n`);
-  pruef('jede Figur hat ein gebackenes Blatt', figuren.ohneBlatt, []);
+  pruef('jede Figur hat das Blatt, auf dem sie laeuft', figuren.ohneBlatt, []);
+  // Kein pruef(): wer auf einem Packblatt laeuft, ist eine Entscheidung je Figur
+  // und keine Zusage des Codes. Die Zeile haelt sie sichtbar — sie ist die
+  // Gegenprobe zu der in bakeAllNpcSheets() und nennt dieselben Namen.
+  if(figuren.aufPaket.length)
+    console.log(`  Hinweis: ${figuren.aufPaket.length} Figur(en) laufen auf ihrem Packblatt`
+      + ` statt auf dem Komposit ihres Portraets: ${figuren.aufPaket.join(', ')}.`
+      + ` Fuer sie gelten die drei Farbpruefungen nicht.`);
   pruef('die Haarfarbe des Portraets kommt im Sprite an', figuren.ohneHaar, []);
   pruef('die Hemdfarbe des Portraets kommt im Sprite an', figuren.ohneHemd, []);
   pruef('der Hautton kommt im Sprite an', figuren.ohneHaut, []);
