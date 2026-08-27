@@ -67,6 +67,12 @@ const QUELLEN = [
   // Bericht behauptete dabei eine Vollstaendigkeit, die er nicht hatte. Das ist
   // derselbe Fall, den der Auftakt vier Zeilen weiter unten beschreibt.
   { name: 'Anlage 2, Ausbruch', art: 'figur', ausdruck: 'ANLAGE2_AUSBRUCH' },
+  // T8: die Szenenzeilen, ebenfalls als eigene Quelle. Sie sind die einzigen
+  // vier Zeilen dieser Figur, die in dem Moment fallen, in dem die
+  // Weltgeschichte selbst spricht, und wenn irgendwo ein Amtston zurueckkehrt,
+  // dann dort: die Versuchung ist gross, die Szene nachzuerzaehlen. Im Band
+  // verrechnet waere das nicht zu sehen.
+  { name: 'Anlage 2, Szenen', art: 'figur', ausdruck: 'ANLAGE2_SZENE' },
   { name: 'Anlage 2, Umschlag', art: 'figur', ausdruck: 'ANLAGE2_UMSCHLAG' },
   { name: 'Anlage 2, Bewegung', art: 'figur', ausdruck: 'ANLAGE2_BEWEGUNG' },
   { name: 'Anlage 2, Blaetter', art: 'figur', ausdruck: 'ANLAGE2_BLAETTER' },
@@ -438,7 +444,21 @@ const balken = (anteil, ziel) => {
 const eich = eichen();
 const quote = eich.richtig / eich.gesamt;
 
-console.log('Ton-Messlauf, Bauabschnitt T5. Zielwert Figurenrede: ' + pro(ZIEL).trim()
+// T8-Nachlese: die Zahl der Quellen steht ab hier IM LAUF und nicht mehr von
+// Hand in der Werkzeugtabelle der README. Dort stand sie zuletzt auf 27,
+// waehrend es 34 waren, und das ist der harmlosere Teil: sie war eine Zeile,
+// die jeder anfassen musste, der eine Quelle dazulegt, und zwei
+// Merge-Konflikte in Folge lagen genau darin. Eine Zahl, die der Lauf selbst
+// zaehlt, veraltet nicht und kollidiert mit niemandem.
+//
+// Sie gehoert ausserdem hierher und nicht in eine Beschreibung: dieser Lauf
+// hatte in T7 schon einmal eine Vollstaendigkeit behauptet, die er nicht
+// hatte (der Ausbruch-Kanal fehlte in der Tabelle, 22 Zeilen ungemessen).
+// Gegen genau das steht unten `ernte.fehlt`; die Zahl hier ist ihre
+// Vorderseite, an einer Stelle, an der man sie sieht, bevor man die Zahlen
+// darunter liest.
+console.log('Ton-Messlauf, Bauabschnitt T5. ' + QUELLEN.length + ' Quellen. '
+          + 'Zielwert Figurenrede: ' + pro(ZIEL).trim()
           + ' amtlich, Toleranz ' + Math.round(TOLERANZ * 100) + ' Punkte.');
 console.log(`Eichprobe: ${eich.richtig} von ${eich.gesamt} von Hand eingestuften Zeilen richtig `
           + `(${pro(quote).trim()}), ${eich.falschNegativ} amtliche uebersehen, `
