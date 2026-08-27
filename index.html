@@ -18413,8 +18413,21 @@ function startGame(){
     // E1: Der erste Dienstantritt laeuft ueber den Empfang. Er endet auf
     // demselben dienstAntritt(), das auch Blatt 3 ausloest, und ist damit
     // derselbe Uebergang wie vorher, nur mit einer Szene davor.
-    if(!kn.seen.einstellung){ empfangStarten(); return; }
+    // AN1 (27.08.2026): Die Reihenfolge ist umgedreht. Bis hierher lief der
+    // Empfang VOR startShift(), und A0 hat gemessen, was das kostet:
+    //   - state stand auf 'menu', also stieg scanAktion() in seiner ersten
+    //     Zeile aus. Waehrend des ganzen Anfangs gab es keine Kontextaktion,
+    //     in keine Richtung -- kein Betreten, kein Hinausgehen, kein
+    //     Ansprechen. Fuer AN2 ist das der Blocker, nicht der Einfriertrick.
+    //   - shiftT stand auf 0, also war rechnerisch Feierabend (innenZeit()),
+    //     also stand Noergel in der Amtsstube, obwohl er nicht soll.
+    //   - und startShift() setzte den Spieler HINTERHER auf SPAWN, 181 Pixel
+    //     von der Amtstuer weg. Der erste freie Schritt aus dem Haus hinaus
+    //     waere dem Schichtreset zum Opfer gefallen, bevor es ihn gab.
+    // Jetzt laeuft der Dienstantritt zuerst und der Empfang darin. Die Welt
+    // steht waehrenddessen still, siehe empfangStarten().
     startShift();
+    if(!kn.seen.einstellung) empfangStarten();
   }
   else { document.getElementById('overlay').style.display = 'none'; MUS.muffle(false); state = 'play'; knPlayStartT = gameT; }
 }
@@ -22741,7 +22754,21 @@ function dienstAntritt(){
   document.body.classList.remove('vordruckOffen');
   empfangSchliessen();   // E2: hier faellt die Buehne, egal ueber welchen Weg
   kn.seen.einstellung = true; saveKn();
-  startShift();
+  // AN1: Hier stand startShift(). Es lief damit GENAU EINMAL, aber am Ende des
+  // Anfangs statt an seinem Beginn -- nachgezaehlt, einmal vorher und einmal
+  // nachher, beide Male eins. Die Aenderung ist das WANN und nicht das Wieoft,
+  // und daran haengt trotzdem alles: wer den Spieler erst nach der Szene auf
+  // SPAWN setzt, ueberschreibt jede Stelle, an die die Szene ihn gebracht hat.
+  // Heute faellt das nicht auf, weil waehrend des Anfangs niemand laeuft. Ab
+  // AN2 waere es der erste freie Schritt selbst.
+  //
+  // Der Dienst laeuft jetzt seit startGame(); was startShift() an dieser Stelle
+  // noch erledigt hat, macht die Funktion selbst. Es sind genau die vier Zeilen
+  // unten, alle vier aus seinem Schluss uebernommen und nicht neu erfunden.
+  el('overlay').style.display = 'none'; MUS.muffle(false);
+  state = 'play'; updateHUD();
+  knPlayStartT = gameT;
+  aktSperre = 0.5;   // der Klick auf UNTERSCHREIBEN ist keine Kontextaktion
 }
 
 function dienstblattEnde(ziel){
@@ -25158,6 +25185,20 @@ function empfangGespraech(){
 // der Mann danach, und dadurch erzaehlte niemand die Geschichte.
 function empfangStarten(){
   szene.gefragt = new Set();
+  // AN1: Der Anfang haelt die Welt an, und zwar ausdruecklich hier statt ueber
+  // haeltDieWelt an der Szene. Der Grund ist der Ausgang: der Empfang endet
+  // nicht an einer Stelle, sondern an dreien (Unterschrift, Vordruck,
+  // UEBERSPRINGEN), und szeneAus() laeuft auf zweien davon mitten durch, lange
+  // bevor unterschrieben ist. Ein szeneStateVorher waere dort verbraucht und
+  // die Welt liefe hinter dem Vordruck weiter. Ein state, den diese eine
+  // Funktion setzt und dienstAntritt() als einzige zuruecknimmt, ist
+  // nachlesbar.
+  //
+  // Was das anhaelt: update(dt) steigt bei state !== 'play' in Zeile zwei aus.
+  // Damit stehen Schichtuhr, Monster, Wetter und Kontextaktion still, bis
+  // unterschrieben ist -- das ist woertlich die Bedingung, die E2 an die Buehne
+  // stellt, nur dass die Welt jetzt schon dahinter steht statt erst danach.
+  state = 'szene';
   document.body.classList.add('szeneLaeuft');
   buehneAn();
   el('overlay').style.display = 'none';
