@@ -11322,6 +11322,67 @@ const ANLAGE2_AUSBRUCH = {
 };
 
 // ===========================================================================
+//  T8: DIE DREI SZENEN-ANLAESSE
+//
+//  Seit SZ2 setzen die Szenen einen Anlass, wenn sie zu Ende sind, und Lott
+//  und Pahl kommentieren ihn von der Bank aus. Anlage 2 hing daran nicht: die
+//  drei lautesten Stellen der Weltgeschichte gingen an der einzigen Figur
+//  vorbei, die dem Spieler dabei die ganze Zeit in der Tasche liegt.
+//
+//  Diese Zeilen sind anders gebaut als alles andere an ihr, und der Grund ist
+//  eine einzige Eigenschaft: SIE FALLEN GENAU EINMAL PRO SPIELSTAND. Daraus
+//  folgt der Rest von selbst.
+//
+//  Kein Pool, kein Wuerfel, kein Anlass-Array. Ein Pool existiert, damit
+//  Wiederholung nicht auffaellt, und hier gibt es keine Wiederholung. Ein
+//  Anlass traegt deshalb GENAU EIN Paar, und zwar strukturell und nicht per
+//  Guard: die Tabelle bildet auf ein Objekt ab und nicht auf eine Liste, dann
+//  laesst sich ein zweites gar nicht erst hinschreiben. In dieser Datei steht
+//  an keiner Stelle dieses Kanals ein Math.random().
+//
+//  Kein Ruhezaehler. Der Zaehler aus T7 macht den Ausbruch selten; was einmal
+//  im ganzen Spiel faellt, ist selten, und ein Zaehler daneben waere eine
+//  zweite Wahrheit ueber dieselbe Frage. Er wird von diesem Kanal deshalb auch
+//  nicht hochgezaehlt: er misst, wie lange sie in dem Kanal gefasst war, der
+//  ausbrechen KANN, und dieser kann es nicht.
+//
+//  z1/z2 und nicht auf/zurueck. Die Form ist dieselbe wie beim Ausbruch (erste
+//  Haelfte, zwei Sekunden, zweite Haelfte im selben Band), die Stimme ist es
+//  nicht: hier faehrt niemand hoch und nimmt nichts zurueck. z1/z2 ist die
+//  Hausform fuer ein zweiteiliges Wort, sie steht so an jeder Dorffigur, und
+//  der Deckel ist derselbe wie im Kommentarkanal (44), nicht der enge des
+//  Ausbruchs. Wer die Felder auf/zurueck sieht, soll den lauten Kanal vor sich
+//  haben und sonst nichts.
+//
+//  DIE BRANDMAUER an dieser Stelle: die drei Szenen sind die Akte, und sie ist
+//  nicht eingeweiht. Beide Zeilen halten deshalb dieselbe Regel wie ihre
+//  uebrigen, nur ist sie hier schwerer: gesagt wird etwas ueber das HAUS in
+//  dem Moment, in dem gerade die AKTE spricht.
+//    umlauf       Sie redet ueber ihren eigenen Weg durch das Haus, nicht
+//                 ueber Hochablage, das sie nie gesehen hat.
+//    hintermuehl  Sie redet ueber Knoeterichs Gewohnheit, nicht ueber das
+//                 Wort. Was Hintermuehl ist, weiss sie nicht, und sie tut
+//                 auch nicht so. Der Satz traegt trotzdem die ganze Szene,
+//                 denn wer den Mann kennt, versteht, was gerade geschah.
+//
+//  VORBLATT SCHWEIGT, und das ist eine Entscheidung und kein Vergessen. Bei
+//  der Entklammerung wird einem Papier die Klammer gezogen, und Anlage 2 ist
+//  ein Papier mit einer Klammer; es waere die naheliegendste Zeile des ganzen
+//  Spiels. Sie faellt trotzdem weg. Vorblatt ist der Gegenspieler aus Akt IV,
+//  und jeder Satz, den sie ueber ihn sagt, ist ein Satz ueber den Fall. Ihr
+//  Schweigen ist an dieser Stelle die staerkere Aussage: ein Blatt sagt
+//  nichts, wenn ein Blatt aufgemacht wird. Damit die Stille eine gepruefte
+//  Zusage bleibt und nicht beim naechsten Bauabschnitt still zurueckkippt,
+//  steht sie als eigener Zweig in anlage2Assert(), wie niederlage im Ausbruch.
+// ===========================================================================
+const ANLAGE2_SZENE = {
+  umlauf:      {z1:'Umlauf. So heißt auch mein Weg hierher.',
+                z2:'Sie läuft ihn. Mich hat man getragen.'},
+  hintermuehl: {z1:'Er sagt sonst nur, was er aufschreibt.',
+                z2:'Das eben hat er nicht aufgeschrieben.'},
+};
+
+// ===========================================================================
 //  F1b: Die Schalter eines Zusatzblocks, und die Kurzform-Tabelle
 //
 //  Bis W11 hatte ein Zusatzblock genau zwei mögliche Schalter, abAkt und merker,
@@ -11514,6 +11575,11 @@ function knAssertCaps(){
   // (30), die Ruecknahme darf sich Zeit nehmen (40). Die sechs Textpruefungen
   // dahinter laufen unveraendert ueber beide Haelften.
   for(const a in ANLAGE2_AUSBRUCH) for(const p of ANLAGE2_AUSBRUCH[a]) rows.push([p.auf,30],[p.zurueck,40]);
+  // T8: die Szenenzeilen liegen wieder auf 44, auf beiden Haelften. Sie sind
+  // keine Ausbrueche, sie sind zwei ruhige Saetze mit einer Pause dazwischen,
+  // und der enge Deckel des lauten Kanals waere hier eine Zusage ueber einen
+  // Ton, den diese Zeilen nicht haben.
+  for(const a in ANLAGE2_SZENE) rows.push([ANLAGE2_SZENE[a].z1,44],[ANLAGE2_SZENE[a].z2,44]);
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
   // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
   // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
@@ -11798,11 +11864,21 @@ function knShowRandLine(line, wer){
 // damit nie dienstlich; wer den Regler auf "Dienstlich" stellt, will Ruhe von
 // genau der Art Zeile, die sie schreibt. Ein zweiter Regler daneben waere eine
 // zweite Wahrheit fuer dieselbe Frage.
-function knLineErlaubt(anlass){
+// T8: ohneSperre hebt GENAU EINE der Bedingungen auf, den Mindestabstand von
+// vierzig Sekunden, und keine der uebrigen. Gebraucht wird das von den
+// Szenen-Anlaessen, und zwar aus einem Grund, der beim Bauen nicht zu sehen
+// ist: gameT steht waehrend einer Szene still (update() kehrt bei
+// state !== 'play' um, noch bevor gezaehlt wird). Der Abstand traegt damit
+// ueber die ganze Szene hinweg, und wer kurz vor dem Gespraech eine Bandzeile
+// hatte, verloere die einmalige Szenenzeile lautlos. Der Regler bleibt
+// ausdruecklich in Kraft: wer "Schweigt" gestellt hat, will auch hier Ruhe,
+// und eine Zeile, die sich ueber die Einstellung hinwegsetzt, weil sie sich
+// selbst fuer wichtig haelt, ist genau die Sorte, die man abstellen wollte.
+function knLineErlaubt(anlass, ohneSperre){
   if(kn.regler === 'schweigt') return false;
   if(kn.regler === 'dienstlich' && anlass !== 'begruessung') return false;
   if(state !== 'play' || player.dead) return false;
-  if(gameT - knLastRandnotizT < 40) return false;
+  if(!ohneSperre && gameT - knLastRandnotizT < 40) return false;
   if(knZettel.active) return false;
   if(kammer){ const mod = kammer.mods[kammer.idx]; if(mod && mod.begonnen && !mod.fertig) return false; }
   return true;
@@ -11868,6 +11944,30 @@ function anlage2Notiz(anlass){
   if(pool.length > 1){ let guard = 0; while(line === knRandLastLine[anlass] && guard++ < 8) line = pool[Math.floor(Math.random()*pool.length)]; }
   knShowRandLine(line, 'a2');
   knRandLastLine[anlass] = line;
+  return true;
+}
+
+// T8: die Szenenzeile. Eigener Weg und nicht anlage2Notiz() mit einem Sonder-
+// fall darin, denn von dessen fuenf Schritten gilt hier keiner: es gibt keinen
+// Pool zu filtern, keine Gates auszuwerten, nichts zu wuerfeln, keinen
+// Wiederholungsschutz zu fuehren und keinen Ruhezaehler zu bewegen. Was bliebe,
+// waeren fuenf Abfragen, die immer denselben Zweig nehmen.
+//
+// letzterAnlass wird hier NICHT gesetzt. szeneEnde() hat es eine Zeile vorher
+// getan, und der Chor auf der Bank haengt daran; ein zweiter Setzer waere eine
+// zweite Wahrheit ueber dieselbe Groesse. Genau deshalb steht der Aufruf dort
+// und nicht in den Szenen selbst.
+//
+// Gibt zurueck, ob die Zeile gefallen ist. Falsch ist kein Fehler: vor der
+// Aushaendigung gibt es sie nicht, auf "Schweigt" schweigt sie, und im
+// Rucksack liest sowieso niemand mit.
+function anlage2Szene(anlass){
+  if(!kn.flags.anlage2Da) return false;
+  const paar = ANLAGE2_SZENE[anlass];
+  if(!paar) return false;                      // vorblatt, und das mit Absicht
+  if(!knLineErlaubt(anlass, true)) return false;
+  knShowRandLine(paar.z1, 'a2');
+  a2Nachklapp = {z: paar.z2, at: gameT + 2.2};
   return true;
 }
 
@@ -24496,6 +24596,11 @@ function szeneEnde(key, merker){
   if(merker && !kn.flags[merker]){ kn.flags[merker] = true; saveKn(); }
   if(SZENE_ANLASS[key]) letzterAnlass = SZENE_ANLASS[key];
   szeneAus();
+  // T8: und Anlage 2, die dabei die ganze Zeit in der Tasche lag. HINTER
+  // szeneAus() und nicht davor, und das ist keine Stelle, die man frei waehlen
+  // kann: szeneAus() gibt state aus 'szene' an 'play' zurueck, und
+  // knLineErlaubt() prueft genau darauf. Davor faellt die Zeile nie.
+  if(SZENE_ANLASS[key]) anlage2Szene(SZENE_ANLASS[key]);
 }
 
 // Eine Zeile der Liste in die Form bringen, die gespraechWaehlen() erwartet.
@@ -25321,6 +25426,13 @@ function anlage2Assert(){
   // waere ein gesperrtes Wort am naheliegendsten.
   for(const a in ANLAGE2_AUSBRUCH)
     for(const p of ANLAGE2_AUSBRUCH[a]) zeilen.push([p.auf, 'Ausbruch ' + a], [p.zurueck, 'Rücknahme ' + a]);
+  // T8: und beide Haelften der Szenenzeilen. Sie stehen hier nicht der
+  // Vollstaendigkeit halber, sondern weil sie die gefaehrlichsten Zeilen sind,
+  // die diese Figur hat: sie fallen in dem Moment, in dem die Akte selbst
+  // spricht, und der naechste, der eine dazuschreibt, hat die Szene frisch im
+  // Kopf und ihre Unwissenheit nicht.
+  for(const a in ANLAGE2_SZENE)
+    zeilen.push([ANLAGE2_SZENE[a].z1, 'Szene ' + a], [ANLAGE2_SZENE[a].z2, 'Szene ' + a + ', zweite Hälfte']);
   zeilen.push([anlage2Tooltip().replace(/<[^>]*>/g, ' '), 'Tooltip']);
   // T7-Fund, aufgefallen beim Ausloesen der neuen Zweige: bis hierher lief
   // diese Schleife ungeprueft auf indexOf. Eine Quelle ohne Text hat den Guard
@@ -25367,7 +25479,13 @@ function anlage2Assert(){
   // waere derselbe stumme Fall, den (4) fuer die Pools nachhaelt.
   let rate = 0;
   for(const a in ANLAGE2_AUSBRUCH){
-    if(!(a in ANLAGE2_NOTIZ)) fehler('Ein Ausbruch wartet auf einen Anlass, den es nicht gibt', a);
+    // T8: die Meldung unterscheidet jetzt zwei Faelle, die bis hierher
+    // denselben Satz bekamen. Ein Szenen-Anlass IST ein Anlass, den es gibt, er
+    // wird nur nicht ueber anlage2Notiz() zugestellt, und wer hier "den es
+    // nicht gibt" liest, sucht an der falschen Stelle.
+    if(!(a in ANLAGE2_NOTIZ)) fehler(ANLASS_QUELLEN.indexOf(a) >= 0
+      ? 'Ein Ausbruch steht auf einem Szenen-Anlass, dort liefert der stille Kanal'
+      : 'Ein Ausbruch wartet auf einen Anlass, den es nicht gibt', a);
     // T4 hat entschieden, dass sie in ein Scheitern nicht hineinredet, sondern
     // beim Wiederantritt wartet. Fuer den lauten Kanal gilt das erst recht,
     // und weil eine Entscheidung, die nur in einem Dokument steht, beim
@@ -25406,6 +25524,57 @@ function anlage2Assert(){
   // die Bauart ein Einzelfall statt einer Eigenschaft, und dann kippt die
   // Figur beim naechsten Bauabschnitt still zurueck in die Haltung.
   if(rate < 3) fehler('Zu wenige Ausbrüche, in denen sie danebenliegt', rate);
+
+  // (2d) T8: der Szenenkanal. Er ist der einzige der drei, dessen Zeilen GENAU
+  // EINMAL pro Spielstand fallen, und daraus folgt alles, was hier geprueft
+  // wird: was einmal faellt, kann man nicht spaeter beim Wiederhoeren bemerken.
+  for(const a in ANLAGE2_SZENE){
+    if(ANLASS_QUELLEN.indexOf(a) < 0) fehler('Eine Szenenzeile wartet auf einen Anlass, den keine Szene setzt', a);
+    const p = ANLAGE2_SZENE[a];
+    if(!p || typeof p !== 'object' || Array.isArray(p)){ fehler('Ein Szenen-Anlass trägt kein Paar', a); continue; }
+    if(typeof p.z1 !== 'string' || !p.z1) fehler('Eine Szenenzeile hat keinen Text', a);
+    // Die zweite Haelfte ist keine Zugabe. Der erste Satz stellt fest, der
+    // zweite sagt, was er fuer sie bedeutet, und ohne ihn bliebe eine Figur
+    // stehen, die etwas bemerkt und es nicht zu Ende sagt.
+    if(typeof p.z2 !== 'string' || !p.z2) fehler('Eine Szenenzeile hat keine zweite Hälfte', a, p.z1);
+    // Kein Gate, kein raten, kein Zusatzfeld. Der Kanal hat genau eine
+    // Bedingung, und die heisst: die Szene ist zu Ende.
+    const extra = Object.keys(p).filter(k => k !== 'z1' && k !== 'z2');
+    if(extra.length) fehler('Eine Szenenzeile trägt ein Feld, das es nicht gibt', a, extra.join());
+  }
+  // Die Entscheidung dieses Abschnitts, und die einzige, die man beim
+  // Weiterschreiben mit der besten Absicht kaputtmacht: bei der Entklammerung
+  // schweigt sie. Ein Papier, dem die Klammer gezogen wird, waere die
+  // naheliegendste Zeile des ganzen Spiels fuer ein Papier mit einer Klammer,
+  // und genau deshalb steht sie hier und nicht nur im Phasendokument. Vorblatt
+  // ist der Gegenspieler aus Akt IV; jeder Satz ueber ihn ist ein Satz ueber
+  // den Fall, und den hat sie nicht. Dieselbe Bauart wie niederlage oben.
+  if('vorblatt' in ANLAGE2_SZENE) fehler('Bei der Entklammerung schweigt sie, hier steht trotzdem eine Zeile');
+  // Und die Gegenrichtung zum Schweigen: jede ANDERE Szene, die einen Anlass
+  // setzt, muss ihre Zeile haben. Ohne diese Pruefung waere die Stille bei
+  // Vorblatt nicht von der Stille zu unterscheiden, die entsteht, wenn jemand
+  // eine Szene dazubaut und die Zeile vergisst, und dann bewiese der Zweig
+  // darueber gar nichts mehr.
+  for(const a of ANLASS_QUELLEN){
+    if(a === 'vorblatt') continue;
+    if(!(a in ANLAGE2_SZENE)) fehler('Eine Szene endet, und sie sagt nichts dazu', a);
+  }
+  // (2e) T8-Fund: ANLASS_QUELLEN behauptet seit SZ3 im Kommentar, die Werte von
+  // SZENE_ANLASS zu fuehren, und dass sie "dort gegengeprueft" werden. Geprueft
+  // wurde nichts, die Liste stand seither unbewacht da. Aufgefallen ist es
+  // hier, weil (2d) sie als Quelle liest: ein Guard, der sich auf eine
+  // handgepflegte Liste stuetzt, erbt deren Fehler und meldet sie als seine
+  // eigene Wahrheit. vorblatt setzt seinen Anlass nicht ueber SZENE_ANLASS,
+  // sondern direkt in vorblattAngekommen(); gelesen wird das aus dem
+  // Quelltext, wie szeneAssert() es bei den Merkern seit SZ2 tut.
+  const ausSzenen = new Set(Object.keys(SZENE_ANLASS).map(k => SZENE_ANLASS[k]));
+  const direkt = (String(vorblattAngekommen).match(/letzterAnlass\s*=\s*'([a-zA-Z0-9]+)'/) || [])[1];
+  if(direkt) ausSzenen.add(direkt);
+  else fehler('Die Entklammerung setzt keinen Anlass mehr, der Chor auf der Bank verstummt');
+  for(const a of ausSzenen)
+    if(ANLASS_QUELLEN.indexOf(a) < 0) fehler('Eine Szene setzt einen Anlass, den ANLASS_QUELLEN nicht führt', a);
+  for(const a of ANLASS_QUELLEN)
+    if(!ausSzenen.has(a)) fehler('ANLASS_QUELLEN führt einen Anlass, den keine Szene setzt', a);
 
   // (4) Die Anlaesse muessen dieselben sein, die auch ausgeloest werden. Der
   // Kanal hat mit T3 den Sprecher gewechselt, nicht die Schluessel: die Bank
@@ -25598,10 +25767,15 @@ function anlage2Assert(){
   // T7 bringt die Ausbrueche in dieselbe Zeile, T6 die Stufen der Wahl. Die
   // Blattzahl steht auf +2 statt +1: hinter dem Auftakt liegt seit T6 die Wahl.
   const ausbrueche = Object.keys(ANLAGE2_AUSBRUCH).reduce((n, a) => n + ANLAGE2_AUSBRUCH[a].length, 0);
+  // T8 nennt die Szenenzeilen mit ihrer Gegenzahl. "2 von 3" ist die Stelle,
+  // an der das Schweigen bei Vorblatt in der Konsole steht: eine 3 dort waere
+  // die Meldung, dass jemand die Entscheidung geraeuschlos zurueckgenommen hat.
+  const szenenZeilen = Object.keys(ANLAGE2_SZENE).length;
   if(ok) console.log(`T3 Anlage 2: ${Object.keys(ANLAGE2_NOTIZ).length} Anlässe, `
     + `${ANLAGE2_BEWEGUNG.length} Sprüche in Reihe, ${ANLAGE2_BLAETTER.length + 2} Blätter, `
     + `${ANLAGE2_FRAGE.length} Stufen, `
     + `${ANLAGE2_UMSCHLAG.length} Umschläge, ${ausbrueche} Ausbrüche (${rate} geraten), `
+    + `${szenenZeilen} von ${ANLASS_QUELLEN.length} Szenen-Anlässen, `
     + `Brandmauer in Ordnung.`);
 }
 anlage2Assert();

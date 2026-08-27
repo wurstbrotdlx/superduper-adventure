@@ -557,6 +557,164 @@ async function imDienst(page){
   pruef('beim Wiederantritt schweigt sie noch', spaet.sofort, true);
   pruef('und sagt es wenige Sekunden spaeter', spaet.danach, false);
 
+  // ---- T8: die Szenen-Anlaesse -------------------------------------------
+  // Die Stellen, an denen die Weltgeschichte selbst spricht.
+  const tab = await page.evaluate(() => ANLAGE2_SZENE);
+
+  // Zuerst der ganze Weg, so wie ein Spieler ihn geht: Akt II erzwingen, Umlauf
+  // wirklich ansprechen, die Szene wirklich durchspielen. Das ist nicht
+  // dieselbe Zusage wie der direkte Aufruf weiter unten, und der Unterschied
+  // ist genau die Stelle, an der dieser Abschnitt haette schiefgehen koennen:
+  // szeneAus() gibt state aus 'szene' an 'play' zurueck, und knLineErlaubt()
+  // prueft darauf. Wer den Aufruf eine Zeile zu frueh setzt, bekommt einen
+  // Kanal, der beim direkten Aufruf tadellos funktioniert und im Spiel nie
+  // etwas sagt. Bauform nach tools/szene-pruef.mjs, wo die Szene ebenso laeuft.
+  const echt = await page.evaluate(() => {
+    amt.schichten = 15; kn.flags.szeneUmlauf = false;
+    kn.flags.anlage2Da = true; kn.regler = 'gespraechig';
+    kammer = null; knZettel.active = false;
+    kn.counters.anlage2Ruhig = 1;
+    letzterAnlass = null; a2Nachklapp = null;
+    setTxt('knRandTxt', 'unberührt');
+    // Die Sperre scharf, und zwar mit Absicht: waehrend der Szene steht gameT
+    // still, sie laeuft also bis zum Ausgang durch. Genau dieser Stand ist im
+    // Spiel der Normalfall, denn wer eine Figur anspricht, hat vorher gespielt.
+    knLastRandnotizT = gameT;
+    gespraechOeffnen(npcs.find(x => x.key === 'umlauf'));
+    const drin = szeneAktiv;
+    for(let i = 0; i < 40 && szeneAktiv; i++){
+      gespraechFertigTippen();
+      const o = szeneOptionen(); if(!o.length) break;
+      o[0].tun();
+    }
+    const band = el('knRandnotiz');
+    return { drin, welt: state, szene: szeneAktiv, merker: kn.flags.szeneUmlauf,
+             text: el('knRandTxt').innerText, sichtbar: band.classList.contains('show'),
+             ihreMarke: band.classList.contains('a2'), anlass: letzterAnlass };
+  });
+  pruef('die Szene laeuft ueber das Ansprechen an', echt.drin, 'umlauf');
+  pruef('und ist am Ende wieder aus', echt.szene, null);
+  pruef('die Welt laeuft weiter', echt.welt, 'play');
+  pruef('der Merker der Szene steht', echt.merker, true);
+  pruef('und Anlage 2 sagt etwas dazu', echt.text, tab.umlauf.z1);
+  pruef('das Band steht dabei offen', echt.sichtbar, true);
+  pruef('mit ihrer Marke', echt.ihreMarke, true);
+  pruef('der Chor auf der Bank bleibt vorgemerkt', echt.anlass, 'umlauf');
+  // Und der Gegenbeweis dazu, damit die Zusage oben Zaehne hat: waehrend die
+  // Szene laeuft, schweigt der Kanal. Ohne diese Zeile bewiese der Durchlauf
+  // nur, dass es irgendwann funktioniert, und nicht, dass die Reihenfolge in
+  // szeneEnde() die richtige ist.
+  pruef('waehrend der Szene schweigt sie', await page.evaluate(() => {
+    const merk = state; state = 'szene'; knLastRandnotizT = -999;
+    const r = anlage2Szene('umlauf');
+    state = merk; a2Nachklapp = null;
+    return r;
+  }), false);
+
+  const sz = await page.evaluate(() => {
+    kn.flags.anlage2Da = true; kn.regler = 'gespraechig';
+    kammer = null; knZettel.active = false;
+    kn.counters.anlage2Ruhig = 1;
+    letzterAnlass = null; a2Nachklapp = null;
+    // Die Vierzig-Sekunden-Sperre steht hier ausdruecklich SCHARF: sie hat
+    // eben erst geredet. Das ist kein Sonderfall, sondern der Normalfall, denn
+    // gameT steht waehrend der ganzen Szene still. Ohne den zweiten Weg durch
+    // knLineErlaubt() verschwaende genau dieser Stand die einmalige Zeile.
+    knLastRandnotizT = gameT;
+    szeneEnde('umlauf', 'szeneUmlauf');
+    const band = el('knRandnotiz');
+    return { text: el('knRandTxt').innerText,
+             ihreMarke: band.classList.contains('a2'),
+             laut: band.classList.contains('ausbruch'),
+             anlass: letzterAnlass,
+             offen: a2Nachklapp ? a2Nachklapp.z : null,
+             stand: kn.counters.anlage2Ruhig };
+  });
+  pruef('die Szene bringt ihre Zeile', sz.text, tab.umlauf.z1);
+  pruef('trotz scharfer Sperre', sz.text !== '', true);
+  pruef('das Band traegt ihre Marke', sz.ihreMarke, true);
+  // Sie ist kein Ausbruch. Die laute Kleidung waere eine Zusage ueber einen
+  // Ton, den diese zwei Saetze nicht haben.
+  pruef('aber nicht die laute Kleidung', sz.laut, false);
+  pruef('die Bank bekommt ihren Anlass', sz.anlass, 'umlauf');
+  pruef('die zweite Haelfte steht offen', sz.offen, tab.umlauf.z2);
+  // Der Ruhezaehler misst den Kanal, der ausbrechen KANN. Dieser kann es nicht,
+  // also bewegt er ihn nicht: sonst kaeme der naechste Ausbruch frueher, und
+  // zwar aus einem Grund, den der Spieler nicht hoeren kann.
+  pruef('der Ruhezaehler bleibt unberuehrt', sz.stand, 1);
+
+  // Die Sperre gilt weiter fuer alle anderen. Der zweite Weg ist einer, nicht
+  // ein Loch.
+  pruef('der Kommentarkanal bleibt derweil gesperrt', await page.evaluate(() =>
+        anlage2Notiz('crit')), false);
+
+  await page.waitForTimeout(2800);
+  pruef('die zweite Haelfte faellt von selbst nach', await page.evaluate(() =>
+        el('knRandTxt').innerText), tab.umlauf.z2);
+  pruef('danach steht nichts mehr offen', await page.evaluate(() => !!a2Nachklapp), false);
+
+  // Die Entklammerung. Sie ist die einzige der drei, bei der Anlage 2 schweigt,
+  // und das Schweigen ist eine Entscheidung: Vorblatt ist der Gegenspieler aus
+  // Akt IV, jeder Satz ueber ihn waere ein Satz ueber den Fall.
+  const vb = await page.evaluate(() => {
+    kn.regler = 'gespraechig'; knLastRandnotizT = -999;
+    letzterAnlass = null; a2Nachklapp = null;
+    kn.flags.szeneVorblatt = false;
+    setTxt('knRandTxt', 'unberührt');
+    vorblattAngekommen();
+    return { anlass: letzterAnlass, text: el('knRandTxt').innerText, offen: !!a2Nachklapp,
+             imKanal: 'vorblatt' in ANLAGE2_SZENE,
+             imAusbruch: 'vorblatt' in ANLAGE2_AUSBRUCH,
+             direkt: anlage2Szene('vorblatt') };
+  });
+  pruef('bei der Entklammerung schweigt sie', vb.text, 'unberührt');
+  pruef('und nichts steht nach', vb.offen, false);
+  pruef('sie hat dort keine Zeile', vb.imKanal, false);
+  pruef('und auch keinen Ausbruch', vb.imAusbruch, false);
+  pruef('der Kanal weist den Anlass ab', vb.direkt, false);
+  // Der Chor auf der Bank bleibt davon unberuehrt. Ihr Schweigen ist ihres.
+  pruef('die Bank bekommt ihn trotzdem', vb.anlass, 'vorblatt');
+
+  // Der Regler gilt hier wie ueberall. Wer "Schweigt" gestellt hat, will auch
+  // an dieser Stelle Ruhe, und eine Zeile, die sich darueber hinwegsetzt, weil
+  // sie sich selbst fuer wichtig haelt, ist genau die Sorte, die man abstellen
+  // wollte. Die Bank verstummt dabei NICHT: szeneEnde() setzt den Anlass, bevor
+  // es sie fragt.
+  const stumm = await page.evaluate(() => {
+    kn.regler = 'schweigt'; knLastRandnotizT = -999;
+    letzterAnlass = null; a2Nachklapp = null;
+    setTxt('knRandTxt', 'unberührt');
+    szeneEnde('knoeterich', 'szeneKnoeterich');
+    return { text: el('knRandTxt').innerText, anlass: letzterAnlass, offen: !!a2Nachklapp };
+  });
+  pruef('auf Schweigt bleibt auch die Szene still', stumm.text, 'unberührt');
+  pruef('und der Chor bekommt seinen Anlass doch', stumm.anlass, 'hintermuehl');
+  pruef('nichts steht dabei nach', stumm.offen, false);
+
+  // Und ohne sie in der Tasche gibt es sie nicht. Auch das darf den Chor nicht
+  // mitreissen: wer sie abgelehnt hat, soll Lott und Pahl trotzdem hoeren.
+  const ohne = await page.evaluate(() => {
+    kn.regler = 'gespraechig'; knLastRandnotizT = -999;
+    kn.flags.anlage2Da = false;
+    letzterAnlass = null; setTxt('knRandTxt', 'unberührt');
+    szeneEnde('knoeterich', 'szeneKnoeterich');
+    const r = { text: el('knRandTxt').innerText, anlass: letzterAnlass };
+    kn.flags.anlage2Da = true;
+    return r;
+  });
+  pruef('ohne sie schweigt die Szene', ohne.text, 'unberührt');
+  pruef('der Chor spricht trotzdem', ohne.anlass, 'hintermuehl');
+
+  // Und die Szenen ohne Anlass loesen auch nichts aus. szeneEnde() traegt seit
+  // T8 einen zweiten Aufruf; eine Szene, die dabei versehentlich eine fremde
+  // Zeile mitnaehme, faellt hier auf.
+  pruef('eine Szene ohne Anlass bleibt stumm', await page.evaluate(() => {
+    knLastRandnotizT = -999; letzterAnlass = null;
+    setTxt('knRandTxt', 'unberührt');
+    szeneEnde('schublade', 'szeneSchublade');
+    return { text: el('knRandTxt').innerText, anlass: letzterAnlass };
+  }), { text: 'unberührt', anlass: null });
+
   pruef('Konsole still (Kanal)', laut, []);
   await ctx.close();
 }
