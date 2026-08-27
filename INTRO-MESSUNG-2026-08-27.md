@@ -331,10 +331,29 @@ Die Meldung nennt inzwischen sogar die Beschriftungen, die wirklich dastehen —
 
 Alle vier sind dieselbe Lage: **`assets/cf/` liegt in diesem Klon nicht vor** (Lizenz, siehe `.gitignore`), es enthält nur `manifest.json` und zwei Textdateien. Der Fall bei `innen-pruef` ist dabei der, für den Riegel 1 gebaut ist: vorher gab er nur einen Stapelabzug und **keine einzige Protokollzeile** her, jetzt stehen 16 geprüfte Zeilen, der ABBRUCH-Hinweis und die Ursache da. Angefasst wurde keiner der vier — das ist eine Grafiklage und kein Fund dieser Sitzung.
 
+## Nachtrag: die Kürzel-Kollision ist real, und zwar doppelt
+
+Der Masterplan trug den Merkposten *„[Vermutung] Kürzel `A1` ff. können im Repo kollidieren, T5 musste schon einmal zu T6 umbenannt werden. Vor Vergabe gegenprüfen."* Gegengeprüft. Die Vermutung stimmt, und die Lage ist schlechter als vermutet: `A1` ff. ist nicht einmal belegt, sondern **zweimal**.
+
+| Bedeutung | Wo | Beispiel |
+|---|---|---|
+| **Aktenblätter der Serie A** | `blaetter-serie-a-b.md`, Kapitel 12 | „Blatt `A1` und Blatt `A5` verorteten den Vorgang ursprünglich…" |
+| **Monsterklassen** | **`index.html` selbst**, dazu `phase-m2-nahfeld-und-namen.md` durchgehend | `{kl:'A1', stufe:1, biom:'Wald', route:'physisch'}` / „ein aufgewerteter `A4` wäre auf Stufe 4" |
+
+Zusammen **227 Treffer** für `A0` bis `A7` in `*.md` und `index.html`. Ein Satz wie „`A3` macht die Kacheln zu Requisiten" stünde damit neben „ein aufgewerteter `A3`", und `grep A3` wäre für diese Kürzel unbrauchbar — in einem Projekt, das seine Bauabschnitte durchgehend über die Kürzel querverweist, ist das keine Kleinigkeit.
+
+**Frei ist das Präfix `A` als Bauabschnitt trotzdem**: die vergebenen sind `e`, `f`, `g`, `in`, `k`, `lv`, `m`, `p`, `s`, `sp`, `sz`, `t`, `u`, `w`, `z`. Das Problem ist nicht das `A`, sondern `A` plus Ziffer.
+
+**Entschieden: `AN1` bis `AN7`.** Zwei Buchstaben, wie `IN1` es seit den Innenräumen vormacht. Gemessen null Treffer für `AN0` bis `AN7` im ganzen Repo (dieselbe Probe fiel auch für `AU`, `EG`, `VOR`, `AKT` und `ANF` auf null aus — `AN` ist die Wahl, nicht der einzige freie Platz).
+
+**`A0` bleibt `A0`.** Acht Treffer, alle aus dieser Sitzung: es gibt kein Blatt `A0` und keine Monsterklasse `A0`, das Kürzel ist eindeutig. Es steht bereits in diesem Bericht, in der `README.md` und im Branchnamen, und ein Umbenennen kaufte Konsistenz für den Preis einer Berichtigung an einer Stelle, die niemanden verwirrt.
+
+Damit lautet die Reihe: `A0` Messlauf → `AN1` Reihenfolge → `AN5` Kladde → `AN2` Amtsstube als Bühne → `AN3` Kacheln werden Requisiten → `AN4` Anlage 2 raus aus der Kette → `AN6` Erstbelehrung nach Akt I → `AN7` Hausmitteilung als Tagesträger.
+
 ## Offen
 
 - [ ] A1 entscheiden: wandert die Amtsstuben-Szene vor oder hinter `startShift()`? Davon hängen Prüfung 1 (181 Pixel) und Prüfung 2 (Nörgel oder niemand) gemeinsam ab.
 - [ ] Entscheiden, welchen der beiden Wege die Tester gegangen sind (Abschnitt 4). Die Rückmeldung nennt die Dienstanweisung, und die liegt nur auf einem davon.
 - [x] **Riegel 1 und 2 aus Prüfung 4 gesetzt** (27.08.2026, siehe unten).
-- [ ] Kürzel-Kollision `A1` ff. gegenprüfen — steht weiter offen, A0 hat nur `A0` vergeben.
+- [x] **Kürzel-Kollision gegengeprüft und entschieden** (27.08.2026, siehe unten): die Bauabschnitte heißen `AN1` bis `AN7`, `A0` bleibt `A0`.
 - [ ] Doku-Nachlese: die sieben Blätter (Nebenbefund).
