@@ -202,7 +202,7 @@ pruef('startShift() holt den Spieler aus dem Haus', await page.evaluate(() => {
 }), {innen: false, level: 1});
 
 // --- Der Ersatzweg: ohne die geschnittenen Blaetter laeuft es weiter ---------
-// Die zwoelf Innenraumblaetter sind als optional registriert, weil die
+// Die neunzehn Innenraumblaetter sind als optional registriert, weil die
 // lizenzierte Grafik im Pages-Build aus einem zweiten Repo kommt und dort erst
 // ankommen muss. Ein Ersatzweg, den niemand ausloest, ist eine Behauptung —
 // hier wird er ausgeloest.
@@ -222,13 +222,38 @@ pruef('ohne die Innenraumblaetter baeckt jede Kachel trotzdem', await page.evalu
   Object.assign(SHEETS, weg);
   for(const k of Object.keys(INN_CACHE)) delete INN_CACHE[k];
   return {blaetter: Object.keys(weg).length, leer};
-}), {blaetter: 12, leer: []});
+}), {blaetter: 19, leer: []});
 
 // --- Und mit den Blaettern kommt das Pack durch ------------------------------
-pruef('mit den Blaettern zeichnen sieben Moebel aus dem Pack', await page.evaluate(() => {
+// Zwoelf Moebelzeichen greifen ins Pack; die drei Auflagen (Pflanze, Kerze,
+// Flasche) haengen an keinem Zeichen, weil sie auf einem Moebel stehen und
+// nicht auf einem Feld. Sie werden hier einzeln nachgesehen.
+pruef('mit den Blaettern zeichnen zwoelf Moebel aus dem Pack', await page.evaluate(() => {
   const da = Object.keys(INN_SPRITE).filter(z => innenBlattDa(INN_SPRITE[z]));
-  return {sprite: da.sort(), boden: innenBlattDa('innen_boden'), pflanze: innenBlattDa('innen_pflanze')};
-}), {sprite: ['D', 'E', 'H', 'R', 'S', 'T', 'Z'], boden: true, pflanze: true});
+  return {sprite: da.sort(), boden: innenBlattDa('innen_boden'),
+          auflagen: ['innen_pflanze', 'innen_kerze', 'innen_flasche'].every(innenBlattDa)};
+}), {sprite: ['B', 'D', 'E', 'H', 'N', 'P', 'R', 'S', 'T', 'U', 'V', 'Z'], boden: true, auflagen: true});
+
+// --- Die Schankstube ist eingerichtet ---------------------------------------
+// Der Nachlese-Grundriss steht in index.html; hier steht, was er tragen MUSS.
+// Nicht die Zahl der Faesser (die darf sich aendern), sondern die drei Saetze,
+// die der Raum ueber sich selbst macht: es gibt eine Theke, an ihr sitzt man,
+// und der freigehaltene Platz sitzt mit.
+pruef('die Schankstube hat Theke, Hocker, Faesser und Uhr', await page.evaluate(() => {
+  const h = INN_HAEUSER.find(h => h.b.innen === 'wirtshaus');
+  betreteHaus(h);
+  const n = z => innen.moebel.filter(o => o.z === z).length;
+  // Sitzt der freigehaltene Platz in der Hockerreihe? Gemessen als Abstand in
+  // Kacheln zum naechsten Hocker: ein Denkmal steht allein, ein Stuhl in einer
+  // Reihe hat einen Nachbarn.
+  const z = innen.moebel.find(o => o.z === 'Z');
+  const nah = Math.min(...innen.moebel.filter(o => o.z === 'U')
+    .map(o => Math.abs(o.x - z.x)/TS + Math.abs(o.y - z.y)/TS));
+  const ergebnis = {theke: n('X'), hocker: n('U'), fass: n('V'), uhr: n('P'),
+                    fenster: n('N'), bank: n('B'), tisch: n('T'), nachbar: nah};
+  verlasseHaus();
+  return ergebnis;
+}), {theke: 1, hocker: 3, fass: 3, uhr: 1, fenster: 2, bank: 2, tisch: 2, nachbar: 1});
 
 pruef('Konsole still', laut, []);
 

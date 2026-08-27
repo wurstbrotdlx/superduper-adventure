@@ -310,7 +310,9 @@ Sieben Buchstaben des Grundrisses zeichnen seither aus dem Pack: `R` Regal,
 **Theke** hat im Pack kein Gegenstück: `Kitchen.png` ist eine Frontansicht, also
 Hängeschränke von vorn gesehen, und ein Küchenschrank ist ohnehin keine
 Schankstube. Die **Bank** auch nicht: `Chairs.png` hat Sofas, und ein Sofa ist
-keine Wirtshausbank. Dazu der **Aktenstapel** und die **Spinnwebe**. Sie haben
+keine Wirtshausbank. *(Berichtigt am 27.08.2026, Abschnitt 11: die Bank stand in
+`Outdoor decoration/`, und dort war nicht gesucht worden. Sie kommt seither aus
+dem Pack.)* Dazu der **Aktenstapel** und die **Spinnwebe**. Sie haben
 mit der Nachlese trotzdem etwas bekommen — das Gewicht der Packmöbel: dicke
 Platte, geschlossener Unterbau, dunkle Kontur. Die dünne Fassung las sich neben
 einem echten Tisch als schwebendes Brett.
@@ -367,9 +369,12 @@ Trick, mit dem eine Wand von oben Höhe bekommt.
 
 * **Ein zweites Stockwerk.** `Wood_Stairs` steht im Manifest. Eine Treppe ohne
   oberes Geschoss wäre dieselbe Behauptung, die M3 bei der Leiter abgelehnt hat.
-* **Fenster.** Von innen sieht kein Raum nach draußen. Das Paket hat ein
+* ~~**Fenster.** Von innen sieht kein Raum nach draußen. Das Paket hat ein
   `windows`-Blatt, im Repo liegt es nicht, und gezeichnete Fenster ohne Aussicht
-  wären Deko ohne Aussage.
+  wären Deko ohne Aussage.~~ **Erledigt am 27.08.2026, Abschnitt 11.** Das Blatt
+  liegt seit der zweiten Nachlese im Repo, und die Aussage war die ganze Zeit da:
+  hinter der Scheibe steht Abend, weil man zum Feierabend hineingeht. Bisher nur
+  im Wirtshaus — in den beiden anderen Räumen ist die Nordwand voller Regale.
 * **Ein Tagesablauf, der diesen Namen verdient.** Was hier steht, ist ein
   Schalter mit zwei Stellungen. Wer den Figuren wirklich einen Tag geben will,
   braucht mehr als das letzte Viertel der Schicht — und dann ist es ein eigener
@@ -377,3 +382,80 @@ Trick, mit dem eine Wand von oben Höhe bekommt.
 * **Der Postregen.** Er kommt laut Weltgeschichte im Amt an, im Gasthaus und in
   der Registratur. Alle drei sind seit heute Orte. Wer SZ3 zu Ende baut, hat
   jetzt, wohin damit.
+
+## 11. Zweite Nachlese: mehr für den Letzten Stempel (27.08.2026)
+
+Auf die Frage *„Gibt's noch mehr Deko für den letzten Stempel?"* — ja, sieben
+Blätter mehr, und zwei davon hätten schon beim ersten Durchgang dabei sein
+müssen.
+
+### Was dazugekommen ist
+
+| Blatt | Quelle | im Raum |
+|---|---|---|
+| `fass.png` | `Outdoor decoration/barrels.png` 49,13 15×19 | `V` — zwei hinter der Theke, eins bei den Kisten |
+| `bank.png` | `Outdoor decoration/Benches.png` 33,6 31×21 | `B` — die Wirtshausbank, die IN1 gezeichnet hat |
+| `hocker.png` | `House_Decor/Indoor_Decor.png` 83,50 9×13 | `U` — drei an der Theke |
+| `kerze.png` | `House_Decor/Placeable_Decoration.png` 5,132 6×11 | Auflage auf dem Tisch |
+| `flasche.png` | `House_Decor/Placeable_Decoration.png` 4,3 7×11 | Auflage auf der Theke |
+| `fenster.png` | `House_Decor/windows.png` 1,7 14×21 | `N` — zwei in der Nordwand |
+| `standuhr.png` | `House_Decor/Clocks.png` 17,1 14×30 | `P` — an der Ostwand |
+
+Der Grundriss trägt jetzt zwei neue Möbelzeichen (`V` Fass, `P` Pendeluhr), ein
+neues Wandzeichen (`N` Fenster) — und `B` und `U` greifen ins Pack statt in
+`drawInnenMoebelGezeichnet()`. Alles andere ist wieder stehen geblieben.
+
+### Der Fund, der weh tut: „das Pack hat kein X"
+
+Abschnitt 9 schreibt, die Bank bleibe gezeichnet, weil `Chairs.png` nur Sofas
+habe. Das stimmte. Die Bank lag in `Outdoor decoration/Benches.png` — eine Bank
+ist eine Bank, drinnen wie draußen, und gesucht worden war in genau einem
+Ordner. Dasselbe beim Fass: `barrels.png` liegt im Außenordner und war das Blatt,
+das ein Wirtshaus am dringendsten braucht. Der Wirt heißt **Fass**.
+
+Die Lehre steht jetzt als Kommentar über `INN_SPRITE`: wer eine Zeile schreibt,
+die sagt „das Pack hat kein X", hat in genau einem Ordner nachgesehen.
+
+### Drei Funde aus dem Bild, wieder
+
+**Erstens: ein Möbel wird über seiner Fußlinie nach oben gezeichnet.** Die erste
+Fassung setzte die drei Hocker in Zeile 4, direkt unter die Theke — und die
+Tische in Zeile 5 haben sie vollständig verdeckt, weil ein Tisch zwei Kacheln
+hoch ist. Der dritte Tisch ist dafür gegangen, und zwischen Theke und Tischen
+liegt jetzt eine leere Reihe. Das ist keine Geschmacksfrage, sondern die Luft,
+die eine Schankstube ohnehin braucht: man tritt an die Theke, ohne über eine Bank
+zu steigen.
+
+**Zweitens: ein `tileHash` über ein einziges Feld ist kein Zufall.** Die Flaschen
+auf der Theke waren erst hash-gesetzt wie die Krüge auf den Tischen. Es gibt aber
+genau eine Theke im Spiel — die Münze wird einmal geworfen und bleibt dann für
+immer liegen. Sie fiel auf „keine Flasche", und die Schankstube hatte keine
+einzige. Zwei Flaschen stehen jetzt fest da. Die Krüge und die Kerze auf den
+Tischen bleiben gewürfelt: davon gibt es zwei, und nicht jeder Tisch ist gedeckt.
+
+**Drittens: der freigehaltene Platz braucht Nachbarn.** Er war der einzige Sitz
+im Raum und stand da wie ein Denkmal. In einer Reihe von drei Hockern fällt erst
+auf, dass auf ihm niemand sitzt. `tools/innen-pruef.mjs` misst das seither als
+Kachelabstand zum nächsten Hocker — ein Denkmal steht allein, ein Stuhl in einer
+Reihe hat einen Nachbarn.
+
+### Geprüft
+
+`tools/innen-pruef.mjs` steht bei 20 Prüfungen (vorher 19). Neu ist die
+Einrichtung der Schankstube — Theke, drei Hocker, drei Fässer, eine Uhr, zwei
+Fenster, zwei Bänke, zwei Tische, und der Abstand des freigehaltenen Platzes zur
+Hockerreihe. Der Ersatzweg nimmt jetzt neunzehn Blätter zur Laufzeit aus
+`SHEETS` statt zwölf, und zwölf Möbelzeichen zeichnen aus dem Pack statt sieben.
+Die fünfzehn anderen Prüfläufe sind unverändert grün.
+
+### Was weiter offen ist
+
+* **`NPCs (Premade)/Bartender_Bruno.png`.** Das Pack hat einen fertigen Wirt, und
+  der Wirt in diesem Dorf heißt Bruno Fass. Ein Figurensprite zu tauschen ist
+  aber kein Dekopunkt, sondern ein Eingriff in die Figurentabelle — das ist eine
+  eigene Entscheidung und kein Nebenbei.
+* **`Carpets.png`.** Teppiche bräuchten eine flache Ebene unter den Möbeln. Ein
+  Feld trägt ein Zeichen, und ein Teppich unter einem Tisch wären zwei.
+* **Fenster in Amt und Registratur.** Beide haben die Nordwand voller Regale.
+  Wer dort ein Fenster will, nimmt ein Regal weg — und das Amt ist zu leer, nicht
+  zu voll.

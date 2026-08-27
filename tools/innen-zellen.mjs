@@ -50,6 +50,7 @@ const PRUEF  = process.argv.includes('--pruef');
 
 const DECOR = 'Cute_Fantasy/Buildings/House_Decor';
 const INNEN = 'Cute_Fantasy/Buildings/Houses_Interiors';
+const AUSSEN = 'Cute_Fantasy/Outdoor decoration';
 
 // ziel, quelle, art, [x, y, w, h], wofuer
 const TABELLE = [
@@ -92,6 +93,43 @@ const TABELLE = [
   // gerade NICHT giesst — das ist ein anderer Witz als der, um den es hier geht.
   {ziel:'pflanze.png',  quelle:`${DECOR}/House_Plants.png`, art:'zelle', r:[32, 2, 16, 30],
    wofuer:'Die Pflanze auf dem Schreibtisch, und sie lebt'},
+
+  // --- Nachschlag fuer die Schankstube --------------------------------------
+  // barrels.png liegt unter "Outdoor decoration" und ist trotzdem das Blatt,
+  // das dieses Wirtshaus am dringendsten gebraucht hat. Genommen ist das
+  // geschlossene Fass ohne Inhalt (die Reihe darueber traegt Beeren, Wasser und
+  // Kraeuter, die Reihe darunter Blumen) — ein Fass, in dem etwas anderes ist
+  // als das, was ein Wirt ausschenkt, waere die falsche Auskunft.
+  {ziel:'fass.png',     quelle:`${AUSSEN}/barrels.png`,    art:'zelle', r:[49, 13, 15, 19],
+   wofuer:'Fass in der Schankstube. Der Wirt heisst Fass'},
+  // Benches.png hat zwei Baenke: eine steinerne und eine hoelzerne. IN1 hat die
+  // Bank gezeichnet, weil Chairs.png nur Sofas hat — dieses Blatt lag im
+  // Aussenordner und war deshalb nicht gesucht worden.
+  {ziel:'bank.png',     quelle:`${AUSSEN}/Benches.png`,    art:'zelle', r:[33, 6, 31, 21],
+   wofuer:'Wirtshausbank, zwei Kacheln breit'},
+  // Indoor_Decor.png, rechte Spalte: drei Hocker mit gepolstertem Sitz. Der rote
+  // steht an der Theke.
+  {ziel:'hocker.png',   quelle:`${DECOR}/Indoor_Decor.png`, art:'zelle', r:[83, 50, 9, 13],
+   wofuer:'Barhocker an der Theke'},
+  // Placeable_Decoration.png ist ein Blatt voller Kleinzeug: Flaschen, Schalen,
+  // Kerzen, ein Buch, ein Kessel. Zwei davon stehen auf Moebeln statt auf dem
+  // Boden und bekommen deshalb kein eigenes Feld im Grundriss.
+  {ziel:'kerze.png',    quelle:`${DECOR}/Placeable_Decoration.png`, art:'zelle', r:[5, 132, 6, 11],
+   wofuer:'Kerze auf dem Tisch, mit Halter'},
+  {ziel:'flasche.png',  quelle:`${DECOR}/Placeable_Decoration.png`, art:'zelle', r:[4, 3, 7, 11],
+   wofuer:'Flasche auf der Theke'},
+  // windows.png hat vier Reihen desselben Fensters: Abend, Nacht, Tag, blank.
+  // Genommen ist die oberste — Violett oben, Rosa und Orange darunter. Man
+  // betritt diese Haeuser zum Feierabend, und das ist die Stunde, die dort
+  // hinter der Scheibe steht. Von den drei Sprossenfassungen die erste, das
+  // Kreuz: es ist die einzige, die auf 14 Pixeln noch als Fenster lesbar ist.
+  {ziel:'fenster.png',  quelle:`${DECOR}/windows.png`,      art:'zelle', r:[1, 7, 14, 21],
+   wofuer:'Fenster in der Wand der Schankstube, Abendhimmel'},
+  // Clocks.png: zwei Standuhren (14x30) und ein Dutzend runder Wanduhren. Die
+  // zweite Standuhr hat den geschlossenen Kasten; die erste hat unten ein
+  // offenes Fach, und ein offenes Fach in einer Uhr sieht aus wie ein Schaden.
+  {ziel:'standuhr.png', quelle:`${DECOR}/Clocks.png`,       art:'zelle', r:[17, 1, 14, 30],
+   wofuer:'Standuhr im Wirtshaus. Es heisst Zum Letzten Stempel'},
 ];
 
 // --- PNG lesen und schreiben, dieselbe Bauart wie innen-tuer-messlauf.mjs ----

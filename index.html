@@ -3493,6 +3493,20 @@ addSheet('innen_pult',         'cf/innen/pult.png',         1, 'grid', {fw:32, f
 addSheet('innen_schreibtisch', 'cf/innen/schreibtisch.png', 1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
 addSheet('innen_kommode',      'cf/innen/kommode.png',      1, 'grid', {fw:32, fh:21, ax:16, ay:21, optional:true});
 addSheet('innen_pflanze',      'cf/innen/pflanze.png',      1, 'grid', {fw:16, fh:30, ax:8,  ay:30, optional:true});
+// Zweite Nachlese, auf die Frage nach mehr Deko fuer den Letzten Stempel. Das
+// Fass und die Bank standen im Ordner "Outdoor decoration" — deshalb hat der
+// erste Durchgang durch die Innenraumordner sie nicht gefunden, und deshalb
+// stand im Phasendokument, das Pack habe keine Wirtshausbank. Es hat eine.
+addSheet('innen_fass',         'cf/innen/fass.png',         1, 'grid', {fw:15, fh:19, ax:7,  ay:19, optional:true});
+addSheet('innen_bank',         'cf/innen/bank.png',         1, 'grid', {fw:31, fh:21, ax:15, ay:21, optional:true});
+addSheet('innen_hocker',       'cf/innen/hocker.png',       1, 'grid', {fw:9,  fh:13, ax:4,  ay:13, optional:true});
+// Zwei Auflagen, keine Moebel: sie stehen auf einem Tisch oder auf der Theke.
+addSheet('innen_kerze',        'cf/innen/kerze.png',        1, 'grid', {fw:6,  fh:11, ax:3,  ay:11, optional:true});
+addSheet('innen_flasche',      'cf/innen/flasche.png',      1, 'grid', {fw:7,  fh:11, ax:3,  ay:11, optional:true});
+// Fenster und Standuhr: die zwei Blaetter, die aus einem Kasten mit Moebeln
+// einen Raum machen. Das Fenster haengt in der Wand, die Uhr steht am Boden.
+addSheet('innen_fenster',      'cf/innen/fenster.png',      1, 'grid', {fw:14, fh:21, ax:7,  ay:21, optional:true});
+addSheet('innen_standuhr',     'cf/innen/standuhr.png',     1, 'grid', {fw:14, fh:30, ax:7,  ay:30, optional:true});
 
 // ===========================================================================
 //  U5: Die Figurenportraets. Seit U4 zeigt die obere Tafelhaelfte einen
@@ -12886,6 +12900,7 @@ const INN_MOEBEL = {
   'A': {name:'Ausgang',        frei:true},
   'F': {name:'Fackel',         frei:true, wand:true},
   'W': {name:'Spinnwebe',      frei:true, wand:true},
+  'N': {name:'Fenster',        frei:true, wand:true},
   'R': {name:'Aktenregal'},
   'K': {name:'Kiste'},
   'O': {name:'Krug'},
@@ -12894,6 +12909,9 @@ const INN_MOEBEL = {
   'E': {name:'Schreibtisch'},
   'T': {name:'Tisch'},
   'B': {name:'Bank'},
+  'U': {name:'Hocker'},
+  'V': {name:'Fass'},
+  'P': {name:'Pendeluhr'},
   'X': {name:'Theke'},
   'H': {name:'Herdfeuer'},
   'Y': {name:'Aktenstapel'},
@@ -12932,19 +12950,36 @@ const INN_RAEUME = {
   // Zum Letzten Stempel. Die Theke, dahinter Fass, daneben der Platz, den er
   // freihält (Grundzeile 4: "Ich halte einen Platz frei."). Er ist ein Stuhl
   // und bleibt ein Stuhl; erklärt wird er nicht.
+  //
+  // Zweite Nachlese: drei Hocker an der Theke, damit der freigehaltene Platz
+  // einer in einer Reihe ist statt der einzige Sitz im Raum — allein steht er
+  // da wie ein Denkmal, in der Reihe fällt erst auf, dass auf ihm niemand
+  // sitzt. Dahinter zwei Fässer, eins bei den Kisten; der Wirt heißt Fass, und
+  // das Haus macht daraus kein Wortspiel, es stellt ihm nur welche hin.
+  //
+  // Dafür ist der dritte Tisch gegangen, und zwar gemessen, nicht aus Geschmack:
+  // ein Möbel wird über seiner Fußlinie nach oben gezeichnet, ein Tisch zwei
+  // Kacheln hoch. Die Hockerreihe in Zeile 4 verschwand vollständig hinter den
+  // Tischen in Zeile 5. Zwischen Theke und Tischen liegt jetzt eine leere Reihe
+  // — die Luft, die eine Schankstube ohnehin braucht, damit man an die Theke
+  // treten kann, ohne über eine Bank zu steigen.
+  //
+  // Zwei Fenster in der Nordwand und eine Standuhr an der Ostwand. Die Fenster
+  // zeigen Abend, weil man zum Feierabend hineingeht; die Uhr steht in einem
+  // Haus, das "Zum Letzten Stempel" heißt, und sagt kein Wort dazu.
   wirtshaus: {
     name: 'Zum Letzten Stempel',
     plan: [
       '###############',
-      '#F..W......W.F#',
-      '#.............#',
+      '#FN.W.....W.NF#',
+      '#VV...........#',
       '#.Xxxxx...Hh..#',
-      '#.....Z.......#',
+      '#..UUUZ......P#',
+      '#.............#',
       '#..Tt....Tt...#',
       '#..Bb....Bb...#',
+      '#.K.......V.K.#',
       '#.............#',
-      '#..Tt.....K.K.#',
-      '#..Bb.........#',
       '######AA#######',
     ],
     // Umlauf isst schnell und redet schneller, und die Weltgeschichte setzt das
@@ -13131,10 +13166,36 @@ function innenBeine(x, y, spann, hoch, dick){
   ctx.fillRect(x - spann/2, y - hoch, dick, hoch);
   ctx.fillRect(x + spann/2 - dick, y - hoch, dick, hoch);
 }
+// Was auf einem Wirtshaustisch steht. Fest je Feld (tileHash statt
+// Math.random), sonst raeumte die Schankstube bei jedem Bild ab und deckte neu
+// ein. Beide Zeichenwege rufen dieselbe Hand: ein Tisch aus dem Pack und ein
+// gemalter Tisch werden gleich gedeckt, nur auf verschiedener Hoehe.
+//
+// Der Krug bleibt gemalt — das Pack hat Flaschen und Kelche, aber keinen
+// Tonkrug von oben. Die Kerze kommt aus dem Pack; fehlt ihr Blatt, steht auf
+// dem Tisch eben keine, denn eine gemalte Kerze waere in diesem Massstab ein
+// Strich mit einem Punkt darueber.
+function innenGedeck(x, y, b, oben){
+  const hh = tileHash(Math.round(x), Math.round(y));
+  for(let i = 0; i < 2; i++){
+    if((hh >> (i*2)) % 3 === 0) continue;                        // nicht jeder Tisch ist gedeckt
+    const kx = x - b/4 + i*(b/2);
+    ctx.fillStyle = '#d8c98f'; ctx.fillRect(kx - 4, oben, 8, 9);  // Krug
+    ctx.fillStyle = '#b9a87a'; ctx.fillRect(kx - 4, oben, 8, 3);
+    ctx.fillStyle = '#8a7a52'; ctx.fillRect(kx + 4, oben + 2, 2, 4);
+  }
+  if((hh >> 5) % 3 && innenBlattDa('innen_kerze'))
+    drawSprite('innen_kerze', 0, x, oben + 9, WELT_SC);
+}
 // IN1-Nachlese: was das Pack hergibt, zeichnet das Pack. Was es nicht hergibt,
-// zeichnet das Haus weiter selbst — die Theke einer Schankstube, eine Bank, ein
-// Aktenstapel und eine Spinnwebe stehen in keinem Innenraumblatt, und ein
-// Kuechenschrank ist keine Theke.
+// zeichnet das Haus weiter selbst — die Theke einer Schankstube, ein
+// Aktenstapel und eine Spinnwebe stehen in keinem Blatt, und ein Kuechenschrank
+// ist keine Theke.
+//
+// Die Bank stand hier bis zur zweiten Nachlese in derselben Liste. Sie war
+// nicht in den Innenraumordnern, sie war in "Outdoor decoration" — eine Bank
+// ist eine Bank, drinnen wie draussen. Wer hier eine Zeile schreibt, die sagt
+// "das Pack hat kein X", hat in genau einem Ordner nachgesehen.
 //
 // Jeder Eintrag hier ist ein Griff ins Blatt; fehlt das Blatt, faellt derselbe
 // Buchstabe in drawInnenMoebelGezeichnet() zurueck. Der Ersatzweg ist keine
@@ -13143,7 +13204,8 @@ function innenBeine(x, y, spann, hoch, dick){
 const INN_SPRITE = {
   R: 'innen_regale', T: 'innen_tisch', Z: 'innen_stuhl',
   D: 'innen_pult',   S: 'innen_schreibtisch', E: 'innen_kommode',
-  H: 'innen_kamin',
+  H: 'innen_kamin',  B: 'innen_bank', U: 'innen_hocker', V: 'innen_fass',
+  N: 'innen_fenster', P: 'innen_standuhr',
 };
 function drawInnenMoebel(o){
   const blatt = INN_SPRITE[o.z];
@@ -13173,18 +13235,38 @@ function drawInnenMoebel(o){
     case 'T':
       innenSchatten(o.x, o.y - 3, b*0.34);
       drawSprite(blatt, 0, o.x, o.y, WELT_SC);
-      if(innen.key === 'wirtshaus'){
-        // Nicht jeder Tisch ist gedeckt. Der Krug steht fest je Feld, sonst
-        // raeumte die Schankstube bei jedem Bild ab und deckte neu ein.
-        const hh = tileHash(Math.round(o.x), Math.round(o.y));
-        for(let i = 0; i < 2; i++){
-          if((hh >> (i*2)) % 3 === 0) continue;
-          const kx = o.x - b/4 + i*(b/2), ky = o.y - 44;
-          ctx.fillStyle = '#d8c98f'; ctx.fillRect(kx - 4, ky, 8, 9);
-          ctx.fillStyle = '#b9a87a'; ctx.fillRect(kx - 4, ky, 8, 3);
-          ctx.fillStyle = '#8a7a52'; ctx.fillRect(kx + 4, ky + 2, 2, 4);
-        }
-      }
+      if(innen.key === 'wirtshaus') innenGedeck(o.x, o.y, b, o.y - 44);
+      break;
+    case 'B':    // Bank. Das Blatt ist 31 Pixel breit und deckt damit genau die
+                 // zwei Felder, die der Grundriss ihr gibt. Auf einem einzelnen
+                 // Feld waere sie doppelt so breit wie das Feld — dort steht
+                 // sie ungestreckt, statt in den Nachbarn hineinzuragen.
+      innenSchatten(o.x, o.y - 3, b*0.30);
+      drawSprite(blatt, 0, o.x, o.y, o.breit >= 2 ? WELT_SC : 1);
+      break;
+    case 'U':    // Barhocker: klein, rot gepolstert, drei nebeneinander an der
+                 // Theke. Sie tragen den freigehaltenen Platz — allein steht er
+                 // da wie ein Denkmal, in der Reihe faellt erst auf, dass auf
+                 // ihm niemand sitzt.
+      innenSchatten(o.x, o.y - 2, 8);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      break;
+    case 'V':    // Fass. Der Wirt heisst Fass, und das Haus macht daraus kein
+                 // Wortspiel: es stellt ihm nur welche in die Ecke.
+      innenSchatten(o.x, o.y - 2, 12);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
+      break;
+    case 'N':    // Fenster. Es haengt in der Wand, nicht im Raum: seine
+                 // Fusslinie liegt eine Kachel ueber der eigenen, sonst stuende
+                 // es auf dem Boden. Was dahinter zu sehen ist, ist Abend —
+                 // hineingegangen wird zum Feierabend, und dann steht draussen
+                 // genau diese Stunde.
+      drawSprite(blatt, 0, o.x, o.y - TS + 8, WELT_SC);
+      break;
+    case 'P':    // Standuhr. Sie steht in einem Haus, das "Zum Letzten Stempel"
+                 // heisst, und sagt kein Wort dazu.
+      innenSchatten(o.x, o.y - 2, 10);
+      drawSprite(blatt, 0, o.x, o.y, WELT_SC);
       break;
     case 'Z':    // Der freigehaltene Platz. Der Schimmer darueber bleibt: er ist
                  // das Einzige an diesem Stuhl, was ihn von den anderen abhebt,
@@ -13239,6 +13321,36 @@ function drawInnenMoebelGezeichnet(o){
     case 'W':
       drawSprite('dun_cobweb', 0, o.x, o.y - TS + 2, WELT_SC);
       break;
+    case 'N': {  // Fenster, gemalt: ein Rahmen, dahinter der Abendhimmel als
+                 // Verlauf, davor ein Sprossenkreuz. Dieselben drei Farben, die
+                 // im Blatt uebereinanderliegen — Violett, Rosa, Orange.
+      const fx = o.x - 14, fy = o.y - TS - 26, fb = 28, fh2 = 42;
+      ctx.fillStyle = '#3a2a1e'; ctx.fillRect(fx - 2, fy - 2, fb + 4, fh2 + 4);
+      const g = ctx.createLinearGradient(0, fy, 0, fy + fh2);
+      g.addColorStop(0, '#8f7bb0'); g.addColorStop(0.55, '#e2a2a0'); g.addColorStop(1, '#f2cf9e');
+      ctx.fillStyle = g; ctx.fillRect(fx, fy, fb, fh2);
+      ctx.fillStyle = '#a9784a';
+      ctx.fillRect(fx + fb/2 - 2, fy, 4, fh2); ctx.fillRect(fx, fy + fh2/2 - 2, fb, 4);
+      break;
+    }
+    case 'P': {  // Standuhr, gemalt: hoher Kasten, helles Zifferblatt, ein
+                 // Pendel, das steht. Es steht, weil das Blatt seines auch
+                 // stehen laesst — zwei Fassungen desselben Moebels duerfen
+                 // sich nicht darin unterscheiden, ob die Zeit laeuft.
+      innenSchatten(o.x, o.y - 2, 10);
+      ctx.fillStyle = '#3a2a20'; ctx.fillRect(o.x - 14, o.y - 60, 28, 58);
+      ctx.fillStyle = '#7a4e26'; ctx.fillRect(o.x - 11, o.y - 57, 22, 52);
+      ctx.fillStyle = '#e6dcc0';
+      ctx.beginPath(); ctx.arc(o.x, o.y - 44, 9, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#3a2a20'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(o.x, o.y - 44); ctx.lineTo(o.x, o.y - 50);
+      ctx.moveTo(o.x, o.y - 44); ctx.lineTo(o.x + 5, o.y - 42); ctx.stroke();
+      ctx.fillStyle = '#5a3a1c'; ctx.fillRect(o.x - 8, o.y - 30, 16, 24);
+      ctx.fillStyle = '#c8a35a';
+      ctx.fillRect(o.x - 1, o.y - 28, 2, 14);
+      ctx.beginPath(); ctx.arc(o.x, o.y - 12, 4, 0, Math.PI*2); ctx.fill();
+      break;
+    }
     case 'R': {  // Aktenregal: drei Böden, darauf Aktenrücken in den Farben des
                  // Hauses. Die Rücken stehen fest je Feld (tileHash statt
                  // Math.random), sonst flackerte die Registratur bei jedem Bild.
@@ -13273,7 +13385,7 @@ function drawInnenMoebelGezeichnet(o){
       drawSprite('camp_pot', animFrame('camp_pot', gameT, 6), o.x, o.y - 12, WELT_SC);
       break;
     }
-    case 'X':    // Theke. Sie bleibt gezeichnet, und zwar nicht aus Trotz: das
+    case 'X': {  // Theke. Sie bleibt gezeichnet, und zwar nicht aus Trotz: das
                  // Pack hat keinen Tresen von oben. Kitchen.png ist eine
                  // Frontansicht (Haengeschraenke, von vorn gesehen), und ein
                  // Kuechenschrank ist ohnehin keine Schankstube.
@@ -13287,7 +13399,21 @@ function drawInnenMoebelGezeichnet(o){
       innenPlatte(o.x, o.y - 26, b, 11, '#c08a45', '#7d5326');
       ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
       ctx.strokeRect(Math.round(o.x - b/2) + 0.5, Math.round(o.y - 26) + 0.5, Math.round(b) - 1, 25);
+      // Auf der Theke stehen zwei Flaschen aus dem Pack, am rechten Ende — am
+      // linken steht der Wirt. Ihre Fusslinie liegt auf der Deckflaeche der
+      // Platte (o.y-26 minus 11 Pixel Dicke, plus die 6 Pixel Deckflaeche):
+      // davor stuenden sie vor der Theke, dahinter in der Wand.
+      //
+      // Ohne Wuerfel, anders als beim Gedeck. Es gibt genau eine Theke im
+      // Spiel, und ein tileHash ueber ein einziges Feld ist kein Zufall,
+      // sondern eine Muenze, die einmal geworfen und dann fuer immer
+      // liegengelassen wird. Der erste Anlauf warf sie und bekam eine
+      // Schankstube ohne eine einzige Flasche.
+      if(innenBlattDa('innen_flasche'))
+        for(let i = 0; i < 2; i++)
+          drawSprite('innen_flasche', 0, o.x + b/2 - 17 - i*15, o.y - 32, WELT_SC);
       break;
+    }
     case 'T': {  // Tisch: Platte auf vier Beinen, hoch genug, dass man die Beine
                  // sieht. Der erste Anlauf war ein Brett mit einem Schatten
                  // darunter, und im Bild sah ein Tisch aus wie eine Bank und
@@ -13297,24 +13423,38 @@ function drawInnenMoebelGezeichnet(o){
       innenSchatten(o.x, o.y - 3, b*0.34);
       innenBeine(o.x, o.y - 3, b - 10, 18, 5);
       innenPlatte(o.x, o.y - 21, b - 4, 15, '#c08c47', '#7d5326');
-      if(innen.key === 'wirtshaus'){
-        const hh = tileHash(Math.round(o.x), Math.round(o.y));
-        for(let i = 0; i < 2; i++){
-          const kx = o.x - b/4 + i*(b/2), ky = o.y - 30;
-          if((hh >> (i*2)) % 3 === 0) continue;              // nicht jeder Tisch ist gedeckt
-          ctx.fillStyle = '#d8c98f'; ctx.fillRect(kx - 4, ky, 8, 9);   // Krug
-          ctx.fillStyle = '#b9a87a'; ctx.fillRect(kx - 4, ky, 8, 3);
-          ctx.fillStyle = '#8a7a52'; ctx.fillRect(kx + 4, ky + 2, 2, 4);
-        }
-      }
+      if(innen.key === 'wirtshaus') innenGedeck(o.x, o.y, b, o.y - 30);
       break;
     }
     case 'B':    // Bank: halb so hoch, schmaler, dunkler. Zwei Beine statt vier.
-                 // Auch sie bleibt gezeichnet — Chairs.png hat Sofas, und ein
-                 // Sofa ist keine Wirtshausbank.
+                 // Von oben unterscheidet eine Bank und einen Tisch nicht die
+                 // Breite, sondern die Hoehe.
       innenSchatten(o.x, o.y - 3, b*0.30);
       innenBeine(o.x, o.y - 3, b - 16, 10, 5);
       innenPlatte(o.x, o.y - 13, b - 10, 9, '#9a7343', INN_HOLZ_DUNKEL);
+      break;
+    case 'U':    // Barhocker: rundes Polster auf einem Bein. Rot, weil das
+                 // Polster im Blatt rot ist — der Ersatzweg zeigt dasselbe
+                 // Wirtshaus wie das Pack, nur mit weniger Pixeln.
+      innenSchatten(o.x, o.y - 2, 7);
+      ctx.fillStyle = INN_HOLZ_DUNKEL; ctx.fillRect(o.x - 2, o.y - 14, 4, 12);
+      ctx.fillStyle = '#8a3a30';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 15, 9, 5, 0, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#b4544a';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 17, 8, 4, 0, 0, Math.PI*2); ctx.fill();
+      break;
+    case 'V':    // Fass: Daubenkoerper mit zwei Reifen, Deckel obendrauf.
+                 // Bauchig heisst hier, dass die Mitte einen Strich breiter ist
+                 // als Boden und Deckel; mehr braucht ein Fass nicht.
+      innenSchatten(o.x, o.y - 2, 12);
+      ctx.fillStyle = '#7a4e26'; ctx.fillRect(o.x - 12, o.y - 30, 24, 28);
+      ctx.fillStyle = '#8f6136'; ctx.fillRect(o.x - 13, o.y - 24, 26, 16);
+      ctx.fillStyle = '#5a3a1c';
+      ctx.fillRect(o.x - 13, o.y - 26, 26, 3); ctx.fillRect(o.x - 13, o.y - 11, 26, 3);
+      ctx.fillStyle = '#a9784a';
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 30, 12, 5, 0, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = INN_HOLZ_DUNKEL; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.ellipse(o.x, o.y - 30, 12, 5, 0, 0, Math.PI*2); ctx.stroke();
       break;
     case 'Z': {  // Der freigehaltene Platz. Ein Stuhl mit Lehne, ein Handbreit
                  // vom Tisch abgerückt, und darüber ein Schimmer, der kommt und
@@ -17814,7 +17954,7 @@ const NEUERUNGEN = {
     // drinnen jemand steht. Die wo-Zeilen nennen nur Wege, die es gibt.
     {
       titel: 'Drei Häuser stehen jetzt offen',
-      was: 'Das Amt, die Registratur und das Gasthaus Zum Letzten Stempel haben ein Inneres bekommen. Man geht hinein, man läuft darin herum, man geht wieder hinaus. Im Amt steht der Schreibtisch, an dem vor Ihnen jemand gearbeitet hat, und auf ihm die Pflanze, die noch lebt.',
+      was: 'Das Amt, die Registratur und das Gasthaus Zum Letzten Stempel haben ein Inneres bekommen. Man geht hinein, man läuft darin herum, man geht wieder hinaus. Im Amt steht der Schreibtisch, an dem vor Ihnen jemand gearbeitet hat, und auf ihm die Pflanze, die noch lebt. Im Wirtshaus brennen Kerzen auf den Tischen, hinter der Theke stehen Fässer, an der Ostwand geht eine Standuhr, und durch die zwei Fenster in der Nordwand sieht man den Abend.',
       wo: 'An der gemalten Tür der drei Häuser steht Betreten. Der Feierabend liegt seither drinnen, am Dienstpult.',
     },
     {
