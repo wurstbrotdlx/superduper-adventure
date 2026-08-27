@@ -117,6 +117,12 @@ async function spiel(ctxOpt){
     if(!weiter) break;
     await page.waitForTimeout(200);
   }
+  // AN2: hinaus aus der Amtsstube. Der Anfang endet seit AN2 drinnen, und der
+  // erste freie Schritt ist der Schritt hinaus. Dieser Lauf prueft das DORF --
+  // drinnen traegt map den Grundriss und npcs die Leute des Raumes, und jede
+  // Weltmessung traefe den falschen Ort.
+  await page.evaluate(() => { if(innen) verlasseHaus(); });
+  await page.waitForTimeout(250);
   await page.evaluate(() => {
     window.__schlaege = 0;
     const alt = tryAttack;

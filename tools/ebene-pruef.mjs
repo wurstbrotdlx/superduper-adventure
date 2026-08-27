@@ -102,6 +102,12 @@ for(let i = 0; i < 60; i++){
   await b.click({ force: true });
   await page.waitForTimeout(150);
 }
+// AN2: hinaus aus der Amtsstube. Der Anfang endet seit AN2 drinnen, und der
+// erste freie Schritt ist der Schritt hinaus. Dieser Lauf prueft das DORF --
+// drinnen traegt map den Grundriss und npcs die Leute des Raumes, und jede
+// Weltmessung traefe den falschen Ort.
+await page.evaluate(() => { if(innen) verlasseHaus(); });
+await page.waitForTimeout(250);
 await page.waitForTimeout(400);
 pruef('der Dienst laeuft', await page.evaluate(() => state), 'play');
 

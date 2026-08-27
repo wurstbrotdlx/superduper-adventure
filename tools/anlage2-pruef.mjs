@@ -116,6 +116,12 @@ async function imDienst(page){
     empfangUeberspringen();
     dienstAntritt();
     kn.flags.anlage2Da = true; saveKn();
+    // AN2: Der Anfang endet seit AN2 IN der Amtsstube, und der erste freie
+    // Schritt ist der Schritt hinaus. Dieser Lauf prueft, was im DORF gilt --
+    // drinnen traegt npcs die Leute des Raumes statt die des Dorfes, und jede
+    // Figurenzeile hier maesse dann den falschen Ort. Also geht er den Schritt,
+    // wie ein Spieler ihn geht.
+    if(innen) verlasseHaus();
   });
   await page.waitForTimeout(600);
 }
