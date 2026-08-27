@@ -1,12 +1,19 @@
-# Bauabschnitt T5: Der Ausbruch — ERLEDIGT
+# Bauabschnitt T7: Der Ausbruch — ERLEDIGT
 
 Anlage 2 hatte einen guten Käfig und keinen Puls.
 
-T3 hat die Figur gebaut, T4 hat ihr die stillen Momente gegeben. Beides steht.
-T5 fasst nichts davon an, sondern behebt etwas, das in beiden Abschnitten
-mitgewachsen ist, ohne dass ein Guard es je gemeldet hätte: sie war
-liebenswürdig, sie war komisch, und sie hatte über achtzig Zeilen lang
-denselben Puls.
+T3 hat die Figur gebaut, T4 hat ihr die stillen Momente gegeben, T5 hat ihr das
+Amtsdeutsch abgenommen und T6 eine Entscheidung gegeben. Alles vier steht. T7
+fasst nichts davon an, sondern behebt etwas, das durch alle vier mitgewachsen
+ist, ohne dass ein Guard es je gemeldet hätte: sie war liebenswürdig, sie war
+komisch, sie redete seit T5 sogar normal — und sie hatte über achtzig Zeilen
+lang denselben Puls.
+
+**Zur Nummer.** Dieser Abschnitt entstand parallel zu T5 und hieß zuerst selbst
+so. Beim Zusammenlegen war T6 bereits vergeben, also ist er T7 geworden. Die
+Reihenfolge der Nummern erzählt hier ausnahmsweise nicht die Reihenfolge der
+Arbeit: T5, T6 und T7 sind am selben Tag an derselben Figur entstanden, und
+Abschnitt 2 zeigt, warum sie sich trotzdem nicht ins Gehege kommen.
 
 ---
 
@@ -81,14 +88,14 @@ Die Brandmauer regelt **Wissen**, nicht **Temperament**. Sie sagt, dass Anlage 2
 den laufenden Fall nicht kennt. Sie sagt nichts darüber, wie heftig die Figur
 auf das reagieren darf, was sie sehr wohl kennt.
 
-Der Hebel, der beides auf einmal löst, steht in Abschnitt 3 unter T5-2 und
+Der Hebel, der beides auf einmal löst, steht in Abschnitt 3 unter T7-2 und
 lautet: **sie darf falsch liegen.**
 
 ---
 
 ## 3. Was jetzt da ist
 
-### T5-1. Der Ausbruch, und warum er zweiteilig ist
+### T7-1. Der Ausbruch, und warum er zweiteilig ist
 
 `ANLAGE2_AUSBRUCH`, elf Paare über neun Anlässe. Ein Eintrag ist kein Satz,
 sondern ein Paar:
@@ -121,7 +128,7 @@ liest nur den zweiten Satz, und auch der stimmt dann.
 Die Streuung ist das Ergebnis, nicht die Länge. Sie ist um mehr als die Hälfte
 gestiegen, und genau das hört man.
 
-### T5-2. Sie darf falsch liegen
+### T7-2. Sie darf falsch liegen
 
 `raten:true` kennzeichnet die zweite Bauart, und sie ist der eigentliche Fund
 dieses Abschnitts:
@@ -132,7 +139,7 @@ dieses Abschnitts:
 
 Eine Figur, die vorprescht und danebentippt, **verrät nichts, weil sie nichts
 weiß.** Das ist keine Umgehung der Brandmauer, das ist ihr stärkster Beweis:
-bis T4 wurde die Brandmauer durch Schweigen belegt, ab T5 durch Reden.
+bis T4 wurde die Brandmauer durch Schweigen belegt, ab T7 durch Reden.
 
 Und es ist die wärmste Stelle, die diese Figur haben kann. Der Spieler weiß es
 besser, hört sie raten und korrigiert sie nicht.
@@ -143,7 +150,7 @@ darf sie nicht haben. Der Guard zählt die Rate-Paare und verlangt mindestens
 drei: unter drei ist die Bauart ein Einzelfall statt einer Eigenschaft, und
 dann kippt die Figur beim nächsten Bauabschnitt still zurück in die Haltung.
 
-### T5-3. Wie selten, und warum ein Zähler und kein Würfel
+### T7-3. Wie selten, und warum ein Zähler und kein Würfel
 
 `kn.counters.anlage2Ruhig` zählt die gefassten Zeilen. Drei davon, dann darf
 sie einmal, danach steht er wieder auf null.
@@ -162,7 +169,7 @@ migrationsfrei.
 Anlass steht, bekommt die Pool-Zeile und behält seinen Stand für den nächsten
 lauten Moment.
 
-### T5-4. Die Niederlage bleibt still, und der Guard hält es fest
+### T7-4. Die Niederlage bleibt still, und der Guard hält es fest
 
 T4 hat entschieden, dass Anlage 2 im Moment des Scheiterns nichts sagt,
 sondern beim Wiederantritt wartet: *wer jemandem in sein Scheitern
@@ -172,10 +179,10 @@ Für den lauten Kanal gilt das erst recht. Weil eine Entscheidung, die nur in
 einem Dokument steht, beim übernächsten Bauabschnitt verloren geht, steht sie
 jetzt als Prüfung im Code: ein Ausbruch auf `niederlage` ist ein Fehler.
 
-### T5-5. Die Ton-Regel, präzisiert und geprüft
+### T7-5. Die Ton-Regel, präzisiert und geprüft
 
 Der Satz über der Bewegungsreihe gilt dort wörtlich weiter. Für die Anlässe
-gilt ab T5 nur noch die erste Hälfte: **sie darf laut werden, gegen ein
+gilt ab T7 nur noch die erste Hälfte: **sie darf laut werden, gegen ein
 Verfahren, gegen ein Formular, gegen sich selbst. Nie gegen den, der zuhört.**
 
 Und diese Grenze steht nicht nur im Kommentar. `anlage2Assert()` (2c) meldet
@@ -189,7 +196,7 @@ Die Prüfung hat sich beim ersten Lauf sofort bezahlt gemacht: genau diese
 Zeile stand im Entwurf. Sie heißt jetzt „Das nehmen wir mit!", und das ist die
 bessere Zeile, weil das *wir* ohnehin die Figur ist.
 
-### T5-6. Ein Band, drei Stimmen, jetzt vier Kleidungen
+### T7-6. Ein Band, drei Stimmen, jetzt vier Kleidungen
 
 `#knRandnotiz` bleibt, was es war. Der Ausbruch trägt **beide** Klassen, `a2`
 und `ausbruch`: sie fällt aus der Haltung, nicht aus der Figur.
@@ -205,14 +212,14 @@ Weg fällt beim Ausbruch die Kursive. Kursiv liest sich wie ein Randvermerk,
 und ein Ausbruch ist keiner. Die Rücknahme nimmt beides zurück, den Satz und
 die Farbe.
 
-### T5-7. Die wärmsten Zeilen lagen zu weit hinten
+### T7-7. Die wärmsten Zeilen lagen zu weit hinten
 
 Zwei gegatete Zeilen sind nach vorn gerückt: `abStufe:5` auf 3 und
 `abSchicht:5` auf 3. Eine Zuneigung, die erst nach Stunden anfängt, ist im
 Zweifel gar keine. `abRang:1` und `abAkt:3` bleiben, wo sie sind, die hängen an
 der Handlung.
 
-### T5-8. Kein Punkt in der Hausmitteilung, und das ist Absicht
+### T7-8. Kein Punkt in der Hausmitteilung, und das ist Absicht
 
 `NEUERUNGEN` bekommt keinen Eintrag und `NEUERUNGEN.stand` bleibt stehen. Ein
 Punkt namens „sie wird jetzt manchmal laut" wäre die Ankündigung genau der
@@ -306,7 +313,7 @@ diesem Lauf nichts mehr.
 
 ## 5. Guards
 
-`anlage2Assert()` prüft seit T5 drei Dinge mehr, alle im Block (2b) und (2c),
+`anlage2Assert()` prüft seit T7 drei Dinge mehr, alle im Block (2b) und (2c),
 plus den Zähler in (6) und die neuen Deckel in `knAssertCaps()`.
 
 Meldung im Normalfall:
@@ -408,7 +415,7 @@ vollem Stand, und verbraucht ihn nicht.
 ## 7. Was offen bleibt
 
 **Die drei Szenen bleiben stumm.** `umlauf`, `hintermuehl` und `vorblatt`
-haben weiterhin keine Zeilen von ihr. T5 hat sie bewusst nicht angefasst,
+haben weiterhin keine Zeilen von ihr. T7 hat sie bewusst nicht angefasst,
 **aber die Auflage aus T3 ist damit erfüllbar geworden**: die Rate-Bauart ist
 genau das Werkzeug, das dort gefehlt hat. Eine Zeile, die vorprescht und
 danebentippt, kommt nachweislich aus dem Haus und nicht aus der Akte, weil sie
@@ -423,7 +430,7 @@ vierzehn zu. Unverändert seit der T4-Nachlese.
 
 **Der Preis pro Pointe bleibt, wo er lag.** Für Anlage 2 abgelehnt und aus
 gutem Grund: ein Verdachtsbalken an einer Figur, deren ganzes Elend darin
-besteht, ungelesen zu sein, würde das Zuhören zur Ressource machen. T5 ändert
+besteht, ungelesen zu sein, würde das Zuhören zur Ressource machen. T7 ändert
 daran nichts und schärft die Begründung sogar. Der Ausbruch kostet den Spieler
 nichts, und das ist der Unterschied zur Zöllnerin am Schichttor, deren Entwurf
 weiterhin fertig in `robin-williams-designstudie-rollen.md`, Teil 2, Abschnitt

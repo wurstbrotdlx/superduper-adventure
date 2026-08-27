@@ -23,7 +23,7 @@
 //                 Portraet steht in der Tafel, der Ausgang schliesst sauber
 //   Kanal         ihre Notiz erscheint im Band, mit ihrer Marke und nicht mit
 //                 Knoeterichs, und sie schweigt, solange sie nicht da ist
-//   Ausbruch      T5: alle drei gefassten Zeilen faehrt sie einmal hoch, laut
+//   Ausbruch      T7: alle drei gefassten Zeilen faehrt sie einmal hoch, laut
 //                 gekleidet, und die Ruecknahme faellt zwei Sekunden spaeter
 //                 von selbst nach. Die Bank bekommt auch den lauten Anlass
 //   Regler        auf "Dienstlich" schweigt sie, auf "Gespraechig" redet sie
@@ -258,10 +258,10 @@ async function imDienst(page){
     return anlage2Notiz('crit');
   }), false);
 
-  // T5: der Ruhezaehler wird hier ausdruecklich genullt. Ohne die Zeile misst
+  // T7: der Ruhezaehler wird hier ausdruecklich genullt. Ohne die Zeile misst
   // dieser Block nicht mehr "eine Zeile aus ihrem Pool", sondern "eine Zeile
   // aus ihrem Pool, solange kein Ausbruch faellig ist", und das ist eine
-  // andere Zusage. Sie stand bis T5 nur deshalb nicht da, weil es nichts gab,
+  // andere Zusage. Sie stand bis T7 nur deshalb nicht da, weil es nichts gab,
   // was den Pool haette ueberstimmen koennen.
   const notiz = await page.evaluate(() => {
     kn.flags.anlage2Da = true; kn.regler = 'gespraechig';
@@ -304,7 +304,7 @@ async function imDienst(page){
     return anlage2Notiz('goldfund');
   }), true);
 
-  // ---- T5: der Ausbruch --------------------------------------------------
+  // ---- T7: der Ausbruch --------------------------------------------------
   // Der Kanal, der ihr das Temperament gibt. Geprueft wird nicht, dass er
   // existiert (das tut anlage2Assert beim Start), sondern dass er FAELLT, und
   // zwar selten, zweiteilig und ohne die Bank zu verlieren.

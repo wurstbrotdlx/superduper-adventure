@@ -1,5 +1,5 @@
 // Gegenprobe zu anlage2Assert() und den Ausbruch-Deckeln in knAssertCaps()
-// (Bauabschnitt T5, phase-t5-ausbruch.md).
+// (Bauabschnitt T7, phase-t7-ausbruch.md).
 //
 //   python3 serve.py &
 //   node tools/anlage2-fehlversuch.mjs [URL]
@@ -92,7 +92,7 @@ await probe('Ausbruch ohne Text', 'hat keinen Text',
   () => { ANLAGE2_AUSBRUCH.bosssieg[0].auf = window.__merkAuf; });
 
 // (5) Ein Ausbruch ohne Ruecknahme. Traf die Brandmauer-Schleife, und
-// die ist daran ABGESTUERZT statt zu melden (siehe phase-t5-ausbruch.md,
+// die ist daran ABGESTUERZT statt zu melden (siehe phase-t7-ausbruch.md,
 // Abschnitt 5). Die Meldung hier ist der Beleg, dass sie es nicht mehr tut.
 await probe('Ausbruch ohne Rücknahme', 'hat gar keinen Text',
   () => { const p = ANLAGE2_AUSBRUCH.ultimate[0]; window.__merkZur = p.zurueck; delete p.zurueck; },
