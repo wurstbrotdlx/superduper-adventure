@@ -243,6 +243,31 @@ Beide Richtungen laufen jetzt (`anlage2Assert()`, Block 2e). Der Sonderfall
 `vorblattAngekommen()`; gelesen wird das aus dem Quelltext, wie `szeneAssert()`
 es bei den Merkern seit SZ2 tut.
 
+### Nachlese: eine Zahl, die zweimal einen Merge-Konflikt ausgelöst hat
+
+Dieser Abschnitt musste zweimal gegen `main` nachgezogen werden (Rebase auf
+IN1, dann ein Merge des Kammerausgangs), und **beide Konflikte lagen in
+derselben Zeile**: der Beschreibung von `tools/ton-messlauf.mjs` in der
+Werkzeugtabelle der README. Nicht zufällig. Die Zeile trug die Zahl der
+Textquellen von Hand, also musste jeder sie anfassen, der eine Quelle
+dazulegt — und zwei benachbarte Bauabschnitte haben genau daneben ihre neuen
+Werkzeuge eingetragen.
+
+Die Zahl stand dabei ohnehin falsch da (27, während es 34 waren). Sie ist
+jetzt weg und steht stattdessen in der Kopfzeile des Laufs:
+
+```
+Ton-Messlauf, Bauabschnitt T5. 34 Quellen. Zielwert Figurenrede: 30% amtlich, …
+```
+
+Das ist dieselbe Regel wie überall in diesem Projekt, nur einmal auf die
+Dokumentation angewandt: eine gezählte Zahl veraltet nicht. Und sie gehört
+gerade in diesen Lauf, denn er hat in T7 schon einmal eine Vollständigkeit
+behauptet, die er nicht hatte — der Ausbruch-Kanal fehlte in der Tabelle, und
+zweiundzwanzig Zeilen liefen ungemessen mit. Die Zahl in der Kopfzeile ist die
+Vorderseite von `ernte.fehlt`, an einer Stelle, an der man sie sieht, bevor
+man die Zahlen darunter liest.
+
 ---
 
 ## 6. Guards
