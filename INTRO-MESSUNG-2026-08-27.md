@@ -471,3 +471,28 @@ und steht weiter vor AN6.
 endet aber auf **Exit 1** — auch auf `origin/main`, in einem frischen
 Arbeitsbaum auf `40ba02a` nachgemessen. Ursache sind die Grafikwarnungen aus dem
 fehlenden `assets/cf/`. „Grün" gilt für die Zählung, nicht für den Exit-Code.
+
+---
+
+## Vierter Nachtrag, 28.08.2026: AN5 ist nachgeholt
+
+**Berichtigung zum dritten Nachtrag.** Dort steht, AN5 sei „nicht erledigt und
+steht weiter vor AN6". Er ist unmittelbar danach gebaut worden, siehe
+`phase-an5-kladde.md`. Gebaut sind damit AN1 bis AN5, wenn auch in einer
+Reihenfolge, die der Plan so nicht vorsah.
+
+**Die Zahlen dieses Berichts bewegt AN5 nicht** — 1174 / 1276 / 1539 / 917 vor
+wie nach, längster Leseblock 575, Blöcke `10 6`. Er baut ein Netz, er schneidet
+nicht.
+
+**Gemessen wird stattdessen das Netz**, und `intro-pruef` weist es im selben
+Abschnitt aus wie den Verlust beim Überspringen: von den **12 Lesestufen**, die
+der Springer nicht aufschlägt, liegen seither **9 in der Kladde**. Die übrigen
+drei sind Gesprächsknoten aus der Vorstellung, und die Kladde trägt Blätter.
+Die Lücke steht neben der Zahl, statt in ihr zu verschwinden.
+
+Damit ist Abschnitt 5 dieses Berichts („was beim Überspringen verloren geht") in
+seiner Aussage überholt: **verloren geht seit AN5 nur noch ein Viertel davon.**
+Die Tabelle selbst bleibt richtig, sie zählt Lesestufen des Anfangs; was danach
+mit ihnen geschieht, war zum Messzeitpunkt keine Frage, weil es keinen Ort gab,
+an dem sie hätten liegen können.

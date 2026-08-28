@@ -2542,7 +2542,7 @@
   <div class="gfBlaetter" id="kesselTabs">
     <div class="gfBlatt on" id="tabKessel" title="Kochen"><i class="ico ico-kessel">🍲</i><span class="gfWort">Kochen</span></div>
     <div class="gfBlatt" id="tabKladde" title="Kladde"><i class="ico ico-kladde">📓</i><span class="gfWort">Kladde</span></div>
-    <div class="gfBlatt" id="tabBlaetter" title="Akten"><i class="ico ico-akten">🗄</i><span class="gfWort">Akten</span></div>
+    <div class="gfBlatt" id="tabBlaetter" title="Akten"><i class="ico ico-akten">🗄</i><span class="gfWort">Akten</span><span id="aktenUngelesen" style="color:#f4d97a;"></span></div>
   </div>
   <div class="gfBody">
     <div id="kesselPane">
@@ -8413,7 +8413,14 @@ function blaetterAssert(){
 blaetterAssert();
 
 const KLADDE_KEY = 'sda_kladde_v1';
-const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorgang:{}, lang:{}};
+const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorgang:{}, lang:{},
+                // AN5: was vom Anfang gelesen wurde. Ein Schluessel je Tafel,
+                // 'intro:0' bis 'ernennung:5'. Der Eimer traegt das Gelesene
+                // und nicht das Ungelesene: der Bestand steht fest (ANFANG_
+                // BESTAND), gezaehlt wird die Gegenprobe. Ein Eimer, der das
+                // Ungelesene traegt, muesste beim Kuerzen eines Stapels
+                // aufgeraeumt werden -- dieser nicht.
+                anfang:{}};
 (function loadKladde(){
   try{
     const raw = localStorage.getItem(KLADDE_KEY); if(!raw) return;
@@ -8427,6 +8434,7 @@ const kladde = {crafts:0, adj:{}, noun:{}, unikate:{}, fl:{}, blaetter:{}, vorga
       if(o.blaetter) kladde.blaetter = o.blaetter;
       if(o.vorgang) kladde.vorgang = o.vorgang;   // W5: additiv wie fl
       if(o.lang) kladde.lang = o.lang;            // W7: additiv wie fl, fehlender Schlüssel liest sich als 0
+      if(o.anfang) kladde.anfang = o.anfang;      // AN5: additiv wie fl, ein alter Stand liest sich als "nichts gelesen"
     }
   }catch(_){}
 })();
@@ -16418,7 +16426,10 @@ function renderBlaetter(){
   // keine Adresszeile gefunden ist — vor Akt IV sieht der Reiter aus wie zuvor.
   // Getrennt von BLAETTER_KEYS/gefunden: die Zählzeile "N von 54" bleibt unberührt.
   const gefunden = BLAETTER_KEYS.filter(id => kladde.blaetter[id]);
-  const bestand = vorgangBestandBlock() + langBestandBlock();
+  // AN5: der Anfang steht vorn. Er ist das Einzige in diesem Reiter, das ein
+  // frischer Spieler ueberhaupt schon haben kann -- die 54 Aktenfunde liegen zu
+  // dem Zeitpunkt noch alle in den Kammern.
+  const bestand = anfangBestandBlock() + vorgangBestandBlock() + langBestandBlock();
   if(!gefunden.length){
     el('blaetterBox').innerHTML = bestand + '<div class="klEmpty">Noch keine Aktenfunde. Kammern durchsuchen.</div>';
     return;
@@ -16434,8 +16445,20 @@ function renderBlaetter(){
 }
 function toggleBlatt(id){ blaetterOffen = blaetterOffen === id ? null : id; renderBlaetter(); }
 
+// AN5: Der Ungelesen-Zaehler steht AM REITER und nicht im Bestand darunter.
+// Ein Zaehler, den man erst sieht, wenn man dort schon ist, zaehlt niemanden
+// zurueck. Er steht als Zahl und nicht als Punkt, weil ein Punkt nur "etwas"
+// sagt und die Zahl sagt, wie viel -- und weil "3" nach dem Ueberspringen eine
+// andere Auskunft ist als "10".
+function anfangZaehlerZeichnen(){
+  const n = kn.seen.einstellung ? anfangUngelesen() : 0;
+  const el2 = el('aktenUngelesen');
+  if(el2) el2.textContent = n ? ' ' + n : '';
+}
+
 function switchKesselTab(t){
   kesselTab = t;
+  anfangZaehlerZeichnen();
   el('tabKessel').classList.toggle('on', t === 'kessel');
   el('tabKladde').classList.toggle('on', t === 'kladde');
   el('tabBlaetter').classList.toggle('on', t === 'blaetter');
@@ -23150,6 +23173,150 @@ const ERNENNUNG_BLAETTER = [
 ];
 
 // ===========================================================================
+//  AN5: DER ANFANG IN DER KLADDE -- Auffangbecken und Ungelesen-Zaehler
+//
+//  Der Masterplan setzt diesen Abschnitt an dritter Stelle, vor AN2, AN3 und
+//  AN4. Gebaut wurde er zuletzt, und das ist die falsche Reihenfolge gewesen:
+//  er ist das Netz unter dem Schneiden. AN3 hat drei Introblaetter zu
+//  Requisiten gemacht, AN4 hat den Erstkontakt der Anlage 2 hinter den ersten
+//  freien Schritt gehaengt, und AN6 nimmt die Chronik ganz heraus -- jedes Mal
+//  ohne einen Ort, an dem das Weggenommene noch zu finden waere. Ab hier gibt
+//  es ihn.
+//
+//  ER ERFINDET KEINEN TEXT. Der Bestand zeigt dieselben Blaetter, die der
+//  Anfang zeigt, aus derselben Tabelle und mit demselben Leseapparat. Wer den
+//  Anfang gelesen hat, findet hier nichts Neues; wer uebersprungen hat, findet
+//  hier alles.
+//
+//  ER LIEGT IN DER KLADDE UND NICHT IM RUCKSACK, und das ist Kanon und keine
+//  Bequemlichkeit: "Die Kladde bleibt. Immer. Sie gehoert nicht dem
+//  Aussendienst, sie liegt im Amt und ist an den Tisch gekettet. Wissen ist
+//  Amtsvermoegen." (Weltbibel, Kapitel 4.) Ein Auffangbecken fuer Gelesenes
+//  gehoert genau dorthin -- und es erbt damit die Todesimmunitaet und den
+//  eigenen Speicher, ohne dass ein zweiter Persistenzweg aufgemacht wird.
+//
+//  ER STEHT NEBEN BLAETTER UND NICHT DARIN. Dieselbe Entscheidung wie bei W5
+//  und W7: blaetterAssert() haelt die Sollzahl 54, und die Zaehlzeile "N von
+//  54" im Akten-Reiter zaehlt Kammerfunde. Der Anfang ist kein Kammerfund.
+// ===========================================================================
+const ANFANG_BESTAND = [
+  {key:'intro',     name:'Die Chronik',   liste:() => INTRO_BLAETTER,
+   satz:'Wie aus einer Frage von zwei Zeilen ein Haus wurde.'},
+  {key:'ernennung', name:'Die Ernennung', liste:() => ERNENNUNG_BLAETTER,
+   satz:'Der Rechtsakt, mit dem der Dienstposten besetzt wurde.'},
+];
+
+// Die Schluesselreihe eines Stapels, parallel zu seiner Blattliste. Sie wird an
+// szeneTafeln() uebergeben und dort blattweise abgehakt -- der Stapel weiss
+// damit selbst, was er in die Kladde eintraegt, und szeneTafel() muss keine
+// Liste erkennen. Dasselbe Muster wie letzterKnopf und ende.
+const anfangSchluessel = key => {
+  const e = ANFANG_BESTAND.find(x => x.key === key);
+  return e ? e.liste().map((_, i) => key + ':' + i) : [];
+};
+const anfangIstGelesen = sk => !!kladde.anfang[sk];
+
+// Abhaken. Kein CFX.schweigen-Guard, aus demselben Grund wie bei findeBlatt():
+// gelesen wird am Blatt und nicht am Kessel beobachtet. Und kein saveKladde()
+// je Blatt, sondern nur wenn sich wirklich etwas geaendert hat -- der Anfang
+// blaettert schnell, und ein Schreibvorgang je Tafel waere Verschwendung.
+function anfangGelesen(sk){
+  if(!sk || kladde.anfang[sk]) return false;
+  kladde.anfang[sk] = true;
+  saveKladde();
+  return true;
+}
+
+const anfangGesamt = () => ANFANG_BESTAND.reduce((n, e) => n + e.liste().length, 0);
+const anfangGelesenZahl = () => ANFANG_BESTAND.reduce((n, e) =>
+  n + e.liste().reduce((m, _, i) => m + (anfangIstGelesen(e.key + ':' + i) ? 1 : 0), 0), 0);
+const anfangUngelesen = () => anfangGesamt() - anfangGelesenZahl();
+
+// Ein einzelnes Blatt aus der Kladde aufschlagen. Bauform wie
+// requisitAnsehen() aus AN3: derselbe Tafelstapel, ein Blatt lang, "Blatt I von
+// I". Das Kesselfenster geht dafuer zu und danach wieder auf -- der Stapel
+// laeuft im #overlay, das Fenster liegt darunter, und zwei offene Flaechen
+// uebereinander sind genau das, was grossfensterRaeumen() verhindern soll.
+function anfangAufschlagen(key, i){
+  const e = ANFANG_BESTAND.find(x => x.key === key);
+  if(!e || szeneTafelLauf) return;
+  const blatt = e.liste()[i];
+  if(!blatt) return;
+  if(kesselOpen) toggleKessel();
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  szeneTafeln([blatt], {letzterKnopf:'ZURÜCK', kladde:[key + ':' + i],
+    ende: () => {
+      el('overlay').style.display = 'none';
+      szeneAus();
+      kesselTab = 'blaetter';
+      toggleKessel();
+    }});
+}
+
+// Der Bestand im Akten-Reiter. Bauform woertlich wie vorgangBestandBlock():
+// eine Ueberschrift, Zeilen, und leer heisst leer statt unsichtbar.
+//
+// Vor dem Dienstantritt steht er nicht da. Wer noch nicht ernannt ist, hat
+// keinen Anfang zum Nachlesen, und die Ernennung vorab aufzuschlagen waere der
+// Vorgriff, gegen den der ganze Sperrvermerk gebaut ist. Dieselbe Bedingung wie
+// bei der Nachholung der Anlage 2 in toggleInventory().
+function anfangBestandBlock(){
+  if(!kn.seen.einstellung) return '';
+  const zeilen = [];
+  for(const e of ANFANG_BESTAND){
+    const liste = e.liste();
+    const offen = liste.filter((_, i) => !anfangIstGelesen(e.key + ':' + i)).length;
+    zeilen.push(`<div class="kl" style="color:#c9b98a;">${e.name}. ${e.satz}`
+      + `${offen ? ` <span style="color:#f4d97a;">${offen} ungelesen.</span>` : ''}</div>`);
+    for(let i = 0; i < liste.length; i++){
+      const gel = anfangIstGelesen(e.key + ':' + i);
+      zeilen.push(`<div class="kl${gel ? '' : ' klEmpty'}" style="cursor:pointer;"`
+        + ` onclick="anfangAufschlagen('${e.key}',${i})">`
+        + `${e.name}, Blatt ${szeneBlattZahl(i + 1, liste.length)}`
+        + `${gel ? '' : ' &middot; ungelesen'}</div>`);
+    }
+  }
+  // Die Dienstanweisung bekommt einen Verweis und keinen Leser. Sie ist seit dem
+  // ersten Dienstantritt ohnehin jederzeit erreichbar (Startbild und Pult im
+  // Amt), und ein vierter Rueckkehrmodus fuer showDienstblatt() waere Aufwand
+  // fuer einen Weg, den es zweimal gibt.
+  zeilen.push('<div class="kl klEmpty">Die Dienstanweisung liegt am Pult im Amt und auf dem Startbild.</div>');
+  const g = anfangGelesenZahl(), ges = anfangGesamt();
+  return `<div class="klHead">DER ANFANG</div>${zeilen.join('')}`
+       + `<div style="font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;margin:4px 0 8px;">`
+       + `${g} von ${ges} Blättern gelesen.</div>`;
+}
+
+// Guard, Bauform wie blaetterAssert(): wirft nie, meldet nur.
+function anfangAssert(){
+  let ok = true;
+  const fehler = (...a) => { ok = false; console.error('AN5 Anfang:', ...a); };
+  const schluessel = new Set();
+  for(const e of ANFANG_BESTAND){
+    const liste = e.liste();
+    if(!Array.isArray(liste) || !liste.length) fehler('Bestand ohne Blätter', e.key);
+    // Die Blattzahl steht roemisch, solange ROEMISCH reicht -- dieselbe Regel
+    // wie im Stapel selbst. Ein Bestand darueber zaehlte im Akten-Reiter anders
+    // als im Leseapparat, und das faellt erst auf, wenn jemand danebenhaelt.
+    if(liste.length >= ROEMISCH.length) fehler('Bestand zu lang für die römische Blattzahl', e.key, liste.length);
+    for(const sk of anfangSchluessel(e.key)){
+      if(schluessel.has(sk)) fehler('Schlüssel steht doppelt', sk);
+      schluessel.add(sk);
+    }
+    if(anfangSchluessel(e.key).length !== liste.length)
+      fehler('Schlüsselreihe und Blattliste sind verschieden lang', e.key);
+  }
+  if(!('anfang' in kladde)) fehler('Der Eimer anfang fehlt in der Kladde');
+  if(ok) console.log(`AN5 Anfang: ${ANFANG_BESTAND.length} Bestände, ${anfangGesamt()} Blätter in der Kladde.`);
+  return ok;
+}
+// Der Aufruf steht NICHT hier, sondern unten neben anlage2Assert(). Der Bestand
+// zeigt mit liste() auf INTRO_BLAETTER und rechnet mit ROEMISCH, und beide
+// stehen weiter unten in der Datei: ein Aufruf an dieser Stelle lief in die
+// temporale Totzone und hat das Spiel beim Laden angehalten, bevor der erste
+// Rahmen stand. Gefunden beim ersten Start nach dem Einbau.
+
+// ===========================================================================
 //  T3: Das erste Treffen mit Anlage 2
 //
 //  Sie haengt an der Ernennungsurkunde, mit Heftklammer, und niemand im Raum
@@ -25041,7 +25208,8 @@ function empfangVordruck(){
 function empfangErnennung(){
   szeneTafelZu();
   buehneAn();
-  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'ÜBERNEHMEN', ende: ernennungEnde});
+  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'ÜBERNEHMEN', ende: ernennungEnde,
+                                   kladde: anfangSchluessel('ernennung')});
 }
 
 // AN4: Hier stand anlage2Erstes, und damit hing der Erstkontakt der Anlage 2
@@ -25331,9 +25499,15 @@ let szeneTafelLauf = null;
 // blatt/stimme). Ein Platzhalter-Blatt, das nur auf eine Reihe zeigt, traegt
 // keine davon und haette den Guard beim Laden ausgeloest. So steht in liste ein
 // vollwertiges Blatt (reihe[0]), und der Guard sieht nur, was er kennt.
+// AN5: opt.kladde ist eine Schluesselreihe PARALLEL zu liste, oder nichts.
+// Traegt der Stapel sie, hakt szeneTafel() jedes gezeigte Blatt in der Kladde
+// ab. Der Stapel weiss damit selbst, was er eintraegt, und szeneTafel() muss
+// keine Blattliste wiedererkennen -- dieselbe Bauform wie letzterKnopf und
+// ende. Stapel ohne die Reihe (Requisiten, Anlage 2, Abspann,
+// Zwischenbescheide) tragen nichts ein, und das ist der Normalfall.
 function szeneTafeln(liste, opt){
   szeneTafelLauf = {liste, letzterKnopf: opt.letzterKnopf, ende: opt.ende, zweiter: opt.zweiter || null,
-                    wahl: opt.wahl || null, stufe: 0};
+                    wahl: opt.wahl || null, stufe: 0, kladde: opt.kladde || null};
   szeneTafel(0);
 }
 
@@ -25401,6 +25575,11 @@ function szeneTafel(i){
   // kein Argument. Der Anlage-2-Abschluss liest sie, weil szeneTafelLauf hier
   // eine Zeile spaeter nicht mehr steht.
   if(!t){ const stufe = lauf.stufe | 0; szeneTafelLauf = null; lauf.ende(stufe); return; }
+  // AN5: gelesen heisst gezeigt. Abgehakt wird HIER und nicht beim Weiterklicken:
+  // wer das letzte Blatt aufschlaegt und dann das Fenster schliesst, hat es
+  // gesehen, und ein Auffangbecken, das ihm das letzte Blatt trotzdem als
+  // ungelesen vorhaelt, zaehlt nicht mit, was passiert ist.
+  if(lauf.kladde && lauf.kladde[i]) anfangGelesen(lauf.kladde[i]);
   const letzte = i === lauf.liste.length - 1;
   // Der zweite Knopf steht nur, solange er etwas zu tun hat: auf dem letzten
   // Blatt gibt es nichts mehr zu ueberspringen und nichts mehr abzukuerzen.
@@ -25514,6 +25693,7 @@ function requisitAnsehen(key){
 function empfangAnriss(){
   szeneTafelZu();
   szeneTafeln(INTRO_BLAETTER, {letzterKnopf:'ZUR SACHE', ende: empfangGespraech,
+                               kladde: anfangSchluessel('intro'),
                                zweiter:{t:'ÜBERSPRINGEN', tun: () => empfangUeberspringen()}});
 }
 
@@ -26277,6 +26457,8 @@ function anlage2Assert(){
     + `Brandmauer in Ordnung.`);
 }
 anlage2Assert();
+// AN5: hier und nicht bei seiner Definition, siehe den Kommentar dort.
+anfangAssert();
 
 // --- Guard, Bauform wie rangAssert()/anredeAssert(). Prueft beim Laden drei
 // Dinge, die man beim spaeteren Weiterschreiben genau so verliert:
