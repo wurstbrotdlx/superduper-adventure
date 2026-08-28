@@ -21,6 +21,18 @@
 // erntet nach jedem Schritt, was gerade auf dem Schirm steht. Was er zaehlt,
 // hat jemand wirklich gelesen.
 //
+// AN4: UND ER HOERT NICHT MEHR AM ERSTEN FREIEN SCHRITT AUF. AN4 hat den
+// Erstkontakt der Anlage 2 aus der Kette genommen und HINTER diesen Schritt
+// gehaengt. Ein Lauf, der dort aufhoert, meldet dafuer 787 Woerter weniger und
+// liest sich wie eine Kuerzung, die es nicht gab. Deshalb geht der Lauf den
+// ersten freien Schritt jetzt selbst -- ueber fuehreAktion(), also ueber die
+// Taste -- und weist aus, was dahinter noch zu lesen ist: NACHLAUF, getrennt
+// von der Kopfzahl. Verschoben ist nicht gekuerzt, und beides muss dastehen.
+//
+// Dieselbe Falle hat AN3 beim Weltgesetz gestellt, eine Zeile weiter unten in
+// alleWeltgesetzStellen(): es war umgezogen und nicht geloescht, und ein
+// Messlauf, der den Umzug nicht sieht, misst den alten Bauzustand.
+//
 // WAS ER NICHT IST: ein Prueflauf. Er stellt kein Soll gegen ein Ist und wird
 // nicht rot, wenn eine Zahl das Ziel verfehlt — das ist die Aufgabe der
 // Bauabschnitte danach. Exit-Code 1 gibt es nur fuer einen Weg, den er nicht
@@ -206,27 +218,22 @@ const fertigGetippt = page => page.waitForFunction(
 //   springer   UEBERSPRINGEN auf Intro-Blatt 1, fuer die Verlustrechnung
 const ROUTEN = ['pflicht', 'vordruck', 'vielleser', 'springer'];
 
-async function laufe(route){
-  const { page, ctx, laut } = await frisch();
-  const stufen = [];      // jede Lesestufe, in der Reihenfolge des Ablaufs
-  let abbruch = null;
-  const gesehen = new Set();   // schon gestellte Fragen, fuer die Vielleser-Route
-
-  await page.evaluate(() => startGame());
-  await page.waitForTimeout(350);
-  await fertigGetippt(page);
-
-  for(let schritt = 0; schritt < 400; schritt++){
+// AN4: Die Ernte steht als eigene Funktion da, weil sie seit AN4 ZWEIMAL
+// laeuft: einmal bis zum ersten freien Schritt und einmal dahinter. Sie erntet
+// in die uebergebene Liste und gibt einen Abbruchgrund zurueck oder null.
+// Bauform unveraendert, nur der Zaehler faengt beim zweiten Mal dort an, wo der
+// erste aufgehoert hat, damit die Schrittnummern im Rohabzug durchlaufen.
+async function ernte(page, route, gesehen, stufen, ab){
+  for(let n = 0; n < 400; n++){
+    const schritt = ab + n;
     const L = await lage(page);
     if(L.apparat === 'frei') break;
     if(!L.apparat){
-      abbruch = `Schritt ${schritt}: kein Leseapparat und kein freier Schritt `
-              + `(state=${L.state}, overlay=${L.overlayAuf}, gespraech=${L.gespraechOffen}).`;
-      break;
+      return `Schritt ${schritt}: kein Leseapparat und kein freier Schritt `
+           + `(state=${L.state}, overlay=${L.overlayAuf}, gespraech=${L.gespraechOffen}).`;
     }
     if(L.apparat === 'startbild'){
-      abbruch = `Schritt ${schritt}: der Lauf steht wieder im Startbild. Der Anfang hat sich beendet, statt zu beginnen.`;
-      break;
+      return `Schritt ${schritt}: der Lauf steht wieder im Startbild. Der Anfang hat sich beendet, statt zu beginnen.`;
     }
 
     // ---- ernten -----------------------------------------------------------
@@ -261,8 +268,7 @@ async function laufe(route){
     try {
       getan = await vor(page, L, route, schritt, gesehen);
     } catch(e){
-      abbruch = `Schritt ${schritt} (${L.marke}): ${e.message}`;
-      break;
+      return `Schritt ${schritt} (${L.marke}): ${e.message}`;
     }
     stufe.getan = getan;
     await page.waitForTimeout(200);
@@ -272,16 +278,63 @@ async function laufe(route){
     // nicht, und deshalb bricht er still.
     const nachher = kennung(await lage(page));
     if(nachher === vorher){
-      abbruch = `Schritt ${schritt} (${L.marke}): "${getan}" geklickt, und die Lage ist unveraendert (${vorher}). `
-              + `Der Lauf haette hier still weitergezaehlt.`;
-      break;
+      return `Schritt ${schritt} (${L.marke}): "${getan}" geklickt, und die Lage ist unveraendert (${vorher}). `
+           + `Der Lauf haette hier still weitergezaehlt.`;
+    }
+  }
+  return null;
+}
+
+async function laufe(route){
+  const { page, ctx, laut } = await frisch();
+  const stufen = [];      // jede Lesestufe, in der Reihenfolge des Ablaufs
+  const nachStufen = [];  // AN4: was HINTER dem ersten freien Schritt noch kommt
+  const gesehen = new Set();   // schon gestellte Fragen, fuer die Vielleser-Route
+
+  await page.evaluate(() => startGame());
+  await page.waitForTimeout(350);
+  await fertigGetippt(page);
+
+  const abbruch = await ernte(page, route, gesehen, stufen, 0);
+  const angekommen = (await lage(page)).apparat === 'frei';
+
+  // -------------------------------------------------------------------------
+  // AN4: DER NACHLAUF. Er ist keine Zugabe, er ist die Ehrlichkeitsprobe.
+  // -------------------------------------------------------------------------
+  // AN4 hat die Anlage 2 aus der Kette genommen und hinter den Schritt vor die
+  // Tuer gehaengt. Ein Lauf, der beim ersten freien Schritt aufhoert, meldet
+  // dafuer 787 Woerter weniger und liest sich wie eine Kuerzung, die es nicht
+  // gab. Genau dieselbe Falle hat AN3 beim Weltgesetz gestellt: es war
+  // umgezogen, nicht geloescht, und ein Messlauf, der den Umzug nicht sieht,
+  // misst den alten Bauzustand.
+  //
+  // Deshalb geht der Lauf den ersten freien Schritt jetzt WIRKLICH, und zwar
+  // ueber fuehreAktion() -- also ueber die Taste, die ein Spieler druecken
+  // wuerde, und nicht ueber verlasseHaus(). Was danach noch zu lesen ist, steht
+  // getrennt im Bericht: verschoben ist nicht gekuerzt, und beides muss
+  // dastehen.
+  let schritt1 = null, nachAbbruch = null;
+  if(!abbruch && angekommen){
+    // Erst die Uhr laufen lassen: scanAktion() steigt aus, solange aktSperre
+    // steht, und dienstAntritt() setzt sie auf 0,5 Sekunden. Sechzig Rahmen
+    // sind eine ganze Sekunde und damit sicher darueber.
+    schritt1 = await page.evaluate(() => {
+      for(let i = 0; i < 60; i++) update(1/60);
+      return { art: aktArt, txt: aktTxt, innen: innen ? innen.key : null, ort: currentLevel };
+    });
+    if(!schritt1.art){
+      nachAbbruch = `Der erste freie Schritt bietet keine Aktion an (innen=${schritt1.innen}). `
+                  + `Der Lauf kann den Nachlauf nicht gehen.`;
+    } else {
+      await page.evaluate(() => fuehreAktion());
+      await page.waitForTimeout(250);
+      await fertigGetippt(page);
+      nachAbbruch = await ernte(page, route, gesehen, nachStufen, stufen.length);
     }
   }
 
-  const L = await lage(page);
-  const angekommen = L.apparat === 'frei';
   await ctx.close();
-  return { route, stufen, abbruch, angekommen, laut };
+  return { route, stufen, abbruch, angekommen, laut, schritt1, nachStufen, nachAbbruch };
 }
 
 // Eine Lage als kurze Zeichenkette, um Bewegung festzustellen.
@@ -511,7 +564,10 @@ console.log('Intro-Messlauf, Bauabschnitt A0. Gemessen am Ablauf, nicht an Tabel
 console.log(`Zielwert Masterplan Fassung 2: unter ${ZIEL_WOERTER} Woerter bis zum ersten freien Schritt.\n`);
 console.log('Gezaehlt wird der Fliesstext der Leseapparate plus die Antwortzeilen, die');
 console.log('zur Auswahl stehen. Kopfzeile des Hauses, Blattzaehlung und Knopfbeschriftung');
-console.log('sind Rahmen und Bedienung und zaehlen nicht mit.\n');
+console.log('sind Rahmen und Bedienung und zaehlen nicht mit.');
+console.log('Seit AN4 geht der Lauf den ersten freien Schritt und misst weiter: was');
+console.log('dahinter noch zu lesen ist, steht als NACHLAUF getrennt darunter. Wer nur');
+console.log('die Kopfzahl liest, haelt eine Verschiebung fuer eine Kuerzung.\n');
 
 for(const r of Object.keys(laeufe)){
   const l = laeufe[r];
@@ -540,6 +596,25 @@ for(const r of Object.keys(laeufe)){
   console.log(`  Meiste Lesetafeln hintereinander ohne echte Wahl    ${z(a.meisteTafeln.tafeln)}   (${a.meisteTafeln.woerter} Woerter)`);
   console.log(`  Das Weltgesetz faellt auf diesem Weg                ${z(a.weltgesetz.length)}   ${a.weltgesetz.map(t => `${t.marke} (${t.art})`).join(', ') || '-'}`);
   console.log(`  Bloecke zwischen den Wahlen, in Stufen              ${a.bloecke.map(b => b.tafeln).join(' ')}`);
+
+  // AN4: Der Nachlauf. Ohne ihn liest sich diese Route wie eine Kuerzung um
+  // 787 Woerter, und gekuerzt wurde davon nichts.
+  if(l.nachAbbruch){
+    fehl++;
+    console.log(`  NACHLAUF: ABGEBROCHEN`);
+    console.log(`      ${l.nachAbbruch}`);
+  } else if(l.schritt1){
+    const nw = werte({ stufen: l.nachStufen });
+    const ort = l.schritt1.innen ? `im Raum "${l.schritt1.innen}"` : `in Ebene ${l.schritt1.ort}`;
+    console.log(`  NACHLAUF, hinter dem ersten freien Schritt`);
+    console.log(`      Der erste freie Schritt war         ${(' "' + l.schritt1.txt + '"').padStart(11)}   Aktion ${l.schritt1.art}, ${ort}`);
+    if(!l.nachStufen.length){
+      console.log(`      Danach noch zu lesen, Woerter      ${z(0)}   nichts, der Weg ist frei`);
+    } else {
+      console.log(`      Danach noch zu lesen, Woerter      ${z(nw.gesamt)}   (${nw.stufen} Lesestufen, ${nw.verschieden.join(' / ')})`);
+      console.log(`      Anfang insgesamt, bis frei im Dorf ${z(a.gesamt + nw.gesamt)}   VERSCHOBEN ist nicht GEKUERZT`);
+    }
+  }
   console.log('');
 }
 
@@ -553,6 +628,8 @@ if(laeufe.pflicht && laeufe.springer && !laeufe.pflicht.abbruch && !laeufe.sprin
   const p = zaehle(laeufe.pflicht), s = zaehle(laeufe.springer);
   console.log('BLAETTER, DIE BEIM UEBERSPRINGEN VERLOREN GEHEN');
   console.log('  Gezaehlt als Lesestufen je Apparat, Pflichtweg gegen Springer.');
+  console.log('  Der Nachlauf zaehlt hier NICHT mit: verglichen wird der Weg bis zum');
+  console.log('  ersten freien Schritt, und genau den kuerzt UEBERSPRINGEN ab.');
   let verlorenW = 0;
   for(const k of new Set([...Object.keys(p), ...Object.keys(s)])){
     const dp = p[k] || 0, ds = s[k] || 0;

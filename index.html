@@ -11014,6 +11014,13 @@ const kn = {
          // Spielstand, kein Eintrag in player.bag: sie belegt kein Fach, sie
          // steckt an der Urkunde.
          anlage2Da:false,
+         // AN4: Zwischen der Ernennung und dem Schritt vor die Tuer haengt sie
+         // an der Urkunde und hat sich noch nicht gemeldet. Genau diese
+         // Wartezeit traegt dieser Merker, und er traegt sonst nichts: gesetzt
+         // am Ende der Ernennung, verbraucht beim ersten Hinausgehen. Er steht
+         // im Spielstand und nicht in einer Modulvariablen, weil zwischen
+         // beidem gespeichert und geladen werden darf.
+         anlage2Wartet:false,
          // T4: der Kipppunkt. Wer im Gespraechsbaum ihre formlose Bitte annimmt
          // ("Sehen Sie ab und zu nach, ob ich noch da bin."), setzt ihn, und
          // zwar ueber szeneEnde(key, merker) wie baumEimer und die drei Szenen.
@@ -14705,7 +14712,9 @@ function fuehreAktion(){
     case AKT_NPC:     gespraechOeffnen(aktObj); break;
     case AKT_AMT:     amtFensterOeffnen(); break;
     case AKT_HAUS:    betreteHaus(aktObj); break;
-    case AKT_HAUSAUS: verlasseHaus(); break;
+    // AN4: Erst hinaus, dann meldet sich die Anlage 2 -- und nur beim ersten
+    // Mal und nur auf diesem Weg. Der Merker steht in anlage2VorDemHaus().
+    case AKT_HAUSAUS: verlasseHaus(); anlage2VorDemHaus(); break;
     case AKT_SCHUBLADE: schubladeOeffnen(); break;
     case AKT_REQUISIT:  requisitAnsehen(aktObj && aktObj.requisit); break;
     case AKT_ZUSTELLEN: zustellen(); break;
@@ -23112,16 +23121,30 @@ const ERNENNUNG_BLAETTER = [
   // Empfangsfrage, und wer sie nicht stellte, stand ohne ihn im Dorf. Kein
   // Questmarker, kein Ort, keine Richtung (Kapitel 14) — aber ein Verfahren,
   // und ein Verfahren ist in diesem Haus dasselbe wie ein Auftrag.
-  {blatt:'Knöterich bringt Sie zur Tür. Auf dem Weg dorthin redet er schneller als vorher.',
+  //
+  // AN4: Diese beiden letzten Blaetter gingen bis hierher hinaus. Knoeterich
+  // brachte den Spieler zur Tuer, hielt sie ihm auf, beschrieb das Wetter
+  // draussen, und der Zusteller kam ihm auf der Schwelle entgegen. Auf
+  // schwarzem Grund war das der einzige Ort, den es gab. Seit AN2 steht der
+  // Spieler sichtbar in der Amtsstube und geht den Schritt selbst -- der Text
+  // nahm ihm also etwas ab, was ihm gehoert. Die Regel des Masterplans hat
+  // hier eine Schwester: was der Spieler geht, darf der Text nicht mehr gehen.
+  //
+  // Der Zusteller bleibt, wo er inhaltlich hingehoert. Er traegt die
+  // Hauptquest, und sein Auftritt hier ist Vorausdeutung und sonst nichts;
+  // gebunden war er nie an die Schwelle, sondern an den Sack. Er kreuzt den
+  // Raum jetzt, statt in der Tuer zu stehen. Sein Name faellt weiterhin nicht,
+  // das verbietet AKTE_SPERRE_NAMEN und ist der Sinn der Sperre.
+  {blatt:'Knöterich zeigt zur Tür, geht aber nicht mit. Von hier an redet er schneller als vorher.',
    stimme:[{wer:'Knöterich', z:'Draußen läuft Unbearbeitetes herum. Sie gehen hin und bearbeiten es. Danach ist es bearbeitet.'},
            {wer:'Knöterich', z:'Bearbeiten heißt nicht totschlagen. Totschlagen kann jeder, das erledigt nichts. Ein Vorgang will eine Antwort.'},
            {wer:'Knöterich', z:'Sie grüßen also zuerst. Dann sehen Sie nach, was für eine Art Vorgang es ist. Dann geben Sie ihm, was ihm zusteht.'},
            {wer:'Knöterich', z:'Wenn Sie nicht weiterwissen, fragen Sie im Dorf. Alle hier wissen etwas, und keiner sagt es unaufgefordert.'}],
-   regie:'Er hält Ihnen die Tür auf. Draußen ist es hell und viel zu ruhig für einen Ort, an dem angeblich ziemlich viel herumläuft.'},
+   regie:'Er hört auf zu reden. Bei ihm ist das dasselbe wie eine Verabschiedung.'},
 
-  {blatt:'Auf der Schwelle kommt Ihnen ein Mann mit einem Postsack entgegen. Der Sack ist voll. Er drückt sich an Ihnen vorbei, entschuldigt sich zweimal und geht weiter.',
+  {blatt:'Ein Mann mit einem Postsack kommt herein, ohne stehen zu bleiben. Der Sack ist voll. Er drückt sich an Ihnen vorbei, entschuldigt sich zweimal und geht weiter.',
    stimme:[{wer:'Knöterich', z:'Nicht heute. Der hat seine eigene Sache, und die ist älter als Ihre.'},
-           'Er sieht dem Mann nach, bis der um die Ecke ist.',
+           'Er sieht dem Mann nach, bis der hinter der nächsten Tür verschwunden ist.',
            {wer:'Knöterich', z:'Ihre Stelle läuft heute Abend aus. Machen Sie etwas daraus.'}],
    regie:'Dann geht er zurück an seinen Tisch und drückt wieder etwas fest, das nicht liegen bleiben will.'},
 ];
@@ -23147,6 +23170,19 @@ const ERNENNUNG_BLAETTER = [
 //  Fuenf Blaetter, und jedes tut eine Sache: sie ist da, sie erklaert was sie
 //  ist, sie zeigt was sie kann, sie sagt was sie nicht weiss, sie bleibt.
 // ===========================================================================
+// AN4: DIESE VIER BLAETTER SIND MIT DEM NACHHOLWEG GETEILT, und drei ihrer
+// Zeilen sagen etwas ueber Ort und Uhrzeit: "Hinter Ihnen faellt die Amtstuer
+// ins Schloss", "Am Ende der Strasse bleiben Sie stehen", "Es ist kurz nach
+// acht". Auf dem Weg ueber die Ernennung stimmt das seit AN4 wieder -- der
+// Stapel laeuft vor dem Haus. Auf dem Nachholweg stimmt es nicht: dort wird
+// derselbe Stapel aus der Tasche geoeffnet, irgendwo im Dorf und irgendwann in
+// der Schicht. Nachgemessen, 860 Pixel von der Amtstuer entfernt.
+//
+// Das ist aelter als AN4 (vor AN4 stand der Ernennungsweg genauso daneben) und
+// hier bewusst nicht behoben: geteilten Text fuer zwei Orte zugleich richtig zu
+// schreiben ist eine Textentscheidung. Wer sie trifft, hat zwei Wege --
+// ortlose Formulierungen, oder eigene Blaetter fuer die Nachholung, so wie sie
+// schon einen eigenen Auftakt hat. Siehe phase-an4-anlage2.md, "Offen".
 const ANLAGE2_BLAETTER = [
   {blatt:'Das Blatt ist vergilbt, an den Kanten weich geworden und trägt oben links den Abdruck von sehr vielen Heftklammern übereinander. Eine davon steckt noch.',
    stimme:[{wer:'Anlage 2', z:'Ich fasse mich kurz, damit wir das hinter uns haben. Eine Anlage ist das, was einem Schriftstück beigefügt wird, weil es dazugehört.'},
@@ -24997,21 +25033,70 @@ function empfangVordruck(){
 // kommt dafuer zurueck, wie beim Intro: es ist ein Rechtsakt des Hauses, und das
 // Haus macht keinen Rechtsakt vor laufender Weltkulisse. Danach faellt beides,
 // die Buehne und die Tafel, und der Dienst beginnt.
+//
+// AN4: Der letzte Knopf hiess HINAUSGEHEN, und das war richtig, solange der
+// Stapel den Weg vor die Tuer selbst gegangen ist. Seit AN2 geht ihn der
+// Spieler. Der Knopf sagt jetzt, was auf diesem Blatt wirklich geschieht: die
+// Urkunde wird uebernommen. Derselbe Fall wie ANKLOPFEN -> ZUR SACHE in AN3.
 function empfangErnennung(){
   szeneTafelZu();
   buehneAn();
-  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'HINAUSGEHEN', ende: anlage2Erstes});
+  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'ÜBERNEHMEN', ende: ernennungEnde});
 }
 
-// T3: Zwischen HINAUSGEHEN und dem ersten Schritt im Dorf steht das erste
-// Treffen. Es ist ein eigener Stapel und kein angehaengtes siebtes Blatt der
-// Ernennung, und das aus zwei Gruenden: die Ernennung gehoert dem Haus und
-// endet mit dem Hinausgehen, und ein eigener Stapel zaehlt seine Blaetter
-// selbst. Wer die Urkunde bekommen hat, faengt hier an zu lesen.
+// AN4: Hier stand anlage2Erstes, und damit hing der Erstkontakt der Anlage 2
+// als siebte bis zwoelfte Lesestufe an der Ernennung. Gemessen war das der
+// teuerste Block des ganzen Anfangs: 751 Woerter auf 7 Lesestufen ohne eine
+// einzige echte Wahl (intro-pruef, Pflichtweg, Stand AN3).
+//
+// Jetzt endet die Ernennung dort, wo der Rechtsakt endet, und der Dienst
+// beginnt sofort danach. Der Merker traegt die Anlage 2 ueber die Luecke bis
+// zum ersten Hinausgehen; gesetzt wird er hier und an keiner zweiten Stelle.
+function ernennungEnde(){
+  if(!kn.flags.anlage2Wartet){ kn.flags.anlage2Wartet = true; saveKn(); }
+  empfangEnde();
+}
+
+// AN4: Der Schritt vor die Tuer loest den Erstkontakt aus, genau einmal.
+//
+// Gerufen wird das aus fuehreAktion(), Fall AKT_HAUSAUS, und NICHT aus
+// verlasseHaus(). Dieselbe Funktion raeumt naemlich auch respawnPlayer() und
+// startShift() den Innenraum weg, und der Pult in der Amtsstube bietet das
+// Amtsfenster an: ein Schichtende von drinnen wuerde den Stapel sonst aus einem
+// Reset-Pfad heraus starten. innen-pruef faehrt genau diesen Fall.
+//
+// Der Merker wird VOR dem Stapel verbraucht und nicht in seinem Abschluss. Wer
+// ihn erst danach loescht, wiederholt den Erstkontakt bei jedem weiteren
+// Hinausgehen, sobald ein Spieler den Stapel einmal nicht zu Ende blaettert.
+function anlage2VorDemHaus(){
+  if(!kn.flags.anlage2Wartet) return;
+  kn.flags.anlage2Wartet = false; saveKn();
+  anlage2Erstes();
+}
+
+// T3: Zwischen der Ernennung und dem Dorf steht das erste Treffen. Es ist ein
+// eigener Stapel und kein angehaengtes siebtes Blatt der Ernennung, und das aus
+// zwei Gruenden: die Ernennung gehoert dem Haus und endet mit der Uebernahme,
+// und ein eigener Stapel zaehlt seine Blaetter selbst. Wer die Urkunde bekommen
+// hat, faengt hier an zu lesen.
+//
+// AN4: Er laeuft jetzt VOR dem Haus statt darin, und damit stimmt sein erster
+// Satz wieder woertlich ("Sie stehen zum ersten Mal vor dem Haus statt darin").
+// Zwei Folgen davon stehen hier:
+//   - buehneAn() bleibt aus. Das Dorf liegt da, und das ist der Ort, den der
+//     Auftakt beschreibt. Ein Rechtsakt ist das hier ohnehin nicht mehr,
+//     sondern ein Blatt, das anfaengt zu reden.
+//   - Der Abschluss ist nicht mehr empfangEnde. Der Dienst laeuft seit dem Ende
+//     der Ernennung; dienstAntritt() ein zweites Mal zu rufen hiesse, den Anfang
+//     zweimal zu beenden. Genommen wird derselbe Abschluss, den
+//     anlage2Nachholen() seit T3 benutzt, nur ohne den Rucksack dahinter.
 function anlage2Erstes(){
   szeneTafeln([ANLAGE2_AUFTAKT_ERNENNUNG, ANLAGE2_FRAGE[0]].concat(ANLAGE2_BLAETTER),
               {letzterKnopf:'EINSTECKEN', wahl:{bei:1, reihe:ANLAGE2_FRAGE},
-               ende: anlage2Angenommen(empfangEnde)});
+               ende: anlage2Angenommen(() => {
+                el('overlay').style.display = 'none';
+                MUS.muffle(false);
+               })});
 }
 
 // Der gemeinsame Abschluss beider Wege. Er setzt den einen Merker, der alles
@@ -26007,6 +26092,11 @@ function anlage2Assert(){
   // migrationsfrei, aber nur solange sie in der Vorgabe stehen: ein Feld, das
   // dort fehlt, ist nach dem ersten Laden weg.
   if(!('anlage2Da' in kn.flags)) fehler('Der Merker anlage2Da fehlt in kn.flags');
+  // AN4: derselbe Grund wie eine Zeile hoeher. Fehlt er in der Vorgabe, steht er
+  // nach dem ersten Laden auf undefined, die Ernennung setzt ihn trotzdem, und
+  // beim Hinausgehen faellt der Erstkontakt aus -- ohne dass etwas kaputt
+  // aussieht. Genau die Art Ausfall, die niemandem auffaellt.
+  if(!('anlage2Wartet' in kn.flags)) fehler('Der Merker anlage2Wartet fehlt in kn.flags');
   if(!('anlage2Zug' in kn.counters)) fehler('Der Zähler anlage2Zug fehlt in kn.counters');
   // T7: ohne diesen Zaehler in der Vorgabe stuende er nach dem ersten Laden auf
   // undefined, (undefined|0) waere 0, und der Kanal liefe trotzdem. Er liefe

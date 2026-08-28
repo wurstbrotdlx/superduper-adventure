@@ -421,3 +421,53 @@ Start (`index.html:18452`). `intro-pruef` hat ihn zwei Bauabschnitte lang
 übersehen, weil er nur Tabellen ansah und weil sein Sinn-Muster ein Wort anders
 lautete als der Satz. Behoben; der Lauf zählt das Startbild jetzt mit und sagt
 dazu, dass es vor den Routen steht und nicht in ihnen.
+
+---
+
+## Dritter Nachtrag, 27.08.2026: AN4 und der Masterplan im Repo
+
+**Der Masterplan liegt jetzt im Repo** (`intro-masterplan.md`). Bis hierher war
+kein einziges der Zitate in diesem Bericht aus dem Repo heraus prüfbar. Die
+Probe fällt gut aus: Zielwert, Zählregel, die Begründung *„Ohne Ausgangszahl ist
+jeder Schnitt eine Behauptung"* und die Reihe der Bauabschnitte sind wörtlich
+richtig zitiert. Eine Berichtigung: AN3s Requisitenregel ist eine **Paraphrase**
+und kein Zitat. Der Plan schreibt *„Trägt ein Gegenstand eine Tatsache, darf der
+Text sie nicht mehr aussprechen."*
+
+**Die Hauptzahl hat sich wieder bewegt: 1967 → 1174** auf dem Pflichtweg, der
+längste Leseblock von **751 auf 575** Wörter, die Blöcke von `10 7 4` auf
+`10 6`, die Erklärstücke vor dem ersten freien Schritt von vier auf drei.
+
+**Davon sind 787 Wörter verschoben und 6 gekürzt**, und der Messlauf sagt es
+seit AN4 selbst. Er hört nicht mehr am ersten freien Schritt auf, sondern geht
+ihn über `fuehreAktion()` und weist als NACHLAUF aus, was dahinter noch liegt.
+Ohne diese Zeile stünde hier eine Ersparnis, die niemand gespart hat — dieselbe
+Fehlerklasse wie beim Weltgesetz im zweiten Nachtrag, nur umgekehrt.
+
+**Die Frage aus Abschnitt 4 ist erledigt, und zwar aufgelöst statt beantwortet.**
+Sie lautete: welchen der beiden Wege sind die Tester gegangen? Sie war für AN4
+vorgemerkt, *„weil Anlage 2 nur auf dem einen und die Dienstanweisung nur auf
+dem anderen Weg liegt"*. Nach AN4 liegt Anlage 2 auf **keinem** der beiden Wege
+mehr vor dem ersten freien Schritt; die Asymmetrie, die die Frage scharf machte,
+gibt es nicht mehr. Zusammen mit dem zweiten Nachtrag (die Dienstanweisung ist
+ab dem ersten Dienstantritt ohnehin jederzeit erreichbar) ist damit **beide
+Hälften der Frage** ohne Belang für den Zuschnitt der folgenden Bauabschnitte.
+
+**Berichtigung zu Abschnitt 6.** Dort steht als Erwartung des Masterplans:
+*„3 Stellen (T5d Kacheln, W8 Vordruck, T5b Anlage 2)."* Der Messlauf zählt die
+dritte beim **Gesprächsbaum** `baumAnlage2` und nicht bei ihrem Erstkontakt —
+der Einführungsstapel trägt das Weltgesetz **null Mal**. Das ist kein
+Nebenbefund: der Masterplan begründet mit dem dreifachen Weltgesetz, dass der
+Erstkontakt frühestens in Schicht 2 fallen soll. Der Grund betrifft eine andere
+Stelle als die, die AN4 verschoben hat.
+
+**Zu AN5.** Die Reihe lautet `A0 → AN1 → AN5 → AN2 → AN3 → AN4 → AN6 → AN7`.
+Gebaut sind AN1, AN2, AN3, AN4; **AN5 ist ohne Notiz übersprungen worden.** Seit
+der Ablage des Masterplans steht im Repo, was er ist: die **Kladde, mit
+Ungelesen-Zähler und Auffangbecken fürs Überspringen.** Er ist nicht erledigt
+und steht weiter vor AN6.
+
+**Berichtigung zur Läuferliste.** `szene-pruef` besteht 50 von 50 Prüfungen,
+endet aber auf **Exit 1** — auch auf `origin/main`, in einem frischen
+Arbeitsbaum auf `40ba02a` nachgemessen. Ursache sind die Grafikwarnungen aus dem
+fehlenden `assets/cf/`. „Grün" gilt für die Zählung, nicht für den Exit-Code.
