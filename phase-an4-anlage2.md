@@ -90,6 +90,26 @@ mehr hinaus. Die vier Stellen der Anlage 2 mussten dagegen **gar nicht
 angefasst werden**: sie standen nur falsch, weil der Stapel am falschen Ort
 lief. Seit AN4 läuft er vor dem Haus, und dort sind sie richtig.
 
+**Auf dem Türweg.** Diese Einschränkung gehört dazu, und sie war in der ersten
+Fassung dieses Absatzes nicht drin. `ANLAGE2_BLAETTER` ist mit dem Nachholweg
+**geteilt**, und dort wird derselbe Stapel aus der Tasche geöffnet, irgendwo im
+Dorf und zu irgendeiner Uhrzeit. Nachgemessen statt vermutet, Vordruckweg,
+Tasche 860 Pixel von der Amtstür entfernt geöffnet:
+
+| Blatt | sagt | Türweg | Nachholweg |
+|---|---|---|---|
+| 4 | „Vor Ihnen liegt das Dorf. Hinter Ihnen fällt die Amtstür ins Schloss" | stimmt | **860 px entfernt** |
+| 6 | „Am Ende der Straße bleiben Sie stehen" | stimmt | irgendwo |
+| 6 | „Es ist kurz nach acht" | stimmt | irgendwann in der Schicht |
+
+**Das ist ein Altbefund aus T3 und keiner von AN4**, und AN4 macht ihn nicht
+schlimmer, sondern auf der einen Hälfte besser: vor AN4 stand der Türweg
+genauso daneben wie der Nachholweg, seither steht nur noch einer daneben.
+Behoben ist er nicht. Er hier zu beheben hieße, geteilten Text für zwei Orte
+zugleich richtig zu schreiben, und das ist eine Textentscheidung und kein
+Nahtstück. Er steht deshalb unten unter „Offen" und im Code neben den
+Blättern.
+
 **Sechs Blätter bleiben sechs Blätter.** Zwei `pruef()`-Zeilen und drei
 Dokumente hängen an dieser Zahl; geändert sind vier Zeilen Text, kein Blatt.
 
@@ -240,6 +260,11 @@ Quellbaum, und an dieser Stelle verhält er sich gleich.
   weiter vor AN6 und ist nicht erledigt.
 * **Der Auslöser der Anlage 2** weicht vom Masterplan ab (siehe oben). Eine
   Zeile, wenn er zurück soll.
+* **Der Nachholweg sagt drei Dinge, die dort nicht stimmen** (Ort, Ort, Uhrzeit
+  — siehe oben, gemessen). Altbefund aus T3, unabhängig von AN4, und die
+  Behebung ist eine Textentscheidung: entweder werden die drei Zeilen ortlos
+  und zeitlos formuliert, oder der Nachholweg bekommt eigene, so wie er schon
+  einen eigenen Auftakt hat.
 * **AN6** holt die vier Chronikblätter in die Erstbelehrung nach Akt I. Der
   längste Block gehört jetzt ihm: 575 Wörter auf 10 Lesetafeln, Empfang plus
   Chronik.
