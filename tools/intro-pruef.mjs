@@ -112,6 +112,11 @@ async function frisch(){
   await page.evaluate(() => { try{ localStorage.clear(); }catch(e){} });
   const schonEingestellt = await page.evaluate(() => !!(kn && kn.seen && kn.seen.einstellung));
   if(schonEingestellt) throw new Error('kn.seen.einstellung steht schon: der Empfang liefe nicht, die Messung waere leer.');
+  // AN5: derselbe Gedanke fuer den Lesestand des Anfangs. Ein Kontext ist zwar
+  // frisch, aber ein stehengebliebener Eintrag wuerde hier keinen Fehler machen,
+  // sondern eine falsche Zahl -- und eine falsche Zahl ist schlimmer als ein
+  // Absturz, weil sie wie ein Ergebnis aussieht.
+  await page.evaluate(() => { if(typeof kladde !== 'undefined' && kladde.anfang){ kladde.anfang = {}; saveKladde(); } });
   return { page, ctx, laut };
 }
 
@@ -333,8 +338,19 @@ async function laufe(route){
     }
   }
 
+  // AN5: Was hat dieser Weg in der Kladde hinterlassen? Gelesen wird am
+  // Merker und nicht an der Route hochgerechnet -- der Weg selbst sagt, was er
+  // aufgeschlagen hat.
+  const kladdeStand = await page.evaluate(() => typeof ANFANG_BESTAND === 'undefined' ? null : ({
+    gelesen: anfangGelesenZahl(), gesamt: anfangGesamt(), ungelesen: anfangUngelesen(),
+    je: ANFANG_BESTAND.map(e => ({
+      name: e.name, n: e.liste().length,
+      gelesen: e.liste().reduce((m, _, i) => m + (anfangIstGelesen(e.key + ':' + i) ? 1 : 0), 0),
+    })),
+  }));
+
   await ctx.close();
-  return { route, stufen, abbruch, angekommen, laut, schritt1, nachStufen, nachAbbruch };
+  return { route, stufen, abbruch, angekommen, laut, schritt1, nachStufen, nachAbbruch, kladdeStand };
 }
 
 // Eine Lage als kurze Zeichenkette, um Bewegung festzustellen.
@@ -640,6 +656,39 @@ if(laeufe.pflicht && laeufe.springer && !laeufe.pflicht.abbruch && !laeufe.sprin
   verlorenW = wp.gesamt - ws.gesamt;
   console.log(`  Woerter: Pflicht ${wp.gesamt}, Springer ${ws.gesamt}, Ersparnis ${verlorenW}.`);
   console.log(`  Das Weltgesetz: Pflicht ${wp.weltgesetz.length} mal, Springer ${ws.weltgesetz.length} mal.\n`);
+
+  // --- AN5: was davon faengt die Kladde auf? -------------------------------
+  // Die Zeilen darueber sagen, was verloren geht. Seit AN5 geht ein Teil davon
+  // nicht mehr verloren, sondern liegt in der Kladde, und der Unterschied
+  // gehoert in denselben Abschnitt. Gemessen am Lesestand beider Wege, nicht an
+  // der Tabelle: was der Springer wirklich nicht aufgeschlagen hat.
+  const kp = laeufe.pflicht.kladdeStand, ks = laeufe.springer.kladdeStand;
+  if(kp && ks){
+    console.log('DAS AUFFANGBECKEN (AN5)');
+    console.log(`  Vom Anfang gelesen: Pflicht ${kp.gelesen} von ${kp.gesamt}, Springer ${ks.gelesen} von ${ks.gesamt}.`);
+    let aufgefangen = 0;
+    for(let i = 0; i < kp.je.length; i++){
+      const a = kp.je[i], b2 = ks.je[i];
+      const offen = a.gelesen - b2.gelesen;
+      aufgefangen += offen;
+      console.log(`  ${(b2.name + ' ').padEnd(28, '.')} Pflicht ${z(a.gelesen, 3)}   Springer ${z(b2.gelesen, 3)}   `
+                + `${offen > 0 ? 'in der Kladde ' + offen : 'nichts offen'}`);
+    }
+    // Die Gegenprobe, und sie braucht die RICHTIGE Verlustzahl. Die Differenz
+    // der Lesestufen (19 gegen 16) ist es nicht: der Springer verliert zwar
+    // zwoelf Stufen, bekommt aber neun Vordruckseiten dazu, und netto bleiben
+    // drei. Gegen die Netto-Zahl gerechnet faengt die Kladde mehr auf, als
+    // verloren geht, und der Lauf meldete "die uebrigen -6". Gezaehlt wird
+    // deshalb je Apparat und nur nach unten, wie in der Tabelle darueber.
+    let stufenVerlust = 0;
+    for(const k of new Set([...Object.keys(p), ...Object.keys(s)]))
+      stufenVerlust += Math.max(0, (p[k] || 0) - (s[k] || 0));
+    console.log(`  Der Springer schlaegt ${stufenVerlust} Lesestufen nicht auf. ${aufgefangen} davon liegen in der Kladde.`);
+    console.log(`  Die uebrigen ${stufenVerlust - aufgefangen} sind Gespraechsknoten: die Kladde traegt`);
+    console.log('  Blaetter, und ein Knoten ist keines. Das ist die Luecke des Beckens.\n');
+  } else {
+    console.log('DAS AUFFANGBECKEN (AN5): ANFANG_BESTAND gibt es in diesem Bauzustand nicht.\n');
+  }
 }
 
 // --- Das Weltgesetz vor Schicht 5, auch abseits des Pflichtwegs ------------

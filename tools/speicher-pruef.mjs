@@ -299,7 +299,10 @@ pruef('SP3 und zu, wo es nicht darf', { kammer: tor.inDerKammer, tod: tor.imTod 
 // --- Export und Import -------------------------------------------------------
 await page.evaluate(() => {
   amt.bankGold = 4242; amt.schichten = 5; saveAmt();
-  kladde.crafts = 11; kladde.blaetter['a1'] = true; saveKladde();
+  // AN5: der Lesestand des Anfangs faehrt im selben Schluessel mit. Die Kladde
+  // ist todesimmun und hat einen eigenen Speicher -- genau deshalb liegt das
+  // Auffangbecken dort und nicht im Spielstand.
+  kladde.crafts = 11; kladde.blaetter['a1'] = true; kladde.anfang['intro:2'] = true; saveKladde();
   startShift(); player.level = 6; shiftT = 900; spielstandSchreiben();
 });
 const [dl] = await Promise.all([
@@ -316,16 +319,18 @@ pruef('Export enthaelt alle vier Schluessel', Object.keys(roh.daten).sort(),
 await page.evaluate(() => localStorage.clear());
 await neuLaden();
 pruef('nach dem Loeschen ist das Geraet leer',
-      await page.evaluate(() => ({ bank: amt.bankGold, schichten: amt.schichten, crafts: kladde.crafts })),
-      { bank: 0, schichten: 0, crafts: 0 });
+      await page.evaluate(() => ({ bank: amt.bankGold, schichten: amt.schichten, crafts: kladde.crafts,
+                                   anfang: Object.keys(kladde.anfang).length })),
+      { bank: 0, schichten: 0, crafts: 0, anfang: 0 });
 
 await page.setInputFiles('#spDatei', datei);
 await page.waitForTimeout(1600);
 await page.waitForFunction(() => typeof frameNo !== 'undefined' && frameNo > 0, null, { timeout: 60000 });
 pruef('der Import holt alles zurueck',
       await page.evaluate(() => ({ bank: amt.bankGold, schichten: amt.schichten, crafts: kladde.crafts,
-                                   blatt: !!kladde.blaetter['a1'], fortsetzbar: !!spielstandLesen() })),
-      { bank: 4242, schichten: 5, crafts: 11, blatt: true, fortsetzbar: true });
+                                   blatt: !!kladde.blaetter['a1'], anfang: !!kladde.anfang['intro:2'],
+                                   fortsetzbar: !!spielstandLesen() })),
+      { bank: 4242, schichten: 5, crafts: 11, blatt: true, anfang: true, fortsetzbar: true });
 pruef('und das Startbild bietet die Schicht an',
       await page.evaluate(() => { showStartScreen();
         const t = document.getElementById('ovPanel').textContent;

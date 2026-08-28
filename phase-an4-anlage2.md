@@ -253,11 +253,12 @@ Quellbaum, und an dieser Stelle verhält er sich gleich.
 
 ## Offen
 
-* **AN5 ist ausgefallen, ohne dass es jemand notiert hat.** Die Reihe lautet
-  `A0 → AN1 → AN5 → AN2 → AN3 → AN4 → AN6 → AN7`; gebaut sind AN1, AN2, AN3,
-  AN4. Was AN5 ist, steht seit der Ablage des Masterplans im Repo: **die Kladde,
-  mit Ungelesen-Zähler und Auffangbecken fürs Überspringen.** Er steht damit
-  weiter vor AN6 und ist nicht erledigt.
+* **AN5 war ausgefallen, ohne dass es jemand notiert hat — nachgeholt
+  unmittelbar nach AN4**, siehe `phase-an5-kladde.md`. Die Reihe lautet
+  `A0 → AN1 → AN5 → AN2 → AN3 → AN4 → AN6 → AN7`; gebaut sind jetzt AN1 bis AN5,
+  wenn auch in einer Reihenfolge, die der Plan so nicht vorsah. Was AN5 ist,
+  stand seit der Ablage des Masterplans im Repo: die Kladde, mit
+  Ungelesen-Zähler und Auffangbecken fürs Überspringen.
 * **Der Auslöser der Anlage 2** weicht vom Masterplan ab (siehe oben). Eine
   Zeile, wenn er zurück soll.
 * **Der Nachholweg sagt drei Dinge, die dort nicht stimmen** (Ort, Ort, Uhrzeit

@@ -708,12 +708,74 @@ async function hinaus(page){
   pruef('das HUD bleibt dabei weg',
         await page.evaluate(() => getComputedStyle(el('hud')).display), 'none');
 
+  // AN5: DAS AUFFANGBECKEN. Genau dieser Weg ist der Grund, aus dem es gebaut
+  // wurde: wer hier UEBERSPRINGEN drueckt, hat neun von zehn Blaettern des
+  // Anfangs nie gesehen. Vor AN5 waren sie damit weg.
+  pruef('vor dem Dienst steht der Bestand nicht in der Kladde',
+        await page.evaluate(() => anfangBestandBlock()), '');
+  pruef('genau das erste Introblatt ist aufgeschlagen worden',
+        await page.evaluate(() => Object.keys(kladde.anfang)), ['intro:0']);
+
   await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); showStartScreen(); });
   await page.waitForTimeout(300);
   await page.evaluate(() => startGame());
   await page.waitForTimeout(1500);
   pruef('der zweite Dienstantritt zeigt keinen Empfang',
         await page.evaluate(() => state === 'play' && !empfangAktiv), true);
+
+  // AN5: und jetzt liegt es in der Kladde, im Akten-Reiter, mit Zaehler.
+  pruef('der Anfang steht mit neun Ungelesenen in der Kladde',
+        await page.evaluate(() => ({ gelesen: anfangGelesenZahl(), ungelesen: anfangUngelesen() })),
+        { gelesen: 1, ungelesen: 9 });
+  await page.evaluate(() => { if(!kesselOpen) toggleKessel(); switchKesselTab('blaetter'); });
+  await page.waitForTimeout(250);
+  pruef('der Akten-Reiter fuehrt DER ANFANG',
+        await page.evaluate(() => el('blaetterBox').textContent.includes('DER ANFANG')), true);
+  pruef('und zaehlt die gelesenen Blaetter',
+        await page.evaluate(() => (el('blaetterBox').textContent.match(/\d+ von \d+ Blättern gelesen/) || [''])[0]),
+        '1 von 10 Blättern gelesen');
+  // Der Zaehler steht AM REITER, damit man ihn sieht, ohne dort zu sein.
+  pruef('der Ungelesen-Zaehler steht am Reiter',
+        await page.evaluate(() => el('aktenUngelesen').textContent.trim()), '9');
+  pruef('jedes Blatt des Anfangs ist von hier aus aufschlagbar',
+        await page.evaluate(() => document.querySelectorAll('#blaetterBox [onclick^="anfangAufschlagen"]').length), 10);
+  pruef('die Dienstanweisung bekommt einen Verweis statt eines Lesers',
+        await page.evaluate(() => el('blaetterBox').textContent.includes('Dienstanweisung liegt am Pult')), true);
+
+  // Ein ungelesenes Blatt aufschlagen. Dasselbe Muster wie ein Requisit aus
+  // AN3: derselbe Tafelstapel, ein Blatt lang, "Blatt I von I".
+  await page.evaluate(() => anfangAufschlagen('ernennung', 2));
+  await page.waitForTimeout(350);
+  pruef('das Kesselfenster macht dem Stapel Platz',
+        await page.evaluate(() => ({ kessel: kesselOpen, stapel: szeneTafelLauf && szeneTafelLauf.liste.length })),
+        { kessel: false, stapel: 1 });
+  pruef('und es steht als Blatt I von I da',
+        await page.evaluate(() => (document.querySelector('#ovPanel .amtFuss') || {}).textContent), 'Blatt I von I');
+  pruef('der Knopf fuehrt zurueck', await page.evaluate(() =>
+        [...document.querySelectorAll('#ovPanel button')].map(b => b.textContent.trim())), ['ZURÜCK']);
+  pruef('aufgeschlagen heisst gelesen', await page.evaluate(() => anfangGelesenZahl()), 2);
+  await page.evaluate(() => [...document.querySelectorAll('#ovPanel button')]
+    .find(x => /^\s*szeneTafel\(\d+\)\s*$/.test(x.getAttribute('onclick') || '')).click());
+  await page.waitForTimeout(350);
+  pruef('ZURUECK fuehrt in den Akten-Reiter zurueck',
+        await page.evaluate(() => ({ kessel: kesselOpen, tab: kesselTab, state,
+                                     overlay: el('overlay').style.display })),
+        { kessel: true, tab: 'blaetter', state: 'play', overlay: 'none' });
+  pruef('und der Zaehler steht eins tiefer',
+        await page.evaluate(() => el('aktenUngelesen').textContent.trim()), '8');
+
+  // Alles gelesen heisst kein Zaehler. Ein Zaehler, der auf null stehen bleibt,
+  // ist eine Mahnung ohne Anlass.
+  await page.evaluate(() => {
+    for(const e of ANFANG_BESTAND) for(let i = 0; i < e.liste().length; i++) anfangGelesen(e.key + ':' + i);
+    switchKesselTab('blaetter');
+  });
+  await page.waitForTimeout(200);
+  pruef('ist alles gelesen, steht am Reiter nichts',
+        await page.evaluate(() => el('aktenUngelesen').textContent.trim()), '');
+  pruef('und die Zaehlzeile ist voll',
+        await page.evaluate(() => (el('blaetterBox').textContent.match(/\d+ von \d+ Blättern gelesen/) || [''])[0]),
+        '10 von 10 Blättern gelesen');
   await ctx.close();
 }
 
