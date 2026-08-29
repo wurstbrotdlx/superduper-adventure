@@ -99,4 +99,11 @@ fertig = true;
 // als Anhaltspunkt da und wird nicht eingeklagt, sonst waere jeder neue Guard
 // eine Aenderung an zwei Dateien. Nachgezaehlt wird im README.
 console.log(`in Ordnung: ${URL} laeuft (frameNo ${frames}), Konsole still.`);
-console.log(`            ${guards}x "in Ordnung", ${warnungen} Warnungen (ohne Grafik erwartet).`);
+console.log(`            ${guards}x "in Ordnung", ${warnungen} Warnungen.`);
+// Mit vollstaendiger Grafik sind es null. Steht hier eine Zahl, fehlen Blaetter
+// — im frischen Klon ist das der Lizenzstand und erwartbar, sonst ein Fund:
+// "Eine Warnung, die immer da steht, ist keine" (README).
+if (warnungen) {
+  console.log('            Warnungen heisst: Blaetter fehlen. Ohne lizenzierte Grafik ist das');
+  console.log('            der Normalfall, mit ihr ein Fund.');
+}
