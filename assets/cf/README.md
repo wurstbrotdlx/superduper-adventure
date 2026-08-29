@@ -48,7 +48,7 @@ Aus `Graphics/Cute_Fantasy_Dungeons/`, Originalnamen behalten:
 Aus `Graphics/Cute_Fantasy/Player/`, Originalnamen behalten. Alle Dateien teilen
 sich ein 9×56-Raster à 64×64 (Player_Base und jeder Layer sind pixelidentisch
 gerastert) — nur 6 Zeilen daraus werden genutzt (idle=1, walk=9, run=45,
-attack=18, cast=24, hurt=15, siehe `CF_HERO_ANIMS` in `index.html` für die
+attack=18, cast=24, hurt=15, siehe `CF_HERO_ANIMS` in `skript/01-grafik-und-klang.js` für die
 Begründung, insbesondere die Ersatzregel für die fehlenden Kampfanimationen).
 
 | Zielordner | Dateien |
@@ -69,14 +69,14 @@ Begründung, insbesondere die Ersatzregel für die fehlenden Kampfanimationen).
 
 **Bewusst nicht kopiert:** `Accessories/Farmer_Hat_1.png` (nur eine einzige Datei,
 keine sinnvolle Zufallsvielfalt) und alle weiteren Hair-Farben (6 Style-Slots
-reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `index.html`).
+reichen für die Frisuren-Zufallsvielfalt, siehe `CF_HAIR` in `skript/01-grafik-und-klang.js`).
 *(Der Hut ist seit G9 überholt: er ist dort Trepps und Nieselbecks Dienstmütze
 und wird gebraucht. Siehe den G9-Abschnitt unten.)*
 
 ### Von G9 gebraucht (`player/`)
 
 Bauabschnitt G9 hat aus der Rüstungsstufe eine **Garderobe** gemacht
-(`CF_GARDEROBE` in `index.html`) und dabei vier Dateien in Dienst genommen, die
+(`CF_GARDEROBE` in `skript/01-grafik-und-klang.js`) und dabei vier Dateien in Dienst genommen, die
 diese Liste bis zum G9-Nachtrag nicht kannte. Sie lagen deshalb drei
 Bauabschnitte lang nicht im Assets-Repo, und was das anrichtete, stand in jeder
 Konsole: vier `Sprite fehlt`-Gruppen, und dahinter Wirt Fass und Herr Lott ohne
@@ -210,7 +210,7 @@ nicht lädt, gehört nach der Kopierkonvention unten nicht hierher.
 ### Von G3 gebraucht (`enemies/`, `deco/`)
 
 19 Monster-Rigs für alle 21 `MONDEF`-Typen (Templar/Swordman/Archer teilen sich je
-zwei Typen, s. `CF_RIGS` in `index.html`), plus 4 Hoftiere und 1 Zauber-Projektil.
+zwei Typen, s. `CF_RIGS` in `skript/01-grafik-und-klang.js`), plus 4 Hoftiere und 1 Zauber-Projektil.
 Zeilen/Anker sind mit `tools/sheet-audit.mjs --rig <Pfad>` gegen die echten Bilder
 gemessen (nicht aus `manifest.json` — dessen `unionBBox`/`anchorSuggested` sind über
 die Angriffszeile gebildet und bis zu 13px/88% daneben, s. Umsetzungsnotizen G3).
@@ -333,7 +333,7 @@ letzten zwei geladenen Sunnyside-Sheets).
 | `deco/Weather/` | `Clouds.png`, `Wind_Anim.png` (aus `Cute_Fantasy/Weather effects/`) | Grasland-Wolkenschatten, Aschewüste-Windböen. Schnee (Frostkamm) braucht kein Sprite, reine Canvas-Punkte |
 | `ui/` | `frame_brown.png`, `round_brown.png`, `glint_strip.png`, `alert.png` | UI-Skin-Rahmen/Rundknöpfe, glint-/alert-Ersatz — alle vier sind Einzelzell-Ausschnitte, siehe Ausnahme unten |
 
-**Zu den acht NPC-Blättern.** `CF_NPCS` in `index.html` trägt acht Einträge. Von G5 bis zum
+**Zu den acht NPC-Blättern.** `CF_NPCS` in `skript/01-grafik-und-klang.js` trägt acht Einträge. Von G5 bis zum
 20.08.2026 lagen nur die drei ersten hier, und Zapf, Lisbeth, Trepp, Milb und Fass standen
 unsichtbar im Dorf; seit G6 fällt jede Figur ohne Blatt auf ein Held-Komposit zurück
 (Frisur/Kleidung je Figur in `DORF_FIGUREN.gestalt`), das Spiel ist also auch ohne sie

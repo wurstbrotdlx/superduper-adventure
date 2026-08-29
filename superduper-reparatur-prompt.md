@@ -30,7 +30,7 @@ Bei `sonnet`-Abschnitten gilt: wenn beim Arbeiten auffällt, dass ein Fund doch 
 
 ## Kontext
 
-Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`. Ein Spielfile: `index.html`. GitHub Pages läuft seit F9 über `.github/workflows/pages.yml`, die Grafik kommt aus dem privaten Repo `wurstbrotdlx/superduper-adventure-assets`. `docs/` und `dist/` sind ignoriert, ein Build-Commit ist nicht mehr nötig.
+Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`. Der Code liegt in `index.html` (HTML und CSS) plus sieben Skriptdateien in `skript/01..07` (rund 25 000 Zeilen JavaScript, geladen in der Reihenfolge ihrer Tags). GitHub Pages läuft seit F9 über `.github/workflows/pages.yml`, die Grafik kommt aus dem privaten Repo `wurstbrotdlx/superduper-adventure-assets`. `docs/` und `dist/` sind ignoriert, ein Build-Commit ist nicht mehr nötig.
 
 Verbindlich mitzulesen, je nach Abschnitt:
 

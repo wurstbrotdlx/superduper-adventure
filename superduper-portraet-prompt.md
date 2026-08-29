@@ -34,7 +34,7 @@ Anführungszeichen und ist bindend. Der Projektinhaber schreibt Deutsch, du antw
 
 ## 1. Was das hier ist
 
-DAS MONSTRAL MINISTERIUM ist ein Browser-Adventure in einer einzigen Datei: `index.html`,
+DAS MONSTRAL MINISTERIUM ist ein Browser-Adventure in `index.html` (HTML und CSS) plus sieben Skriptdateien in `skript/01..07` (rund 25 000 Zeilen JavaScript, geladen in der Reihenfolge ihrer Tags),
 rund 25.000 Zeilen, alle Texte als JS-Literale, kein Build-Schritt für Texte. Eine
 Behördenwelt, strange aber liebenswert, Humor in der Verwandtschaft von Monkey Island, Day of
 the Tentacle und Theme Hospital, Zielgruppe 9 bis 99 mit Betonung ab 9.

@@ -74,7 +74,7 @@ zerlegt, und **jeder Block ist ein Commit, der für sich abnehmbar ist**:
 **Drei Regeln für den Abbruch**, weil eine Sitzung mittendrin endet und die nächste
 weitermachen können muss:
 
-1. **In `index.html` kommt nur, was fertig ist.** Ein halber Block bleibt im
+1. **In die `skript/`-Dateien kommt nur, was fertig ist.** Ein halber Block bleibt im
    Lieferdokument stehen und wird nicht eingebaut. Ein Guard, der über eine halbe Tabelle
    läuft, meldet Unsinn oder schweigt falsch.
 2. **Der Statusmarker trägt den Stand**, nicht nur das Wort: `— OFFEN (Stand: 9 von 18)`.
@@ -114,7 +114,7 @@ wissen, was sie nicht wissen kann.
 
 ## 2. Der Bestand, den es zu erweitern gilt
 
-Vierzehn ansprechbare Dorffiguren in `DORF_FIGUREN` (`index.html`, ab Zeile 3171), dazu
+Vierzehn ansprechbare Dorffiguren in `DORF_FIGUREN` (in `skript/02-dorf-und-welt.js`), dazu
 Knöterich als Begleitfigur mit eigenem Kanal. Jede Dorffigur hat heute:
 
 * `grund` — sechs Zeilenpaare, Kreislauf bei wiederholtem Ansprechen
@@ -124,7 +124,7 @@ Knöterich als Begleitfigur mit eigenem Kanal. Jede Dorffigur hat heute:
 * `antworten` / `abweisung` — nur Bramsche: fünfzehn Fragen, eine pro Schicht
 * dazu die Anredezeile aus `anredeZeile()` und, wo vorhanden, Langvorgangs-Zeilen
 
-Der Weg durch den Zyklus steht in `npcCycle()` (ab Zeile 8534): Schritt 0 ist die Anrede,
+Der Weg durch den Zyklus steht in `npcCycle()` (in `skript/05-buehne-und-kammern.js`): Schritt 0 ist die Anrede,
 dann die Grundzeilen samt freigeschalteter Zusatzzeilen, zuletzt die Aktzeile. Das
 Gesprächsfenster (U3/U4) zeigt oben den Satz und unten vier Antworten; die erste ruft
 `npcSprechen()` auf, die drei anderen lesen nur.
@@ -357,12 +357,12 @@ sieht: nämlich die nächste Zeile, und keinen Fehler.
 |---|---|---|
 | ohne Bedingung | `grund` | immer, Kreislauf |
 | Handlung | `zusatz:[{abAkt:N}]` | `!CONFIG.schichtModus \|\| aktStand() >= N` |
-| Ereignis, dauerhaft | `zusatz:[{merker:'name'}]` | `kn.flags[name]`, siehe `kn.flags` (Zeile 7181) |
+| Ereignis, dauerhaft | `zusatz:[{merker:'name'}]` | `kn.flags[name]`, siehe `kn.flags` (in `skript/04-magie-und-zulagen.js`) |
 | Ereignis, einmalig | `anlass:{schluessel:[…]}` | `letzterAnlass`, wird beim Lesen verbraucht |
 
 Vorhandene Merker: `hatGezaubert`, `hatGekocht`, `hatKammerBetreten`, `hatGesteigert`,
 `hatLagerGesehen`, `szeneUmlauf`, `szeneSchublade`, `szeneKnoeterich`.
-Vorhandene Anlässe (`RANDNOTIZ`, Zeile 7272): `crit`, `ultimate`, `levelup`,
+Vorhandene Anlässe (seit T3 `ANLAGE2_NOTIZ` statt `RANDNOTIZ`, in `skript/04-magie-und-zulagen.js`): `crit`, `ultimate`, `levelup`,
 `kammerAbbruch`, `fluch`, `goldfund`, `untaetigkeit`, dazu `umlauf` und `hintermuehl`
 aus SZ2.
 
@@ -373,9 +373,9 @@ aus SZ2.
 | Zeit, Dienstalter | `zusatz:[{abSchicht:N}]` | `!CONFIG.schichtModus \|\| amt.schichten >= N` | `amt.schichten` |
 | Zeit, Schichtphase | `zusatz:[{phase:'antritt'\|'feierabend'}]` | `shiftT > 0.75 * CONFIG.schichtDauer` bzw. `shiftT < 0.25 * CONFIG.schichtDauer`, im freien Spiel beide offen | `shiftT` |
 | Stufe | `zusatz:[{abStufe:N}]` | `player.level >= N` | `player.level` |
-| Rang | `zusatz:[{abRang:N}]` | `!CONFIG.schichtModus \|\| rangStufe() >= N` | `rangStufe()` (Zeile 11858) |
+| Rang | `zusatz:[{abRang:N}]` | `!CONFIG.schichtModus \|\| rangStufe() >= N` | `rangStufe()` (in `skript/06-gespraech-dienst-und-szenen.js`) |
 | Skillung, Punkte | `zusatz:[{skill:'str'\|'vit'\|'agi'\|'int', ab:N}]` | `player.skills[skill] >= N` | `player.skills` |
-| Skillung, Zauber | `zusatz:[{zauber:'funke'}]` oder `{zweig:0\|1\|2}` | `player.spellsKnown[id]` bzw. `kenntZweig(b)` (Zeile 7862) | Zauberbaum |
+| Skillung, Zauber | `zusatz:[{zauber:'funke'}]` oder `{zweig:0\|1\|2}` | `player.spellsKnown[id]` bzw. `kenntZweig(b)` (in `skript/05-buehne-und-kammern.js`) | Zauberbaum |
 
 **Sechs Regeln für die Auslöser, alle prüfbar:**
 
@@ -408,7 +408,7 @@ sich verlaufen.
 ### Die Maschine steht schon
 
 **Es wird keine zweite Dialogmaschine gebaut.** SZ1 und SZ2 haben eine, und sie kann
-alles, was ein Baum braucht (`index.html`, Szenenmaschine ab Zeile 14681, Tabelle `SZENEN` ab Zeile 14868):
+alles, was ein Baum braucht (Szenenmaschine und Tabelle `SZENEN` in `skript/06-gespraech-dienst-und-szenen.js`):
 
 | Feld | Was es tut |
 |---|---|
@@ -770,10 +770,10 @@ Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
 
 **Aus F1b, die Auslöser:**
 
-* **`figZusatz()`** (Zeile 8519): aus zwei Zweigen werden acht. Eine Tabelle von
+* **`figZusatz()`** (in `skript/05-buehne-und-kammern.js`): aus zwei Zweigen werden acht. Eine Tabelle von
   Schaltername zu Prüffunktion, damit die Funktion kurz bleibt und `knAssertCaps()`
   dieselbe Tabelle lesen kann. Kein zweiter Ort, an dem die Namen stehen.
-* **`knAssertCaps()`** (Zeile 7298): Deckel über alle neuen Zeilen, „genau ein Schalter"
+* **`knAssertCaps()`** (in `skript/04-magie-und-zulagen.js`): Deckel über alle neuen Zeilen, „genau ein Schalter"
   über die volle Schalterliste, Erreichbarkeit jeder Schwelle, und die Prüfung, dass jeder
   benutzte `anlass`-Schlüssel irgendwo gesetzt wird.
 * **Neue Anlass-Schlüssel** brauchen eine Setzstelle (`letzterAnlass = '…'`) an der
@@ -801,8 +801,8 @@ Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
 
 **Aus F1d, die Bäume:**
 
-* **Die Einstiegszeile.** `gespraechOptionen()` (Zeile 8667) liefert heute vier feste
-  Antworten, `gespraechAssert()` (Zeile 8958) verlangt genau vier. Neu: hat die Figur
+* **Die Einstiegszeile.** `gespraechOptionen()` (in `skript/06-gespraech-dienst-und-szenen.js`) liefert heute vier feste
+  Antworten, `gespraechAssert()` (in `skript/06-gespraech-dienst-und-szenen.js`) verlangt genau vier. Neu: hat die Figur
   einen fälligen Baum (`szeneFaellig()` mit den Auslösern aus Abschnitt 7), erscheint als
   vorletzte Antwort **„Erzählen Sie von früher."** (24 Zeichen, Deckel 28) und öffnet ihn;
   der Abschied bleibt die letzte. Der Guard prüft dann vier **oder** fünf Antworten, dass
@@ -810,11 +810,11 @@ Klein halten, das ist Bedingung. Erwartet werden genau diese Eingriffe:
   ist. **Innerhalb** eines Baums bleibt es bei höchstens vier Antworten je Knoten, wie
   `szeneAssert()` es heute erzwingt. Die Asymmetrie ist Absicht: die Figurenliste ist ein
   Menü, ein Baumknoten ist ein Gespräch.
-* **`szeneFaellig()`** (Zeile 15328) darf mehrere Bäume je Figur unterscheiden und nimmt
+* **`szeneFaellig()`** (in `skript/06-gespraech-dienst-und-szenen.js`) darf mehrere Bäume je Figur unterscheiden und nimmt
   dafür den ersten, dessen `wenn()` zutrifft. Das kann sie heute schon; was fehlt, ist
   eine Ordnung, in der der speziellere Baum vor dem allgemeineren steht. Eine Zeile
   Kommentar dazu genügt, aber sie muss dastehen.
-* **`szeneAssert()`** (Zeile 15530) zählt die Figurenbäume mit. Neue Prüfungen: jeder Baum
+* **`szeneAssert()`** (in `skript/07-tafeln-und-start.js`) zählt die Figurenbäume mit. Neue Prüfungen: jeder Baum
   hat einen Ausgang, der in den Kreislauf zurückführt; jeder Strang ist erreichbar; kein
   `wenn` hängt an einer Bedingung, die es nicht gibt; kein Baum setzt einen Merker, den
   der Spielstand nicht kennt; und die Anspielungszahl aus Abschnitt 4 steht als Zahl im
@@ -891,7 +891,7 @@ Nichts gilt als fertig, was nur behauptet ist. Die dritte Mitarbeitsregel des Re
 das wörtlich.
 
 ```bash
-python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</script>',h,re.DOTALL);open('/tmp/c.js','w').write(m.group(1))" && node --check /tmp/c.js
+for f in skript/*.js; do node --check "$f"; done
 ```
 
 Danach im Browser, mit `python3 serve.py` und dem Playwright-Chromium der Umgebung, wie im
@@ -944,7 +944,7 @@ war, hat einen Fund und keine Tapete.
 Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 
 > Lies `superduper-weltbibel.md` (Kapitel 7, 8, 9, 13, 17, 19), `weltgeschichte.md`
-> (Kapitel 3, 6, 12), `figuren-dorf.md` und in `index.html` den Block `DORF_FIGUREN` samt
+> (Kapitel 3, 6, 12), `figuren-dorf.md` und in `skript/02-dorf-und-welt.js` den Block `DORF_FIGUREN` samt
 > `npcCycle()`, `npcSprechen()`, `figZusatz()`, `knAssertCaps()`, `gespraechOptionen()`
 > sowie den Szenenblock `SZENEN` mit `szeneOptionen()`, `szeneKnoten()`, `szeneFaellig()`
 > und `szeneAssert()`. Arbeite dann `superduper-figurenleben-prompt.md` ab, Lieferung F1a
@@ -996,7 +996,7 @@ Für eine frische Sitzung, wenn das lange Dokument nicht in den Kontext soll:
 > Halte dich an drei Dinge, die leicht untergehen: **der Musterbaum in Abschnitt 8** ist das
 > Maß, an das du deinen eigenen legst, samt der Eigenheit, dass `opts` nur an Knoten gilt
 > und nicht an Fragen. **Die Blockgrößen in Abschnitt 0** sind verbindlich (F1a neun
-> Figuren, F1c vier, F1d drei je Commit), in `index.html` kommt nur ein vollständiger
+> Figuren, F1c vier, F1d drei je Commit), in die `skript/`-Dateien kommt nur ein vollständiger
 > Block, und jeder Commit hinterlässt eine Reststand-Tabelle plus Statusmarker mit Zahl.
 > **Jeden neuen Guard löst du einmal absichtlich aus** und kopierst die Meldung ins
 > Phasendokument, sonst ist er nur vorhanden und nicht geprüft.

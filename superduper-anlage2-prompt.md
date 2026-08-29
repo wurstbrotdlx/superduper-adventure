@@ -27,7 +27,7 @@ Phasendokument:
 
 ## 1. Was das hier ist
 
-DAS MONSTRAL MINISTERIUM ist ein Browser-Adventure in einer einzigen Datei: `index.html`, rund 24.000 Zeilen, alle Texte als JS-Literale, kein Build-Schritt für Texte. Eine Behördenwelt, strange aber liebenswert, Humor in der Verwandtschaft von Monkey Island, Day of the Tentacle und Theme Hospital, Zielgruppe 9 bis 99 mit Betonung ab 9.
+DAS MONSTRAL MINISTERIUM ist ein Browser-Adventure in `index.html` (HTML und CSS) plus sieben Skriptdateien in `skript/01..07` (rund 25 000 Zeilen JavaScript, geladen in der Reihenfolge ihrer Tags), alle Texte als JS-Literale, kein Build-Schritt für Texte. Eine Behördenwelt, strange aber liebenswert, Humor in der Verwandtschaft von Monkey Island, Day of the Tentacle und Theme Hospital, Zielgruppe 9 bis 99 mit Betonung ab 9.
 
 Die Rangfolge der Wahrheit: `superduper-weltbibel.md` ist die Autorität über allem. Danach `weltgeschichte.md`, dann `figuren-dorf.md` und `figuren-leben.md`, dann die datierten `phase-*.md` (Protokolle, sie werden nie rückwirkend geändert), zuletzt der Code. Was du neu kanonisierst, wandert zuerst in die Weltbibel.
 
@@ -96,7 +96,7 @@ Leg dem Projektinhaber früh eine konkrete Liste vor: welche Randnotiz-Anlässe 
 
 ## 7. Die Mechanik, die du wiederverwendest
 
-Nichts davon musst du erfinden, alles liegt in `index.html`:
+Nichts davon musst du erfinden, alles liegt in den `skript/`-Dateien:
 
 * **Anlass-Kanäle.** Knöterichs `RANDNOTIZ` ist ein Pool je Auslöser; bekannte Auslöser sind `crit`, `levelup`, `ultimate`, `fluch`, `goldfund`, `kammerAbbruch`, `untaetigkeit`, dazu die Szenen-Anlässe in `ANLASS_QUELLEN` (`umlauf`, `hintermuehl`, `vorblatt`). Die `anlass`-Pools der Dorffiguren hängen an denselben Schlüsseln, und `knAssertCaps` meldet jeden Schlüssel, den es nicht kennt. Anlage 2 bekommt ihren eigenen Kanal nach diesem Muster.
 * **Zusatz-Gates.** Zeilen, die erst später dazukommen, laufen über `zusatz`-Blöcke mit `abSchicht`, `abStufe`, `abAkt`, `abRang`, `skill`, `merker`, `phase`, `lang`. So wächst Anlage 2 mit dem Spielstand.

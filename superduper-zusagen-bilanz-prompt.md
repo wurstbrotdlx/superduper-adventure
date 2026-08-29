@@ -20,7 +20,7 @@ Zur ersten Lücke, der adversarialen Gegenprobe: die ist **weitgehend abgegolten
 
 ## Kontext
 
-Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`. Ein Spielfile: `index.html`, rund 6400 Zeilen. Stand bei Abfassung: `2e066d1`.
+Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`. Der Code liegt in `index.html` (HTML und CSS) plus sieben Skriptdateien in `skript/01..07` (rund 25 000 Zeilen JavaScript, geladen in der Reihenfolge ihrer Tags). Stand bei Abfassung: `2e066d1`.
 
 **Statusmarker sind keine Quelle, `git log` ist die Quelle.** Diese Falle hat schon zugeschlagen: R6 und R7 standen monatelang als OFFEN in `superduper-reparatur-prompt.md`, obwohl beide gebaut, abgenommen und committet waren (`81ef6d9`, `f2f9928`). Wer den Stand aus den Markern liest, liest falsch. Inzwischen nachgezogen, aber die Regel bleibt.
 
@@ -111,7 +111,7 @@ Schreib die Datei `ZUSAGEN-BILANZ-<JJJJ-MM-TT>.md` ins Repo-Root. Nur diese eine
 Aufbau:
 
 1. **Ampel in drei Zeilen.** Wie viele Zusagen geprüft, wie viele weichen ab, ein Satz Gesamturteil. Kein Vorgeplänkel.
-2. **Bilanztabelle je Paket.** Spalten: Zusage, Fundort im Plan, erwarteter Wert, gefundener Wert, `index.html:Zeile`, Urteil. **Auch die Treffer stehen drin**, sonst ist es keine Bilanz. Wenn ein Paket zu lang wird, fasse ununterbrochene Trefferstrecken zu einer Zeile zusammen („Prio-Werte aller 11 Katalogeinträge: stimmen"), aber nur echte Trefferstrecken.
+2. **Bilanztabelle je Paket.** Spalten: Zusage, Fundort im Plan, erwarteter Wert, gefundener Wert, Fundort (Bezeichner plus `skript/`-Datei), Urteil. **Auch die Treffer stehen drin**, sonst ist es keine Bilanz. Wenn ein Paket zu lang wird, fasse ununterbrochene Trefferstrecken zu einer Zeile zusammen („Prio-Werte aller 11 Katalogeinträge: stimmen"), aber nur echte Trefferstrecken.
 3. **Funde**, sortiert nach Schwere, nicht nach Fundort. Je Fund: was, wo, warum es zählt, was eine Korrektur kosten würde, und ob Plan oder Code der Fehler ist. Das ist die wichtigste Unterscheidung des ganzen Auftrags: **eine Abweichung heißt nicht automatisch, dass der Code falsch liegt.** Oft ist der Plan veraltet und die Korrektur gehört in die Plandatei.
 4. **Ungeprüft**, als eigener Abschnitt, mit Grund je Zeile. Lieber ehrlich lückenhaft als gefällig vollständig.
 5. **Vorschlagsliste**, priorisiert, mit Aufwandsschätzung, getrennt nach „Code ändern" und „Plan ändern". Keine Umsetzung.
