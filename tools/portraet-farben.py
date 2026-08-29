@@ -192,16 +192,24 @@ def messen(key, pfad, xoff=0.0, xspan=1.0):
     return aus
 
 def ausIndex():
-    """haarFarbe/hemdFarbe je Figurenschluessel aus index.html.
+    """haarFarbe/hemdFarbe je Figurenschluessel aus dem Spielskript.
 
     Gelesen wird mit einem Ausdruck und nicht mit einem Parser: die Tabelle ist
-    JavaScript in einer HTML-Datei, und der einzige Teil, auf den es ankommt,
-    steht in einer Zeile. Knoeterich steht nicht in DORF_FIGUREN, sondern in
-    KN_GESTALT; beide haben dieselbe Form und werden hier gleich gelesen.
+    JavaScript, und der einzige Teil, auf den es ankommt, steht in einer Zeile.
+    Knoeterich steht nicht in DORF_FIGUREN, sondern in KN_GESTALT; beide haben
+    dieselbe Form und werden hier gleich gelesen.
+
+    Seit der Teilung liegt das Skript in skript/01..07 statt in index.html.
+    Gelesen werden alle Teile verkettet, nicht der eine, in dem die Tabelle
+    heute zufaellig steht: welcher das ist, ist eine Schnittfrage und keine
+    Zusage. Der Abbruch unten faengt es ohnehin, wenn nichts gefunden wird.
     """
-    import re
-    pfad = os.path.join(HIER, '..', 'index.html')
-    text = open(pfad, encoding='utf-8').read()
+    import re, glob
+    wurzel = os.path.join(HIER, '..')
+    teile = sorted(glob.glob(os.path.join(wurzel, 'skript', '*.js')))
+    if not teile:
+        raise SystemExit('Keine skript/*.js gefunden - steht das Werkzeug in tools/?')
+    text = '\n'.join(open(p, encoding='utf-8').read() for p in teile)
     aus = {}
     # Zwischen der Kopfzeile und gestalt darf beliebiges stehen - Kommentare, und
     # seit G10 auch Felder wie rig/rigSc. Nicht-gierig bis zum ersten gestalt,

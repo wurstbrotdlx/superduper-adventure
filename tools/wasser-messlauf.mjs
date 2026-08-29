@@ -265,7 +265,14 @@ for (const sw of STARTWERTE) {
     // Den Startwert der Welt beim Ausliefern umschreiben. Nur dieses eine
     // Literal, und der Lauf bricht ab, wenn es nicht genau einmal vorkommt —
     // eine stillschweigend wirkungslose Ersetzung waere schlimmer als keine.
-    await page.route(url, async route => {
+    //
+    // Seit der Teilung haengt das Muster an skript/01 und nicht mehr an der
+    // Seite: in index.html stand das Literal zuletzt zweimal (der Aufruf und
+    // ein Kommentar weiter unten, der ihn zitiert), und die Zaehlung haette den
+    // Lauf abgebrochen. Die Teilung trennt beide, der Aufruf liegt in 01. Beim
+    // Einzeldatei-Build (dist/index.html) stehen sie wieder zusammen — dieser
+    // Lauf gehoert deshalb auf die Quelle, nicht auf die gebackene Datei.
+    await page.route('**/skript/01-*.js', async route => {
       const antwort = await route.fetch();
       const text = await antwort.text();
       const treffer = text.split(`mulberry32(${STANDARD})`).length - 1;
