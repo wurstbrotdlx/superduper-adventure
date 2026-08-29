@@ -133,6 +133,7 @@ python3 -c "import re;h=open('dist/index.html').read();m=re.search(r'<script>(.*
 
 | Datei | Was |
 |---|---|
+| `CLAUDE.md` | Die Arbeitsanleitung für KI-Sitzungen: wo der Code liegt, warum die Reihenfolge der `skript/`-Tags Programmtext ist, wie geprüft wird, und die Hausregeln (gemessen statt geschätzt, Guards melden statt zu werfen, Fundstellen über Bezeichner statt Zeilennummern, Ton, Commit-Stil). Kurz gehalten, sie wird jede Sitzung gelesen. |
 | `superduper-weltbibel.md` | Die Autorität: Welt, Figuren, Humor, Formregeln, Bauabschnitte. Bei Konflikt zwischen Code und Weltbibel gewinnt die Weltbibel. |
 | `weltgeschichte.md` | Der Erzählstoff: die Chronik von Jahr 0 bis heute, das Reich und sein Adel, vier neue Figuren, drei Blattserien, vier Langvorgänge und neun ausgeschriebene Szenen samt Intro und Abspann. Zuwachs zur Weltbibel, nicht Ersatz: bei Konflikt gewinnt die Weltbibel. |
 | `superduper-gameplay-prompt.md` | Gameplay-Phasen 1 bis 6, Zählertabellen |

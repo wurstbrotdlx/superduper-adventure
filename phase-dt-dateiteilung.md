@@ -142,6 +142,20 @@ Drei lesen das Skript als Text und nicht über den Browser. Sie sind mitgezogen:
 Für die übrigen rund vierzig Werkzeuge ändert sich nichts: sie fahren die Seite
 über `http://127.0.0.1:8378/index.html`, und für sie ist die Teilung unsichtbar.
 
+## Kein Punkt in der Hausmitteilung, und das ist Absicht
+
+Die Regel lautet, dass jeder Bauabschnitt einen Punkt in `NEUERUNGEN` bekommt.
+Dieser hier bekommt keinen, und der Grund steht hier, damit die Auslassung
+begründet ist statt stillschweigend: DT ändert kein Wort, keine Zahl und kein
+Bild des Spiels. Wer spielt, sieht dieselbe Seite wie vorher, und ein Punkt
+namens „das Skript liegt jetzt in sieben Dateien" wäre eine Mitteilung an
+niemanden. Die Hausmitteilung gehört den Spielern, nicht der Werkbank.
+
+Das ist ausdrücklich keine Regel für Fehlerbehebungen: `KAMMERAUSGANG-2026-08-27.md`
+hat eine weggelassene Zeile am selben Tag nachgetragen, weil der Fehler sichtbar
+war und wer ihn gesehen hat lesen können soll, dass er weg ist. Sichtbar ist das
+Kriterium, nicht die Größe der Änderung.
+
 ## Was das kostet
 
 Eine neue Fehlerklasse, die es vorher nicht gab: eine falsche Ladereihenfolge.

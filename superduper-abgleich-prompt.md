@@ -10,7 +10,7 @@ Modell: `/model opus`, ausdrücklich **nicht** `opusplan`. Bei `opusplan` läuft
 
 ## Kontext
 
-Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`, GitHub Pages aus dem Root. Ein Spielfile: `index.html`. Build-Ausgabe in `dist/`, Werkzeuge in `tools/`, Bildmaterial in `assets/` und `Graphics/`.
+Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`, GitHub Pages über die Actions-Pipeline (seit F9, s. `.github/workflows/pages.yml`). Der Code liegt in `index.html` (HTML und CSS) plus sieben Skriptdateien in `skript/01..07` (rund 25 000 Zeilen JavaScript, geladen in der Reihenfolge ihrer Tags). Build-Ausgabe in `dist/`, Werkzeuge in `tools/`, Bildmaterial in `assets/` und `Graphics/`.
 
 Plandokumente, die als Soll gelten:
 
@@ -37,7 +37,7 @@ Achtung Namenskollision: **Phase 5 (Gameplay, Knöterich)** und **Phase G5 (Graf
 Für **jede** Phase aus allen drei Plandokumenten:
 
 * Ist sie im Plan als ERLEDIGT markiert?
-* Existiert der zugehörige Code wirklich in `index.html`? Beleg über Bezeichner, nicht über Zeilennummern (die verschieben sich).
+* Existiert der zugehörige Code wirklich in den `skript/`-Dateien? Beleg über Bezeichner, nicht über Zeilennummern (die verschieben sich, und seit der Teilung erst recht).
 * Stimmen Kopfzeilen-Marker und Realität überein? Sowohl „steht ERLEDIGT, ist aber nicht drin" als auch „ist längst drin, steht aber nicht dran" sind Funde.
 
 Ergebnis als Tabelle: Phase, Marker im Plan, Code vorhanden ja/nein, Commit, Urteil.
@@ -63,7 +63,7 @@ Der Block „Regressionsschutz: das hier NICHT kaputtmachen" steht in beiden gro
 * 70ms-Bremse auf Crit- und Sterbe-Sound
 * kein `ctx.filter`, Tönung ausschließlich über `tintedSheet()`
 
-Bei jedem Punkt: eingehalten, verletzt, oder aufgeweicht. Bei „verletzt" die Fundstelle als `index.html:Zeile` nennen.
+Bei jedem Punkt: eingehalten, verletzt, oder aufgeweicht. Bei „verletzt" die Fundstelle als Bezeichner plus Datei nennen (`DORF_FIGUREN` in `skript/02-dorf-und-welt.js`), nicht als Zeilennummer.
 
 ### 5. Abweichungen zwischen Plan und Umsetzung
 
@@ -108,7 +108,7 @@ Aufbau:
 
 1. **Ampel in drei Zeilen.** Ein Satz Git-Stand, ein Satz Phasenstand, ein Satz Gesamturteil. Kein Vorgeplänkel.
 2. **Phasentabelle** nach Abschnitt 2.
-3. **Funde**, sortiert nach Schwere, nicht nach Fundort. Je Fund: was, wo (`index.html:Zeile` oder Plandatei plus Abschnitt), warum es zählt, was es kosten würde. Schwere in drei Stufen: bricht etwas, weicht vom Plan ab, kosmetisch.
+3. **Funde**, sortiert nach Schwere, nicht nach Fundort. Je Fund: was, wo (Bezeichner plus `skript/`-Datei, oder Plandatei plus Abschnitt), warum es zählt, was es kosten würde. Schwere in drei Stufen: bricht etwas, weicht vom Plan ab, kosmetisch.
 4. **Ungeprüft**, ausdrücklich als eigener Abschnitt. Alles, was du nicht belegen konntest, mit Grund. Lieber ehrlich lückenhaft als gefällig vollständig.
 5. **Vorschlagsliste**, priorisiert, jeweils mit Aufwandsschätzung. Keine Umsetzung.
 

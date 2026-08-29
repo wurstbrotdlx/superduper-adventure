@@ -22,7 +22,7 @@ Wie berechtigt der Verdacht ist, hat `GEGENPROBE-2026-08-04.md` gerade gezeigt. 
 
 ## Kontext
 
-Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`. Ein Spielfile: `index.html`, rund 8500 Zeilen. Stand bei Abfassung: `a048e5b`, alles gepusht, Arbeitsbaum sauber.
+Repo: `~/vibecodingprojekt/adventure/`, `wurstbrotdlx/superduper-adventure`, Branch `main`. Der Code liegt in `index.html` (HTML und CSS) plus sieben Skriptdateien in `skript/01..07` (rund 25 000 Zeilen JavaScript, geladen in der Reihenfolge ihrer Tags). Stand bei Abfassung: `a048e5b`, alles gepusht, Arbeitsbaum sauber.
 
 **`git log` ist die Statusquelle, nicht die Statusmarker.** Diese Falle hat schon zugeschlagen (R6/R7 standen als OFFEN da, obwohl gebaut und committet).
 
@@ -35,12 +35,12 @@ Dokumente, die als Soll gelten:
 * `figuren-dorf.md`, `blaetter-serie-a-b.md`, `phase-w-blaetter-cf.md` — Inhaltslieferungen
 * `ABGLEICH-2026-07-27.md`, `ZUSAGEN-BILANZ-2026-08-04.md`, `GEGENPROBE-2026-08-04.md` — nicht Soll, aber **Vorgeschichte**. Dort steht, was schon einmal geprüft wurde und mit welchem Ergebnis. Prüfe nichts doppelt, was `GEGENPROBE-2026-08-04.md` bereits erledigt hat.
 
-Server: `preview_start {name: "adventure"}`, dann `http://localhost:8378/adventure/`. **Niemals Bash für den Server.** Niemals `dist/index.html` öffnen, die ist veraltet.
+Server: `python3 serve.py &`, dann `http://127.0.0.1:8378/index.html`. **Niemals Bash für den Server.** Niemals `dist/index.html` öffnen, die ist veraltet.
 
 Syntaxcheck (falls du ihn brauchst, du änderst aber nichts):
 
 ```bash
-python3 -c "import re;h=open('index.html').read();m=re.search(r'<script>(.*)</script>',h,re.DOTALL);open('/tmp/c.js','w').write(m.group(1))" && node --check /tmp/c.js
+for f in skript/*.js; do node --check "$f"; done
 ```
 
 ## Zwei Fallen beim Prüfen selbst
@@ -123,7 +123,7 @@ Sieben Pakete, überlappungsfrei, parallel ausführbar.
 
 Datei: `GEGENPROBE-W-<ISO-Datum>.md` im Repo-Wurzelverzeichnis.
 
-* **Kopf** mit Prüfstand (HEAD-Hash, Arbeitsbaum, Zeilenzahl `index.html`, Datum) und der Zusicherung, dass nichts geändert wurde.
+* **Kopf** mit Prüfstand (HEAD-Hash, Arbeitsbaum, Zeilensumme `skript/*.js`, Datum) und der Zusicherung, dass nichts geändert wurde.
 * **Ampel**, drei bis vier Absätze Fließtext: Gesamteindruck, wo es hält, wo nicht.
 * **Zählung** als kleine Tabelle.
 * **Ein Abschnitt je Paket** mit einer Tabelle *Zusage | Fundort im Dokument | Erwartet | Gefunden | Bezeichner im Code | Urteil*, darunter eine Zählzeile.

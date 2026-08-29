@@ -13,11 +13,11 @@ Arbeite die Phasen einzeln ab, nicht alle in einer Session. Ziel: kompletter Wec
 
 Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurstbrotdlx/superduper-adventure`, public, Branch `main`). Direkt von hier committen.
 
-* Hauptdatei: `index.html` (Canvas/JS, ein File, groß)
+* Hauptdatei: `index.html` (HTML und CSS) plus `skript/01..07` (Canvas/JS, sieben Dateien, geladen in der Reihenfolge ihrer Tags)
 * Aktuelle Grafik: `assets/` (Sunnyside World, danieldiggle), einheitliches 96x64-Frameraster, row-major, Framezahlen hart im Code hinterlegt
 * Neue Grafik-Quelle: `Graphics/` im Repo-Root (Cute Fantasy von Kenmi plus Add-ons). Das ist die **Rohbibliothek**, sie wird NIE committet (siehe Lizenz). Genutzte Dateien werden kuratiert nach `assets/cf/` kopiert — **auch die sind gitignored**, siehe Lizenz-Abschnitt.
 * Ausgeliefert wird **nicht** der Repo-Inhalt, sondern ein Build: `node tools/build-single.mjs` schreibt `dist/index.html` mit allen Grafiken als `data:`-URIs (eine Datei, ~1,1 MB, läuft auch per `file://` ohne Server). Seit G1 so, Begründung im Lizenz-Abschnitt.
-* Dev-Server: `.claude/launch.json` (eine Ebene höher, `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://localhost:8378/adventure/index.html`. Dahinter steht `serve.py` (seit R4 im Repo): ein `http.server` mit `Cache-Control: no-store`. Ein blankes `python3 -m http.server` reicht nicht, es antwortet mit 304 und prüft dann den alten Stand.
+* Dev-Server: `.claude/launch.json` (eine Ebene höher, `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://127.0.0.1:8378/index.html`. Dahinter steht `serve.py` (seit R4 im Repo): ein `http.server` mit `Cache-Control: no-store`. Ein blankes `python3 -m http.server` reicht nicht, es antwortet mit 304 und prüft dann den alten Stand.
 * Gameplay-Doku: `superduper-gameplay-prompt.md` im selben Ordner. Dort stehen die Umsetzungsnotizen der Phasen 1 bis 6 (Zutaten-Grammatik, Kammern, Flüche, Schichtmodus, Knöterich, Soundtrack). Bei Berührungspunkten dort nachlesen.
 
 ### Was in `Graphics/` liegt
@@ -45,7 +45,7 @@ Kommerzielle Nutzung ja, Modifikation ja, Weiterverteilung/Weiterverkauf nein, a
 2. Nach `assets/cf/` wandern nur Dateien, die das Spiel tatsächlich lädt — **und auch diese Ordner sind gitignored** (`assets/cf/dungeon/`, `player/`, `enemies/`, `tiles/`, `deco/`, `ui/`). Getrackt bleiben nur `README.md`, `manifest.json` und `audit-report.md`: Dateinamen und Rastermaße, keine Bilddaten.
 3. **Jede Phase, die einen neuen `assets/cf/`-Unterordner anlegt, trägt ihn in `.gitignore` ein und ergänzt die Dateiliste in `assets/cf/README.md`** — sonst kann niemand mit eigener Lizenz das Repo wieder lauffähig machen.
 4. Vor jedem Commit prüfen: `git diff --cached --name-only | grep -i '\.png$'` muss leer sein.
-5. Ausgeliefert wird `dist/index.html` aus `node tools/build-single.mjs`. Der Loader nimmt die eingebackene Tabelle über `ASSET_BLOBS` entgegen (Platzhalterzeile mit Marker `/*BUILD:ASSET_BLOBS*/` direkt unter `const ASSETS`); ist sie `null`, lädt das Spiel wie im Quellbaum aus `assets/`. **Diese Zeile nicht umformulieren**, sonst bricht der Build ab.
+5. Ausgeliefert wird `dist/index.html` aus `node tools/build-single.mjs`. Der Loader nimmt die eingebackene Tabelle über `ASSET_BLOBS` entgegen (Platzhalterzeile mit Marker `/*BUILD:ASSET_BLOBS*/` direkt unter `const ASSETS`, seit der Teilung in `skript/01-grafik-und-klang.js`); ist sie `null`, lädt das Spiel wie im Quellbaum aus `assets/`. **Diese Zeile nicht umformulieren**, sonst bricht der Build ab.
 6. `CREDITS.md` nennt seit G0 Cute Fantasy (Kenmi, itch.io). Sunnyside bleibt dort stehen, bis G5 die letzten Sunnyside-Assets entfernt.
 
 ### Gemessene Fakten (Stichproben, ersetzt kein Audit)
@@ -218,7 +218,7 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 
 **Nachtrag (Zusagen-Bilanz 2026-08-04):** die Zahl 29 in diesem Abschnitt ist veraltet. `tools/sheet-audit.overrides.json` führt heute 30 Einträge in `_castTable`, davon 10 mit `checked:false` (Slime_Big, Goblin_Spearman, Goblin_Thief, 3 der 4 Knights außer Templar, Orc_Grunt, Orc_Peon, Cowling_2, Cowling_Mage_2 — Angel_2 ist inzwischen bestätigt und zählt nicht mehr dazu). Die Confidence-Bilanz steht heute bei 442 von 886 Sheets unter 0,15 (Rest 413), nicht 447/418. Ursache in beiden Fällen: spätere Phasen (G1–G3) haben weitere Sheets geprüft und der Cast-Tabelle hinzugefügt, ohne diesen G0-Abschnitt nachzuziehen.
 
-**Verifikation:** `git diff -- index.html` leer. Spiel unter `http://localhost:8378/adventure/index.html` gestartet, Konsole ohne Fehler (siehe unten).
+**Verifikation:** `git diff -- index.html` leer. Spiel unter `http://127.0.0.1:8378/index.html` gestartet, Konsole ohne Fehler (siehe unten).
 
 ### G1 — Kammern-Interieur
 
@@ -254,7 +254,7 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 - **Kammerwächter laufen weiter auf den Sunnyside-Rigs** (Stilbruch bis G3 ausdrücklich erlaubt, Übergangsregel 13). Ebenso die Fackel-Flamme (`fire1`).
 - **Sewer-, Arch-, Door-, Stairs- und Floor_spikes-Dateien nicht kopiert** — nicht geladen, also nicht im Repo.
 
-**Verifikation (alles am laufenden Spiel unter `http://localhost:8378/adventure/index.html`):**
+**Verifikation (alles am laufenden Spiel unter `http://127.0.0.1:8378/index.html`):**
 
 | Prüfung | Ergebnis |
 |---|---|
@@ -274,7 +274,7 @@ Dorf begehbar, Amt über Gebäude erreichbar, Dorf-Musik läuft nur im Dorf. UI-
 
 **Für G2/G3 zum Mitnehmen:** Der `'grid'`-Lademodus ist der Weg für alle weiteren CF-Sheets — Framegröße und Anker gehören ins `opt`-Objekt, nicht in eine Heuristik. Und die Anker aus `manifest.json` (`anchorSuggested`) sind nur ein Startwert; bei jedem hier eingebauten Sprite musste der y-Anker von Hand nachgezogen werden, damit der Fuß auf der Kachelunterkante sitzt.
 
-**Einzeldatei-Build (in G1 nachgezogen, gilt ab jetzt):** `node tools/build-single.mjs` schreibt `dist/index.html` mit allen Grafiken als `data:`-URIs. Der Loader nimmt sie über `ASSET_BLOBS` (Platzhalterzeile mit Marker `/*BUILD:ASSET_BLOBS*/` direkt unter `const ASSETS`); ist die Tabelle `null`, lädt das Spiel wie bisher aus `assets/`. Beides läuft, Entwicklung ändert sich nicht.
+**Einzeldatei-Build (in G1 nachgezogen, gilt ab jetzt):** `node tools/build-single.mjs` schreibt `dist/index.html` mit allen Grafiken als `data:`-URIs. Der Loader nimmt sie über `ASSET_BLOBS` (Platzhalterzeile mit Marker `/*BUILD:ASSET_BLOBS*/` direkt unter `const ASSETS`, seit der Teilung in `skript/01-grafik-und-klang.js`); ist die Tabelle `null`, lädt das Spiel wie bisher aus `assets/`. Beides läuft, Entwicklung ändert sich nicht.
 
 Der Build inliniert **alles** unter `assets/`, statt die benutzte Teilmenge zu erraten — `SHEET_LIST` entsteht in Schleifen, jede statische Analyse wäre eine Fehlerquelle, und der Unterschied ist klein (341 Dateien, 615 KB roh). Ergebnis 1,1 MB, ein HTTP-Request statt 97. Fehlt der Marker, bricht der Build ab, statt still eine Datei ohne Grafik zu schreiben.
 
@@ -292,7 +292,7 @@ Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**,
    vorhanden — **Angriffs-Hieb, Zauber-Geste, Treffer-Taumel und Sterbe-Animation
    fehlen vollständig.** Das war beim G0-Audit nicht aufgefallen, weil G0 bewusst
    nur Cast-fähig/nicht-cast-fähig für die 29 Kammer-/Monster-Rigs geprüft hat, nicht
-   den Helden. Ersatzregel (siehe `CF_HERO_ANIMS`-Kommentar in `index.html`): Attacke
+   den Helden. Ersatzregel (siehe `CF_HERO_ANIMS`-Kommentar in `skript/01-grafik-und-klang.js`): Attacke
    nutzt die Seitenreihe der Rolle (einziger echter Armausschlag im ganzen Blatt),
    Zauber die kleine 5-Frame-Gestenreihe, Treffer/Tod teilen sich die einzige echte
    Stolperbewegung. Der tatsächliche Kampf-Eindruck kommt weiterhin vom Klingenbogen-
@@ -401,7 +401,7 @@ Gemessen am Build: 97/97 Sheets geladen, **null Bild-Requests im Netzwerk-Log**,
   aber nicht verdrahtet; wären reiner Mehraufwand ohne Spielwert, solange die
   Steuerung selbst nur links/rechts kennt.
 
-**Verifikation (`http://localhost:8378/adventure/index.html` und `dist/index.html`):**
+**Verifikation (`http://127.0.0.1:8378/index.html` und `dist/index.html`):**
 
 | Prüfung | Ergebnis |
 |---|---|
@@ -451,7 +451,7 @@ Daumennagel-Vorschaubild anfangs sehr ähnlich aus).
    **mittlere** Zeile die Seitenansicht. Für die 13-Zeilen-Familie also fix
    idle=1, walk=4, attack/cast=7, hurt=11, death=9 (Einzelzeile). Gilt für alle in
    G3 verwendeten Humanoiden-Rigs identisch — nur Slime, Flying_Skull und Bat
-   weichen davon ab (siehe `CF_RIGS`-Kommentare in `index.html`).
+   weichen davon ab (siehe `CF_RIGS`-Kommentare in `skript/01-grafik-und-klang.js`).
 5. **`manifest.json` taugt nicht für Anker (`ax`/`ay`) und Pixelhöhe.** Seine
    `unionBBox`/`anchorSuggested` sind über die Angriffszeile gebildet, in der
    Waffe/Zauber weit über den Körper hinausragt — bis zu 13px/88% daneben gegen
@@ -461,7 +461,7 @@ Daumennagel-Vorschaubild anfangs sehr ähnlich aus).
 **Entscheidungen:**
 
 - **Rig-Zuordnung** (19 Rigs für 21 `MONDEF`-Typen, Cast-Reserve ist null — 5
-  Magier auf 5 cast-bestätigten Rigs): siehe `CF_RIGS` in `index.html` und die
+  Magier auf 5 cast-bestätigten Rigs): siehe `CF_RIGS` in `skript/01-grafik-und-klang.js` und die
   Tabelle in `assets/cf/README.md`. Boss-Rigs nach Nutzerentscheidung:
   Schattenfürst = Knights_Templar (sicherstes Raster im Pack), Alter Schrecken =
   Knights_Archer (Fallback für das kaputte Skeleton_Swordman-Raster).
@@ -559,7 +559,7 @@ Daumennagel-Vorschaubild anfangs sehr ähnlich aus).
 - **Kein eigenes Rotations-/Ausrichtungs-System für Projektile** — `cf_bolt`
   wird ungedreht gezeichnet, wie zuvor der Kreis.
 
-**Verifikation (`http://localhost:8378/adventure/index.html`, per Browser-Konsole
+**Verifikation (`http://127.0.0.1:8378/index.html`, per Browser-Konsole
 und direkter `SHEETS`/`RIG_ANIM`-Introspektion statt nur Screenshots):**
 
 | Prüfung | Ergebnis |
@@ -670,7 +670,7 @@ man am Bild rätselt.
 
 **Umgesetzt (alles in `index.html`, sofern nicht anders vermerkt):**
 
-- Sheet-Registrierung (~Zeile 620ff): komplette Sunnyside-Welt-Sektion (`tileset`,
+- Sheet-Registrierung (die `addSheet`-Aufrufe in `skript/01-grafik-und-klang.js`): komplette Sunnyside-Welt-Sektion (`tileset`,
   `tree1/2`, `mush_blue1-3`, `mush_red`, `windmill`, `rock`, `wood`) durch CF-Sheets
   ersetzt. `glint`/`alert` bleiben bewusst Sunnyside bis G5 (kein Pack-Äquivalent).
 - `CF_TILE`, `bakeCfTile()`, `pickCfTile()` ersetzen `TILE_UV`/`TILE_TINT`/`bakeTile()`.
@@ -715,7 +715,7 @@ man am Bild rätselt.
 - **Kein `ctx.filter` an keiner Stelle** — alle neuen Tints laufen weiter über
   `source-atop` auf gebackenen Canvas-Kopien, Regressionsregel 10 unangetastet.
 
-**Verifikation (`http://localhost:8378/adventure/index.html`, Konsolen-
+**Verifikation (`http://127.0.0.1:8378/index.html`, Konsolen-
 Introspektion wie in G1–G3, da kein automatisierter Test-Runner existiert):**
 
 | Prüfung | Ergebnis |
@@ -920,7 +920,7 @@ diese Session, bevor G5 begann — keine Vermischung mit dem G5-Diff).
 - **Kein Sway/keine Animation für die Dorf-Gebäude** — reine `big:true`-Decos wie
   die Windmühle, ein Gebäude hat keinen Grund zu wackeln.
 
-**Verifikation (`http://localhost:8378/adventure/index.html`, Konsolen-
+**Verifikation (`http://127.0.0.1:8378/index.html`, Konsolen-
 Introspektion und direkte `update()`/`render()`-Aufrufe wie in G1–G4, da kein
 automatisierter Test-Runner existiert):**
 

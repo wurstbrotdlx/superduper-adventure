@@ -13,9 +13,9 @@ Arbeite die Phasen einzeln ab, nicht alle in einer Session.
 
 Du arbeitest an `~/vibecodingprojekt/adventure/`. Der Ordner ist das Repo (`wurstbrotdlx/superduper-adventure`, public, Branch `main`, GitHub Pages aus dem Root). Kein Kopierschritt, direkt von hier committen und pushen.
 
-* Hauptdatei: `index.html` (Canvas/JS, ein File, groß)
+* Hauptdatei: `index.html` (HTML und CSS) plus `skript/01..07` (Canvas/JS, sieben Dateien, geladen in der Reihenfolge ihrer Tags)
 * Grafik: `assets/`, Sunnyside World (danieldiggle), einheitliches 96x64-Frameraster, row-major
-* Dev-Server: `.claude/launch.json` (liegt eine Ebene höher, in `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://localhost:8378/adventure/index.html`. Dahinter steht `serve.py` (seit R4 im Repo): ein `http.server` mit `Cache-Control: no-store`. Ein blankes `python3 -m http.server` reicht nicht, es antwortet mit 304 und prüft dann den alten Stand.
+* Dev-Server: `.claude/launch.json` (liegt eine Ebene höher, in `~/vibecodingprojekt/.claude/`), Eintrag `adventure`, Port 8378, URL `http://127.0.0.1:8378/index.html`. Dahinter steht `serve.py` (seit R4 im Repo): ein `http.server` mit `Cache-Control: no-store`. Ein blankes `python3 -m http.server` reicht nicht, es antwortet mit 304 und prüft dann den alten Stand.
 * Sprache im Spiel: Deutsch, Untertitel „Looten, leveln und Monster wegschellen!"
 
 Bestehende Systeme, auf denen du aufbaust:
@@ -89,7 +89,7 @@ Zutaten droppen, stapeln sich im Inventar, Kessel funktioniert, Kladde füllt si
 
 ### Umsetzungsnotizen aus Phase 1 (für die Folgephasen wichtig)
 
-* Tabellen stehen in `index.html` als `ZUTAT_NOUNS` (21), `ZUTAT_ADJ` (16), `WIRKUNG` (14), `CRAFT_BASE` (4 Slots x 5 Qualitätsstufen). Sie müssen **vor** dem ersten `recalc()`-Aufruf stehen, sonst TDZ-Fehler.
+* Tabellen stehen in `skript/03-akten-und-katalog.js` als `ZUTAT_NOUNS` (21), `ZUTAT_ADJ` (16), `WIRKUNG` (14), `CRAFT_BASE` (4 Slots x 5 Qualitätsstufen). Sie müssen **vor** dem ersten `recalc()`-Aufruf stehen, sonst TDZ-Fehler.
 * Vierter Ausrüstungs-Slot `boots` (Stiefel) kam dazu, weil die Kladde-Beispiele ihn nennen. `SLOT_DE` und `SLOT_FUGE` liefern die deutschen Formen.
 * Zutaten liegen in `player.pouch` (eigener Beutel, gestapelt), nicht in den 24 Taschenplätzen. Phase 4 nimmt genau diesen Beutel für das Mitnahme-Kontingent.
 * Wirkungen werden in `recalc()` zu `FX` aggregiert (Schlüssel = `WIRKUNG[k].fx`, Wert = Summe der Stufen). Die 14 Hooks lesen nur aus `FX`. Phase 3 hängt Flüche an dieselbe Stelle.
