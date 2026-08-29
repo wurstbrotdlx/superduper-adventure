@@ -1,0 +1,107 @@
+name: Prüfung
+
+# Läuft bei jedem Push auf jeden Branch und prüft drei Dinge: Syntax, Bau und
+# einen Ladelauf im echten Browser — gegen die Quelle UND gegen die gebaute
+# dist/index.html.
+#
+# Warum ein Browser: node --check findet Syntaxfehler und sonst nichts. Der
+# häufigste echte Fehler dieses Projekts ist ein ReferenceError beim Laden, weil
+# etwas auf Skriptebene eine erst später deklarierte Konstante liest. Seit der
+# Teilung (DT1) kommt die falsche Reihenfolge der skript/-Tags als zweite
+# Fehlerklasse derselben Art dazu. Beide sieht nur ein Browser, und beide sind
+# leise: die Seite lädt, das Spiel startet nur nicht.
+#
+# Warum auch dist: der Build ist seit DT1 selbst Programmlogik (er backt die
+# sieben Dateien in der Reihenfolge der Tags wieder zu einem Block) und nimmt
+# einen anderen Ladeweg (ASSET_BLOBS als data:-URI statt HTTP). Was in der
+# Quelle läuft, muss dort nicht laufen. Der zweite Lauf kostet zwanzig Sekunden.
+#
+# Warum die Grafik nur, wenn der Schlüssel da ist: sie ist lizenziert und liegt
+# im privaten Repo (s. assets/cf/README.md). Ohne sie läuft das Spiel trotzdem
+# hoch — seit U2 fragt bakeUiSkin(), statt zuzugreifen — und der Ladelauf prüft
+# dann das Skript statt der Bilder. Das ist der größere Teil seines Werts, also
+# soll ein fehlender oder gedrehter Schlüssel den Lauf nicht rot machen, sondern
+# nur ärmer. Mit Schlüssel prüft er zusätzlich den Weg durch die echten Blätter.
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pruef-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruef:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Spiel-Repo
+        uses: actions/checkout@v4
+
+      - name: Syntaxprüfung der Skriptdateien
+        run: |
+          for f in skript/*.js; do
+            echo "  $f"
+            node --check "$f"
+          done
+
+      - name: Grafik per Deploy Key laden (wenn vorhanden)
+        id: grafik
+        env:
+          ASSETS_DEPLOY_KEY: ${{ secrets.ASSETS_DEPLOY_KEY }}
+        if: env.ASSETS_DEPLOY_KEY != ''
+        run: |
+          # Derselbe Block wie in pages.yml: Schlüssel schreiben, klonen,
+          # assets/cf ersetzen, Schlüssel wieder löschen.
+          mkdir -p ~/.ssh
+          echo "$ASSETS_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          git clone --depth 1 git@github.com:wurstbrotdlx/superduper-adventure-assets.git /tmp/cf-assets
+          rm -rf assets/cf
+          mv /tmp/cf-assets assets/cf
+          rm -rf assets/cf/.git
+          rm -f ~/.ssh/id_ed25519
+
+      - name: Bau
+        run: node tools/build-single.mjs --out dist/index.html
+
+      - name: Syntaxprüfung der gebauten Datei
+        # Die gebackene Datei hat genau einen script-Block, dafür sorgt der Bau.
+        run: |
+          python3 -c "import re;h=open('dist/index.html').read();m=re.search(r'<script>(.*)</script>',h,re.DOTALL);open('/tmp/c.js','w').write(m.group(1))"
+          node --check /tmp/c.js
+
+      - name: Playwright bereitstellen
+        # Im Repo liegt bewusst kein package.json (die Werkzeuge sind zero-dep),
+        # der Runner bekommt Playwright nur für diesen Lauf. PLAYWRIGHT_PFAD und
+        # CHROMIUM bleiben ungesetzt: dann findet das Werkzeug von selbst das
+        # node_modules daneben und Playwrights eigenen Chromium. Dieselbe Datei
+        # läuft im Cloud-Container über die beiden Variablen.
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Ladelauf gegen Quelle und gebaute Datei
+        run: |
+          python3 serve.py 8378 &
+          for i in $(seq 1 50); do
+            curl -sf http://127.0.0.1:8378/index.html > /dev/null && break
+            sleep 0.2
+          done
+          node tools/ladelauf-pruef.mjs http://127.0.0.1:8378/index.html
+          node tools/ladelauf-pruef.mjs http://127.0.0.1:8378/dist/index.html
+
+      - name: Womit geprüft wurde
+        if: always()
+        run: |
+          if [ -d assets/cf/ui ]; then
+            echo "Mit lizenzierter Grafik geprüft."
+          else
+            echo "Ohne Grafik geprüft (kein Deploy Key): Skript und Ladekette sind belegt,"
+            echo "die Blätter nicht. Sprite-Warnungen in der Konsole sind hier erwartbar."
+          fi

@@ -93,10 +93,61 @@ for (const p of files) {
   raw += buf.length;
 }
 
-const src = readFileSync(SRC, 'utf8');
+const roh = readFileSync(SRC, 'utf8');
+
+// Seit der Teilung liegt das Skript in skript/01..07, und die Auslieferung
+// braucht wieder EINEN Block: Pages bekommt nur dist/, und die Einzeldatei per
+// file:// zu oeffnen bleibt der gekaufte Anwendungsfall (s. Kopf).
+//
+// Die Reihenfolge kommt aus index.html selbst und nicht aus dem Dateisystem.
+// Das ist keine Bequemlichkeit: die sieben Dateien teilen sich eine globale
+// lexikalische Umgebung, ihre Reihenfolge ist Programmtext, und die steht in
+// den Tags. Ein sort() ueber das Verzeichnis waere eine zweite Wahrheit daneben.
+//
+// Die wiederholten 'use strict'-Zeilen bleiben stehen. Nach der ersten sind sie
+// wirkungslose String-Literale, und der Build bleibt damit eine stumpfe
+// Verkettung statt einer Umformung, die man falsch bauen kann.
+const TAG_LAUF = /(?:[ \t]*<script src="skript\/[^"]+\.js"><\/script>\r?\n)+/;
+const lauf = roh.match(TAG_LAUF);
+if (!lauf) {
+  console.error('FEHLER: keine <script src="skript/...">-Tags in index.html gefunden.');
+  console.error('Wurde die Teilung zurueckgebaut oder der Ordner umbenannt? Ohne die Tags');
+  console.error('kennt der Build die Reihenfolge der Skriptdateien nicht.');
+  process.exit(1);
+}
+const teile = [...lauf[0].matchAll(/src="([^"]+)"/g)].map(m => m[1]);
+const koerper = teile.map(p => {
+  let t;
+  try {
+    t = readFileSync(join(ROOT, p), 'utf8');
+  } catch {
+    console.error(`FEHLER: ${p} steht als Tag in index.html, liegt aber nicht im Repo.`);
+    process.exit(1);
+  }
+  // Getrennt ist die Zeichenfolge harmlos, im gemeinsamen Block beendet sie das
+  // Skript mitten im Satz — und zwar stillschweigend: die Seite laedt, der Rest
+  // des Spiels steht als Text im Dokument. Lieber hier abbrechen.
+  if (/<\/script/i.test(t)) {
+    console.error(`FEHLER: ${p} enthaelt ein schliessendes script-Tag.`);
+    console.error('Im Einzeldatei-Build wuerde das den Block vorzeitig beenden. Auch im');
+    console.error('Kommentar nicht zulaessig — bitte umformulieren.');
+    process.exit(1);
+  }
+  return t;
+}).join('');
+const src = roh.replace(TAG_LAUF, '<script>\n' + koerper + '</script>\n');
+if (src.includes('<script src="skript/')) {
+  console.error('FEHLER: skript/-Tags ausserhalb des zusammenhaengenden Blocks.');
+  console.error('Der Build kennt nur EINEN Lauf; verstreute Tags waeren stillschweigend');
+  console.error('nicht eingebacken und wuerden in dist/ ins Leere zeigen.');
+  process.exit(1);
+}
+
 if (!src.includes(MARKER)) {
-  console.error('FEHLER: Marker nicht in index.html gefunden:\n  ' + MARKER);
-  console.error('Wurde die Zeile umformuliert? Ohne sie kann der Build die Assets nicht einsetzen.');
+  console.error('FEHLER: Marker nicht im Skript gefunden:\n  ' + MARKER);
+  console.error('Er steht seit der Teilung in skript/01-grafik-und-klang.js, nicht mehr in');
+  console.error('index.html. Wurde die Zeile umformuliert? Ohne sie kann der Build die');
+  console.error('Assets nicht einsetzen.');
   process.exit(1);
 }
 

@@ -38,12 +38,19 @@ STUFEN   = (1, 2, 3)
 
 
 def familien():
-    """Die Familienschluessel aus index.html, nicht aus dem Kopf.
+    """Die Familienschluessel aus dem Spielskript, nicht aus dem Kopf.
 
     Abgeschriebene Tabellen laufen auseinander. Diese hier kann es nicht:
     sie ist dieselbe Quelle, aus der das Spiel seine Karten baut.
+
+    Seit der Teilung liegt das Skript in skript/01..07. Gelesen werden alle
+    Teile verkettet und nicht der eine, in dem ZULAGE heute steht: welcher das
+    ist, ist eine Schnittfrage und keine Zusage.
     """
-    quelle = (WURZEL / 'index.html').read_text(encoding='utf-8')
+    teile = sorted((WURZEL / 'skript').glob('*.js'))
+    if not teile:
+        raise SystemExit('Keine skript/*.js gefunden - steht das Werkzeug in tools/?')
+    quelle = '\n'.join(p.read_text(encoding='utf-8') for p in teile)
     i = quelle.index('const ZULAGE')
     j = quelle.index('\n};', i)
     return re.findall(r'^  ([a-zA-Z_]+):\s*\{', quelle[i:j], re.M)
