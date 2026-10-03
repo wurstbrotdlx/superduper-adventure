@@ -61,8 +61,13 @@ function szeneTafeln(liste, opt){
   // RL1: opt.beiBlatt(i) wird beim Aufschlagen jedes Blattes gerufen, mit dem
   // Index. Der Abspann braucht das fuer die Musik, die erst mit Bild 12 einsetzt;
   // bis dahin hatte kein Stapel eine Regie je Blatt, und das bleibt der Normalfall.
+  // RL6: opt.blattzahl {n, gesamt} ueberschreibt die Blattzahl in der Fusszeile.
+  // Die Erstbelehrung zeigt je Morgen EIN Blatt der Chronik, und ein Stapel
+  // aus einem Blatt stuende sonst als "Blatt I von I" da; es ist aber das
+  // zweite von vier, und das soll der Spieler lesen.
   szeneTafelLauf = {liste, letzterKnopf: opt.letzterKnopf, ende: opt.ende, zweiter: opt.zweiter || null,
-                    wahl: opt.wahl || null, stufe: 0, kladde: opt.kladde || null, beiBlatt: opt.beiBlatt || null};
+                    wahl: opt.wahl || null, stufe: 0, kladde: opt.kladde || null, beiBlatt: opt.beiBlatt || null,
+                    blattzahl: opt.blattzahl || null};
   szeneTafel(0);
 }
 
@@ -199,7 +204,7 @@ function szeneTafel(i){
       ${inhalt}
     </div>
     <hr class="amtRegel unten">
-    <p class="amtFuss">Blatt ${szeneBlattZahl(i+1, lauf.liste.length)} von ${szeneBlattZahl(lauf.liste.length, lauf.liste.length)}</p>
+    <p class="amtFuss">Blatt ${lauf.blattzahl ? szeneBlattZahl(lauf.blattzahl.n, lauf.blattzahl.gesamt) : szeneBlattZahl(i+1, lauf.liste.length)} von ${lauf.blattzahl ? szeneBlattZahl(lauf.blattzahl.gesamt, lauf.blattzahl.gesamt) : szeneBlattZahl(lauf.liste.length, lauf.liste.length)}</p>
     <button onclick="szeneTafel(${i+1})">${gEsc(wahl ? wahl.ja : letzte ? lauf.letzterKnopf : 'WEITER')}</button>
     ${zweiter}`;
   el('overlay').style.display = 'flex';
@@ -249,11 +254,18 @@ function requisitAnsehen(key){
 // Dass diese Umbenennung gefahrlos ist, ist der Zweck von Riegel 3: bis AN3
 // suchten empfang-pruef und menue-pruef ihren Weiterknopf am Wortlaut, und die
 // Wortliste kannte ANKLOPFEN. Sie suchen ihn jetzt am onclick.
-function empfangAnriss(){
-  szeneTafelZu();
-  szeneTafeln(INTRO_BLAETTER, {letzterKnopf:'ZUR SACHE', ende: empfangGespraech,
-                               kladde: anfangSchluessel('intro'),
-                               zweiter:{t:'ÜBERSPRINGEN', tun: () => empfangUeberspringen()}});
+// RL6: Hier stand empfangAnriss(), der die vier Chronikblaetter zwischen die
+// Vorstellung und den Gruss haengte, mit UEBERSPRINGEN auf dem ersten Blatt.
+// Die Chronik faellt seither in Raten (erstbelehrungZeigen in Datei 06), der
+// Weg am Anfang vorbei steht als zweite Zeile am ersten Knoten, und was von
+// der Funktion bleibt, ist der Uebergang: buehneAus() und der Amtsmarsch, die
+// bis hierher der Abschluss des Stapels erledigt hat. Ein Knoten, der zum
+// hub fuehrt, laeuft deshalb hier durch und nicht ueber ein blankes zu:'gruss'.
+function empfangZurSache(){
+  buehneAus();
+  szene.gefragt = new Set();
+  MUS.goto('office'); MUS.muffle(false);
+  szeneKnoten('gruss');
 }
 
 // Wer den Anfang kennt, will ihn beim zweiten Mal nicht wieder sehen. Der Weg
@@ -262,15 +274,6 @@ function empfangUeberspringen(){
   szeneTafelLauf = null;
   szeneAus();
   showDienstblatt(1, 'einstellung', 0);
-}
-
-// Der Empfang. Hier faellt die Buehne, und das Dorf steht da.
-function empfangGespraech(){
-  el('overlay').style.display = 'none';
-  buehneAus();
-  szene.knoten = 'gruss'; szene.gefragt = new Set();
-  MUS.goto('office'); MUS.muffle(false);
-  szeneOeffnen('empfang', 'gruss');
 }
 
 // Der Eingang. Ersetzt in startGame() den Sprung auf Blatt 1.
@@ -1488,7 +1491,7 @@ function showDorf(){
     <p style="font-size:calc(11px * var(--fs));color:#9a8a5f;">Nächste Hebung nach Schicht ${(rangStufe()+1)*5}: ${rangNameVon(rangStufe()+1)}</p>
     <div id="amtRoll" style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
     <p id="amtMehr" style="font-size:calc(11px * var(--fs));color:#7a6a45;margin:2px 0 0;"></p>
-    <button onclick="startShift()">NÄCHSTE SCHICHT ANTRETEN</button>
+    <button onclick="schichtAntreten()">NÄCHSTE SCHICHT ANTRETEN</button>
     <div><button onclick="showDienstblatt(2,'dorf')" style="font-size:calc(12px * var(--fs));padding:7px 16px;margin-top:10px;">Dienstanweisung</button></div>
   `;
   document.getElementById('overlay').style.display = 'flex';

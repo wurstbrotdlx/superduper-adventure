@@ -155,7 +155,9 @@ async function durchDieVorstellung(page){
     await page.waitForTimeout(120);
     await fertigGetippt(page);
     beats++;
-    if(await page.evaluate(() => el('overlay').style.display === 'flex')) break;
+    // RL6: die Vorstellung endet am hub (gruss) und nicht mehr an einer Tafel;
+    // ein weiterer Druck auf die 1 waere dort schon die erste Frage.
+    if(await page.evaluate(() => el('overlay').style.display === 'flex' || szene.knoten === 'gruss')) break;
   }
   return beats;
 }
@@ -245,18 +247,13 @@ async function durchDenStapel(page, ende){
   return tafeln;
 }
 
-// Das Intro, und danach laeuft der Gruss noch ein.
-async function durchDenAnriss(page){
-  const n = await durchDenStapel(page, 'ANKLOPFEN');
-  await fertigGetippt(page);
-  return n;
-}
-
-// Der ganze Anfang am Stueck, bis die Gespraechstafel des Empfangs steht.
+// Der ganze Anfang am Stueck, bis die Gespraechstafel des Empfangs am hub
+// steht. RL6: ohne das Intro dazwischen; durchDenAnriss() ist damit entfallen.
 async function bisZumEmpfang(page){
   await starteAnfang(page);
-  await durchDieVorstellung(page);
-  return await durchDenAnriss(page);
+  const n = await durchDieVorstellung(page);
+  await fertigGetippt(page);
+  return n;
 }
 
 // ------------------------------------------------------------- Anriss und Szene
@@ -283,33 +280,21 @@ async function bisZumEmpfang(page){
   const beats = await durchDieVorstellung(page);
   pruef('die Vorstellung hat sechs Zuege', beats, 6);
 
-  // Waehrend der Tafeln, nicht danach: mit der letzten faellt die Buehne, und
-  // eine Messung hinterher haette genau das nicht gesehen.
-  pruef('die Amtsstube traegt auch die Tafeln',
+  // RL6: Hier standen die vier Chronikblaetter, mit ihrer Blattzahl und ihrem
+  // Schlussknopf ZUR SACHE. Sie haengen nicht mehr in der Kette, sondern
+  // fallen je eines am Morgen der Schichten 2 bis 5 (eigener Abschnitt unten).
+  // Die Vorstellung endet seither am hub, und der letzte Knoten davor sagt,
+  // dass die Geschichte in Raten kommt und wo der Satz ueber der Tuer haengt.
+  pruef('die Vorstellung endet am hub', await page.evaluate(() => szene.knoten), 'gruss');
+  pruef('ohne eine Tafel dazwischen', await page.evaluate(() => el('overlay').style.display), 'none');
+  pruef('die Amtsstube traegt den ganzen Weg',
         await page.evaluate(() => (innen && innen.key) + '/' + state), 'amt/szene');
-  // SZ1: Die fuenf Anrisstafeln aus E1 sind durch die neun Introblaetter aus
-  // weltgeschichte.md ersetzt. Das sind die beiden einzigen Zusagen dieses
-  // Laufs, die sich dadurch geaendert haben, und beide beschreiben Inhalt, der
-  // absichtlich ausgetauscht wurde. Die uebrigen 57 stehen unveraendert und
-  // sind damit der Beweis, dass der Anfang den Umbau der Maschine ueberlebt hat.
-  pruef('das erste Introblatt steht', await page.evaluate(() =>
-        el('ovPanel').textContent.includes('aus dem Fluss')), true);
-
-  // AN3 (27.08.2026): vier statt sieben. T5d hatte auf sieben erhoeht, weil
-  // der Anfang seither Kapitel 0 bis 5 der Weltbibel traegt; drei dieser
-  // Blaetter beschrieben aber Gegenstaende, die es im Raum gibt -- die Karte
-  // (Kapitel 3), die Tafel ueber der Tuer (Kapitel 1) und das Formular
-  // (Kapitel 5). Solange der Anfang auf schwarzem Grund lief, MUSSTE der Text
-  // sie aussprechen; seit AN2 haengen sie da. Sie sind nicht gestrichen,
-  // sondern umgezogen, und was hier steht, ist die Chronik und nur sie.
-  const tafeln = await durchDenAnriss(page);
-  pruef('das Intro hat vier Blaetter', tafeln, 4);
-  // Riegel 3: die Aufschrift des Schlussknopfes wird geprueft und nicht mehr
-  // zum Finden benutzt. Wer sie aendert, macht ab jetzt genau DIESE Zeile rot,
-  // statt den Lauf vor seiner ersten Pruefung sterben zu lassen. AN3 ist genau
-  // dieser Fall: ANKLOPFEN hiess er, solange man vor dem Haus stand.
-  pruef('und sein Schlussknopf heisst ZUR SACHE', letzterSchluss, 'ZUR SACHE');
-  pruef('danach ist das Overlay weg', await page.evaluate(() => el('overlay').style.display), 'none');
+  pruef('kein Chronikblatt ist dabei aufgeschlagen worden',
+        await page.evaluate(() => Object.keys(kladde.anfang).filter(k => k.startsWith('intro:'))), []);
+  pruef('Knoeterich kuendigt die Raten an', await page.evaluate(() =>
+        SZENEN.empfang.knoten.vorstellung6.z2.includes('in Raten')), true);
+  pruef('und zeigt auf die Tafel ueber der Tuer', await page.evaluate(() =>
+        SZENEN.empfang.knoten.vorstellung6.z2.includes('über der Tür')), true);
   pruef('und die Buehne faellt fuer den Empfang',
         await page.evaluate(() => el('introBuehne').style.display), 'none');
   pruef('die Tafel steht', await page.evaluate(() => el('gespraech').style.display), 'block');
@@ -379,18 +364,27 @@ async function bisZumEmpfang(page){
         document.getElementById('overlay').style.display), 'none');
   pruef('der Spieler steht dabei in der Amtsstube', await page.evaluate(() => innen && innen.key), 'amt');
   pruef('Anlage 2 ist noch nicht in der Tasche', await page.evaluate(() => kn.flags.anlage2Da), false);
-  pruef('sie wartet aber an der Urkunde', await page.evaluate(() => kn.flags.anlage2Wartet), true);
+  // RL6: und sie wartet auch nicht an der Tuer. AN4 hatte sie dort angehaengt,
+  // der Masterplan wollte sie an einem Bedarf, und der Bedarf ist der erste
+  // Griff zur Tasche (T3). Der Merker bleibt als Feld bestehen und wird nicht
+  // mehr gesetzt.
+  pruef('und sie wartet nicht an der Tuer', await page.evaluate(() => kn.flags.anlage2Wartet), false);
 
-  // AN4: Der erste freie Schritt ist der Schritt hinaus (AN2), und erst
-  // dahinter meldet sich die Anlage 2. Damit stimmt ihr erster Satz wieder
-  // woertlich: "Sie stehen zum ersten Mal vor dem Haus statt darin."
+  // AN2: Der erste freie Schritt ist der Schritt hinaus.
   const schritt1 = await hinaus(page);
   pruef('der erste freie Schritt heisst "Hinausgehen"', schritt1.txt, 'Hinausgehen');
   pruef('und er ist der Weg aus dem Haus', schritt1.hausaus, true);
   pruef('danach steht der Spieler draussen', await page.evaluate(() => innen), null);
-  pruef('und dort meldet sich die Anlage 2', await page.evaluate(() =>
-        document.getElementById('overlay').style.display), 'flex');
-  pruef('der Merker ist damit verbraucht', await page.evaluate(() => kn.flags.anlage2Wartet), false);
+  pruef('und dort meldet sich niemand', await page.evaluate(() =>
+        document.getElementById('overlay').style.display), 'none');
+  pruef('der Weg ist frei', await page.evaluate(() => state), 'play');
+  // RL6: der Bedarf. Der erste Griff zur Tasche holt die Anlage 2 nach, auch
+  // auf dem Weg ueber die Ernennung; der Vordruckweg unten prueft denselben
+  // Griff ein zweites Mal, und das ist Absicht: es ist jetzt der einzige Weg.
+  await page.evaluate(() => toggleInventory());
+  await page.waitForTimeout(400);
+  pruef('der erste Griff zur Tasche bringt sie', await page.evaluate(() =>
+        document.getElementById('overlay').style.display === 'flex' && !invOpen), true);
   // T6: sechs statt fuenf, weil die Scheinwahl hinter dem Auftakt dazugekommen
   // ist. Wer hier durchlaeuft, nimmt sie beim ersten Anlauf an.
   const treffen = await durchDenStapel(page, 'EINSTECKEN');
@@ -400,6 +394,8 @@ async function bisZumEmpfang(page){
   // denen, die bis zum gesperrten Knopf abgelehnt haben.
   pruef('wer gleich liest, hoert nichts davon', await page.evaluate(() => !!kn.umschlag.zoegerlich), false);
   await page.waitForTimeout(1500);
+  pruef('danach steht der Rucksack offen', await page.evaluate(() => invOpen), true);
+  await page.evaluate(() => { if(invOpen) toggleInventory(); });
   pruef('das Spiel laeuft', await page.evaluate(() => state), 'play');
   pruef('die Einstellung ist vermerkt', await page.evaluate(() => kn.seen.einstellung), true);
   pruef('die Szene ist beendet', await page.evaluate(() => empfangAktiv || gespraechOffen), false);
@@ -616,6 +612,12 @@ async function hinaus(page){
   // Klick unten in ein leeres Panel und der ganze Lauf stirbt mit einem
   // TypeError, samt der zwanzig Pruefungen der Bloecke danach.
   pruef('auch hier fuehrt der erste freie Schritt hinaus', (await hinaus(page)).hausaus, true);
+  // RL6: und draussen meldet sich niemand; der Stapel kommt mit dem ersten
+  // Griff zur Tasche. Die Wahl darin ist dieselbe, nur der Auftakt ist der
+  // nachgeholte ("Sie sehen zum ersten Mal in die Tasche").
+  pruef('draussen steht kein Stapel', await page.evaluate(() => el('overlay').style.display), 'none');
+  await page.evaluate(() => toggleInventory());
+  await page.waitForTimeout(400);
 
   // Blatt I ist ihr Auftakt. Er hat noch keine Wahl, sondern nur WEITER.
   const auftakt = await tafel();
@@ -684,19 +686,12 @@ async function hinaus(page){
 {
   const { page, ctx } = await frisch({ viewport: { width: 1100, height: 760 } });
   await starteAnfang(page);
-  await durchDieVorstellung(page);          // E2: ÜBERSPRINGEN steht erst auf den Tafeln
-  await page.waitForTimeout(200);
-  // Riegel 3: der zweite Knopf ruft szeneTafelZweiter(). Seine Aufschrift
-  // wird gleich darunter geprueft statt zum Finden benutzt.
-  const zweiter = await page.evaluate(() => {
-    const b = [...document.querySelectorAll('#ovPanel button')]
-      .find(x => /^\s*szeneTafelZweiter\(\)\s*$/.test(x.getAttribute('onclick') || ''));
-    if(!b) return null;
-    const t = b.textContent.trim(); b.click(); return t;
-  });
-  pruef('der zweite Knopf der Anrisstafel heisst UEBERSPRINGEN', zweiter, 'ÜBERSPRINGEN');
+  // RL6: Der Weg am Anfang vorbei steht als zweite Zeile am ERSTEN Knoten,
+  // nicht mehr als UEBERSPRINGEN auf einer Tafel nach sechs Zuegen.
+  pruef('der erste Knoten bietet den Weg am Anfang vorbei', (await antworten(page)).length, 2);
+  await waehle(page, 'Ich kenne das Haus');
   await page.waitForTimeout(500);
-  pruef('ÜBERSPRINGEN fuehrt auf den Vordruck',
+  pruef('er fuehrt auf den Vordruck',
         (await page.textContent('#ovPanel')).includes('EINSTELLUNGSVERFÜGUNG'), true);
   pruef('und beendet die Szene', await page.evaluate(() => empfangAktiv), false);
   // E2: Hier ist der Empfang noch nicht gelaufen, der Vordruck gehoert also
@@ -709,12 +704,13 @@ async function hinaus(page){
         await page.evaluate(() => getComputedStyle(el('hud')).display), 'none');
 
   // AN5: DAS AUFFANGBECKEN. Genau dieser Weg ist der Grund, aus dem es gebaut
-  // wurde: wer hier UEBERSPRINGEN drueckt, hat neun von zehn Blaettern des
-  // Anfangs nie gesehen. Vor AN5 waren sie damit weg.
+  // wurde: wer hier am Anfang vorbeigeht, hat kein Blatt des Anfangs gesehen
+  // (RL6: zehn von zehn, vorher neun von zehn, weil UEBERSPRINGEN auf dem
+  // ersten Chronikblatt stand und das damit aufgeschlagen war).
   pruef('vor dem Dienst steht der Bestand nicht in der Kladde',
         await page.evaluate(() => anfangBestandBlock()), '');
-  pruef('genau das erste Introblatt ist aufgeschlagen worden',
-        await page.evaluate(() => Object.keys(kladde.anfang)), ['intro:0']);
+  pruef('kein Blatt des Anfangs ist aufgeschlagen worden',
+        await page.evaluate(() => Object.keys(kladde.anfang)), []);
 
   await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); showStartScreen(); });
   await page.waitForTimeout(300);
@@ -724,19 +720,19 @@ async function hinaus(page){
         await page.evaluate(() => state === 'play' && !empfangAktiv), true);
 
   // AN5: und jetzt liegt es in der Kladde, im Akten-Reiter, mit Zaehler.
-  pruef('der Anfang steht mit neun Ungelesenen in der Kladde',
+  pruef('der Anfang steht mit zehn Ungelesenen in der Kladde',
         await page.evaluate(() => ({ gelesen: anfangGelesenZahl(), ungelesen: anfangUngelesen() })),
-        { gelesen: 1, ungelesen: 9 });
+        { gelesen: 0, ungelesen: 10 });
   await page.evaluate(() => { if(!kesselOpen) toggleKessel(); switchKesselTab('blaetter'); });
   await page.waitForTimeout(250);
   pruef('der Akten-Reiter fuehrt DER ANFANG',
         await page.evaluate(() => el('blaetterBox').textContent.includes('DER ANFANG')), true);
   pruef('und zaehlt die gelesenen Blaetter',
         await page.evaluate(() => (el('blaetterBox').textContent.match(/\d+ von \d+ Blättern gelesen/) || [''])[0]),
-        '1 von 10 Blättern gelesen');
+        '0 von 10 Blättern gelesen');
   // Der Zaehler steht AM REITER, damit man ihn sieht, ohne dort zu sein.
   pruef('der Ungelesen-Zaehler steht am Reiter',
-        await page.evaluate(() => el('aktenUngelesen').textContent.trim()), '9');
+        await page.evaluate(() => el('aktenUngelesen').textContent.trim()), '10');
   pruef('jedes Blatt des Anfangs ist von hier aus aufschlagbar',
         await page.evaluate(() => document.querySelectorAll('#blaetterBox [onclick^="anfangAufschlagen"]').length), 10);
   pruef('die Dienstanweisung bekommt einen Verweis statt eines Lesers',
@@ -753,7 +749,7 @@ async function hinaus(page){
         await page.evaluate(() => (document.querySelector('#ovPanel .amtFuss') || {}).textContent), 'Blatt I von I');
   pruef('der Knopf fuehrt zurueck', await page.evaluate(() =>
         [...document.querySelectorAll('#ovPanel button')].map(b => b.textContent.trim())), ['ZURÜCK']);
-  pruef('aufgeschlagen heisst gelesen', await page.evaluate(() => anfangGelesenZahl()), 2);
+  pruef('aufgeschlagen heisst gelesen', await page.evaluate(() => anfangGelesenZahl()), 1);
   await page.evaluate(() => [...document.querySelectorAll('#ovPanel button')]
     .find(x => /^\s*szeneTafel\(\d+\)\s*$/.test(x.getAttribute('onclick') || '')).click());
   await page.waitForTimeout(350);
@@ -762,7 +758,7 @@ async function hinaus(page){
                                      overlay: el('overlay').style.display })),
         { kessel: true, tab: 'blaetter', state: 'play', overlay: 'none' });
   pruef('und der Zaehler steht eins tiefer',
-        await page.evaluate(() => el('aktenUngelesen').textContent.trim()), '8');
+        await page.evaluate(() => el('aktenUngelesen').textContent.trim()), '9');
 
   // Alles gelesen heisst kein Zaehler. Ein Zaehler, der auf null stehen bleibt,
   // ist eine Mahnung ohne Anlass.
@@ -776,6 +772,68 @@ async function hinaus(page){
   pruef('und die Zaehlzeile ist voll',
         await page.evaluate(() => (el('blaetterBox').textContent.match(/\d+ von \d+ Blättern gelesen/) || [''])[0]),
         '10 von 10 Blättern gelesen');
+  await ctx.close();
+}
+
+// ------------------------------------------------- RL6: die Erstbelehrung
+//
+// Die Chronik faellt in Raten: am Morgen der Schichten 2 bis 5 je ein Blatt,
+// in der Reihenfolge der Chronik, am Knopf im Amt und nicht an startShift().
+// Geprueft wird der Knopf (schichtAntreten), die Blattzahl der Fusszeile, das
+// Abhaken in der Kladde, dass ein gelesenes Blatt nicht wiederkommt, dass die
+// sechste Schicht nichts mehr bringt, dass ein eingeloester Spielstand kein
+// Morgenblatt bekommt, und dass das freie Spiel keins kennt.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde(); });
+  const morgen = async (schichten) => {
+    await page.evaluate(s => { amt.schichten = s; CONFIG.schichtModus = true; el('overlay').style.display = 'none'; schichtAntreten(); }, schichten);
+    await page.waitForTimeout(300);
+    return await page.evaluate(() => ({
+      auf: el('overlay').style.display === 'flex', state,
+      fuss: (document.querySelector('#ovPanel .amtFuss') || {}).textContent || null,
+      text: el('ovPanel').textContent || '',
+      knoepfe: [...document.querySelectorAll('#ovPanel button')].map(b => b.textContent.trim()),
+    }));
+  };
+  const erste = await morgen(0);
+  pruef('die erste Schicht bekommt kein Morgenblatt', erste.auf, false);
+  const zweite = await morgen(1);
+  pruef('die zweite Schicht bekommt das erste Blatt der Chronik', zweite.auf && zweite.text.includes('aus dem Fluss'), true);
+  pruef('es zaehlt als Blatt I von IV', zweite.fuss, 'Blatt I von IV');
+  pruef('mit genau einem Knopf, der zu den Akten fuehrt', zweite.knoepfe, ['ZU DEN AKTEN']);
+  pruef('und die Welt steht derweil', zweite.state, 'szene');
+  const n = await durchDenStapel(page, 'ZU DEN AKTEN');
+  pruef('es ist ein einzelnes Blatt', n, 1);
+  await page.waitForTimeout(300);
+  pruef('danach laeuft der Dienst', await page.evaluate(() => ({ state, overlay: el('overlay').style.display })),
+        { state: 'play', overlay: 'none' });
+  pruef('und die Kladde hat es abgehakt', await page.evaluate(() => Object.keys(kladde.anfang)), ['intro:0']);
+  const nochmal = await morgen(1);
+  pruef('derselbe Morgen ein zweites Mal bringt nichts', nochmal.auf, false);
+  const dritte = await morgen(2);
+  pruef('die dritte Schicht bringt Blatt II', dritte.auf && dritte.fuss === 'Blatt II von IV', true);
+  await durchDenStapel(page, 'ZU DEN AKTEN');
+  const fuenfte = await morgen(4);
+  pruef('die fuenfte Schicht bringt Blatt IV, auch wenn III ungelesen blieb',
+        fuenfte.auf && fuenfte.fuss === 'Blatt IV von IV', true);
+  pruef('und das vierte Blatt zeigt auf die Tafel, ohne "hinausgehen" zu sagen',
+        fuenfte.text.includes('über der Tür') && !fuenfte.text.includes('bevor Sie hinausgehen'), true);
+  await durchDenStapel(page, 'ZU DEN AKTEN');
+  const sechste = await morgen(5);
+  pruef('die sechste Schicht bringt nichts mehr', sechste.auf, false);
+  pruef('ein eingeloester Spielstand bekommt kein Morgenblatt', await page.evaluate(() => {
+    amt.schichten = 2; el('overlay').style.display = 'none';
+    startShift();   // der Weg des Spielstands, ohne den Knopf
+    return el('overlay').style.display === 'flex';
+  }), false);
+  pruef('das freie Spiel kennt keine Erstbelehrung', await page.evaluate(() => {
+    CONFIG.schichtModus = false; amt.schichten = 2;
+    const f = erstbelehrungFaellig();
+    CONFIG.schichtModus = true;
+    return f;
+  }), -1);
+  pruef('Konsole still (Erstbelehrung)', laut, []);
   await ctx.close();
 }
 
@@ -793,14 +851,9 @@ async function hinaus(page){
     return t.left >= -1 && t.right <= innerWidth + 1 && t.bottom <= innerHeight + 1;
   }), true);
   await durchDieVorstellung(page);
-  await page.waitForTimeout(200);
-  pruef('die Anrisstafel passt ins Bild', await page.evaluate(() => {
-    const b = [...document.querySelectorAll('#ovPanel button')]
-      .find(x => /^\s*szeneTafel\(\d+\)\s*$/.test(x.getAttribute('onclick') || ''));
-    const r = b.getBoundingClientRect();
-    return r.top >= 0 && r.bottom <= innerHeight;
-  }), true);
-  await durchDenAnriss(page);
+  await fertigGetippt(page);
+  // RL6: die Chronikblaetter stehen nicht mehr hier; dass sie auf dem Telefon
+  // ins Bild passen, prueft szene-pruef.mjs weiter an der Tabelle.
   const lage = await page.evaluate(() => {
     const t = el('gespraech').getBoundingClientRect();
     const zeilen = [...document.querySelectorAll('.gwOpt')].map(n => n.getBoundingClientRect());

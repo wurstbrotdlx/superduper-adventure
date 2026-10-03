@@ -3541,9 +3541,15 @@ const NEUERUNGEN = {
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
-  stand: '2026-10-03-rl4',
+  stand: '2026-10-03-rl6',
   datum: '3. Oktober',
   punkte: [
+    // --- RL6, 03.10.2026 ----------------------------------------------------
+    {
+      titel: 'Der Anfang kommt in Raten',
+      was: 'Knöterich erzählt die Geschichte des Hauses nicht mehr am Stück, bevor Sie den ersten Schritt tun dürfen. Die vier Blätter der Chronik liegen jetzt an vier Morgen bereit, von der zweiten bis zur fünften Schicht, je eines. Anlage 2 meldet sich beim ersten Griff in die Tasche statt vor der Tür. Und wer das Haus schon kennt, sagt es Knöterich im ersten Satz und bekommt gleich den Vordruck.',
+      wo: 'Beim Dienstantritt der nächsten vier Schichten, und in der Kladde unter Akten, wo die Chronik wie bisher liegt.',
+    },
     // --- RL4, 03.10.2026 ----------------------------------------------------
     {
       titel: 'Die Karte passt aufs Telefon',
@@ -8560,6 +8566,52 @@ const anfangSchluessel = key => {
 };
 const anfangIstGelesen = sk => !!kladde.anfang[sk];
 
+// ===========================================================================
+//  RL6: DIE ERSTBELEHRUNG -- die Chronik in Raten (AN6 des Masterplans)
+//
+//  Bis RL6 hing die Chronik, vier Blaetter und 386 Woerter, mitten in der
+//  Vorstellung des Empfangs, und der Pflichtweg bis zum ersten freien Schritt
+//  mass 1174 Woerter (intro-pruef, 03.10.2026). Der Masterplan sieht fuer sie
+//  "Erstbelehrung, je ein Blatt in Akt I mit Absender" vor: kein Regelwerk,
+//  jeden Morgen ein Blatt. Genau das ist das hier. Am Morgen der Schichten 2
+//  bis 5 steht EIN Blatt der Chronik, in der Reihenfolge der Chronik, und die
+//  Kladde hakt es ab wie jedes gelesene Blatt des Anfangs (AN5). Wer die
+//  Chronik aus einem aelteren Stand schon gelesen hat, bekommt nichts, denn
+//  der Merker ist derselbe.
+//
+//  Es erfindet keinen Text. Gezeigt wird dieselbe Tabelle (INTRO_BLAETTER)
+//  mit demselben Apparat (szeneTafeln), nur eins je Morgen statt vier am
+//  Stueck; die Fusszeile zaehlt "Blatt II von IV", weil es das zweite von
+//  vier ist und kein Requisit.
+//
+//  Gehaengt an schichtAntreten(), also an den Knopf im Amt und nicht an
+//  startShift(): startShift() laeuft auch beim Einloesen eines Spielstands
+//  (spielstandEinloesen), und wer mittags weiterspielt, bekommt kein
+//  Morgenblatt. Die erste Schicht (amt.schichten 0) bekommt keins, ihr Morgen
+//  ist der Empfang.
+// ===========================================================================
+function erstbelehrungFaellig(){
+  if(!CONFIG.schichtModus) return -1;
+  const idx = amt.schichten - 1;   // Schicht 2 (ein abgeschlossener Dienst) -> Blatt 0
+  if(idx < 0 || idx >= INTRO_BLAETTER.length) return -1;
+  return anfangIstGelesen('intro:' + idx) ? -1 : idx;
+}
+function erstbelehrungZeigen(){
+  const idx = erstbelehrungFaellig();
+  if(idx < 0 || szeneTafelLauf) return false;
+  // Dieselbe Bauform wie requisitAnsehen(): die Welt haelt an, solange das
+  // Blatt steht, und szeneAus() laesst sie mit aktSperre wieder an.
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  szeneTafeln([INTRO_BLAETTER[idx]], {letzterKnopf:'ZU DEN AKTEN', kladde:['intro:' + idx],
+              blattzahl:{n: idx + 1, gesamt: INTRO_BLAETTER.length},
+              ende: () => { el('overlay').style.display = 'none'; szeneAus(); }});
+  return true;
+}
+function schichtAntreten(){
+  startShift();
+  erstbelehrungZeigen();
+}
+
 // Abhaken. Kein CFX.schweigen-Guard, aus demselben Grund wie bei findeBlatt():
 // gelesen wird am Blatt und nicht am Kessel beobachtet. Und kein saveKladde()
 // je Blatt, sondern nur wenn sich wirklich etwas geaendert hat -- der Anfang
@@ -8957,7 +9009,11 @@ const INTRO_BLAETTER = [
            // herumprobiert. Er sagt, WO der Satz steht, und nicht, WIE er
            // lautet -- genau das ist die Regel des Masterplans, und deshalb
            // meldet der Messlauf fuer den Pflichtweg weiterhin null Stellen.
-           {wer:'Knöterich', z:'Der Satz, auf dem das alles steht, hängt über der Tür. Sehen Sie ihn sich an, bevor Sie hinausgehen.'}],
+           // RL6: Das Blatt faellt seit RL6 am Morgen der fuenften Schicht, und
+           // der Spieler steht dabei draussen. "bevor Sie hinausgehen" war
+           // seither falsch; der Zeiger auf die Tafel ist geblieben, nur die
+           // Richtung stimmt wieder. In Schicht 1 traegt ihn vorstellung6.
+           {wer:'Knöterich', z:'Der Satz, auf dem das alles steht, hängt über der Tür des Amtes. Sehen Sie ihn sich an, wenn Sie das nächste Mal hineingehen.'}],
    regie:'Jemand hat das Wort einmal nachgezogen, weil die Tinte verblasste. Sonst hat sich daran nichts geändert.'},
 
   // AN3, 27.08.2026: Hier standen die drei Blaetter, die Gegenstaende
@@ -9128,7 +9184,13 @@ const EMPFANG_KNOTEN = {
   vorstellung1: {
     z1:'Einen Moment. Ich habe hier etwas, das nicht liegen bleiben will.',
     z2:'Knöterich, Amtsrat. Sie sind zu früh, das ist selten und wird vermerkt.',
-    opts: () => [{t:'Was haben Sie da?', zu:'vorstellung2'}],
+    // RL6: Der Weg am Anfang vorbei stand bis hierher als ÜBERSPRINGEN auf dem
+    // ersten Chronikblatt, also erst nach sechs Zuegen. Seit die Chronik nicht
+    // mehr in der Kette haengt, steht er hier, als zweite Zeile am ersten
+    // Knoten: wer das Haus kennt, sagt es und bekommt den Vordruck. Fuer den
+    // Messlauf ist das die erste echte Wahl des Spiels, und zwar auf Stufe 1.
+    opts: () => [{t:'Was haben Sie da?', zu:'vorstellung2'},
+                 {t:'Kenne ich. Den Vordruck.', tun:() => empfangUeberspringen()}],
   },
   vorstellung2: {
     z1:'Eine Anfrage zur Reinigung einer Brücke. Gestellt vor sechs Jahren.',
@@ -9152,10 +9214,18 @@ const EMPFANG_KNOTEN = {
     z2:'Und ich. Amtsrat außer Dienst. Und im Dienst. Das ist kein Widerspruch, das ist Verwaltung.',
     opts: () => [{t:'Beides gleichzeitig?', zu:'vorstellung6'}],
   },
+  // RL6: Hier hing die Chronik, vier Blaetter und 386 Woerter, mitten in der
+  // Vorstellung. Sie ist nicht gestrichen, sondern in Raten gegangen: ein
+  // Blatt je Morgen, Schicht 2 bis 5 (erstbelehrungZeigen, der AN6 des
+  // Masterplans). Knoeterich sagt das selbst, und er sagt, wo der Satz haengt,
+  // auf dem alles steht; den Zeiger auf die Tafel trug bis hierher das vierte
+  // Chronikblatt, und ohne ihn faende das Weltgesetz nur, wer im Raum
+  // herumprobiert (AN3). Er nennt weiter das WO und nicht das WIE, der
+  // Messlauf zaehlt fuer den Pflichtweg also weiterhin null Stellen.
   vorstellung6: {
     z1:'Meine Entpflichtung wurde nie bearbeitet. Sie liegt in demselben Fach wie alles andere hier.',
-    z2:'Setzen Sie sich nicht hin. Bevor Sie hinausgehen, müssen Sie wissen, warum es dieses Haus überhaupt gibt.',
-    opts: () => [{t:'Dann erzählen Sie.', tun:() => empfangAnriss()}],
+    z2:'Warum es dieses Haus gibt, bekommen Sie in Raten, ein Blatt je Morgen. Heute nur eins: der Satz über der Tür. Sehen Sie ihn sich an, bevor Sie hinausgehen.',
+    opts: () => [{t:'Dann zur Sache.', tun:() => empfangZurSache()}],
   },
 
   gruss: {
@@ -10564,8 +10634,17 @@ function empfangErnennung(){
 // Jetzt endet die Ernennung dort, wo der Rechtsakt endet, und der Dienst
 // beginnt sofort danach. Der Merker traegt die Anlage 2 ueber die Luecke bis
 // zum ersten Hinausgehen; gesetzt wird er hier und an keiner zweiten Stelle.
+// RL6: Der Merker wird hier nicht mehr gesetzt. AN4 hatte den Erstkontakt an
+// den Schritt vor die Tuer gehaengt (Entscheidung des Projektinhabers), der
+// Masterplan wollte ihn "fruehestens Schicht 2, an Bedarf gehaengt", und AN4
+// hat die Abweichung samt der einen Zeile notiert, an der sie haengt. Das ist
+// diese Zeile. Gemessen: hinter dem ersten freien Schritt lagen 787 Woerter
+// auf sechs Lesestufen, und das war nach dem Umbau des Anfangs der groesste
+// Block, der einem neuen Spieler noch vor dem Spielen stand. Der Bedarf ist
+// der erste Blick in die Tasche (anlage2Nachholen, seit T3), in jeder Schicht.
+// anlage2VorDemHaus() bleibt stehen und ist ohne Merker ein Leerlauf; wer
+// die AN4-Fassung zurueckwill, setzt den Merker hier wieder.
 function ernennungEnde(){
-  if(!kn.flags.anlage2Wartet){ kn.flags.anlage2Wartet = true; saveKn(); }
   empfangEnde();
 }
 

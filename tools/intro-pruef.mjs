@@ -220,7 +220,8 @@ const fertigGetippt = page => page.waitForFunction(
 //   vordruck   derselbe Weg, aber ueber "Erst den Vordruck" — die
 //              Dienstanweisung ist auf dem direkten Weg naemlich OPTIONAL
 //   vielleser  alles mitnehmen, was angeboten wird — die Obergrenze
-//   springer   UEBERSPRINGEN auf Intro-Blatt 1, fuer die Verlustrechnung
+//   springer   am ersten Knoten vorbei an allem (RL6; vorher UEBERSPRINGEN auf
+//              Intro-Blatt 1), fuer die Verlustrechnung
 const ROUTEN = ['pflicht', 'vordruck', 'vielleser', 'springer'];
 
 // AN4: Die Ernte steht als eigene Funktion da, weil sie seit AN4 ZWEIMAL
@@ -371,6 +372,10 @@ async function vor(page, L, route, schritt, gesehen){
     } else if(L.istHub){
       // Der kuerzeste Weg nimmt am hub den Ausgang. Er steht immer zuletzt,
       // szeneOptionen() haengt ihn hinten an.
+      i = opts.length - 1;
+    } else if(route === 'springer' && L.knoten === 'vorstellung1'){
+      // RL6: Der Weg am Anfang vorbei steht als zweite Zeile am ersten
+      // Knoten. Bis RL6 war es UEBERSPRINGEN auf dem ersten Chronikblatt.
       i = opts.length - 1;
     } else if(route === 'vordruck' && L.knoten === 'schluss'){
       // Die eine Abzweigung, die diese Route ausmacht: "Erst den Vordruck".

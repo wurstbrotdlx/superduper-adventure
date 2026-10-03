@@ -1397,6 +1397,14 @@ bekommt hier ihre Berichtigung statt einer Umschreibung.)*
 * **Von den dreizehn Langvorgängen sind acht gebaut.** Der Rest ist offen, die Aussage
   stimmt also sinngemäß weiter, nur nicht mit den Nummern.
 
+*(Nachtrag RL6, 03.10.2026, siehe `phase-rl6-anfang-in-raten.md`.)* **Der Anfang kommt in
+Raten.** Die vier Chronikblätter fallen je eines am Morgen der Schichten 2 bis 5 statt am
+Stück vor dem ersten Schritt (AN6 des Masterplans); Anlage 2 meldet sich beim ersten Griff
+in die Tasche statt vor der Tür (die Abweichung aus AN4 ist damit aufgehoben); wer das Haus
+kennt, sagt es Knöterich im ersten Zug und bekommt den Vordruck. Der Pflichtweg bis zum
+ersten freien Schritt misst seither 806 Wörter statt 1174, und was davon bleibt, ist die
+Ernennung (18.12).
+
 Unverändert offen: die Blattserien G und H, die übrigen Langvorgänge, Konrad zu Händen
 Aufschub und alles, was Hochablage zeigt. Und Knöterichs Zuwachs, jetzt mit einem Grund
 mehr: seit T3 hat er überhaupt keinen Weltkommentar mehr, den spricht Anlage 2. Er erklärt
