@@ -446,7 +446,13 @@
 
   /* --- Vollbildkarte (L) — W-Groß: Ausgleich für das Minimap-Fenster, das bei
      großer Karte nur noch einen Ausschnitt zeigt statt der ganzen Welt. --- */
-  #fullmap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px));z-index:21;display:none;
+  /* RL4: box-sizing, weil die Breite aus 100vw gerechnet wird und Rand plus
+     Innenabstand (34px) sonst obendrauf kommen: auf 390 Pixeln stand die
+     Karte bis Pixel 391 und ihr rechter Rand war weg. Die dritte Groesse im
+     min() ist das liegende Telefon: dort war das Blatt quadratisch 564 hoch in
+     einem Fenster von 390 (gemessen, oben -138). Die Karte ist ein Quadrat,
+     also deckelt die Hoehe die Breite. */
+  #fullmap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px),calc(100vh - 150px));box-sizing:border-box;z-index:21;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
   #fullmap h2{margin:0 0 8px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #fullmapCanvas{display:block;width:100%;height:auto;aspect-ratio:1/1;border:2px solid #4c4030;border-radius:6px;background:#0a0810;image-rendering:pixelated;}
@@ -2040,7 +2046,7 @@
   body.touch #fullmap, body.touch #schloss,
   body.touch #ausweis, body.touch #amtFenster{
     left:calc(50% + var(--railW) / 2);}
-  body.touch #fullmap{width:min(560px, calc(100vw - 32px - var(--railW)));}
+  body.touch #fullmap{width:min(560px, calc(100vw - 32px - var(--railW)), calc(100vh - 150px));}
   body.touch #schloss{width:min(320px, calc(100vw - 32px - var(--railW)));}
   body.touch #ausweis{width:min(340px, calc(100vw - 32px - var(--railW)));}
   body.touch #amtFenster{width:min(320px, calc(100vw - 32px - var(--railW)));}

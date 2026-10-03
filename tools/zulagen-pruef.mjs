@@ -253,6 +253,10 @@ await frisch();
     recalc(); updateHUD();
   });
   const zu = () => page.evaluate(() => zulagenOffen());
+  // RL2: Solange das #overlay steht (hier: das Startbild, der Lauf startet
+  // keine Schicht), bleiben die Fenster zu. Vorher ging die Mappe darunter
+  // auf, und das hat der Lauf fuer "offen" gezaehlt.
+  await page.evaluate(() => { document.getElementById('overlay').style.display = 'none'; });
   await page.keyboard.press('z');
   pruef('Taste Z oeffnet die Kartenmappe', await zu(), true);
   pruef('und zwar im Charakterfenster', await page.evaluate(() =>

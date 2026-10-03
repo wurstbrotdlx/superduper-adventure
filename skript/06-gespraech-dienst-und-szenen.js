@@ -1191,7 +1191,11 @@ const GROSSFENSTER = [
 // Oeffnen; ein Fenster, das vor der Szene schon offen stand, geht weiter zu.
 // Ein gewoehnliches Gespraech im Dorf haelt die Welt nicht und sperrt nichts:
 // wer Zwirn zuhoert, darf nebenbei in den Rucksack sehen.
-const fensterGesperrt = () => state === 'szene';
+// Dazu das #overlay: ein Tafelstapel oder ein Panel darauf (Anlage 2 beim
+// ersten Blick in die Tasche, der Dienstbericht, das Amt) deckt den ganzen
+// Schirm, die Taste C oeffnete das Fenster trotzdem darunter, und nach dem
+// Weiterklicken stand es unvermittelt da. Gesehen beim Abzug der Fenster.
+const fensterGesperrt = () => state === 'szene' || el('overlay').style.display === 'flex';
 function grossfensterRaeumen(ausser){
   for(const f of GROSSFENSTER) if(f.id !== ausser && f.offen()) f.auf();
 }
@@ -3537,9 +3541,15 @@ const NEUERUNGEN = {
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
-  stand: '2026-10-03-rl2',
+  stand: '2026-10-03-rl4',
   datum: '3. Oktober',
   punkte: [
+    // --- RL4, 03.10.2026 ----------------------------------------------------
+    {
+      titel: 'Die Karte passt aufs Telefon',
+      was: 'Die Kartenmappe lief am Telefon rechts aus dem Bild und auf dem liegenden Telefon oben und unten hinaus. Jetzt bleibt sie im Fenster. Im Amt sagt außerdem eine Zeile unter dem Kasten, dass ganz unten das Schwarze Brett hängt; am Telefon war davon nichts zu sehen.',
+      wo: 'Taste L oder der Kartenknopf, und zwischen zwei Schichten im Amt unter den Ausbauten.',
+    },
     // --- RL2, 03.10.2026 ----------------------------------------------------
     {
       titel: 'Die Gesprächstafel schneidet keinen Titel mehr ab',
