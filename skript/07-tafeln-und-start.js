@@ -58,8 +58,11 @@ let szeneTafelLauf = null;
 // ende. Stapel ohne die Reihe (Requisiten, Anlage 2, Abspann,
 // Zwischenbescheide) tragen nichts ein, und das ist der Normalfall.
 function szeneTafeln(liste, opt){
+  // RL1: opt.beiBlatt(i) wird beim Aufschlagen jedes Blattes gerufen, mit dem
+  // Index. Der Abspann braucht das fuer die Musik, die erst mit Bild 12 einsetzt;
+  // bis dahin hatte kein Stapel eine Regie je Blatt, und das bleibt der Normalfall.
   szeneTafelLauf = {liste, letzterKnopf: opt.letzterKnopf, ende: opt.ende, zweiter: opt.zweiter || null,
-                    wahl: opt.wahl || null, stufe: 0, kladde: opt.kladde || null};
+                    wahl: opt.wahl || null, stufe: 0, kladde: opt.kladde || null, beiBlatt: opt.beiBlatt || null};
   szeneTafel(0);
 }
 
@@ -201,6 +204,10 @@ function szeneTafel(i){
     ${zweiter}`;
   el('overlay').style.display = 'flex';
   MUS.muffle(true);
+  // RL1: nach der Daempfung, nicht davor. Die Regie des Abspanns hebt sie fuer
+  // die Hymne wieder auf, und davor stuende ihr Aufruf unter dem muffle(true)
+  // dieser Zeile.
+  if(lauf.beiBlatt) lauf.beiBlatt(i);
 }
 
 // AN3: Ein Wandstueck ansehen.
@@ -1479,12 +1486,22 @@ function showDorf(){
     <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">Schicht ${amt.schichten} abgeschlossen · Bankguthaben: <i class="ico ico-gold">💰</i> ${amt.bankGold}${amt.auftrag ? ' · Aushang angenommen' : ''}</p>
     <p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${rangGruppeName()} · ${rangVerhaeltnis()}</p>
     <p style="font-size:calc(11px * var(--fs));color:#9a8a5f;">Nächste Hebung nach Schicht ${(rangStufe()+1)*5}: ${rangNameVon(rangStufe()+1)}</p>
-    <div style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
+    <div id="amtRoll" style="max-height:44vh;overflow-y:auto;text-align:left;">${rows}${vermRow}${fluchRow}${brettRow}</div>
+    <p id="amtMehr" style="font-size:calc(11px * var(--fs));color:#7a6a45;margin:2px 0 0;"></p>
     <button onclick="startShift()">NÄCHSTE SCHICHT ANTRETEN</button>
     <div><button onclick="showDienstblatt(2,'dorf')" style="font-size:calc(12px * var(--fs));padding:7px 16px;margin-top:10px;">Dienstanweisung</button></div>
   `;
   document.getElementById('overlay').style.display = 'flex';
   state = 'feierabend';
+  // RL4: Der Kasten rollt, und das Schwarze Brett haengt ganz unten darin. Auf
+  // dem Telefon endet der Kasten sauber hinter dem fuenften Ausbau (gemessen:
+  // 371 von 730 Pixeln sichtbar), und nichts sagt, dass darunter die Aushaenge
+  // haengen; auf dem Schirm war wenigstens die angeschnittene Zeile ein
+  // Hinweis. Dieselbe Bauform wie "Der Bericht geht im Kasten weiter" in
+  // showDienstbericht(): einmal nach dem Rendern gemessen, kein Timer.
+  const roll = document.getElementById('amtRoll'), mehr = document.getElementById('amtMehr');
+  if(roll && mehr && roll.scrollHeight > roll.clientHeight + 2)
+    mehr.textContent = CONFIG.schichtModus ? 'Der Kasten geht weiter. Ganz unten hängt das Schwarze Brett.' : 'Der Kasten geht weiter.';
 }
 
 // ===========================================================================

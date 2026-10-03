@@ -102,6 +102,7 @@ function selectSpell(id){
 function castActiveSpell(){ const sp = SPELLS.find(s=>s.id===activeSpellId); if(sp) castSpell(sp); }
 
 function toggleSpellTree(){
+  if(!spellTreeOpen && fensterGesperrt()) return;   // RL2, Sperre steht in Datei 06, gelesen erst zur Laufzeit
   spellTreeOpen = !spellTreeOpen;
   document.getElementById('spellTree').style.display = spellTreeOpen ? 'flex' : 'none';   // U8: .grossFenster ist eine Spalte
   if(spellTreeOpen){ grossfensterRaeumen('spellTree'); gfBandZeichnen(); renderSpellTree(); knIdleT = 0; }
@@ -900,6 +901,8 @@ const AMT_KEY = 'sda_amt_v1';
     // Gemessen und nachgestellt in SPEICHERFRAGE-2026-08-24.md.
     if(typeof o.stopfenSchicht === 'number') amt.stopfenSchicht = stempelGeklemmt(o.stopfenSchicht);
     if(typeof o.adressSchicht === 'number') amt.adressSchicht = stempelGeklemmt(o.adressSchicht);
+    // RL1: derselbe Stempeltyp, dieselbe Klemme.
+    if(typeof o.vorgangGeschlossen === 'number') amt.vorgangGeschlossen = stempelGeklemmt(o.vorgangGeschlossen);
     // SP2: der Übertrag. Strukturell geprüft und beidseitig geklemmt wie der
     // Antrag darüber; die Zutatenliste wird Stück für Stück gefiltert, weil ein
     // einzelner kaputter Eintrag sonst den ganzen Übertrag mitnähme.

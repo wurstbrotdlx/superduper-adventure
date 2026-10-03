@@ -446,7 +446,13 @@
 
   /* --- Vollbildkarte (L) — W-Groß: Ausgleich für das Minimap-Fenster, das bei
      großer Karte nur noch einen Ausschnitt zeigt statt der ganzen Welt. --- */
-  #fullmap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px));z-index:21;display:none;
+  /* RL4: box-sizing, weil die Breite aus 100vw gerechnet wird und Rand plus
+     Innenabstand (34px) sonst obendrauf kommen: auf 390 Pixeln stand die
+     Karte bis Pixel 391 und ihr rechter Rand war weg. Die dritte Groesse im
+     min() ist das liegende Telefon: dort war das Blatt quadratisch 564 hoch in
+     einem Fenster von 390 (gemessen, oben -138). Die Karte ist ein Quadrat,
+     also deckelt die Hoehe die Breite. */
+  #fullmap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 32px),calc(100vh - 150px));box-sizing:border-box;z-index:21;display:none;
        background:rgba(20,14,24,.96);border:3px solid #8a6d3b;border-radius:10px;color:#e8d9a8;padding:14px;box-shadow:0 8px 40px rgba(0,0,0,.9);}
   #fullmap h2{margin:0 0 8px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #fullmapCanvas{display:block;width:100%;height:auto;aspect-ratio:1/1;border:2px solid #4c4030;border-radius:6px;background:#0a0810;image-rendering:pixelated;}
@@ -1617,6 +1623,16 @@
     font-size:calc(15px * var(--fs));font-weight:bold;color:#f4d97a;letter-spacing:1px;
     padding:0 0 6px;margin-bottom:8px;border-bottom:2px solid #7a5a10;
     text-shadow:0 2px 0 #241a09;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  /* RL2: Der Name ist ein Flex-Kind, und ein Flex-Kind schrumpft nicht unter
+     seine min-content-Breite, solange min-width auf auto steht. Das
+     overflow-wrap am Elternteil darueber hat deshalb nie gegriffen: auf 390
+     Pixeln bei groesster Schrift lief "Reichsministerialdirektor zu Haenden
+     Vorblatt" ueber den Rand und schob das Schliesskreuz mit hinaus (gemessen:
+     357 Pixel Text in 250 Pixeln Kopf). Der Nebenbefund aus SZ4, der dort als
+     "UI-Runde" liegenblieb. anywhere statt break-word, weil das laengste Wort
+     des Hauses allein breiter ist als die halbe Tafel. */
+  #gespraechNameTxt{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;}
+  #gespraechZu{flex:0 0 auto;}
   /* min-height haelt zwei Zeilen frei, damit die Antwortliste nicht springt,
      wenn ein Satz einzeilig ist und der naechste zweizeilig. */
   /* U6: das rollende Feld. flex:1 1 auto plus min-height:0 laesst es kleiner
@@ -2030,7 +2046,7 @@
   body.touch #fullmap, body.touch #schloss,
   body.touch #ausweis, body.touch #amtFenster{
     left:calc(50% + var(--railW) / 2);}
-  body.touch #fullmap{width:min(560px, calc(100vw - 32px - var(--railW)));}
+  body.touch #fullmap{width:min(560px, calc(100vw - 32px - var(--railW)), calc(100vh - 150px));}
   body.touch #schloss{width:min(320px, calc(100vw - 32px - var(--railW)));}
   body.touch #ausweis{width:min(340px, calc(100vw - 32px - var(--railW)));}
   body.touch #amtFenster{width:min(320px, calc(100vw - 32px - var(--railW)));}
@@ -2196,6 +2212,11 @@
        Name ging ueber drei Zeilen, die Antworten ueber zwei. Die Grundzahlen
        geben hier zwei Stufen ab, der Regler wirkt weiter darauf. */
     #gespraechName{font-size:calc(13px * var(--fs));letter-spacing:0;}
+    /* RL2: Das Schild unter dem Satz. Dreissig gesperrte Grossbuchstaben bei
+       groesster Schrift sind breiter als die Tafel, und der Umbruch stellte den
+       letzten Buchstaben allein in eine zweite Zeile ("...ANWAERTE / R").
+       Weniger Sperrung statt weniger Schrift: ein Schild bleibt ein Schild. */
+    #gespraechIchName{letter-spacing:.1em;}
     #gespraechText{font-size:calc(14px * var(--fs));min-height:calc(14px * var(--fs) * 2.9);}
     .gwOpt{padding:9px 8px;font-size:calc(13px * var(--fs));}
 
@@ -2271,6 +2292,12 @@
      Fuenftel des Bildes fuer den Zustand draufgeht — und die Knopfspalte
      bricht in mehrere kurze Spalten um (s. max-height an #beltRow). */
   @media (max-height: 460px){
+    /* RL2: Das liegende Telefon. #gespraechInnen hat dort 250 Pixel, die obere
+       Haelfte schrumpft (flex 1 1 auto, min-height 0), das Bildfeld mit seinen
+       festen 128 Pixeln nicht: es ragte 60 Pixel durch die Trennlinie in die
+       Antworten hinein (gemessen auf 844x390). Dasselbe Mass wie auf 480
+       Pixeln Breite, aus demselben Grund. */
+    #gespraechBild{width:72px;height:72px;}
     :root, body.touch{--rand:8px; --karteY:8px; --karteH:62px; --mapY:8px; --mapH:96px; --reiheH:36px;}
     #statusKarte, body.touch #statusKarte{padding:4px 10px 4px 4px;gap:7px;}
     #portraitRing, body.touch #portraitRing{width:46px;height:46px;border-width:2px;}

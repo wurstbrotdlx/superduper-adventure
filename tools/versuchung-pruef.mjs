@@ -95,6 +95,7 @@ const zuruecksetzen = () => page.evaluate(() => {
   kladde.lang = {}; kladde.vorgang = {}; kladde.crafts = 0;
   kn.flags.szeneVorblatt = false; kn.flags.szeneVersuchung = false;
   amt.stopfenSchicht = 0; amt.adressSchicht = 0; amt.bonusNachwachsen = 0;
+  amt.vorgangGeschlossen = 0;   // RL1: der Abspann setzt ihn, dieser Lauf prueft die Zeit davor
   amt.schichten = 35; CONFIG.schichtModus = true;
   szeneAus();
 });
@@ -347,6 +348,10 @@ await page.setViewportSize({width: 1280, height: 800});
 // unveraendert, und der Abspann ist derselbe.
 const zwang = await page.evaluate(() => {
   kn.flags.szeneVersuchung = false;
+  // RL1: die Abspannlaeufe oben haben den Vorgang geschlossen, und ein
+  // geschlossener stellt nicht noch einmal zu. Geprueft wird hier der Zwang
+  // der Versuchung, nicht der Schluss; den prueft schluss-pruef.mjs.
+  amt.vorgangGeschlossen = 0;
   return {zustellbar: vorgangZustellbar(), bilder: abspannBlaetter().length,
           vertagt: vorgangVertagt()};
 });

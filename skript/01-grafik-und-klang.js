@@ -1634,6 +1634,11 @@ let toFx=null, lowpass=null, dry=null, reverbSend=null, convolver=null, reverbWe
 let delayNode=null, delayFeedback=null, delaySend=null, delayWet=null;
 let musicBus=null, sfxBus=null, kampfGain=null, gefahrGain=null, zoneDroneGain=null, swellGain=null;
 let musicMuted=false, musicVolTarget=0.45, muffled=false;
+// RL1: Stille als Regieanweisung, getrennt vom Musikknopf des Spielers. Der
+// Abspann laeuft nach weltgeschichte.md (Szene 9) "ohne Musik bis zum
+// vorletzten Bild"; musicMuted gehoert dem Spieler und darf dafuer nicht
+// umgebogen werden, sonst stuende sein Knopf nach dem Abspann falsch herum.
+let musicStill=false;
 let ovMuffle=false;   // Dämpfungswunsch der #overlay-Screens; die offenen Panels kommen in MUS.muffle() dazu
 
 function makeImpulse(duration, decay){
@@ -1699,7 +1704,7 @@ function initAudio(){
 
 function applyMusicGain(){
   if(!AC) return;
-  const base = musicMuted ? 0 : musicVolTarget;
+  const base = (musicMuted || musicStill) ? 0 : musicVolTarget;
   musicBus.gain.setTargetAtTime(muffled ? base*0.6 : base, AC.currentTime, 0.1);
 }
 function toggleMusic(){
@@ -2117,6 +2122,13 @@ const MUS = {
     const ch = {root:z.tonic, oct:4, q:''};
     choir(now, chordToneFreq(ch,0,-1), 3.6, swellGain, 0.5);
     choir(now, chordToneFreq(ch,2,-1), 3.6, swellGain, 0.4);
+  },
+  // RL1: Regie-Stille, siehe musicStill. Idempotent wie goto(): nur bei
+  // Zustandswechsel wird ein Audioparameter geschrieben.
+  still(on){
+    if(musicStill === !!on) return;
+    musicStill = !!on;
+    applyMusicGain();
   },
   sting(name){
     if(!AC || muffled) return;   // Knöterich bleibt stumm, während ein Panel offen ist

@@ -1038,6 +1038,7 @@ function toggleInventory(){
     anlage2Nachholen();
     return;
   }
+  if(!invOpen && fensterGesperrt()) return;   // RL2
   invOpen = !invOpen;
   document.getElementById('inv').style.display = invOpen ? 'flex' : 'none';
   if(invOpen){ grossfensterRaeumen('inv'); renderInventory(); knIdleT = 0; }
@@ -1183,6 +1184,18 @@ const GROSSFENSTER = [
 // Schliesst jedes Grossfenster ausser dem genannten. Zwei von ihnen stehen an
 // derselben Stelle im Bild; uebereinander waeren sie kein Stapel, sondern ein
 // Fenster, das aussieht wie ein anderes.
+// RL2: Solange eine Szene die Welt haelt (state 'szene', s. szeneOeffnen),
+// gehoert ihr der Schirm. Bis hierher liess sich mitten im Empfang das
+// Charakterfenster oeffnen, und die Gespraechstafel lag dann quer ueber dem
+// Fenster (gesehen auf dem Bildschirmabzug, 390x844). Gesperrt wird nur das
+// Oeffnen; ein Fenster, das vor der Szene schon offen stand, geht weiter zu.
+// Ein gewoehnliches Gespraech im Dorf haelt die Welt nicht und sperrt nichts:
+// wer Zwirn zuhoert, darf nebenbei in den Rucksack sehen.
+// Dazu das #overlay: ein Tafelstapel oder ein Panel darauf (Anlage 2 beim
+// ersten Blick in die Tasche, der Dienstbericht, das Amt) deckt den ganzen
+// Schirm, die Taste C oeffnete das Fenster trotzdem darunter, und nach dem
+// Weiterklicken stand es unvermittelt da. Gesehen beim Abzug der Fenster.
+const fensterGesperrt = () => state === 'szene' || el('overlay').style.display === 'flex';
 function grossfensterRaeumen(ausser){
   for(const f of GROSSFENSTER) if(f.id !== ausser && f.offen()) f.auf();
 }
@@ -1242,6 +1255,7 @@ function charBlattWaehlen(b){
 function toggleCharakter(blatt){
   const wechsel = charakterOpen && blatt && blatt !== charBlatt;
   if(wechsel){ charBlattWaehlen(blatt); return; }
+  if(!charakterOpen && fensterGesperrt()) return;   // RL2
   charakterOpen = !charakterOpen;
   el('charakter').style.display = charakterOpen ? 'flex' : 'none';
   if(charakterOpen){
@@ -1265,6 +1279,7 @@ function zulagenOffen(){ return charakterOpen && charBlatt === 'mappe'; }
 // Spielstand-Knoepfe beim Umschalten).
 let optionenOpen = false;
 function toggleOptionen(){
+  if(!optionenOpen && fensterGesperrt()) return;   // RL2
   optionenOpen = !optionenOpen;
   el('optionen').style.display = optionenOpen ? 'flex' : 'none';
   if(optionenOpen){ grossfensterRaeumen('optionen'); gfBandZeichnen(); knIdleT = 0; }
@@ -1673,6 +1688,7 @@ function switchKesselTab(t){
 }
 
 function toggleKessel(){
+  if(!kesselOpen && fensterGesperrt()) return;   // RL2
   kesselOpen = !kesselOpen;
   el('kessel').style.display = kesselOpen ? 'flex' : 'none';   // U8: .grossFenster ist eine Spalte
   if(kesselOpen){
@@ -1689,6 +1705,7 @@ function toggleKessel(){
 
 // W6: Dienstausweis, wortgleiche Form wie toggleKessel() oben.
 function toggleAusweis(){
+  if(!ausweisOpen && fensterGesperrt()) return;   // RL2
   ausweisOpen = !ausweisOpen;
   el('ausweis').style.display = ausweisOpen ? 'block' : 'none';
   if(ausweisOpen){
@@ -1729,6 +1746,7 @@ function renderFullmap(){
   mark(player.x, player.y, 6, '#5c86ff');
 }
 function toggleFullmap(){
+  if(!fullmapOpen && fensterGesperrt()) return;   // RL2
   fullmapOpen = !fullmapOpen;
   el('fullmap').style.display = fullmapOpen ? 'block' : 'none';
   if(fullmapOpen){
@@ -3522,9 +3540,30 @@ const NEUERUNGEN = {
   // Kammerausgang: neuer Tag, also reicht das Datum als Stempel. Der Zusatz
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
-  stand: '2026-08-27-kam',
-  datum: '27. August',
+  // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
+  stand: '2026-10-03-rl4',
+  datum: '3. Oktober',
   punkte: [
+    // --- RL4, 03.10.2026 ----------------------------------------------------
+    {
+      titel: 'Die Karte passt aufs Telefon',
+      was: 'Die Kartenmappe lief am Telefon rechts aus dem Bild und auf dem liegenden Telefon oben und unten hinaus. Jetzt bleibt sie im Fenster. Im Amt sagt außerdem eine Zeile unter dem Kasten, dass ganz unten das Schwarze Brett hängt; am Telefon war davon nichts zu sehen.',
+      wo: 'Taste L oder der Kartenknopf, und zwischen zwei Schichten im Amt unter den Ausbauten.',
+    },
+    // --- RL2, 03.10.2026 ----------------------------------------------------
+    {
+      titel: 'Die Gesprächstafel schneidet keinen Titel mehr ab',
+      was: 'Lange Amtsbezeichnungen in der Kopfzeile des Gesprächs liefen am Telefon über den Rand und nahmen das Schließkreuz mit. Jetzt brechen sie um. Am liegenden Telefon ragt das Bild nicht mehr in die Antworten, und solange eine Szene läuft, bleiben Rucksack, Charakter und die übrigen Fenster zu.',
+      wo: 'Im Gespräch mit Reichsministerialdirektor zu Händen Vorblatt, am Telefon, bei großer Schrift.',
+    },
+    // --- RL1, 03.10.2026 ----------------------------------------------------
+    // Der Punkt steht vorn, weil er der juengste ist und die Mitteilung von
+    // oben gelesen wird. Er sagt, was man sieht, nicht welches Feld fehlte.
+    {
+      titel: 'Ein geschlossener Vorgang bleibt geschlossen',
+      was: 'Wer Vorgang 1 zugestellt hat, findet ihn beim nächsten Dienstantritt nicht wieder offen vor. Startbild, Bestand und Jahresgespräch sagen seither, dass er geschlossen ist, und der Fürst bekommt keinen zweiten Umschlag. Der Abspann läuft außerdem ohne Musik, bis die Hymne an der Reihe ist.',
+      wo: 'Nach dem Abspann: im Startbild unter Ihrem Rang, im Rucksack beim Bestand der Anschrift und im Jahresgespräch bei Zwirn.',
+    },
     {
       titel: 'Anlage 2 ist Ihnen beigefügt worden',
       was: 'An Ihrer Ernennungsurkunde hängt ein Blatt, das seit Jahrzehnten jedem wichtigen Vorgang dieses Hauses beigefügt wird und das noch nie jemand gelesen hat. Es kennt das Haus, es kennt die Leute, es hat zu allem eine Auskunft, und es bleibt bei Ihnen. Ausheften lässt es sich nicht. Versuchen Sie es ruhig, es antwortet jedes Mal anders.',
@@ -3677,7 +3716,7 @@ function showStartScreen(){
   // erste Knopf und nicht ein Untermenü. Wer sie nicht will, drückt daneben.
   const sp = spielstandLesen();
   const stand = (CONFIG.schichtModus && amt.schichten > 0)
-    ? `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse <i class="ico ico-gold">💰</i> ${amt.bankGold}</p>` : '';
+    ? `<p style="font-size:calc(12px * var(--fs));color:#c9b98a;">${rangName()} · ${amt.schichten} Schichten im Dienst · Amtskasse <i class="ico ico-gold">💰</i> ${amt.bankGold}${vorgangGeschlossen() ? ' · Vorgang 1 geschlossen' : ''}</p>` : '';
   document.getElementById('ovPanel').innerHTML = `
     <h1>DAS MONSTRAL MINISTERIUM</h1>
     <h3>Erledigen. Beglaubigen. Feierabend.</h3>
@@ -3743,13 +3782,29 @@ function respawnPlayer(){
 // hat einen Sachverhalt ohne Aktenzeichen, und das Haus weiß nichts damit
 // anzufangen. Kein Sperrvermerk in Reichweite, kein Hinweis auf die Zustellung
 // als bessere Variante — das wäre ein Questmarker.
+// RL1: die drei Absaetze des Kampf-Tod-Endes, je Zustand des Vorgangs. Die
+// offene Fassung ist Wort fuer Wort die von F27; die geschlossene ist neu und
+// sagt, was das Haus mit einem erledigten Sachverhalt ohne offenen Vorgang tut.
+const WIN_ZEILEN = {
+  offen: ['Fürst Nachtrag ist zu den Akten genommen. Die Akten liegen noch dort, wo er stand.',
+          'Ein Aktenzeichen wird nicht vergeben. Es fehlt die Anschrift, an die man die Erledigung hätte richten können. Das Haus vermerkt: Vorgang 1 bleibt offen, der Anlass ist entfallen.',
+          'Trepp trägt den Brief zurück in den Sack. Er sagt nichts.'],
+  geschlossen: ['Fürst Nachtrag ist zu den Akten genommen. Die Akten lagen schon dort.',
+          'Vorgang 1 ist geschlossen, seit der Zustellung. Was heute in Ablage V stand, war ein Nachtrag zum Nachtrag. Das Haus heftet ihn ab. Ein Aktenzeichen bekommt er nicht.',
+          'Trepp sieht in den Sack. Er ist leer. Er sagt nichts.'],
+};
 function winGame(){
   state = 'win';
+  // RL1: nach dem Schluss sagt der Bildschirm nicht mehr "Vorgang 1 bleibt
+  // offen". Wer den Fuersten nach dem Abspann erschlaegt, hat einen Nachtrag
+  // zum Nachtrag, und das Haus heftet ihn ab. Beide Fassungen stehen als
+  // Tabelle in WIN_ZEILEN, damit vorgangAssert() sie wie jeden Text prueft.
+  const w = vorgangGeschlossen() ? WIN_ZEILEN.geschlossen : WIN_ZEILEN.offen;
   document.getElementById('ovPanel').innerHTML = `
     <h1 style="color:#a855f7">SACHVERHALT ERLEDIGT</h1>
-    <p>Fürst Nachtrag ist zu den Akten genommen. Die Akten liegen noch dort, wo er stand.</p>
-    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">Ein Aktenzeichen wird nicht vergeben. Es fehlt die Anschrift, an die man die Erledigung hätte richten können. Das Haus vermerkt: Vorgang 1 bleibt offen, der Anlass ist entfallen.</p>
-    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">Trepp trägt den Brief zurück in den Sack. Er sagt nichts.</p>
+    <p>${w[0]}</p>
+    <p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${w[1]}</p>
+    <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">${w[2]}</p>
     <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -5180,10 +5235,16 @@ const VORGANG_JAHRES = [
   {zwirn:'Ablage V. Die Zustellung. Mehr sage ich dazu nicht.'},
 ];
 const VORGANG_JAHRES_WEITER = 'Der Vorgang läuft weiter. Vermerkt, wie immer.';
+// RL1: nach dem Schluss. Zwirn hat in Schicht 20 gesagt, er koenne das Dorffest
+// nicht genehmigen, zustaendig waere die Amtsleitung; derselbe Satz, derselbe
+// Mann, ein anderer Umschlag. Das Spiel endet nach dem Finale nicht (Weltbibel
+// 18.4), und der Umschlag mit Vorgang 2 liegt seit dem letzten Bild des
+// Abspanns auf dem Tresen.
+const VORGANG_JAHRES_GESCHLOSSEN = 'Vorgang 1 ist geschlossen. Auf dem Tresen liegt ein Umschlag mit der Aufschrift Vorgang 2. Ich habe ihn nicht aufgemacht. Zuständig wäre die Amtsleitung.';
 function vorgangJahresBlock(){
   const idx = Math.floor(amt.schichten/10) - 1;   // gleiche Rechnung wie JAHRES_BONI/rangZeremonieBlock
   const e = idx >= 0 && idx < VORGANG_JAHRES.length ? VORGANG_JAHRES[idx] : null;
-  const zwirn = e ? e.zwirn : VORGANG_JAHRES_WEITER;
+  const zwirn = vorgangGeschlossen() ? VORGANG_JAHRES_GESCHLOSSEN : e ? e.zwirn : VORGANG_JAHRES_WEITER;
   const hinweis = e && e.hinweis ? `<p style="font-size:calc(12px * var(--fs));color:#9a8a5f;">${e.hinweis}</p>` : '';
   return `
     <div style="border-top:1px solid #5a4a2d;margin-top:12px;padding-top:10px;">
@@ -5206,7 +5267,11 @@ function vorgangBestandBlock(){
   // Ein halber Satz statt eines Erklärsystems: er nennt den Akt, nicht die
   // Bedingung, und liest vorgangZustellbar() statt ein zweites Prädikat
   // aufzumachen (die F1-Falle aus 18.7).
+  // RL1: zugestellt heisst zugestellt. Die Zeile sagte nach dem Abspann weiter
+  // "Die Ausfertigung ist vollständig", als laege der Umschlag noch im Beutel.
   const voll = !vorgangAusfertigung() ? ''
+    : vorgangGeschlossen()
+    ? `<div class="kl" style="color:#f4d97a;">Zugestellt in Schicht ${amt.vorgangGeschlossen}. Vorgang 1 ist geschlossen. Kein Widerspruch eingelegt.</div>`
     : `<div class="kl" style="color:#f4d97a;">Die Ausfertigung ist vollständig. ${VORGANG_ANSCHRIFT}`
       + `${vorgangZustellbar() ? '' : ' Zugestellt wird im fünften Akt.'}</div>`;
   // SZ4: der Zwischenbescheid. Dieselbe Bauform wie der halbe Satz darüber, aus
@@ -5214,7 +5279,7 @@ function vorgangBestandBlock(){
   // etwas klebt, das die Zustellung aufhält. Er nennt den Zustand und nicht die
   // Bedingung, und er ist keine Warnung: aufgehalten wird nichts, die drei
   // Schritte in Ablage V lösen ihn auf.
-  const anhaengig = vorgangAusfertigung() && vorgangAnhaengig()
+  const anhaengig = vorgangAusfertigung() && vorgangAnhaengig() && !vorgangGeschlossen()
     ? '<div class="kl" style="color:#c77dff;">Oben rechts klebt ein Zwischenbescheid. Ihr Anliegen wird bearbeitet.</div>' : '';
   return `<div class="klHead">DIE ANSCHRIFT</div>${zeilen}${voll}${anhaengig}`;
 }
@@ -5264,7 +5329,15 @@ const VORGANG_PUZZLE = [
 // Falsch war sie nur für einen aus dem Schichtmodus mitgebrachten Stand, wo
 // kladde.vorgang und amt.schichten persistiert danebenliegen. Dieselbe Klasse
 // hat GW5 für W4 und GW6 für W7 geschlossen; das hier war der letzte Rest.
-const vorgangZustellbar = () => CONFIG.schichtModus && vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5;
+// RL1: Ein geschlossener Vorgang. Dasselbe Modus-Gate wie die beiden darunter,
+// aus demselben Grund: im Nicht-Schichtmodus laeuft der Vorgang nicht, also
+// wird dort auch nichts geschlossen. Gesetzt wird der Stempel genau einmal, in
+// abspannStarten(), und nie wieder genullt.
+const vorgangGeschlossen = () => CONFIG.schichtModus && !!amt.vorgangGeschlossen;
+// RL1: der vierte Term. Was zugestellt ist, wird nicht noch einmal zugestellt;
+// bis hierher stand der Fuerst nach dem Abspann wieder in Ablage V und nahm den
+// Umschlag ein zweites Mal an.
+const vorgangZustellbar = () => CONFIG.schichtModus && vorgangAusfertigung() && rangZeichnungsbefugt() && aktStand() >= 5 && !vorgangGeschlossen();
 
 // Die Vertagung. Wer die Ausfertigung im Bestand hat, aber noch nicht zustellen
 // darf, kann den Fürsten nicht mehr über killMon() zum Spielende bringen: ein
@@ -5282,7 +5355,10 @@ const vorgangZustellbar = () => CONFIG.schichtModus && vorgangAusfertigung() && 
 // (vorgangZustellbar() ist dort jetzt immer falsch). Ein solcher Stand hätte
 // dann gar kein Ende mehr, weder Zustellung noch Kampf-Tod. Im Nicht-
 // Schichtmodus läuft der Vorgang nicht, also wird dort auch nichts vertagt.
-const vorgangVertagt = () => CONFIG.schichtModus && vorgangAusfertigung() && !vorgangZustellbar();
+// RL1: und nach dem Schluss wird nichts mehr vertagt. Ohne diesen Term waere
+// der Fuerst nach dem Abspann unsterblich: nicht mehr zustellbar, also vertagt,
+// also kein Ende mehr, weder Zustellung noch Kampf-Tod.
+const vorgangVertagt = () => CONFIG.schichtModus && vorgangAusfertigung() && !vorgangZustellbar() && !vorgangGeschlossen();
 
 // Die drei Zeilen der Vertagung als Tabelle, nicht als Literale in killMon():
 // so laufen sie durch die Formregeln in vorgangAssert() Block 9 wie jeder andere
@@ -5391,12 +5467,29 @@ function abspannBlaetter(){
 // dazwischen etwas am Strangstand haengt. Dieselbe Vorsicht wie in
 // schubladeOeffnen(), aus demselben Grund.
 function abspannStarten(){
-  MUS.goto('office'); MUS.muffle(false);
+  // RL1: Hier wird geschlossen und nicht erst am Schlusspanel. "Der Vorgang 1
+  // wird geschlossen" steht auf Schritt 5, und wer den Abspann beim ersten Bild
+  // mit einem Neuladen verlaesst, hat ihn trotzdem zugestellt. Sofort
+  // gespeichert, weil der pagehide-Weg in diesem Zustand nicht speichert
+  // (spielstandErlaubt verlangt state 'play'). Der Stempel ist 1-basiert wie
+  // amt.stopfenSchicht und wird nie wieder genullt.
+  if(!amt.vorgangGeschlossen){ amt.vorgangGeschlossen = amt.schichten + 1; saveAmt(); }
+  // RL1: "ohne Musik bis zum vorletzten Bild" (weltgeschichte.md, Szene 9). Bis
+  // hierher lief der Amtsmarsch vom ersten Bild an, gedaempft, und die Hymne
+  // war nur ein Satz auf Bild 12. Jetzt ist der Stapel still, und mit Bild 12
+  // setzt der Marsch ungedaempft ein; der Sprung ueber ZUM LETZTEN BILD landet
+  // auf 13 und liegt damit ebenfalls hinter der Schwelle.
+  MUS.still(true);
   const liste = abspannBlaetter();
   szeneTafelLauf = null;
   szeneTafeln(liste, {letzterKnopf:'ZUM SCHLUSS', ende: () => vorgangPanel(6),
+                      beiBlatt: i => { if(i >= ABSPANN_HYMNE_BLATT){ MUS.still(false); MUS.goto('office'); MUS.muffle(false); } },
                       zweiter:{t:'ZUM LETZTEN BILD', tun: () => szeneTafel(liste.length - 1)}});
 }
+// RL1: Index (0-basiert) des Hymnenblatts im Abspann. Als Zahl ausgeschrieben
+// und im Guard gegen den Wortlaut des Blattes geprueft, damit ein eingeschobenes
+// Bild die Musik nicht stumm auf dem falschen Blatt einsetzen laesst.
+const ABSPANN_HYMNE_BLATT = 11;
 
 // Eine Schreibstelle, sechs Schritte. Drei davon sind mit SZ4 dazugekommen und
 // laufen nur, wenn der Zwischenbescheid klebt: der Gruss des Fuersten, die
@@ -5464,7 +5557,7 @@ function vorgangPanelHtml(schritt){
     <button onclick="location.reload()">NEUEN VORGANG ANLEGEN</button>`;
 }
 function vorgangPanel(schritt){
-  if(schritt === 6){ MUS.goto('office'); MUS.muffle(false); }
+  if(schritt === 6){ MUS.still(false); MUS.goto('office'); MUS.muffle(false); }
   document.getElementById('ovPanel').innerHTML = vorgangPanelHtml(schritt);
   document.getElementById('overlay').style.display = 'flex';
   if(schritt !== 6) MUS.muffle(true);
@@ -5506,8 +5599,15 @@ function vorgangAssert(){
         // SZ4: der sechste. Die Kapsel im Finale hängt an amt.stopfenSchicht,
         // und ein Guard, der sie in beiden Zuständen rendert, muss den echten
         // Stand danach wiederhaben, auch wenn dazwischen etwas wirft.
-        stopfenEcht = amt.stopfenSchicht;
-  try {   // GW26i: sechs Spiegel, alle im finally
+        stopfenEcht = amt.stopfenSchicht,
+        // RL1: der siebte Spiegel, aus demselben Grund wie der sechste.
+        geschlossenEcht = amt.vorgangGeschlossen;
+  try {   // GW26i: sechs Spiegel, alle im finally (RL1: sieben)
+  // RL1: der Guard prueft den offenen Vorgang und laeuft auch auf einem Stand,
+  // der ihn geschlossen hat. Ohne diese Zeile fiele Sweep (7) nach dem Abspann
+  // bei jedem Laden, und zwar fuer immer. Gefunden von schluss-pruef.mjs beim
+  // Neuladen, nicht im Guard selbst. Der echte Wert steht im finally.
+  amt.vorgangGeschlossen = 0;
 
   // (1) Tabellenform: vier Zeilen, Zeilen 1-3 mit je einem der drei Biome,
   // Zeile 4 ohne Biom. Ankerprüfung auf den zusammengesetzten Wortlaut.
@@ -5646,6 +5746,24 @@ function vorgangAssert(){
   }
   if(zustellbarCount !== 1) fehler('vorgangZustellbar() nicht genau einmal wahr im Sweep', zustellbarCount);
   if(vertagtCount !== 3) fehler('vorgangVertagt() nicht genau dreimal wahr im Sweep', vertagtCount);
+  // RL1: derselbe Sweep mit geschlossenem Vorgang. Zustellbar nie, vertagt
+  // nie, und zwar bei jedem Schichtwert, auch den beiden, die oben wahr waren.
+  // Das Modus-Gate dazu: ohne Schichtmodus ist auch der Stempel nichts wert.
+  amt.vorgangGeschlossen = 45;
+  for(const ausf of [false, true]){
+    kladde.vorgang = ausf ? {1:true, 2:true, 3:true, 4:true} : {};
+    for(const s of [0, 30, 39, 40, 60]){
+      amt.schichten = s;
+      if(vorgangZustellbar()) fehler('vorgangZustellbar() trotz geschlossenem Vorgang', 'ausfertigung=', ausf, 'schichten=', s);
+      if(vorgangVertagt())    fehler('vorgangVertagt() trotz geschlossenem Vorgang', 'ausfertigung=', ausf, 'schichten=', s);
+      if(!vorgangGeschlossen()) fehler('vorgangGeschlossen() falsch bei gesetztem Stempel', s);
+    }
+  }
+  CONFIG.schichtModus = false;
+  if(vorgangGeschlossen()) fehler('schichtModus=false, aber vorgangGeschlossen() ist wahr');
+  CONFIG.schichtModus = true; amt.vorgangGeschlossen = 0;
+  if(vorgangGeschlossen()) fehler('vorgangGeschlossen() wahr ohne Stempel');
+  // Bleibt 0 bis zum finally: die Bloecke danach pruefen den offenen Vorgang.
   kladde.vorgang = vorgangEcht; amt.schichten = schichtenEcht; CONFIG.schichtModus = modusEcht;
 
   // (8) Aktzeilen-Anker: die drei geänderten Zeilen stehen an den erwarteten
@@ -5661,6 +5779,10 @@ function vorgangAssert(){
   text(VORGANG_ANSCHRIFT, 'Anschrift');
   VORGANG_JAHRES.forEach((e,i) => { text(e.zwirn, 'Jahres-Zwirn '+i); if(e.hinweis) text(e.hinweis, 'Jahres-Hinweis '+i); });
   text(VORGANG_JAHRES_WEITER, 'Jahres-Weiter');
+  text(VORGANG_JAHRES_GESCHLOSSEN, 'Jahres-Geschlossen');                               // RL1
+  for(const k in WIN_ZEILEN) WIN_ZEILEN[k].forEach((l,i) => text(l, 'Kampf-Tod '+k+'/'+i)); // RL1
+  if(!WIN_ZEILEN.offen || WIN_ZEILEN.offen.length !== 3 || !WIN_ZEILEN.geschlossen || WIN_ZEILEN.geschlossen.length !== 3)
+    fehler('WIN_ZEILEN hat nicht je drei Zeilen');
   VORGANG_PUZZLE.forEach((p,i) => { text(p.text, 'Puzzle '+i); if(p.sonst) text(p.sonst, 'Puzzle-Sonst '+i); });
   VERTAGT_ZEILEN.forEach((l,i) => text(l, 'Vertagung '+i));
   if(VERTAGT_ZEILEN.length !== 3) fehler('VERTAGT_ZEILEN hat nicht drei Zeilen', VERTAGT_ZEILEN.length);
@@ -5689,7 +5811,24 @@ function vorgangAssert(){
   if(vorgangBestandBlock().indexOf('fünften Akt') < 0) fehler('Bestandblock nennt bei Schicht 30 den Akt nicht');
   amt.schichten = 40; text(strip(vorgangBestandBlock()), 'Bestandblock voll, Akt V');
   if(vorgangBestandBlock().indexOf('fünften Akt') >= 0) fehler('Bestandblock nennt bei Schicht 40 immer noch den Akt');
+  // RL1: die geschlossene Fassung beider Bloecke, mit Schichtmodus erzwungen,
+  // weil der Stempel ohne ihn nichts gilt. Der Bestand darf dann weder die
+  // Vollstaendigkeit noch den Zwischenbescheid behaupten.
+  CONFIG.schichtModus = true; amt.vorgangGeschlossen = 45; amt.schichten = 50;
+  const merkerEcht = kn.flags.szeneVersuchung; kn.flags.szeneVersuchung = true;
+  text(strip(vorgangBestandBlock()), 'Bestandblock geschlossen');
+  if(vorgangBestandBlock().indexOf('geschlossen') < 0) fehler('Bestandblock nennt den Schluss nicht');
+  if(vorgangBestandBlock().indexOf('Die Ausfertigung ist vollständig') >= 0) fehler('Bestandblock behauptet nach dem Schluss Vollständigkeit');
+  if(vorgangBestandBlock().indexOf('Zwischenbescheid') >= 0) fehler('Bestandblock zeigt nach dem Schluss den Zwischenbescheid');
+  text(strip(vorgangJahresBlock()), 'Jahresblock geschlossen');
+  if(vorgangJahresBlock().indexOf('Vorgang 2') < 0) fehler('Jahresblock nennt nach dem Schluss Vorgang 2 nicht');
+  kn.flags.szeneVersuchung = merkerEcht;
+  amt.vorgangGeschlossen = 0; CONFIG.schichtModus = modusEcht;   // 0 bis zum finally, s. o.
   amt.schichten = schichtenEcht;
+  // RL1: das Hymnenblatt steht, wo die Musik einsetzt. abspannBlaetter() liest
+  // kladde.lang, deshalb der Spiegel auf langEcht wie in Block 12.
+  const hymne = abspannBlaetter()[ABSPANN_HYMNE_BLATT];
+  if(!hymne || !hymne.z1 || hymne.z1.indexOf('Amtshymne') < 0) fehler('ABSPANN_HYMNE_BLATT zeigt nicht auf die Hymne', ABSPANN_HYMNE_BLATT);
 
   // (11) GW16: die Adresskammer-Markierung, auf einer Attrappenliste. Bis hierher
   // war die gesamte W5-Verdrahtung von keinem Guard erfasst — die Abnahmezeilen
@@ -5731,7 +5870,7 @@ function vorgangAssert(){
   } finally {
     amt.schichten = schichtenEcht; CONFIG.schichtModus = modusEcht;
     kladde.vorgang = vorgangEcht; amt.bonusNachwachsen = bonusEcht;
-    kladde.crafts = craftsEcht; amt.stopfenSchicht = stopfenEcht;
+    kladde.crafts = craftsEcht; amt.stopfenSchicht = stopfenEcht; amt.vorgangGeschlossen = geschlossenEcht;
   }
 
   console.assert(ok, 'W5 Vorgang: Assertion fehlgeschlagen, siehe Konsole.');
@@ -6823,7 +6962,12 @@ function langAssert(){
   // aktStand() >= 5; bei 30 wäre der Fehlschlag kein W7-Befund, sondern die neue
   // Aktschwelle. Der Adress-Akt und die Zeichnungsbefugnis bleiben unten bei 30.
   amt.schichten = 40; kladde.vorgang = {1:true, 2:true, 3:true, 4:true};
+  // RL1: auf einem Stand nach dem Abspann ist Zustellen zu Recht nicht mehr
+  // moeglich; der Punkt prueft die Blockadefreiheit von W7 und nicht den
+  // Schluss. Spiegel direkt hier, weil fehler() nicht wirft.
+  const geschlossenEcht = amt.vorgangGeschlossen; amt.vorgangGeschlossen = 0;
   if(!vorgangZustellbar()) fehler('W7 blockiert den Hauptvorgang: Zustellen nicht möglich bei Schicht 40 mit vollem Bestand');
+  amt.vorgangGeschlossen = geschlossenEcht;
   for(const s in SERIE_AKT){ amt.schichten = SERIE_AKT[s] * 10; if(!serieFrei(s)) fehler('W7 blockiert eine Blattserie', s); }
   amt.schichten = 200;
   for(const k in AUFTRAG_TYPEN) if(AUFTRAG_TYPEN[k].wenn && !AUFTRAG_TYPEN[k].wenn()) fehler('W7 blockiert einen Auftragstyp', k);
