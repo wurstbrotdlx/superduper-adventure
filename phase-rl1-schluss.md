@@ -128,6 +128,13 @@ und nichts vertagt, Bestand, Jahresgespräch, Startbild und Kampf-Tod nennen den
 Schluss, der Zwischenbescheid ist weg; der Stempel überlebt ein Neuladen, 999999
 wird 9999, -5 wird 0; ohne Schichtmodus gilt nichts davon; Konsole still.
 
+**Mit Grafik geprüft hat die CI**: `.github/workflows/pruef.yml` holt die
+lizenzierten Blätter per Deploy Key und fährt den Ladelauf gegen Quelle und
+Build. Für jeden Commit der Release-Reihe steht dort „Mit lizenzierter Grafik
+geprüft", „0 Warnungen", „Konsole still" (Läufe 7 bis 10 vom 03.10.2026). Was
+im Container ohne Blätter nicht abnehmbar war, ist damit zumindest für die
+Ladekette und alle Guards abgenommen, nicht aber für das Bild.
+
 **Baseline aller 17 Prüfläufe vor RL1** (03.10.2026, ohne Grafik): 11 grün, 6
 rot, und alle sechs roten hängen an fehlenden Blättern (`ebene`: die Leiter ist
 nicht geladen; `gespraech`: Porträt und Nörgels Blatt; `innen`: die
