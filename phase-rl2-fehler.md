@@ -60,6 +60,18 @@ allein in eine zweite Zeile („MONSTERANGELEGENHEITENANWÄRTE / R"). Unter 480
 Pixeln Breite jetzt `letter-spacing:.1em` statt `.22em`. Weniger Sperrung statt
 weniger Schrift: ein Schild bleibt ein Schild.
 
+**Die Fenster bleiben zu, solange eine Szene die Welt hält.** Ein dritter Fund
+aus dem Bildschirmabzug: mitten im Empfang ließ sich mit `C` das
+Charakterfenster öffnen, und die Gesprächstafel lag dann quer über dem Fenster
+(390×844 und 1280×720, beide gesehen). `fensterGesperrt()` liest `state ===
+'szene'`, also genau den Zustand, den `szeneOeffnen()` für eine Szene mit
+`haeltDieWelt` setzt, und die sieben Öffner (Rucksack, Charakter, Zauber,
+Optionen, Kessel, Ausweis, Karte) steigen damit beim Öffnen aus, nicht beim
+Schließen. Ein gewöhnliches Gespräch im Dorf hält die Welt nicht und sperrt
+nichts: wer Zwirn zuhört, darf nebenbei in den Rucksack sehen. Die Belegung in
+`PANEL_REGISTER` und die Gürtelknöpfe laufen über dieselben Öffner, die Sperre
+gilt also für Taste und Finger gleichermaßen.
+
 ## 3. Was nicht angefasst wurde, und warum
 
 * **Das Startbild auf 844×390** ist 450 Pixel hoch in einem Fenster von 390.
@@ -78,6 +90,7 @@ weniger Schrift: ein Schild bleibt ein Schild.
 | `tools/gespraech-pruef.mjs` | 87 von 89, die zwei fehlenden sind die zwei Blätter ohne Grafik (wie in der Baseline) |
 | `tools/menue-pruef.mjs` | 78 von 78 |
 | `tools/steuerung-pruef.mjs` | alles in Ordnung |
+| `tools/szene-pruef.mjs`, `empfang-pruef.mjs`, `anlage2-pruef.mjs`, `stopfen-pruef.mjs` (nach der Fenstersperre) | 50/50, 131/131, 123/123, 43/43 |
 | Zufallseingaben, 9 Minuten | 0 Fehler |
 | neun Schichtenden 9 bis 89 | 0 Fehler |
 | Zeit je Rahmen (ohne Blätter, 1280×720, 10 239 Rahmen) | `update()` Mittel 0,10 ms, p99 0,8 ms, Spitze 5 ms; `render()` Mittel 0,57 ms, p99 2,3 ms, Spitze 25,5 ms |

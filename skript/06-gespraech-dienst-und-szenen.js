@@ -1038,6 +1038,7 @@ function toggleInventory(){
     anlage2Nachholen();
     return;
   }
+  if(!invOpen && fensterGesperrt()) return;   // RL2
   invOpen = !invOpen;
   document.getElementById('inv').style.display = invOpen ? 'flex' : 'none';
   if(invOpen){ grossfensterRaeumen('inv'); renderInventory(); knIdleT = 0; }
@@ -1183,6 +1184,14 @@ const GROSSFENSTER = [
 // Schliesst jedes Grossfenster ausser dem genannten. Zwei von ihnen stehen an
 // derselben Stelle im Bild; uebereinander waeren sie kein Stapel, sondern ein
 // Fenster, das aussieht wie ein anderes.
+// RL2: Solange eine Szene die Welt haelt (state 'szene', s. szeneOeffnen),
+// gehoert ihr der Schirm. Bis hierher liess sich mitten im Empfang das
+// Charakterfenster oeffnen, und die Gespraechstafel lag dann quer ueber dem
+// Fenster (gesehen auf dem Bildschirmabzug, 390x844). Gesperrt wird nur das
+// Oeffnen; ein Fenster, das vor der Szene schon offen stand, geht weiter zu.
+// Ein gewoehnliches Gespraech im Dorf haelt die Welt nicht und sperrt nichts:
+// wer Zwirn zuhoert, darf nebenbei in den Rucksack sehen.
+const fensterGesperrt = () => state === 'szene';
 function grossfensterRaeumen(ausser){
   for(const f of GROSSFENSTER) if(f.id !== ausser && f.offen()) f.auf();
 }
@@ -1242,6 +1251,7 @@ function charBlattWaehlen(b){
 function toggleCharakter(blatt){
   const wechsel = charakterOpen && blatt && blatt !== charBlatt;
   if(wechsel){ charBlattWaehlen(blatt); return; }
+  if(!charakterOpen && fensterGesperrt()) return;   // RL2
   charakterOpen = !charakterOpen;
   el('charakter').style.display = charakterOpen ? 'flex' : 'none';
   if(charakterOpen){
@@ -1265,6 +1275,7 @@ function zulagenOffen(){ return charakterOpen && charBlatt === 'mappe'; }
 // Spielstand-Knoepfe beim Umschalten).
 let optionenOpen = false;
 function toggleOptionen(){
+  if(!optionenOpen && fensterGesperrt()) return;   // RL2
   optionenOpen = !optionenOpen;
   el('optionen').style.display = optionenOpen ? 'flex' : 'none';
   if(optionenOpen){ grossfensterRaeumen('optionen'); gfBandZeichnen(); knIdleT = 0; }
@@ -1673,6 +1684,7 @@ function switchKesselTab(t){
 }
 
 function toggleKessel(){
+  if(!kesselOpen && fensterGesperrt()) return;   // RL2
   kesselOpen = !kesselOpen;
   el('kessel').style.display = kesselOpen ? 'flex' : 'none';   // U8: .grossFenster ist eine Spalte
   if(kesselOpen){
@@ -1689,6 +1701,7 @@ function toggleKessel(){
 
 // W6: Dienstausweis, wortgleiche Form wie toggleKessel() oben.
 function toggleAusweis(){
+  if(!ausweisOpen && fensterGesperrt()) return;   // RL2
   ausweisOpen = !ausweisOpen;
   el('ausweis').style.display = ausweisOpen ? 'block' : 'none';
   if(ausweisOpen){
@@ -1729,6 +1742,7 @@ function renderFullmap(){
   mark(player.x, player.y, 6, '#5c86ff');
 }
 function toggleFullmap(){
+  if(!fullmapOpen && fensterGesperrt()) return;   // RL2
   fullmapOpen = !fullmapOpen;
   el('fullmap').style.display = fullmapOpen ? 'block' : 'none';
   if(fullmapOpen){
@@ -3523,9 +3537,15 @@ const NEUERUNGEN = {
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
-  stand: '2026-10-03-rl1',
+  stand: '2026-10-03-rl2',
   datum: '3. Oktober',
   punkte: [
+    // --- RL2, 03.10.2026 ----------------------------------------------------
+    {
+      titel: 'Die Gesprächstafel schneidet keinen Titel mehr ab',
+      was: 'Lange Amtsbezeichnungen in der Kopfzeile des Gesprächs liefen am Telefon über den Rand und nahmen das Schließkreuz mit. Jetzt brechen sie um. Am liegenden Telefon ragt das Bild nicht mehr in die Antworten, und solange eine Szene läuft, bleiben Rucksack, Charakter und die übrigen Fenster zu.',
+      wo: 'Im Gespräch mit Reichsministerialdirektor zu Händen Vorblatt, am Telefon, bei großer Schrift.',
+    },
     // --- RL1, 03.10.2026 ----------------------------------------------------
     // Der Punkt steht vorn, weil er der juengste ist und die Mitteilung von
     // oben gelesen wird. Er sagt, was man sieht, nicht welches Feld fehlte.

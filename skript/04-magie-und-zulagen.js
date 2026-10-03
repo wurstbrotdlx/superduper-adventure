@@ -102,6 +102,7 @@ function selectSpell(id){
 function castActiveSpell(){ const sp = SPELLS.find(s=>s.id===activeSpellId); if(sp) castSpell(sp); }
 
 function toggleSpellTree(){
+  if(!spellTreeOpen && fensterGesperrt()) return;   // RL2, Sperre steht in Datei 06, gelesen erst zur Laufzeit
   spellTreeOpen = !spellTreeOpen;
   document.getElementById('spellTree').style.display = spellTreeOpen ? 'flex' : 'none';   // U8: .grossFenster ist eine Spalte
   if(spellTreeOpen){ grossfensterRaeumen('spellTree'); gfBandZeichnen(); renderSpellTree(); knIdleT = 0; }
