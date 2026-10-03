@@ -58,8 +58,11 @@ let szeneTafelLauf = null;
 // ende. Stapel ohne die Reihe (Requisiten, Anlage 2, Abspann,
 // Zwischenbescheide) tragen nichts ein, und das ist der Normalfall.
 function szeneTafeln(liste, opt){
+  // RL1: opt.beiBlatt(i) wird beim Aufschlagen jedes Blattes gerufen, mit dem
+  // Index. Der Abspann braucht das fuer die Musik, die erst mit Bild 12 einsetzt;
+  // bis dahin hatte kein Stapel eine Regie je Blatt, und das bleibt der Normalfall.
   szeneTafelLauf = {liste, letzterKnopf: opt.letzterKnopf, ende: opt.ende, zweiter: opt.zweiter || null,
-                    wahl: opt.wahl || null, stufe: 0, kladde: opt.kladde || null};
+                    wahl: opt.wahl || null, stufe: 0, kladde: opt.kladde || null, beiBlatt: opt.beiBlatt || null};
   szeneTafel(0);
 }
 
@@ -201,6 +204,10 @@ function szeneTafel(i){
     ${zweiter}`;
   el('overlay').style.display = 'flex';
   MUS.muffle(true);
+  // RL1: nach der Daempfung, nicht davor. Die Regie des Abspanns hebt sie fuer
+  // die Hymne wieder auf, und davor stuende ihr Aufruf unter dem muffle(true)
+  // dieser Zeile.
+  if(lauf.beiBlatt) lauf.beiBlatt(i);
 }
 
 // AN3: Ein Wandstueck ansehen.

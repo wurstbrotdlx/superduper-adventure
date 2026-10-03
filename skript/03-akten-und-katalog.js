@@ -996,6 +996,13 @@ let amt = {bankGold:0, schichten:0,
   // zwischen diesen beiden Zahlen. Echter Zustand, nicht ableitbar: welche
   // Schicht es war, weiss danach niemand mehr.
   stopfenSchicht:0, adressSchicht:0,
+  // RL1: In welcher Schicht Vorgang 1 geschlossen wurde, 1-basiert wie die
+  // beiden darüber, 0 heisst "noch offen". Bis RL1 hat das Finale nichts
+  // hinterlassen: nach "NEUEN VORGANG ANLEGEN" stand der Fürst wieder da und
+  // liess sich ein zweites Mal zustellen (GEGENPROBE-W-2026-08-05.md,
+  // Randnotiz). Der Rang ist Meta-Progression, die nie zurueckgesetzt wird
+  // (Weltbibel 18.2), und ein geschlossener Vorgang gehoert in dieselbe Klasse.
+  vorgangGeschlossen:0,
   // SP2: Was am Gürtel die Nacht übersteht, {gold, zutaten:[{noun,adj,count}]}
   // oder null. War bis hierher ein Paar Laufzeitvariablen (pendingCarryGold,
   // pendingCarryPouch), die startGame() bei jedem Seitenaufruf genullt hat — wer
