@@ -1099,6 +1099,13 @@ const INN_MOEBEL = {
   // also bekommt sie 'C'. 'G' ist die Gesetzestafel.
   'G': {name:'Tafel über der Tür', frei:true, wand:true, akt:'requisit', requisit:'gesetz'},
   'C': {name:'Karte der Ablage',   frei:true, wand:true, akt:'requisit', requisit:'karte'},
+  // KA1: der Druck aus Hochablage. Das dritte Wandstueck, und das erste, das
+  // nicht aus dem Intro stammt: die Kaisertuer mit dem Schild IM TERMIN, der
+  // Poststapel, die Bank, und auf der Bank Konrad zu Haendens Aufschub. Er
+  // steht damit im Spiel, ohne die Schlange zu verlassen, in der er seit
+  // siebenundsechzig Jahren steht; er haengt nur. Weltbibel, Kapitel 8:
+  // Vordermuehl zeigt Hochablage nur auf Papier.
+  'J': {name:'Druck aus Hochablage', frei:true, wand:true, akt:'requisit', requisit:'kaisertuer'},
   'W': {name:'Spinnwebe',      frei:true, wand:true},
   'N': {name:'Fenster',        frei:true, wand:true},
   'Q': {name:'Flaschenbord',   frei:true, wand:true},
@@ -1130,6 +1137,10 @@ const INN_RAEUME = {
   // Dienstpult, an dem man Feierabend nimmt. Dazwischen Platz, und das ist der
   // Punkt des Raumes: er ist zu groß für die zwei Leute, die noch da sind.
   //
+  // KA1: rechts daneben, ebenfalls zwischen Regalen, der Druck aus Hochablage
+  // mit der Kaisertür. Zwei Bilder an einer Wand, und sie zeigen dieselbe
+  // Welt von zwei Enden: die Ablage vor dem Haus und die Tür, vor der alles
+  // wartet, was von hier aus nach Oben ging.
   // AN3: an der Nordwand hängt zwischen den Regalen die Karte der Ablage, über
   // dem Weg hinaus die Tafel mit dem Weltgesetz. Beide standen bis dahin als
   // Introblätter da und wurden vorgelesen; jetzt hängen sie da und werden
@@ -1140,7 +1151,7 @@ const INN_RAEUME = {
     name: 'Amtsstube',
     plan: [
       '#################',
-      '#FRRRRRCcRRRRRRF#',
+      '#FRRRRRCcRRJjRRF#',
       '#...............#',
       '#.Dd.......Ss...#',
       '#...............#',
@@ -1645,6 +1656,25 @@ function drawInnenMoebelGezeichnet(o){
       for(const [px, py] of [[cx + 2, cy + 2], [cx + cb - 4, cy + 2],
                              [cx + 2, cy + 34], [cx + cb - 4, cy + 34]])
         ctx.fillRect(px, py, 2, 2);
+      break;
+    }
+    case 'J': {  // KA1, der Druck aus Hochablage. Ein dunkler Rahmen wie bei der
+                 // Karte, darin helles Papier; links die Tuer als dunkler Block
+                 // mit einem winzigen Schild, davor der Poststapel als helle
+                 // Streifen, rechts die Bank mit vier Punkten darauf. Auf dieser
+                 // Entfernung ist das ein Bild mit einer Tuer und einer Reihe,
+                 // und was auf dem Schild steht, steht beim Ansehen da. Haengt
+                 // im Wandband wie die Karte, eine Kachel ueber der Fusslinie.
+      const jb = b - 6, jx = o.x - jb/2, jy = o.y - TS - 30;
+      ctx.fillStyle = '#2b2118'; ctx.fillRect(jx - 2, jy - 2, jb + 4, 42);
+      ctx.fillStyle = '#e4dcc4'; ctx.fillRect(jx, jy, jb, 38);
+      ctx.fillStyle = '#4a3a2c'; ctx.fillRect(jx + 6, jy + 6, 14, 28);          // die Tuer
+      ctx.fillStyle = '#c9b98a'; ctx.fillRect(jx + 9, jy + 11, 8, 3);           // das Schild
+      ctx.fillStyle = '#f2ead2';                                                 // der Poststapel
+      for(let i = 0; i < 9; i++) ctx.fillRect(jx + 22, jy + 9 + i*3, 7, 2);
+      ctx.fillStyle = '#7a5a3a'; ctx.fillRect(jx + 33, jy + 26, jb - 37, 3);    // die Bank
+      ctx.fillStyle = '#3c332a';                                                 // die vier Wartenden
+      for(let i = 0; i < 4; i++) ctx.fillRect(jx + 35 + i*5, jy + 20, 3, 6);
       break;
     }
     case 'N': {  // Fenster, gemalt: ein Rahmen, dahinter der Abendhimmel als
