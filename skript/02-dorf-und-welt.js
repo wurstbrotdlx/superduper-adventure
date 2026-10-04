@@ -248,13 +248,6 @@ const DORF_FIGUREN = [
      'Ein Sack ohne lesbare Anschrift. Seltsam.',
      'Ablage V ist offen. Ich lege nichts mehr ab.',
    ],
-   // SZ3: Bramsche sortiert, und man sieht sie zum einzigen Mal im Spiel
-   // gluecklich. Sie sagt es nicht, sie sagt Saetze ueber Ablage — das ist bei
-   // ihr dasselbe.
-   zusatz:[{lang:'stopfen', zeilen:[
-     {z1:'Zweihunderteinundsiebzig Jahre Post.', z2:'Ich sortiere seit gestern.'},
-     {z1:'Alles hat eine Anschrift. Alles.',     z2:'Sie ahnen nicht, wie das ist.'},
-   ]}],
    antworten:[
      {frage:'Was war der Vorgang 1?', z1:'Vorgang 1 ist der Friedensvertrag.', z2:'Nie geschlossen, nur ausgesetzt.'},
      {frage:'Wo ist die Amtsleitung?', z1:'N.N. heißt nicht genannt.', z2:'Der Posten ist unbesetzt.'},
@@ -295,10 +288,31 @@ const DORF_FIGUREN = [
      {z1:'In welcher Sache?', z2:'Das hatten wir schon.'},
      {z1:'Antrag für heute erledigt.', z2:'Morgen wieder.'},
    ],
+   // LV11-13-Fund: dieser Eintrag trug zwei Schluessel zusatz, einen von SZ3 vor
+   // den Antworten und diesen hier. In einem Objektliteral gewinnt der letzte,
+   // ohne Fehler und ohne Warnung; Bramsches zwei Stopfen-Zeilen waren seit SZ3
+   // nie im Spiel, und kein Guard konnte das sehen, weil er die Tabelle nach dem
+   // Parsen liest. Jetzt steht alles in EINEM Block; tools/lv11-13-pruef.mjs
+   // liest den Quelltext und meldet einen zweiten Schluessel je Figur.
+   //
+   // SZ3: Bramsche sortiert, und man sieht sie zum einzigen Mal im Spiel
+   // gluecklich. Sie sagt es nicht, sie sagt Saetze ueber Ablage — das ist bei
+   // ihr dasselbe.
+   zusatz:[{lang:'stopfen', zeilen:[
+     {z1:'Zweihunderteinundsiebzig Jahre Post.', z2:'Ich sortiere seit gestern.'},
+     {z1:'Alles hat eine Anschrift. Alles.',     z2:'Sie ahnen nicht, wie das ist.'},
+   ]},
+   // LV11-13: nach dem richtigen Wortlaut. Zimmer 4 ist wieder zu, und der
+   // Antrag liegt bei. Sie sagt nicht, dass es schoen war; sie sagt, dass es
+   // korrekt war, und das ist bei ihr dasselbe.
+   {lang:'wortlaut', zeilen:[
+     {z1:'Zimmer 4 ist wieder zu.',           z2:'Der Antrag liegt bei. Korrekt.'},
+     {z1:'Ein korrekt gestellter Antrag.',    z2:'Ich lese ihn manchmal noch.'},
+   ]},
    // W11: der Herr aus Hochablage von 985. Sie hält sich für schuldig an einem
    // Landstrich, und der Griff daneben hat in Wahrheit das Beweisstück gerettet.
    // Sie erfährt das nie, deshalb sagt sie nur die Hälfte, die sie kennt.
-   zusatz:[{abAkt:3, zeilen:[
+   {abAkt:3, zeilen:[
      {z1:'Damals kam ein Herr aus Hochablage.',  z2:'Er war ausgesprochen höflich.'},
      {z1:'Seitdem gebe ich nichts ohne Antrag.', z2:'Höflichkeit ist kein Antrag.'},
    ]},
@@ -796,6 +810,14 @@ const DORF_FIGUREN = [
    {merker:'hatGekocht', zeilen:[
      {z1:'Was Sie da mischen, war einmal Bestand.', z2:'Irgendwo steht es noch drin.'},
      {z1:'Bei mir kam nie etwas ohne Antrag heraus.', z2:'Bei Ihnen offenbar schon.'},
+   ]},
+   // LV11-13: die Tatsache aus figuren-leben.md, die bis zum richtigen Wortlaut
+   // in keiner Sprechblase stehen durfte. Er schreibt abends Entwuerfe, und
+   // einer davon ist jetzt eingetreten. Die Liste bleibt leer: ein Entwurf in
+   // der Schublade ist keine Ausgabe.
+   {lang:'wortlaut', zeilen:[
+     {z1:'Ich schreibe abends Entwürfe. Für Fälle.', z2:'Keine Beratung. Nur Entwürfe.'},
+     {z1:'Einer davon ist eingetreten.',             z2:'Steht nicht in der Liste. Gut.'},
    ]}
    ],
    anlass:{
@@ -1206,6 +1228,13 @@ const DORF_FIGUREN = [
    {abAkt:3, zeilen:[
      {z1:'Ich führe zwei Tabellen. Eine ist leer.', z2:'Die leere ist die wichtige.'},
      {z1:'Die Kopfzeile ziehe ich nach.', z2:'Jedes Jahr. Tinte verblasst.'},
+   ]},
+   // LV11-13: nach dem Eimer. Die Veranlassung ist weitergeleitet, und das ist
+   // mehr, als in dreiundvierzig Jahren je in seiner Spalte stand. Der Hut
+   // bleibt im Schrank bis zum Abspann; herausgelegt ist er trotzdem.
+   {lang:'eimer', zeilen:[
+     {z1:'Gemeldet wird: Vlg. in Bearbeitung.', z2:'Das stand noch nie da.'},
+     {z1:'Der Hut liegt heraus. Nicht auf.',    z2:'Heraus ist schon viel.'},
    ]}
    ],
    anlass:{
@@ -1350,6 +1379,13 @@ const DORF_FIGUREN = [
    {abAkt:4, zeilen:[
      {z1:'In meinem Fach liegt ein Stempel.', z2:'Er ist durchgeschrieben.'},
      {z1:'Ausmustern wäre eine Entscheidung.', z2:'Sie verstehen das Problem.'},
+   ]},
+   // LV11-13: nach den einundvierzig Blaettern. Er bleibt bei seinem Wortlaut,
+   // nur die Pause davor fehlt; die Pause war die Beleidigung (Weltbibel,
+   // Kapitel 8), und wer sie weglaesst, hat etwas zugegeben.
+   {lang:'bescheide', zeilen:[
+     {z1:'Einundvierzig. Sie haben nachgezählt.', z2:'Das hat vor Ihnen niemand getan.'},
+     {z1:'Nichts davon ist geschehen.',           z2:'Ich sage es ohne Pause.'},
    ]}
    ],
    anlass:{

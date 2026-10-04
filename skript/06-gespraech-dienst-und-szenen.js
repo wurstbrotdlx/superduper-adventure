@@ -3571,158 +3571,159 @@ const NEUERUNGEN = {
   // Umhaengung der Ernennung: dritter.
   // Befund 8 und 9 aus RL7: vierter Stempel desselben Tages.
   // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
-  stand: '2026-10-04-gh',
+  stand: '2026-10-04-lv',
   datum: '4. Oktober',
+  // HM-kurz (04.10.2026): jeder Punkt traegt sein Datum (am, ISO). Die
+  // Hausmitteilung beim Start zeigt nur die Punkte ab dem Tag des zuletzt
+  // gestempelten Standes; der ganze Umlauf steht im Startbild unter "Was ist
+  // neu". Vorher standen hier beim Start vierundzwanzig Punkte mit 1486
+  // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
+  // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
   punkte: [
-    // --- W11-GH, Serie G und H, 04.10.2026 ------------------------------------
-    {
+    // --- LV11-13 und die Hausmitteilung, 04.10.2026 -----------------------------
+    {am:'2026-10-04',
+      titel: 'Drei Nebenstränge mehr: der Eimer, der richtige Wortlaut, einundvierzig Blätter',
+      was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt, und darf sie nicht holen. Bramsche und Pommer geben die Archivausfertigung heraus, wenn der Antrag richtig lautet. Wer die vierzig Zwischenbescheide kennt, hat in Vorblatts Versammlung eine Antwort mehr.',
+      wo: 'Herr Nieselbeck ab Schicht 11, Registratur und Materialausgabe ab Schicht 21; die Kladde unter Akten.',
+    },
+    {am:'2026-10-04',
+      titel: 'Diese Mitteilung ist kürzer',
+      was: 'Beim Start steht nur noch, was seit Ihrem letzten Stand neu ist. Der ganze Umlauf liegt im Startbild.',
+      wo: 'Startbild, Knopf „Was ist neu".',
+    },
+    // --- W11-GH, 04.10.2026 -----------------------------------------------------
+    {am:'2026-10-04',
       titel: 'Vierzehn neue Blätter: aus Hochablage und sechs Schreiben',
-      was: 'Die Kammertruhen im Steinfeld geben jetzt acht Blätter her, die sagen, was Oben ist und wie der Rang gerechnet wird. Im Lager der Beschwerden und in den Kammern des Moorbruchs liegen sechs Schreiben der Gegenseite, die sich bis auf den Kopf gleichen; wer alle sechs hat, bekommt in der Kladde eine siebte Zeile dazu. Die Zählzeile unter Akten geht von 54 auf 68.',
-      wo: 'Steinfeld ab der einundzwanzigsten Schicht, Lager und Moorbruch ab der elften; die Kladde unter Akten.',
+      was: 'Acht Blätter aus Hochablage liegen in den Kammertruhen des Steinfelds, sechs Schreiben der Gegenseite im Lager und in den Kammern des Moorbruchs. Die Kladde zählt jetzt bis 68.',
+      wo: 'Steinfeld ab Schicht 21, Lager und Moorbruch ab Schicht 11; Kladde unter Akten.',
     },
-    // --- RL7, Befund 8 und 9, 04.10.2026 --------------------------------------
-    {
-      titel: 'Die Räume stehen am Telefon mittig, und der Zettel lässt die Ortszeile in Ruhe',
-      was: 'In der Amtsstube, der Registratur und im Gasthaus hing die Kamera am Spieler wie draußen; am Telefon saß der Raum deshalb oben und darunter war es schwarz, auf dem liegenden Telefon fehlte die obere Wand. Jetzt steht der Raum mittig, und wo er breiter ist als das Bild, bleibt die Wand im Bild. Knöterichs Zettel rückt außerdem unter die Ortszeile, wenn er sie sonst zudecken würde.',
-      wo: 'In den drei Häusern am Telefon, und überall dort, wo die Ortszeile zwei Zeilen hat, etwa in einer Kammer.',
+    // --- RL7, Befund 8 und 9, 04.10.2026 ----------------------------------------
+    {am:'2026-10-04',
+      titel: 'Die Räume stehen am Telefon mittig',
+      was: 'In Amtsstube, Registratur und Gasthaus steht der Raum am Telefon mittig statt oben. Knöterichs Zettel rückt unter die Ortszeile, wenn er sie verdecken würde.',
+      wo: 'In den drei Häusern und in jeder Kammer, am Telefon.',
     },
-    // --- Ernennung, 04.10.2026 ---------------------------------------------
-    {
+    // --- Ernennung, 04.10.2026 --------------------------------------------------
+    {am:'2026-10-04',
       titel: 'Die Ernennung ist kürzer, nichts davon ist weg',
-      was: 'Die Zeremonie am ersten Morgen zeigt noch die vier Blätter mit dem Rechtsakt: Urkunde, Aushändigung, „Auf die Form!" und der Auftrag. Zwirns Auftritt mit der Mappe kommt jetzt vor dem ersten Jahresgespräch, und der Mann mit dem Postsack kreuzt Ihren Weg an der Tür, wenn Sie nach der Ernennung zum ersten Mal hinausgehen.',
-      wo: 'Beim ersten Dienstantritt, an der Tür der Amtsstube und nach der zehnten Schicht; alle sechs Blätter liegen weiter in der Kladde unter Akten.',
+      was: 'Die Zeremonie am ersten Morgen hat vier Blätter statt sechs. Zwirns Mappe kommt vor dem ersten Jahresgespräch, der Postsack an der Tür beim ersten Hinausgehen.',
+      wo: 'Erster Dienstantritt, Amtstür, nach der zehnten Schicht; alle Blätter in der Kladde unter Akten.',
     },
-    // --- AN7, 04.10.2026 ----------------------------------------------------
-    {
+    // --- AN7, 04.10.2026 --------------------------------------------------------
+    {am:'2026-10-04',
       titel: 'Die Hausordnung kommt in Raten',
-      was: 'Ab der sechsten Schicht liegt beim Dienstantritt je Morgen ein Punkt der Dienstanweisung als Hausmitteilung bereit, in der Reihenfolge des Hauses, elf Morgen lang. Wer den Vordruck nie aufgeschlagen hat, bekommt die Regeln so trotzdem, eine nach der anderen. Der Vordruck bleibt, wo er war.',
-      wo: 'Beim Dienstantritt der sechsten bis sechzehnten Schicht; die Kladde zählt unter Akten mit, wie viele umgelaufen sind.',
+      was: 'Ab der sechsten Schicht liegt beim Dienstantritt je ein Punkt der Dienstanweisung bereit, elf Morgen lang. Der Vordruck bleibt.',
+      wo: 'Dienstantritt der Schichten 6 bis 16; Zähler in der Kladde unter Akten.',
     },
-    // --- RL7, 04.10.2026 ----------------------------------------------------
-    // Der erste Punkt, der aus einer Abnahme mit Grafik kommt. Er nennt, was
-    // man sieht, und nicht die CSS-Regel, die es verdeckt hat.
-    {
-      titel: 'Die Urkunden zeigen auf dem liegenden Telefon wieder die ganze Szene',
-      was: 'Auf einem niedrigen Fenster fehlten den Urkunden des Anfangs und des Abspanns die Zeilen, die sagen, was auf dem Tisch liegt und wer hereinkommt. Das letzte Bild des Abspanns bestand dort aus zwei Wörtern. Jetzt steht alles da, und wenn ein Blatt nicht in den Rahmen passt, sagt eine Zeile darunter, dass es weitergeht. Dazu: der lange Amtstitel läuft auf der Urkunde und dem Dienstausweis nicht mehr aus dem Bild, im Zauberbaum stehen die Namen am Telefon wieder in einer Zeile, die Münze hinter dem Bankguthaben hängt nicht mehr unter der Zeile, und die Kammeransage schiebt sich nicht mehr rechts hinaus.',
-      wo: 'Ernennung und Abspann auf einem Telefon im Querformat, Zauberbaum mit Taste T am Telefon, Dienstausweis im Charakterfenster, Amtsfenster am Pult.',
+    // --- RL7, 04.10.2026 --------------------------------------------------------
+    {am:'2026-10-04',
+      titel: 'Die Urkunden zeigen auf dem liegenden Telefon die ganze Szene',
+      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen; passt ein Blatt nicht, sagt eine Zeile darunter, dass es weitergeht. Amtstitel, Zauberbaum, Bankmünze und Kammeransage bleiben im Bild.',
+      wo: 'Telefon im Querformat: Ernennung, Abspann, Zauberbaum (Taste T), Dienstausweis, Amtsfenster.',
     },
-    // --- RL6, 03.10.2026 ----------------------------------------------------
-    {
+    // --- RL6, 03.10.2026 --------------------------------------------------------
+    {am:'2026-10-03',
       titel: 'Der Anfang kommt in Raten',
-      was: 'Knöterich erzählt die Geschichte des Hauses nicht mehr am Stück, bevor Sie den ersten Schritt tun dürfen. Die vier Blätter der Chronik liegen jetzt an vier Morgen bereit, von der zweiten bis zur fünften Schicht, je eines. Anlage 2 meldet sich beim ersten Griff in die Tasche statt vor der Tür. Und wer das Haus schon kennt, sagt es Knöterich im ersten Satz und bekommt gleich den Vordruck.',
-      wo: 'Beim Dienstantritt der nächsten vier Schichten, und in der Kladde unter Akten, wo die Chronik wie bisher liegt.',
+      was: 'Die vier Chronikblätter liegen an den Morgen der Schichten 2 bis 5 bereit, je eines. Anlage 2 meldet sich beim ersten Griff in die Tasche. Wer das Haus kennt, sagt es Knöterich und bekommt den Vordruck.',
+      wo: 'Dienstantritt der nächsten vier Schichten; Kladde unter Akten.',
     },
-    // --- RL4, 03.10.2026 ----------------------------------------------------
-    {
+    // --- RL4, 03.10.2026 --------------------------------------------------------
+    {am:'2026-10-03',
       titel: 'Die Karte passt aufs Telefon',
-      was: 'Die Kartenmappe lief am Telefon rechts aus dem Bild und auf dem liegenden Telefon oben und unten hinaus. Jetzt bleibt sie im Fenster. Im Amt sagt außerdem eine Zeile unter dem Kasten, dass ganz unten das Schwarze Brett hängt; am Telefon war davon nichts zu sehen.',
-      wo: 'Taste L oder der Kartenknopf, und zwischen zwei Schichten im Amt unter den Ausbauten.',
+      was: 'Die Kartenmappe bleibt am Telefon im Fenster. Im Amt steht unter dem Kasten, dass ganz unten das Schwarze Brett hängt.',
+      wo: 'Taste L oder Kartenknopf; im Amt unter den Ausbauten.',
     },
-    // --- RL2, 03.10.2026 ----------------------------------------------------
-    {
+    // --- RL2, 03.10.2026 --------------------------------------------------------
+    {am:'2026-10-03',
       titel: 'Die Gesprächstafel schneidet keinen Titel mehr ab',
-      was: 'Lange Amtsbezeichnungen in der Kopfzeile des Gesprächs liefen am Telefon über den Rand und nahmen das Schließkreuz mit. Jetzt brechen sie um. Am liegenden Telefon ragt das Bild nicht mehr in die Antworten, und solange eine Szene läuft, bleiben Rucksack, Charakter und die übrigen Fenster zu.',
-      wo: 'Im Gespräch mit Reichsministerialdirektor zu Händen Vorblatt, am Telefon, bei großer Schrift.',
+      was: 'Lange Titel in der Kopfzeile brechen um, statt das Schließkreuz zu verdrängen. Während einer Szene bleiben die übrigen Fenster zu.',
+      wo: 'Gespräch mit zu Händen Vorblatt, am Telefon.',
     },
-    // --- RL1, 03.10.2026 ----------------------------------------------------
-    // Der Punkt steht vorn, weil er der juengste ist und die Mitteilung von
-    // oben gelesen wird. Er sagt, was man sieht, nicht welches Feld fehlte.
-    {
+    // --- RL1, 03.10.2026 --------------------------------------------------------
+    {am:'2026-10-03',
       titel: 'Ein geschlossener Vorgang bleibt geschlossen',
-      was: 'Wer Vorgang 1 zugestellt hat, findet ihn beim nächsten Dienstantritt nicht wieder offen vor. Startbild, Bestand und Jahresgespräch sagen seither, dass er geschlossen ist, und der Fürst bekommt keinen zweiten Umschlag. Der Abspann läuft außerdem ohne Musik, bis die Hymne an der Reihe ist.',
-      wo: 'Nach dem Abspann: im Startbild unter Ihrem Rang, im Rucksack beim Bestand der Anschrift und im Jahresgespräch bei Zwirn.',
+      was: 'Ein zugestellter Vorgang 1 bleibt geschlossen: Startbild, Bestand und Jahresgespräch sagen es, der Fürst bekommt keinen zweiten Umschlag. Der Abspann läuft ohne Musik bis zur Hymne.',
+      wo: 'Nach dem Abspann: Startbild, Rucksack bei der Anschrift, Jahresgespräch.',
     },
-    {
+    // --- T3, U8 bis U10, 25.08.2026 ---------------------------------------------
+    {am:'2026-08-25',
       titel: 'Anlage 2 ist Ihnen beigefügt worden',
-      was: 'An Ihrer Ernennungsurkunde hängt ein Blatt, das seit Jahrzehnten jedem wichtigen Vorgang dieses Hauses beigefügt wird und das noch nie jemand gelesen hat. Es kennt das Haus, es kennt die Leute, es hat zu allem eine Auskunft, und es bleibt bei Ihnen. Ausheften lässt es sich nicht. Versuchen Sie es ruhig, es antwortet jedes Mal anders.',
-      wo: 'Im Rucksack, erstes Feld. Anklicken heißt ansprechen. Taste I.',
+      was: 'An Ihrer Ernennungsurkunde hängt ein Blatt, das zu allem eine Auskunft hat und bei Ihnen bleibt. Ausheften geht nicht.',
+      wo: 'Rucksack, erstes Feld. Anklicken heißt ansprechen. Taste I.',
     },
-    {
+    {am:'2026-08-25',
       titel: 'Zwei Stimmen statt einer',
-      was: 'Was bisher Knöterich am Rand bemerkt hat, sagt jetzt Anlage 2. Er bleibt bei Tasten und Gerät, sie erklärt die Welt. Am Zeichen vor der Zeile sehen Sie, wer spricht: das Paragrafenzeichen gehört ihm, die Fußnotenmarke ihr.',
-      wo: 'Das Band oben unter der Statusleiste. Wie gesprächig es zugeht, stellen Sie in den Optionen ein.',
+      was: 'Knöterich erklärt Tasten und Gerät, Anlage 2 die Welt. Das Zeichen vor der Zeile sagt, wer spricht.',
+      wo: 'Band unter der Statusleiste; wie gesprächig, steht in den Optionen.',
     },
-    {
+    {am:'2026-08-25',
       titel: 'Vier große Fenster statt acht Kästen',
-      was: 'Charakter, Rucksack, Kochen und Zauber füllen jetzt den Schirm, ein Reiterband im Kopf führt in einem Griff von einem zum nächsten. Befähigung, Ausrüstung und Ausweis stehen im Charakterfenster statt im Rucksack.',
+      was: 'Charakter, Rucksack, Kochen und Zauber füllen den Schirm, ein Reiterband führt von einem zum nächsten.',
       wo: 'Taste C oder der Knopf 🧍 am Gürtel, dann das Reiterband oben.',
     },
-    {
+    {am:'2026-08-25',
       titel: 'Die Bedienschicht hat sich sortiert',
-      was: 'Leben, Mana und Erfahrung liegen als eine Karte beieinander, mit Lichtbild und Dienststufe. Die Dienstuhr wandert nicht mehr mit dem Ortsnamen, und auf dem Telefon sind die Daumen frei.',
-      wo: 'Statuskarte oben links, Karte oben rechts, Uhr darunter. Am Telefon: Ruhering unten links, Knopfspalte links, Zielwahl 🎯 am Angriffsfächer.',
+      was: 'Leben, Mana und Erfahrung liegen als eine Karte beieinander. Die Dienstuhr steht fest, am Telefon sind die Daumen frei.',
+      wo: 'Statuskarte oben links, Uhr unter der Karte; am Telefon Ruhering, Knopfspalte, Zielwahl 🎯 am Angriffsfächer.',
     },
-    {
+    {am:'2026-08-25',
       titel: 'Die Zulagen sind Sammelkarten geworden',
-      was: 'Namensleiste mit der Stufe, Bildfenster, Typenzeile, Textfeld — und fünfundvierzig gemalte Motive, eines je Familie und Stufe.',
-      wo: 'Charakterfenster, zweites Blatt „Kartenmappe" — oder Taste Z.',
+      was: 'Jede Zulage ist eine Sammelkarte mit Stufe, Bild und Text, fünfundvierzig Motive.',
+      wo: 'Charakterfenster, Blatt „Kartenmappe", oder Taste Z.',
     },
-    {
+    {am:'2026-08-25',
       titel: 'Das Haus zeichnet seine Sinnbilder selbst',
-      was: 'Schwert, Trank, Rucksack, Personalakte, Zielkreuz, Beute, Befähigung, Reiterband und die Münzen im Feld sind nicht mehr die Zeichen Ihres Telefons, sondern die des Spiels. Ein gesperrter Zauber trägt jetzt das Verbotsschild, das er verdient.',
-      wo: 'Überall: Gürtel, Reiterband, Fensterköpfe und der Boden unter Ihren Füßen.',
+      was: 'Schwert, Trank, Rucksack, Zielkreuz, Münzen und die übrigen Zeichen sind die des Spiels, nicht die Ihres Telefons.',
+      wo: 'Gürtel, Reiterband, Fensterköpfe, Boden.',
     },
-    {
+    {am:'2026-08-25',
       titel: 'Am Telefon sind die Knöpfe Knöpfe geworden',
-      was: 'Angriffsfächer und Knopfspalte tragen jetzt die Achteckform, die in der Grafik gezeichnet steht, statt sie unter einem Kreisrand zu verstecken. Ein gesperrter Knopf zeigt nur noch sein Schloss, wo bis eben ein Text aus dem Knopf herauslief.',
-      wo: 'Nur am Finger: Fächer unten rechts, Knopfspalte am linken Rand.',
+      was: 'Angriffsfächer und Knopfspalte haben die gezeichnete Achteckform. Ein gesperrter Knopf zeigt nur sein Schloss.',
+      wo: 'Nur am Finger: Fächer unten rechts, Knopfspalte links.',
     },
-    // --- T5, 26.08.2026 -----------------------------------------------------
-    // Normales Deutsch, wie es die Formregel "Das Register haengt am Ort" seit
-    // heute fuer jeden Erklaertext verlangt. Die wo-Zeilen nennen nur Wege, die
-    // es wirklich gibt; tools/mitteilung-pruef.mjs drueckt sie nach.
-    {
+    // --- T5, 26.08.2026 ---------------------------------------------------------
+    {am:'2026-08-26',
       titel: 'Die Hinweise reden Deutsch',
-      was: 'Die kurzen Hinweise im Band sagen jetzt, was los ist und was Sie tun können, ohne dass man sie zweimal liest. Aus „Sie verlieren Konfetti. Das ist selten gut." ist „Sie haben kaum noch Kraft übrig. Ein Trank hilft." geworden. Elf Zeilen sind so überarbeitet.',
-      wo: 'Im Band unter der Statusleiste, sobald es etwas zu sagen gibt.',
+      was: 'Elf Hinweise im Band sagen jetzt, was los ist und was Sie tun können. Aus „Sie verlieren Konfetti." wurde „Sie haben kaum noch Kraft übrig. Ein Trank hilft."',
+      wo: 'Band unter der Statusleiste.',
     },
-    {
+    {am:'2026-08-26',
       titel: 'Anlage 2 legt den Amtston ab',
-      was: 'Sie fängt an wie ein Schriftstück: Aktenzeichen, vier Abkürzungen in zwei Zeilen, alles korrekt. Nach fünf Sätzen hört sie damit auf und sagt selbst, warum. Danach redet sie normal, und über die Sprache dieses Hauses lässt sie gelegentlich etwas fallen.',
-      wo: 'Gleich zu Beginn, wenn sie sich vorstellt. Wer schon im Dienst ist, hört den Unterschied im Band.',
+      was: 'Anlage 2 beginnt wie ein Schriftstück, hört nach fünf Sätzen damit auf und sagt, warum.',
+      wo: 'Bei ihrer Vorstellung; im Dienst im Band.',
     },
-    {
+    {am:'2026-08-26',
       titel: 'Anlage 2 erklärt Ihnen die Welt',
-      was: 'Neu in ihrem Gespräch ist die Frage „Erklären Sie mir diese Welt." Dahinter liegen drei Themen: was hier eigentlich los ist, warum es dieses Amt gibt, und wo Sie sind und was Sie darin tun. Sie erzählt das in Ruhe und wiederholt sich gern.',
-      wo: 'Im Rucksack Anlage 2 anklicken, dann die Frage auswählen.',
+      was: 'Neue Frage „Erklären Sie mir diese Welt." mit drei Themen: was hier los ist, warum es das Amt gibt, wo Sie sind.',
+      wo: 'Rucksack, Anlage 2 anklicken, Frage wählen.',
     },
-    {
+    {am:'2026-08-26',
       titel: 'Der Anfang zeigt mehr von der Welt',
-      was: 'Das Intro hat zwei Blätter dazubekommen: eine Landkarte, auf der die Gegend keine Ortsnamen trägt, sondern Buchstaben, und die Tafel über der Amtstür mit dem Satz, auf dem hier alles steht. Das Einstellungsformular sagt jetzt außerdem, was der Außendienst überhaupt ist.',
-      wo: 'Beim ersten Dienstantritt. Wer den hinter sich hat, sieht es nicht noch einmal.',
+      was: 'Zwei Blätter mehr im Intro: die Landkarte mit Buchstaben statt Namen und die Tafel über der Amtstür. Das Einstellungsformular sagt, was der Außendienst ist.',
+      wo: 'Beim ersten Dienstantritt, einmal.',
     },
-    // --- T6, 26.08.2026 -----------------------------------------------------
-    // Der Punkt sagt, was der Spieler sieht, und nicht, wie es gebaut ist. Die
-    // Pointe steht im dritten Satz und wird nicht erklaert: wer sie beim Lesen
-    // nicht merkt, merkt sie beim Spielen.
-    {
+    // --- T6, 26.08.2026 ---------------------------------------------------------
+    {am:'2026-08-26',
       titel: 'Sie dürfen entscheiden, ob Sie lesen',
-      was: 'Beim ersten Treffen mit Anlage 2 stellt das Haus Ihnen frei, ob Sie sie lesen möchten. Die Freistellung ist echt. Das Ergebnis steht fest.',
-      wo: 'Gleich nachdem sie sich vorgestellt hat, auf beiden Wegen in den Dienst.',
+      was: 'Beim ersten Treffen mit Anlage 2 stellt das Haus Ihnen frei, ob Sie lesen. Die Freistellung ist echt. Das Ergebnis steht fest.',
+      wo: 'Gleich nach ihrer Vorstellung.',
     },
-    // --- IN1, 26.08.2026 ----------------------------------------------------
-    // Zwei Punkte, weil es zwei Dinge sind: dass man hineinkommt, und dass
-    // drinnen jemand steht. Die wo-Zeilen nennen nur Wege, die es gibt.
-    {
+    // --- IN1, 26.08.2026 --------------------------------------------------------
+    {am:'2026-08-26',
       titel: 'Drei Häuser stehen jetzt offen',
-      was: 'Das Amt, die Registratur und das Gasthaus Zum Letzten Stempel haben ein Inneres bekommen. Man geht hinein, man läuft darin herum, man geht wieder hinaus. Im Amt steht der Schreibtisch, an dem vor Ihnen jemand gearbeitet hat, und auf ihm die Pflanze, die noch lebt. Im Wirtshaus brennt das Feuer im Kamin, daneben liegt das Holz, hinter der Theke stehen die Fässer und darüber das Flaschenbord, an der Ostwand geht eine Standuhr, und durch die zwei Fenster in der Nordwand sieht man den Abend.',
-      wo: 'An der gemalten Tür der drei Häuser steht Betreten. Der Feierabend liegt seither drinnen, am Dienstpult.',
+      was: 'Amt, Registratur und Gasthaus Zum Letzten Stempel haben ein Inneres: Schreibtisch und Pflanze im Amt, Kamin, Fässer und Standuhr im Wirtshaus.',
+      wo: 'An der Tür der drei Häuser steht Betreten. Der Feierabend liegt drinnen am Dienstpult.',
     },
-    {
+    {am:'2026-08-26',
       titel: 'Zum Feierabend geht das Dorf hinein',
-      was: 'Im letzten Viertel Ihrer Schicht sind drei Leute nicht mehr auf dem Anger: Wirt Fass steht dann hinter seiner Theke, Registratorin Bramsche zwischen ihren Regalen und Nörgel an seinem Schreibtisch. Wer sie abends sprechen will, muss ihnen nachgehen.',
-      wo: 'In den drei Häusern, sobald die Dienstuhr unter ein Viertel gefallen ist.',
+      was: 'Im letzten Viertel der Schicht stehen Fass, Bramsche und Nörgel in ihren Häusern. Wer sie abends sprechen will, geht ihnen nach.',
+      wo: 'In den drei Häusern, sobald die Dienstuhr unter ein Viertel fällt.',
     },
-    // --- Kammerausgang, 27.08.2026 ------------------------------------------
-    // Eine Berichtigung und kein Bauabschnitt. Sie steht hier trotzdem, weil
-    // sie gemeldet wurde und weil sie sichtbar war: wer auf dem Telefon aus
-    // einer Kammer kam, stand in einer schwarzen Welt und hat sich das nicht
-    // eingebildet. Der Punkt sagt, was man jetzt sieht, und nicht, welche
-    // Zeile gefehlt hat — das steht in KAMMERAUSGANG-2026-08-27.md.
-    {
+    // --- Kammerausgang, 27.08.2026 ----------------------------------------------
+    {am:'2026-08-27',
       titel: 'Der Weg aus der Kammer führt wieder ins Bild',
-      was: 'Wer eine Kammer verließ, wurde bisher in einem langen Flug quer über die Karte zu seiner Tür zurückgetragen. Am Telefon konnte dabei der Boden wegbleiben: die Welt war schwarz, und sie kam erst mit der nächsten Kammer zurück. Jetzt steht man ohne Flug vor der Tür, und der Boden steht mit.',
-      wo: 'An jeder Kammertür, sobald Sie über die Ausgangsrune im Vorraum oder über 🏳️ Abbruch hinausgehen.',
+      was: 'Wer eine Kammer verlässt, steht ohne Flug über die Karte vor der Tür, und der Boden steht mit.',
+      wo: 'An jeder Kammertür, über die Ausgangsrune oder 🏳️ Abbruch.',
     },
   ],
 };
@@ -3748,10 +3749,23 @@ function neuerungenFaellig(){
   return true;
 }
 
-function showNeuerungen(){
+// HM-kurz: welche Punkte die Mitteilung beim Start zeigt. Alle ab dem Tag des
+// zuletzt gestempelten Standes (der Stand beginnt mit dem ISO-Datum); ohne
+// Stempel alle. Derselbe Tag zaehlt mit, weil an einem Tag mehrere Staende
+// fallen koennen und ein Punkt lieber zweimal steht als nie.
+function neuerungenNeu(){
+  const stand = neuerungenStandLesen();
+  if(!stand) return NEUERUNGEN.punkte;
+  const seit = stand.slice(0, 10);
+  const neu = NEUERUNGEN.punkte.filter(p => !p.am || p.am >= seit);
+  return neu.length ? neu : NEUERUNGEN.punkte;
+}
+
+function showNeuerungen(alle){
   state = 'menu';
   camSnap();   // gleiche Kameraregel wie das Startbild: hinter dem Blatt steht das Dorf
-  const punkte = NEUERUNGEN.punkte.map(p => `
+  const liste = alle ? NEUERUNGEN.punkte : neuerungenNeu();
+  const punkte = liste.map(p => `
     <div class="neuPunkt">
       <b>${p.titel}</b>
       <p>${p.was}</p>
@@ -3760,10 +3774,10 @@ function showNeuerungen(){
   document.getElementById('ovPanel').innerHTML = `
     <h1>HAUSMITTEILUNG</h1>
     <h3>Umlauf vom ${NEUERUNGEN.datum} · zur Kenntnis</h3>
-    <p style="font-size:calc(13px * var(--fs));color:#c9b98a;margin:0;">${neuerungenStellen(NEUERUNGEN.punkte.length)}, an denen seit Ihrer letzten Schicht umgeräumt wurde. Kurz, was und wo.</p>
+    <p style="font-size:calc(13px * var(--fs));color:#c9b98a;margin:0;">${neuerungenStellen(liste.length)}, an denen ${alle ? 'bisher' : 'seit Ihrer letzten Schicht'} umgeräumt wurde. Kurz, was und wo.</p>
     <div class="neuListe">${punkte}</div>
     <button onclick="neuerungenWeg()">Zur Kenntnis genommen</button>
-    <p class="neuFuss">Steht ab jetzt auch im Startbild unter „Was ist neu".</p>
+    <p class="neuFuss">${alle ? 'Der ganze Umlauf.' : 'Der ganze Umlauf steht im Startbild unter „Was ist neu".'}</p>
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
 }
@@ -3798,7 +3812,7 @@ function showStartScreen(){
     <div><button onclick="spielstandVerwerfen()" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Neue Schicht beginnen</button></div>`
     : `<button onclick="startGame()">${erst ? 'Dienst antreten' : 'Dienst fortsetzen'}</button>`}
     ${erst ? '' : `<div>
-      ${NEUERUNGEN.punkte.length ? `<button onclick="showNeuerungen()" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin:10px 8px 0 0;">Was ist neu</button>` : ''}
+      ${NEUERUNGEN.punkte.length ? `<button onclick="showNeuerungen(true)" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin:10px 8px 0 0;">Was ist neu</button>` : ''}
       <button onclick="showDienstblatt(2,'menu')" style="font-size:calc(13px * var(--fs));padding:9px 20px;margin-top:10px;">Dienstanweisung</button></div>`}
   `;
   document.getElementById('overlay').style.display = 'flex'; MUS.muffle(true);
@@ -5365,6 +5379,7 @@ function vorgangBestandBlock(){
 // trotzdem stehen: showJahresgespraech() hängt am WEITER-Knopf des
 // Dienstberichts, amt.schichten steht aber schon vorher gespeichert da. Wer auf
 // dem Bericht neu lädt, bekommt das Siegel nie. "Nie leer" wäre wieder falsch.
+const PUZZLE4_KANON = 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“';
 const VORGANG_PUZZLE = [
   {frei: () => rangDienstsiegel(),
    text: 'Er braucht einen Stift. Das Dienstsiegel liegt bereit, seit einem Jahresgespräch. Er benutzt es zum ersten Mal.',
@@ -5381,10 +5396,18 @@ const VORGANG_PUZZLE = [
   // hier seit W5 steht, Wort für Wort. Der Kanon von Kapitel 9 liegt also in
   // der sonst-Fassung und nicht im Zusatz, damit ein fehlender Strang nichts
   // wegnimmt, sondern der vorhandene etwas dazugibt.
-  {frei: () => langFertig('bericht'),
-   text: 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“ Dieselbe Begründung hat in diesem Haus schon einmal getragen, unter dem sechsten Praktikumsbericht, gezeichnet von einem Sachbearbeiter auf Probe. Der Fall ist aktenkundig. Es fragt niemand nach.',
-   sonst: 'Er braucht eine weisungsbefugte Gegenzeichnung. Sturz kommt aus dem Nebenzimmer, mit einer Teetasse. „Ich bin noch im Dienst. Meine Entpflichtung wurde nie bearbeitet.“'},
+  // LV11-13: ein zweiter Zusatz am selben Teil, aus dem richtigen Wortlaut.
+  // Die Archivausfertigung ist "in Akt V das Blatt, das Sturz gegenzeichnet"
+  // (Weltgeschichte, Kapitel 10). text ist deshalb eine Funktion: zwei
+  // Straenge, vier Fassungen, und der Kanon aus Kapitel 9 steht in jeder davon
+  // vorn. puzzleText() liest beides, Zeichenkette oder Funktion.
+  {frei: () => langFertig('bericht') || langFertig('wortlaut'),
+   text: () => PUZZLE4_KANON
+     + (langFertig('bericht') ? ' Dieselbe Begründung hat in diesem Haus schon einmal getragen, unter dem sechsten Praktikumsbericht, gezeichnet von einem Sachbearbeiter auf Probe. Der Fall ist aktenkundig. Es fragt niemand nach.' : '')
+     + (langFertig('wortlaut') ? ' Sie zeichnet auf der Archivausfertigung aus Zimmer 4 gegen, dem Blatt, das beweist, dass der Krieg nie zu Ende war. Bramsche hat es herausgegeben. Auf Antrag, im richtigen Wortlaut.' : ''),
+   sonst: PUZZLE4_KANON},
 ];
+const puzzleText = v => typeof v === 'function' ? v() : v;
 // GW10, dritte Bedingung. Das Dienstsiegel (JAHRES_BONI Index 3, siehe
 // showJahresgespraech()) fällt bei amt.schichten === 40 — exakt der Sprung von
 // aktStand() auf 5. Ohne diese Bindung war das Zustellen schon ab Schicht 30
@@ -5472,7 +5495,21 @@ const vorgangAnhaengig = () => CONFIG.schichtModus && kn.flags.szeneVersuchung;
 // Bild 10, 12 und 13 sind nach der Weltgeschichte nicht verhandelbar und
 // stehen deshalb woertlich: der Regen, der vierte Takt, Vorgang 2.
 function abspannBlaetter(){
-  return [
+  // LV11-13: der Regen. Ohne den Eimer faellt er als zehntes Bild, mitten auf
+  // das Fest; mit dem Eimer zwei Bilder frueher, vor Noergels Entfristung, und
+  // Nieselbeck hat den Hut auf. Dasselbe Blatt an einer anderen Stelle, mit
+  // einer anderen Regieangabe. Die Hymne bleibt an Index 11, weil nur
+  // umsortiert wird, was vor ihr liegt (ABSPANN_HYMNE_BLATT, Guard in
+  // vorgangAssert()).
+  const eimer = langFertig('eimer');
+  const regen = eimer
+    ? {blatt:'Und dann regnet es. Zum ersten Mal seit hundertfünfzehn Jahren, noch vor dem Fest.',
+       stimme:[{wer:'Nieselbeck', z:'Gemeldet wird: Niederschlag.'}],
+       regie:'Die Veranlassung lag im Frostkamm und ist weitergeleitet, mit Vermerk. Nieselbeck hat den Hut auf. Er hatte ihn seit dem Morgen auf.'}
+    : {blatt:'Und dann regnet es. Zum ersten Mal seit hundertfünfzehn Jahren, mitten auf ein Dorffest.',
+       stimme:[{wer:'Nieselbeck', z:'Gemeldet wird: Niederschlag.'}],
+       regie:'Die Veranlassung lag im Frostkamm und war ein zurückgestellter Vorgang. Alle bleiben stehen und werden nass und finden es großartig.'};
+  const liste = [
     {z1:'Hochablage, am selben Nachmittag.',
      z2:'In vierzehn Türmen klappen Aktendeckel zu, von allein, Stockwerk für Stockwerk, wie Applaus. Niemand fällt um. Es wird nur sehr viel leichter im Raum.'},
 
@@ -5509,9 +5546,7 @@ function abspannBlaetter(){
      // endlich angenommen (Grundgesetz 12, Reichsregel 7).
      z2:'Zwirn hält eine Rede. Sie ist sehr lang, und alle hören zu. Lott und Pahl finden die Musik zu laut. Fass räumt nicht ab, weil zum ersten Mal alle bis zum Ende bleiben. Das Gasthaus heißt Zum Letzten Stempel und hat vierhundert Jahre darauf gewartet.'},
 
-    {blatt:'Und dann regnet es. Zum ersten Mal seit hundertfünfzehn Jahren, mitten auf ein Dorffest.',
-     stimme:[{wer:'Nieselbeck', z:'Gemeldet wird: Niederschlag.'}],
-     regie:'Die Veranlassung lag im Frostkamm und war ein zurückgestellter Vorgang. Alle bleiben stehen und werden nass und finden es großartig.'},
+    regen,
 
     {blatt:'Vorblatt steht am Rand, in Hemdsärmeln, ohne Rang, den Stempel in der Hand. Er weiß nicht, wohin damit.',
      // Die einzige Wechselrede des Abspanns, und der Grund, warum der
@@ -5530,6 +5565,9 @@ function abspannBlaetter(){
      stimme:[{wer:'Auf dem Umschlag', z:'Vorgang 2.'}],
      regie:'Sie bräuchte eine Empfangsbestätigung. Es ist niemand da. Sie unterschreibt das Empfangsbekenntnis selbst, mit ihrem eigenen Namen, und geht.'},
   ];
+  // Zwei Bilder frueher: von Platz 10 (Index 9) auf Platz 8 (Index 7).
+  if(eimer){ liste.splice(9, 1); liste.splice(7, 0, regen); }
+  return liste;
 }
 
 // Der Stapel laeuft im selben #overlay, in dem gerade das Finale stand, und
@@ -5606,7 +5644,7 @@ function vorgangPanelHtml(schritt){
     <p style="font-size:calc(12px * var(--fs));font-style:italic;color:#c9b98a;">„Vierhundert Jahre. Und Sie kommen einfach vorbei.“</p>
     <button onclick="vorgangPanel(5)">WEITER</button>`;
   if(schritt === 5){
-    const teile = VORGANG_PUZZLE.map(p => `<p>${p.frei() ? p.text : (p.sonst || p.text)}</p>`).join('');
+    const teile = VORGANG_PUZZLE.map(p => `<p>${puzzleText(p.frei() ? p.text : (p.sonst || p.text))}</p>`).join('');
     // Die Kapsel. Sie liegt nur auf dem Tisch, wenn der Spieler den Stopfen
     // gezogen hat, und sie ist der einzige Lohn dieses Strangs, der im Finale
     // ankommt. Gelesen wird amt.stopfenSchicht, dieselbe Groesse, an der SZ3
@@ -5855,7 +5893,9 @@ function vorgangAssert(){
   for(const k in WIN_ZEILEN) WIN_ZEILEN[k].forEach((l,i) => text(l, 'Kampf-Tod '+k+'/'+i)); // RL1
   if(!WIN_ZEILEN.offen || WIN_ZEILEN.offen.length !== 3 || !WIN_ZEILEN.geschlossen || WIN_ZEILEN.geschlossen.length !== 3)
     fehler('WIN_ZEILEN hat nicht je drei Zeilen');
-  VORGANG_PUZZLE.forEach((p,i) => { text(p.text, 'Puzzle '+i); if(p.sonst) text(p.sonst, 'Puzzle-Sonst '+i); });
+  // LV11-13: text darf eine Funktion sein; geprueft wird hier der aktuelle
+  // Strangstand, beide Strangzustaende rendert langAssert() Punkt (10).
+  VORGANG_PUZZLE.forEach((p,i) => { text(puzzleText(p.text), 'Puzzle '+i); if(p.sonst) text(puzzleText(p.sonst), 'Puzzle-Sonst '+i); });
   VERTAGT_ZEILEN.forEach((l,i) => text(l, 'Vertagung '+i));
   if(VERTAGT_ZEILEN.length !== 3) fehler('VERTAGT_ZEILEN hat nicht drei Zeilen', VERTAGT_ZEILEN.length);
 
@@ -6285,7 +6325,14 @@ const LANG_EREIGNISSE = ['kill','kammer','kessel','trank','zauber','ablage','zut
                          // auftragEreignis(), sondern aus der Kontextaktion an der
                          // brummenden Stelle — deshalb eine eigene Art und kein
                          // Zweckentfremden von 'ablage'.
-                         'stopfenort'];
+                         'stopfenort',
+                         // LV11-13: zwei Szenenschritte. 'schublade' feuert, wenn
+                         // die zweite Schublade zugeklappt ist (Szene 3), 'stempel',
+                         // wenn Vorblatt in Szene 7 den Zwischenbescheid aufdrueckt.
+                         // Beide kommen aus szeneEnde-Haken und von nirgends sonst,
+                         // deshalb eigene Arten und kein Zweckentfremden von
+                         // 'amtstube', das der Giesskanne gehoert.
+                         'schublade', 'stempel'];
 
 // Feldform je Strang:
 //   figur   DORF_FIGUREN-Key oder 'knoeterich' — wer den Strang trägt
@@ -6749,6 +6796,163 @@ LANGVORGAENGE.gutachter = {
 };
 
 
+// ---------------------------------------------------------------------------
+//  Weltgeschichte Kapitel 10, Nummer 11: DER EIMER.  (LV11-13)
+//
+//  Nieselbeck darf die Veranlassung fuer Niederschlag nicht holen, weil er fuer
+//  Wetter zustaendig ist und nicht fuer Ablagen. Der Aussendienst ist fuer
+//  Ablagen zustaendig. Also holt der Spieler sie: aus einer Kammertruhe im
+//  Frostkamm (biome 'snow'), ueber denselben 'kammer'-Trichter, den der
+//  Gutachter benutzt, nur dass hier das Biom der Kammer zaehlt und nicht ihre
+//  Zahl. Kein neues Ereignis, kein Gegenstand im Rucksack: die Veranlassung
+//  ist ein Bit im Rohwert, und truheOeffnen() wirft dafuer einen Floater.
+//
+//  Rohwert zweigeteilt wie beim Gutachter: untere vier Bits die Stufe (was
+//  Nieselbeck erzaehlt hat), Bit 4 die Veranlassung (ob sie aus dem Frostkamm
+//  heraus ist). Stufe 2 setzt das Bit voraus; vorher hat er nichts zu melden.
+//
+//  Belohnung: ausdruecklich kein Bonus. Im Abspann regnet es zwei Bilder
+//  frueher, und Nieselbeck hat den Hut auf (abspannBlaetter()). Dazu zwei
+//  Zusatzzeilen bei ihm (DORF_FIGUREN, Schalter lang).
+// ---------------------------------------------------------------------------
+const EIMER_BEATS = [
+  {z1:'Gemeldet wird: Vlg. liegt im Frostkamm.',    z2:'Auf Eis. Nicht mein Ressort.'},
+  {z1:'Gemeldet wird: Vlg. eingegangen. Ungeöffnet.', z2:'Ich fasse sie nicht an.'},
+  {z1:'Weitergeleitet. An die zuständige Stelle.',  z2:'Vermerk: eilt. Seit 897.'},
+  {z1:'Gemeldet wird: TNM negativ. Vorerst.',       z2:'Hut: herausgelegt. Eimer: steht.'},
+];
+const EIMER_VLG = 16;   // Bit 4: die Veranlassung ist aus dem Frostkamm heraus
+
+LANGVORGAENGE.eimer = {
+  figur:'nieselbeck', titel:'Der Eimer', stufen:EIMER_BEATS.length,
+  hoert:['ansprechen','kammer'],
+  // Akt II, wenn die Aktenfunde beginnen: die Veranlassung ist eine Ablage, und
+  // dass es im Frostkamm eine gibt, sagt Bramsche ab demselben Akt.
+  wenn: () => aktStand() >= 2,
+  stufe: roh => roh & 15,
+  schritt(was, info, roh){
+    const st = roh & 15, vlg = roh & EIMER_VLG;
+    // Der Ortsschritt: eine Kammertruhe im Frostkamm, nachdem er gesagt hat, wo.
+    // info ist das kammer-Objekt aus truheOeffnen() (auftragEreignis('kammer', k)).
+    if(was === 'kammer' && info && info.biome === 'snow' && st >= 1 && !vlg) return roh | EIMER_VLG;
+    if(was === 'ansprechen' && info && info.key === 'nieselbeck'){
+      if(st === 0) return 1;
+      if(st === 1 && vlg) return 2 | vlg;
+      if(st >= 2 && st < EIMER_BEATS.length) return (st + 1) | vlg;
+    }
+    return roh;
+  },
+  fortschritt: st => EIMER_BEATS[st - 1],
+  // Die zwei Zeilen danach stehen in DORF_FIGUREN am Schalter lang, wie bei
+  // Noergel (LV4), nicht hier als zusatz: zwei Quellen fuer dieselben Zeilen
+  // waeren zweimal dieselbe Sprechblase im Kreislauf.
+  bestand(st){
+    const vlg = langRoh('eimer') & EIMER_VLG;
+    return st >= EIMER_BEATS.length
+      ? 'Der Eimer: die Veranlassung ist weitergeleitet. Kein Bonus. Der Hut liegt heraus.'
+      : 'Der Eimer: ' + st + ' von ' + EIMER_BEATS.length + '. ' + (vlg ? 'Die Veranlassung ist aus dem Frostkamm geholt.' : 'Die Veranlassung liegt im Frostkamm, auf Eis.');
+  },
+};
+
+// ---------------------------------------------------------------------------
+//  Weltgeschichte Kapitel 10, Nummer 12: DER RICHTIGE WORTLAUT.  (LV11-13)
+//
+//  Die Archivausfertigung liegt in Zimmer 4. Bramsche gibt sie ohne korrekt
+//  gestellten Antrag nicht heraus; Pommer weiss, wie ein Antrag lauten muss,
+//  weil er nur ausgibt, was dasteht. Man erzaehlt beiden dieselbe Sache in
+//  verschiedenen Worten: sieben Beats, abwechselnd, wie die Kette bei
+//  Hintermuehl, nur dass hier jeder Schritt den Satz um ein Wort richtiger
+//  macht. Pommers Haelfte ist die Tatsache aus figuren-leben.md, die in keiner
+//  Sprechblase stehen durfte, bis sie hier faellt: er schreibt abends Entwuerfe.
+//
+//  Der Strang steht HINTER anlage3 in der Tabelle, und das ist die Schlange,
+//  die bei bericht und stopfen schon vermerkt ist: Bramsche traegt drei
+//  Straenge, langAnsprechen() nimmt den ersten, der vorrueckt. Anlage 3 (Akt
+//  II) geht also vor, der Wortlaut (Akt III) danach. Wer beide offen hat,
+//  braucht bei ihr ein paar Tastendruecke mehr, und das ist bei einer Frau,
+//  die "In welcher Sache?" sagt, kein Fehler.
+//
+//  Belohnung: die Archivausfertigung. Kein Bonus, kein Gegenstand: in Akt V ist
+//  sie das Blatt, auf dem Sturz gegenzeichnet (VORGANG_PUZZLE, viertes Teil,
+//  nach derselben Bauregel wie LV4: der Zusatz kommt dazu, der Kanon bleibt).
+//  Dazu je zwei Zusatzzeilen bei Bramsche und Pommer.
+// ---------------------------------------------------------------------------
+const WORTLAUT_BEATS = [
+  {z1:'Zimmer 4? Die Archivausfertigung.',          z2:'In welcher Sache? Auf Antrag?'},
+  {z1:'Ein Antrag ist, was dasteht.',               z2:'Nicht, was gemeint ist.'},
+  {z1:'Ich hätte gern ist kein Antrag.',            z2:'Das ist ein Wunsch. Abgelegt.'},
+  {z1:'Schreiben Sie: Es wird beantragt.',          z2:'Dann steht es. Dann geht es.'},
+  {z1:'Es wird beantragt. Schon besser.',           z2:'Was denn? Das steht nicht da.'},
+  {z1:'Die Sache in den Satz. Ich übe das abends.', z2:'Für Fälle, die nie eintreten.'},
+  {z1:'Herausgabe der Archivausfertigung, Zimmer 4.', z2:'So steht es da. Hier. Bitte.'},
+];
+const WORTLAUT_DRAN = ['bramsche', 'pommer', 'bramsche', 'pommer', 'bramsche', 'pommer', 'bramsche'];
+
+LANGVORGAENGE.wortlaut = {
+  figur:'bramsche', titel:'Der richtige Wortlaut', stufen:WORTLAUT_BEATS.length,
+  hoert:['ansprechen'],
+  // Akt III: dass der Krieg nicht zu Ende ist, weiss der Spieler seit Akt II
+  // (Serie A). Das Blatt, das es beweist, kommt einen Akt spaeter.
+  wenn: () => aktStand() >= 3,
+  schritt(was, info, roh){
+    if(was !== 'ansprechen' || !info) return roh;
+    return info.key === WORTLAUT_DRAN[roh] ? roh + 1 : roh;
+  },
+  fortschritt: st => WORTLAUT_BEATS[st - 1],
+  bestand: st => st >= WORTLAUT_BEATS.length
+    ? 'Der richtige Wortlaut: die Archivausfertigung ist herausgegeben. Auf Antrag, korrekt gestellt.'
+    : 'Der richtige Wortlaut: ' + st + ' von ' + WORTLAUT_BEATS.length + '. Zimmer 4 bleibt zu.',
+};
+
+// ---------------------------------------------------------------------------
+//  Weltgeschichte Kapitel 10, Nummer 13: EINUNDVIERZIG BLAETTER.  (LV11-13)
+//
+//  Jeden Zwischenbescheid sammeln, den Vorblatt je in dieses Haus geschickt
+//  hat. Vierzig liegen im Schreibtisch, der einundvierzigste klebt in Akt V auf
+//  dem Umschlag. Beides gibt es im Spiel seit SZ2 und SZ4: die zweite Schublade
+//  (Szene 3, schubladeBlaetter(), vierzig Tafeln von 972 bis 1011) und der
+//  Stempel am Ende der Versuchung (Szene 7). Der Strang zaehlt also, was zwei
+//  Szenen ohnehin tun, und haengt sich mit zwei Haken dran: schubladeEnde()
+//  und versuchungEnde(). Kein neuer Ort, kein neuer Gegenstand.
+//
+//  Rohwert ist die Zahl der Blaetter (0, 40, 41), die Stufe daraus abgeleitet:
+//  1 bei vierzig, 2 bei einundvierzig. Die Fortschrittszeilen werden nie
+//  gesprochen (kein ansprechen-Schritt), sie stehen fuer den Guard und den
+//  Reiter.
+//
+//  Belohnung: wer die vierzig hat, darf Vorblatt in Szene 7 eine fuenfte
+//  Antwort geben (SZENEN.versuchung, Frage 'jahre'). Vierzig und nicht
+//  einundvierzig, und das ist kein Rabatt: der einundvierzigste ist der
+//  Stempel, den er in genau dieser Szene aufdrueckt. Wer ihn zur Bedingung
+//  machte, machte die Antwort unerreichbar. Danach zwei Zusatzzeilen bei ihm.
+// ---------------------------------------------------------------------------
+const BESCHEIDE_SCHUBLADE = 40, BESCHEIDE_ALLE = 41;
+
+LANGVORGAENGE.bescheide = {
+  figur:'vorblatt', titel:'Einundvierzig Blätter', stufen:2,
+  hoert:['schublade','stempel'],
+  wenn: () => aktStand() >= 3,   // die Schublade klemmt ab Akt III (SZENEN.schublade)
+  stufe: roh => roh >= BESCHEIDE_ALLE ? 2 : roh >= BESCHEIDE_SCHUBLADE ? 1 : 0,
+  schritt(was, info, roh){
+    if(was === 'schublade' && roh < BESCHEIDE_SCHUBLADE) return BESCHEIDE_SCHUBLADE;
+    if(was === 'stempel' && roh >= BESCHEIDE_SCHUBLADE && roh < BESCHEIDE_ALLE) return BESCHEIDE_ALLE;
+    return roh;
+  },
+  fortschritt: st => [
+    {z1:'Vierzig Zwischenbescheide. Ein Name.',         z2:'Gezeichnet: zu Händen Vorblatt.'},
+    {z1:'Der einundvierzigste klebt auf dem Umschlag.', z2:'Jetzt sind es alle.'},
+  ][st - 1],
+  bestand(st){
+    const n = Math.min(BESCHEIDE_ALLE, langRoh('bescheide'));
+    return st >= 2
+      ? 'Einundvierzig Blätter: vollständig. Der letzte klebt auf dem Umschlag.'
+      : 'Einundvierzig Blätter: ' + n + ' von ' + BESCHEIDE_ALLE + ' im Schreibtisch. Der letzte ist noch unterwegs.';
+  },
+};
+// Die fuenfte Antwort in Szene 7 fragt genau das, und nur das.
+const bescheideVierzig = () => CONFIG.schichtModus && langRoh('bescheide') >= BESCHEIDE_SCHUBLADE;
+
+
 // Was das Kammerschild anzeigt. Milb liegt immer NACH UNTEN daneben: jede Kammer
 // liefert mehr als angekündigt, ein W4-Aushang "ab Aufwand N" wird dadurch nie
 // schwerer. t.diff und t.tier selbst bleiben unangetastet — Beute, die
@@ -6791,6 +6995,18 @@ const langLaeuft = k => CONFIG.schichtModus && LANGVORGAENGE[k].wenn() && !langF
   if(!amt.stopfenSchicht && langFertig('stopfen')){ amt.stopfenSchicht = amt.schichten + 1; nachgezogen = true; }
   if(!amt.adressSchicht && vorgangHat(4)){ amt.adressSchicht = amt.schichten + 1; nachgezogen = true; }
   if(nachgezogen) saveAmt();
+})();
+// LV11-13: dieselbe Heilung in die andere Richtung. Wer die Schublade oder die
+// Versuchung gespielt hat, bevor es den Strang gab, traegt die Merker in kn
+// und den Rohwert auf 0. Die Merker sind hier die Wahrheitsquelle, der Strang
+// wird aus ihnen nachgezogen; ohne das waere die fuenfte Antwort fuer jeden
+// Altbestand auf ewig zu. Nur im Schichtmodus, wie langEreignis() selbst.
+(function bescheideMigration(){
+  if(!CONFIG.schichtModus) return;
+  let roh = langRoh('bescheide');
+  if(kn.flags.szeneSchublade && roh < BESCHEIDE_SCHUBLADE) roh = BESCHEIDE_SCHUBLADE;
+  if(kn.flags.szeneVersuchung && roh >= BESCHEIDE_SCHUBLADE && roh < BESCHEIDE_ALLE) roh = BESCHEIDE_ALLE;
+  if(roh !== langRoh('bescheide')){ kladde.lang.bescheide = roh; saveKladde(); }
 })();
 
 // Der Trichter. Hängt an auftragEreignis(), deckt damit alle acht bestehenden
@@ -7161,6 +7377,12 @@ const LANG_PROBEN = {
   // Stopfens unerreichbar, und Punkt (2) meldete zu Recht einen toten Eintrag —
   // genau das hat er beim ersten Lauf getan.
   stopfenort:  [null, {gezogen:true}],
+  // LV11-13: der Ortsschritt des Eimers ist eine Kammer im Frostkamm. Ohne die
+  // snow-Probe meldete Punkt (2) den Strang zu Recht als tot; die grass-Probe
+  // steht daneben, damit der Guard auch sieht, dass eine andere Kammer nichts tut.
+  kammer:      [null, {biome:'snow'}, {biome:'grass'}],
+  schublade:   [null],
+  stempel:     [null],
 };
 // Die drei Guards, die W7-Zustand lesen, laufen erst hier — alle drei tragen an
 // ihrer Definition den Grund. Reihenfolge egal, es sind reine Prüfungen.
@@ -9331,10 +9553,15 @@ const szeneDef = () => SZENEN[szeneAktiv] || null;
 const szeneFragen = () => { const d = szeneDef(); return (d && d.fragen) || []; };
 const szeneFrage = k => szeneFragen().find(f => f.key === k);
 // Offen heißt: noch nicht gestellt, Voraussetzung gestellt, Wartezeit vorbei.
+// LV11-13: wenn ist die dritte Voraussetzung neben frei und nach, und die erste,
+// die nicht aus der Szene selbst kommt: die fuenfte Antwort in Szene 7 haengt
+// an einem Langvorgang. Eine Funktion und kein Schluessel, weil die Szene nicht
+// wissen soll, wie der Strang seinen Stand zaehlt.
 const szeneOffen = () => szeneFragen().filter(f =>
   !szene.gefragt.has(f.key)
   && (!f.frei || szene.gefragt.has(f.frei))
-  && (!f.nach || szene.gefragt.size >= f.nach));
+  && (!f.nach || szene.gefragt.size >= f.nach)
+  && (!f.wenn || f.wenn()));
 
 // Die festen Knoten. Alles, was keine Frage aus der Liste oben ist: der Gruß,
 // die Anrede und der Abschied.
@@ -9563,7 +9790,7 @@ SZENEN.schublade = {
   sprecher: () => szeneSprecherKnoeterich(),
   start:  's1',
   sperre: [],
-  ende:   () => szeneEnde('schublade', 'szeneSchublade'),
+  ende:   () => schubladeEnde(),
   knoten: {
     // T1-Nachlese: hier stand Knoeterich vor seinem eigenen Portraet und
     // fragte "Wer ist Vorblatt?", und der Spieler antwortete darauf mit
@@ -9577,9 +9804,17 @@ SZENEN.schublade = {
     s3: {z1:'Einundvierzig.', z2:'Der erste kam vor ihrer Abreise.',
          opts: () => [{t:'Vor ihrer Abreise?', zu:'s4'}]},
     s4: {z1:'Das habe ich nicht gesagt.', z2:'Notiert habe ich es aber.',
-         opts: () => [{t:'Verstanden.', tun: () => szeneEnde('schublade', 'szeneSchublade')}]},
+         opts: () => [{t:'Verstanden.', tun: () => schubladeEnde()}]},
   },
 };
+// LV11-13: das Ende der Schublade zaehlt die vierzig Blaetter in den Strang
+// (LANGVORGAENGE.bescheide). Der Merker bleibt die Wahrheit der Szene, der
+// Strang liest ihn beim Laden nach (bescheideMigration); hier wird er nur
+// sofort gesetzt, damit die Zeile im Reiter nicht erst nach einem Neuladen steht.
+function schubladeEnde(){
+  szeneEnde('schublade', 'szeneSchublade');
+  langEreignis('schublade', null);
+}
 
 // Der Eingang. Erst der Tafelstapel, dann das Gespraech mit Knoeterich: die
 // vierzig Blaetter sind der Fund, seine vier Zeilen sind, was daraus folgt.
@@ -9787,6 +10022,17 @@ SZENEN.versuchung = {
      z1:'Einundvierzigtausend Menschen.', z2:'Sie wären morgen früh niemand mehr.'},
     {key:'zustell', t:'Und wenn ich zustelle?',
      z1:'Dann ist der Krieg vorbei.', z2:'Und wir sind es auch. Am selben Nachmittag.'},
+    // LV11-13: die fuenfte Antwort (Weltgeschichte, Kapitel 10, Nummer 13).
+    // Nur fuer den, der die vierzig Zwischenbescheide aus der Schublade kennt
+    // (bescheideVierzig()); sonst steht sie nicht in der Liste, und die Tafel
+    // bleibt bei drei Fragen und dem Ausgang. Die Spielerzeile ist auf den
+    // Antwortdeckel gekuerzt ("Sie haben einundvierzig Jahre lang gearbeitet."
+    // hat sechsundvierzig Zeichen), wie die drei Fragen darueber auch. Vorblatts
+    // drei Saetze stehen woertlich, der dritte als Fortsetzung: es ist der
+    // einzige wahre Satz seines Lebens, und er bekommt einen eigenen Zug.
+    {key:'jahre', wenn: () => bescheideVierzig(), t:'Einundvierzig Jahre Arbeit.',
+     z1:'Ja.', z2:'Und es ist nichts davon geschehen. Das war die Leistung.',
+     weiter:'j2', wt:'Vorblatt?'},
   ],
   knoten: {
     w1: {z1:'Ich bin nicht gekommen, um etwas wegzunehmen.', z2:'Ich bin gekommen, um Ihnen etwas zu geben.',
@@ -9883,6 +10129,9 @@ SZENEN.versuchung = {
     // Ausgang zeigt. Wer alle drei stellt, bekommt am Ende trotzdem denselben
     // Ausgang: es gibt in dieser Szene nichts anzunehmen und nichts abzulehnen.
     hub: {z1:'Sie kämen morgen wieder. Und übermorgen.', z2:'Sie müssten nichts tun. Nur etwas lassen.', hub:true},
+    // LV11-13: der dritte Satz der fuenften Antwort. Ohne opts, faellt auf den
+    // hub zurueck, wie jede Fortsetzung (szeneOptionen()).
+    j2: {z1:'Ich habe das lange für dasselbe gehalten.', z2:'Er sagt es ohne die Pause davor. Zum ersten Mal.'},
     // Vorblatts vierte Antwort, die auf das Schweigen. Sie steht als eigener
     // Knoten und nicht am Ausgang, weil sie in der Weltgeschichte eine Antwort
     // ist und keine Regieangabe.
@@ -9943,6 +10192,9 @@ SZENEN.versuchung = {
 // sagt (die Bauform von stopfenGezogenEnde(), SZ3).
 function versuchungEnde(){
   szeneEnde('versuchung', 'szeneVersuchung');
+  // LV11-13: der einundvierzigste Zwischenbescheid. Er zaehlt nur, wenn die
+  // vierzig aus der Schublade schon da sind (schritt() des Strangs).
+  langEreignis('stempel', null);
   floaters.push({x: player.x, y: player.y - 46, txt: 'ANHÄNGIG', col:'#c77dff', t: 3.4, big: true});
 }
 

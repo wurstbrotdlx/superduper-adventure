@@ -96,7 +96,11 @@ const stempel = () => page.evaluate(() => localStorage.getItem('sda_neuerungen')
 // Monaten rot, ohne dass etwas kaputt war. Wer den naechsten Punkt anhaengt,
 // aendert ab jetzt nichts an diesem Lauf.
 const sollStand  = () => page.evaluate(() => NEUERUNGEN.stand);
-const sollPunkte = () => page.evaluate(() => NEUERUNGEN.punkte.length);
+// HM-kurz: beim Start zaehlen nur die Punkte seit dem letzten Stand
+// (neuerungenNeu()); der ganze Umlauf steht im Startbild. Beide Zahlen werden
+// unten gegen die gerenderten Punkte gehalten.
+const sollPunkte = () => page.evaluate(() => neuerungenNeu().length);
+const sollAlle   = () => page.evaluate(() => NEUERUNGEN.punkte.length);
 
 // --- 1. Das frische Geraet -------------------------------------------------
 await laden();
@@ -137,6 +141,17 @@ pruef('das Startbild bietet das Nachlesen an',
 
 await page.locator('#ovPanel button', { hasText: 'Was ist neu' }).click();
 pruef('Nachlesen zeigt dieselbe Mitteilung', await kopf(), 'HAUSMITTEILUNG');
+pruef('Nachlesen zeigt den ganzen Umlauf',
+      await page.evaluate(() => document.querySelectorAll('#ovPanel .neuPunkt').length), await sollAlle());
+// HM-kurz: die Wand ist gemessen. Ein alter Stempel vom 25.08. laesst alles
+// seit dem 25.08. wiederkommen, also den ganzen Umlauf; ein Stempel von gestern
+// nur den heutigen Tag. Beide Faelle, mit Zahl.
+await page.evaluate(() => localStorage.setItem('sda_neuerungen', '2026-10-03-x'));
+const seitGestern = await page.evaluate(() => neuerungenNeu());
+pruef('Stempel von gestern: nur Punkte ab gestern', seitGestern.every(p => p.am >= '2026-10-03'), true);
+pruef('und das sind weniger als der ganze Umlauf', seitGestern.length < (await sollAlle()), true);
+const woerter = seitGestern.map(p => p.titel + ' ' + p.was + ' ' + p.wo).join(' ').split(/\s+/).length;
+pruef('die Startmitteilung bleibt unter 500 Woertern', woerter < 500, true);
 await page.locator('#ovPanel button', { hasText: 'Zur Kenntnis' }).click();
 pruef('und geht wieder zurueck', await kopf(), 'DAS MONSTRAL MINISTERIUM');
 
