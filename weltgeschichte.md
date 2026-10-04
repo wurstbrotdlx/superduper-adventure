@@ -256,6 +256,8 @@ Im Dorf sagt man "das kommt von oben" und "das entscheiden die da oben". Man sag
 
 **Oben ist eine Stadt.** Sie heißt **Hochablage**, sie liegt vier Tagesreisen nordöstlich, sie hat einundvierzigtausend Einwohner, und die meisten davon sind zuständig. Es fährt keine Kutsche hin, weil es keine Straße gibt. Es gab eine. Sie wurde zur Klärung zurückgestellt.
 
+*(Hinweis 04.10.2026, HO1.)* Im Spiel seit `phase-ho1-hochablage.md`: nach der Zustellung von Vorgang 1 sind zurückgestellte Vorgänge geschlossen (Szene 9, Bild 10), die Straße ist frei, und am Dorfplatz steht eine Kutsche nach Turm I, oberstes Geschoss (Szene 9, Bild 2, von innen, nach dem Nachmittag). Vorher fährt weiterhin keine. Der Erzhalter des Hauses Randbemerkung steht dort am Fenster; seine Zeilen in `figuren-dorf.md`.
+
 Wer in Vordermühl sagt, Oben sei ein Ort, wird freundlich angesehen. Es ist ungefähr so, als behauptete jemand, das Schicksal wohne in einem Haus mit einer Hausnummer.
 
 Es wohnt in einem Haus mit einer Hausnummer.

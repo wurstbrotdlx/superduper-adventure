@@ -947,6 +947,7 @@ function drawKammerTuer(t){
 
 setzeKammerTueren();
 setzeStopfen();   // SZ3: einmal je Welt, nicht je Schicht — eine Roehre wandert nicht
+setzeKutsche();   // HO1: dieselbe Regel, eine Strasse wandert auch nicht
 
 // --- QoL INVENTORY SYSTEM ---
 function buildTooltip(item, isEquipped){
@@ -2628,6 +2629,7 @@ function render(){
   // steht, ist richtig herum, und ein sortiertes Loch waere ein Sortierfehler,
   // der nur bei einer bestimmten Blickrichtung auffiele.
   drawStopfen();
+  drawKutsche();   // HO1
   if(currentLevel === 1){                               // Hoftiere, Dorf-Staffage, Kessel, Knöterich und Kammertüren, alle nur hier
     for(const c of critters) if(vis(c.x, c.y)) pushDraw(c.y, DRAW_CRITTER, c);
     for(const n of npcs) if(figHier(n.figur) && vis(n.x, n.y)) pushDraw(n.y, DRAW_NPC, n);
@@ -3572,7 +3574,8 @@ const NEUERUNGEN = {
   // Befund 8 und 9 aus RL7: vierter Stempel desselben Tages.
   // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
   // LV11-13 und die Hausmitteilung: sechster. KA1, der Druck: siebter.
-  stand: '2026-10-04-ka',
+  // HO1, Hochablage: achter.
+  stand: '2026-10-04-ho',
   datum: '4. Oktober',
   // HM-kurz (04.10.2026): jeder Punkt traegt sein Datum (am, ISO). Die
   // Hausmitteilung beim Start zeigt nur die Punkte ab dem Tag des zuletzt
@@ -3581,21 +3584,27 @@ const NEUERUNGEN = {
   // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
   // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
   punkte: [
+    // --- HO1, Hochablage, 04.10.2026 --------------------------------------------
+    {am:'2026-10-04',
+      titel: 'Nach dem Schluss fährt eine Kutsche nach Hochablage',
+      was: 'Wer Vorgang 1 zugestellt hat, findet am Dorfplatz eine Kutsche. Sie fährt nach Turm I, oberstes Geschoss.',
+      wo: 'Dorfplatz, nach dem Abspann.',
+    },
     // --- KA1, der Druck aus Hochablage, 04.10.2026 ------------------------------
     {am:'2026-10-04',
       titel: 'Ein Druck aus Hochablage hängt in der Amtsstube',
-      was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, der Poststapel, die Bank, darauf der Vierte Wartende. Unter dem Bild steckt eine Karte mit zwei Sätzen von ihm. Sie wechselt, wenn man wieder hinsieht.',
+      was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, die Bank, darauf der Vierte Wartende. Die Karte unter dem Bild wechselt, wenn man wieder hinsieht.',
       wo: 'Amtsstube, Nordwand, Ansehen.',
     },
     // --- LV11-13 und die Hausmitteilung, 04.10.2026 -----------------------------
     {am:'2026-10-04',
       titel: 'Drei Nebenstränge mehr: der Eimer, der richtige Wortlaut, einundvierzig Blätter',
-      was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt, und darf sie nicht holen. Bramsche und Pommer geben die Archivausfertigung heraus, wenn der Antrag richtig lautet. Wer die vierzig Zwischenbescheide kennt, hat bei Vorblatt eine Antwort mehr.',
+      was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt. Bramsche und Pommer geben die Archivausfertigung heraus, wenn der Antrag richtig lautet. Wer die vierzig Zwischenbescheide kennt, hat bei Vorblatt eine Antwort mehr.',
       wo: 'Nieselbeck ab Schicht 11, Registratur und Materialausgabe ab Schicht 21.',
     },
     {am:'2026-10-04',
       titel: 'Diese Mitteilung ist kürzer',
-      was: 'Beim Start steht nur noch, was seit Ihrem letzten Stand neu ist. Der ganze Umlauf liegt im Startbild.',
+      was: 'Beim Start steht nur, was seit Ihrem letzten Stand neu ist.',
       wo: 'Startbild, Knopf „Was ist neu".',
     },
     // --- W11-GH, 04.10.2026 -----------------------------------------------------
@@ -3625,8 +3634,8 @@ const NEUERUNGEN = {
     // --- RL7, 04.10.2026 --------------------------------------------------------
     {am:'2026-10-04',
       titel: 'Die Urkunden zeigen auf dem liegenden Telefon die ganze Szene',
-      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen; passt ein Blatt nicht, sagt eine Zeile darunter, dass es weitergeht. Amtstitel, Zauberbaum und Kammeransage bleiben im Bild.',
-      wo: 'Telefon im Querformat: Ernennung, Abspann, Zauberbaum (Taste T), Dienstausweis.',
+      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen; passt ein Blatt nicht, sagt eine Zeile darunter, dass es weitergeht.',
+      wo: 'Telefon im Querformat: Ernennung, Abspann, Zauberbaum, Dienstausweis.',
     },
     // --- RL6, 03.10.2026 --------------------------------------------------------
     {am:'2026-10-03',
@@ -5191,6 +5200,11 @@ const ANREDE = {
   // Charakterisierung, sondern seine Regel aus Kapitel 18.5, wortkarg gesagt.
   knoeterich: () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
                       z2:'Vollständig. Immer.'}),
+  // HO1: der Erzhalter, nach dem Schluss. Er sagt den Titel, wie Hochablage ihn
+  // sagt, und die zweite Zeile ist das Einzige, was ueber ihn kanonisch ist:
+  // er hat sich umgedreht.
+  randbemerkung: () => ({z1: anredePunkt(rangStufe(), 48) || rangDef().t + '.',
+                         z2:'Ich habe mich umgedreht.'}),
 };
 function anredeZeile(key){ const f = ANREDE[key]; return f ? f() : {z1: rangName() + '.', z2:''}; }
 
@@ -9431,6 +9445,44 @@ const REQUISITEN = {
        regie:  'Hinter dem Vierten ist die Bank zu Ende. Dann kommt der Rahmen.'},
     ],
   },
+  // HO1: die drei Dinge in Turm I, nach dem Schluss. Alle drei zeigen den
+  // Nachmittag aus Szene 9 von innen, und keines erklaert ihn: die Tuer ist zu
+  // und einer mehr ist drin, die Bank ist leer, das Fenster zeigt die Stadt im
+  // Konfetti. Der Kaiser im Praesens, als Schild, und sonst nichts.
+  kabinett: {
+    name:   'Die Tür mit dem Schild',
+    knopf:  'WEGSEHEN',
+    blatt:  'Die Tür mit dem Schild IM TERMIN. Sie ist zu. Der Stapel Post davor ist weg; er ist hineingerutscht, von allein. Davor steht niemand mehr.',
+    stimme: ['Auf dem Schild, unverändert: IM TERMIN.',
+             'Darunter, mit Bleistift und frisch: und ein Zweiter.'],
+    regie:  'Man klopft nicht, wenn jemand im Termin ist. Auch heute nicht.',
+  },
+  wasserspender: {
+    name:   'Der Wasserspender',
+    knopf:  'WEGSEHEN',
+    blatt:  'Ein Wasserspender aus Messing, neu seit achtzig Jahren. Daneben die Bank, leer, und ein Schild, das um Rücksicht auf Wartende bittet.',
+    stimme: ['Es wartet niemand mehr.',
+             'Das Schild bleibt hängen. Es ist dreihundert Jahre alt und tut nichts Falsches.'],
+    regie:  'Auf der Bank ist das Holz an einer Stelle heller. Dort hat siebenundsechzig Jahre lang jemand gesessen.',
+  },
+  turmfenster: {
+    name:   'Das Fenster',
+    knopf:  'WEGSEHEN',
+    blatt:  'Das Fenster im obersten Geschoss von Turm I. Dreizehn weitere Türme, Brücken dazwischen, und unten die Stadt, bis zu den Knien in Konfetti.',
+    stimme: ['Niemand schreit. Niemand fällt um.',
+             'Es ist nur sehr viel leichter im Raum.'],
+    regie:  'Vier Tagesreisen südwestlich liegt Vordermühl. Die Straße dorthin ist frei; sie war nur zurückgestellt.',
+  },
+};
+
+// HO1: das Blatt vor der Fahrt. Kein Requisit, denn es haengt an keiner Wand;
+// szeneAssert() prueft es als eigenen Stapel mit derselben Sperre.
+const KUTSCHE_BLATT = {
+  blatt:  'Eine Kutsche am Dorfplatz, oberhalb des Marktes. Sie steht seit dem Nachmittag der Zustellung da, und niemand hat sie bestellt.',
+  stimme: ['Die Straße nach Hochablage war zur Klärung zurückgestellt.',
+           'Zurückgestellte Vorgänge sind an jenem Nachmittag alle geschlossen worden. Die Straße ist frei.',
+           'Vier Tagesreisen. Der Kutscher sagt nichts. Er fährt.'],
+  regie:  'Hochablage, Turm I, oberstes Geschoss.',
 };
 
 const INTRO_BLAETTER = [

@@ -574,6 +574,87 @@ function setzeStopfen(){
   console.log('SZ3 Stopfen: im Steinfeld liegt keine freie Stelle, die Roehre fehlt auf dieser Karte.');
 }
 
+// ===========================================================================
+//  HO1: DIE KUTSCHE NACH HOCHABLAGE
+//
+//  "Es faehrt keine Kutsche hin, weil es keine Strasse gibt. Es gab eine. Sie
+//  wurde zur Klaerung zurueckgestellt." (Weltgeschichte, Kapitel 3.) Und am
+//  Nachmittag der Zustellung werden zurueckgestellte Vorgaenge alle geschlossen
+//  (Szene 9, Bild 10). Also ist die Strasse seither frei, und eine Kutsche
+//  steht am Dorfplatz, oberhalb des Marktes, die niemand bestellt hat. Sie faehrt nur, wer
+//  den Vorgang zugestellt hat (vorgangGeschlossen()); vorher steht sie nicht da,
+//  weil es vorher keine Strasse gibt. Entscheidung A vom 04.10.2026, siehe
+//  phase-ho1-hochablage.md.
+//
+//  Die Stelle wird wie der Stopfen gesucht und nicht gesetzt: ein freies
+//  Dreierfeld nordoestlich des Amtes, moeglichst nah am Anker. Eine Karte, auf der
+//  es keines gibt, hat keine Kutsche, und der Raum bleibt unerreichbar; das
+//  ist ein Befund und kein Fehler, wie beim Stopfen.
+// ===========================================================================
+const KUTSCHE = {tx:0, ty:0, x:0, y:0, da:false};
+function setzeKutsche(){
+  KUTSCHE.da = false;
+  // Am Dorfplatz, nordoestlich des Amtes, zwischen Amtsgiebel und Markt. Zwei
+  // Abzuege haben den Platz bestimmt: noerdlich der Amtsfassade (Zeile 26, dann
+  // 23) stand die Kutsche jedes Mal hinter dem gemalten Giebel, denn das
+  // Amtsblatt ist 192 Pixel hoch, bei Massstab 2 also 384, und deckt von Zeile
+  // 34 zwoelf Zeilen hinauf. Rechts davon ist der Platz frei: das Blatt ist genau
+  // fuenfzehn Kacheln breit (5 bis 19), ab Kachel 21 steht nichts davor, und
+  // der Markt (Zeile 32 bis 33, Blatt zweieinhalb Kacheln hoch) deckt erst ab
+  // Zeile 30. Anker (23, 27), Deckel Zeile 28: der Spieler steht auf 29 und
+  // bleibt im Bild.
+  const ax = DORF_DX + 23, ay = DORF_DY + 27;
+  for(let r = 0; r <= 8 && !KUTSCHE.da; r++){
+    for(let dy = -r; dy <= r && !KUTSCHE.da; dy++) for(let dx = -r; dx <= r; dx++){
+      if(Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+      const tx = ax + dx, ty = ay + dy;
+      if(ty > DORF_DY + 28 || tx < DORF_DX + 21) continue;   // weder vor den Markt noch hinter den Giebel
+      let frei = true;
+      for(let yy = -1; yy <= 1 && frei; yy++) for(let xx = -1; xx <= 1; xx++)
+        if(!reachbar(tx+xx, ty+yy)){ frei = false; break; }
+      if(!frei) continue;
+      KUTSCHE.tx = tx; KUTSCHE.ty = ty; KUTSCHE.x = tileMid(tx); KUTSCHE.y = tileMid(ty);
+      KUTSCHE.da = true;
+      INN_FERN[0].tuer.x = KUTSCHE.x; INN_FERN[0].tuer.y = KUTSCHE.y;
+      break;
+    }
+  }
+  if(!KUTSCHE.da) console.log('HO1 Kutsche: nordoestlich des Amtes liegt kein freies Dreierfeld, Hochablage ist auf dieser Karte unerreichbar.');
+}
+const kutscheDa = () => KUTSCHE.da && CONFIG.schichtModus && vorgangGeschlossen() && !kammer && !innen && currentLevel === 1;
+// Ein Kasten auf zwei Raedern, Deichsel nach Norden, kein Pferd: der Kutscher
+// sagt nichts, und das Pferd ist nicht Teil der Behauptung. Gezeichnet in den
+// sechs Holztoenen der Innenraeume, damit sie zum Haus gehoert, vor dem sie
+// steht.
+function drawKutsche(){
+  if(!kutscheDa() || !vis(KUTSCHE.x, KUTSCHE.y)) return;
+  const x = KUTSCHE.x, y = KUTSCHE.y;
+  ctx.save();
+  innenSchatten(x, y + 6, 26);
+  ctx.fillStyle = '#3f2832'; ctx.fillRect(x - 24, y - 26, 48, 24);          // Kasten, Kontur
+  ctx.fillStyle = '#91533b'; ctx.fillRect(x - 22, y - 24, 44, 20);
+  ctx.fillStyle = '#bf6f4a'; ctx.fillRect(x - 22, y - 24, 44, 4);          // Deckflaeche
+  ctx.fillStyle = '#2b2118'; ctx.fillRect(x - 14, y - 18, 10, 8);          // Fenster
+  ctx.fillRect(x + 4, y - 18, 10, 8);
+  ctx.fillStyle = '#743f39';                                              // Deichsel
+  ctx.fillRect(x - 2, y - 40, 4, 16);
+  for(const wx of [x - 16, x + 16]){                                       // Raeder
+    ctx.fillStyle = '#3f2832'; ctx.beginPath(); ctx.arc(wx, y, 8, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#8a4836'; ctx.beginPath(); ctx.arc(wx, y, 5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#3f2832'; ctx.beginPath(); ctx.arc(wx, y, 2, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+// Mitfahren: erst das Blatt (vier Tagesreisen in drei Saetzen), dann der Raum.
+// Dieselbe Bauform wie requisitAnsehen(): die Welt steht, solange das Blatt
+// steht, und betreteHaus() uebernimmt danach mit der Kutsche als Tuer.
+function kutscheFahren(){
+  if(!kutscheDa() || szeneTafelLauf) return;
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  szeneTafeln([KUTSCHE_BLATT], {letzterKnopf: 'MITFAHREN',
+    ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); betreteHaus(INN_FERN[0]); }});
+}
+
 // Der Stand des Strangs als eine Zahl, damit Zeichnung, Kontaktaktion und Szene
 // dieselbe Quelle lesen. 0 nichts, 1 nachgesehen, 2 freigelegt, 3 Zapf geholt,
 // 4 erledigt (die Szene ist gelaufen).
@@ -981,6 +1062,10 @@ const INN_SAETZE = {
                 ersatz:{satz:0, boden:['#a2622f', 0.46], wand:['#241610', 0.74]}},
   registratur: {boden:['innen_boden',  0, 64], wand:['innen_wand_ziegel'],
                 ersatz:{satz:1, boden:['#9a8f6a', 0.44], wand:['#26221a', 0.72]}},
+  // HO1: Turm I in Hochablage ist Sandstein (Weltgeschichte, Kapitel 3). Das
+  // Steinblatt der Amtsstube traegt ihn mit; der Boden ist derselbe helle Satz.
+  hochablage:  {boden:['innen_boden', 32,  0], wand:['innen_wand_stein'],
+                ersatz:{satz:1, boden:['#c9b48a', 0.40], wand:['#3a3024', 0.70]}},
 };
 // Liegen die geschnittenen Blaetter ueberhaupt da? Einmal gefragt statt je
 // Kachel: die Antwort aendert sich nach loadAssets() nicht mehr.
@@ -1106,6 +1191,15 @@ const INN_MOEBEL = {
   // siebenundsechzig Jahren steht; er haengt nur. Weltbibel, Kapitel 8:
   // Vordermuehl zeigt Hochablage nur auf Papier.
   'J': {name:'Druck aus Hochablage', frei:true, wand:true, akt:'requisit', requisit:'kaisertuer'},
+  // HO1: die drei Dinge im Flur vor dem Kabinett, Turm I. Die Tuer mit dem
+  // Schild ist ein Wandstueck und kein Ausgang: man klopft nicht, und man geht
+  // nicht hinein; was dahinter ist, sieht niemand (Weltgeschichte, Szene 9).
+  // Der Wasserspender steht auf dem Boden und sperrt sein Feld; das Fenster im
+  // obersten Geschoss ist ein eigenes Zeichen, weil es etwas zu sagen hat, das
+  // ein Wirtshausfenster nicht sagt.
+  'I': {name:'Die Tür mit dem Schild', frei:true, wand:true, akt:'requisit', requisit:'kabinett'},
+  '1': {name:'Fenster im Turm',        frei:true, wand:true, akt:'requisit', requisit:'turmfenster'},
+  'M': {name:'Wasserspender',          akt:'requisit', requisit:'wasserspender'},
   'W': {name:'Spinnwebe',      frei:true, wand:true},
   'N': {name:'Fenster',        frei:true, wand:true},
   'Q': {name:'Flaschenbord',   frei:true, wand:true},
@@ -1209,6 +1303,28 @@ const INN_RAEUME = {
   },
   // Ordnung ist, was man wiederfindet. Sechs Regalblöcke, zwei Gänge, hinten
   // ein Pult und ein Stapel, auf dem Anlage 3 schläft.
+  // HO1: Hochablage, Turm I, oberstes Geschoss, der Flur vor dem Kabinett. Nach
+  // dem Schluss, und nur dann (vorgangGeschlossen()): die Kutsche am Dorfplatz
+  // oberhalb des Marktes faehrt hin. Der Raum zeigt den Nachmittag aus Szene 9 von innen:
+  // die Tuer mit dem Schild ist zu, der Poststapel ist hineingerutscht, die
+  // Bank ist leer, am Fenster steht der Erzhalter des Hauses Randbemerkung und
+  // sieht zum ersten Mal hinaus. Kein Aufzug, keine Treppe: wer hier ist, ist
+  // oben, und das Spiel erklaert nicht, wie, denn der Kutscher sagt nichts.
+  hochablage: {
+    name: 'Hochablage, Turm I',
+    plan: [
+      '###############',
+      '#F1.IiN...N.1F#',
+      '#.............#',
+      '#..Bb......M..#',
+      '#.............#',
+      '#.............#',
+      '#......Bb.....#',
+      '#.............#',
+      '#######AA######',
+    ],
+    leute: [{key:'randbemerkung', tx:10, ty:2}],
+  },
   registratur: {
     name: 'Registratur',
     plan: [
@@ -1238,6 +1354,14 @@ for(const k in INN_RAEUME){
 // Welches Gebäude hat welchen Raum, und wo ist seine Schwelle in der Oberwelt?
 const INN_HAEUSER = VILLAGE_BUILDINGS.filter(b => b.innen)
   .map(b => ({b, raum: INN_RAEUME[b.innen], tuer: bldTuer(b)}));
+// HO1: der eine Raum, der kein Haus im Dorf ist. Seine "Tuer" ist die Kutsche
+// am Dorfplatz (KUTSCHE, setzeKutsche()); betreteHaus() und verlasseHaus() lesen
+// nur tuer.x/tuer.y, also faehrt man mit demselben Mechanismus hin und zurueck,
+// mit dem man ein Haus betritt. Eigene Liste statt INN_HAEUSER, weil die
+// Haeuser ihr Betreten immer anbieten und dieser Weg erst nach dem Schluss
+// offen ist (scanAktion()).
+const INN_FERN = [{b:{bld:'kutsche', innen:'hochablage'}, raum: INN_RAEUME.hochablage,
+                   tuer: {x:0, y:0}}];
 
 // --- Wer ist gerade drinnen? -----------------------------------------------
 // Eine Figur steht in ihrem Haus, wenn Feierabend ist. Der Schalter ist nicht
@@ -1250,7 +1374,9 @@ const INN_HAEUSER = VILLAGE_BUILDINGS.filter(b => b.innen)
 // den Zweck: Fass steht tagsüber auf dem Anger und abends hinter seiner Theke,
 // und niemand steht zweimal gleichzeitig irgendwo.
 function innenZeit(){ return !CONFIG.schichtModus || shiftT < 0.25 * CONFIG.schichtDauer; }
-const figDrinnen = fig => !!(fig && fig.innenHaus && innenZeit());
+// HO1: nurInnen haelt eine Figur ganz aus dem Dorf heraus. Der Erzhalter wohnt
+// in Turm I und war nie in Vordermuehl; die Uhr gilt fuer ihn nicht.
+const figDrinnen = fig => !!(fig && fig.innenHaus && (innenZeit() || fig.nurInnen));
 // Steht diese Figur da, wo der Spieler gerade ist? Draußen heißt das "nicht
 // drinnen", drinnen heißt es "sie wurde beim Betreten hier hingestellt".
 const figHier = fig => figDa(fig) && (!!innen || !figDrinnen(fig));
@@ -1677,6 +1803,45 @@ function drawInnenMoebelGezeichnet(o){
       for(let i = 0; i < 4; i++) ctx.fillRect(jx + 35 + i*5, jy + 20, 3, 6);
       break;
     }
+    case 'I': {  // HO1, die Tuer mit dem Schild. Ein dunkles Blatt im Wandband,
+                 // zwei Kacheln breit, mit hellem Schild auf Augenhoehe und
+                 // einem Bleistiftstrich darunter. Kein Griff: man geht hier
+                 // nicht hinein.
+      const ib = b - 10, ix = o.x - ib/2, iy = o.y - TS - 34;
+      ctx.fillStyle = '#2b2118'; ctx.fillRect(ix - 3, iy - 3, ib + 6, 48);
+      ctx.fillStyle = '#4a3a2c'; ctx.fillRect(ix, iy, ib, 44);
+      ctx.fillStyle = '#5c4a38'; ctx.fillRect(ix + 3, iy + 3, ib - 6, 38);
+      ctx.fillStyle = '#e4dcc4'; ctx.fillRect(ix + ib/2 - 12, iy + 12, 24, 8);   // das Schild
+      ctx.fillStyle = '#3c332a'; ctx.fillRect(ix + ib/2 - 9, iy + 15, 18, 2);
+      ctx.fillStyle = '#9a8a5f'; ctx.fillRect(ix + ib/2 - 6, iy + 23, 12, 1);    // der Bleistiftstrich
+      break;
+    }
+    case '1': {  // HO1, das Fenster im Turm. Wie das Wirtshausfenster, nur mit
+                 // Tag dahinter: Himmel oben, und unten eine Zeile Tuerme als
+                 // dunkle Zinnen. Was man sieht, sagt das Blatt beim Ansehen.
+      const fx = o.x - 14, fy = o.y - TS - 26, fb = 28, fh2 = 42;
+      ctx.fillStyle = '#3a2a1e'; ctx.fillRect(fx - 2, fy - 2, fb + 4, fh2 + 4);
+      const g = ctx.createLinearGradient(0, fy, 0, fy + fh2);
+      g.addColorStop(0, '#9fc3e0'); g.addColorStop(0.7, '#dfe9ee'); g.addColorStop(1, '#c9b48a');
+      ctx.fillStyle = g; ctx.fillRect(fx, fy, fb, fh2);
+      ctx.fillStyle = '#7a6a52';
+      for(let i = 0; i < 4; i++) ctx.fillRect(fx + 2 + i*7, fy + fh2 - 14 - (i % 2)*4, 4, 14 + (i % 2)*4);
+      ctx.fillStyle = '#a9784a';
+      ctx.fillRect(fx + fb/2 - 2, fy, 4, fh2); ctx.fillRect(fx, fy + fh2/2 - 2, fb, 4);
+      break;
+    }
+    case 'M': {  // HO1, der Wasserspender. Messing auf einem Sockel, ein Hahn,
+                 // ein Becher daneben. Steht auf dem Boden wie ein Fass, also
+                 // mit Schatten.
+      innenSchatten(o.x, o.y - 2, 10);
+      ctx.fillStyle = '#3f2832'; ctx.fillRect(o.x - 7, o.y - 10, 14, 8);      // Sockel
+      ctx.fillStyle = '#b8903a'; ctx.fillRect(o.x - 6, o.y - 34, 12, 24);     // Tank
+      ctx.fillStyle = '#e2c56a'; ctx.fillRect(o.x - 6, o.y - 34, 4, 24);      // Lichtkante
+      ctx.fillStyle = '#7a5a1e'; ctx.fillRect(o.x - 6, o.y - 36, 12, 3);      // Deckel
+      ctx.fillStyle = '#3f2832'; ctx.fillRect(o.x + 6, o.y - 18, 4, 2);       // Hahn
+      ctx.fillStyle = '#e4dcc4'; ctx.fillRect(o.x + 9, o.y - 12, 4, 5);       // Becher
+      break;
+    }
     case 'N': {  // Fenster, gemalt: ein Rahmen, dahinter der Abendhimmel als
                  // Verlauf, davor ein Sprossenkreuz. Dieselben drei Farben, die
                  // im Blatt uebereinanderliegen — Violett, Rosa, Orange.
@@ -1976,7 +2141,9 @@ function drawInnenSchwelle(){
 function innenAssert(){
   let ok = true;
   const warnen = (m, ...r) => { ok = false; console.warn('IN1 Innenraum:', m, ...r); };
-  for(const h of INN_HAEUSER){
+  // HO1: der ferne Raum laeuft durch dieselben Grundrisspruefungen; nur die
+  // Tuer-im-Haus-Probe (7) gilt fuer ihn nicht, er hat kein Haus.
+  for(const h of INN_HAEUSER.concat(INN_FERN)){
     const r = h.raum;
     if(!r){ warnen(`${h.b.bld} nennt einen Raum, den es nicht gibt: ${h.b.innen}`); continue; }
     // (1) Rechteckig? Ein Grundriss mit einer kurzen Zeile hat ein Loch in der
@@ -2021,6 +2188,11 @@ function innenAssert(){
     // (6) Sitzt die Schwelle unter der gemalten Tür? Gemessen wird der Abstand
     //     zwischen dem Türpunkt und der Mitte des Fußabdrucks — er MUSS von
     //     null verschieden sein, sonst steht wieder die geratene Mitte da.
+    // HO1: die Kutsche ist kein Haus, hat kein Blatt und keinen Fussabdruck;
+    //      (6) und (7) gelten fuer sie nicht. Der erste Ladelauf hat genau hier
+    //      abgebrochen: CF_BLD.kutsche gibt es nicht, der Zugriff auf tuerDx
+    //      warf, und mit ihm riss der Rest der Datei ab (aktArt undeklariert).
+    if(h.b.x0 === undefined) continue;
     if(CF_BLD[h.b.bld].tuerDx === undefined)
       warnen(`${h.b.bld} ist betretbar, aber sein Blatt hat kein gemessenes tuerDx`);
     // (7) Liegt die Schwelle innerhalb des Fußabdrucks? Eine Tür neben dem Haus
@@ -2624,7 +2796,8 @@ const AKT_TUER=1, AKT_SPIEGEL=2, AKT_HEBEL=3, AKT_SCHLOSS=4, AKT_TRUHE=5, AKT_AU
       // AN3: ein Wandstueck ansehen, das etwas traegt. Eine Zahl fuer beide
       // Requisiten und nicht eine je Stueck: was angesehen wird, steht am
       // Moebel (o.requisit), nicht an der Sprungmarke.
-      AKT_REQUISIT=18;
+      AKT_REQUISIT=18,
+      AKT_KUTSCHE=19;   // HO1
 function aktBiete(x, y, art, obj, txt){
   const d = sqDist(player.x, player.y, x, y);
   if(d < aktD2){ aktD2 = d; aktArt = art; aktObj = obj; aktTxt = txt; }
@@ -2707,6 +2880,8 @@ function scanAktion(dt){
     // jetzt drinnen, am Dienstpult: der Weg zum Feierabend ist um drei Schritte
     // länger geworden, und dafür hat er einen Ort.
     for(const h of INN_HAEUSER) aktBiete(h.tuer.x, h.tuer.y, AKT_HAUS, h, 'Betreten');
+    // HO1: die Kutsche, nur nach dem Schluss (kutscheDa()).
+    if(kutscheDa()) aktBiete(KUTSCHE.x, KUTSCHE.y, AKT_KUTSCHE, null, 'Nach Hochablage');
     return;
   }
   const k = kammer;
@@ -2740,6 +2915,7 @@ function fuehreAktion(){
     case AKT_AUSGANG: verlasseKammer(); break;
     case AKT_ABSTIEG: steigeAb(); break;
     case AKT_STOPFEN: stopfenGriff(); break;
+    case AKT_KUTSCHE: kutscheFahren(); break;   // HO1
     case AKT_RESET:   bloeckeZurueck(aktObj); break;
     case AKT_GRUSS:   gruessen(); break;
     // U3: F oeffnet die Tafel; ein zweiter Druck redet darin weiter.
