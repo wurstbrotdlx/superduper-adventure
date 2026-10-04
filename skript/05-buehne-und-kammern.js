@@ -2086,7 +2086,8 @@ function truheOeffnen(){
     const b = BLAETTER[id];
     if(!serieFrei(b.serie)) return false;   // W5: Aktgatter
     if(b.serie === 'A') return k.diff >= b.minDiff;
-    if(b.serie === 'B' || b.serie === 'C' || b.serie === 'D') return k.biome === b.biome;
+    // W11-GH: G (Steinfeld) und H (Moorbruch) haengen wie B/C/D an der Tuer.
+    if(b.serie === 'B' || b.serie === 'C' || b.serie === 'D' || b.serie === 'G' || b.serie === 'H') return k.biome === b.biome;
     return false;
   });
   if(kandidaten.length && Math.random() < 0.18 + k.diff * 0.04){

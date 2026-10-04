@@ -1636,13 +1636,17 @@ function renderKladde(){
 }
 
 let blaetterOffen = null;   // welche Blatt-ID gerade aufgeklappt ist, kein neues Panel dafür
+// W11-GH: Wortlaut aus der Weltgeschichte, Kapitel 9. Als Konstante, damit
+// serien-pruef.mjs denselben String liest wie der Reiter.
+const SERIE_H_WERTUNG = 'Kein Eingangsstempel fehlt. Kein Ausgang ist vermerkt.';
+const serieVollstaendig = s => BLAETTER_KEYS.every(id => BLAETTER[id].serie !== s || kladde.blaetter[id]);
 function renderBlaetter(){
   // W5: vorgangBestandBlock() (Definition bei vorgangAssert()) liefert '', solange
   // keine Adresszeile gefunden ist — vor Akt IV sieht der Reiter aus wie zuvor.
-  // Getrennt von BLAETTER_KEYS/gefunden: die Zählzeile "N von 54" bleibt unberührt.
+  // Getrennt von BLAETTER_KEYS/gefunden: die Zählzeile "N von 68" bleibt unberührt.
   const gefunden = BLAETTER_KEYS.filter(id => kladde.blaetter[id]);
   // AN5: der Anfang steht vorn. Er ist das Einzige in diesem Reiter, das ein
-  // frischer Spieler ueberhaupt schon haben kann -- die 54 Aktenfunde liegen zu
+  // frischer Spieler ueberhaupt schon haben kann -- die 68 Aktenfunde liegen zu
   // dem Zeitpunkt noch alle in den Kammern.
   const bestand = anfangBestandBlock() + vorgangBestandBlock() + langBestandBlock();
   if(!gefunden.length){
@@ -1650,11 +1654,19 @@ function renderBlaetter(){
     return;
   }
   const parts = [bestand, `<div style="font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;margin-bottom:6px;">${gefunden.length} von ${BLAETTER_KEYS.length} Blättern gefunden.</div>`];
+  // W11-GH: die siebte Zeile zu Serie H. Wer alle sechs Schreiben hat, sieht
+  // unter dem letzten die einzige Wertung im ganzen Bestand (Weltgeschichte,
+  // Kapitel 9). Sie ist kein Blatt: nicht in BLAETTER, nicht in der Zaehlzeile,
+  // nicht aufschlagbar, und sie haengt nicht am sechsten Blatt, sondern an
+  // allen sechs -- wer h6 zuerst findet, bekommt sie nicht.
+  const hVoll = serieVollstaendig('H');
+  const hLetztes = hVoll ? gefunden.filter(id => BLAETTER[id].serie === 'H').pop() : null;
   for(const id of gefunden){
     const b = BLAETTER[id];
     const titel = `Serie ${b.serie}, Blatt ${b.n}`;
     parts.push(`<div class="ak" onclick="toggleBlatt('${id}')">${titel}${blaetterOffen === id
       ? '<div class="akText">' + b.lines.map(l => `<p>${l}</p>`).join('') + '</div>' : ''}</div>`);
+    if(id === hLetztes) parts.push(`<div class="akWertung">${SERIE_H_WERTUNG}</div>`);
   }
   el('blaetterBox').innerHTML = parts.join('');
 }
@@ -3558,9 +3570,16 @@ const NEUERUNGEN = {
   // RL7: neuer Tag, neuer Stempel. AN7: derselbe Tag, zweiter Stempel. Die
   // Umhaengung der Ernennung: dritter.
   // Befund 8 und 9 aus RL7: vierter Stempel desselben Tages.
-  stand: '2026-10-04-rl7b',
+  // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
+  stand: '2026-10-04-gh',
   datum: '4. Oktober',
   punkte: [
+    // --- W11-GH, Serie G und H, 04.10.2026 ------------------------------------
+    {
+      titel: 'Vierzehn neue Blätter: aus Hochablage und sechs Schreiben',
+      was: 'Die Kammertruhen im Steinfeld geben jetzt acht Blätter her, die sagen, was Oben ist und wie der Rang gerechnet wird. Im Lager der Beschwerden und in den Kammern des Moorbruchs liegen sechs Schreiben der Gegenseite, die sich bis auf den Kopf gleichen; wer alle sechs hat, bekommt in der Kladde eine siebte Zeile dazu. Die Zählzeile unter Akten geht von 54 auf 68.',
+      wo: 'Steinfeld ab der einundzwanzigsten Schicht, Lager und Moorbruch ab der elften; die Kladde unter Akten.',
+    },
     // --- RL7, Befund 8 und 9, 04.10.2026 --------------------------------------
     {
       titel: 'Die Räume stehen am Telefon mittig, und der Zettel lässt die Ortszeile in Ruhe',
@@ -5712,7 +5731,7 @@ function vorgangAssert(){
       vorherFrei[serie] = frei;
     }
   }
-  const SCHWELLE = {A:0, B:0, C:10, D:20, E:30, F:40};
+  const SCHWELLE = {A:0, B:0, C:10, D:20, E:30, F:40, G:20, H:10, I:30};   // W11-GH: G und H dazu, I nachgetragen
   for(const serie in SCHWELLE){
     if(SCHWELLE[serie] > 0){ amt.schichten = SCHWELLE[serie] - 1; if(serieFrei(serie)) fehler('Serie zu früh frei', serie, amt.schichten); }
     amt.schichten = SCHWELLE[serie];

@@ -929,7 +929,12 @@ function saveAmt(){ try{ localStorage.setItem(AMT_KEY, JSON.stringify(amt)); }ca
 // Ihr eigentliches Tor ist der Stopfen, und das steht in blattFaelltAusRohr()
 // weiter unten. Der Akt hier verhindert nur, dass ein spaeter eingebauter
 // zweiter Fundweg sie versehentlich vorzieht.
-const SERIE_AKT = {A:1, B:1, C:2, D:3, E:4, F:5, I:4};
+// W11-GH: H ab Akt II, wenn die Aktenfunde beginnen (Weltbibel, Kapitel 9):
+// sechsmal dieselbe Rueckfrage verraet nichts, sie ist ein Witz mit langem
+// Atem. G ab Akt III, weil Blatt 2 und 8 die Amtsleitung betreffen (die
+// Rangliste nennt das Haus, die Verfuegung stellt ihre Ausschreibung zurueck),
+// und das ist die Frage des dritten Akts, nicht die des zweiten.
+const SERIE_AKT = {A:1, B:1, C:2, D:3, E:4, F:5, G:3, H:2, I:4};
 const serieFrei = s => !CONFIG.schichtModus || aktStand() >= SERIE_AKT[s];
 const vorgangAdressAkt = () => CONFIG.schichtModus && aktStand() >= 4;
 

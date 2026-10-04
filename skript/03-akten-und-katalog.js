@@ -512,8 +512,9 @@ function takeZutat(noun, adj){
 //  Neustart (localStorage): in Phase 4 ist Wissen der eigentliche Fortschritt.
 // ===========================================================================
 // ===========================================================================
-//  AKTENFUNDE (Phase W2, erweitert um Serie C-F, seit SZ3 um Serie I)
-//  54 Blätter, sieben Serien. Fundwege sind dreigeteilt: A/B/C/D fallen aus
+//  AKTENFUNDE (Phase W2, erweitert um Serie C-F, seit SZ3 um Serie I, seit
+//  W11-GH um Serie G und H)
+//  68 Blätter, neun Serien. Fundwege sind dreigeteilt: A/B/C/D/G/H fallen aus
 //  Kammertruhen (truheOeffnen(), Filter unten prüft minDiff bzw. biome).
 //  E/F gibt es nur im Schattenland, wo es keine Kammern gibt — eigener
 //  Dropkanal in killMon() (currentLevel === 2). Siehe phase-w-blaetter-cf.md
@@ -522,6 +523,12 @@ function takeZutat(noun, adj){
 //  statt an einem Ort: sie faellt ueberall, aber erst nachdem der Stopfen
 //  gezogen ist (SZ3, blattFaelltAusRohr()). Vorher gibt es sie nicht, weil
 //  vorher nichts durchkommt.
+//  Serie H hat als einzige ZWEI Orte: die Kammertruhen des Moorbruchs (biome
+//  'sumpf', wie B/C/D) und das Lager der Beschwerden, wo sie beim Kill einer
+//  Lagerwache faellt (killMon(), m.def.lagerwache). Die Weltbibel nennt beide
+//  Orte in einer Zeile, und das Lager kennt keine Kammer; ohne den zweiten
+//  Weg laege die Serie dort, wo sie hingehoert, aber nicht dort, wo man sie
+//  finden kann. Siehe phase-w11-serien-g-h.md.
 //  Kein Blatt verrät Kesselgrammatik oder eine Fluch-Ableitung, siehe
 //  Sperrvermerk. Reihenfolge beim Fund ist absichtlich egal.
 //  Zusagen-Bilanz 2026-08-04: a1/a5 verorteten den Vorgang fälschlich in
@@ -735,6 +742,78 @@ const BLAETTER = {
         'Ich habe den Tisch gedeckt. Für den Fall, dass diesmal jemand kommt.',
         'Bislang kam niemand. Das rechne ich niemandem an.',
         'Mit vorzüglicher Hochachtung, und aufrichtiger Geduld, der Empfänger.']},
+  // W11-GH: Serie G, aus Hochablage. Liegt im Steinfeld (biome 'ruine'), weil
+  // der Altbestand die Ablage aus der Zeit ist, als das Haus noch anders hiess,
+  // und Reichsschriftgut genau das ist (Weltgeschichte, Kapitel 9). Wortlaut
+  // von dort; zwei Zeilen (g1 Zeile 2, g6 Zeile 3) sind umformuliert, weil der
+  // Sperrvermerk unten 'ergibt', 'Alter' und 'dreimal' als Kesselgrammatik
+  // liest. Der Sinn steht, die Pointe steht, die Woerter sind andere. Datiert
+  // in der Weltbibel, Kapitel 12.
+  g1:  {serie:'G', n:1, biome:'ruine', lines:['Reichsschriftgut, Auszug.',
+        'Der Rang eines Hauses bemisst sich danach, wie lange sein ältester Vorgang offen ist.',
+        'Andere Maßstäbe sind nicht vorgesehen.',
+        'Vermerk am Rand, andere Handschrift: „Also ist Nichtstun eine Leistung?"',
+        'Darunter, dritte Handschrift: „Ja."']},
+  g2:  {serie:'G', n:2, biome:'ruine', lines:['Rangliste der Aktenhäuser, gekürzt.',
+        'Erstes Haus: Ministerium für Monsterangelegenheiten, Vorgang 1, vierhundert Jahre.',
+        'Zweites Haus: Die Wartenden vor dem Kabinett, dreihundert Jahre.',
+        'Drittes Haus: Vorblatt, zweihundertelf Jahre.',
+        'Am Rand: „Wo bitte liegt das erste Haus?"']},
+  g3:  {serie:'G', n:3, biome:'ruine', lines:['Einladung, ungeöffnet zurück.',
+        'Das erste Haus des Reiches wird zum Empfang geladen.',
+        'Platz: neben dem Kabinett Seiner Majestät.',
+        'Rückvermerk der Poststelle: Empfänger nicht erreichbar. Röhre gestört.',
+        'Dasselbe Blatt liegt sechzigmal im Bestand.']},
+  g4:  {serie:'G', n:4, biome:'ruine', lines:['Türschild, abmontiert, mit Inventarnummer.',
+        'IM TERMIN',
+        'Inventarvermerk: Schild seit Jahr fünfhundertachtundachtzig in Verwendung.',
+        'Zustand: gut.',
+        'Am Rand: „Nachbestellen? Nein. Hält noch."']},
+  g5:  {serie:'G', n:5, biome:'ruine', lines:['Aus der Hausordnung von Turm I.',
+        'Ein Bediensteter, der einen Vorgang schließt, hat dies vorher anzuzeigen.',
+        'Die Anzeige ist zu begründen.',
+        'Ohne Begründung gilt der Vorgang als weiterhin offen.',
+        'Am Rand: „Es hat noch nie jemand angezeigt."']},
+  g6:  {serie:'G', n:6, biome:'ruine', lines:['Kartenwerk, Randbemerkung.',
+        'Vordermühl an der Ablage ist in keinem Bestand geführt.',
+        'Eine Aufnahme wurde drei Mal angeregt und drei Mal zurückgestellt.',
+        'Der Ort gilt daher als nicht vorhanden.',
+        'Am Rand, sehr klein: „Trotzdem wohnen da Leute."']},
+  g7:  {serie:'G', n:7, biome:'ruine', lines:['Personalvorgang, Auszug.',
+        'Betrifft: Bevollmächtigter für Anhängige Angelegenheiten.',
+        'Der Bewerber ist sechsundzwanzig Jahre alt und hat die Stelle geerbt.',
+        'Eignung: unbestritten.',
+        'Am Rand, eigene Handschrift: „Ich hätte gern etwas anderes gemacht."']},
+  g8:  {serie:'G', n:8, biome:'ruine', lines:['Verfügung, jährlich wiederkehrend.',
+        'Die Ausschreibung der Amtsleitung im Zuständigkeitsbereich VII wird zur Klärung zurückgestellt.',
+        'Begründung: keine.',
+        'Eine Begründung ist bei Zurückstellungen nicht erforderlich.',
+        'Gezeichnet: H. z. H. Vorblatt.']},
+  // W11-GH: Serie H, sechs Schreiben. Fast identisch, und das ist der Punkt:
+  // wer sie einzeln findet, haelt sie fuer einen Dublettenfehler; wer alle
+  // sechs hat, sieht die Eskalation, und sie besteht ausschliesslich aus
+  // Unterstreichungen. Das biome-Feld traegt den Moorbruch; der zweite Ort,
+  // das Lager, steht in killMon() und braucht kein Feld, weil das Lager kein
+  // Biom ist, sondern ein Rechteck im Grasland (imLager()).
+  h1:  {serie:'H', n:1, biome:'sumpf', lines:['Ohne Aktenzeichen. Im Jahr 596.',
+        'Wer räumt das Papier aus dem Fluss?',
+        'Um Nachricht wird gebeten.']},
+  h2:  {serie:'H', n:2, biome:'sumpf', lines:['Ohne Aktenzeichen. Im Jahr 597. Oben rechts: Erinnerung.',
+        'Wer räumt das Papier aus dem Fluss?',
+        'Um Nachricht wird gebeten.']},
+  h3:  {serie:'H', n:3, biome:'sumpf', lines:['Ohne Aktenzeichen. Im Jahr 599. Oben rechts: Zweite Erinnerung.',
+        'Wer räumt das Papier aus dem Fluss?',
+        'Um Nachricht wird gebeten.']},
+  h4:  {serie:'H', n:4, biome:'sumpf', lines:['Ohne Aktenzeichen. Im Jahr 601. Oben rechts: Mahnung, unterstrichen.',
+        'Wer räumt das Papier aus dem Fluss?',
+        'Um Nachricht wird gebeten.']},
+  h5:  {serie:'H', n:5, biome:'sumpf', lines:['Ohne Aktenzeichen. Im Jahr 602. Oben rechts: Zweite Mahnung, doppelt unterstrichen.',
+        'Wer räumt das Papier aus dem Fluss?',
+        'Um Nachricht wird gebeten.']},
+  h6:  {serie:'H', n:6, biome:'sumpf', lines:['Ohne Aktenzeichen. Im Jahr 603. Oben rechts: Letzte Mahnung.',
+        'Wer räumt das Papier aus dem Fluss?',
+        'Um Nachricht wird gebeten.',
+        'Darunter, andere Feder, sehr fest aufgedrückt: Es ist eine kurze Frage.']},
   // SZ3: Serie I, aus der Röhre. Der einzige Fundweg, der nicht an einem Ort
   // hängt, sondern an einem Ereignis: sie fällt überall und erst, nachdem der
   // Stopfen gezogen ist. Vorher gibt es sie nicht, weil vorher nichts durchkommt.
@@ -784,7 +863,7 @@ const PRUEF_GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'd
 
 // Guard, Bauform wie knAssertCaps()/auftragAssertBrett() weiter unten. Beweist
 // beim Start, dass keine Serie "still vorhanden" ist, d.h. in BLAETTER_KEYS
-// mitgezählt wird (Zählzeile "N von 54"), aber über keinen Fundweg erreichbar
+// mitgezählt wird (Zählzeile "N von 68"), aber über keinen Fundweg erreichbar
 // ist. TRUHE_SERIEN fällt in truheOeffnen() (Kammer, biome bzw. minDiff),
 // SCHATTEN_SERIEN fällt in killMon() (Schattenland, kein biome-Feld). Biome-
 // Liste hier bewusst als Literal, nicht aus BIOME_MOBS/BIOM_AMT gelesen: beide
@@ -796,8 +875,15 @@ const PRUEF_GEHEIM = ['Substantiv', 'Adjektiv', 'Seltenheit', 'drei gleiche', 'd
 // der vollstaendigsten Pruefdimension war damit der einzige, den eine spaetere
 // Gegenprobe nicht befragen konnte. Verhalten identisch, nur nachpruefbar.
 function blaetterAssert(){
-  const TRUHE_SERIEN = ['A', 'B', 'C', 'D'];
+  const TRUHE_SERIEN = ['A', 'B', 'C', 'D', 'G', 'H'];
   const SCHATTEN_SERIEN = ['E', 'F'];
+  // W11-GH: Serie H faellt zusaetzlich im Lager der Beschwerden (killMon(),
+  // m.def.lagerwache). Das steht hier als Satz und nicht als Liste, weil der
+  // Guard den zweiten Weg nicht pruefen kann: MONDEF liegt weiter unten, ein
+  // Zugriff hier liefe in die TDZ (siehe Kommentar ueber dieser Funktion). Was
+  // er pruefen kann, ist das eine biome-Feld: eine Serie mit zwei Orten traegt
+  // trotzdem genau eines, naemlich das der Kammer. Den Lagerweg selbst misst
+  // tools/serien-pruef.mjs im Browser.
   // SZ3: der dritte Fundweg. Serie I faellt nicht an einem Ort, sondern nach
   // einem Ereignis — ueberall, und erst wenn der Stopfen gezogen ist. Deshalb
   // ein eigener Eintrag und kein Anhaengen an eine der beiden Listen: die
@@ -805,7 +891,7 @@ function blaetterAssert(){
   // zu Recht nicht.
   const ROHR_SERIEN = ['I'];
   const TRUHE_BIOME = BIOME_BANDS.map(b => b.key);
-  const SOLL = {A:12, B:6, C:8, D:8, E:10, F:4, I:6};
+  const SOLL = {A:12, B:6, C:8, D:8, E:10, F:4, G:8, H:6, I:6};
   const EMOJI = PRUEF_EMOJI;
   const GEHEIM = PRUEF_GEHEIM;
   let ok = true;
@@ -824,10 +910,16 @@ function blaetterAssert(){
     if(ROHR_SERIEN.indexOf(b.serie) >= 0 && (b.biome || typeof b.minDiff === 'number'))
       fehler('Serie aus der Roehre traegt ein Ortsfeld, faellt aber ueberall', id);
     if(b.serie === 'A' && typeof b.minDiff !== 'number') fehler('Serie A ohne minDiff', id);
-    if((b.serie === 'B' || b.serie === 'C' || b.serie === 'D')){
+    if(b.serie === 'B' || b.serie === 'C' || b.serie === 'D' || b.serie === 'G' || b.serie === 'H'){
       if(!b.biome) fehler('Kammer-Serie ohne biome-Feld', id);
       else if(TRUHE_BIOME.indexOf(b.biome) < 0) fehler('biome-Feld auf unbekanntes Biom', id, b.biome);
     }
+    // W11-GH: die Weltbibel legt beide Serien an einen Ort, und der Guard haelt
+    // das fest: G ins Steinfeld, H in den Moorbruch. Ein anderes Biom waere kein
+    // Fehler im Code, aber ein Widerspruch zum Kanon, und den soll die Konsole
+    // melden und nicht erst ein Leser.
+    if(b.serie === 'G' && b.biome !== 'ruine') fehler('Serie G liegt nicht im Steinfeld', id, b.biome);
+    if(b.serie === 'H' && b.biome !== 'sumpf') fehler('Serie H liegt nicht im Moorbruch', id, b.biome);
     if((b.serie === 'E' || b.serie === 'F') && b.biome) fehler('Schattenland-Serie hat ein biome-Feld, kann nie droppen', id);
     if(!b.lines || !b.lines.length) fehler('Blatt ohne Text', id);
     else if(b.lines.length > 6) fehler('Mehr als sechs Zeilen', id, b.lines.length);
@@ -839,7 +931,7 @@ function blaetterAssert(){
     gesehen[b.serie] = (gesehen[b.serie] || 0) + 1;
   }
   for(const s in SOLL) if(gesehen[s] !== SOLL[s]) fehler('Serie hat falsche Blattzahl', s, 'ist', gesehen[s] || 0, 'soll', SOLL[s]);
-  if(BLAETTER_KEYS.length !== 54) fehler('Gesamtzahl ist nicht 54', BLAETTER_KEYS.length);
+  if(BLAETTER_KEYS.length !== 68) fehler('Gesamtzahl ist nicht 68', BLAETTER_KEYS.length);
   if(!ok) console.error('Aktenfunde: Guard fehlgeschlagen, siehe obige Zeilen.');
   return ok;
 }
@@ -889,8 +981,9 @@ function findeBlatt(id){
 
 // ===========================================================================
 //  W5: DER VORGANGS-BESTAND — Weltbibel Kapitel 9, Akt IV. Vier Adresszeilen,
-//  bewusst getrennt von BLAETTER: blaetterAssert()s Sollzahl 54 und die
-//  Zählzeile "N von 54" (renderBlaetter()) bleiben dadurch unberührt. Drei
+//  bewusst getrennt von BLAETTER: blaetterAssert()s Sollzahl (54 damals, 68
+//  seit W11-GH) und die Zählzeile "N von …" (renderBlaetter()) bleiben
+//  dadurch unberührt. Drei
 //  Zeilen liegen in Sonderkammern (ein Biom je Zeile, siehe setzeKammerTueren()
 //  und drawKammerTuer()), die vierte fällt in Ablage V (killMon()), weil es
 //  dort keine Kammern gibt, siehe A. Genau wie findeBlatt(): kein
@@ -2141,6 +2234,23 @@ function killMon(m){
       // etwas in Bewegung kommt, und zwei Schichten spaeter steht der Wagen da.
       // Nur der erste Fund zaehlt, deshalb die Klammer.
       if(!amt.adressSchicht){ amt.adressSchicht = amt.schichten + 1; saveAmt(); }
+    }
+  }
+  // W11-GH: Serie H im Lager der Beschwerden. Die Weltbibel legt die sechs
+  // Schreiben an zwei Orte, Lager und Moorbruch; der Moorbruch hat Kammern und
+  // laeuft ueber truheOeffnen(), das Lager hat keine, also faellt sie hier, an
+  // der Lagerwache. Die Wachen greifen nie zuerst an: wer hier ein Blatt
+  // findet, hat sich dafuer entschieden, jemanden zu erschlagen, der nur
+  // gewartet hat. Das ist der Preis, und er ist Absicht.
+  //
+  // Sechs Wachen je Schicht (setzeLager(), placeMonsters() bei startShift()),
+  // Wurf 0,25 je Wache: im Erwartungswert anderthalb Blaetter je geraeumtem
+  // Lager, die Serie in rund vier Schichten. Hoeher als E (0,04), weil das
+  // Lager pro Schicht genau sechs Wuerfe hergibt und nicht hunderte.
+  if(m.def.lagerwache && serieFrei('H')){
+    const kandH = BLAETTER_KEYS.filter(id => BLAETTER[id].serie === 'H' && !kladde.blaetter[id]);
+    if(kandH.length && Math.random() < 0.25 && findeBlatt(kandH[Math.floor(Math.random() * kandH.length)])){
+      floaters.push({x:m.x, y:m.y-40, txt:'+ Aktenfund', col:'#c9b98a', t:2.8, big:true});
     }
   }
   // SZ3: Serie I, aus der Roehre. Der dritte Fundweg, und der einzige, der weder
