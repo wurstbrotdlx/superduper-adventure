@@ -821,7 +821,11 @@ async function hinaus(page){
         fuenfte.text.includes('über der Tür') && !fuenfte.text.includes('bevor Sie hinausgehen'), true);
   await durchDenStapel(page, 'ZU DEN AKTEN');
   const sechste = await morgen(5);
-  pruef('die sechste Schicht bringt nichts mehr', sechste.auf, false);
+  // AN7: seit der Hausordnung bringt der sechste Morgen etwas, nur kein
+  // Chronikblatt mehr. Der eigene Abschnitt weiter unten prueft, was.
+  pruef('die sechste Schicht bringt kein Chronikblatt mehr (seit AN7 die Hausordnung)',
+        [sechste.fuss, sechste.text.includes('HAUSMITTEILUNG')], [null, true]);
+  await page.evaluate(() => hausordnungWeg());
   pruef('ein eingeloester Spielstand bekommt kein Morgenblatt', await page.evaluate(() => {
     amt.schichten = 2; el('overlay').style.display = 'none';
     startShift();   // der Weg des Spielstands, ohne den Knopf
@@ -834,6 +838,106 @@ async function hinaus(page){
     return f;
   }), -1);
   pruef('Konsole still (Erstbelehrung)', laut, []);
+  await ctx.close();
+}
+
+// ------------------------------------------------- AN7: die Hausordnung in Raten
+//
+// Ab der sechsten Schicht faellt je Morgen ein Punkt der Dienstanweisung als
+// Hausmitteilung, in der Reihenfolge des Vordrucks, am Knopf im Amt. Geprueft
+// wird: die Chronik hat Vorrang und nichts stapelt sich, der sechste Morgen
+// bringt Punkt 1 in der Form der Hausmitteilung mit genau einem Knopf, die
+// Welt steht derweil, danach laeuft der Dienst und die Musik ist nicht mehr
+// gedaempft (der Fund beim Bauen: ovMuffle blieb nach jedem Morgenblatt
+// stehen), die Kladde haelt den Umlauf fest, derselbe Morgen bringt nichts
+// zweimal, die Reihe folgt dem Kalender, der sechzehnte Morgen bringt den
+// elften Punkt und der siebzehnte nichts, ein Spielstand bekommt keinen, das
+// freie Spiel kennt keinen, und der Kalender meidet die Chronikmorgen.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde(); });
+  const morgen = async (schichten) => {
+    await page.evaluate(s => { amt.schichten = s; CONFIG.schichtModus = true; el('overlay').style.display = 'none'; MUS.muffle(false); schichtAntreten(); }, schichten);
+    await page.waitForTimeout(300);
+    return await page.evaluate(() => ({
+      auf: el('overlay').style.display === 'flex', state, muffled,
+      kopf: (document.querySelector('#ovPanel h1') || {}).textContent || null,
+      text: el('ovPanel').textContent || '',
+      knoepfe: [...document.querySelectorAll('#ovPanel button')].map(b => b.textContent.trim()),
+    }));
+  };
+  const punkte = await page.evaluate(() => hausordnungPunkte().map(p => p[0]));
+  pruef('die Hausordnung hat die elf Punkte der Dienstanweisung', punkte.length, 11);
+  const fuenfte = await morgen(4);
+  pruef('die fuenfte Schicht bringt die Chronik und keine Hausmitteilung',
+        [fuenfte.auf, fuenfte.text.includes('HAUSMITTEILUNG'), fuenfte.knoepfe], [true, false, ['ZU DEN AKTEN']]);
+  await durchDenStapel(page, 'ZU DEN AKTEN');
+  await page.waitForTimeout(200);
+  pruef('nach dem Chronikblatt ist die Musik nicht mehr gedaempft', await page.evaluate(() => ({muffled, ovMuffle})), {muffled: false, ovMuffle: false});
+  const sechste = await morgen(5);
+  pruef('die sechste Schicht bringt die Hausmitteilung', [sechste.auf, sechste.kopf], [true, 'HAUSMITTEILUNG']);
+  pruef('mit dem ersten Punkt der Dienstanweisung', sechste.text.includes(punkte[0]) && sechste.text.includes('Punkt 1 von 11'), true);
+  pruef('und dem Betreff der Schicht', sechste.text.includes('Umlauf zur 6. Schicht'), true);
+  pruef('mit genau einem Knopf', sechste.knoepfe, ['Zur Kenntnis genommen']);
+  pruef('und die Welt steht derweil', [sechste.state, sechste.muffled], ['szene', true]);
+  pruef('die Fundstelle nennt den Vordruck', sechste.text.includes('Dienstanweisung'), true);
+  await page.evaluate(() => document.querySelector('#ovPanel button').click());
+  await page.waitForTimeout(300);
+  pruef('danach laeuft der Dienst, ungedaempft', await page.evaluate(() => ({ state, overlay: el('overlay').style.display, muffled })),
+        { state: 'play', overlay: 'none', muffled: false });
+  pruef('und die Kladde hat den Punkt festgehalten', await page.evaluate(() => Object.keys(kladde.anfang).filter(k => k.startsWith('hausordnung:'))), ['hausordnung:0']);
+  pruef('der Akten-Reiter zaehlt den Umlauf mit', await page.evaluate(() => anfangBestandBlock().includes('1 von 11 zur Kenntnis genommen')), true);
+  const nochmal = await morgen(5);
+  pruef('derselbe Morgen ein zweites Mal bringt nichts', nochmal.auf, false);
+  const siebte = await morgen(6);
+  pruef('die siebte Schicht bringt Punkt 2', siebte.auf && siebte.text.includes(punkte[1]) && siebte.text.includes('Punkt 2 von 11'), true);
+  await page.evaluate(() => hausordnungWeg());
+  const neunte = await morgen(8);
+  pruef('die neunte Schicht bringt Punkt 4, auch wenn Punkt 3 nicht umlief', neunte.auf && neunte.text.includes(punkte[3]), true);
+  await page.evaluate(() => hausordnungWeg());
+  const sechzehnte = await morgen(15);
+  pruef('die sechzehnte Schicht bringt den elften Punkt', sechzehnte.auf && sechzehnte.text.includes(punkte[10]) && sechzehnte.text.includes('Punkt 11 von 11'), true);
+  await page.evaluate(() => hausordnungWeg());
+  const siebzehnte = await morgen(16);
+  pruef('die siebzehnte Schicht bringt nichts mehr', siebzehnte.auf, false);
+  pruef('ein eingeloester Spielstand bekommt keine Hausmitteilung', await page.evaluate(() => {
+    kladde.anfang = {}; amt.schichten = 7; el('overlay').style.display = 'none';
+    startShift();   // der Weg des Spielstands, ohne den Knopf
+    return el('overlay').style.display === 'flex';
+  }), false);
+  pruef('das freie Spiel kennt keine Hausordnung', await page.evaluate(() => {
+    CONFIG.schichtModus = false; amt.schichten = 7;
+    const f = hausordnungFaellig();
+    CONFIG.schichtModus = true;
+    return f;
+  }), -1);
+  pruef('der Kalender meidet die Morgen der Chronik und des Empfangs', await page.evaluate(() =>
+    [0, 1, 2, 3, 4].map(s => hausordnungIndex(s))), [-1, -1, -1, -1, -1]);
+  pruef('Konsole still (Hausordnung)', laut, []);
+  await ctx.close();
+}
+
+// AN7, Telefon: der Umlauf steht auf 390x844 im Bild, mit Knopf, ohne zu rollen.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde(); CONFIG.schichtModus = true;
+                              document.body.classList.add('touch'); schriftSetzen(2); el('overlay').style.display = 'none'; });
+  const ueber = [];
+  const n = await page.evaluate(() => hausordnungPunkte().length);
+  for(let i = 0; i < n; i++){
+    await page.evaluate(s => { amt.schichten = s; schichtAntreten(); }, 5 + i);
+    await page.waitForTimeout(250);
+    const m = await page.evaluate(() => {
+      const pan = el('ovPanel'); const b = document.querySelector('#ovPanel button');
+      const r = b ? b.getBoundingClientRect() : null;
+      return {auf: el('overlay').style.display === 'flex', rollt: document.documentElement.scrollHeight > innerHeight + 4,
+              knopfDrin: !!r && r.bottom <= innerHeight + 1 && r.top >= 0, breit: pan.getBoundingClientRect().right <= innerWidth + 1};
+    });
+    if(!m.auf || m.rollt || !m.knopfDrin || !m.breit) ueber.push(`Punkt ${i + 1}: ${JSON.stringify(m)}`);
+    await page.evaluate(() => hausordnungWeg());
+  }
+  pruef('kein Punkt der Hausordnung laeuft auf dem Telefon ueber', ueber, []);
+  pruef('Konsole still (Hausordnung, Telefon)', laut, []);
   await ctx.close();
 }
 

@@ -247,7 +247,9 @@ function requisitAnsehen(key){
   const r = REQUISITEN[key];
   if(!r || szeneTafelLauf) return;
   if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
-  szeneTafeln([r], {letzterKnopf: r.knopf, ende: () => { el('overlay').style.display = 'none'; szeneAus(); }});
+  // AN7: MUS.muffle(false) wie bei erstbelehrungZeigen(); ohne das blieb die
+  // Musik nach jedem Blick auf ein Wandstueck gedaempft.
+  szeneTafeln([r], {letzterKnopf: r.knopf, ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }});
 }
 
 // Der Anfang benutzt den Stapel fuer das Intro. Vier Blaetter, danach der

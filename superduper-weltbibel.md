@@ -1405,6 +1405,17 @@ kennt, sagt es Knöterich im ersten Zug und bekommt den Vordruck. Der Pflichtweg
 ersten freien Schritt misst seither 806 Wörter statt 1174, und was davon bleibt, ist die
 Ernennung (18.12).
 
+*(Nachtrag AN7, 04.10.2026, siehe `phase-an7-hausordnung.md`.)* **Die Hausordnung kommt in
+Raten.** Der letzte Bauabschnitt des Masterplans vom 27.08.2026: ab der sechsten Schicht
+läuft beim Dienstantritt je Morgen ein Punkt der Dienstanweisung (W8, Blatt 2) als
+Hausmitteilung um, elf Morgen lang bis zur sechzehnten Schicht, in der Reihenfolge des
+Vordrucks und in dessen Wortlaut. Die Chronik der Schichten 2 bis 5 hat Vorrang, an keinem
+Morgen liegen zwei Blätter. Das reicht über Akt I hinaus, und das ist mit Absicht so belassen:
+der Satz in Kapitel 9, dass in Akt I niemand aufgreift, was das Intro zeigte, gilt dem Fall;
+eine Hausordnung ist Haus. Ob dieser Satz so präzisiert wird, ist die erste der drei
+Kanon-Entscheidungen des Masterplans und weiter nicht getroffen. Die Zahl 806 im Nachtrag
+RL6 darüber ist seit RL7 als 804 nachgemessen (Berichtigung in `phase-rl6-anfang-in-raten.md`).
+
 Unverändert offen: die Blattserien G und H, die übrigen Langvorgänge, Konrad zu Händen
 Aufschub und alles, was Hochablage zeigt. Und Knöterichs Zuwachs, jetzt mit einem Grund
 mehr: seit T3 hat er überhaupt keinen Weltkommentar mehr, den spricht Anlage 2. Er erklärt

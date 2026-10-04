@@ -3554,10 +3554,16 @@ const NEUERUNGEN = {
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
-  // RL7: neuer Tag, neuer Stempel.
-  stand: '2026-10-04-rl7',
+  // RL7: neuer Tag, neuer Stempel. AN7: derselbe Tag, zweiter Stempel.
+  stand: '2026-10-04-an7',
   datum: '4. Oktober',
   punkte: [
+    // --- AN7, 04.10.2026 ----------------------------------------------------
+    {
+      titel: 'Die Hausordnung kommt in Raten',
+      was: 'Ab der sechsten Schicht liegt beim Dienstantritt je Morgen ein Punkt der Dienstanweisung als Hausmitteilung bereit, in der Reihenfolge des Hauses, elf Morgen lang. Wer den Vordruck nie aufgeschlagen hat, bekommt die Regeln so trotzdem, eine nach der anderen. Der Vordruck bleibt, wo er war.',
+      wo: 'Beim Dienstantritt der sechsten bis sechzehnten Schicht; die Kladde zählt unter Akten mit, wie viele umgelaufen sind.',
+    },
     // --- RL7, 04.10.2026 ----------------------------------------------------
     // Der erste Punkt, der aus einer Abnahme mit Grafik kommt. Er nennt, was
     // man sieht, und nicht die CSS-Regel, die es verdeckt hat.
@@ -8626,12 +8632,101 @@ function erstbelehrungZeigen(){
   if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
   szeneTafeln([INTRO_BLAETTER[idx]], {letzterKnopf:'ZU DEN AKTEN', kladde:['intro:' + idx],
               blattzahl:{n: idx + 1, gesamt: INTRO_BLAETTER.length},
-              ende: () => { el('overlay').style.display = 'none'; szeneAus(); }});
+              // AN7: MUS.muffle(false), weil szeneTafel() die Musik mit
+              // muffle(true) daempft und ovMuffle sonst stehen bleibt: der
+              // Dienst lief nach jedem Morgenblatt gedaempft weiter, bis das
+              // naechste Overlay es zuruecknahm. Gemessen am 04.10.2026
+              // (ovMuffle true, muffled true, state play).
+              ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }});
   return true;
 }
+
+// ===========================================================================
+//  AN7: DIE HAUSMITTEILUNG ALS TAGESTRAEGER -- die Hausordnung in Raten
+//
+//  Der letzte Bauabschnitt des Masterplans vom 27.08.2026: "Akt I: verteilt
+//  wird die Hausordnung, nicht der Fall. Traeger ist die Hausmitteilung (U9),
+//  pro Schicht genau eine neue Regel, vier Zeilen. Direkte Uebernahme des
+//  Papers-Please-Prinzips: kein Regelwerk, jeden Morgen ein Blatt."
+//
+//  Die Hausordnung IST die Dienstanweisung: die elf Punkte auf Blatt 2 des
+//  Vordrucks (Erledigung, Sachbestand, Beglaubigung ... Zauberbefugnis). Seit
+//  AN1 liegt der Vordruck nicht mehr auf dem Pflichtweg; wer den Empfang
+//  nimmt und nicht "Kenne ich. Den Vordruck." sagt, hat die elf Punkte nie
+//  gesehen und findet sie nur, wenn er am Pult oder im Startbild danach
+//  greift. Hier kommen sie zu ihm, einer je Morgen, in der Reihenfolge des
+//  Hauses ("Sie brauchen zuerst die ersten drei", sagt Knoeterich auf dem
+//  Blatt). Es erfindet keinen Text: dieselbe Tabelle (DIENSTBLATT), derselbe
+//  Wortlaut, und dienstAssert() prueft ihn weiter gegen Formregeln und
+//  Sperrvermerk. Umgehaengt, nicht gestrichen: der Vordruck bleibt, wo er ist.
+//
+//  Die Form ist die der Hausmitteilung aus U9 (HAUSMITTEILUNG, ein Punkt, ein
+//  Knopf), und das ist die Vorgabe des Masterplans und kein Zufall: das Haus
+//  hat fuer "heute gilt" genau eine Form, den Umlauf. Vier Zeilen: der Betreff
+//  mit der Schicht, der Name des Punktes, sein Text, die Fundstelle fuer den
+//  ganzen Rest. Keine Pointe dazu, der Punkt traegt seine selbst.
+//
+//  Der Kalender: die erste Schicht hat den Empfang, die zweite bis fuenfte
+//  die Chronik (Erstbelehrung, RL6). "Nicht beides am selben Morgen stapeln"
+//  war die Ansage, also faengt die Hausordnung mit der sechsten Schicht an und
+//  laeuft bis zur sechzehnten. Das reicht ueber Akt I hinaus (Schicht 10), und
+//  das ist in Ordnung: Kapitel 9 sperrt den FALL, nicht das Haus, und eine
+//  Hausordnung ist Haus. Wer einen Morgen nicht liest, bekommt am naechsten
+//  den naechsten Punkt und nicht den verpassten (die Reihe folgt dem Kalender,
+//  wie bei der Chronik); die Kladde haelt fest, welche umgelaufen sind, und
+//  der Vordruck hat ohnehin alle.
+//
+//  Gehaengt an schichtAntreten() hinter die Erstbelehrung, also an den Knopf
+//  im Amt und nicht an startShift() -- aus demselben Grund wie dort: ein
+//  eingeloester Spielstand ist ein Mittag und kein Morgen.
+// ===========================================================================
+const HAUSORDNUNG_AB_SCHICHT = 6;   // 1-basiert wie die Anzeige: die sechste Schicht bekommt Punkt 1
+const hausordnungPunkte = () => { const b = DIENSTBLATT.find(x => x.punkte); return b ? b.punkte() : []; };
+// Reine Rechnung, damit anfangAssert() den Kalender durchzaehlen kann, ohne
+// amt.schichten anzufassen: abgeschlossene Schichten -> Punktindex oder -1.
+const hausordnungIndex = schichten => {
+  const i = schichten - (HAUSORDNUNG_AB_SCHICHT - 1);
+  return (i >= 0 && i < hausordnungPunkte().length) ? i : -1;
+};
+function hausordnungFaellig(){
+  if(!CONFIG.schichtModus) return -1;
+  const idx = hausordnungIndex(amt.schichten);
+  if(idx < 0) return -1;
+  return anfangIstGelesen('hausordnung:' + idx) ? -1 : idx;
+}
+function hausordnungZeigen(){
+  const idx = hausordnungFaellig();
+  if(idx < 0 || szeneTafelLauf || el('overlay').style.display === 'flex') return false;
+  const punkte = hausordnungPunkte();
+  const [titel, text] = punkte[idx];
+  // Dieselbe Bauform wie erstbelehrungZeigen(): die Welt haelt an, solange das
+  // Blatt steht, und szeneAus() laesst sie mit aktSperre wieder an.
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  // Gelesen heisst gezeigt, wie bei jedem Blatt des Anfangs seit AN5. Der
+  // Schluessel liegt in kladde.anfang neben intro:n und ernennung:n, zaehlt
+  // aber nicht in den Bestand "DER ANFANG": die Dienstanweisung hat dort seit
+  // AN5 einen Verweis und keinen Leser, und das bleibt so.
+  anfangGelesen('hausordnung:' + idx);
+  el('ovPanel').innerHTML = `
+    <h1>HAUSMITTEILUNG</h1>
+    <h3>Umlauf zur ${amt.schichten + 1}. Schicht · zur Kenntnis</h3>
+    <div class="neuListe"><div class="neuPunkt">
+      <b>${gEsc(titel)}</b>
+      <p>${gEsc(text)}</p>
+      <p class="neuWo">Hausordnung, Punkt ${idx + 1} von ${punkte.length}. Alle Punkte stehen in der Dienstanweisung, am Pult im Amt und auf dem Startbild.</p>
+    </div></div>
+    <button onclick="hausordnungWeg()">Zur Kenntnis genommen</button>`;
+  el('overlay').style.display = 'flex'; MUS.muffle(true);
+  return true;
+}
+function hausordnungWeg(){ el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }
+const hausordnungGelesenZahl = () => hausordnungPunkte().filter((_, i) => anfangIstGelesen('hausordnung:' + i)).length;
+
 function schichtAntreten(){
   startShift();
-  erstbelehrungZeigen();
+  // AN7: ein Blatt je Morgen. Die Chronik hat Vorrang, weil sie frueher dran
+  // ist; die Hausordnung faengt an, wenn die Chronik durch ist.
+  if(!erstbelehrungZeigen()) hausordnungZeigen();
 }
 
 // Abhaken. Kein CFX.schweigen-Guard, aus demselben Grund wie bei findeBlatt():
@@ -8665,6 +8760,7 @@ function anfangAufschlagen(key, i){
   szeneTafeln([blatt], {letzterKnopf:'ZURÜCK', kladde:[key + ':' + i],
     ende: () => {
       el('overlay').style.display = 'none';
+      MUS.muffle(false);   // AN7: s. erstbelehrungZeigen(), derselbe stehengebliebene ovMuffle
       szeneAus();
       kesselTab = 'blaetter';
       toggleKessel();
@@ -8698,7 +8794,11 @@ function anfangBestandBlock(){
   // ersten Dienstantritt ohnehin jederzeit erreichbar (Startbild und Pult im
   // Amt), und ein vierter Rueckkehrmodus fuer showDienstblatt() waere Aufwand
   // fuer einen Weg, den es zweimal gibt.
-  zeilen.push('<div class="kl klEmpty">Die Dienstanweisung liegt am Pult im Amt und auf dem Startbild.</div>');
+  // AN7: dazu der Stand des Umlaufs. Der Verweis bleibt ein Verweis.
+  const hoG = hausordnungGelesenZahl(), hoN = hausordnungPunkte().length;
+  zeilen.push('<div class="kl klEmpty">Die Dienstanweisung liegt am Pult im Amt und auf dem Startbild.'
+    + (hoG ? ` Ihre Punkte laufen ab der ${HAUSORDNUNG_AB_SCHICHT}. Schicht je Morgen einzeln als Hausmitteilung um: ${hoG} von ${hoN} zur Kenntnis genommen.` : '')
+    + '</div>');
   const g = anfangGelesenZahl(), ges = anfangGesamt();
   return `<div class="klHead">DER ANFANG</div>${zeilen.join('')}`
        + `<div style="font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;margin:4px 0 8px;">`
@@ -8725,7 +8825,23 @@ function anfangAssert(){
       fehler('Schlüsselreihe und Blattliste sind verschieden lang', e.key);
   }
   if(!('anfang' in kladde)) fehler('Der Eimer anfang fehlt in der Kladde');
-  if(ok) console.log(`AN5 Anfang: ${ANFANG_BESTAND.length} Bestände, ${anfangGesamt()} Blätter in der Kladde.`);
+  // AN7: der Kalender der Hausordnung. Jeder Punkt faellt an genau einem
+  // Morgen, keiner an einem Morgen der Chronik (Schicht 2 bis 5, also
+  // amt.schichten 1 bis INTRO_BLAETTER.length), und keiner vor dem Empfang.
+  const ho = hausordnungPunkte();
+  if(!ho.length) fehler('AN7: Hausordnung ohne Punkte');
+  const morgen = {};
+  for(let sch = 0; sch < 100; sch++){
+    const i = hausordnungIndex(sch);
+    if(i < 0) continue;
+    if(sch >= 1 && sch <= INTRO_BLAETTER.length) fehler('AN7: Hausordnung und Chronik am selben Morgen', sch + 1);
+    if(sch === 0) fehler('AN7: Hausordnung am Morgen des Empfangs');
+    if(i in morgen) fehler('AN7: Punkt faellt zweimal', i);
+    morgen[i] = sch;
+  }
+  if(Object.keys(morgen).length !== ho.length) fehler('AN7: nicht jeder Punkt hat einen Morgen', Object.keys(morgen).length, 'von', ho.length);
+  for(const [t, x] of ho) if(!t || !x) fehler('AN7: Punkt ohne Titel oder Text', t);
+  if(ok) console.log(`AN5 Anfang: ${ANFANG_BESTAND.length} Bestände, ${anfangGesamt()} Blätter in der Kladde; AN7 Hausordnung: ${ho.length} Punkte ab Schicht ${HAUSORDNUNG_AB_SCHICHT}.`);
   return ok;
 }
 // Der Aufruf steht NICHT hier, sondern unten neben anlage2Assert(). Der Bestand
