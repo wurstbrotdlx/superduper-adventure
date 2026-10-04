@@ -253,34 +253,35 @@ async function frisch(opt){
 {
   const { page, ctx } = await frisch({ viewport: { width: 390, height: 844 }, isMobile: true,
                                        hasTouch: true, deviceScaleFactor: 2 });
-  await page.evaluate(() => startGame());
-  await page.waitForTimeout(300);
-  for(let i = 0; i < 6; i++){
-    await page.evaluate(() => { gespraechFertigTippen(); const o = szeneOptionen(); if(o.length) o[0].tun(); });
-    await page.waitForTimeout(200);
-  }
-  await page.waitForTimeout(300);
+  // RL6: Die Chronikblaetter stehen nicht mehr in der Kette des Anfangs,
+  // sondern fallen je eines am Morgen der Schichten 2 bis 5 (Erstbelehrung,
+  // schichtAntreten). Gemessen wird deshalb dort, wo sie jetzt stehen: jedes
+  // Blatt einzeln, mit genau einem Knopf (ZU DEN AKTEN), ohne Ueberspringen.
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde();
+                              CONFIG.schichtModus = true; el('overlay').style.display = 'none'; });
   const anzahl = await page.evaluate(() => INTRO_BLAETTER.length);
   const ueber = [];
   for(let i = 1; i <= anzahl; i++){
+    await page.evaluate(s => { amt.schichten = s; schichtAntreten(); }, i);
+    await page.waitForTimeout(300);
     const m = await page.evaluate(() => {
       const pan = document.getElementById('ovPanel');
       const knoepfe = [...pan.querySelectorAll('button')];
-      return {rollt: pan.scrollHeight > pan.clientHeight + 2,
+      return {auf: document.getElementById('overlay').style.display === 'flex',
+              rollt: pan.scrollHeight > pan.clientHeight + 2,
               knoepfe: knoepfe.length,
               drin: knoepfe.every(b => b.getBoundingClientRect().bottom <= innerHeight + 1)};
     });
-    // Zwei Knoepfe auf jedem Blatt ausser dem letzten: dort gibt es nichts mehr
-    // zu ueberspringen, und ein Knopf, der nichts tut, ist schlechter als keiner.
-    const sollKnoepfe = i === anzahl ? 1 : 2;
-    if(m.rollt || !m.drin || m.knoepfe !== sollKnoepfe) ueber.push(`Blatt ${i}: ${JSON.stringify(m)}`);
-    await page.evaluate(n => szeneTafel(n), i);
+    if(!m.auf || m.rollt || !m.drin || m.knoepfe !== 1) ueber.push(`Blatt ${i}: ${JSON.stringify(m)}`);
+    await page.evaluate(() => [...document.querySelectorAll('#ovPanel button')]
+      .find(x => /^\s*szeneTafel\(\d+\)\s*$/.test(x.getAttribute('onclick') || '')).click());
     await page.waitForTimeout(150);
   }
-  pruef('kein Introblatt laeuft auf dem Telefon ueber', ueber, []);
-  pruef('nach dem letzten Blatt steht der Empfang',
-        await page.evaluate(() => document.getElementById('overlay').style.display), 'none');
-  pruef('und die Szene laeuft weiter', await page.evaluate(() => szeneAktiv), 'empfang');
+  pruef('kein Chronikblatt laeuft auf dem Telefon ueber', ueber, []);
+  pruef('nach dem letzten Blatt laeuft der Dienst',
+        await page.evaluate(() => document.getElementById('overlay').style.display + '/' + state), 'none/play');
+  pruef('und alle vier sind abgehakt',
+        await page.evaluate(() => Object.keys(kladde.anfang).filter(k => k.startsWith('intro:')).length), anzahl);
   await ctx.close();
 }
 
