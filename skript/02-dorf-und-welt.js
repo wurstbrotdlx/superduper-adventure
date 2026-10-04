@@ -152,32 +152,37 @@ const DORF_FIGUREN = [
   {key:'zwirn', name:'Bürgermeister Alfons Zwirn', kurz:'Bürgermeister Zwirn', tx:17, ty:37, opt:'wander', sheet:'bob', komposit:true,
    // schüttere sandige Haare über blanker Kopfhaut, ockerbraune Weste
    gestalt:{hair:'h1', haarFarbe:'#9f704b', hemd:'hof', hemdFarbe:'#765937', hose:'hof', schuh:'schuh'},
+   // T5e-1: die Zeilen tragen Fachwoerter (Bewilligung, Bescheid, Vordruck, zu
+   // den Akten) und das bestehende Kuerzel MfM, weil Amtsdeutsch daran haengt
+   // und nicht an der Kuerze (Grundgesetz 3, "Woran Amtsdeutsch haengt"). Kein
+   // neues Kuerzel: die Tabelle steht auf zwoelf (figuren-leben.md), und ein
+   // Wort-Kuerzel FEST liegt als Entscheidung vor (phase-t5-ton.md, 5f).
    // T1: Aus jeder Auskunft wird bei ihm eine kleine Festrede. Der Kreislauf
    // traegt sie in der Reihenfolge, in der eine Rede laeuft: Begruessung,
    // Rueckblick, Ausblick, Dank, und danach zweimal die Sache selbst. Er meint
    // jede Silbe, und deshalb hoert man ihm zu (Humor-Grundgesetz 12). Die beiden
    // Saetze aus seiner Sprachmarke in Kapitel 8 stehen woertlich drin.
    grund:[
-     {z1:'Schön, dass Sie da sind! Wirklich schön.', z2:'Ihr Jahresgespräch führe ich.'},
-     {z1:'Zum Rückblick: elf Jahre Dorffest.', z2:'Vordermühl hatte noch nie eins.'},
-     {z1:'Zum Ausblick: wir werden das angehen.', z2:'Noch dieses Jahr, vielleicht.'},
-     {z1:'Zum Dank: Konfetti ist längst bestellt.', z2:'Nur die Genehmigung fehlt noch.'},
+     {z1:'Schön, dass Sie da sind! Zu Protokoll: schön.', z2:'Ihr Jahresgespräch führe ich.'},
+     {z1:'Zum Rückblick: elf Jahre Antrag auf Dorffest.', z2:'Vordermühl hatte noch nie eins.'},
+     {z1:'Zum Ausblick: wir werden das angehen.', z2:'Zwischenbescheid, vielleicht.'},
+     {z1:'Zum Dank: Konfetti ist längst bestellt.', z2:'Nur die Bewilligung fehlt noch.'},
      {z1:'Zuständig wäre die Amtsleitung.', z2:'Nur weiß ich nicht, wer sie ist.'},
-     {z1:'Da bin ich dran. Seit elf Jahren dran.', z2:'Man darf nicht lockerlassen.'},
+     {z1:'Da bin ich dran. Der Vorgang läuft bei mir.', z2:'Elf Jahre. Man bleibt eben dran.'},
    ],
    akt:[
      'Elf Jahre Vorfreude, noch mehr Händedruck.',
      'Wer zuständig ist? Klären wir noch.',
      'Der Schreibtisch ist leer. Ich weiß warum.',
      'Ich habe gestanden. Das Fest steht noch aus.',
-     'Wir werden das Fest feiern. Irgendwann.',
+     'Wir feiern, sobald der Bescheid da ist.',
    ],
    // W11: Die Bewilligung des Dorffestes ist im Jahr 1004 erteilt worden und
    // steckt seither in der Röhre unter dem Steinfeld. Zwirn hat seit acht Jahren
    // recht und erfährt es hier nicht. Er sagt nur, was er getan hat.
    zusatz:[{abAkt:2, zeilen:[
-     {z1:'Ich habe damals eine Anfrage geschickt.', z2:'Nach Oben. Vor acht Jahren.'},
-     {z1:'Vielleicht ist die Antwort unterwegs.',   z2:'Post braucht eben ihre Zeit.'},
+     {z1:'Ich habe damals einen Antrag ans MfM gestellt.', z2:'Nach Oben. Vor acht Jahren.'},
+     {z1:'Vielleicht ist der Bescheid unterwegs.',   z2:'Post braucht eben ihre Zeit.'},
    ]},
    // SZ3: Die Bewilligung ist mit dem Postregen gekommen. Er hat seit acht
    // Jahren recht gehabt, und die Bewilligung ist an die Amtsleitung gerichtet,
@@ -186,7 +191,7 @@ const DORF_FIGUREN = [
    {lang:'stopfen', zeilen:[
      {z1:'Sie ist da. Die Bewilligung.',        z2:'Aus dem Jahr tausendundvier.'},
      {z1:'Sie ist nur an niemanden.',           z2:'Zur Kenntnis: die Amtsleitung.'},
-     {z1:'Ich hebe sie auf.',                   z2:'Ordentlich. Wie sich das gehört.'},
+     {z1:'Ich hebe sie auf. Zu den Akten, bei mir.', z2:'Ordentlich. Wie sich das gehört.'},
    ]},
    {abSchicht:6, zeilen:[
      {z1:'Sie sind noch da. Das ist ungewöhnlich.', z2:'Die meisten bleiben einen Tag.'},
@@ -210,21 +215,21 @@ const DORF_FIGUREN = [
    ]},
    {abAkt:4, zeilen:[
      {z1:'Im Keller stehen elf Kisten.', z2:'Zehn davon sind leer.'},
-     {z1:'Ich bestelle jedes Jahr neu.', z2:'Feuchtes Konfetti taugt nichts.'},
+     {z1:'Ich bestelle jedes Jahr neu, per Vordruck.', z2:'Feuchtes Konfetti taugt nichts.'},
    ]}
    ],
    anlass:{
      levelup:[
        {z1:'Ein Aufstieg! Herzlichen Glückwunsch.', z2:'Ich sage das gern öffentlich.'},
-       {z1:'Da wäre eine Feier angebracht.', z2:'Sobald das geklärt ist.'},
+       {z1:'Da wäre eine Feier angebracht.', z2:'Sobald die Bewilligung da ist.'},
      ],
      goldfund:[
-       {z1:'So viel Gold. Sehr erfreulich.', z2:'Ein Fest kostet auch etwas.'},
+       {z1:'So viel Gold. Zur Kenntnis genommen.', z2:'Ein Fest kostet auch etwas.'},
        {z1:'Legen Sie etwas zurück.', z2:'Für später. Für uns alle.'},
      ],
      untaetigkeit:[
        {z1:'Stehen Sie ruhig. Ich rede weiter.', z2:'Ich bin dran. Wie immer.'},
-       {z1:'Eine Pause ist auch Planung.', z2:'So sehe ich das seit elf Jahren.'},
+       {z1:'Eine Pause ist auch Planung. Dienstlich.', z2:'So sehe ich das seit elf Jahren.'},
      ]
    }},
 
@@ -589,19 +594,22 @@ const DORF_FIGUREN = [
    // Bild gilt (assets/figuren/README.md, Befunde am zweiten Paket).
    gestalt:{hair:'h1', haarFarbe:'#455033', hautFarbe:'#949341',
             hemd:'hemd', hemdFarbe:'#b49354', hose:'hose', schuh:'schuh'},
+   // T5e-1: Fachwoerter statt Kuerze: Widerspruch, Rechtsbehelf, anhaengig,
+   // fristgerecht, Nebenbestimmung. Die Coda bleibt. Kein neues Kuerzel (die
+   // Zwoelf); seine Akte als Kaskade im Baum (baumNoergel, Frage 'akte').
    // T1: Eine Beschwerde ohne Begruendung ist keine, und er ist eine. Jede
    // Zeile traegt jetzt ihren Grund mit, und die Coda aus Kapitel 8 steht am
    // Ende, wo sie hingehoert. Die ganze Form steht in seinem Baum.
    grund:[
-     {z1:'Vierzig Jahre Probezeit. Mit Begründung.', z2:'Nächstes Jahr wird entfristet.'},
-     {z1:'Die Entfristung macht die Amtsleitung.', z2:'Die sieht man nie. Aktenkundig.'},
-     {z1:'Ich habe mich damals beschwert.', z2:'Dann hat man mich eingestellt.'},
+     {z1:'Vierzig Jahre auf Probe. Mit Begründung.', z2:'Nächstes Jahr wird entfristet.'},
+     {z1:'Zuständig für Entfristung: die Amtsleitung.', z2:'Die sieht man nie. Aktenkundig.'},
+     {z1:'Ich habe damals Widerspruch eingelegt.', z2:'Dann hat man mich eingestellt.'},
      {z1:'Ich trage eine Krawatte. Vorschrift.', z2:'Fällt niemandem auf. Trotzdem.'},
      {z1:'Ich beschwere mich auch über mich.', z2:'Berechtigt, wie meistens.'},
      {z1:'Das ist nicht meine Zuständigkeit.', z2:'Ich mache es trotzdem.'},
    ],
    akt:[
-     'Noch ein Formular, noch keine Antwort.',
+     'Noch ein Vordruck, noch kein Bescheid.',
      'Jetzt braucht auch Zwirn die Amtsleitung.',
      'Die Stelle ist leer, ich bin es nicht.',
      'Gelesen und gezeichnet. Ich bin im Dienst.',
@@ -649,14 +657,14 @@ const DORF_FIGUREN = [
    ]},
    {abStufe:5, zeilen:[
      {z1:'Sie steigen auf. Zulässig.', z2:'Bei mir ist das anders geregelt.'},
-     {z1:'Aufstieg ohne Antrag. Interessant.', z2:'Ich habe damals einen gestellt.'},
+     {z1:'Aufstieg ohne Antrag. Interessant.', z2:'Meiner ist noch anhängig.'},
    ]},
    {skill:'int', ab:5, zeilen:[
      {z1:'Sie lesen. Das fällt hier auf.', z2:'Lesen können wenige. Ich schon.'},
      {z1:'Schrift ist Schrift. Man muss sie kennen.', z2:'Man muss wissen, woher sie ist.'},
    ]},
    {abRang:5, zeilen:[
-     {z1:'Sie werden befördert. Ich gratuliere.', z2:'Beschwerde folgt trotzdem.'},
+     {z1:'Sie werden befördert. Ich gratuliere.', z2:'Beschwerde folgt. Fristgerecht.'},
      {z1:'Ihr Verhältnis ist jetzt anders.', z2:'Meines heißt weiter: auf Probe.'},
    ]},
    {phase:'antritt', zeilen:[
@@ -671,14 +679,14 @@ const DORF_FIGUREN = [
    anlass:{
      fluch:[
        {z1:'Kleingedrucktes. Sie lesen nicht.', z2:'Ich lese immer. Berufsschaden.'},
-       {z1:'Eine Auflage mehr. Zulässig.', z2:'Beschwerde wäre möglich.'},
+       {z1:'Eine Auflage mehr. Zulässig.', z2:'Ein Rechtsbehelf wäre möglich.'},
      ],
      untaetigkeit:[
        {z1:'Sie stehen herum. Verständlich.', z2:'Ich stehe seit vierzig Jahren.'},
        {z1:'Nicht meine Zuständigkeit.', z2:'Ich sage es trotzdem.'},
      ],
      kammerAbbruch:[
-       {z1:'Abgebrochen. Das ist ein Recht.', z2:'Steht sogar irgendwo.'},
+       {z1:'Abgebrochen. Das ist ein Recht.', z2:'Steht in einer Nebenbestimmung.'},
        {z1:'Zurückgehen ist kein Fehler.', z2:'Fehler sehen anders aus.'},
      ]
    }},
@@ -688,6 +696,9 @@ const DORF_FIGUREN = [
    // komposit:true fehlte hier seit G8 — Milb lief die ganze Zeit als
    // Farmer_Buba durchs Dorf, mit dessen Strohhut. Ein Gutachter mit Strohhut.
    gestalt:{hair:'h5', haarFarbe:'#68624d', hemd:'hof', hemdFarbe:'#314f62', hose:'hof', schuh:'schuh'},
+   // T5e-1: GA bleibt sein einziges Kuerzel (die Zwoelf). "Vorlaeufig" sagt er
+   // drei Mal und meint es nie: das ist der Vorbehalt, den er nicht hat (LV7).
+   // Die Stufe als Kaskade im Baum (baumMilb, Frage 'stufe').
    // T1: Er ist der Ausfuehrlichste im Haus, und seine Form ist das Gutachten in
    // vier Teilen: Gegenstand, Massstab, Ansetzung, Vorbehalt. Der Kreislauf der
    // Grundzeilen traegt sie in dieser Reihenfolge, wer ihn also zweimal
@@ -696,16 +707,16 @@ const DORF_FIGUREN = [
    // Der vierte Teil ist die gesperrte Tatsache aus LV7 von innen: er hat
    // keinen Vorbehalt, und genau deshalb liegt er immer eine Stufe daneben.
    grund:[
-     {z1:'Erstens der Gegenstand. Diese Kammer.', z2:'Ungefragt, versteht sich.'},
+     {z1:'Erstens der Gegenstand. Diese Kammer, laut GA.', z2:'Ungefragt, versteht sich.'},
      {z1:'Zweitens der Maßstab. Der Vordruck.', z2:'Sechs Zeilen. Genügt seit je.'},
      {z1:'Das würde ich mit Drei ansetzen.', z2:'Höchstens. Das ist drittens.'},
      {z1:'Viertens der Vorbehalt. Meine Zahlen stimmen.', z2:'Nur wo, weiß ich nicht.'},
-     {z1:'Ein Gutachten ist nie fertig.', z2:'Nur eingestellt.'},
-     {z1:'Andere raten. Ich stufe ein.', z2:'Das ist ein Unterschied.'},
+     {z1:'Ein Gutachten ist nie fertig.', z2:'Nur eingestellt. Vorläufig.'},
+     {z1:'Andere raten. Ich stufe ein, nach Vordruck.', z2:'Das ist ein Unterschied.'},
    ],
    akt:[
-     'Die neue Kraft schätze ich auf Zwei.',
-     'Ohne Freigabe stufe ich das niedrig ein.',
+     'Die neue Kraft setze ich vorläufig auf Zwei.',
+     'Ohne Freigabe: vorläufig niedrig eingestuft.',
      'Ein leerer Stuhl lässt sich nicht bewerten.',
      'Diese Schrift verweigert sich der Note.',
      'Diesmal setze ich keine Note mehr an.',
@@ -715,14 +726,14 @@ const DORF_FIGUREN = [
    // Freiherr. Er merkt es nicht, wie immer.
    zusatz:[{abAkt:2, zeilen:[
      {z1:'Unser ältester Vorgang wird ein Jahr.', z2:'Das reicht für Freiherr. Knapp.'},
-     {z1:'Ich stelle mich als Freiherr vor.',     z2:'Geschätzt, nicht geraten.'},
+     {z1:'Ich stelle mich als Freiherr vor.',     z2:'Laut GA, nicht geraten.'},
    ]},
    {abSchicht:6, zeilen:[
-     {z1:'Ihre Verweildauer setze ich mit Vier an.', z2:'Das ist gut. Für hier.'},
-     {z1:'Neue Kräfte halten selten.', z2:'Sie halten. Bemerkenswert.'},
+     {z1:'Ihre Verweildauer setze ich mit Vier an.', z2:'Gut, für hier. Nach Vordruck.'},
+     {z1:'Neue Kräfte halten selten.', z2:'Sie halten. Das vermerke ich.'},
    ]},
    {abStufe:6, zeilen:[
-     {z1:'Ihre Entwicklung: Stufe Drei.', z2:'Ich habe das angesetzt.'},
+     {z1:'Ihre Entwicklung: Stufe Drei, laut Vordruck.', z2:'Ich habe das angesetzt.'},
      {z1:'Ich weiß, dass ich nichts weiß.', z2:'Das setze ich mit Zwei an.'},
    ]},
    {skill:'int', ab:7, zeilen:[
@@ -735,7 +746,7 @@ const DORF_FIGUREN = [
    ]},
    {phase:'antritt', zeilen:[
      {z1:'Morgens sind meine Zahlen genauer.', z2:'Nachmittags auch. Anders.'},
-     {z1:'Ich habe zwei Kammern angesetzt.', z2:'Vor dem Frühstück.'},
+     {z1:'Ich habe zwei Kammern angesetzt, per GA.', z2:'Vor dem Frühstück.'},
    ]},
    {merker:'hatGesteigert', zeilen:[
      {z1:'Sie haben Punkte vergeben.', z2:'Nach welchem Maßstab?'},
@@ -744,7 +755,7 @@ const DORF_FIGUREN = [
    ],
    anlass:{
      crit:[
-       {z1:'Diesen Schlag setze ich mit Fünf an.', z2:'Höchstens.'},
+       {z1:'Diesen Schlag setze ich mit Fünf an.', z2:'Höchstens. Vorbehaltlich.'},
        {z1:'Sauber getroffen. Notenwert hoch.', z2:'Ich korrigiere das später.'},
      ],
      ultimate:[

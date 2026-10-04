@@ -476,6 +476,87 @@ genau der Fund vom U9-Auslieferungstag.
 `tools/mitteilung-pruef.mjs`: **32 von 32**, elf Punkte, jeder mit Weg, und die
 genannten Tasten werden im Lauf wirklich gedrückt.
 
+## 5f. Was gebaut wurde: T5e-1, die erste Tranche *(04.10.2026)*
+
+Auf Zuruf des Projektinhabers („T5e-1 los"), nach vorgelegter Reihenfolge:
+Zwirn, Nörgel, Milb zuerst, weil sie laut Kapitel 8 die drei Ausführlichen des
+Hauses sind (Grundgesetz 12) und laut Messlauf am weitesten unter ihrer eigenen
+Sprachmarke lagen. Ausgenommen bleiben Zapf (die Knappheit ist seine Marke),
+Knöterich (Register), Pommer, Umlauf, Nieselbeck (eigene Tranche).
+
+**Was gebaut ist, je Figur.** Drei Dinge, dieselben bei allen dreien:
+
+1. **Fachwörter in den Grundzeilen** (`DORF_FIGUREN`, `skript/02`), weil
+   Amtsdeutsch daran hängt und nicht an der Kürze (Regel 3, „Woran Amtsdeutsch
+   hängt"). Kein Witz fällt, jede Zeile behält ihre Pointe und bekommt ein
+   Wort, das draußen niemand sagt: Zwirn „Zu Protokoll: schön", „Nur die
+   Bewilligung fehlt noch", „Zwischenbescheid, vielleicht", „Zu den Akten, bei
+   mir", „per Vordruck"; Nörgel „auf Probe", „Widerspruch eingelegt", „noch
+   anhängig", „fristgerecht", „Rechtsbehelf", „Nebenbestimmung"; Milb „laut
+   GA", „nach Vordruck", „vorläufig" (dreimal, und er meint es nie: das ist der
+   Vorbehalt, den er nicht hat, LV7), „vorbehaltlich", „Das vermerke ich".
+2. **Je eine Kaskade im Gesprächsbaum** (`SZENEN.baumZwirn`, `baumNoergel`,
+   `baumMilb` in `skript/06`), hinter einer Frage, die erst nach einer anderen
+   frei wird: Zwirns Antrag in ganzer Form („Antrag auf Bewilligung einer
+   Festveranstaltung", wer bewilligt, warum das Feld leer ist, seit wann er
+   anhängig ist), Nörgels Akte Zeile für Zeile („Personalvorgang, ruhend", was
+   ruhend heißt, wer das aufhebt, und solange), Milbs Stufe mit Herleitung
+   (eine Feststellung aus dem Vordruck, unverbindlich, aber verbindlich
+   angewandt, und am Ende setzt er die Herleitung selbst mit Fünf an). Vier
+   Tafelzüge je Kaskade, jeder über eine Weiterklickzeile des Spielers.
+3. **Das bestehende Kürzel, wo es hingehört.** Zwirn sagt einmal „MfM" (er
+   steht in der Tabelle als Benutzer), Milb „GA" dreimal mehr. Beides löst sich
+   an seiner angestammten Stelle auf.
+
+**Der Fund, und er ist eine Entscheidung für den Projektinhaber.** Die erste
+Fassung hatte drei neue Kürzel nach der vierten Wurzel aus Regel 3, Kürzel,
+die ein Wort sind: **FEST** (Festveranstaltungs-Erlaubnis, Sondertermin, bei
+Zwirn), **PROBE** (Personalvorgang, ruhend, ohne Beschluss zur Entfristung,
+bei Nörgel) und **STUFE** (sachgerechte Tabelle unverbindlicher
+Feststellungen zur Einstufung, bei Milb), jedes mit seiner Auflösung als
+Kaskade. `knAssertCaps()` hat zwei davon beim ersten Lauf gemeldet, und zu
+Recht: **die Abkürzungstabelle steht auf zwölf, „mehr nicht"**
+(`figuren-leben.md`, Kapitel 13 der Weltbibel), und alle zwölf Positionen sind
+belegt, die letzte absichtlich leer. Die vierte Wurzel aus T5 (26.08.2026)
+sagt, wie ein neues Kürzel gebaut wird, hebt die Zwölf aber nicht auf. Beides
+ist Kanon, und ein dreizehntes Kürzel ist keine Bauentscheidung. Gebaut ist
+deshalb die Fassung ohne neue Kürzel; die drei Entwürfe stehen hier, und die
+Frage lautet: **bleibt die Zwölf, oder bekommt die vierte Wurzel eigene
+Plätze?** Bis dahin gilt die Zwölf.
+
+**Gemessen** (`tools/ton-messlauf.mjs`, 04.10.2026, Untergrenze, Faktor 1,1 nach
+Eichprobe; Knappheit je Figur mit demselben Maß über die Grundzeilen gezählt):
+
+| Figur | amtlich vorher | amtlich nachher | knapp vorher | knapp nachher |
+|---|---|---|---|---|
+| Zwirn | 8 % (63 Zeilen) | **27 %** | 74 % | 68 % |
+| Nörgel | 19 % (73 Zeilen) | **29 %** | 76 % | 76 % |
+| Milb | 7 % (55 Zeilen) | **27 %** (56) | 75 % | 71 % |
+| Dorffiguren gesamt | 10 % (974 Zeilen) | 13 % (975) | 77 % | 77 % |
+| Szenen | 11 % (784 Zeilen) | 12 % (817) | 78 % | 78 % |
+| Figurenrede gesamt | 13 % (2159 Zeilen) | 14 % (2193) | | |
+
+**Zweiter Fund: die Knappheit der Grundzeilen rührt sich kaum, und das ist
+strukturell.** Eine zweite Zeile fasst 32 Zeichen, da passen selten sieben
+Wörter hinein; eine erste 48. Was sich in den Grundzeilen abbauen lässt, sind
+ein paar Punkte, nicht die Hälfte. Die Länge entsteht, wie der Kanon sagt,
+über Kaskaden, und die zählen in den Szenen, nicht bei der Figur. Für die
+übrigen Tranchen heißt das: je Figur eine Kaskade ist der Hebel, die
+Grundzeilen sind es nicht.
+
+**Sichtbar:** ein Punkt in `NEUERUNGEN`, Stempel `2026-10-04-t5e`. Die
+Startmitteilung mit Stempel von gestern stand danach auf 498 Wörtern bei
+Deckel 500; drei ältere Punkte um zusammen zehn Wörter gekürzt, jetzt 494.
+
+**Prüfprotokoll T5e-1** (04.10.2026, live im Browser mit Grafik):
+
+| Prüfung | Ergebnis |
+|---|---|
+| `node tools/ladelauf-pruef.mjs` | 12 „in Ordnung", 0 Warnungen, Konsole still (der erste Lauf meldete FEST und STUFE als Kürzel ohne Eintrag, siehe oben) |
+| `node tools/ton-messlauf.mjs` | Eichprobe unverändert 42 von 43; Zahlen in der Tabelle oben |
+| `node --check` über sieben Dateien | still |
+| alle 22 `tools/*-pruef.mjs` | grün: anlage2 123, aufschub 24, ebene 54, empfang 190, gespraech 89, hochablage 29, innen 27, intro 648 Wörter unverändert, langvorgang 58, lv11-13 58, menue 78, mitteilung 36, reich 59, schluss 36, serien 36, speicher 38, steuerung in Ordnung, stopfen 43, szene 50, versuchung 67, zulagen 50 |
+
 ## 6. Was offen bleibt
 
 Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
@@ -494,6 +575,9 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   ist von selbst eine Kaskade: Kürzel, Nachfrage, Langform, Fußnote. Der
   Zeichendeckel von 44 bleibt und ist nicht der Gegner; die Länge entsteht über
   mehrere Tafelzüge, und die Maschine dafür steht seit T1.
+  *(Nachtrag 04.10.2026: die erste Tranche, Zwirn, Nörgel und Milb, ist gebaut,
+  siehe Abschnitt 5f. Offen: die übrigen Figuren in Tranchen, und die Frage an
+  den Projektinhaber, ob die Zwölf für Wort-Kürzel Plätze bekommt.)*
 
 ## 7. Abnahme
 
