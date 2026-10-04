@@ -548,7 +548,10 @@
     max-width:min(420px, calc(100vw - 200px));z-index:12;pointer-events:none;
     background:rgba(20,14,10,.92);border:2px solid #8a6d3b;border-radius:8px;color:#f4e6c8;
     padding:7px 14px;font-size:calc(12px * var(--fs));line-height:1.5;text-align:center;
-    opacity:0;transform:translate(-50%,-6px);transition:opacity .25s ease, transform .25s ease, top .2s ease;}
+    /* RL7, Befund 8: top ohne Uebergang. knBandLage() setzt es beim Zeigen aus
+       der Lage der Ortszeile, und ein Band, das erst ueber die Zeile faehrt und
+       dann darunter rutscht, deckt sie fuer eine Fuenftelsekunde doch zu. */
+    opacity:0;transform:translate(-50%,-6px);transition:opacity .25s ease, transform .25s ease;}
   #knZettel.show,#knRandnotiz.show{opacity:1;transform:translate(-50%,0);}
   #knZettel{display:flex;align-items:center;gap:8px;}
   /* Amtsstempel: gemeinsames Merkmal beider Kanäle, der Kopf trennt sie (gameplay:273/274).

@@ -1318,6 +1318,7 @@ function betreteHaus(haus){
   // auf F sofort wieder hinaus (dieselbe Falle wie bei k.start in baueEbene).
   player.x = innen.tuer.x; player.y = innen.tuer.y - TS - 8;
   camSnap();
+  innenKamera();   // RL7: sofort, nicht erst mit dem ersten update(); der Empfang haelt die Welt an
   setStyle('bossbar', 'display', 'none');
   refreshFloor();
   sfx.warp();
@@ -2522,6 +2523,24 @@ function kammerKamera(){
   const k = kammer;
   const oben = KAM_Y0*TS - 24, unten = (KAM_Y0 + KAM_H)*TS + 24;
   const links = KAM_X0*TS - 24, rechts = (k.raeume[k.raeume.length-1].x1 + 1)*TS + 24;
+  cam.y = (unten - oben) <= canvas.height ? (oben + unten - canvas.height)/2
+                                          : clamp(cam.y, oben, unten - canvas.height);
+  cam.x = (rechts - links) <= canvas.width ? (links + rechts - canvas.width)/2
+                                           : clamp(cam.x, links, rechts - canvas.width);
+}
+
+// RL7, Befund 9: dasselbe fuer den Innenraum. Die Kamera hing am Spieler, und
+// ein Raum von 17 mal 11 Kacheln (544 mal 352 Pixel) ist kleiner als jedes
+// Fenster in mindestens einer Richtung: auf 390x844 sass die Amtsstube oben
+// und darunter lagen 382 Pixel Schwarz, auf 844x390 fehlte der Schrank mit
+// der Tafel am oberen Rand (gemessen am 04.10.2026, Abzuege RL7). Passt der
+// Raum ins Bild, steht er mittig; ist er breiter, haelt die Klemme den Rand
+// im Bild. Derselbe Rand von 24 Pixeln wie bei der Kammer, damit die Wand
+// nicht an der Kante klebt.
+function innenKamera(){
+  const r = innen.raum;
+  const oben = INN_Y0*TS - 24, unten = (INN_Y0 + r.h)*TS + 24;
+  const links = INN_X0*TS - 24, rechts = (INN_X0 + r.w)*TS + 24;
   cam.y = (unten - oben) <= canvas.height ? (oben + unten - canvas.height)/2
                                           : clamp(cam.y, oben, unten - canvas.height);
   cam.x = (rechts - links) <= canvas.width ? (links + rechts - canvas.width)/2

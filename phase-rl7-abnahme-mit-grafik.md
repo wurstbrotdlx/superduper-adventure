@@ -165,3 +165,34 @@ Dieselben Zahlen wie vor den Korrekturen (Abschnitt 1); kein Lauf hat eine Zeile
 * Das Bild ist auf drei Fenstergrößen gesehen, nicht auf einem Telefon in der
   Hand. Was `deviceScaleFactor` 3, ein Daumen und ein echter Lautsprecher
   anders machen, steht weiter auf der Liste des Projektinhabers.
+
+---
+
+## Nachtrag, 04.10.2026: Befund 8 und 9 gebaut
+
+Auf Zuruf des Projektinhabers, nach dem Merge von RL7 (`4b4fb66`).
+
+**Befund 8, der Zettel über der Ortszeile.** Kein Breakpoint, sondern ein
+Maß beim Zeigen: `knBandLage()` (in `skript/04`, vor `knDisplayZettel()`) liest
+die Lage von `#zone` und rückt Zettel oder Randnotiz unter die Zeile, wenn
+sich beide in der Breite überschneiden; sonst bleibt das Band bei seinen
+46 px. Der Übergang auf `top` ist aus dem CSS genommen, sonst fuhr das Band
+eine Fünftelsekunde über die Zeile, bevor es darunter stand. Zwölf statt sechs
+Pixel Abstand, weil das Band beim Einblenden sechs Pixel von oben
+herunterfährt; mit sechs stand es in dieser Viertelsekunde 0,3 px in der
+Zeile (gemessen auf 360×640, dort ist die Ortszeile der Kammer dreizeilig).
+`steuerung-pruef` misst seither auf allen vier Formaten, dass weder Zettel
+noch Randnotiz die Ortszeile berühren und der Zettel im Fenster steht.
+
+**Befund 9, die Kamera im Innenraum.** `innenKamera()` (in `skript/05`, neben
+`kammerKamera()`, gleiche Rechnung, gleicher Rand von 24 px): passt der Raum
+ins Fenster, steht er mittig, ist er breiter, hält die Klemme die Wand im
+Bild. Gerufen in `update()` hinter der Kamerafahrt und in `betreteHaus()`
+sofort nach `camSnap()`, weil der Empfang die Welt anhält und `update()` dort
+nicht läuft. Gemessen danach: 390×844 Raum von y 246 bis 598 statt 110 bis
+462, mittig; 844×390 Raum von y 0 bis 352 mit Oberkante im Bild statt −117;
+1280×720 unverändert mittig. `innen-pruef` prüft es in drei Fenstern, sofort
+nach dem Betreten und nach dreißig Rahmen (27 von 27, war 21).
+
+Beides für Spieler sichtbar, deshalb ein Punkt in der Hausmitteilung
+(Stempel `2026-10-04-rl7b`).
