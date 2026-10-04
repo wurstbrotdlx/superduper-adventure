@@ -29,3 +29,6 @@ docs/
 # bis tools/zulagen-bild.py sie auf Kartengroesse gerechnet hat. Ins Repo geht
 # nur das Ergebnis in assets/zulagen/.
 assets/eingang/
+
+# Abzuege aus tools/abzug-messlauf.mjs: Bilder zum Ansehen, kein Bestand.
+abzuege/

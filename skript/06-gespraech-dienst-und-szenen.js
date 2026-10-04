@@ -2744,9 +2744,22 @@ function render(){
     ctx.restore();
   }
 
+  // RL7: Die grossen Zeilen ("KAMMER · SCHWIERIGKEIT 2", "MASSENVORGANG
+  // ERÖFFNET") begannen am Spieler und liefen nach rechts; auf dem stehenden
+  // Telefon steht der Spieler in der Mitte, die Zeile misst 259 Pixel und
+  // lief 64 Pixel aus dem Bild (gemessen auf 390x844). Jetzt steht sie mittig
+  // ueber ihm und wird in den sichtbaren Ausschnitt geklemmt. Die kleinen
+  // Zahlen bleiben, wie sie waren: sie haengen am Treffer, nicht am Bild.
   for(const f of floaters){
     ctx.fillStyle = '#000'; ctx.font = f.big ? '900 18px Courier New' : 'bold 12px Courier New';
-    ctx.fillText(f.txt, f.x+1, f.y+1); ctx.fillStyle = f.col; ctx.fillText(f.txt, f.x, f.y);
+    let fx = f.x;
+    if(f.big){
+      const halb = ctx.measureText(f.txt).width / 2;
+      fx = clamp(f.x, cam.x + halb + 6, cam.x + canvas.width - halb - 6);
+      ctx.textAlign = 'center';
+    }
+    ctx.fillText(f.txt, fx+1, f.y+1); ctx.fillStyle = f.col; ctx.fillText(f.txt, fx, f.y);
+    if(f.big) ctx.textAlign = 'start';
   }
 
   ctx.restore();
@@ -3541,9 +3554,18 @@ const NEUERUNGEN = {
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
-  stand: '2026-10-03-rl6',
-  datum: '3. Oktober',
+  // RL7: neuer Tag, neuer Stempel.
+  stand: '2026-10-04-rl7',
+  datum: '4. Oktober',
   punkte: [
+    // --- RL7, 04.10.2026 ----------------------------------------------------
+    // Der erste Punkt, der aus einer Abnahme mit Grafik kommt. Er nennt, was
+    // man sieht, und nicht die CSS-Regel, die es verdeckt hat.
+    {
+      titel: 'Die Urkunden zeigen auf dem liegenden Telefon wieder die ganze Szene',
+      was: 'Auf einem niedrigen Fenster fehlten den Urkunden des Anfangs und des Abspanns die Zeilen, die sagen, was auf dem Tisch liegt und wer hereinkommt. Das letzte Bild des Abspanns bestand dort aus zwei Wörtern. Jetzt steht alles da, und wenn ein Blatt nicht in den Rahmen passt, sagt eine Zeile darunter, dass es weitergeht. Dazu: der lange Amtstitel läuft auf der Urkunde und dem Dienstausweis nicht mehr aus dem Bild, im Zauberbaum stehen die Namen am Telefon wieder in einer Zeile, die Münze hinter dem Bankguthaben hängt nicht mehr unter der Zeile, und die Kammeransage schiebt sich nicht mehr rechts hinaus.',
+      wo: 'Ernennung und Abspann auf einem Telefon im Querformat, Zauberbaum mit Taste T am Telefon, Dienstausweis im Charakterfenster, Amtsfenster am Pult.',
+    },
     // --- RL6, 03.10.2026 ----------------------------------------------------
     {
       titel: 'Der Anfang kommt in Raten',
@@ -8859,6 +8881,13 @@ const ANLAGE2_AUFTAKT_NACHHOLUNG = {
 //  CSS ausgeblendet (.amtLead, siehe dort). Auf einem Telefon im Querformat ist
 //  es weg. Jede Zeile, die den Witz TRAEGT, gehoert deshalb in `stimme` und
 //  nie in `blatt` oder `regie`.
+//  RL7 (04.10.2026): Das gilt nicht mehr. Die Regel oben traf auf die
+//  Ernennung (T2) und den Abspann (SZ4) nie zu, und beide standen auf 844x390
+//  ohne ihre Szene da (Blatt 13 des Abspanns: "Vorgang 2." und sonst nichts).
+//  Ausgeblendet wird seither nur der Vorspann des Vordrucks; `blatt` und
+//  `regie` einer Szenentafel stehen auf jedem Format, und der Rahmen rollt,
+//  wenn sie nicht hineinpassen. Die Reihe hier darf also bleiben, wie sie
+//  ist, und die Sorgfalt von oben schadet trotzdem nicht.
 // ===========================================================================
 const ANLAGE2_FRAGE = [
   // Stufe 0. Das Amt schweigt noch, sie fragt selbst, und sie fragt ergebnis-

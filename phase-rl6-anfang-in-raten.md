@@ -129,3 +129,20 @@ Warnungen).
 * **AN7, die Hausmitteilung als Tagesträger** (eine Regel je Morgen), bleibt
   offen; die Erstbelehrung benutzt denselben Morgen und wäre ihr erster Fall.
 * Die drei Kanon-Entscheidungen des Masterplans sind weiter nicht getroffen.
+
+---
+
+## Berichtigung, 04.10.2026 (RL7)
+
+Die Tabelle unter 1. nennt für „nachher" 806 (Pflicht), 908 (Vordruck), 1171
+(Vielleser) und 664 (Springer). `tools/intro-pruef.mjs` misst am Stand von
+`8cc4b47`, dem gemergten RL6, auf jeder Route **zwei Wörter weniger**: 804,
+906, 1169, 662. Gemessen am 04.10.2026 zweimal, einmal mit und einmal ohne die
+lizenzierte Grafik, beide Läufe Zeichen für Zeichen gleich (`--roh --route
+pflicht`, `cmp` still); die Grafik ist es also nicht. [Wahrscheinlich] ist es
+die Antwortzeile am ersten Knoten: Abschnitt 4 beschreibt vier Fassungen, und
+die Tabelle ist mit einer der längeren entstanden („Ich kenne das Haus. Den
+Vordruck." hat sechs Wörter, gebaut sind die vier von „Kenne ich. Den
+Vordruck."). Die Antwortzeilen zählen auf jeder Route mit, deshalb trifft es
+alle vier gleich. Die Verhältnisse und Schlüsse oben ändern sich nicht; die
+Zahlen, die ab jetzt gelten, stehen in `phase-rl7-abnahme-mit-grafik.md`.

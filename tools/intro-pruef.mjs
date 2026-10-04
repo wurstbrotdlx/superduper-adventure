@@ -130,11 +130,15 @@ const lage = page => page.evaluate(() => {
   // Fliesstext eines Panels. Kopfzeile des Hauses und Blattzaehlung sind
   // Rahmen und keine Lektuere, Knoepfe sind Bedienung. Beides faellt raus,
   // damit "Woerter" heisst, was jemand gelesen hat.
+  // RL7: .amtMehr dazu, die Zeile "Der Text geht im Blatt weiter." unter einem
+  // rollenden Rahmen. Sie ist Bedienung wie der Knopf; mitgezaehlt haette sie
+  // den Pflichtweg um 36 Woerter verlaengert (sechs Blaetter Ernennung mal
+  // sechs), ohne dass jemand ein Wort mehr liest.
   const panelText = () => {
     const p = document.getElementById('ovPanel');
     if(!p) return [];
     const k = p.cloneNode(true);
-    for(const w of k.querySelectorAll('button, .amtKopf, .amtFuss, svg')) w.remove();
+    for(const w of k.querySelectorAll('button, .amtKopf, .amtFuss, .amtMehr, svg')) w.remove();
     return [...k.querySelectorAll('p, h1, li, div > b, span')]
       .map(n => (n.textContent || '').replace(/\s+/g, ' ').trim())
       .filter(Boolean);

@@ -624,7 +624,10 @@
   #ausweis h2{margin:0 0 10px;font-size:calc(15px * var(--fs));color:#f4d97a;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center;}
   #ausweisKopf{display:flex;gap:12px;align-items:flex-start;}
   #ausweisFoto{image-rendering:pixelated;width:96px;height:108px;flex:0 0 auto;border:2px solid #6b5a3a;border-radius:4px;background:#17130d;}
-  #ausweisFelder{font-size:calc(12px * var(--fs));line-height:1.7;}
+  /* RL7: min-width 0 und overflow-wrap, weil das Feld als Flex-Kind sonst
+     so breit wird wie sein laengstes Wort (259 Pixel fuer den ersten Titel)
+     und auf 390 Pixeln Breite 25 Pixel aus dem Ausweis hinauslief. */
+  #ausweisFelder{font-size:calc(12px * var(--fs));line-height:1.7;min-width:0;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;}
   #ausweisFelder b{color:#f4d97a;}
   #ausweisInsignien{margin-top:10px;padding-top:8px;border-top:1px solid #5a4a2d;font-size:calc(11px * var(--fs));color:#c9b98a;text-align:left;}
   #ausweisInsignien div{padding:2px 0;}
@@ -1446,7 +1449,14 @@
      Ausruf. */
   .amtStimme, #overlay .amtStimme{
     font-size:calc(clamp(16px, 2.6vw, 25px) * var(--fs));
-    line-height:1.45;color:#f0dfb4;margin:10px 0 0;}
+    line-height:1.45;color:#f0dfb4;margin:10px 0 0;
+    /* RL7: "Monsterangelegenheitenanwärter" misst in dieser Schrift 345 Pixel,
+       die Spalte auf 390 Pixeln Breite 307. Das Wort lief 38 Pixel aus der
+       Urkunde hinaus und wurde abgeschnitten, gesehen auf dem Abzug. Ein
+       Amtstitel, der nicht in die Zeile passt, bricht lieber als dass er
+       fehlt, und mit hyphens:auto bricht er an einer Silbe (lang="de" steht
+       am Dokument), overflow-wrap faengt den Rest. */
+    hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;}
   /* SZ4: wer spricht. Das Intro brauchte das nicht, es hat eine Stimme; der
      Abspann hat fuenf Bilder mit Rede und eines davon ist eine Wechselrede
      zwischen zwei Leuten. Ohne Namen davor liest sich Bild 11 als fuenf Zeilen
@@ -1461,7 +1471,15 @@
   .amtTitel, #overlay .amtTitel{
     font-size:calc(clamp(19px, 3.2vw, 27px) * var(--fs));margin:0 0 6px;}
   .amtLead, #overlay .amtLead{
-    font-size:calc(13px * var(--fs));line-height:1.5;color:#a89158;margin:0 0 4px;}
+    font-size:calc(13px * var(--fs));line-height:1.5;color:#a89158;margin:0 0 4px;
+    hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;}
+  /* RL7: Der Textkoerper einer Szenentafel rollt seit SZ4 im Rahmen, und
+     nichts sagte es. Auf 1280x720 lagen beim ersten Ernennungsblatt 103
+     Pixel unter der Kante, auf 390x844 78, ohne Rollbalken im Bild. Dieselbe
+     Zeile wie unter dem Dienstbericht (RL4, berichtMehr), nach dem Rendern
+     gemessen. Leer, solange alles im Rahmen steht. */
+  .amtMehr, #overlay .amtMehr{
+    font-size:calc(10px * var(--fs));line-height:1.4;color:#7a6a45;font-style:italic;margin:2px 0 0;min-height:0;}
   /* Auf einem niedrigen Fenster ist der Urkundenkopf Platz, der dem Inhalt
      fehlt: Siegel, Kopfzeile und zwei Doppellinien kosten dort ein Drittel
      der Hoehe, und der Vordruck zerfiel dadurch in dreizehn Seiten. Der
@@ -1478,7 +1496,16 @@
      Dienst. Wenn eines von beidem weichen muss, weicht der Schmuck. */
   @media (max-height: 660px){
     .amtSiegel{display:none;}
-    .amtLead, #overlay .amtLead{display:none;}
+    /* RL7: Bis hierher fiel .amtLead auf jeder Urkunde weg, und T6 hat das als
+       Schreibregel weitergegeben ("jede Zeile, die den Witz traegt, gehoert in
+       stimme"). Die Szenentafeln aus T2 und SZ4 halten sich nicht daran und
+       koennen es nicht: auf dem Abspannblatt 13 steht die ganze Szene im
+       Feld blatt, die Stimme ist "Vorgang 2." Gemessen auf 844x390: Blatt 10
+       verlor 34 Woerter, Blatt 13 46, die Ernennung je Blatt 20 bis 36. Die
+       Regel gilt seither nur noch dort, wofuer sie geschrieben wurde: dem
+       Vordruck, dessen Vorspann wirklich Schmuck ist. Die Tafeln rollen auf
+       einem niedrigen Fenster stattdessen, und sagen es (.amtMehr). */
+    body.vordruckOffen .amtLead, body.vordruckOffen #overlay .amtLead{display:none;}
     body.introBuehne #overlay .panel,
     body.vordruckOffen #overlay .panel{padding:12px 14px 10px;}
   }
@@ -1961,7 +1988,14 @@
   body.cfuiIco .ico{
     /* font-size:0 raeumt das Ersatz-Emoji weg. Es steht als Text IM Element,
        nicht daneben — sonst muesste jede Fundstelle zweimal gepflegt werden. */
-    font-size:0;width:16px;height:16px;vertical-align:-3px;
+    /* RL7: overflow:hidden, weil die Grundlinie eines inline-block sonst die
+       seines Inhalts ist, und der Inhalt ist eine Zeile mit Schriftgroesse 0
+       am oberen Rand: das Sinnbild hing 16 Pixel unter der Zeile, in der es
+       stand (Muenze hinter "Bankguthaben:" im Amtsfenster und in der
+       Statusspalte, gesehen auf allen drei Formaten). Mit overflow ungleich
+       visible ist die Grundlinie die Unterkante, und vertical-align:-3px
+       heisst wieder, was es sagt. */
+    font-size:0;width:16px;height:16px;vertical-align:-3px;overflow:hidden;
     background-size:100% 100%;background-repeat:no-repeat;
     image-rendering:pixelated;}
   body.cfuiIco.touch .ico{width:32px;height:32px;vertical-align:middle;}
@@ -2254,15 +2288,21 @@
       text-align:left; font-size:calc(12px * var(--fs)); margin:8px 0 6px;
       padding-bottom:3px; border-bottom:1px solid #4c4030;
     }
+    /* RL7: Die Manazeile stand als dritte Spalte neben dem Namen, ohne
+       Umbruch. "36 Mana · Pool 26, zu klein" ist 230 Pixel breit, und das
+       Raster gab ihr die, bevor der Name etwas bekam: dem Namen blieben 38
+       Pixel, "Feuerball" (78) stand in drei Zeilen. Gemessen auf 390x844.
+       Jetzt steht die Manazeile unter dem Namen, die Beschreibung darunter,
+       und das Sinnbild laeuft ueber alle drei Zeilen. */
     .spellNode{
-      display:grid; grid-template-columns:36px 1fr auto;
-      grid-template-rows:auto auto; column-gap:8px; align-items:center;
+      display:grid; grid-template-columns:36px minmax(0,1fr);
+      grid-template-rows:auto auto auto; column-gap:8px; align-items:center;
       text-align:left; padding:8px 10px; margin-bottom:6px; min-height:28px;
     }
-    .spellNode .sIcon{grid-row:1 / span 2; font-size:calc(24px * var(--fs)); text-align:center;}
+    .spellNode .sIcon{grid-row:1 / span 3; font-size:calc(24px * var(--fs)); text-align:center;}
     .spellNode .sName{grid-column:2; grid-row:1; margin:0;}
-    .spellNode .sMana{grid-column:3; grid-row:1; justify-self:end; white-space:nowrap;}
-    .spellNode .sDesc{grid-column:2 / span 2; grid-row:2;}
+    .spellNode .sMana{grid-column:2; grid-row:2; justify-self:start;}
+    .spellNode .sDesc{grid-column:2; grid-row:3;}
 
     /* --- Skill-Buttons ---
        Das Mass stand hier bei 48x40 mit einem Pluszeichen von 15 Pixeln (mal
