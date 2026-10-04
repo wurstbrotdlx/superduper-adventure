@@ -689,7 +689,7 @@ async function hinaus(page){
   // RL6: Der Weg am Anfang vorbei steht als zweite Zeile am ERSTEN Knoten,
   // nicht mehr als UEBERSPRINGEN auf einer Tafel nach sechs Zuegen.
   pruef('der erste Knoten bietet den Weg am Anfang vorbei', (await antworten(page)).length, 2);
-  await waehle(page, 'Ich kenne das Haus');
+  await waehle(page, 'Kenne ich');
   await page.waitForTimeout(500);
   pruef('er fuehrt auf den Vordruck',
         (await page.textContent('#ovPanel')).includes('EINSTELLUNGSVERFÜGUNG'), true);

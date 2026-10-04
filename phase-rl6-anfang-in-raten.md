@@ -109,8 +109,15 @@ auf (vorher eines, weil ÜBERSPRINGEN auf einem Blatt stand).
 
 ## 5. Abnahme
 
-Siehe Prüfprotokoll unten; die Reihe aller 17 Läufe nach dem Umbau steht dort
-mit Datum.
+Alle 18 Prüfläufe am 04.10.2026 auf dem Stand des Umbaus, ohne Grafik im
+Container: 13 grün, 5 rot, und alle fünf roten sind dieselben wie in der
+Baseline vor RL1 (`ebene`, `gespraech`, `innen`, `langvorgang`, `reich`,
+jeweils nur fehlende Blätter oder Sprite-Warnungen). Darunter `empfang`
+150/150, `intro` ohne Abbruch, `szene` 50/50 (sein Telefon-Abschnitt misst die
+Chronik seit RL6 am Morgen statt in der Kette), `anlage2` 123/123,
+`mitteilung` 32/32, `speicher` 38/38, `schluss` 36/36, `versuchung` 67/67,
+`ladelauf` still. Die CI hat den Push mit Grafik geprüft (Konsole still, 0
+Warnungen).
 
 ## Offen
 
