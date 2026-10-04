@@ -3575,7 +3575,7 @@ const NEUERUNGEN = {
   // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
   // LV11-13 und die Hausmitteilung: sechster. KA1, der Druck: siebter.
   // HO1, Hochablage: achter.
-  stand: '2026-10-04-ho',
+  stand: '2026-10-04-t5e',
   datum: '4. Oktober',
   // HM-kurz (04.10.2026): jeder Punkt traegt sein Datum (am, ISO). Die
   // Hausmitteilung beim Start zeigt nur die Punkte ab dem Tag des zuletzt
@@ -3584,23 +3584,29 @@ const NEUERUNGEN = {
   // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
   // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
   punkte: [
+    // --- T5e-1, der Ton, erste Tranche, 04.10.2026 ------------------------------
+    {am:'2026-10-04',
+      titel: 'Zwirn, Nörgel und Milb reden ausführlicher',
+      was: 'Mehr Fachwörter, und je eine Nachfrage mehr im Gespräch.',
+      wo: 'Dorf, „Erzählen Sie von früher".',
+    },
     // --- HO1, Hochablage, 04.10.2026 --------------------------------------------
     {am:'2026-10-04',
       titel: 'Nach dem Schluss fährt eine Kutsche nach Hochablage',
-      was: 'Wer Vorgang 1 zugestellt hat, findet am Dorfplatz eine Kutsche. Sie fährt nach Turm I, oberstes Geschoss.',
+      was: 'Wer Vorgang 1 zugestellt hat, findet am Dorfplatz eine Kutsche nach Turm I.',
       wo: 'Dorfplatz, nach dem Abspann.',
     },
     // --- KA1, der Druck aus Hochablage, 04.10.2026 ------------------------------
     {am:'2026-10-04',
       titel: 'Ein Druck aus Hochablage hängt in der Amtsstube',
-      was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, die Bank, darauf der Vierte Wartende. Die Karte unter dem Bild wechselt, wenn man wieder hinsieht.',
+      was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, die Bank, darauf der Vierte Wartende. Die Karte unter dem Bild wechselt.',
       wo: 'Amtsstube, Nordwand, Ansehen.',
     },
     // --- LV11-13 und die Hausmitteilung, 04.10.2026 -----------------------------
     {am:'2026-10-04',
-      titel: 'Drei Nebenstränge mehr: der Eimer, der richtige Wortlaut, einundvierzig Blätter',
+      titel: 'Drei Nebenstränge mehr: Eimer, Wortlaut, einundvierzig Blätter',
       was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt. Bramsche und Pommer geben die Archivausfertigung heraus, wenn der Antrag richtig lautet. Wer die vierzig Zwischenbescheide kennt, hat bei Vorblatt eine Antwort mehr.',
-      wo: 'Nieselbeck ab Schicht 11, Registratur und Materialausgabe ab Schicht 21.',
+      wo: 'Nieselbeck ab Schicht 11, Registratur ab 21.',
     },
     {am:'2026-10-04',
       titel: 'Diese Mitteilung ist kürzer',
@@ -10396,6 +10402,13 @@ SZENEN.baumZwirn = {
      z1:'Bestellt. Elf Mal inzwischen.', z2:'Feucht wird es ja doch.'},
     {key:'kisten', frei:'konfetti', t:'Wer bezahlt das?',
      z1:'Ich. Ohne Genehmigung kein Titel.', z2:'Ein Haushaltstitel, meine ich.'},
+    // T5e-1: der Antrag in ganzer Form, als Kaskade. Er erklaert ihn mit
+    // sichtbarem Vergnuegen und laenger als die Sache selbst (Grundgesetz 12).
+    // Kein neues Kuerzel: die Tabelle steht auf zwoelf; FEST als Wort-Kuerzel
+    // liegt als Entscheidung vor (phase-t5-ton.md, Abschnitt 5f).
+    {key:'kuerzel', frei:'fest', t:'Wie heißt der Antrag?',
+     z1:'Antrag auf Bewilligung einer Festveranstaltung.', z2:'Mit Sondertermin, versteht sich.',
+     weiter:'fest4', wt:'Und wer bewilligt?'},
     {key:'sturz', nach:3, t:'Wer war die Amtsleiterin?',
      z1:'Sie hat einen Antrag gestellt.', z2:'Ich habe unterschrieben.'},
   ],
@@ -10404,6 +10417,11 @@ SZENEN.baumZwirn = {
     fest2:   {z1:'Erstens Menschen. Die sind da.', z2:'Zweitens Konfetti. Bestellt.',
               opts: () => [{t:'Und drittens?', zu:'fest3'}]},
     fest3:   {z1:'Drittens die Genehmigung.', z2:'Da bin ich dran. Seit elf Jahren.'},
+    fest4:   {z1:'Die Amtsleitung, per Bewilligungsvermerk.', z2:'Ich habe das Feld freigelassen.',
+              opts: () => [{t:'Freigelassen?', zu:'fest5'}]},
+    fest5:   {z1:'Für den Namen. Den trägt sie selbst ein.', z2:'Sobald es sie gibt.',
+              opts: () => [{t:'Seit wann?', zu:'fest6'}]},
+    fest6:   {z1:'Seit elf Jahren. Der Antrag ist anhängig.', z2:'Anhängig heißt: er hängt. Hier.'},
     angebot: {z1:'Sie könnten sich das ansehen.', z2:'Der Keller ist offen. Immer.',
               opts: () => [
                 {t:'Ich sehe es mir an.', tun: () => { szeneKnoten('dank'); }},
@@ -10590,6 +10608,12 @@ SZENEN.baumNoergel = {
      z1:'Beantragt. Bei der Materialausgabe.', z2:'Ordnungsgemäß. Mit Wortlaut.'},
     {key:'bestand', frei:'antrag', t:'Steht sie in einem Bestand?',
      z1:'Als einziges Stück. Meines.', z2:'Das ist beinahe ein Beweis.'},
+    // T5e-1: seine Akte, Zeile fuer Zeile, als Kaskade mit Vermerk von ihm.
+    // Kein neues Kuerzel (die Zwoelf); PROBE als Wort-Kuerzel liegt als
+    // Entscheidung vor (phase-t5-ton.md, Abschnitt 5f).
+    {key:'akte', frei:'probe', t:'Was steht in Ihrer Akte?',
+     z1:'Personalvorgang, ruhend. Eine Zeile.', z2:'Seit vierzig Jahren dieselbe.',
+     weiter:'probe2', wt:'Ruhend?'},
     {key:'lager', nach:3, t:'Und die vor der Palisade?',
      z1:'Meine Leute. Sie warten dort.', z2:'Seit vierhundert Jahren.'},
   ],
@@ -10600,6 +10624,11 @@ SZENEN.baumNoergel = {
     be3:     {z1:'Viertens die Belehrung über den Rechtsbehelf.', z2:'Die schreibe ich mir selbst.',
               opts: () => [{t:'Und dann?', zu:'be4'}]},
     be4:     {z1:'Dann lege ich sie ab. Bei mir.', z2:'Und mache es trotzdem.'},
+    probe2:  {z1:'Ruhend heißt: niemand ist zuständig.', z2:'Vermerk von mir. Zulässig.',
+              opts: () => [{t:'Und wer hebt das auf?', zu:'probe3'}]},
+    probe3:  {z1:'Die Amtsleitung, per Beschluss zur Entfristung.', z2:'Das Feld dafür ist leer.',
+              opts: () => [{t:'Und solange?', zu:'probe4'}]},
+    probe4:  {z1:'Solange bin ich auf Probe. Ordnungsgemäß.', z2:'Beschwerde läuft. Trotzdem.'},
     angebot: {z1:'Sie könnten selbst hingehen.', z2:'Ohne zu schlagen, meine ich.',
               opts: () => [
                 {t:'Ich gehe hin.', tun: () => { szeneKnoten('dank'); }},
@@ -10630,6 +10659,13 @@ SZENEN.baumMilb = {
      z1:'Gutachterliche Ansetzung. Mein Wort.', z2:'Ich habe es selbst gebildet.'},
     {key:'kurz', frei:'ga', t:'Warum kürzen Sie das ab?',
      z1:'Weil ich es oft schreibe.', z2:'Was oft kommt, wird kürzer.'},
+    // T5e-1: die Stufe in ganzer Form, als Kaskade. Die Herleitung ist ihm
+    // wichtiger als die Sache, und am Ende setzt er sie selbst mit Fuenf an.
+    // Kein neues Kuerzel (die Zwoelf); STUFE als Wort-Kuerzel liegt als
+    // Entscheidung vor (phase-t5-ton.md, Abschnitt 5f).
+    {key:'stufe', frei:'ga', t:'Und was ist eine Stufe?',
+     z1:'Eine Feststellung aus dem Vordruck.', z2:'Sechs davon, von eins bis sechs.',
+     weiter:'stufe2', wt:'Nur eine Feststellung?'},
     // T1: das Gutachten in ganzer Form, die Kaskade dieser Figur. Vier Teile,
     // maximal gruendlich vorgetragen, und der vierte ist der Fehler: ein
     // Gutachten ohne Vorbehalt ist der Grund, warum er seit vierzig Jahren
@@ -10648,6 +10684,11 @@ SZENEN.baumMilb = {
     g3:      {z1:'Drittens die Ansetzung. Ich sage Drei.', z2:'Höchstens. Sie sind neu.',
               opts: () => [{t:'Und viertens?', zu:'g4'}]},
     g4:      {z1:'Viertens der Vorbehalt. Ich habe keinen.', z2:'Das ist die eigentliche Güte.'},
+    stufe2:  {z1:'Eine sachgerechte, nach Tabelle. Unverbindlich.', z2:'So steht es im Vordruck.',
+              opts: () => [{t:'Unverbindlich?', zu:'stufe3'}]},
+    stufe3:  {z1:'Unverbindlich, aber verbindlich angewandt.', z2:'Seit vierzig Jahren.',
+              opts: () => [{t:'Wer hat das gebildet?', zu:'stufe4'}]},
+    stufe4:  {z1:'Ich. Die GA auch. Ich bilde gern Wörter.', z2:'Das setze ich mit Fünf an.'},
     angebot: {z1:'Ich könnte ihn Ihnen zeigen.', z2:'Er liegt hier. Natürlich.',
               opts: () => [
                 {t:'Zeigen Sie ihn mir.', tun: () => { szeneKnoten('dank'); }},
