@@ -747,6 +747,8 @@ Persistent wie die Kladde. Jeder endet in einer dauerhaften Kleinigkeit, passt a
 
 **Zum Stand der vier neuen.** Sie sind in `weltgeschichte.md`, Kapitel 10, vollständig entworfen und stehen hier, damit die Tabelle vollständig ist. Gebaut ist keiner von ihnen.
 
+*(Nachtrag 04.10.2026, LV11-13, `phase-lv11-13-langvorgaenge.md`.)* **Alle vier sind gebaut**, Nummer 10 mit SZ3, Nummer 11 bis 13 mit LV11-13; der Zusatz „entworfen, nicht gebaut" in der Tabelle ist überholt. Drei Entscheidungen beim Bau, die der Entwurf offen ließ: der Eimer holt die Veranlassung aus einer Kammertruhe im Frostkamm (ab Akt II); die fünfte Antwort in Szene 7 hängt an den **vierzig** Blättern aus der Schublade, weil der einundvierzigste der Stempel ist, den Vorblatt in genau dieser Szene aufdrückt; und die Spielerzeile dazu ist auf den Antwortdeckel gekürzt („Einundvierzig Jahre Arbeit."), Vorblatts drei Sätze stehen wörtlich. Im Code stehen damit zwölf Stränge in `LANGVORGAENGE`; die Zustellung bleibt der Hauptstrang.
+
 **Stand im Code: acht Stränge in `LANGVORGAENGE`.** Sieben aus W7, dazu Nummer 4 aus Langvorgang 4 (`phase-lv4-praktikumsbericht.md`, 24.08.2026). Nummer 8, die Zustellung, ist weiterhin der W5-Hauptstrang selbst und kein Tabelleneintrag. Die Zahl neun in der alten Überschrift war schon vorher eine Planungszahl und keine Codezahl.
 
 **Regel für alle Langvorgänge:** Sie dürfen den Spielfluss nie blockieren. Kein Langvorgang darf für den Hauptvorgang notwendig sein, mit genau einer Ausnahme: Nummer 4, und die ist so gebaut, dass sie nebenbei mitläuft.
@@ -1402,6 +1404,9 @@ bekommt hier ihre Berichtigung statt einer Umschreibung.)*
   G und H.
 * **Von den dreizehn Langvorgängen sind acht gebaut.** Der Rest ist offen, die Aussage
   stimmt also sinngemäß weiter, nur nicht mit den Nummern.
+  *(Nachtrag 04.10.2026: seit SZ3 neun, seit LV11-13 zwölf. Die Zustellung ist der
+  Hauptstrang und kein Tabelleneintrag, damit ist die Tabelle aus Kapitel 10 im Code
+  vollständig.)*
 
 *(Nachtrag RL6, 03.10.2026, siehe `phase-rl6-anfang-in-raten.md`.)* **Der Anfang kommt in
 Raten.** Die vier Chronikblätter fallen je eines am Morgen der Schichten 2 bis 5 statt am

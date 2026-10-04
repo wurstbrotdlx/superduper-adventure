@@ -1263,6 +1263,8 @@ Die Weltbibel führt neun. Hier kommen vier dazu, nach derselben Regel: keiner b
 | 12 | **Der richtige Wortlaut** | Bramsche und Pommer | Die Archivausfertigung liegt in Zimmer 4. Bramsche gibt sie ohne korrekt gestellten Antrag nicht heraus. Pommer weiß, wie ein Antrag formuliert sein muss, weil er nur ausgibt, was dasteht. Man muss den beiden dieselbe Sache in verschiedenen Worten erzählen. | Die Archivausfertigung. Sie beweist, dass der Krieg nicht zu Ende ist, und sie ist in Akt V das Blatt, das Sturz gegenzeichnet. |
 | 13 | **Einundvierzig Blätter** | Vorblatt | Man sammelt jeden Zwischenbescheid, den er je in dieses Haus geschickt hat. Vierzig liegen im Schreibtisch. Der einundvierzigste klebt in Akt V auf dem Umschlag. | Wer alle hat, darf Vorblatt in Szene 7 eine fünfte Antwort geben. Sie lautet: "Sie haben einundvierzig Jahre lang gearbeitet." Er antwortet darauf mit dem einzigen wahren Satz seines Lebens. |
 
+*(Hinweis 04.10.2026, LV11-13.)* Alle vier sind im Spiel; Nummer 10 seit SZ3, 11 bis 13 seit `phase-lv11-13-langvorgaenge.md`. Die Spielerzeile der fünften Antwort steht dort auf den Antwortdeckel gekürzt („Einundvierzig Jahre Arbeit."), die drei Sätze Vorblatts wörtlich; die Antwort hängt an den vierzig Blättern aus der Schublade, weil der einundvierzigste der Stempel aus derselben Szene ist. Die Fassung unten bleibt stehen, sie ist die Vorlage.
+
 **Die fünfte Antwort, für Langvorgang 13:**
 
 > AUSSENDIENST: Sie haben einundvierzig Jahre lang gearbeitet.

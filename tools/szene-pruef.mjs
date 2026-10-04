@@ -164,6 +164,12 @@ async function frisch(opt){
         const erreicht = new Set([d.start]);
         for(const n in d.knoten) if(d.knoten[n].hub) erreicht.add(n);
         const gefragt = new Set();
+        // LV11-13: eine Frage mit wenn: haengt an einem Zustand ausserhalb der
+        // Szene (die fuenfte Antwort in Szene 7 am Langvorgang bescheide). Der
+        // Graph kann den Zustand nicht herstellen, also gilt sie als erreicht,
+        // und ihre Fortsetzung wird von ihr aus verfolgt. Ob das Tor selbst
+        // auf- und zugeht, prueft lv11-13-pruef.mjs mit dem echten Strang.
+        for(const f of (d.fragen || [])) if(f.wenn){ erreicht.add(f.key); gefragt.add(f.key); }
         // Eine Antwort nennt ihr Ziel auf zwei Arten: als zu: in der Tabelle
         // oder als tun: () => szeneKnoten('x'). Die zweite ist von aussen nur
         // am Quelltext der Funktion zu erkennen. Das ist keine Spielerei: die

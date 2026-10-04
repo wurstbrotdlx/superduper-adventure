@@ -2051,7 +2051,13 @@ function truheOeffnen(){
   // zweiten Kammerabschluss — das faellt in keinem Bild auf und in jeder
   // Auftragszaehlung.
   if(k.ebene === 0){
+    // LV11-13: der Eimer hoert ueber denselben Trichter mit (langEreignis), und
+    // wenn er dabei die Veranlassung aus dieser Truhe nimmt, sagt das ein
+    // Floater. Vor- und Nachher-Vergleich statt eines zweiten Kanals.
+    const vlgVorher = langRoh('eimer') & EIMER_VLG;
     auftragEreignis('kammer', k);   // W4
+    if(!vlgVorher && (langRoh('eimer') & EIMER_VLG))
+      floaters.push({x: k.truhe.x, y: k.truhe.y - 72, txt: '+ Veranlassung, auf Eis', col:'#7ad6ff', t: 3.2, big: true});
     k.tuer.cd = Math.max(40, CONFIG.kammerNachwachsen - amt.bonusNachwachsen);
   }
   // M4: die untere Ebene zahlt kein Gold, und das ist eine Entscheidung ueber
