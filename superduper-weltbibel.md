@@ -353,7 +353,7 @@ Bauprinzip pro Figur: **eine Besessenheit, ein Hindernis, eine Sprachmarke.** Wi
 
 **Stand nach T3.** Das Ensemble ist siebzehn Figuren stark. Die siebzehnte ist **Anlage 2**, ein Schriftstück, und sie steht unten hinter Fürst Nachtrag.
 
-**Stand nach W11.** Das Ensemble ist von zwölf auf sechzehn Figuren gewachsen. Vier kommen aus `weltgeschichte.md`, Kapitel 6, und stehen unten unter der Überschrift "Aus dem Reich". Drei davon sind gebaut (Nieselbeck, Umlauf, Vorblatt), die vierte (Konrad zu Händen Aufschub) steht nur in Hochablage und deshalb im Spiel bisher nirgends.
+**Stand nach W11.** Das Ensemble ist von zwölf auf sechzehn Figuren gewachsen. Vier kommen aus `weltgeschichte.md`, Kapitel 6, und stehen unten unter der Überschrift "Aus dem Reich". Drei davon sind gebaut (Nieselbeck, Umlauf, Vorblatt), die vierte (Konrad zu Händen Aufschub) steht nur in Hochablage und deshalb im Spiel bisher nirgends. *(Nachtrag 04.10.2026: seit KA1 als Druck an der Wand der Amtsstube, siehe Kapitel 8.)*
 
 **Außerdem hat jede bestehende Figur einen Zuwachs bekommen**, also genau eine neue Tatsache, die ab jetzt gilt. Keine ist umgeschrieben worden. Der Zuwachs steht bei der jeweiligen Figur als eigener Absatz *(Zuwachs W11)*, dreizehn Absätze plus einer für den Kater Anlage 3.
 
@@ -601,6 +601,8 @@ Steht von Anfang an im Dorf.
 #### Konrad zu Händen Aufschub, Vierter Wartender
 
 **Im Spiel bisher nicht gebaut**, und zwar mit Grund: Er erscheint nur, wenn das Spiel Hochablage zeigt, also im Intro, in Serie H und im Abspann. Vordermühl zeigt Hochablage nie.
+
+*(Nachtrag 04.10.2026, KA1, `phase-ka1-druck-aus-hochablage.md`, auf Entscheidung des Projektinhabers.)* **Vordermühl zeigt Hochablage nur auf Papier.** An der Nordwand der Amtsstube hängt ein gerahmter Druck: die Tür mit dem Schild IM TERMIN, der Poststapel, die Bank, und auf der Bank der Vierte Wartende. Unter dem Bild steckt eine Karte mit zwei Sätzen von ihm; sie wechselt, wer wieder hinsieht, und seine sechs Grundzeilen aus der Weltgeschichte laufen so im Kreislauf. Er bleibt in der Schlange, er hängt nur. Kein Eintrag im Dorf, keine Zeile im Intro, der Abspann unverändert. Die beiden anderen Wege, Hochablage als Ort und nicht bauen, wurden vorgelegt und nicht gewählt.
 
 * **Was er ist:** Vierter in der Schlange vor dem Kabinett des Kaisers. Seit siebenundsechzig Jahren. Hoheitsstufe Graf, weil sein Anliegen alt ist.
 * **Besessenheit:** Vorrücken. **Hindernis:** Vor ihm stehen drei Familien.
@@ -1428,7 +1430,9 @@ Kanon-Entscheidungen des Masterplans und weiter nicht getroffen. Die Zahl 806 im
 RL6 darüber ist seit RL7 als 804 nachgemessen (Berichtigung in `phase-rl6-anfang-in-raten.md`).
 
 Unverändert offen: die Blattserien G und H, die übrigen Langvorgänge, Konrad zu Händen
-Aufschub und alles, was Hochablage zeigt. Und Knöterichs Zuwachs, jetzt mit einem Grund
+Aufschub und alles, was Hochablage zeigt. *(Nachtrag 04.10.2026: die Serien G und H mit
+W11-GH, die Langvorgänge 11 bis 13 mit LV11-13, Aufschub mit KA1 als Druck an der Wand.
+Offen bleibt Hochablage als Ort.)* Und Knöterichs Zuwachs, jetzt mit einem Grund
 mehr: seit T3 hat er überhaupt keinen Weltkommentar mehr, den spricht Anlage 2. Er erklärt
 Tasten, nie Zusammenhänge, und das ist seit diesem Bauabschnitt nicht mehr nur eine
 Designregel über ihn, sondern der Zuschnitt seines Kanals.

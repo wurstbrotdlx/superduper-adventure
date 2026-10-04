@@ -3571,7 +3571,8 @@ const NEUERUNGEN = {
   // Umhaengung der Ernennung: dritter.
   // Befund 8 und 9 aus RL7: vierter Stempel desselben Tages.
   // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
-  stand: '2026-10-04-lv',
+  // LV11-13 und die Hausmitteilung: sechster. KA1, der Druck: siebter.
+  stand: '2026-10-04-ka',
   datum: '4. Oktober',
   // HM-kurz (04.10.2026): jeder Punkt traegt sein Datum (am, ISO). Die
   // Hausmitteilung beim Start zeigt nur die Punkte ab dem Tag des zuletzt
@@ -3580,11 +3581,17 @@ const NEUERUNGEN = {
   // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
   // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
   punkte: [
+    // --- KA1, der Druck aus Hochablage, 04.10.2026 ------------------------------
+    {am:'2026-10-04',
+      titel: 'Ein Druck aus Hochablage hängt in der Amtsstube',
+      was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, der Poststapel, die Bank, darauf der Vierte Wartende. Unter dem Bild steckt eine Karte mit zwei Sätzen von ihm. Sie wechselt, wenn man wieder hinsieht.',
+      wo: 'Amtsstube, Nordwand, Ansehen.',
+    },
     // --- LV11-13 und die Hausmitteilung, 04.10.2026 -----------------------------
     {am:'2026-10-04',
       titel: 'Drei Nebenstränge mehr: der Eimer, der richtige Wortlaut, einundvierzig Blätter',
-      was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt, und darf sie nicht holen. Bramsche und Pommer geben die Archivausfertigung heraus, wenn der Antrag richtig lautet. Wer die vierzig Zwischenbescheide kennt, hat in Vorblatts Versammlung eine Antwort mehr.',
-      wo: 'Herr Nieselbeck ab Schicht 11, Registratur und Materialausgabe ab Schicht 21; die Kladde unter Akten.',
+      was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt, und darf sie nicht holen. Bramsche und Pommer geben die Archivausfertigung heraus, wenn der Antrag richtig lautet. Wer die vierzig Zwischenbescheide kennt, hat bei Vorblatt eine Antwort mehr.',
+      wo: 'Nieselbeck ab Schicht 11, Registratur und Materialausgabe ab Schicht 21.',
     },
     {am:'2026-10-04',
       titel: 'Diese Mitteilung ist kürzer',
@@ -3594,20 +3601,20 @@ const NEUERUNGEN = {
     // --- W11-GH, 04.10.2026 -----------------------------------------------------
     {am:'2026-10-04',
       titel: 'Vierzehn neue Blätter: aus Hochablage und sechs Schreiben',
-      was: 'Acht Blätter aus Hochablage liegen in den Kammertruhen des Steinfelds, sechs Schreiben der Gegenseite im Lager und in den Kammern des Moorbruchs. Die Kladde zählt jetzt bis 68.',
-      wo: 'Steinfeld ab Schicht 21, Lager und Moorbruch ab Schicht 11; Kladde unter Akten.',
+      was: 'Acht Blätter aus Hochablage in den Kammertruhen des Steinfelds, sechs Schreiben der Gegenseite im Lager und im Moorbruch. Die Kladde zählt jetzt bis 68.',
+      wo: 'Steinfeld ab Schicht 21, Lager und Moorbruch ab Schicht 11.',
     },
     // --- RL7, Befund 8 und 9, 04.10.2026 ----------------------------------------
     {am:'2026-10-04',
       titel: 'Die Räume stehen am Telefon mittig',
-      was: 'In Amtsstube, Registratur und Gasthaus steht der Raum am Telefon mittig statt oben. Knöterichs Zettel rückt unter die Ortszeile, wenn er sie verdecken würde.',
-      wo: 'In den drei Häusern und in jeder Kammer, am Telefon.',
+      was: 'In den drei Häusern steht der Raum am Telefon mittig statt oben. Knöterichs Zettel rückt unter die Ortszeile, wenn er sie verdecken würde.',
+      wo: 'Die drei Häuser und jede Kammer, am Telefon.',
     },
     // --- Ernennung, 04.10.2026 --------------------------------------------------
     {am:'2026-10-04',
       titel: 'Die Ernennung ist kürzer, nichts davon ist weg',
       was: 'Die Zeremonie am ersten Morgen hat vier Blätter statt sechs. Zwirns Mappe kommt vor dem ersten Jahresgespräch, der Postsack an der Tür beim ersten Hinausgehen.',
-      wo: 'Erster Dienstantritt, Amtstür, nach der zehnten Schicht; alle Blätter in der Kladde unter Akten.',
+      wo: 'Erster Dienstantritt, Amtstür, zehnte Schicht; alle Blätter in der Kladde.',
     },
     // --- AN7, 04.10.2026 --------------------------------------------------------
     {am:'2026-10-04',
@@ -3618,13 +3625,13 @@ const NEUERUNGEN = {
     // --- RL7, 04.10.2026 --------------------------------------------------------
     {am:'2026-10-04',
       titel: 'Die Urkunden zeigen auf dem liegenden Telefon die ganze Szene',
-      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen; passt ein Blatt nicht, sagt eine Zeile darunter, dass es weitergeht. Amtstitel, Zauberbaum, Bankmünze und Kammeransage bleiben im Bild.',
-      wo: 'Telefon im Querformat: Ernennung, Abspann, Zauberbaum (Taste T), Dienstausweis, Amtsfenster.',
+      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen; passt ein Blatt nicht, sagt eine Zeile darunter, dass es weitergeht. Amtstitel, Zauberbaum und Kammeransage bleiben im Bild.',
+      wo: 'Telefon im Querformat: Ernennung, Abspann, Zauberbaum (Taste T), Dienstausweis.',
     },
     // --- RL6, 03.10.2026 --------------------------------------------------------
     {am:'2026-10-03',
       titel: 'Der Anfang kommt in Raten',
-      was: 'Die vier Chronikblätter liegen an den Morgen der Schichten 2 bis 5 bereit, je eines. Anlage 2 meldet sich beim ersten Griff in die Tasche. Wer das Haus kennt, sagt es Knöterich und bekommt den Vordruck.',
+      was: 'Die vier Chronikblätter liegen an den Morgen der Schichten 2 bis 5 bereit, je eines. Anlage 2 meldet sich beim ersten Griff in die Tasche. Wer das Haus kennt, sagt es Knöterich.',
       wo: 'Dienstantritt der nächsten vier Schichten; Kladde unter Akten.',
     },
     // --- RL4, 03.10.2026 --------------------------------------------------------
@@ -9379,6 +9386,50 @@ const REQUISITEN = {
     stimme: ['Die Wiese vor dem Tor heißt hier nicht Wiese. Sie heißt Ablage A.',
              'In der Legende, klein und zweimal unterstrichen: Amtliche Bearbeitungsliste für Angelegenheiten Grundsätzlicher Erledigung.'],
     regie:  'Ganz unten rechts, wo bei anderen Karten das Meer steht, steht: Tilgung. Nicht befahren.',
+  },
+  // KA1: der Druck aus Hochablage, und mit ihm Konrad zu Haendens Aufschub,
+  // Vierter Wartender (weltgeschichte.md, Kapitel 6). Die Weltgeschichte laesst
+  // ihn nur erscheinen, wo das Spiel Hochablage zeigt, und Vordermuehl zeigt
+  // Hochablage nie -- jetzt: nur auf Papier (Weltbibel, Kapitel 8, Nachtrag
+  // 04.10.2026). Er haengt an der Nordwand der Amtsstube, in der Schlange, in
+  // der er seit siebenundsechzig Jahren steht, und verlaesst sie nicht.
+  //
+  // Das erste Requisit mit ZUEGEN: seine sechs Grundzeilen sind ein Kreislauf,
+  // und ein Kreislauf braucht ein Wiedersehen. Je Ansehen ein Blatt, dann das
+  // naechste, nach dem sechsten wieder das erste (requisitAnsehen()). Die
+  // Zeilen stehen woertlich aus der Weltgeschichte; was sie traegt, ist eine
+  // Karte in einem Schlitz unter dem Bild, und wer sie wechselt, sagt das Haus
+  // nicht. Der Kaiser kommt im Praesens vor und nur als Tuer, wie es die Regel
+  // verlangt.
+  kaisertuer: {
+    name:  'Der Druck aus Hochablage',
+    knopf: 'WEGSEHEN',
+    zuege: [
+      {blatt:  'Ein Druck aus Hochablage, gerahmt, hinter Glas. Eine Tür, davor ein Stapel Post, zwei Meter hoch und sehr ordentlich. Auf dem Schild an der Tür: IM TERMIN. Links eine Bank, darauf vier Wartende. Der vierte sieht einen an.',
+       stimme: [{wer:'Aufschub', z:'Ich bin Vierter. Das ist sehr weit vorn.'},
+                {wer:'Aufschub', z:'Es waren einmal neun.'}],
+       regie:  'Unter dem Bild ein Schlitz im Rahmen, darin eine Karte mit zwei Sätzen des Vierten Wartenden. Die Karte wechselt. Niemand im Haus hat je gesehen, wer sie wechselt.'},
+      {blatt:  'Derselbe Druck. Die Tür ist zu, der Stapel steht, die vier sitzen. Die Karte im Schlitz ist eine andere.',
+       stimme: [{wer:'Aufschub', z:'Man klopft nicht. Er ist im Termin.'},
+                {wer:'Aufschub', z:'So etwas tut man nicht.'}],
+       regie:  'Neben der Tür, kleiner gedruckt, ein zweites Schild. Es bittet um Rücksicht auf Wartende. Seit dreihundert Jahren.'},
+      {blatt:  'Derselbe Druck. Die Karte im Schlitz ist wieder eine andere.',
+       stimme: [{wer:'Aufschub', z:'Die Bank ist bequem. Man richtet sich ein.'},
+                {wer:'Aufschub', z:'Mein Vater saß hier auch.'}],
+       regie:  'Die Bank ist mitgezeichnet, bis in die Armlehnen. Wer den Druck gemacht hat, kannte sie.'},
+      {blatt:  'Derselbe Druck. Eine neue Karte.',
+       stimme: [{wer:'Aufschub', z:'Was ich vortragen will? Etwas Wichtiges.'},
+                {wer:'Aufschub', z:'Es fällt mir wieder ein.'}],
+       regie:  'Der Vierte hält ein Blatt in der Hand. Ob etwas darauf steht, gibt der Druck nicht her.'},
+      {blatt:  'Derselbe Druck. Eine neue Karte.',
+       stimme: [{wer:'Aufschub', z:'Der Wasserspender ist neu. Seit achtzig Jahren.'},
+                {wer:'Aufschub', z:'Wir waren sehr froh.'}],
+       regie:  'Rechts im Bild, etwas blasser gedruckt als der Rest, steht der Wasserspender. Er ist später dazugekommen.'},
+      {blatt:  'Derselbe Druck. Die sechste Karte.',
+       stimme: [{wer:'Aufschub', z:'Nach mir kommt niemand mehr.'},
+                {wer:'Aufschub', z:'Ich bin der Letzte. Auch schön.'}],
+       regie:  'Hinter dem Vierten ist die Bank zu Ende. Dann kommt der Rahmen.'},
+    ],
   },
 };
 

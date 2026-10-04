@@ -243,13 +243,24 @@ function szeneTafel(i){
 // state !== 'play' aus (A0, Pruefung 1), es gibt also keine Kontextaktion,
 // solange der Empfang laeuft. Ein Requisit ist damit gelesen ODER Anfang, nie
 // beides -- und das ist der ganze Zweck von AN3.
+// KA1: welcher Zug eines Requisits mit Kreislauf als naechstes drankommt.
+// Laufzeitzustand wie der Grundzeilen-Kreislauf der Dorffiguren (npcCycle):
+// ein Neuladen faengt vorn an, und das ist bei sechs Karten kein Verlust.
+const requisitZug = {};
+function requisitBlatt(key){
+  const r = REQUISITEN[key];
+  if(!r.zuege) return r;
+  const i = (requisitZug[key] || 0) % r.zuege.length;
+  requisitZug[key] = i + 1;
+  return r.zuege[i];
+}
 function requisitAnsehen(key){
   const r = REQUISITEN[key];
   if(!r || szeneTafelLauf) return;
   if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
   // AN7: MUS.muffle(false) wie bei erstbelehrungZeigen(); ohne das blieb die
   // Musik nach jedem Blick auf ein Wandstueck gedaempft.
-  szeneTafeln([r], {letzterKnopf: r.knopf, ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }});
+  szeneTafeln([requisitBlatt(key)], {letzterKnopf: r.knopf, ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }});
 }
 
 // Der Anfang benutzt den Stapel fuer das Intro. Vier Blaetter, danach der
@@ -428,7 +439,9 @@ function szeneAssert(){
                   // durch dieselbe Pruefung -- ein Wandstueck, das man ansehen
                   // kann, ist ein Blatt mit einem Ort davor. Sperre wie beim
                   // Intro, denn es IST das Material des Intros.
-                  {name:'Requisiten', liste:Object.values(REQUISITEN), sperre:AKTE_SPERRE_NAMEN},
+                  // KA1: ein Requisit mit Zuegen bringt jeden Zug als eigenes
+                  // Blatt in die Pruefung, sonst saehe der Guard nur das erste.
+                  {name:'Requisiten', liste:Object.values(REQUISITEN).flatMap(r => r.zuege || [r]), sperre:AKTE_SPERRE_NAMEN},
                   {name:'Abspann', liste:abspannBlaetter(), sperre:[]}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);
@@ -463,6 +476,9 @@ function szeneAssert(){
   for(const k in REQUISITEN){
     if(!REQUISITEN[k].knopf) fehler('Requisit ohne Knopfaufschrift', k);
     if(!REQUISITEN[k].name)  fehler('Requisit ohne Namen', k);
+    // KA1: entweder ein Blatt oder eine Zugfolge, nie beides und nie keins.
+    const r = REQUISITEN[k], einBlatt = r.blatt !== undefined, zuege = Array.isArray(r.zuege) && r.zuege.length > 0;
+    if(einBlatt === zuege) fehler('Requisit trägt kein Blatt oder zwei Lesarten', k);
   }
   for(const z in INN_MOEBEL){
     const m = INN_MOEBEL[z];

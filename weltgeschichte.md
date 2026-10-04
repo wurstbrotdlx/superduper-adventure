@@ -483,6 +483,8 @@ V. „Ich stehe bereit. Man weiß ja nie.“ (34)
 * **Spielfunktion:** Erscheint nur, wenn das Spiel Hochablage zeigt, also im Intro, in Serie H und im Abspann. Er ist die freundlichste Illustration des zweiten Weltgesetzes: ein Mann, der sein ganzes Leben in einem Flur verbracht hat und es für eine Karriere hält. Er ist auch nicht falsch dabei. Es ist eine Karriere.
 * **Sprachmarke:** Spricht wie jemand, der viel Zeit hatte, sich Sätze zurechtzulegen. Er hat sie sich zurechtgelegt.
 
+*(Hinweis 04.10.2026, KA1.)* Im Spiel seit `phase-ka1-druck-aus-hochablage.md`: als Druck an der Wand der Amtsstube, die sechs Grundzeilen unten wörtlich auf einer wechselnden Karte unter dem Bild. Vordermühl zeigt Hochablage damit nur auf Papier (Weltbibel, Kapitel 8, Nachtrag).
+
 **Grundzeilen (Kreislauf)**
 
 1. „Ich bin Vierter. Das ist sehr weit vorn.“ (40) / „Es waren einmal neun.“ (21)

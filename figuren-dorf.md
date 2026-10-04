@@ -718,6 +718,10 @@ Weltgeschichte sagt über ihn, er erscheine nur, wenn das Spiel Hochablage zeigt
 in Serie H und im Abspann. Vordermühl zeigt Hochablage nie. Ihn ins Dorf zu stellen, hieße, ihn
 aus der Schlange zu holen, in der er seit siebenundsechzig Jahren steht, und das ist die Figur.
 
+*(Nachtrag 04.10.2026, KA1.)* Er steht weiter nicht hier. Er hängt: als Druck aus Hochablage an
+der Nordwand der Amtsstube, auf der Bank, in der Schlange, mit seinen sechs Grundzeilen auf einer
+wechselnden Karte unter dem Bild. Siehe `phase-ka1-druck-aus-hochablage.md`.
+
 ### Nieselbeck — Wetterbeauftragter Ferdinand Nieselbeck
 
 Ab **Akt I**, also von Anfang an. Optik: Held-Komposit (Haar h5 grau, Oberteil/Hose Stufe 1
