@@ -1183,6 +1183,8 @@ Die Weltbibel führt sechs Serien mit achtundvierzig Blättern (A bis F). Hier k
 > Eine Begründung ist bei Zurückstellungen nicht erforderlich.
 > Gezeichnet: H. z. H. Vorblatt.
 
+*(Hinweis 04.10.2026, W11-GH.)* Im Spiel stehen G 1, Zeile 2 und G 6, Zeile 3 umformuliert, weil der Sperrvermerk-Guard `ergibt`, `Alter` und `dreimal` als Kesselgrammatik liest. Wortlaut und Begründung in `superduper-weltbibel.md`, Kapitel 12, und `phase-w11-serien-g-h.md`, Abschnitt 3. Die Fassung oben bleibt stehen, sie ist die Vorlage.
+
 ### Serie H, ausgeschriebene Blätter
 
 Die sechs Blätter dieser Serie sind fast identisch. Das ist der Punkt. Wer sie einzeln findet, hält sie für einen Dublettenfehler. Wer alle sechs hat, sieht die Eskalation, und sie besteht ausschließlich aus Unterstreichungen.
