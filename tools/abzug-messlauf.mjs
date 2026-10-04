@@ -93,7 +93,9 @@ for(const [w, h] of FORMATE){
   await schuss('schattenland', 1200);
   await ev(() => { amt.schichten = 9; state = 'feierabend'; endShift('zeit'); });
   await schuss('dienstschluss', 600);
-  await ev(() => nachSchicht());                               // Schicht 10: Jahresgespraech
+  await ev(() => nachSchicht());                               // Schicht 10: erst Zwirns Auftritt (Blatt I), dann Jahresgespraech
+  await schuss('jahresgespraech-auftritt', 400);
+  await ev(() => { if(szeneTafelLauf) szeneTafel(1); });
   await schuss('jahresgespraech', 600);
   await ev(() => { kladde.vorgang = {1: true, 2: true, 3: true, 4: true}; state = 'zustellung'; abspannStarten(); });
   await schuss('abspann-01', 600);

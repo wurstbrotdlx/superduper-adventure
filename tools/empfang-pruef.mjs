@@ -346,8 +346,13 @@ async function bisZumEmpfang(page){
   await waehle(page, 'Dienst antreten');
   // T2: zwischen Unterschrift und erstem Schritt liegt jetzt die Ernennung.
   // Dieselbe Tafelmaschine wie das Intro, deshalb derselbe Durchlauf.
+  // 04.10.2026: vier statt sechs. Zwirns Auftritt haengt vor dem ersten
+  // Jahresgespraech, der Zusteller an der Tuer; beides steht weiter unten.
   const ernennung = await durchDenStapel(page, 'ÜBERNEHMEN');
-  pruef('die Ernennung hat sechs Blaetter', ernennung, 6);
+  pruef('die Ernennung hat vier Blaetter', ernennung, 4);
+  pruef('und die Kladde hat genau diese vier abgehakt', await page.evaluate(() =>
+        Object.keys(kladde.anfang).filter(k => k.startsWith('ernennung:')).sort()),
+        ['ernennung:1', 'ernennung:2', 'ernennung:3', 'ernennung:4']);
   pruef('die Urkunde nennt die Amtsbezeichnung', await page.evaluate(() =>
         ERNENNUNG_URKUNDE().some(z => z.includes(rangNameVon(0)))), true);
   // T3: die Urkunde kuendigt ihre Anlage an, eine Tafel bevor die Anlage
@@ -374,10 +379,26 @@ async function bisZumEmpfang(page){
   const schritt1 = await hinaus(page);
   pruef('der erste freie Schritt heisst "Hinausgehen"', schritt1.txt, 'Hinausgehen');
   pruef('und er ist der Weg aus dem Haus', schritt1.hausaus, true);
+  // 04.10.2026: an der Schwelle kreuzt der Zusteller (Blatt VI der Ernennung),
+  // genau einmal, und sein Abschluss geht den Schritt hinaus.
+  const schwelle = await blattLage(page);
+  pruef('an der Schwelle kommt der Mann mit dem Postsack', await page.evaluate(() =>
+        el('ovPanel').textContent.includes('Postsack') && innen && innen.key === 'amt'), true);
+  pruef('als einzelnes Blatt mit HINAUSGEHEN', [schwelle.fuss, schwelle.knoepfe], ['Blatt I von I', ['HINAUSGEHEN']]);
+  pruef('die Welt steht derweil', await page.evaluate(() => state), 'szene');
+  pruef('der Durchlauf blaettert genau ein Blatt', await durchDenStapel(page, 'HINAUSGEHEN'), 1);
+  await page.waitForTimeout(300);
   pruef('danach steht der Spieler draussen', await page.evaluate(() => innen), null);
   pruef('und dort meldet sich niemand', await page.evaluate(() =>
         document.getElementById('overlay').style.display), 'none');
-  pruef('der Weg ist frei', await page.evaluate(() => state), 'play');
+  pruef('der Weg ist frei, ungedaempft', await page.evaluate(() => ({ state, muffled })), { state: 'play', muffled: false });
+  pruef('und die Kladde hat Blatt VI', await page.evaluate(() => anfangIstGelesen('ernennung:5')), true);
+  pruef('ein zweiter Gang durch die Tuer bringt den Zusteller nicht noch einmal', await page.evaluate(() => {
+    const h = INN_HAEUSER.find(x => x.raum.key === 'amt'); betreteHaus(h);
+    for(let i = 0; i < 60; i++) update(1/60);
+    const vorher = aktArt === AKT_HAUSAUS; fuehreAktion();
+    return { angebot: vorher, draussen: innen === null, overlay: el('overlay').style.display };
+  }), { angebot: true, draussen: true, overlay: 'none' });
   // RL6: der Bedarf. Der erste Griff zur Tasche holt die Anlage 2 nach, auch
   // auf dem Weg ueber die Ernennung; der Vordruckweg unten prueft denselben
   // Griff ein zweites Mal, und das ist Absicht: es ist jetzt der einzige Weg.
@@ -446,6 +467,18 @@ async function bisZumEmpfang(page){
 // Gibt zurueck, WAS angeboten wurde, damit die Zusage aus AN2 ("der erste freie
 // Schritt ist der Schritt hinaus") am Angebot geprueft wird und nicht daran,
 // dass hinterher zufaellig etwas passiert ist.
+// 04.10.2026: das aktuelle Blatt (Knoepfe, Fusszeile), fuer die beiden neuen
+// Anlaesse der Ernennung; der T6-Abschnitt hat denselben Helfer lokal.
+// Als Funktionsdeklaration, weil der erste Aufruf weiter oben im Skript steht
+// als diese Zeile (temporale Totzone, dieselbe Falle wie im Spiel).
+function blattLage(page){
+  return page.evaluate(() => {
+    const bs = [...document.querySelectorAll('#ovPanel button')];
+    const fuss = document.querySelector('#ovPanel .amtFuss');
+    return { knoepfe: bs.map(b => b.textContent.trim()), fuss: fuss ? fuss.textContent.trim() : null };
+  });
+}
+
 async function hinaus(page){
   const angebot = await page.evaluate(() => {
     for(let i = 0; i < 60; i++) update(1/60);
@@ -605,17 +638,20 @@ async function hinaus(page){
   // Pruefung, die an den vier anderen Aufrufstellen einen stehengebliebenen
   // Stapel rot macht. Ein Helfer, der null Blaetter blaettert, kam hier
   // ungestraft durch.
-  pruef('die Ernennung blaettert auch auf diesem Weg sechs Blaetter',
-        await durchDenStapel(page, 'ÜBERNEHMEN'), 6);
+  pruef('die Ernennung blaettert auch auf diesem Weg vier Blaetter',
+        await durchDenStapel(page, 'ÜBERNEHMEN'), 4);
   // AN4: und auch dieser Block muss jetzt erst vor die Tuer. Vorher stand die
   // Wahl unmittelbar hinter der Ernennung; ohne diesen Schritt greift der
   // Klick unten in ein leeres Panel und der ganze Lauf stirbt mit einem
   // TypeError, samt der zwanzig Pruefungen der Bloecke danach.
   pruef('auch hier fuehrt der erste freie Schritt hinaus', (await hinaus(page)).hausaus, true);
+  // 04.10.2026: der Zusteller an der Schwelle, ein Blatt, dann draussen.
+  pruef('auch hier kreuzt der Zusteller an der Schwelle', await durchDenStapel(page, 'HINAUSGEHEN'), 1);
+  await page.waitForTimeout(300);
   // RL6: und draussen meldet sich niemand; der Stapel kommt mit dem ersten
   // Griff zur Tasche. Die Wahl darin ist dieselbe, nur der Auftakt ist der
   // nachgeholte ("Sie sehen zum ersten Mal in die Tasche").
-  pruef('draussen steht kein Stapel', await page.evaluate(() => el('overlay').style.display), 'none');
+  pruef('draussen steht kein Stapel', await page.evaluate(() => el('overlay').style.display + '/' + innen), 'none/null');
   await page.evaluate(() => toggleInventory());
   await page.waitForTimeout(400);
 
@@ -938,6 +974,41 @@ async function hinaus(page){
   }
   pruef('kein Punkt der Hausordnung laeuft auf dem Telefon ueber', ueber, []);
   pruef('Konsole still (Hausordnung, Telefon)', laut, []);
+  await ctx.close();
+}
+
+// ------------------------------- 04.10.2026: Zwirns Auftritt vor dem Jahresgespraech
+//
+// Blatt I der Ernennung haengt seit der Umhaengung vor dem ersten
+// Jahresgespraech (Schicht 10), genau einmal, fuer jeden, der es noch nicht
+// gelesen hat; danach kommt das Gespraech wie immer. Der Springer bekommt es
+// auch, der Auftritt setzt nichts voraus. Die zwanzigste Schicht bringt es
+// nicht noch einmal, ein Spieler ohne Schichtmodus nie.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde(); CONFIG.schichtModus = true;
+                              startGame(); state = 'feierabend'; amt.schichten = 10; nachSchicht(); });
+  await page.waitForTimeout(300);
+  const auftritt = await blattLage(page);
+  pruef('nach der zehnten Schicht kommt Zwirn mit der Mappe herein', await page.evaluate(() =>
+        el('ovPanel').textContent.includes('Zwirn kommt herein')), true);
+  pruef('als einzelnes Blatt mit ZUM GESPRÄCH', [auftritt.fuss, auftritt.knoepfe], ['Blatt I von I', ['ZUM GESPRÄCH']]);
+  pruef('der Durchlauf blaettert genau ein Blatt', await durchDenStapel(page, 'ZUM GESPRÄCH'), 1);
+  await page.waitForTimeout(300);
+  pruef('dahinter steht das Jahresgespraech', await page.evaluate(() => (document.querySelector('#ovPanel h1') || {}).textContent), 'JAHRESGESPRÄCH');
+  pruef('und die Kladde hat Blatt I', await page.evaluate(() => anfangIstGelesen('ernennung:0')), true);
+  pruef('die zwanzigste Schicht bringt ihn nicht noch einmal', await page.evaluate(() => {
+    amt.schichten = 20; nachSchicht();
+    return (document.querySelector('#ovPanel h1') || {}).textContent;
+  }), 'JAHRESGESPRÄCH');
+  pruef('wer ihn schon gelesen hat, geht gleich ins Gespraech', await page.evaluate(() => {
+    amt.schichten = 10; nachSchicht();
+    return (document.querySelector('#ovPanel h1') || {}).textContent;
+  }), 'JAHRESGESPRÄCH');
+  pruef('ohne Schichtmodus faellt nichts', await page.evaluate(() => {
+    kladde.anfang = {}; CONFIG.schichtModus = false; const r = ernennungVorDemJahresgespraech(); CONFIG.schichtModus = true; return r;
+  }), false);
+  pruef('Konsole still (Auftritt)', laut, []);
   await ctx.close();
 }
 

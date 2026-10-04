@@ -171,7 +171,7 @@ const lage = page => page.evaluate(() => {
     out.apparat = 'tafel';
     const li = l.liste;
     out.marke = li === INTRO_BLAETTER ? 'Intro'
-              : li === ERNENNUNG_BLAETTER ? 'Ernennung'
+              : (li === ERNENNUNG_BLAETTER || (li.length && li.every(b => ERNENNUNG_BLAETTER.includes(b)))) ? 'Ernennung'
               : li[0] === ANLAGE2_AUFTAKT_ERNENNUNG ? 'Anlage 2, Erstkontakt'
               : li[0] === ANLAGE2_AUFTAKT_NACHHOLUNG ? 'Anlage 2, nachgeholt'
               : 'unbenannter Stapel';

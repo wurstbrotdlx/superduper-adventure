@@ -3554,10 +3554,17 @@ const NEUERUNGEN = {
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
-  // RL7: neuer Tag, neuer Stempel. AN7: derselbe Tag, zweiter Stempel.
-  stand: '2026-10-04-an7',
+  // RL7: neuer Tag, neuer Stempel. AN7: derselbe Tag, zweiter Stempel. Die
+  // Umhaengung der Ernennung: dritter.
+  stand: '2026-10-04-ernennung',
   datum: '4. Oktober',
   punkte: [
+    // --- Ernennung, 04.10.2026 ---------------------------------------------
+    {
+      titel: 'Die Ernennung ist kürzer, nichts davon ist weg',
+      was: 'Die Zeremonie am ersten Morgen zeigt noch die vier Blätter mit dem Rechtsakt: Urkunde, Aushändigung, „Auf die Form!" und der Auftrag. Zwirns Auftritt mit der Mappe kommt jetzt vor dem ersten Jahresgespräch, und der Mann mit dem Postsack kreuzt Ihren Weg an der Tür, wenn Sie nach der Ernennung zum ersten Mal hinausgehen.',
+      wo: 'Beim ersten Dienstantritt, an der Tür der Amtsstube und nach der zehnten Schicht; alle sechs Blätter liegen weiter in der Kladde unter Akten.',
+    },
     // --- AN7, 04.10.2026 ----------------------------------------------------
     {
       titel: 'Die Hausordnung kommt in Raten',
@@ -3824,7 +3831,10 @@ const WIN_ZEILEN = {
           'Ein Aktenzeichen wird nicht vergeben. Es fehlt die Anschrift, an die man die Erledigung hätte richten können. Das Haus vermerkt: Vorgang 1 bleibt offen, der Anlass ist entfallen.',
           'Trepp trägt den Brief zurück in den Sack. Er sagt nichts.'],
   geschlossen: ['Fürst Nachtrag ist zu den Akten genommen. Die Akten lagen schon dort.',
-          'Vorgang 1 ist geschlossen, seit der Zustellung. Was heute in Ablage V stand, war ein Nachtrag zum Nachtrag. Das Haus heftet ihn ab. Ein Aktenzeichen bekommt er nicht.',
+          // Kanon 04.10.2026: Ablage V bleibt nach dem Schluss der ungeleerte
+          // Papierkorb, und der Fuerst sagt den einen Satz, der das traegt.
+          // Hoeflich wie immer (Kapitel 8), kein Zwinkern, keine Drohung.
+          'Vorgang 1 ist geschlossen, seit der Zustellung. Was heute in Ablage V stand, war ein Nachtrag zum Nachtrag. Seine letzten Worte, sehr höflich: „Danke, ich habe meine Antwort. Ich weiß nur noch nicht, wohin damit." Das Haus heftet ihn ab. Ein Aktenzeichen bekommt er nicht.',
           'Trepp sieht in den Sack. Er ist leer. Er sagt nichts.'],
 };
 function winGame(){
@@ -4163,7 +4173,8 @@ function endShift(reason){
 }
 
 function nachSchicht(){
-  if(amt.schichten % 10 === 0) showJahresgespraech(); else showDorf();
+  if(amt.schichten % 10 === 0){ if(!ernennungVorDemJahresgespraech()) showJahresgespraech(); }
+  else showDorf();
 }
 
 // ===========================================================================
@@ -10764,11 +10775,47 @@ function empfangVordruck(){
 // Stapel den Weg vor die Tuer selbst gegangen ist. Seit AN2 geht ihn der
 // Spieler. Der Knopf sagt jetzt, was auf diesem Blatt wirklich geschieht: die
 // Urkunde wird uebernommen. Derselbe Fall wie ANKLOPFEN -> ZUR SACHE in AN3.
+// 04.10.2026 (Entscheidung des Projektinhabers, phase-rl6 Nachtrag): Die
+// Zeremonie zeigt die vier Blaetter mit dem Rechtsakt, Urkunde bis Auftrag.
+// Blatt I (Zwirns Auftritt, 74 Woerter) und Blatt VI (der Zusteller mit dem
+// Postsack, 82) bleiben in ERNENNUNG_BLAETTER und in der Kladde, haengen aber
+// an eigenen Anlaessen: Zwirn kommt vor dem ersten Jahresgespraech herein
+// (ernennungVorDemJahresgespraech, es ist seine erste Zeremonie), der Zusteller
+// kreuzt den Weg an der Tuer, beim ersten Hinausgehen nach der Ernennung
+// (ernennungAnDerTuer). Umgehaengt, nicht gestrichen; die Schluessel der Kladde
+// bleiben dieselben, deshalb slice statt einer zweiten Tabelle.
+const ERNENNUNG_ZEREMONIE = () => ERNENNUNG_BLAETTER.slice(1, 5);
 function empfangErnennung(){
   szeneTafelZu();
   buehneAn();
-  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'ÜBERNEHMEN', ende: ernennungEnde,
-                                   kladde: anfangSchluessel('ernennung')});
+  szeneTafeln(ERNENNUNG_ZEREMONIE(), {letzterKnopf:'ÜBERNEHMEN', ende: ernennungEnde,
+                                      kladde: anfangSchluessel('ernennung').slice(1, 5)});
+}
+
+// Blatt VI an der Tuer. Faellig genau einmal, nur fuer den, der die Zeremonie
+// gesehen hat (ernennung:4 abgehakt), und nur solange es nicht gelesen ist;
+// wer ueber den Vordruck kam, hat es in der Kladde. Der Schritt hinaus laeuft
+// im Abschluss des Blattes: der Mann draengt sich an der Schwelle vorbei, dann
+// geht der Spieler. Gerufen aus fuehreAktion(), Fall AKT_HAUSAUS, aus demselben
+// Grund wie anlage2VorDemHaus() nicht aus verlasseHaus().
+function ernennungAnDerTuer(){
+  if(!CONFIG.schichtModus || szeneTafelLauf) return false;
+  if(!anfangIstGelesen('ernennung:4') || anfangIstGelesen('ernennung:5')) return false;
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  szeneTafeln([ERNENNUNG_BLAETTER[5]], {letzterKnopf:'HINAUSGEHEN', kladde:['ernennung:5'],
+    ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); verlasseHaus(); anlage2VorDemHaus(); }});
+  return true;
+}
+
+// Blatt I vor dem ersten Jahresgespraech (Schicht 10). Zwirn kommt mit der
+// Mappe herein, und dahinter steht seine Urkunde: dieselbe Reihenfolge wie in
+// der Zeremonie, nur zehn Schichten spaeter. Genau einmal, fuer jeden, der das
+// Blatt noch nicht gelesen hat; auch fuer den Springer, denn der Auftritt
+// setzt nichts voraus.
+function ernennungVorDemJahresgespraech(){
+  if(!CONFIG.schichtModus || amt.schichten !== 10 || anfangIstGelesen('ernennung:0') || szeneTafelLauf) return false;
+  szeneTafeln([ERNENNUNG_BLAETTER[0]], {letzterKnopf:'ZUM GESPRÄCH', kladde:['ernennung:0'], ende: showJahresgespraech});
+  return true;
 }
 
 // AN4: Hier stand anlage2Erstes, und damit hing der Erstkontakt der Anlage 2

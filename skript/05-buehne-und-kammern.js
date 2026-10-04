@@ -2696,7 +2696,9 @@ function fuehreAktion(){
     case AKT_HAUS:    betreteHaus(aktObj); break;
     // AN4: Erst hinaus, dann meldet sich die Anlage 2 -- und nur beim ersten
     // Mal und nur auf diesem Weg. Der Merker steht in anlage2VorDemHaus().
-    case AKT_HAUSAUS: verlasseHaus(); anlage2VorDemHaus(); break;
+    // 04.10.2026: und davor, genau einmal, der Zusteller an der Schwelle
+    // (Blatt VI der Ernennung). Sein Abschluss geht den Schritt hinaus selbst.
+    case AKT_HAUSAUS: if(!ernennungAnDerTuer()){ verlasseHaus(); anlage2VorDemHaus(); } break;
     case AKT_SCHUBLADE: schubladeOeffnen(); break;
     case AKT_REQUISIT:  requisitAnsehen(aktObj && aktObj.requisit); break;
     case AKT_ZUSTELLEN: zustellen(); break;
