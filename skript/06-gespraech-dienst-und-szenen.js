@@ -2744,9 +2744,22 @@ function render(){
     ctx.restore();
   }
 
+  // RL7: Die grossen Zeilen ("KAMMER · SCHWIERIGKEIT 2", "MASSENVORGANG
+  // ERÖFFNET") begannen am Spieler und liefen nach rechts; auf dem stehenden
+  // Telefon steht der Spieler in der Mitte, die Zeile misst 259 Pixel und
+  // lief 64 Pixel aus dem Bild (gemessen auf 390x844). Jetzt steht sie mittig
+  // ueber ihm und wird in den sichtbaren Ausschnitt geklemmt. Die kleinen
+  // Zahlen bleiben, wie sie waren: sie haengen am Treffer, nicht am Bild.
   for(const f of floaters){
     ctx.fillStyle = '#000'; ctx.font = f.big ? '900 18px Courier New' : 'bold 12px Courier New';
-    ctx.fillText(f.txt, f.x+1, f.y+1); ctx.fillStyle = f.col; ctx.fillText(f.txt, f.x, f.y);
+    let fx = f.x;
+    if(f.big){
+      const halb = ctx.measureText(f.txt).width / 2;
+      fx = clamp(f.x, cam.x + halb + 6, cam.x + canvas.width - halb - 6);
+      ctx.textAlign = 'center';
+    }
+    ctx.fillText(f.txt, fx+1, f.y+1); ctx.fillStyle = f.col; ctx.fillText(f.txt, fx, f.y);
+    if(f.big) ctx.textAlign = 'start';
   }
 
   ctx.restore();
@@ -3541,9 +3554,31 @@ const NEUERUNGEN = {
   // bleibt trotzdem stehen — ein Stand, der nur das Datum ist, laedt dazu ein,
   // ihn beim naechsten Abschnitt desselben Tages nicht mehr anzufassen.
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
-  stand: '2026-10-03-rl6',
-  datum: '3. Oktober',
+  // RL7: neuer Tag, neuer Stempel. AN7: derselbe Tag, zweiter Stempel. Die
+  // Umhaengung der Ernennung: dritter.
+  stand: '2026-10-04-ernennung',
+  datum: '4. Oktober',
   punkte: [
+    // --- Ernennung, 04.10.2026 ---------------------------------------------
+    {
+      titel: 'Die Ernennung ist kürzer, nichts davon ist weg',
+      was: 'Die Zeremonie am ersten Morgen zeigt noch die vier Blätter mit dem Rechtsakt: Urkunde, Aushändigung, „Auf die Form!" und der Auftrag. Zwirns Auftritt mit der Mappe kommt jetzt vor dem ersten Jahresgespräch, und der Mann mit dem Postsack kreuzt Ihren Weg an der Tür, wenn Sie nach der Ernennung zum ersten Mal hinausgehen.',
+      wo: 'Beim ersten Dienstantritt, an der Tür der Amtsstube und nach der zehnten Schicht; alle sechs Blätter liegen weiter in der Kladde unter Akten.',
+    },
+    // --- AN7, 04.10.2026 ----------------------------------------------------
+    {
+      titel: 'Die Hausordnung kommt in Raten',
+      was: 'Ab der sechsten Schicht liegt beim Dienstantritt je Morgen ein Punkt der Dienstanweisung als Hausmitteilung bereit, in der Reihenfolge des Hauses, elf Morgen lang. Wer den Vordruck nie aufgeschlagen hat, bekommt die Regeln so trotzdem, eine nach der anderen. Der Vordruck bleibt, wo er war.',
+      wo: 'Beim Dienstantritt der sechsten bis sechzehnten Schicht; die Kladde zählt unter Akten mit, wie viele umgelaufen sind.',
+    },
+    // --- RL7, 04.10.2026 ----------------------------------------------------
+    // Der erste Punkt, der aus einer Abnahme mit Grafik kommt. Er nennt, was
+    // man sieht, und nicht die CSS-Regel, die es verdeckt hat.
+    {
+      titel: 'Die Urkunden zeigen auf dem liegenden Telefon wieder die ganze Szene',
+      was: 'Auf einem niedrigen Fenster fehlten den Urkunden des Anfangs und des Abspanns die Zeilen, die sagen, was auf dem Tisch liegt und wer hereinkommt. Das letzte Bild des Abspanns bestand dort aus zwei Wörtern. Jetzt steht alles da, und wenn ein Blatt nicht in den Rahmen passt, sagt eine Zeile darunter, dass es weitergeht. Dazu: der lange Amtstitel läuft auf der Urkunde und dem Dienstausweis nicht mehr aus dem Bild, im Zauberbaum stehen die Namen am Telefon wieder in einer Zeile, die Münze hinter dem Bankguthaben hängt nicht mehr unter der Zeile, und die Kammeransage schiebt sich nicht mehr rechts hinaus.',
+      wo: 'Ernennung und Abspann auf einem Telefon im Querformat, Zauberbaum mit Taste T am Telefon, Dienstausweis im Charakterfenster, Amtsfenster am Pult.',
+    },
     // --- RL6, 03.10.2026 ----------------------------------------------------
     {
       titel: 'Der Anfang kommt in Raten',
@@ -3796,7 +3831,10 @@ const WIN_ZEILEN = {
           'Ein Aktenzeichen wird nicht vergeben. Es fehlt die Anschrift, an die man die Erledigung hätte richten können. Das Haus vermerkt: Vorgang 1 bleibt offen, der Anlass ist entfallen.',
           'Trepp trägt den Brief zurück in den Sack. Er sagt nichts.'],
   geschlossen: ['Fürst Nachtrag ist zu den Akten genommen. Die Akten lagen schon dort.',
-          'Vorgang 1 ist geschlossen, seit der Zustellung. Was heute in Ablage V stand, war ein Nachtrag zum Nachtrag. Das Haus heftet ihn ab. Ein Aktenzeichen bekommt er nicht.',
+          // Kanon 04.10.2026: Ablage V bleibt nach dem Schluss der ungeleerte
+          // Papierkorb, und der Fuerst sagt den einen Satz, der das traegt.
+          // Hoeflich wie immer (Kapitel 8), kein Zwinkern, keine Drohung.
+          'Vorgang 1 ist geschlossen, seit der Zustellung. Was heute in Ablage V stand, war ein Nachtrag zum Nachtrag. Seine letzten Worte, sehr höflich: „Danke, ich habe meine Antwort. Ich weiß nur noch nicht, wohin damit." Das Haus heftet ihn ab. Ein Aktenzeichen bekommt er nicht.',
           'Trepp sieht in den Sack. Er ist leer. Er sagt nichts.'],
 };
 function winGame(){
@@ -4135,7 +4173,8 @@ function endShift(reason){
 }
 
 function nachSchicht(){
-  if(amt.schichten % 10 === 0) showJahresgespraech(); else showDorf();
+  if(amt.schichten % 10 === 0){ if(!ernennungVorDemJahresgespraech()) showJahresgespraech(); }
+  else showDorf();
 }
 
 // ===========================================================================
@@ -8604,12 +8643,101 @@ function erstbelehrungZeigen(){
   if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
   szeneTafeln([INTRO_BLAETTER[idx]], {letzterKnopf:'ZU DEN AKTEN', kladde:['intro:' + idx],
               blattzahl:{n: idx + 1, gesamt: INTRO_BLAETTER.length},
-              ende: () => { el('overlay').style.display = 'none'; szeneAus(); }});
+              // AN7: MUS.muffle(false), weil szeneTafel() die Musik mit
+              // muffle(true) daempft und ovMuffle sonst stehen bleibt: der
+              // Dienst lief nach jedem Morgenblatt gedaempft weiter, bis das
+              // naechste Overlay es zuruecknahm. Gemessen am 04.10.2026
+              // (ovMuffle true, muffled true, state play).
+              ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }});
   return true;
 }
+
+// ===========================================================================
+//  AN7: DIE HAUSMITTEILUNG ALS TAGESTRAEGER -- die Hausordnung in Raten
+//
+//  Der letzte Bauabschnitt des Masterplans vom 27.08.2026: "Akt I: verteilt
+//  wird die Hausordnung, nicht der Fall. Traeger ist die Hausmitteilung (U9),
+//  pro Schicht genau eine neue Regel, vier Zeilen. Direkte Uebernahme des
+//  Papers-Please-Prinzips: kein Regelwerk, jeden Morgen ein Blatt."
+//
+//  Die Hausordnung IST die Dienstanweisung: die elf Punkte auf Blatt 2 des
+//  Vordrucks (Erledigung, Sachbestand, Beglaubigung ... Zauberbefugnis). Seit
+//  AN1 liegt der Vordruck nicht mehr auf dem Pflichtweg; wer den Empfang
+//  nimmt und nicht "Kenne ich. Den Vordruck." sagt, hat die elf Punkte nie
+//  gesehen und findet sie nur, wenn er am Pult oder im Startbild danach
+//  greift. Hier kommen sie zu ihm, einer je Morgen, in der Reihenfolge des
+//  Hauses ("Sie brauchen zuerst die ersten drei", sagt Knoeterich auf dem
+//  Blatt). Es erfindet keinen Text: dieselbe Tabelle (DIENSTBLATT), derselbe
+//  Wortlaut, und dienstAssert() prueft ihn weiter gegen Formregeln und
+//  Sperrvermerk. Umgehaengt, nicht gestrichen: der Vordruck bleibt, wo er ist.
+//
+//  Die Form ist die der Hausmitteilung aus U9 (HAUSMITTEILUNG, ein Punkt, ein
+//  Knopf), und das ist die Vorgabe des Masterplans und kein Zufall: das Haus
+//  hat fuer "heute gilt" genau eine Form, den Umlauf. Vier Zeilen: der Betreff
+//  mit der Schicht, der Name des Punktes, sein Text, die Fundstelle fuer den
+//  ganzen Rest. Keine Pointe dazu, der Punkt traegt seine selbst.
+//
+//  Der Kalender: die erste Schicht hat den Empfang, die zweite bis fuenfte
+//  die Chronik (Erstbelehrung, RL6). "Nicht beides am selben Morgen stapeln"
+//  war die Ansage, also faengt die Hausordnung mit der sechsten Schicht an und
+//  laeuft bis zur sechzehnten. Das reicht ueber Akt I hinaus (Schicht 10), und
+//  das ist in Ordnung: Kapitel 9 sperrt den FALL, nicht das Haus, und eine
+//  Hausordnung ist Haus. Wer einen Morgen nicht liest, bekommt am naechsten
+//  den naechsten Punkt und nicht den verpassten (die Reihe folgt dem Kalender,
+//  wie bei der Chronik); die Kladde haelt fest, welche umgelaufen sind, und
+//  der Vordruck hat ohnehin alle.
+//
+//  Gehaengt an schichtAntreten() hinter die Erstbelehrung, also an den Knopf
+//  im Amt und nicht an startShift() -- aus demselben Grund wie dort: ein
+//  eingeloester Spielstand ist ein Mittag und kein Morgen.
+// ===========================================================================
+const HAUSORDNUNG_AB_SCHICHT = 6;   // 1-basiert wie die Anzeige: die sechste Schicht bekommt Punkt 1
+const hausordnungPunkte = () => { const b = DIENSTBLATT.find(x => x.punkte); return b ? b.punkte() : []; };
+// Reine Rechnung, damit anfangAssert() den Kalender durchzaehlen kann, ohne
+// amt.schichten anzufassen: abgeschlossene Schichten -> Punktindex oder -1.
+const hausordnungIndex = schichten => {
+  const i = schichten - (HAUSORDNUNG_AB_SCHICHT - 1);
+  return (i >= 0 && i < hausordnungPunkte().length) ? i : -1;
+};
+function hausordnungFaellig(){
+  if(!CONFIG.schichtModus) return -1;
+  const idx = hausordnungIndex(amt.schichten);
+  if(idx < 0) return -1;
+  return anfangIstGelesen('hausordnung:' + idx) ? -1 : idx;
+}
+function hausordnungZeigen(){
+  const idx = hausordnungFaellig();
+  if(idx < 0 || szeneTafelLauf || el('overlay').style.display === 'flex') return false;
+  const punkte = hausordnungPunkte();
+  const [titel, text] = punkte[idx];
+  // Dieselbe Bauform wie erstbelehrungZeigen(): die Welt haelt an, solange das
+  // Blatt steht, und szeneAus() laesst sie mit aktSperre wieder an.
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  // Gelesen heisst gezeigt, wie bei jedem Blatt des Anfangs seit AN5. Der
+  // Schluessel liegt in kladde.anfang neben intro:n und ernennung:n, zaehlt
+  // aber nicht in den Bestand "DER ANFANG": die Dienstanweisung hat dort seit
+  // AN5 einen Verweis und keinen Leser, und das bleibt so.
+  anfangGelesen('hausordnung:' + idx);
+  el('ovPanel').innerHTML = `
+    <h1>HAUSMITTEILUNG</h1>
+    <h3>Umlauf zur ${amt.schichten + 1}. Schicht · zur Kenntnis</h3>
+    <div class="neuListe"><div class="neuPunkt">
+      <b>${gEsc(titel)}</b>
+      <p>${gEsc(text)}</p>
+      <p class="neuWo">Hausordnung, Punkt ${idx + 1} von ${punkte.length}. Alle Punkte stehen in der Dienstanweisung, am Pult im Amt und auf dem Startbild.</p>
+    </div></div>
+    <button onclick="hausordnungWeg()">Zur Kenntnis genommen</button>`;
+  el('overlay').style.display = 'flex'; MUS.muffle(true);
+  return true;
+}
+function hausordnungWeg(){ el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }
+const hausordnungGelesenZahl = () => hausordnungPunkte().filter((_, i) => anfangIstGelesen('hausordnung:' + i)).length;
+
 function schichtAntreten(){
   startShift();
-  erstbelehrungZeigen();
+  // AN7: ein Blatt je Morgen. Die Chronik hat Vorrang, weil sie frueher dran
+  // ist; die Hausordnung faengt an, wenn die Chronik durch ist.
+  if(!erstbelehrungZeigen()) hausordnungZeigen();
 }
 
 // Abhaken. Kein CFX.schweigen-Guard, aus demselben Grund wie bei findeBlatt():
@@ -8643,6 +8771,7 @@ function anfangAufschlagen(key, i){
   szeneTafeln([blatt], {letzterKnopf:'ZURÜCK', kladde:[key + ':' + i],
     ende: () => {
       el('overlay').style.display = 'none';
+      MUS.muffle(false);   // AN7: s. erstbelehrungZeigen(), derselbe stehengebliebene ovMuffle
       szeneAus();
       kesselTab = 'blaetter';
       toggleKessel();
@@ -8676,7 +8805,11 @@ function anfangBestandBlock(){
   // ersten Dienstantritt ohnehin jederzeit erreichbar (Startbild und Pult im
   // Amt), und ein vierter Rueckkehrmodus fuer showDienstblatt() waere Aufwand
   // fuer einen Weg, den es zweimal gibt.
-  zeilen.push('<div class="kl klEmpty">Die Dienstanweisung liegt am Pult im Amt und auf dem Startbild.</div>');
+  // AN7: dazu der Stand des Umlaufs. Der Verweis bleibt ein Verweis.
+  const hoG = hausordnungGelesenZahl(), hoN = hausordnungPunkte().length;
+  zeilen.push('<div class="kl klEmpty">Die Dienstanweisung liegt am Pult im Amt und auf dem Startbild.'
+    + (hoG ? ` Ihre Punkte laufen ab der ${HAUSORDNUNG_AB_SCHICHT}. Schicht je Morgen einzeln als Hausmitteilung um: ${hoG} von ${hoN} zur Kenntnis genommen.` : '')
+    + '</div>');
   const g = anfangGelesenZahl(), ges = anfangGesamt();
   return `<div class="klHead">DER ANFANG</div>${zeilen.join('')}`
        + `<div style="font-size:calc(10px * var(--fs));color:#9a8a5f;font-style:italic;margin:4px 0 8px;">`
@@ -8703,7 +8836,23 @@ function anfangAssert(){
       fehler('Schlüsselreihe und Blattliste sind verschieden lang', e.key);
   }
   if(!('anfang' in kladde)) fehler('Der Eimer anfang fehlt in der Kladde');
-  if(ok) console.log(`AN5 Anfang: ${ANFANG_BESTAND.length} Bestände, ${anfangGesamt()} Blätter in der Kladde.`);
+  // AN7: der Kalender der Hausordnung. Jeder Punkt faellt an genau einem
+  // Morgen, keiner an einem Morgen der Chronik (Schicht 2 bis 5, also
+  // amt.schichten 1 bis INTRO_BLAETTER.length), und keiner vor dem Empfang.
+  const ho = hausordnungPunkte();
+  if(!ho.length) fehler('AN7: Hausordnung ohne Punkte');
+  const morgen = {};
+  for(let sch = 0; sch < 100; sch++){
+    const i = hausordnungIndex(sch);
+    if(i < 0) continue;
+    if(sch >= 1 && sch <= INTRO_BLAETTER.length) fehler('AN7: Hausordnung und Chronik am selben Morgen', sch + 1);
+    if(sch === 0) fehler('AN7: Hausordnung am Morgen des Empfangs');
+    if(i in morgen) fehler('AN7: Punkt faellt zweimal', i);
+    morgen[i] = sch;
+  }
+  if(Object.keys(morgen).length !== ho.length) fehler('AN7: nicht jeder Punkt hat einen Morgen', Object.keys(morgen).length, 'von', ho.length);
+  for(const [t, x] of ho) if(!t || !x) fehler('AN7: Punkt ohne Titel oder Text', t);
+  if(ok) console.log(`AN5 Anfang: ${ANFANG_BESTAND.length} Bestände, ${anfangGesamt()} Blätter in der Kladde; AN7 Hausordnung: ${ho.length} Punkte ab Schicht ${HAUSORDNUNG_AB_SCHICHT}.`);
   return ok;
 }
 // Der Aufruf steht NICHT hier, sondern unten neben anlage2Assert(). Der Bestand
@@ -8859,6 +9008,13 @@ const ANLAGE2_AUFTAKT_NACHHOLUNG = {
 //  CSS ausgeblendet (.amtLead, siehe dort). Auf einem Telefon im Querformat ist
 //  es weg. Jede Zeile, die den Witz TRAEGT, gehoert deshalb in `stimme` und
 //  nie in `blatt` oder `regie`.
+//  RL7 (04.10.2026): Das gilt nicht mehr. Die Regel oben traf auf die
+//  Ernennung (T2) und den Abspann (SZ4) nie zu, und beide standen auf 844x390
+//  ohne ihre Szene da (Blatt 13 des Abspanns: "Vorgang 2." und sonst nichts).
+//  Ausgeblendet wird seither nur der Vorspann des Vordrucks; `blatt` und
+//  `regie` einer Szenentafel stehen auf jedem Format, und der Rahmen rollt,
+//  wenn sie nicht hineinpassen. Die Reihe hier darf also bleiben, wie sie
+//  ist, und die Sorgfalt von oben schadet trotzdem nicht.
 // ===========================================================================
 const ANLAGE2_FRAGE = [
   // Stufe 0. Das Amt schweigt noch, sie fragt selbst, und sie fragt ergebnis-
@@ -10619,11 +10775,47 @@ function empfangVordruck(){
 // Stapel den Weg vor die Tuer selbst gegangen ist. Seit AN2 geht ihn der
 // Spieler. Der Knopf sagt jetzt, was auf diesem Blatt wirklich geschieht: die
 // Urkunde wird uebernommen. Derselbe Fall wie ANKLOPFEN -> ZUR SACHE in AN3.
+// 04.10.2026 (Entscheidung des Projektinhabers, phase-rl6 Nachtrag): Die
+// Zeremonie zeigt die vier Blaetter mit dem Rechtsakt, Urkunde bis Auftrag.
+// Blatt I (Zwirns Auftritt, 74 Woerter) und Blatt VI (der Zusteller mit dem
+// Postsack, 82) bleiben in ERNENNUNG_BLAETTER und in der Kladde, haengen aber
+// an eigenen Anlaessen: Zwirn kommt vor dem ersten Jahresgespraech herein
+// (ernennungVorDemJahresgespraech, es ist seine erste Zeremonie), der Zusteller
+// kreuzt den Weg an der Tuer, beim ersten Hinausgehen nach der Ernennung
+// (ernennungAnDerTuer). Umgehaengt, nicht gestrichen; die Schluessel der Kladde
+// bleiben dieselben, deshalb slice statt einer zweiten Tabelle.
+const ERNENNUNG_ZEREMONIE = () => ERNENNUNG_BLAETTER.slice(1, 5);
 function empfangErnennung(){
   szeneTafelZu();
   buehneAn();
-  szeneTafeln(ERNENNUNG_BLAETTER, {letzterKnopf:'ÜBERNEHMEN', ende: ernennungEnde,
-                                   kladde: anfangSchluessel('ernennung')});
+  szeneTafeln(ERNENNUNG_ZEREMONIE(), {letzterKnopf:'ÜBERNEHMEN', ende: ernennungEnde,
+                                      kladde: anfangSchluessel('ernennung').slice(1, 5)});
+}
+
+// Blatt VI an der Tuer. Faellig genau einmal, nur fuer den, der die Zeremonie
+// gesehen hat (ernennung:4 abgehakt), und nur solange es nicht gelesen ist;
+// wer ueber den Vordruck kam, hat es in der Kladde. Der Schritt hinaus laeuft
+// im Abschluss des Blattes: der Mann draengt sich an der Schwelle vorbei, dann
+// geht der Spieler. Gerufen aus fuehreAktion(), Fall AKT_HAUSAUS, aus demselben
+// Grund wie anlage2VorDemHaus() nicht aus verlasseHaus().
+function ernennungAnDerTuer(){
+  if(!CONFIG.schichtModus || szeneTafelLauf) return false;
+  if(!anfangIstGelesen('ernennung:4') || anfangIstGelesen('ernennung:5')) return false;
+  if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
+  szeneTafeln([ERNENNUNG_BLAETTER[5]], {letzterKnopf:'HINAUSGEHEN', kladde:['ernennung:5'],
+    ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); verlasseHaus(); anlage2VorDemHaus(); }});
+  return true;
+}
+
+// Blatt I vor dem ersten Jahresgespraech (Schicht 10). Zwirn kommt mit der
+// Mappe herein, und dahinter steht seine Urkunde: dieselbe Reihenfolge wie in
+// der Zeremonie, nur zehn Schichten spaeter. Genau einmal, fuer jeden, der das
+// Blatt noch nicht gelesen hat; auch fuer den Springer, denn der Auftritt
+// setzt nichts voraus.
+function ernennungVorDemJahresgespraech(){
+  if(!CONFIG.schichtModus || amt.schichten !== 10 || anfangIstGelesen('ernennung:0') || szeneTafelLauf) return false;
+  szeneTafeln([ERNENNUNG_BLAETTER[0]], {letzterKnopf:'ZUM GESPRÄCH', kladde:['ernennung:0'], ende: showJahresgespraech});
+  return true;
 }
 
 // AN4: Hier stand anlage2Erstes, und damit hing der Erstkontakt der Anlage 2

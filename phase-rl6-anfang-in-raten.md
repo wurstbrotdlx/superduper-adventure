@@ -129,3 +129,83 @@ Warnungen).
 * **AN7, die Hausmitteilung als Tagesträger** (eine Regel je Morgen), bleibt
   offen; die Erstbelehrung benutzt denselben Morgen und wäre ihr erster Fall.
 * Die drei Kanon-Entscheidungen des Masterplans sind weiter nicht getroffen.
+
+---
+
+## Berichtigung, 04.10.2026 (RL7)
+
+Die Tabelle unter 1. nennt für „nachher" 806 (Pflicht), 908 (Vordruck), 1171
+(Vielleser) und 664 (Springer). `tools/intro-pruef.mjs` misst am Stand von
+`8cc4b47`, dem gemergten RL6, auf jeder Route **zwei Wörter weniger**: 804,
+906, 1169, 662. Gemessen am 04.10.2026 zweimal, einmal mit und einmal ohne die
+lizenzierte Grafik, beide Läufe Zeichen für Zeichen gleich (`--roh --route
+pflicht`, `cmp` still); die Grafik ist es also nicht. [Wahrscheinlich] ist es
+die Antwortzeile am ersten Knoten: Abschnitt 4 beschreibt vier Fassungen, und
+die Tabelle ist mit einer der längeren entstanden („Ich kenne das Haus. Den
+Vordruck." hat sechs Wörter, gebaut sind die vier von „Kenne ich. Den
+Vordruck."). Die Antwortzeilen zählen auf jeder Route mit, deshalb trifft es
+alle vier gleich. Die Verhältnisse und Schlüsse oben ändern sich nicht; die
+Zahlen, die ab jetzt gelten, stehen in `phase-rl7-abnahme-mit-grafik.md`.
+
+---
+
+## Nachtrag, 04.10.2026: die Ernennung gibt zwei Blätter an ihre Anlässe ab
+
+Entscheidung des Projektinhabers auf die Frage unter „Offen" („Unter 400 geht
+nur über die Ernennung"): **Blatt I (Zwirns Auftritt, 74 Wörter) und Blatt VI
+(der Zusteller mit dem Postsack, 82) verlassen die Zeremonie.** Umgehängt,
+nicht gestrichen: beide bleiben in `ERNENNUNG_BLAETTER`, in der Kladde und in
+jedem Guard; die Zeremonie zeigt `ERNENNUNG_ZEREMONIE()`, die vier Blätter mit
+dem Rechtsakt (Urkunde, Aushändigung, „Auf die Form!", Auftrag). Stolzregel 0
+bleibt erfüllt, der Titel fällt vor dem ersten Schritt.
+
+* **Blatt I kommt vor dem ersten Jahresgespräch** (Schicht 10,
+  `nachSchicht()` → `ernennungVorDemJahresgespraech()`): Zwirn kommt mit der
+  Mappe herein, legt sie zweimal gerade, und dahinter steht seine
+  Hebungsurkunde. Es ist seine erste Zeremonie mit dem Spieler, dieselbe
+  Reihenfolge wie am ersten Morgen, zehn Schichten später. Genau einmal, auch
+  für den Springer, denn der Auftritt setzt nichts voraus.
+* **Blatt VI kommt an die Tür**, beim ersten Hinausgehen nach der Ernennung
+  (`fuehreAktion()`, Fall `AKT_HAUSAUS` → `ernennungAnDerTuer()`): der Mann
+  mit dem Sack drängt sich an der Schwelle vorbei, Knöterich sieht ihm nach,
+  dann geht der Spieler. Der Knopf heißt HINAUSGEHEN und tut es; AN4 hatte den
+  Zusteller genau dort gewollt. Nur für den, der die Zeremonie gesehen hat
+  (`ernennung:4` abgehakt); der Springer hat ihn in der Kladde.
+
+**Gemessen, `tools/intro-pruef.mjs`, 04.10.2026, mit Grafik, vorher (Stand
+`471b096`) gegen nachher:**
+
+| Route | vorher | nachher | |
+|---|---|---|---|
+| **Pflicht** bis zum ersten freien Schritt | **804** | **648** | −19 % |
+| Pflicht, Nachlauf hinter dem ersten Schritt | 0 | 82 (ein Blatt, an der Tür) | |
+| Vordruck | 906 | 906 | unverändert |
+| Vielleser | 1169 | 1013 | −13 % |
+| Springer | 662 | 662 | unverändert |
+| Längster Leseblock ohne echte Wahl | 529 (Ernennung, 6 Stufen) | 373 (Ernennung, 4 Stufen) | |
+| Lesestufen Pflicht | 15 | 13 | |
+| Vom Anfang gelesen, Pflicht | 6 von 10 | 5 von 10 (Blatt I liegt bis Schicht 10 in der Kladde) | |
+
+Der Zielwert des Masterplans (unter 400) ist weiter nicht erreicht; was
+bleibt, ist die Zeremonie selbst (373) und der Empfang. Der Springer ist mit
+662 jetzt der längere Weg, weil der Vordruck neun Seiten hat und die Zeremonie
+noch vier Blätter.
+
+**Abnahme:** `empfang-pruef` 190 von 190 (war 173; die beiden Anlässe mit
+siebzehn Zusagen: Blatt an der Schwelle, HINAUSGEHEN geht hinaus, Welt steht,
+Musik frei, Kladde, kein zweites Mal durch dieselbe Tür, Zwirn vor dem
+Jahresgespräch, nicht in der zwanzigsten Schicht, nicht für den, der es
+gelesen hat, nicht ohne Schichtmodus). `intro-pruef` erkennt die Zeremonie
+seither am Inhalt und nicht an der Identität der Tabelle. Alle 18 Läufe, siehe
+Prüfprotokoll unten.
+
+**Am selben Tag entschieden (Projektinhaber), in der Weltbibel datiert
+nachgetragen:** die drei Kanon-Entscheidungen des Masterplans, jeweils A
+(Kapitel 9: der Satz gilt dem Fall, nicht dem Haus; T5d: Karte und Tafel sind
+Requisiten, Doppelung beginnt später; E2: Schwarz ist die Bühne des
+Rechtsakts, nicht des ganzen Anfangs), und zu SZ4: Ablage V bleibt nach dem
+Schluss der ungeleerte Papierkorb, der Fürst bekommt seinen letzten Satz
+(`WIN_ZEILEN.geschlossen`). Damit ist die Liste „Offen" des Masterplans
+abgearbeitet bis auf T5e.
+
+Prüfprotokoll: alle 18 Läufe am 04.10.2026 mit Grafik, nach der Umhängung: `anlage2` 123 von 123, `ebene` 54 von 54, `empfang` 190 von 190, `gespraech` 89 von 89, `innen` 21 von 21, `intro` Messlauf ohne Abbruch, Pflichtweg 648, `ladelauf` still, 12x „in Ordnung", 0 Warnungen, `langvorgang` 58 von 58, `menue` 78 von 78, `mitteilung` 32 von 32, `reich` 59 von 59, `schluss` 36 von 36, `speicher` 38 von 38, `steuerung` „Alles in Ordnung", `stopfen` 43 von 43, `szene` 50 von 50, `versuchung` 67 von 67, `zulagen` 50 von 50.

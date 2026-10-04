@@ -199,15 +199,25 @@ function szeneTafel(i){
     ${siegelSvg(66)}
     <p class="amtKopf">${gEsc(AMT_KOPFZEILE)}</p>
     <hr class="amtRegel">
-    <div style="min-height:30vh;max-height:56vh;overflow-y:auto;display:flex;
+    <div class="amtRolle" style="min-height:30vh;max-height:56vh;overflow-y:auto;display:flex;
                 flex-direction:column;justify-content:safe center;">
       ${inhalt}
     </div>
+    <p class="amtMehr"></p>
     <hr class="amtRegel unten">
     <p class="amtFuss">Blatt ${lauf.blattzahl ? szeneBlattZahl(lauf.blattzahl.n, lauf.blattzahl.gesamt) : szeneBlattZahl(i+1, lauf.liste.length)} von ${lauf.blattzahl ? szeneBlattZahl(lauf.blattzahl.gesamt, lauf.blattzahl.gesamt) : szeneBlattZahl(lauf.liste.length, lauf.liste.length)}</p>
     <button onclick="szeneTafel(${i+1})">${gEsc(wahl ? wahl.ja : letzte ? lauf.letzterKnopf : 'WEITER')}</button>
     ${zweiter}`;
   el('overlay').style.display = 'flex';
+  // RL7: Rollt der Textkoerper, steht es unter ihm. Gemessen nach dem Rendern
+  // wie beim Dienstbericht (RL4), kein Timer, kein Listener; auf 1280x720 lagen
+  // beim ersten Ernennungsblatt 103 Pixel unter der Kante und kein Rollbalken
+  // war im Bild. Das Overlay muss dafuer schon stehen, sonst misst clientHeight
+  // null. Beide ueber den Panelinhalt gesucht und nicht ueber el(): das Blatt
+  // wird je Stufe neu gebaut, und el() haelt den ersten Knoten fest, der
+  // dann abgehaengt in der Luft haengt und still beschrieben wuerde.
+  const rolle = el('ovPanel').querySelector('.amtRolle'), mehr = el('ovPanel').querySelector('.amtMehr');
+  if(rolle && mehr && rolle.scrollHeight > rolle.clientHeight + 2) mehr.textContent = 'Der Text geht im Blatt weiter.';
   MUS.muffle(true);
   // RL1: nach der Daempfung, nicht davor. Die Regie des Abspanns hebt sie fuer
   // die Hymne wieder auf, und davor stuende ihr Aufruf unter dem muffle(true)
@@ -237,7 +247,9 @@ function requisitAnsehen(key){
   const r = REQUISITEN[key];
   if(!r || szeneTafelLauf) return;
   if(state === 'play'){ szeneStateVorher = state; state = 'szene'; aktArt = 0; updateHUD(); }
-  szeneTafeln([r], {letzterKnopf: r.knopf, ende: () => { el('overlay').style.display = 'none'; szeneAus(); }});
+  // AN7: MUS.muffle(false) wie bei erstbelehrungZeigen(); ohne das blieb die
+  // Musik nach jedem Blick auf ein Wandstueck gedaempft.
+  szeneTafeln([r], {letzterKnopf: r.knopf, ende: () => { el('overlay').style.display = 'none'; MUS.muffle(false); szeneAus(); }});
 }
 
 // Der Anfang benutzt den Stapel fuer das Intro. Vier Blaetter, danach der

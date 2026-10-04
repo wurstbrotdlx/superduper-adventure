@@ -346,8 +346,13 @@ async function bisZumEmpfang(page){
   await waehle(page, 'Dienst antreten');
   // T2: zwischen Unterschrift und erstem Schritt liegt jetzt die Ernennung.
   // Dieselbe Tafelmaschine wie das Intro, deshalb derselbe Durchlauf.
+  // 04.10.2026: vier statt sechs. Zwirns Auftritt haengt vor dem ersten
+  // Jahresgespraech, der Zusteller an der Tuer; beides steht weiter unten.
   const ernennung = await durchDenStapel(page, 'ÜBERNEHMEN');
-  pruef('die Ernennung hat sechs Blaetter', ernennung, 6);
+  pruef('die Ernennung hat vier Blaetter', ernennung, 4);
+  pruef('und die Kladde hat genau diese vier abgehakt', await page.evaluate(() =>
+        Object.keys(kladde.anfang).filter(k => k.startsWith('ernennung:')).sort()),
+        ['ernennung:1', 'ernennung:2', 'ernennung:3', 'ernennung:4']);
   pruef('die Urkunde nennt die Amtsbezeichnung', await page.evaluate(() =>
         ERNENNUNG_URKUNDE().some(z => z.includes(rangNameVon(0)))), true);
   // T3: die Urkunde kuendigt ihre Anlage an, eine Tafel bevor die Anlage
@@ -374,10 +379,26 @@ async function bisZumEmpfang(page){
   const schritt1 = await hinaus(page);
   pruef('der erste freie Schritt heisst "Hinausgehen"', schritt1.txt, 'Hinausgehen');
   pruef('und er ist der Weg aus dem Haus', schritt1.hausaus, true);
+  // 04.10.2026: an der Schwelle kreuzt der Zusteller (Blatt VI der Ernennung),
+  // genau einmal, und sein Abschluss geht den Schritt hinaus.
+  const schwelle = await blattLage(page);
+  pruef('an der Schwelle kommt der Mann mit dem Postsack', await page.evaluate(() =>
+        el('ovPanel').textContent.includes('Postsack') && innen && innen.key === 'amt'), true);
+  pruef('als einzelnes Blatt mit HINAUSGEHEN', [schwelle.fuss, schwelle.knoepfe], ['Blatt I von I', ['HINAUSGEHEN']]);
+  pruef('die Welt steht derweil', await page.evaluate(() => state), 'szene');
+  pruef('der Durchlauf blaettert genau ein Blatt', await durchDenStapel(page, 'HINAUSGEHEN'), 1);
+  await page.waitForTimeout(300);
   pruef('danach steht der Spieler draussen', await page.evaluate(() => innen), null);
   pruef('und dort meldet sich niemand', await page.evaluate(() =>
         document.getElementById('overlay').style.display), 'none');
-  pruef('der Weg ist frei', await page.evaluate(() => state), 'play');
+  pruef('der Weg ist frei, ungedaempft', await page.evaluate(() => ({ state, muffled })), { state: 'play', muffled: false });
+  pruef('und die Kladde hat Blatt VI', await page.evaluate(() => anfangIstGelesen('ernennung:5')), true);
+  pruef('ein zweiter Gang durch die Tuer bringt den Zusteller nicht noch einmal', await page.evaluate(() => {
+    const h = INN_HAEUSER.find(x => x.raum.key === 'amt'); betreteHaus(h);
+    for(let i = 0; i < 60; i++) update(1/60);
+    const vorher = aktArt === AKT_HAUSAUS; fuehreAktion();
+    return { angebot: vorher, draussen: innen === null, overlay: el('overlay').style.display };
+  }), { angebot: true, draussen: true, overlay: 'none' });
   // RL6: der Bedarf. Der erste Griff zur Tasche holt die Anlage 2 nach, auch
   // auf dem Weg ueber die Ernennung; der Vordruckweg unten prueft denselben
   // Griff ein zweites Mal, und das ist Absicht: es ist jetzt der einzige Weg.
@@ -446,6 +467,18 @@ async function bisZumEmpfang(page){
 // Gibt zurueck, WAS angeboten wurde, damit die Zusage aus AN2 ("der erste freie
 // Schritt ist der Schritt hinaus") am Angebot geprueft wird und nicht daran,
 // dass hinterher zufaellig etwas passiert ist.
+// 04.10.2026: das aktuelle Blatt (Knoepfe, Fusszeile), fuer die beiden neuen
+// Anlaesse der Ernennung; der T6-Abschnitt hat denselben Helfer lokal.
+// Als Funktionsdeklaration, weil der erste Aufruf weiter oben im Skript steht
+// als diese Zeile (temporale Totzone, dieselbe Falle wie im Spiel).
+function blattLage(page){
+  return page.evaluate(() => {
+    const bs = [...document.querySelectorAll('#ovPanel button')];
+    const fuss = document.querySelector('#ovPanel .amtFuss');
+    return { knoepfe: bs.map(b => b.textContent.trim()), fuss: fuss ? fuss.textContent.trim() : null };
+  });
+}
+
 async function hinaus(page){
   const angebot = await page.evaluate(() => {
     for(let i = 0; i < 60; i++) update(1/60);
@@ -605,17 +638,20 @@ async function hinaus(page){
   // Pruefung, die an den vier anderen Aufrufstellen einen stehengebliebenen
   // Stapel rot macht. Ein Helfer, der null Blaetter blaettert, kam hier
   // ungestraft durch.
-  pruef('die Ernennung blaettert auch auf diesem Weg sechs Blaetter',
-        await durchDenStapel(page, 'ÜBERNEHMEN'), 6);
+  pruef('die Ernennung blaettert auch auf diesem Weg vier Blaetter',
+        await durchDenStapel(page, 'ÜBERNEHMEN'), 4);
   // AN4: und auch dieser Block muss jetzt erst vor die Tuer. Vorher stand die
   // Wahl unmittelbar hinter der Ernennung; ohne diesen Schritt greift der
   // Klick unten in ein leeres Panel und der ganze Lauf stirbt mit einem
   // TypeError, samt der zwanzig Pruefungen der Bloecke danach.
   pruef('auch hier fuehrt der erste freie Schritt hinaus', (await hinaus(page)).hausaus, true);
+  // 04.10.2026: der Zusteller an der Schwelle, ein Blatt, dann draussen.
+  pruef('auch hier kreuzt der Zusteller an der Schwelle', await durchDenStapel(page, 'HINAUSGEHEN'), 1);
+  await page.waitForTimeout(300);
   // RL6: und draussen meldet sich niemand; der Stapel kommt mit dem ersten
   // Griff zur Tasche. Die Wahl darin ist dieselbe, nur der Auftakt ist der
   // nachgeholte ("Sie sehen zum ersten Mal in die Tasche").
-  pruef('draussen steht kein Stapel', await page.evaluate(() => el('overlay').style.display), 'none');
+  pruef('draussen steht kein Stapel', await page.evaluate(() => el('overlay').style.display + '/' + innen), 'none/null');
   await page.evaluate(() => toggleInventory());
   await page.waitForTimeout(400);
 
@@ -821,7 +857,11 @@ async function hinaus(page){
         fuenfte.text.includes('über der Tür') && !fuenfte.text.includes('bevor Sie hinausgehen'), true);
   await durchDenStapel(page, 'ZU DEN AKTEN');
   const sechste = await morgen(5);
-  pruef('die sechste Schicht bringt nichts mehr', sechste.auf, false);
+  // AN7: seit der Hausordnung bringt der sechste Morgen etwas, nur kein
+  // Chronikblatt mehr. Der eigene Abschnitt weiter unten prueft, was.
+  pruef('die sechste Schicht bringt kein Chronikblatt mehr (seit AN7 die Hausordnung)',
+        [sechste.fuss, sechste.text.includes('HAUSMITTEILUNG')], [null, true]);
+  await page.evaluate(() => hausordnungWeg());
   pruef('ein eingeloester Spielstand bekommt kein Morgenblatt', await page.evaluate(() => {
     amt.schichten = 2; el('overlay').style.display = 'none';
     startShift();   // der Weg des Spielstands, ohne den Knopf
@@ -834,6 +874,141 @@ async function hinaus(page){
     return f;
   }), -1);
   pruef('Konsole still (Erstbelehrung)', laut, []);
+  await ctx.close();
+}
+
+// ------------------------------------------------- AN7: die Hausordnung in Raten
+//
+// Ab der sechsten Schicht faellt je Morgen ein Punkt der Dienstanweisung als
+// Hausmitteilung, in der Reihenfolge des Vordrucks, am Knopf im Amt. Geprueft
+// wird: die Chronik hat Vorrang und nichts stapelt sich, der sechste Morgen
+// bringt Punkt 1 in der Form der Hausmitteilung mit genau einem Knopf, die
+// Welt steht derweil, danach laeuft der Dienst und die Musik ist nicht mehr
+// gedaempft (der Fund beim Bauen: ovMuffle blieb nach jedem Morgenblatt
+// stehen), die Kladde haelt den Umlauf fest, derselbe Morgen bringt nichts
+// zweimal, die Reihe folgt dem Kalender, der sechzehnte Morgen bringt den
+// elften Punkt und der siebzehnte nichts, ein Spielstand bekommt keinen, das
+// freie Spiel kennt keinen, und der Kalender meidet die Chronikmorgen.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde(); });
+  const morgen = async (schichten) => {
+    await page.evaluate(s => { amt.schichten = s; CONFIG.schichtModus = true; el('overlay').style.display = 'none'; MUS.muffle(false); schichtAntreten(); }, schichten);
+    await page.waitForTimeout(300);
+    return await page.evaluate(() => ({
+      auf: el('overlay').style.display === 'flex', state, muffled,
+      kopf: (document.querySelector('#ovPanel h1') || {}).textContent || null,
+      text: el('ovPanel').textContent || '',
+      knoepfe: [...document.querySelectorAll('#ovPanel button')].map(b => b.textContent.trim()),
+    }));
+  };
+  const punkte = await page.evaluate(() => hausordnungPunkte().map(p => p[0]));
+  pruef('die Hausordnung hat die elf Punkte der Dienstanweisung', punkte.length, 11);
+  const fuenfte = await morgen(4);
+  pruef('die fuenfte Schicht bringt die Chronik und keine Hausmitteilung',
+        [fuenfte.auf, fuenfte.text.includes('HAUSMITTEILUNG'), fuenfte.knoepfe], [true, false, ['ZU DEN AKTEN']]);
+  await durchDenStapel(page, 'ZU DEN AKTEN');
+  await page.waitForTimeout(200);
+  pruef('nach dem Chronikblatt ist die Musik nicht mehr gedaempft', await page.evaluate(() => ({muffled, ovMuffle})), {muffled: false, ovMuffle: false});
+  const sechste = await morgen(5);
+  pruef('die sechste Schicht bringt die Hausmitteilung', [sechste.auf, sechste.kopf], [true, 'HAUSMITTEILUNG']);
+  pruef('mit dem ersten Punkt der Dienstanweisung', sechste.text.includes(punkte[0]) && sechste.text.includes('Punkt 1 von 11'), true);
+  pruef('und dem Betreff der Schicht', sechste.text.includes('Umlauf zur 6. Schicht'), true);
+  pruef('mit genau einem Knopf', sechste.knoepfe, ['Zur Kenntnis genommen']);
+  pruef('und die Welt steht derweil', [sechste.state, sechste.muffled], ['szene', true]);
+  pruef('die Fundstelle nennt den Vordruck', sechste.text.includes('Dienstanweisung'), true);
+  await page.evaluate(() => document.querySelector('#ovPanel button').click());
+  await page.waitForTimeout(300);
+  pruef('danach laeuft der Dienst, ungedaempft', await page.evaluate(() => ({ state, overlay: el('overlay').style.display, muffled })),
+        { state: 'play', overlay: 'none', muffled: false });
+  pruef('und die Kladde hat den Punkt festgehalten', await page.evaluate(() => Object.keys(kladde.anfang).filter(k => k.startsWith('hausordnung:'))), ['hausordnung:0']);
+  pruef('der Akten-Reiter zaehlt den Umlauf mit', await page.evaluate(() => anfangBestandBlock().includes('1 von 11 zur Kenntnis genommen')), true);
+  const nochmal = await morgen(5);
+  pruef('derselbe Morgen ein zweites Mal bringt nichts', nochmal.auf, false);
+  const siebte = await morgen(6);
+  pruef('die siebte Schicht bringt Punkt 2', siebte.auf && siebte.text.includes(punkte[1]) && siebte.text.includes('Punkt 2 von 11'), true);
+  await page.evaluate(() => hausordnungWeg());
+  const neunte = await morgen(8);
+  pruef('die neunte Schicht bringt Punkt 4, auch wenn Punkt 3 nicht umlief', neunte.auf && neunte.text.includes(punkte[3]), true);
+  await page.evaluate(() => hausordnungWeg());
+  const sechzehnte = await morgen(15);
+  pruef('die sechzehnte Schicht bringt den elften Punkt', sechzehnte.auf && sechzehnte.text.includes(punkte[10]) && sechzehnte.text.includes('Punkt 11 von 11'), true);
+  await page.evaluate(() => hausordnungWeg());
+  const siebzehnte = await morgen(16);
+  pruef('die siebzehnte Schicht bringt nichts mehr', siebzehnte.auf, false);
+  pruef('ein eingeloester Spielstand bekommt keine Hausmitteilung', await page.evaluate(() => {
+    kladde.anfang = {}; amt.schichten = 7; el('overlay').style.display = 'none';
+    startShift();   // der Weg des Spielstands, ohne den Knopf
+    return el('overlay').style.display === 'flex';
+  }), false);
+  pruef('das freie Spiel kennt keine Hausordnung', await page.evaluate(() => {
+    CONFIG.schichtModus = false; amt.schichten = 7;
+    const f = hausordnungFaellig();
+    CONFIG.schichtModus = true;
+    return f;
+  }), -1);
+  pruef('der Kalender meidet die Morgen der Chronik und des Empfangs', await page.evaluate(() =>
+    [0, 1, 2, 3, 4].map(s => hausordnungIndex(s))), [-1, -1, -1, -1, -1]);
+  pruef('Konsole still (Hausordnung)', laut, []);
+  await ctx.close();
+}
+
+// AN7, Telefon: der Umlauf steht auf 390x844 im Bild, mit Knopf, ohne zu rollen.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde(); CONFIG.schichtModus = true;
+                              document.body.classList.add('touch'); schriftSetzen(2); el('overlay').style.display = 'none'; });
+  const ueber = [];
+  const n = await page.evaluate(() => hausordnungPunkte().length);
+  for(let i = 0; i < n; i++){
+    await page.evaluate(s => { amt.schichten = s; schichtAntreten(); }, 5 + i);
+    await page.waitForTimeout(250);
+    const m = await page.evaluate(() => {
+      const pan = el('ovPanel'); const b = document.querySelector('#ovPanel button');
+      const r = b ? b.getBoundingClientRect() : null;
+      return {auf: el('overlay').style.display === 'flex', rollt: document.documentElement.scrollHeight > innerHeight + 4,
+              knopfDrin: !!r && r.bottom <= innerHeight + 1 && r.top >= 0, breit: pan.getBoundingClientRect().right <= innerWidth + 1};
+    });
+    if(!m.auf || m.rollt || !m.knopfDrin || !m.breit) ueber.push(`Punkt ${i + 1}: ${JSON.stringify(m)}`);
+    await page.evaluate(() => hausordnungWeg());
+  }
+  pruef('kein Punkt der Hausordnung laeuft auf dem Telefon ueber', ueber, []);
+  pruef('Konsole still (Hausordnung, Telefon)', laut, []);
+  await ctx.close();
+}
+
+// ------------------------------- 04.10.2026: Zwirns Auftritt vor dem Jahresgespraech
+//
+// Blatt I der Ernennung haengt seit der Umhaengung vor dem ersten
+// Jahresgespraech (Schicht 10), genau einmal, fuer jeden, der es noch nicht
+// gelesen hat; danach kommt das Gespraech wie immer. Der Springer bekommt es
+// auch, der Auftritt setzt nichts voraus. Die zwanzigste Schicht bringt es
+// nicht noch einmal, ein Spieler ohne Schichtmodus nie.
+{
+  const { page, ctx, laut } = await frisch({ viewport: { width: 1100, height: 760 } });
+  await page.evaluate(() => { kn.seen.einstellung = true; saveKn(); kladde.anfang = {}; saveKladde(); CONFIG.schichtModus = true;
+                              startGame(); state = 'feierabend'; amt.schichten = 10; nachSchicht(); });
+  await page.waitForTimeout(300);
+  const auftritt = await blattLage(page);
+  pruef('nach der zehnten Schicht kommt Zwirn mit der Mappe herein', await page.evaluate(() =>
+        el('ovPanel').textContent.includes('Zwirn kommt herein')), true);
+  pruef('als einzelnes Blatt mit ZUM GESPRÄCH', [auftritt.fuss, auftritt.knoepfe], ['Blatt I von I', ['ZUM GESPRÄCH']]);
+  pruef('der Durchlauf blaettert genau ein Blatt', await durchDenStapel(page, 'ZUM GESPRÄCH'), 1);
+  await page.waitForTimeout(300);
+  pruef('dahinter steht das Jahresgespraech', await page.evaluate(() => (document.querySelector('#ovPanel h1') || {}).textContent), 'JAHRESGESPRÄCH');
+  pruef('und die Kladde hat Blatt I', await page.evaluate(() => anfangIstGelesen('ernennung:0')), true);
+  pruef('die zwanzigste Schicht bringt ihn nicht noch einmal', await page.evaluate(() => {
+    amt.schichten = 20; nachSchicht();
+    return (document.querySelector('#ovPanel h1') || {}).textContent;
+  }), 'JAHRESGESPRÄCH');
+  pruef('wer ihn schon gelesen hat, geht gleich ins Gespraech', await page.evaluate(() => {
+    amt.schichten = 10; nachSchicht();
+    return (document.querySelector('#ovPanel h1') || {}).textContent;
+  }), 'JAHRESGESPRÄCH');
+  pruef('ohne Schichtmodus faellt nichts', await page.evaluate(() => {
+    kladde.anfang = {}; CONFIG.schichtModus = false; const r = ernennungVorDemJahresgespraech(); CONFIG.schichtModus = true; return r;
+  }), false);
+  pruef('Konsole still (Auftritt)', laut, []);
   await ctx.close();
 }
 
