@@ -196,3 +196,8 @@ nach dem Betreten und nach dreißig Rahmen (27 von 27, war 21).
 
 Beides für Spieler sichtbar, deshalb ein Punkt in der Hausmitteilung
 (Stempel `2026-10-04-rl7b`).
+
+Prüfprotokoll des Nachtrags: alle 18 Läufe am 04.10.2026 mit Grafik grün,
+darunter `innen` 27 von 27, `steuerung` „Alles in Ordnung" auf vier Formaten,
+`empfang` 190 von 190, `gespraech` 89 von 89, `mitteilung` 32 von 32,
+`ladelauf` still mit null Warnungen.
