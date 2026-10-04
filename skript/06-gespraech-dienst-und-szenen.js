@@ -2072,6 +2072,7 @@ function update(dt){
   cam.x = lerp(cam.x, player.x - canvas.width / 2, 0.1);
   cam.y = lerp(cam.y, player.y - canvas.height / 2, 0.1);
   if(kammer) kammerKamera();      // Korridor mittig halten statt halbes Bild Leere zu zeigen
+  else if(innen) innenKamera();   // RL7: der Raum ebenso
 
   // W-Groß: Nahliste. Alles, was pro Frame über ALLE Monster laufen müsste
   // (Trennung, Projektiltreffer), läuft stattdessen nur über die bildschirmnahen.
@@ -3556,9 +3557,16 @@ const NEUERUNGEN = {
   // RL1: neuer Tag, neuer Stempel, Zusatz aus dem Grund darueber.
   // RL7: neuer Tag, neuer Stempel. AN7: derselbe Tag, zweiter Stempel. Die
   // Umhaengung der Ernennung: dritter.
-  stand: '2026-10-04-ernennung',
+  // Befund 8 und 9 aus RL7: vierter Stempel desselben Tages.
+  stand: '2026-10-04-rl7b',
   datum: '4. Oktober',
   punkte: [
+    // --- RL7, Befund 8 und 9, 04.10.2026 --------------------------------------
+    {
+      titel: 'Die Räume stehen am Telefon mittig, und der Zettel lässt die Ortszeile in Ruhe',
+      was: 'In der Amtsstube, der Registratur und im Gasthaus hing die Kamera am Spieler wie draußen; am Telefon saß der Raum deshalb oben und darunter war es schwarz, auf dem liegenden Telefon fehlte die obere Wand. Jetzt steht der Raum mittig, und wo er breiter ist als das Bild, bleibt die Wand im Bild. Knöterichs Zettel rückt außerdem unter die Ortszeile, wenn er sie sonst zudecken würde.',
+      wo: 'In den drei Häusern am Telefon, und überall dort, wo die Ortszeile zwei Zeilen hat, etwa in einer Kammer.',
+    },
     // --- Ernennung, 04.10.2026 ---------------------------------------------
     {
       titel: 'Die Ernennung ist kürzer, nichts davon ist weg',

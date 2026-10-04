@@ -1915,12 +1915,31 @@ function knStuckCandidate(){
   return null;
 }
 
+// RL7, Befund 8: Das Band steht seit Phase 5 fest bei top:46px, die Ortszeile
+// seit U7 bei --reiheY (76 Pixel auf dem Telefon). Auf 390 Pixeln Breite lag
+// der Zettel ueber ihr, 16 Pixel tief ueber 100 Pixel Breite, und deckte
+// „Schwierigkeit" zu (gemessen am 04.10.2026). Gemessen wird deshalb beim
+// Zeigen: ueberschneiden sich Band und Ortszeile in der Breite, rueckt das
+// Band unter die Zeile; sonst bleibt es, wo es war. Ein Mass, kein Breakpoint,
+// weil die Ortszeile ein- oder zweizeilig ist und das niemand vorher weiss.
+// Die Ortszeile ist ausgeblendet, solange eine Szene laeuft; dann hat ihr
+// Kasten keine Hoehe und das Band bleibt oben.
+function knBandLage(band){
+  band.style.top = '';
+  const z = el('zone').getBoundingClientRect(), b = band.getBoundingClientRect();
+  // Zwoelf statt sechs: das Band faehrt beim Einblenden sechs Pixel von oben
+  // herunter (transform), und in dieser Viertelsekunde stand es sonst noch
+  // einen Hauch in der Zeile (0,3 Pixel, gemessen auf 360x640).
+  if(z.height > 0 && b.left < z.right + 8 && b.right > z.left - 8 && b.top < z.bottom + 4)
+    band.style.top = Math.round(z.bottom + 12) + 'px';
+}
 function knDisplayZettel(cand){
   if(knRand.active){ knRand.active = false; el('knRandnotiz').classList.remove('show'); }
   if(kn.regler !== 'schweigt') MUS.sting(kn.regler === 'dienstlich' ? 'dienstlich' : 'gespraechig');
   setTxt('knZettelZ1', cand.z1);
   if(cand.z2){ setStyle('knZettelZ2', 'display', 'block'); setTxt('knZettelZ2', cand.z2); }
   else setStyle('knZettelZ2', 'display', 'none');
+  knBandLage(el('knZettel'));
   el('knZettel').classList.add('show');
   knZettel.active = true; knZettelHideAt = gameT + 6;
   knClosingId = (!cand.isVarB && ESCALATE_DEFS[cand.id]) ? cand.id : null;
@@ -1973,6 +1992,7 @@ function knShowRandLine(line, wer){
   band.classList.toggle('a2', wer === 'a2' || wer === 'a2x');
   band.classList.toggle('ausbruch', wer === 'a2x');
   band.classList.toggle('umschlag', wer === 'u');
+  knBandLage(band);   // RL7, Befund 8
   band.classList.add('show');
   knRand.active = true; knRandHideAt = gameT + (wer === 'u' ? 5 : 3);
   knLastRandnotizT = gameT;

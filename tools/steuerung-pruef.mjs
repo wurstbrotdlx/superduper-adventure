@@ -181,6 +181,28 @@ for(const f of FORMATE){
     melde(gross, `Daumenmass: ${fl.sel} ${Math.round(r.w)}x${Math.round(r.h)}`);
   }
 
+  // RL7, Befund 8: Knoeterichs Zettel und die Randnotiz duerfen nicht ueber der
+  // Ortszeile liegen, auch nicht ueber einer zweizeiligen (die Kammer schreibt
+  // "Kammer · Schwierigkeit 2 · Raum 1/2", auf 390 Pixeln sind das zwei Zeilen).
+  // Gemessen auf dem Abzug: 16 Pixel tief ueber 100 Pixel Breite. Das Band
+  // misst seither beim Zeigen und rueckt unter die Zeile, wenn es sein muss.
+  const band = await page.evaluate(() => {
+    const z = document.getElementById('zone');
+    z.textContent = '📍 Kammer · Schwierigkeit 2 · Raum 1/2';
+    knDisplayZettel({id:'rl7', prio:0, exempt:true, z1:'Ein verschlossener Vorgang.', z2:'Vorsicht.'});
+    const r = (a, b) => Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)) > 0
+                     && Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) > 0;
+    const zr = z.getBoundingClientRect(), kr = document.getElementById('knZettel').getBoundingClientRect();
+    knZettel.active = false; document.getElementById('knZettel').classList.remove('show');
+    knShowRandLine('Zur Kenntnis genommen.', 'kn');
+    const rr = document.getElementById('knRandnotiz').getBoundingClientRect();
+    knRand.active = false; document.getElementById('knRandnotiz').classList.remove('show');
+    return { zettel: r(zr, kr), rand: r(zr, rr), zettelDrin: kr.top >= 0 && kr.bottom <= innerHeight,
+             zeilen: Math.round(zr.height / 21) };
+  });
+  melde(!band.zettel, `Zettel liegt nicht ueber der Ortszeile (${band.zeilen} Zeile(n))`);
+  melde(!band.rand, `Randnotiz liegt nicht ueber der Ortszeile`);
+  melde(band.zettelDrin, `Zettel steht im Fenster`);
   melde(jsFehler.length === 0, `kein Skriptfehler${jsFehler.length ? ': ' + jsFehler[0] : ''}`);
   await ctx.close();
 }

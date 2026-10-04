@@ -209,6 +209,42 @@ pruef('eine Tafel, die drinnen aufgeht, bricht nicht ab', await page.evaluate(()
   return {auf, nochAuf, wer};
 }), {auf: true, nochAuf: true, wer: 'fass'});
 
+// --- RL7, Befund 9: die Kamera haelt den Raum im Bild ------------------------
+// Auf 390x844 sass die Amtsstube oben und darunter lagen 382 Pixel Schwarz, auf
+// 844x390 fehlte der Schrank mit der Tafel am oberen Rand: die Kamera hing am
+// Spieler wie draussen. Jetzt steht der Raum mittig, wo er ins Fenster passt,
+// und wo er breiter ist, haelt die Klemme die Wand im Bild. Gemessen in drei
+// Fenstern an der Amtsstube, sofort nach dem Betreten (der Empfang haelt die
+// Welt an, ein update() kommt dort nicht) und nach dreissig Rahmen.
+for(const [w, h] of [[390, 844], [844, 390], [1280, 720]]){
+  const c2 = await browser.newContext({ viewport: { width: w, height: h } });
+  const p2 = await c2.newPage();
+  await p2.goto(URL, { waitUntil: 'load' });
+  await p2.waitForFunction(() => typeof frameNo !== 'undefined' && frameNo > 0, null, { timeout: 60000 });
+  const lage = await p2.evaluate(() => {
+    kn.seen.einstellung = true; startGame(); el('overlay').style.display = 'none'; state = 'play';
+    const h = INN_HAEUSER.find(x => x.b.innen === 'amt'); betreteHaus(h);
+    const r = innen.raum;
+    const mess = () => ({ oben: Math.round(INN_Y0*TS - cam.y), unten: Math.round((INN_Y0 + r.h)*TS - cam.y),
+                          links: Math.round(INN_X0*TS - cam.x), rechts: Math.round((INN_X0 + r.w)*TS - cam.x) });
+    const sofort = mess();
+    for(let i = 0; i < 30; i++) update(1/60);
+    const spaeter = mess();
+    verlasseHaus();
+    return { sofort, spaeter, cw: canvas.width, ch: canvas.height, rw: r.w*TS, rh: r.h*TS };
+  });
+  const passt = (m) => {
+    const yOk = lage.rh + 48 <= lage.ch ? (m.oben >= 0 && m.unten <= lage.ch && Math.abs((m.oben + m.unten)/2 - lage.ch/2) <= 2)
+                                        : (m.oben <= 24 && m.unten >= lage.ch - 24);
+    const xOk = lage.rw + 48 <= lage.cw ? (m.links >= 0 && m.rechts <= lage.cw && Math.abs((m.links + m.rechts)/2 - lage.cw/2) <= 2)
+                                        : (m.links <= 24 && m.rechts >= lage.cw - 24);
+    return yOk && xOk;
+  };
+  pruef(`${w}x${h}: der Raum steht sofort nach dem Betreten im Bild`, passt(lage.sofort), true);
+  pruef(`${w}x${h}: und bleibt es nach dreissig Rahmen`, passt(lage.spaeter), true);
+  await c2.close();
+}
+
 // --- Kein Spielstand im Haus --------------------------------------------------
 pruef('im Haus wird nicht gespeichert, und der Grund wird genannt', await page.evaluate(() => {
   betreteHaus(INN_HAEUSER[0]);
