@@ -355,6 +355,8 @@ Bauprinzip pro Figur: **eine Besessenheit, ein Hindernis, eine Sprachmarke.** Wi
 
 **Stand nach W11.** Das Ensemble ist von zwölf auf sechzehn Figuren gewachsen. Vier kommen aus `weltgeschichte.md`, Kapitel 6, und stehen unten unter der Überschrift "Aus dem Reich". Drei davon sind gebaut (Nieselbeck, Umlauf, Vorblatt), die vierte (Konrad zu Händen Aufschub) steht nur in Hochablage und deshalb im Spiel bisher nirgends. *(Nachtrag 04.10.2026: seit KA1 als Druck an der Wand der Amtsstube, siehe Kapitel 8.)*
 
+**Stand nach HO1** *(04.10.2026)*. Achtzehn Figuren: der Erzhalter des Hauses Randbemerkung, aus Hochablage, steht unten hinter Aufschub. Er ist die erste Figur, die nie in Vordermühl steht.
+
 **Außerdem hat jede bestehende Figur einen Zuwachs bekommen**, also genau eine neue Tatsache, die ab jetzt gilt. Keine ist umgeschrieben worden. Der Zuwachs steht bei der jeweiligen Figur als eigener Absatz *(Zuwachs W11)*, dreizehn Absätze plus einer für den Kater Anlage 3.
 
 Zehn davon trägt das Spiel als je ein Paar Zusatzzeilen, das ab einem bestimmten Akt in den Grundzeilen-Kreislauf rutscht (siehe `figuren-dorf.md` und `phase-w11-reich-im-dorf.md`). Die übrigen vier stehen nur hier: Knöterich sagt seinen nicht, weil er Tasten erklärt und keine Zusammenhänge; Sturz und Fürst Nachtrag sind keine ansprechbaren Dorffiguren; und Anlage 3 ist ein Kater.
@@ -603,6 +605,12 @@ Steht von Anfang an im Dorf.
 **Im Spiel bisher nicht gebaut**, und zwar mit Grund: Er erscheint nur, wenn das Spiel Hochablage zeigt, also im Intro, in Serie H und im Abspann. Vordermühl zeigt Hochablage nie.
 
 *(Nachtrag 04.10.2026, KA1, `phase-ka1-druck-aus-hochablage.md`, auf Entscheidung des Projektinhabers.)* **Vordermühl zeigt Hochablage nur auf Papier.** An der Nordwand der Amtsstube hängt ein gerahmter Druck: die Tür mit dem Schild IM TERMIN, der Poststapel, die Bank, und auf der Bank der Vierte Wartende. Unter dem Bild steckt eine Karte mit zwei Sätzen von ihm; sie wechselt, wer wieder hinsieht, und seine sechs Grundzeilen aus der Weltgeschichte laufen so im Kreislauf. Er bleibt in der Schlange, er hängt nur. Kein Eintrag im Dorf, keine Zeile im Intro, der Abspann unverändert. Die beiden anderen Wege, Hochablage als Ort und nicht bauen, wurden vorgelegt und nicht gewählt.
+
+*(Nachtrag 04.10.2026, HO1, `phase-ho1-hochablage.md`, auf Entscheidung des Projektinhabers.)* **Vordermühl zeigt Hochablage nur auf Papier, bis der Vorgang zugestellt ist.** Die Straße nach Hochablage war zur Klärung zurückgestellt (Weltgeschichte, Kapitel 3), und am Nachmittag der Zustellung werden zurückgestellte Vorgänge alle geschlossen (Szene 9, Bild 10). Seither steht am Dorfplatz oberhalb des Marktes eine Kutsche, die niemand bestellt hat, und fährt nach Turm I, oberstes Geschoss: die Tür mit dem Schild IM TERMIN, darunter mit Bleistift „und ein Zweiter", die leere Bank, der Wasserspender, das Fenster. Aufschub sitzt dort nicht mehr; er hängt weiter in der Amtsstube. Am Fenster steht der Erzhalter des Hauses Randbemerkung (unten). Vor dem Schluss ändert sich nichts.
+
+#### Erzhalter des Hauses Randbemerkung *(neu mit HO1, 04.10.2026)*
+
+Aus Weltgeschichte, Kapitel 3 (die Aktenhäuser, die Kleidung als Bestand) und Szene 9, Bild 2: die Lagen fallen ab, und zum ersten Mal seit Generationen kann er sich umdrehen. Er steht in Turm I am Fenster, nur nach dem Schluss, nie im Dorf. Sechs Grundzeilenpaare und eine Aktzeile, kein Baum: er hat nichts zu fragen, denn er hat gerade keinen Vorgang mehr. „Haus Randbemerkung. Vierhundert Jahre." / „Seit heute Nachmittag: eines." Im Code die fünfzehnte Dorffigur (`nurInnen`), im Ensemble die achtzehnte. Zeilen in `figuren-dorf.md`.
 
 * **Was er ist:** Vierter in der Schlange vor dem Kabinett des Kaisers. Seit siebenundsechzig Jahren. Hoheitsstufe Graf, weil sein Anliegen alt ist.
 * **Besessenheit:** Vorrücken. **Hindernis:** Vor ihm stehen drei Familien.
@@ -1432,7 +1440,9 @@ RL6 darüber ist seit RL7 als 804 nachgemessen (Berichtigung in `phase-rl6-anfan
 Unverändert offen: die Blattserien G und H, die übrigen Langvorgänge, Konrad zu Händen
 Aufschub und alles, was Hochablage zeigt. *(Nachtrag 04.10.2026: die Serien G und H mit
 W11-GH, die Langvorgänge 11 bis 13 mit LV11-13, Aufschub mit KA1 als Druck an der Wand.
-Offen bleibt Hochablage als Ort.)* Und Knöterichs Zuwachs, jetzt mit einem Grund
+Offen bleibt Hochablage als Ort.)* *(Nachtrag 04.10.2026, später am Tag: Hochablage als
+Ort mit HO1, nach dem Schluss, ein Raum hinter einer Kutsche, die vorher nicht dasteht.
+Damit ist von dieser Liste nichts mehr offen.)* Und Knöterichs Zuwachs, jetzt mit einem Grund
 mehr: seit T3 hat er überhaupt keinen Weltkommentar mehr, den spricht Anlage 2. Er erklärt
 Tasten, nie Zusammenhänge, und das ist seit diesem Bauabschnitt nicht mehr nur eine
 Designregel über ihn, sondern der Zuschnitt seines Kanals.

@@ -442,6 +442,8 @@ function szeneAssert(){
                   // KA1: ein Requisit mit Zuegen bringt jeden Zug als eigenes
                   // Blatt in die Pruefung, sonst saehe der Guard nur das erste.
                   {name:'Requisiten', liste:Object.values(REQUISITEN).flatMap(r => r.zuege || [r]), sperre:AKTE_SPERRE_NAMEN},
+                  // HO1: das Blatt vor der Fahrt, dieselbe Sperre wie die Requisiten.
+                  {name:'Kutsche', liste:[KUTSCHE_BLATT], sperre:AKTE_SPERRE_NAMEN},
                   {name:'Abspann', liste:abspannBlaetter(), sperre:[]}];
   for(const st of stapel){
     if(!st.liste.length) fehler('Tafelstapel ohne Blätter', st.name);

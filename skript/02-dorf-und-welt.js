@@ -1402,6 +1402,34 @@ const DORF_FIGUREN = [
        {z1:'Nehmen Sie sich Zeit. Viel Zeit.', z2:'Zeit haben wir reichlich.'},
      ]
    }},
+  // HO1: der Erzhalter des Hauses Randbemerkung, Turm I, oberstes Geschoss.
+  // Weltgeschichte, Szene 9, Bild 2: "Zum ersten Mal seit Generationen kann
+  // sich der Erzhalter des Hauses Randbemerkung umdrehen. Er sieht aus dem
+  // Fenster. Er hat noch nie aus diesem Fenster gesehen." Das ist alles, was
+  // der Kanon ueber ihn sagt, und seine sechs Zeilen sagen nichts, was darueber
+  // hinausgeht: das Fenster, die Lagen, das Haus, das Drehen, das Konfetti, und
+  // dass es kein erstes Haus mehr gibt. Er steht nie im Dorf (nurInnen) und
+  // erst nach dem Schluss (daWenn); seine Kachel im Dorf ist deshalb ein Anker
+  // ohne Bedeutung. Gestalt: Hofkleidung wie Vorblatt, graues Haar.
+  {key:'randbemerkung', name:'Erzhalter des Hauses Randbemerkung', kurz:'Erzhalter Randbemerkung', tx:11, ty:36, opt:'fest',
+   abAkt:5, daWenn: () => vorgangGeschlossen(), nurInnen:true,
+   // h2 traegt sonst niemand; mit h3 saehe er aus wie Vorblatt mit anderem Haar.
+   gestalt:{hair:'h2', haarFarbe:'#71825f', hemd:'hof', hemdFarbe:'#171717', hose:'hof', schuh:'schuh'},
+   grund:[
+     {z1:'Ich sehe aus dem Fenster. Zum ersten Mal.',  z2:'Da unten ist ein Fluss.'},
+     {z1:'Die Lagen sind ab. Ich bin leicht.',          z2:'Ich weiß nicht, wohin damit.'},
+     {z1:'Haus Randbemerkung. Vierhundert Jahre.',      z2:'Seit heute Nachmittag: eines.'},
+     {z1:'Man hat mich gedreht, wenn jemand sprach.',   z2:'Jetzt drehe ich mich selbst.'},
+     {z1:'Unten liegt Konfetti. Bis zu den Knien.',     z2:'Es war einmal unser Bestand.'},
+     {z1:'Sie kommen aus Vordermühl. Dem ersten Haus.', z2:'Es gibt kein erstes Haus mehr.'},
+   ],
+   akt:[
+     '',
+     '',
+     '',
+     '',
+     'Es ist sehr viel leichter im Raum.',
+   ]},
 ];
 // Literale oben bewusst im alten 80er-Raster (vgl. figuren-dorf.md) — einmalig
 // um DORF_DX/DORF_DY verschoben, bevor genMap() die Anker liest (:2443 unten).

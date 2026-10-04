@@ -70,7 +70,8 @@ const tab = await page.evaluate(() => {
     kaiserVergangenheit: /\bwar im Termin|Kaiser.*(starb|tot|gestorben)/i.test(alles),
     schild: alles.includes('IM TERMIN'),
     imDorf: DORF_FIGUREN.some(f => /aufschub/i.test(f.key + f.name)),
-    anzahl: Object.keys(REQUISITEN).length,
+    // nur die Dinge im Plan der Amtsstube; REQUISITEN traegt seit HO1 auch die drei aus Turm I
+    anzahl: new Set(INN_RAEUME.amt.plan.join('').split('').map(c => INN_MOEBEL[c]).filter(m => m && m.akt === 'requisit').map(m => m.requisit)).size,
   };
 });
 pruef('das Requisit gibt es', tab.da, true);

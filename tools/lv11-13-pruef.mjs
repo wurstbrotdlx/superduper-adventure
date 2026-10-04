@@ -229,7 +229,7 @@ import { readFileSync } from 'node:fs';
     for(const pr of new Set(props)) if(props.filter(x => x === pr).length > 1) doppelt.push(k.key + '.' + pr);
   });
   zeilen.push({name: 'keine Figur traegt einen Schluessel zweimal (Quelltext)', ist: doppelt, soll: [], ok: doppelt.length === 0});
-  zeilen.push({name: 'die Quelltextpruefung sieht alle vierzehn Figuren', ist: koepfe.length, soll: 14, ok: koepfe.length === 14});
+  zeilen.push({name: 'die Quelltextpruefung sieht alle fuenfzehn Figuren', ist: koepfe.length, soll: 15, ok: koepfe.length === 15});   // HO1: der Erzhalter ist die fuenfzehnte
 }
 
 let fehl = 0;
