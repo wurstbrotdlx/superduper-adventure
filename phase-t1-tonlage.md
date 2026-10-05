@@ -312,3 +312,12 @@ Zwei Nebenfunde dabei, beide älter als T1: Lott **duzte** den Spieler an zwei S
 ---
 
 **Der Rest ist absichtlich unangetastet.** Das ist das eigentliche Ergebnis dieses Bauabschnitts: die Regel war falsch, die Texte, die unter ihr entstanden sind, überwiegend nicht. Wo die Regel wirklich Schaden angerichtet hat, war der Schaden messbar, und zwar am deutlichsten an der Bank. Dort standen zwei Figuren, von denen die eine seit F1 als die Kürzere und die andere als die Ausführlichere im Kanon steht, und im Spiel war es **genau umgekehrt**: Lott lag im Schnitt bei 36,8 Zeichen in der ersten Zeile, Pahl bei 30,5. Eine Hausregel, die allen dasselbe Maß vorschreibt, macht aus zwei Figuren eine, und dann ist es Zufall, welche von beiden die längeren Sätze bekommt.
+
+---
+
+*(Nachtrag 05.10.2026, DZ1, `phase-dz1-zweite-zeile.md`.)* Der Satz in Abschnitt
+1, Punkt 1, „Der Zeichendeckel bleibt, wo er ist (48/32/44, Antwortzeile 28)",
+gilt seither für die erste Zeile, die Aktzeile und die Antwortzeile. Die zweite
+Zeile einer Figuren-Sprechblase steht auf 48 (`BLASE_Z2`). Die Layoutzusage aus
+U3 und U4 hält: die Tafel rollt bei 48/48 in keinem Format bei Stufe Normal
+und Mittel, und die Blase bricht seit DZ1 um, statt den Rand zu überlaufen.
