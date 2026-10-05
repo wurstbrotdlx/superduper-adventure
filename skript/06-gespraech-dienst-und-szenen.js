@@ -2696,13 +2696,14 @@ function render(){
                       if(o.key === 'bramsche') drawAnlage3(o.x + 14, o.y + 6);
                       // U3: Namensschild, entfernungsabhaengig eingeblendet.
                       // Nur vormerken, gezeichnet wird nach der Schleife (s. npcSchildFlush).
-                      npcSchildMerken(o.x, o.y, o.figur.kurz, gespraech.npc === o);
                       // U3: Die Blase bleibt, aber nicht neben dem Fenster. Steht
                       // der Satz schon im Gespraechsfenster, waere sie dieselbe
                       // Zeile ein zweites Mal.
                       // SZ2: dieselbe Regel fuer die Dorffiguren, siehe drawAlter().
-                      if(o.bubbleText1 && gameT < o.bubbleHideAt && gespraech.npc !== o && !szeneAktiv)
-                        drawBubble(o.x, o.y, o.bubbleText1, o.bubbleText2);
+                      // DZ1: gemerkt statt gezeichnet, und das Schild weiss davon.
+                      { const blase = o.bubbleText1 && gameT < o.bubbleHideAt && gespraech.npc !== o && !szeneAktiv;
+                        npcSchildMerken(o.x, o.y, o.figur.kurz, gespraech.npc === o, blase ? blasenHoehe(o.bubbleText1, o.bubbleText2) : 0);
+                        if(blase) blasenMerken(o.x, o.y, o.bubbleText1, o.bubbleText2); }
                       break; }
       case DRAW_INNEN:   drawInnenMoebel(o); break;
       case DRAW_CORPSE:  drawCorpse(o); break;
@@ -2715,6 +2716,7 @@ function render(){
     }
   }
   npcSchildFlush();   // U3: alle Namensschilder auf einmal, ueber allem und ohne Ueberlappung
+  blasenFlush();      // DZ1: die Blasen danach, also ueber den Schildern
 
   // --- Touch: Zauber-Preview + Lock-Marker (World-Space) ---
   if(spellAim.active && spellAim.sp){
@@ -2857,20 +2859,78 @@ function drawKessel(){
 // grau getönt über tintedSheet() (Cache aus drawPlayer()). Ausdrücklich kein
 // ctx.filter, siehe die Kommentare bei drawPlayer()/drawMon() weiter unten.
 // Trägt bewusst keine Rüstungs-Layer (Knöterich war schon vor G2 unbewaffnet/-gerüstet).
+// DZ1: die Blase bricht um und bleibt im Bild. Bis hierher war sie genau so
+// breit wie ihre laengere Zeile und stand mittig ueber der Figur, ohne Blick
+// auf den Rand. Gemessen auf 390x844 bei der voreingestellten Schriftstufe:
+// eine erste Zeile mit 48 Zeichen ergab 462 Pixel Blase auf 390 Pixel
+// Leinwand, und der Abzug zeigte "rhanden. Messstab: ..." am linken Rand. Das
+// war vor DZ1 schon so, fiel aber nur bei den laengsten ersten Zeilen auf.
+// Seit die zweite Zeile denselben Deckel hat wie die erste (BLASE_Z2), traefe
+// es jede zweite Blase. Deshalb zuerst die Blase, dann der Deckel.
+//
+// Umbrochen wird an Wortgrenzen und nur, wenn die Zeile nicht passt; auf dem
+// Schirm aendert sich also nichts. Die erste und die zweite Zeile werden
+// getrennt umbrochen, damit der Satzwechsel ein Zeilenwechsel bleibt.
+const BLASE_RAND = 6;                  // Abstand zum Leinwandrand, Leinwandpixel
+function blasenZeilen(text, maxW){
+  const out = []; let z = '';
+  for(const wort of text.split(' ')){
+    const t = z ? z + ' ' + wort : wort;
+    if(z && ctx.measureText(t).width > maxW){ out.push(z); z = wort; } else z = t;
+  }
+  if(z) out.push(z);
+  return out;
+}
+// Mass und Zeilen, ohne zu zeichnen. Erwartet ctx.font === BLASE_FONT; der
+// Pruefling tools/blase-pruef.mjs liest genau diese Rechnung.
+function blasenMass(text1, text2){
+  const maxW = Math.max(120, canvas.width - 2*BLASE_RAND - 16);
+  const z1 = blasenZeilen(text1, maxW), z2 = text2 ? blasenZeilen(text2, maxW) : [];
+  const zeilen = z1.concat(z2);
+  const w = Math.max(...zeilen.map(z => ctx.measureText(z).width)) + 16;
+  // Zeilenabstand aus der Schriftgroesse: bisher stand er fest auf 14, und bei
+  // der groessten Stufe (19 Pixel) lagen die Zeilen damit uebereinander.
+  const px = parseFloat((BLASE_FONT.match(/([\d.]+)px/) || [0, 13])[1]);
+  const lh = Math.round(px * 1.15);
+  return {zeilen, w, lh, h: zeilen.length * lh + 8};
+}
+// DZ1: Blasen werden wie die Namensschilder gesammelt und nach ihnen gezeichnet.
+// Vorher lag jedes Schild ueber jeder Blase, weil npcSchildFlush() am Ende der
+// Zeichenschleife lief; im Abzug ging "Wirt Fass" quer durch Zwirns Satz. Ein
+// Satz ist die Auskunft des Moments, ein Schild steht immer da, also gewinnt
+// der Satz. Kein Neubau je Frame: geleert und wieder gefuellt (Regel 10).
+const npcBlasen = [];
+function blasenMerken(x, y, text1, text2){ if(text1) npcBlasen.push({x, y, text1, text2}); }
+function blasenFlush(){
+  for(const b of npcBlasen) drawBubble(b.x, b.y, b.text1, b.text2);
+  npcBlasen.length = 0;
+}
+function blasenHoehe(text1, text2){
+  if(!text1) return 0;
+  ctx.save(); ctx.font = BLASE_FONT;
+  const h = blasenMass(text1, text2).h;
+  ctx.restore();
+  return h;
+}
 function drawBubble(x, y, text1, text2){
   if(!text1) return;
   ctx.save();
   ctx.textAlign = 'center'; ctx.font = BLASE_FONT;   // U3: waechst mit der Schriftstufe
-  const by = y - 48;
-  const w = Math.max(ctx.measureText(text1).width, ctx.measureText(text2 || '').width) + 16;
-  const h = text2 ? 34 : 20;
+  const m = blasenMass(text1, text2);
+  // Im Bild halten: die Blase rueckt seitlich und nach unten, die Figur nicht.
+  // cam.x/cam.y sind der linke obere Bildpunkt in Weltkoordinaten (s. render).
+  const links = Math.floor(cam.x) + BLASE_RAND + m.w/2, rechts = Math.floor(cam.x) + canvas.width - BLASE_RAND - m.w/2;
+  const bx = links <= rechts ? clamp(x, links, rechts) : x;
+  let unten = y - 40;                                 // Unterkante wie bisher (by + 8)
+  const oben = Math.floor(cam.y) + BLASE_RAND;
+  if(unten - m.h < oben) unten = oben + m.h;
   ctx.fillStyle = 'rgba(20,14,10,.85)'; ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 1.5;
   ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(x - w/2, by - h + 8, w, h, 6); else ctx.rect(x - w/2, by - h + 8, w, h);
+  if(ctx.roundRect) ctx.roundRect(bx - m.w/2, unten - m.h, m.w, m.h, 6); else ctx.rect(bx - m.w/2, unten - m.h, m.w, m.h);
   ctx.fill(); ctx.stroke();
   ctx.fillStyle = '#f4e6c8';
-  ctx.fillText(text1, x, by - (text2 ? 12 : 4));
-  if(text2) ctx.fillText(text2, x, by + 2);
+  const n = m.zeilen.length;
+  m.zeilen.forEach((z, i) => ctx.fillText(z, bx, unten - 6 - (n - 1 - i) * m.lh));
   ctx.restore();
 }
 
@@ -2896,7 +2956,8 @@ function drawAlter(){
   // U6: der vierte Parameter ist "wird gerade angesprochen" und stand hier fest
   // auf false, weil Knoeterich kein Gespraech hatte. Jetzt hat er eins, und sein
   // Schild hebt sich waehrenddessen hervor wie das jeder Dorffigur.
-  npcSchildMerken(x, y, KN_NAME_KURZ, gespraech.npc === knNpc);
+  const knBlase = knBubble.visible && !szeneAktiv && gespraech.npc !== knNpc;
+  npcSchildMerken(x, y, KN_NAME_KURZ, gespraech.npc === knNpc, knBlase ? blasenHoehe(knBubble.text1, knBubble.text2) : 0);
   // SZ2: Waehrend einer Szene redet niemand dazwischen. Der Weltstopp friert
   // gameT ein, und eine Blase, die beim Beginn der Szene gerade stand, stuende
   // damit die ganze Szene lang weiter: sie lag im Bild ueber Knoeterichs
@@ -2906,7 +2967,7 @@ function drawAlter(){
   // U6: dieselbe Regel wie bei den Dorffiguren (DRAW_NPC): steht der Satz schon
   // in der Tafel, waere die Blase daneben dieselbe Zeile ein zweites Mal.
   if(knBubble.visible && !szeneAktiv && gespraech.npc !== knNpc)
-    drawBubble(x, y, knBubble.text1, knBubble.text2);
+    blasenMerken(x, y, knBubble.text1, knBubble.text2);   // DZ1: gezeichnet in blasenFlush()
 }
 
 // W3: der Kater Anlage 3, kein Sprite, keine Kontextaktion — laut Kapitel 8
@@ -3163,11 +3224,15 @@ function npcNameAlpha(x, y){
 // ersetzt (Regressionsregel 10), und laenger als die Figurentabelle plus
 // Knoeterich wird es nie.
 const npcSchilder = [];
-function npcSchildMerken(x, y, text, imGespraech){
+// DZ1: blase ist die Hoehe der Sprechblase dieser Figur, 0 ohne Blase. Seit
+// die Blase umbricht, kann sie drei, vier Zeilen hoch werden und reicht dann
+// ueber das Schild. Das Schild rueckt deshalb ueber die Blase: wer spricht,
+// steht weiter darueber, und nicht quer durch die erste Zeile.
+function npcSchildMerken(x, y, text, imGespraech, blase){
   if(!text) return;
   const a = npcNameAlpha(x, y);
   if(a <= 0.02) return;
-  npcSchilder.push({x, y, text, a, hell: imGespraech});
+  npcSchilder.push({x, y, text, a, hell: imGespraech, hoch: Math.max(NPC_NAME_HOCH, blase ? 40 + blase + 6 : 0)});
 }
 
 // Das Schild selbst. Gleiche Lesart wie bei den Monstern (schwarzer Versatz
@@ -3193,7 +3258,7 @@ function npcSchildFlush(){
     let zeile = 0;
     while(belegt.some(b => b.zeile === zeile && b.l < r && l < b.r)) zeile++;
     belegt.push({l, r, zeile});
-    const ty = s.y - NPC_NAME_HOCH - zeile * NPC_SCHILD_ZEILE;
+    const ty = s.y - s.hoch - zeile * NPC_SCHILD_ZEILE;
     ctx.globalAlpha = s.a;
     ctx.fillStyle = '#000';                        ctx.fillText(s.text, s.x + 1, ty + 1);
     ctx.fillStyle = s.hell ? '#f4d97a' : '#f4e6c8'; ctx.fillText(s.text, s.x, ty);
@@ -3575,7 +3640,7 @@ const NEUERUNGEN = {
   // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
   // LV11-13 und die Hausmitteilung: sechster. KA1, der Druck: siebter.
   // HO1, Hochablage: achter.
-  stand: '2026-10-05-t5e3',
+  stand: '2026-10-05-dz1',
   datum: '4. Oktober',
   // HM-kurz (04.10.2026): jeder Punkt traegt sein Datum (am, ISO). Die
   // Hausmitteilung beim Start zeigt nur die Punkte ab dem Tag des zuletzt
@@ -3584,6 +3649,12 @@ const NEUERUNGEN = {
   // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
   // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
   punkte: [
+    // --- DZ1, die zweite Zeile, 05.10.2026 --------------------------------------
+    {am:'2026-10-05',
+      titel: 'Sprechblasen bleiben im Bild',
+      was: 'Am Telefon bricht eine lange Blase um, statt am Rand abzureißen.',
+      wo: 'Dorf.',
+    },
     // --- T5e-3, der Ton, dritte Tranche, 05.10.2026 -----------------------------
     {am:'2026-10-05',
       titel: 'Pommer, Nieselbeck und die Botin reden amtlicher',
@@ -3605,7 +3676,7 @@ const NEUERUNGEN = {
     // --- HO1, Hochablage, 04.10.2026 --------------------------------------------
     {am:'2026-10-04',
       titel: 'Nach dem Schluss fährt eine Kutsche nach Hochablage',
-      was: 'Wer Vorgang 1 zugestellt hat, findet am Dorfplatz eine Kutsche nach Turm I.',
+      was: 'Wer zugestellt hat, findet am Dorfplatz eine Kutsche.',
       wo: 'Dorfplatz, nach dem Abspann.',
     },
     // --- KA1, der Druck aus Hochablage, 04.10.2026 ------------------------------
@@ -3617,7 +3688,7 @@ const NEUERUNGEN = {
     // --- LV11-13 und die Hausmitteilung, 04.10.2026 -----------------------------
     {am:'2026-10-04',
       titel: 'Drei Nebenstränge mehr: Eimer, Wortlaut, einundvierzig Blätter',
-      was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt. Bramsche und Pommer geben die Archivausfertigung heraus, wenn der Antrag richtig lautet. Wer die vierzig Zwischenbescheide kennt, hat bei Vorblatt eine Antwort mehr.',
+      was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt. Bramsche und Pommer geben die Archivausfertigung heraus. Wer die vierzig Zwischenbescheide kennt, hat bei Vorblatt eine Antwort mehr.',
       wo: 'Nieselbeck ab Schicht 11, Registratur ab 21.',
     },
     {am:'2026-10-04',
@@ -3640,7 +3711,7 @@ const NEUERUNGEN = {
     // --- Ernennung, 04.10.2026 --------------------------------------------------
     {am:'2026-10-04',
       titel: 'Die Ernennung ist kürzer, nichts davon ist weg',
-      was: 'Die Zeremonie am ersten Morgen hat vier Blätter statt sechs. Zwirns Mappe kommt vor dem ersten Jahresgespräch, der Postsack an der Tür beim ersten Hinausgehen.',
+      was: 'Die Zeremonie am ersten Morgen hat vier Blätter statt sechs. Mappe und Postsack kommen später.',
       wo: 'Erster Dienstantritt, Amtstür, zehnte Schicht; alle Blätter in der Kladde.',
     },
     // --- AN7, 04.10.2026 --------------------------------------------------------
@@ -5275,7 +5346,7 @@ function anredeAssert(){
       const a = anredeZeile(k);
       if(!a) { fehler('Anredeform liefert nichts', k, s); continue; }
       text(a.z1, 48, 'z1 ' + k + ' s=' + s);
-      if(a.z2) text(a.z2, 32, 'z2 ' + k + ' s=' + s);
+      if(a.z2) text(a.z2, BLASE_Z2, 'z2 ' + k + ' s=' + s);
     }
     // (3) Zwirn schmeichelt wirklich, solange es über ihm einen benannten Rang
     // gibt: gleicher Bau, eine Stufe höher, muss einen anderen String ergeben.
@@ -7250,7 +7321,7 @@ function langAssert(){
   kladde.lang = {}; langSchicht = {};
 
   // (8) Zeichendeckel, Formregeln, Sperrvermerk. Fortschritts- und Zusatzzeilen
-  // sind Sprechblasen (z1<=48, z2<=32); bestand() ist freier Panel-Text ohne
+  // sind Sprechblasen (z1<=48, z2<=BLASE_Z2); bestand() ist freier Panel-Text ohne
   // Deckel, aber Form und Sperrvermerk gelten auch dort.
   for(const k in LANGVORGAENGE){
     const d = LANGVORGAENGE[k];
@@ -7258,12 +7329,12 @@ function langAssert(){
       const f = d.fortschritt(st);
       if(!f){ fehler('fortschritt() liefert nichts', k, st); continue; }
       text(f.z1, 48, 'fortschritt z1 ' + k + ' st=' + st); abk(f.z1, 'fortschritt z1 ' + k + ' st=' + st);
-      if(f.z2){ text(f.z2, 32, 'fortschritt z2 ' + k + ' st=' + st); abk(f.z2, 'fortschritt z2 ' + k + ' st=' + st); }
+      if(f.z2){ text(f.z2, BLASE_Z2, 'fortschritt z2 ' + k + ' st=' + st); abk(f.z2, 'fortschritt z2 ' + k + ' st=' + st); }
     }
     for(let st = 0; st <= d.stufen; st++){
       if(d.zusatz) for(const z of (d.zusatz(st) || [])){
         text(z.z1, 48, 'zusatz z1 ' + k + ' st=' + st); abk(z.z1, 'zusatz z1 ' + k + ' st=' + st);
-        if(z.z2){ text(z.z2, 32, 'zusatz z2 ' + k + ' st=' + st); abk(z.z2, 'zusatz z2 ' + k + ' st=' + st); }
+        if(z.z2){ text(z.z2, BLASE_Z2, 'zusatz z2 ' + k + ' st=' + st); abk(z.z2, 'zusatz z2 ' + k + ' st=' + st); }
       }
       // GW18: bestand() liest bei probezeit und gutachter den ROHWERT aus
       // kladde.lang, nicht die uebergebene Stufe. Mit leerem kladde.lang sah es

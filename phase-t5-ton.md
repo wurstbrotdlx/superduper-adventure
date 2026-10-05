@@ -749,6 +749,12 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   *(Nachtrag 05.10.2026, später: dritte Tranche, Abschnitt 5h. T5e ist in der
   Breite durch; offen bleiben der Deckel der zweiten Zeile als Tafelfrage, die
   Sprachmarken-Liste des Werkzeugs und die Wort-Kürzel.)*
+  *(Korrektur 05.10.2026, DZ1, `phase-dz1-zweite-zeile.md`.)* Abschnitt 5h
+  sagt: „Wer sie senken will, baut die Gesprächstafel um, nicht die Texte."
+  Das ist zur Hälfte falsch. Der Deckel ist die Voraussetzung (gezählt: zweite
+  Zeilen zu 94 Prozent knapp, erste zu 65), aber ein höherer Deckel macht
+  keine Zeile länger. Seit DZ1 steht er auf 48; die Knappheit sinkt erst,
+  wenn die Texte den Platz nutzen. 5h bleibt stehen, wie er war.
 
 ## 7. Abnahme
 

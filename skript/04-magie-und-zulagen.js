@@ -1675,6 +1675,19 @@ const KN_TRAENKE_GAGS = {3:'Ihr dritter Trank.', 7:'Ihr siebter Trank. Ich führ
 const KAISER_PRAETERITUM =
   /(Kaiser|Ordinat|Majestät)[^.!?]{0,40}\b(war|waren|wurde|hatte|starb|verstarb|regierte|lebte|gewesen|gestorben)\b/i;
 
+// DZ1 (phase-dz1-zweite-zeile.md): der Deckel der zweiten Zeile einer
+// Figuren-Sprechblase. Bis DZ1 stand er auf 32, und das war gemessen der
+// Grund, warum 94 Prozent aller zweiten Zeilen der Dorffiguren aus hoechstens
+// sechs Woertern bestanden (erste Zeilen 65, Aktzeilen bei 44 Zeichen 37;
+// gezaehlt am 05.10.2026). Er steht jetzt auf dem Deckel der ersten Zeile,
+// denn breiter als die erste wird die Blase damit nie, und seit DZ1 bricht
+// sie um, statt den Rand zu ueberlaufen. Die Tafel rollt bei 48 in keinem der
+// drei Formate (tools/deckel-messlauf.mjs).
+//
+// NICHT fuer Knoeterichs Tastenhinweise (HINWEISE, ESCALATE_DEFS): das ist
+// eine Erklaerung mit Touch-Fassung, dort ist knapp richtig und bleibt 32.
+const BLASE_Z2 = 48;
+
 function knAssertCaps(){
   const rows = [];
   for(const h of HINWEISE) rows.push([h.z1,48],[h.z2,32],[h.z2t,32]);
@@ -1711,6 +1724,7 @@ function knAssertCaps(){
   for(const s in KN_TRAENKE_GAGS) rows.push([KN_TRAENKE_GAGS[s],44]);
   // W3: Dorf-Figuren, gleicher Deckel wie Knöterichs Kanäle (z1<=48, z2<=32,
   // Einzeiler<=44). antworten/abweisung/anlass sind optionale Felder.
+  // DZ1: die zweite Zeile der Figuren steht seither auf BLASE_Z2 (48).
   // U6: Knöterich läuft ab hier durch dieselbe Prüfung. Seine Tafelzeilen sind
   // Sprechblasen wie alle anderen, und die Strukturzusicherung (sechs
   // Grundzeilenpaare, fünf Aktzeilen, keine leer) gilt für ihn genauso: eine
@@ -1744,11 +1758,11 @@ function knAssertCaps(){
     // danach ohne Blatt dasteht. Farben und Stufen prüft figurenFarbenAssert().
     if(fig.opt === 'wander' && !fig.sheet) rows.push([null,0,'Figur ' + fig.key + ' ohne Sprite']);
     if(!fig.gestalt || !fig.gestalt.hair) rows.push([null,0,'Figur ' + fig.key + ' ohne Gestalt']);
-    for(const p of fig.grund) rows.push([p.z1,48],[p.z2,32]);
+    for(const p of fig.grund) rows.push([p.z1,48],[p.z2,BLASE_Z2]);
     for(const a of fig.akt) rows.push([a,44]);
-    if(fig.antworten) for(const qa of fig.antworten) rows.push([qa.z1,48],[qa.z2,32]);
-    if(fig.abweisung) for(const ab of fig.abweisung) rows.push([ab.z1,48],[ab.z2,32]);
-    if(fig.anlass) for(const key in fig.anlass) for(const p of fig.anlass[key]) rows.push([p.z1,48],[p.z2,32]);
+    if(fig.antworten) for(const qa of fig.antworten) rows.push([qa.z1,48],[qa.z2,BLASE_Z2]);
+    if(fig.abweisung) for(const ab of fig.abweisung) rows.push([ab.z1,48],[ab.z2,BLASE_Z2]);
+    if(fig.anlass) for(const key in fig.anlass) for(const p of fig.anlass[key]) rows.push([p.z1,48],[p.z2,BLASE_Z2]);
     // W-Nörgel: zusatz sind Sprechblasen wie alle anderen, derselbe Deckel. Der
     // Merkername wird mitgeprüft: ein Tippfehler darin fiele sonst nirgends auf,
     // die Zeilen wären schlicht nie zu sehen, und genau so eine stumme Figur ist
@@ -1770,7 +1784,7 @@ function knAssertCaps(){
       // Schalter sähe aus wie eine Bedingung und wäre keine.
       if('ab' in z && !('skill' in z))
         rows.push([null,0,'Figur ' + fig.key + ' hat ein ab ohne skill']);
-      for(const p of z.zeilen) rows.push([p.z1,48],[p.z2,32]);
+      for(const p of z.zeilen) rows.push([p.z1,48],[p.z2,BLASE_Z2]);
     }
     // F1b: Ein Anlass-Pool, den nichts auslöst, ist eine Zeile, die nie jemand
     // hört. Die Schlüssel kommen aus dem Weltkommentar (bis T2 RANDNOTIZ, seit
