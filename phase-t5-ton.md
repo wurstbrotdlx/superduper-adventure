@@ -648,6 +648,79 @@ Umlauf, 491 ab dem 03.10., 22 heute (gezählt am 05.10.2026). Danach 36 von
 36. Offen bleibt die Werkzeugfrage, ob „gestern" im Lauf an der Uhr hängen
 soll statt an einem genannten Datum; bis dahin wandert die Grenze täglich.
 
+## 5h. Was gebaut wurde: T5e-3, die dritte Tranche *(05.10.2026)*
+
+Auf Zuruf („T5e-3 los"): Pommer, Nieselbeck, Umlauf, Randbemerkung. Damit hat
+jede Dorffigur außer Zapf (Knappheit ist seine Marke) und Knöterich (Register,
+T5a) eine Tranche hinter sich; T5e ist in der Breite durch.
+
+**Je Figur, und bei dreien gilt die Marke gegen die Zahl:**
+
+* **Pommer.** Fachwörter, aber kein Wort mehr je Satz: T1 sagt ausdrücklich,
+  er bleibt kurz, denn sein Gag ist die falsche Betonung eines kurzen Satzes.
+  Vordruck, Bestand, ordnungsgemäß, Nachweis, Dienstweg, fristgerecht,
+  Nebenbestimmung, dienstlich. Kaskade aus kurzen Sätzen: wie man eine Liste
+  führt, in drei Teilen (`baumPommer`, „Wie führt man eine Liste?"), und der
+  dritte Teil ist sein Zuwachs aus W11: die leere Liste als Nachweis.
+* **Nieselbeck.** Vier Fachwörter (Vermerkt, Veranlassung, Vordruck,
+  dienstlich); seine Kürzel-Familie und die Kaskade der Spalten standen seit
+  T1. Er bleibt der kürzeste Sprecher, das ist die Marke. Die Zeile „Stehen
+  ist keine Verzögerung." aus der Eichprobe steht unverändert.
+* **Umlauf.** Fachwörter aus dem Reich (Umlauf, Dienstweg, nachrichtlich,
+  Schriftstücke, vermerkt), keine Kaskade: ihr Gag ist der Abbruch, und ein
+  Abbruch braucht keine Länge, sondern einen Zeitpunkt (T1).
+* **Randbemerkung.** Ein Wort (Bestand) in dreizehn Zeilen nach dem Schluss,
+  kein Baum. Der Lauf zählt die Zeile schon vorher als amtlich (Ellipse), die
+  Zahl bleibt deshalb stehen.
+
+Kein neues Kürzel (die Zwölf, 5f). Kein Witz fällt.
+
+**Gemessen** (`tools/ton-messlauf.mjs`, 05.10.2026, Untergrenze; Knappheit je
+Figur mit demselben Maß über die Grundzeilen):
+
+| Figur | amtlich vorher | amtlich nachher | knapp vorher | knapp nachher |
+|---|---|---|---|---|
+| Pommer | 18 % (60 Zeilen) | **34 %** (61) | 83 % | 84 % |
+| Nieselbeck | 11 % (55 Zeilen) | 18 % | 90 % | 90 % |
+| Umlauf | 4 % (51 Zeilen) | 16 % | 73 % | 71 % |
+| Randbemerkung | 15 % (13 Zeilen) | 15 % | 61 % | 61 % |
+| Dorffiguren gesamt | 17 % (975 Zeilen) | **19 %** (976) | 77 % | 77 % |
+| Szenen | 13 % (857 Zeilen) | 13 % (867) | 78 % | 79 % |
+| Figurenrede gesamt | 16 % (2233 Zeilen) | **17 %** (2244) | | |
+
+**Bilanz T5e über drei Tranchen** (Dorffiguren, Untergrenze): 10 Prozent am
+Morgen des 04.10. (974 Zeilen), 19 Prozent am 05.10. (976 Zeilen). Figurenrede
+gesamt 13 auf 17 Prozent, Ziel 30. Von fünfzehn Dorffiguren liegen sieben
+über 25 Prozent (Pommer, Nörgel, Zwirn, Trepp, Milb, dazu Bramsche und
+Vorblatt aus dem Bestand), vier bleiben aus der Figur heraus unten (Fass,
+Lott, Pahl, Zapf), vier dazwischen (Lisbeth, Nieselbeck, Umlauf,
+Randbemerkung). **Die Knappheit der Dorffiguren steht nach drei Tranchen auf
+77 Prozent wie vorher.** Dreimal gemessen, dreimal dasselbe: sie hängt am
+Deckel der zweiten Zeile, nicht am Ton. Wer sie senken will, baut die
+Gesprächstafel um, nicht die Texte.
+
+**Ein Fund am Werkzeug:** `SPRACHMARKE_AMTLICH` führt Umlauf, Kapitel 8 gibt
+ihr aber keine amtliche Marke, sondern Aufzählung und Abbruch. Die Liste
+stammt aus T5 und ist laut Kommentar eine Kanon-Aussage; ob Umlauf dort
+hingehört oder Nieselbeck (der meldet) eher, ist eine Entscheidung des
+Projektinhabers, keine Bauentscheidung.
+
+**Sichtbar:** ein Punkt in `NEUERUNGEN`, Stempel `2026-10-05-t5e3`; drei
+Punkte um acht Wörter gekürzt (497 ab dem 03.10., Deckel 500).
+
+**Prüfprotokoll T5e-3** (05.10.2026, live im Browser mit Grafik):
+
+| Prüfung | Ergebnis |
+|---|---|
+| `node tools/ladelauf-pruef.mjs` | 12 „in Ordnung", 0 Warnungen, Konsole still |
+| `node tools/ton-messlauf.mjs` | Eichprobe unverändert 42 von 43; Zahlen in der Tabelle oben |
+| `node --check` über sieben Dateien | still |
+| alle 22 `tools/*-pruef.mjs` | grün: anlage2 123, aufschub 24, ebene 54, empfang 190, gespraech 89, hochablage 29, innen 27, intro 648 Wörter unverändert, langvorgang 58, lv11-13 58, menue 78, mitteilung 36, reich 59, schluss 36, serien 36, speicher 38, steuerung in Ordnung, stopfen 43, szene 50, versuchung 67, zulagen 50 |
+
+Die Hausmitteilung wurde vor dem Sammellauf unter die Grenze gekürzt (505
+auf 497 ab dem 03.10., genannter Stempel des Laufs), deshalb diesmal kein
+roter erster Lauf.
+
 ## 6. Was offen bleibt
 
 Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
@@ -673,6 +746,9 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   Abschnitt 5g. Offen: Pommer, Umlauf, Nieselbeck, Randbemerkung als dritte
   Tranche, und die Frage, ob Wirt und Chor eine Sprachmarke „nicht amtlich"
   bekommen.)*
+  *(Nachtrag 05.10.2026, später: dritte Tranche, Abschnitt 5h. T5e ist in der
+  Breite durch; offen bleiben der Deckel der zweiten Zeile als Tafelfrage, die
+  Sprachmarken-Liste des Werkzeugs und die Wort-Kürzel.)*
 
 ## 7. Abnahme
 

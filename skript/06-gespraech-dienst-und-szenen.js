@@ -3575,7 +3575,7 @@ const NEUERUNGEN = {
   // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
   // LV11-13 und die Hausmitteilung: sechster. KA1, der Druck: siebter.
   // HO1, Hochablage: achter.
-  stand: '2026-10-05-t5e2',
+  stand: '2026-10-05-t5e3',
   datum: '4. Oktober',
   // HM-kurz (04.10.2026): jeder Punkt traegt sein Datum (am, ISO). Die
   // Hausmitteilung beim Start zeigt nur die Punkte ab dem Tag des zuletzt
@@ -3584,6 +3584,12 @@ const NEUERUNGEN = {
   // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
   // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
   punkte: [
+    // --- T5e-3, der Ton, dritte Tranche, 05.10.2026 -----------------------------
+    {am:'2026-10-05',
+      titel: 'Pommer, Nieselbeck und die Botin reden amtlicher',
+      was: 'Fachwörter, und Pommer erklärt seine Liste in drei Teilen.',
+      wo: 'Dorf, „Erzählen Sie von früher".',
+    },
     // --- T5e-2, der Ton, zweite Tranche, 05.10.2026 -----------------------------
     {am:'2026-10-05',
       titel: 'Trepp, Lisbeth, Fass und die Bank reden ausführlicher',
@@ -3605,7 +3611,7 @@ const NEUERUNGEN = {
     // --- KA1, der Druck aus Hochablage, 04.10.2026 ------------------------------
     {am:'2026-10-04',
       titel: 'Ein Druck aus Hochablage hängt in der Amtsstube',
-      was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, die Bank, darauf der Vierte Wartende. Die Karte unter dem Bild wechselt.',
+      was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, die Bank, der Vierte Wartende. Die Karte darunter wechselt.',
       wo: 'Amtsstube, Nordwand, Ansehen.',
     },
     // --- LV11-13 und die Hausmitteilung, 04.10.2026 -----------------------------
@@ -3629,7 +3635,7 @@ const NEUERUNGEN = {
     {am:'2026-10-04',
       titel: 'Die Räume stehen am Telefon mittig',
       was: 'In den drei Häusern steht der Raum am Telefon mittig statt oben.',
-      wo: 'Die drei Häuser und jede Kammer, am Telefon.',
+      wo: 'Die drei Häuser und jede Kammer.',
     },
     // --- Ernennung, 04.10.2026 --------------------------------------------------
     {am:'2026-10-04',
@@ -3652,7 +3658,7 @@ const NEUERUNGEN = {
     // --- RL6, 03.10.2026 --------------------------------------------------------
     {am:'2026-10-03',
       titel: 'Der Anfang kommt in Raten',
-      was: 'Die vier Chronikblätter liegen an den Morgen der Schichten 2 bis 5 bereit, je eines. Anlage 2 meldet sich beim ersten Griff in die Tasche. Wer das Haus kennt, sagt es Knöterich.',
+      was: 'Die vier Chronikblätter liegen an den Morgen der Schichten 2 bis 5 bereit, je eines. Wer das Haus kennt, sagt es Knöterich.',
       wo: 'Dienstantritt der nächsten vier Schichten; Kladde unter Akten.',
     },
     // --- RL4, 03.10.2026 --------------------------------------------------------
@@ -10747,11 +10753,22 @@ SZENEN.baumPommer = {
      z1:'Es war nie da. Vermisst wurde es.', z2:'Beides gleichzeitig, ja.'},
     {key:'beweis', frei:'fehl', t:'Ein Antrag beweist etwas?',
      z1:'Dass die Sache überhaupt besteht.', z2:'Sonst ist sie nur behauptet.'},
+    // T5e-3: die Liste in ganzer Form, als Kaskade aus kurzen Saetzen. Kurz
+    // bleibt er (T1), lang wird nur der Weg: drei Teile, und der dritte ist die
+    // Pointe seines Zuwachses aus W11, die leere Liste als Nachweis.
+    {key:'fuehren', frei:'liste', t:'Wie führt man eine Liste?',
+     z1:'Nach Vordruck. Erstens: die Spalte.', z2:'Datum, Gegenstand, Antrag.',
+     weiter:'liste2', wt:'Und zweitens?'},
     {key:'abend', nach:3, t:'Was tun Sie abends?',
      z1:'Ich räume ein. Und schreibe etwas.', z2:'Nichts Dienstliches. Fast.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Dazu bräuchte ich einen Antrag.', z2:'Ich mache eine Ausnahme.', hub:true},
+    liste2:  {z1:'Zweitens: der Eintrag. Kurz. Genau.', z2:'Bei mir: keiner.',
+              opts: () => [{t:'Und drittens?', zu:'liste3'}]},
+    liste3:  {z1:'Drittens: der Nachweis. Die Liste selbst.', z2:'Leer ist ein Nachweis.',
+              opts: () => [{t:'Leer?', zu:'liste4'}]},
+    liste4:  {z1:'Leer heißt: nie ohne Antrag. Steht da.', z2:'Steht nicht da. Das ist es.'},
     angebot: {z1:'Ich könnte Ihnen eines zeigen.', z2:'Herausgeben kann ich es nicht.',
               opts: () => [
                 {t:'Zeigen Sie es.', tun: () => { szeneKnoten('dank'); }},
