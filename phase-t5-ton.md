@@ -557,6 +557,97 @@ Deckel 500; drei ältere Punkte um zusammen zehn Wörter gekürzt, jetzt 494.
 | `node --check` über sieben Dateien | still |
 | alle 22 `tools/*-pruef.mjs` | grün: anlage2 123, aufschub 24, ebene 54, empfang 190, gespraech 89, hochablage 29, innen 27, intro 648 Wörter unverändert, langvorgang 58, lv11-13 58, menue 78, mitteilung 36, reich 59, schluss 36, serien 36, speicher 38, steuerung in Ordnung, stopfen 43, szene 50, versuchung 67, zulagen 50 |
 
+## 5g. Was gebaut wurde: T5e-2, die zweite Tranche *(05.10.2026)*
+
+Auf Zuruf („T5e-2 los"), Figuren wie in der Obsidian-Notiz vorgeschlagen:
+Trepp, Lisbeth, Fass, Lott und Pahl. Weiter ausgenommen: Zapf (Knappheit ist
+seine Marke), Knöterich (Register), Pommer (T1: bleibt kurz, ausdrücklich),
+Umlauf und Nieselbeck (eigene Tranche, beide mit Kürzel-Familie oder
+Sprachmarke).
+
+**Dasselbe Verfahren wie in 5f, mit einem Unterschied:** nicht jede dieser
+fünf Figuren soll auf dreißig Prozent. Grundgesetz 3 sagt „die Ausnahme ist
+die Figur", und hier gilt das nach unten: ein Wirt, der seine Gäste duzt, und
+ein Chor, dessen Gag der Wechselrhythmus ist, werden nicht amtlich, nur weil
+der Schnitt es verlangt. Je Figur:
+
+* **Trepp.** Die erste Zeile bleibt „Wenn ich kurz stören darf.", die zweite
+  trägt sein Fach: Zustellung, zustellbar, Dienstweg, dienstlich,
+  Dienstausweis, Amtsbezeichnung. Kaskade: seine Bezeichnung in drei Teilen
+  (`baumTrepp`, Frage „Was heißt die Bezeichnung?"). Den dritten Teil kann
+  er nicht auflösen, und das ist die Figur: ein Bevollmächtigter ist im Reich
+  ein Adelsamt, und es hat ihm nie jemand gesagt. Er sagt es also auch hier
+  nicht.
+* **Lisbeth.** Fachwörter aus ihrem eigenen Vorgang: weisungsbefugt,
+  vorläufig, Vermerk, zu Protokoll, nachrichtlich, Beanstandung, befugt.
+  Die Fragen bleiben ihre Marke. Kaskade: ihr Antrag in vier Teilen
+  (`baumLisbeth`, „Was steht im Antrag?"), und die letzten beiden Teile sind
+  leer. Das ist kein Scheitern, sondern der Grund, warum sie fragt.
+* **Fass.** Zwei Zeilen und eine Kaskade, mehr nicht: der Deckel als Vorgang
+  (`baumFass`, „Was steht auf meinem Deckel?"), die eine Stelle, an der das
+  Gasthaus ans Amt grenzt. Er bleibt beim Du.
+* **Lott.** Ein Wort mehr je Zeile, nie ein Satz mehr: er bleibt der Kürzere
+  der Bank. Fachwörter, wo er ohnehin das Amt zitiert: Vorgang, unzuständig,
+  Bestand, Veranlassung, Widerspruch, Dienstauftrag, zu Protokoll.
+* **Pahl.** Der Ausführlichere bekommt Bewilligung, ordnungsgemäß,
+  Nebenbestimmung, Bestand, zustellt, unverhältnismäßig, und die Kaskade der
+  Bank: wie man ein Dorf zuklappt, in vier Zügen (`baumBank`, „Wie klappt man
+  ein Dorf zu?"), mit dem Hergang aus Kapitel 8: Bestand, letzte Uferfrage
+  806, erledigt. Lott kommt darin vor.
+
+Kein neues Kürzel (die Zwölf, siehe 5f). Kein Witz fällt; drei Zeilen der
+Eichprobe („Reich geworden, wenn auch vorübergehend", „Bei der Übergabe. Nur
+die.", „Steht in meinem Bericht") stehen unverändert.
+
+**Gemessen** (`tools/ton-messlauf.mjs`, 05.10.2026, Untergrenze; Knappheit
+je Figur mit demselben Maß über die Grundzeilen):
+
+| Figur | amtlich vorher | amtlich nachher | knapp vorher | knapp nachher |
+|---|---|---|---|---|
+| Trepp | 5 % (41 Zeilen) | **27 %** | 81 % | 81 % |
+| Lisbeth | 4 % (56 Zeilen) | **23 %** | 74 % | 74 % |
+| Fass | 2 % (61 Zeilen) | 3 % | 81 % | 81 % |
+| Lott | 4 % (99 Zeilen) | 13 % | 92 % | 91 % |
+| Pahl | 2 % (99 Zeilen) | 11 % | 53 % | 55 % |
+| Dorffiguren gesamt | 13 % (975 Zeilen) | 17 % | 77 % | 77 % |
+| Szenen | 12 % (817 Zeilen) | 13 % (857) | 78 % | 78 % |
+| Figurenrede gesamt | 14 % (2193 Zeilen) | 16 % (2233) | | |
+
+**Der Befund aus 5f bestätigt sich hart:** die Knappheit der Grundzeilen
+rührt sich bei keiner der fünf Figuren, und bei Trepp kann sie es gar nicht,
+weil seine erste Zeile die Marke ist und die zweite 32 Zeichen fasst. Was
+gegen die 78 Prozent hilft, sind die vier Kaskaden, je vier Züge, und die
+zählen in den Szenen. Wer die Knappheit der Dorffiguren messbar senken will,
+muss den Deckel der zweiten Zeile anfassen, und das ist keine Tonfrage,
+sondern eine Tafelfrage (Gesprächstafel, Touch-Fassung).
+
+**Eine Entscheidung für den Projektinhaber, die nicht in 5f stand:** Fass,
+Lott und Pahl bleiben unter dem Zielwert, aus der Figur heraus. Der Messlauf
+führt sie weiter als „TIEF". Entweder bekommt `SPRACHMARKE_AMTLICH` ein
+Gegenstück („Sprachmarke: nicht amtlich", Wirt und Chor), und das ist laut
+Kommentar im Werkzeug eine Kanon-Aussage, oder die Zahl steht so da und
+jeder liest den Grund hier nach. Bis dahin: so lassen.
+
+**Sichtbar:** ein Punkt in `NEUERUNGEN`, Stempel `2026-10-05-t5e2`.
+
+**Prüfprotokoll T5e-2** (05.10.2026, live im Browser mit Grafik):
+
+| Prüfung | Ergebnis |
+|---|---|
+| `node tools/ladelauf-pruef.mjs` | 12 „in Ordnung", 0 Warnungen, Konsole still |
+| `node tools/ton-messlauf.mjs` | Eichprobe unverändert 42 von 43; Zahlen in der Tabelle oben |
+| `node --check` über sieben Dateien | still |
+| alle 22 `tools/*-pruef.mjs` | grün: anlage2 123, aufschub 24, ebene 54, empfang 190, gespraech 89, hochablage 29, innen 27, intro 648 Wörter unverändert, langvorgang 58, lv11-13 58, menue 78, mitteilung 36 (siehe Hinweis), reich 59, schluss 36, serien 36, speicher 38, steuerung in Ordnung, stopfen 43, szene 50, versuchung 67, zulagen 50 |
+
+**Hinweis zu `mitteilung-pruef`:** im Sammellauf rot (35 von 36). Der Lauf
+nennt seinen „Stempel von gestern" mit Datum (`2026-10-03-x`, mit Absicht,
+siehe Kommentar im Werkzeug), und seit dem 05.10. ist das vorgestern: die
+Zeile zählt damit zwei Tage, 529 Wörter bei Deckel 500. Vier Punkte um 38
+Wörter gekürzt (T5e-1, T5e-2, Räume, Urkunden): 30 Punkte, 985 Wörter im
+Umlauf, 491 ab dem 03.10., 22 heute (gezählt am 05.10.2026). Danach 36 von
+36. Offen bleibt die Werkzeugfrage, ob „gestern" im Lauf an der Uhr hängen
+soll statt an einem genannten Datum; bis dahin wandert die Grenze täglich.
+
 ## 6. Was offen bleibt
 
 Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
@@ -578,6 +669,10 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   *(Nachtrag 04.10.2026: die erste Tranche, Zwirn, Nörgel und Milb, ist gebaut,
   siehe Abschnitt 5f. Offen: die übrigen Figuren in Tranchen, und die Frage an
   den Projektinhaber, ob die Zwölf für Wort-Kürzel Plätze bekommt.)*
+  *(Nachtrag 05.10.2026: zweite Tranche, Trepp, Lisbeth, Fass, Lott, Pahl,
+  Abschnitt 5g. Offen: Pommer, Umlauf, Nieselbeck, Randbemerkung als dritte
+  Tranche, und die Frage, ob Wirt und Chor eine Sprachmarke „nicht amtlich"
+  bekommen.)*
 
 ## 7. Abnahme
 

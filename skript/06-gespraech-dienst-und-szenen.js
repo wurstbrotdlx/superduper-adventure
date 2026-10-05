@@ -3575,7 +3575,7 @@ const NEUERUNGEN = {
   // W11-GH, Serie G und H: fuenfter Stempel desselben Tages.
   // LV11-13 und die Hausmitteilung: sechster. KA1, der Druck: siebter.
   // HO1, Hochablage: achter.
-  stand: '2026-10-04-t5e',
+  stand: '2026-10-05-t5e2',
   datum: '4. Oktober',
   // HM-kurz (04.10.2026): jeder Punkt traegt sein Datum (am, ISO). Die
   // Hausmitteilung beim Start zeigt nur die Punkte ab dem Tag des zuletzt
@@ -3584,10 +3584,16 @@ const NEUERUNGEN = {
   // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
   // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
   punkte: [
+    // --- T5e-2, der Ton, zweite Tranche, 05.10.2026 -----------------------------
+    {am:'2026-10-05',
+      titel: 'Trepp, Lisbeth, Fass und die Bank reden ausführlicher',
+      was: 'Mehr Fachwörter und je eine Nachfrage mehr im Gespräch.',
+      wo: 'Dorf, „Erzählen Sie von früher".',
+    },
     // --- T5e-1, der Ton, erste Tranche, 04.10.2026 ------------------------------
     {am:'2026-10-04',
       titel: 'Zwirn, Nörgel und Milb reden ausführlicher',
-      was: 'Mehr Fachwörter, und je eine Nachfrage mehr im Gespräch.',
+      was: 'Fachwörter und je eine Nachfrage mehr.',
       wo: 'Dorf, „Erzählen Sie von früher".',
     },
     // --- HO1, Hochablage, 04.10.2026 --------------------------------------------
@@ -3622,7 +3628,7 @@ const NEUERUNGEN = {
     // --- RL7, Befund 8 und 9, 04.10.2026 ----------------------------------------
     {am:'2026-10-04',
       titel: 'Die Räume stehen am Telefon mittig',
-      was: 'In den drei Häusern steht der Raum am Telefon mittig statt oben. Knöterichs Zettel rückt unter die Ortszeile, wenn er sie verdecken würde.',
+      was: 'In den drei Häusern steht der Raum am Telefon mittig statt oben.',
       wo: 'Die drei Häuser und jede Kammer, am Telefon.',
     },
     // --- Ernennung, 04.10.2026 --------------------------------------------------
@@ -3640,7 +3646,7 @@ const NEUERUNGEN = {
     // --- RL7, 04.10.2026 --------------------------------------------------------
     {am:'2026-10-04',
       titel: 'Die Urkunden zeigen auf dem liegenden Telefon die ganze Szene',
-      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen; passt ein Blatt nicht, sagt eine Zeile darunter, dass es weitergeht.',
+      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen.',
       wo: 'Telefon im Querformat: Ernennung, Abspann, Zauberbaum, Dienstausweis.',
     },
     // --- RL6, 03.10.2026 --------------------------------------------------------
@@ -10496,11 +10502,21 @@ SZENEN.baumLisbeth = {
      z1:'Beobachtungen. Sechs Jahre davon.', z2:'Seite zwei ist die beste.'},
     {key:'deckblatt', frei:'bericht', t:'Und auf dem Deckblatt?',
      z1:'Bericht über das Praktikumsjahr.', z2:'Und dahinter: vorläufig.'},
+    // T5e-2: ihr Antrag in ganzer Form, vier Teile, und die letzten beiden
+    // sind leer. Das ist kein Scheitern, sondern der Grund, warum sie fragt.
+    {key:'antrag', frei:'traum', t:'Was steht im Antrag?',
+     z1:'Vier Teile. Erstens der Gegenstand.', z2:'Ein Amt für Monsterbelange.',
+     weiter:'antrag2', wt:'Und zweitens?'},
     {key:'unter', nach:3, t:'Wer unterschreibt das?',
      z1:'Eine weisungsbefugte Person.', z2:'Es gibt hier keine.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Ich bin noch beim ersten Jahr.', z2:'Fragen Sie. Bitte.', hub:true},
+    antrag2: {z1:'Zweitens die Begründung. Sechs Jahre lang.', z2:'Steht alles auf Seite zwei.',
+              opts: () => [{t:'Und drittens?', zu:'antrag3'}]},
+    antrag3: {z1:'Drittens die Zuständigkeit. Leer gelassen.', z2:'Es gibt niemanden dafür.',
+              opts: () => [{t:'Und viertens?', zu:'antrag4'}]},
+    antrag4: {z1:'Viertens die Unterschrift. Auch leer.', z2:'Deshalb frage ich. Weiter.'},
     angebot: {z1:'Sie könnten hineinsehen. Wenn Sie mögen.', z2:'Es hat noch niemand gelesen.',
               opts: () => [
                 {t:'Zeigen Sie mir Seite zwei.', tun: () => { kn.flags.baumBericht = true; saveKn(); szeneKnoten('dank'); }},
@@ -10566,11 +10582,23 @@ SZENEN.baumTrepp = {
      z1:'Die Schrift ist mir fremd.', z2:'Nicht unleserlich. Fremd.'},
     {key:'starren', frei:'schrift', t:'Sie starren sie an?',
      z1:'Jeden Tag. Seit vierzig Jahren.', z2:'Man gewöhnt sich an Striche.'},
+    // T5e-2: die Amtsbezeichnung in drei Teilen, als Kaskade. Den dritten
+    // Teil kann er nicht aufloesen, und das ist die Figur (Zuwachs W11): ein
+    // Bevollmaechtigter ist im Reich ein Adelsamt, und es hat ihm nie jemand
+    // gesagt. Er sagt es also auch hier nicht.
+    {key:'bezeichnung', frei:'sieben', t:'Was heißt die Bezeichnung?',
+     z1:'Drei Teile. Erstens: Schattenland.', z2:'Das ist das Gebiet. Da drüben.',
+     weiter:'bez2', wt:'Und zweitens?'},
     {key:'vater', nach:3, t:'Wie kam der Sack zu Ihnen?',
      z1:'Mein Vater hat ihn mir gegeben.', z2:'Mit fünf Wörtern dazu.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Wenn ich kurz stören darf.', z2:'Da gäbe es einiges.', hub:true},
+    bez2:    {z1:'Zweitens: Zustellung. Das ist der Brief.', z2:'Der eine. Im Sack.',
+              opts: () => [{t:'Und drittens?', zu:'bez3'}]},
+    bez3:    {z1:'Drittens: Bevollmächtigter. Ein Amt.', z2:'Was es heißt, weiß ich nicht.',
+              opts: () => [{t:'Hat es nie jemand gesagt?', zu:'bez4'}]},
+    bez4:    {z1:'Es stand nie jemand da, der es sagt.', z2:'Wenn ich kurz stören darf: nein.'},
     angebot: {z1:'Ich könnte sie Ihnen sagen.', z2:'Wenn Sie kurz Zeit hätten.',
               opts: () => [
                 {t:'Sagen Sie sie mir.', tun: () => { szeneKnoten('dank'); }},
@@ -10754,11 +10782,21 @@ SZENEN.baumFass = {
      z1:'Dass einer den letzten setzt.', z2:'Irgendwann tut das jemand.'},
     {key:'regal', frei:'letzte', t:'Was steht oben im Regal?',
      z1:'Ein Krug. Der bleibt oben stehen.', z2:'Auch wenn alle anderen weg sind.'},
+    // T5e-2: der Deckel als Vorgang, die eine Stelle, an der der Wirt
+    // Amtsdeutsch redet, weil das Gasthaus hier ans Amt grenzt. Du bleibt Du.
+    {key:'deckel', frei:'name', t:'Was steht auf meinem Deckel?',
+     z1:'Dein Deckel ist ein Vorgang. Offen.', z2:'Wie alle hier. Trink ruhig.',
+     weiter:'deckel2', wt:'Und wann ist er zu?'},
     {key:'warum', nach:3, t:'Warum rührt ihn keiner an?',
      z1:'Weil er gebraucht wird. Später.', z2:'So hat es der Großvater gesagt.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Setz dich erst mal.', z2:'Das dauert nämlich.', hub:true},
+    deckel2: {z1:'Wenn einer den letzten Stempel setzt.', z2:'Dann ist er erledigt. Deiner.',
+              opts: () => [{t:'Und bis dahin?', zu:'deckel3'}]},
+    deckel3: {z1:'Bis dahin führe ich ihn. Mit Kreide.', z2:'Ordentlich. Kein Vermerk fehlt.',
+              opts: () => [{t:'Was schulde ich denn?', zu:'deckel4'}]},
+    deckel4: {z1:'Nichts. Der Deckel ist nur ein Vorgang.', z2:'Zuständig für ihn bin ich.'},
     angebot: {z1:'Du könntest ihn dir ansehen.', z2:'Anfassen ist was anderes.',
               opts: () => [
                 {t:'Ich sehe ihn mir an.', tun: () => { szeneKnoten('dank'); }},
@@ -10797,11 +10835,22 @@ SZENEN.baumBank = {
      // Fragmente statt eines Satzes. Das Bild "kein Feuer, ein Aktendeckel"
      // ist gepinnt und bleibt woertlich, es wird nur zum ganzen Satz.
      z1:'Passiert ist gar nichts. Das ist es ja.', z2:'Kein Feuer, nur ein Aktendeckel.'},
+    // T5e-2: die Kaskade der Bank, und Pahl spricht sie, weil er der
+    // Ausfuehrlichere ist. Der Hergang steht in Kapitel 8 (Zuwachs W11):
+    // Bestand, letzte Uferfrage 806, erledigt. Lott kommt darin vor.
+    {key:'zuklappen', wer:'pahl', frei:'wiese', t:'Wie klappt man ein Dorf zu?',
+     z1:'Ordnungsgemäß. Ich erkläre es Ihnen.', z2:'Lott hört weg. Er kennt es.',
+     weiter:'zu2', wt:'Bitte.'},
     {key:'steine', wer:'pahl', nach:3, t:'Auf der Wiese liegen Steine.',
      z1:'Sortiert. Das fällt Leuten auf.', z2:'Uns hat es niemand gedankt.'},
   ],
   knoten:{
     hub:     {z1:'Von früher? Da fragt uns selten wer.', z2:'Pahl, sag du erst.', hub:true},
+    zu2:     {wer:'pahl', z1:'Hintermühl stand im Bestand eines Hauses.', z2:'Bei den Uferfragen. Hinten.',
+              opts: () => [{t:'Und dann?', zu:'zu3'}]},
+    zu3:     {wer:'pahl', z1:'Dann hat das Haus seine letzte Frage erledigt.', z2:'Im Jahr 806. Mit einem Vermerk.',
+              opts: () => [{t:'Und das Dorf?', zu:'zu4'}]},
+    zu4:     {wer:'pahl', z1:'Stand im erledigten Bestand. Also erledigt.', z2:'Lott sagt: zugeklappt. Stimmt.'},
     angebot: {z1:'Wir könnten sagen, wer das war.', z2:'Pahl findet die Frage unhöflich.',
               opts: () => [
                 {t:'Wer war es denn?', tun: () => { szeneKnoten('dank'); }},

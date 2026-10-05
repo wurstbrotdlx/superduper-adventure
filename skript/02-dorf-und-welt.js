@@ -426,20 +426,23 @@ const DORF_FIGUREN = [
    }},
 
   {key:'lisbeth', name:'Praktikantin Lisbeth Fuhr', kurz:'Praktikantin Fuhr', tx:3, ty:40, opt:'wander', sheet:'chloe', komposit:true,
+   // T5e-2: Fachwoerter aus ihrem eigenen Vorgang (weisungsbefugt, vorlaeufig,
+   // Vermerk, zu Protokoll, nachrichtlich); die Fragen bleiben ihre Marke. Ihr
+   // Antrag in vier Teilen steht als Kaskade im Baum (baumLisbeth, 'antrag').
    // dunkles Haar aus einem lockeren Knoten, grüne Bluse
    gestalt:{hair:'h6', haarFarbe:'#362620', hemd:'kittel', hemdFarbe:'#656848', hose:'hose', schuh:'schuh'},
    grund:[
      {z1:'Man erledigt Monster nicht.', z2:'Man beantwortet sie.'},
      {z1:'Und wenn er einfach nur wartet?', z2:'Das fragt hier keiner gern.'},
-     {z1:'Sechstes Jahr Praktikum, immer noch unbezahlt.', z2:'Es fehlt nur eine Unterschrift.'},
+     {z1:'Sechstes Praktikumsjahr, unbezahlt, vorläufig.', z2:'Es fehlt nur eine Unterschrift.'},
      {z1:'Es fehlt eine weisungsbefugte Person.', z2:'Es gibt sie einfach nicht.'},
-     {z1:'Mein Traum: ein Amt für Monster.', z2:'Nicht gegen sie, für sie.'},
-     {z1:'Ich stelle nur die Fragen, die stören.', z2:'Irgendwer muss ja fragen.'},
+     {z1:'Mein Traum: ein Amt für Monsterbelange.', z2:'Nicht gegen sie, für sie.'},
+     {z1:'Ich frage, wofür niemand zuständig ist.', z2:'Irgendwer muss ja fragen.'},
    ],
    akt:[
      'Ich zähle mit, aber ich frage schon.',
      'Jetzt fragt endlich jemand mit mir.',
-     'Ein leerer Stuhl. Genau mein Problem.',
+     'Ein leerer Stuhl. Keiner weisungsbefugt.',
      'Fragen Sie Nörgel. Er kann das lesen.',
      'Ich komme mit. Ich habe ja gefragt.',
    ],
@@ -448,15 +451,15 @@ const DORF_FIGUREN = [
    // Praktikumsberichts, und den hat nie jemand gelesen.
    zusatz:[{abAkt:3, zeilen:[
      {z1:'Der Fürst hat einen Titel. Die anderen nicht.', z2:'Steht in meinem Bericht.'},
-     {z1:'Seite zwei. Hat nie jemand gelesen.',           z2:'Ist vielleicht auch nichts.'},
+     {z1:'Seite zwei. Hat nie jemand gelesen.',           z2:'Nicht einmal nachrichtlich.'},
    ]},
    {abSchicht:5, zeilen:[
-     {z1:'Sie sind länger hier als die meisten.', z2:'Ich zähle mit. Berufskrankheit.'},
-     {z1:'Fünf Tage. Bei mir sind es sechs Jahre.', z2:'Nicht als Vorwurf. Nur so.'},
+     {z1:'Sie sind länger hier als die meisten.', z2:'Ich zähle mit. Dienstlich.'},
+     {z1:'Fünf Tage. Bei mir sind es sechs Jahre.', z2:'Nicht als Beanstandung. Nur so.'},
    ]},
    {abStufe:7, zeilen:[
-     {z1:'Sie werden besser. Merkt das jemand?', z2:'Ich meine: schriftlich.'},
-     {z1:'Wer bescheinigt Ihnen das eigentlich?', z2:'Bei mir bescheinigt es keiner.'},
+     {z1:'Sie werden besser. Merkt das jemand?', z2:'Ich meine: mit Vermerk.'},
+     {z1:'Wer bescheinigt Ihnen das eigentlich?', z2:'Bei mir ist keiner befugt dazu.'},
    ]},
    {zweig:1, zeilen:[
      {z1:'Sie frieren Dinge ein statt sie zu treffen.', z2:'Das ist fast schon höflich.'},
@@ -464,7 +467,7 @@ const DORF_FIGUREN = [
    ]},
    {abRang:4, zeilen:[
      {z1:'Sie steigen auf. Ich freue mich wirklich.', z2:'Und frage trotzdem weiter.'},
-     {z1:'Wer Sie befördert, könnte auch unterschreiben.', z2:'Nur so ein Gedanke.'},
+     {z1:'Wer Sie befördert, wäre auch weisungsbefugt.', z2:'Nur so ein Gedanke.'},
    ]},
    {phase:'feierabend', zeilen:[
      {z1:'Ich bleibe noch. Der Bericht wächst.', z2:'Seite zwei ist die spannende.'},
@@ -477,11 +480,11 @@ const DORF_FIGUREN = [
    ],
    anlass:{
      crit:[
-       {z1:'Das war laut. Hat er etwas gesagt?', z2:'Ich frage für das Protokoll.'},
+       {z1:'Das war laut. Hat er etwas gesagt?', z2:'Ich frage zu Protokoll.'},
        {z1:'Sie treffen gut. Ich frage trotzdem.', z2:'Beides geht gleichzeitig.'},
      ],
      levelup:[
-       {z1:'Aufstieg. Und wer trägt das ein?', z2:'Bei Ihnen tut es jemand.'},
+       {z1:'Aufstieg. Und wer vermerkt das?', z2:'Bei Ihnen tut es jemand.'},
        {z1:'Herzlichen Glückwunsch. Ehrlich.', z2:'Ich meine das nicht spitz.'},
      ],
      untaetigkeit:[
@@ -491,6 +494,10 @@ const DORF_FIGUREN = [
    }},
 
   {key:'trepp', name:'Zusteller Emil Trepp der Siebte', kurz:'Zusteller Trepp', tx:28, ty:40, opt:'wander', sheet:'fin', komposit:true,
+   // T5e-2: die zweite Zeile traegt sein Fach (Zustellung, Dienstweg,
+   // dienstlich), die erste bleibt die Entschuldigung. Seine Bezeichnung in
+   // drei Teilen steht als Kaskade im Baum (baumTrepp, Frage 'bezeichnung');
+   // was der dritte Teil heisst, weiss er weiter nicht (Kapitel 8, Zuwachs W11).
    // G9: die Dienstmütze ist jetzt eine Mütze und keine blaugraue Frisur mehr.
    // Haar und Mütze teilen sich den einen gemessenen Ton: seine blonde Tolle
    // schaut auf dem Porträt so wenig hervor, dass sie sich im 128er-Raster
@@ -498,15 +505,15 @@ const DORF_FIGUREN = [
    gestalt:{hair:'h2', haarFarbe:'#474c61', hut:'muetze',
             hemd:'hof', hemdFarbe:'#494f63', hose:'hose', schuh:'schuh'},
    grund:[
-     {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Trepp.'},
-     {z1:'Wenn ich kurz stören darf.', z2:'Der Brief ist immer im Sack.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Sieben Generationen Zustellung.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Der Brief liegt zur Zustellung.'},
      {z1:'Wenn ich kurz stören darf.', z2:'Die Adresse ist unleserlich.'},
      {z1:'Wenn ich kurz stören darf.', z2:'Ich starre sie schon ewig an.'},
-     {z1:'Wenn ich kurz stören darf.', z2:'Vielleicht heute lesbar?'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Vielleicht heute zustellbar?'},
      {z1:'Wenn ich kurz stören darf.', z2:'Zustellung bleibt Zustellung.'},
    ],
    akt:[
-     'Ein Brief im Sack, wie immer.',
+     'Ein Brief zur Zustellung. Wie immer im Sack.',
      'Alle reden vom Amt, ich trage den Brief.',
      'Ein leerer Stuhl, ein Brief, der bleibt.',
      'Sieben Generationen, und es ist ein Name.',
@@ -516,12 +523,12 @@ const DORF_FIGUREN = [
    // Reich jemand, der zeichnet. Trepp trägt Post aus, weil ihm das nie jemand
    // gesagt hat, und er sagt es hier auch nicht, er liest nur seinen Ausweis vor.
    zusatz:[{abAkt:3, zeilen:[
-     {z1:'Wenn ich kurz stören darf.',               z2:'Meine Bezeichnung ist sehr lang.'},
-     {z1:'Schattenlandzustellungsbevollmächtigter.', z2:'Steht so im Ausweis. Ehrlich.'},
+     {z1:'Wenn ich kurz stören darf.',               z2:'Meine Amtsbezeichnung ist lang.'},
+     {z1:'Schattenlandzustellungsbevollmächtigter.', z2:'Steht im Dienstausweis. Ehrlich.'},
    ]},
    {abSchicht:7, zeilen:[
      {z1:'Wenn ich kurz stören darf.', z2:'Sie sind länger da als üblich.'},
-     {z1:'Wenn ich kurz stören darf.', z2:'Ich frage jeden. Wirklich jeden.'},
+     {z1:'Wenn ich kurz stören darf.', z2:'Ich frage jeden. Dienstlich.'},
    ]},
    {abStufe:10, zeilen:[
      {z1:'Sie könnten weit gehen. Weiter als ich.', z2:'Ich gehe nur im Dorf.'},
@@ -532,12 +539,12 @@ const DORF_FIGUREN = [
      {z1:'Wenn ich kurz stören darf.', z2:'Schnell hilft nicht bei weit.'},
    ]},
    {abRang:7, zeilen:[
-     {z1:'Sie haben jetzt eine Bezeichnung.', z2:'Meine ist länger. Leider.'},
+     {z1:'Sie haben jetzt eine Amtsbezeichnung.', z2:'Meine ist länger. Leider.'},
      {z1:'Wenn ich kurz stören darf.', z2:'Bezeichnungen sagen wenig.'},
    ]},
    {phase:'feierabend', zeilen:[
      {z1:'Wenn ich kurz stören darf.', z2:'Ich gehe gleich zum Gasthaus.'},
-     {z1:'Der Sack kommt mit. Immer.', z2:'Auch abends. Auch sonntags.'},
+     {z1:'Der Sack kommt mit. Dienstweg ist Dienstweg.', z2:'Auch abends. Auch sonntags.'},
    ]},
    {abAkt:3, zeilen:[
      {z1:'Mein Vater hat mir fünf Wörter gesagt.', z2:'Bei der Übergabe. Nur die.'},
@@ -547,14 +554,14 @@ const DORF_FIGUREN = [
    anlass:{
      untaetigkeit:[
        {z1:'Wenn ich kurz stören darf.', z2:'Sie stehen. Ich auch. Anders.'},
-       {z1:'Warten kann ich gut.', z2:'Sieben Generationen Übung.'},
+       {z1:'Warten kann ich gut. Zustellen auch.', z2:'Sieben Generationen Übung.'},
      ],
      goldfund:[
        {z1:'Wenn ich kurz stören darf.', z2:'Gold wiegt. Post auch.'},
-       {z1:'Das trage ich nicht mit.', z2:'Ich habe schon etwas dabei.'},
+       {z1:'Das trage ich nicht mit.', z2:'Ich trage schon eine Zustellung.'},
      ],
      crit:[
-       {z1:'Entschuldigung. Das war laut.', z2:'Ich bin nur vorbeigekommen.'},
+       {z1:'Entschuldigung. Das war laut.', z2:'Ich bin nur dienstlich hier.'},
        {z1:'Wenn ich kurz stören darf.', z2:'Nein? Dann später.'},
      ]
    }},
@@ -852,6 +859,9 @@ const DORF_FIGUREN = [
   // halber Stand schlimmer ist als beide Antworten. Wer das Blatt für die
   // bessere Zeichnung hält, streicht hier ein Wort.
   {key:'fass', name:'Wirt Bruno Fass, Gasthaus "Zum Letzten Stempel"', kurz:'Wirt Fass', tx:24, ty:38, opt:'wander', sheet:'bruno',
+   // T5e-2: er bleibt der Wirt und redet Du; Amtsdeutsch nur dort, wo das
+   // Gasthaus ans Amt grenzt (der Deckel als Vorgang, Kaskade in baumFass,
+   // Frage 'deckel'). Mehr waere nicht die Figur, siehe phase-t5-ton.md, 5g.
    // Der Einzige des Ensembles ohne komposit:true, und das ist eine
    // Entscheidung, keine Lücke. Das Pack hat einen fertigen Wirt, und er heißt
    // Bartender_Bruno — der Wirt dieses Dorfes heißt Bruno Fass. Der Name stand
@@ -878,7 +888,7 @@ const DORF_FIGUREN = [
      {z1:'Zum Letzten Stempel schließt nie zu früh.', z2:'Bleib, so lang du willst.'},
      // T1: waermer, nicht laenger. Er ueberredet nie, er haelt einen Platz frei.
      {z1:'Alle hauen ab, bevor der Käse kommt.', z2:'Und der Käse ist gut.'},
-     {z1:'Einmal bleibt wer bis zum Schluss.', z2:'Ich halte einen Platz frei.'},
+     {z1:'Einmal bleibt wer bis zum letzten Stempel.', z2:'Ich halte einen Platz frei.'},
      {z1:'Hier redet sich manches leichter.', z2:'Bei Suppe und Bier.'},
      {z1:'Kaum eingekehrt, schon wieder Dienst.', z2:'So ein Jammer.'},
    ],
@@ -906,7 +916,7 @@ const DORF_FIGUREN = [
    ]},
    {abSchicht:10, zeilen:[
      {z1:'Zehn Tage. Du hältst durch.', z2:'Setz dich mal richtig hin.'},
-     {z1:'Du warst schon öfter hier.', z2:'Merke ich mir. Berufssache.'},
+     {z1:'Du warst schon öfter hier.', z2:'Steht auf dem Deckel. Vermerkt.'},
    ]},
    {abStufe:7, zeilen:[
      {z1:'Du siehst kräftiger aus.', z2:'Iss trotzdem was.'},
@@ -945,6 +955,9 @@ const DORF_FIGUREN = [
    }},
 
   {key:'lott', name:'Herr Lott, auf der Bank am Dorfplatz', kurz:'Herr Lott', tx:5, ty:54, opt:'fest',
+   // T5e-2: ein Wort mehr je Zeile, nie ein Satz mehr: er bleibt der Kuerzere
+   // der Bank (Wechselrhythmus, Weltbibel Formregel "Die Laenge ist eine
+   // Sprachmarke"). Fachwoerter, wo er ohnehin das Amt zitiert.
    // Haarreste und geflickter brauner Mantel, gemessen an der linken Hälfte des
    // Doppelporträts (Motiv 11). Bis G8 trug er gar keine Kleiderebene. G10: die
    // Werte kommen jetzt aus der 128er-Tafelfassung, die das Spiel wirklich lädt,
@@ -960,9 +973,9 @@ const DORF_FIGUREN = [
    // billigste Dauervorfuehrung der neuen Formregel, die dieses Spiel hat.
    grund:[
      {z1:'Der Neue. Wieder unterwegs.', z2:'Ich sitze. Zuständig für nichts.'},
-     {z1:'Der Neue. Schlägt was kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
-     {z1:'Der Neue läuft. Ich sitze.', z2:'Manche stehen auf. Ich nicht.'},
-     {z1:'Der Neue. Mutig.', z2:'Nicht mein Bereich.'},
+     {z1:'Der Neue. Schlägt einen Vorgang kurz und klein.', z2:'Sauber. Nichts bleibt stehen.'},
+     {z1:'Der Neue läuft. Ich sitze. Dienstlich.', z2:'Manche stehen auf. Ich nicht.'},
+     {z1:'Der Neue. Mutig.', z2:'Nicht mein Bereich. Unzuständig.'},
      {z1:'Der Neue. Klatschnass.', z2:'Ich bleibe trocken. Prinzip.'},
      {z1:'Der Neue. Fragen Sie Herrn Pahl.', z2:'Der hat mehr Worte als ich.'},
    ],
@@ -978,7 +991,7 @@ const DORF_FIGUREN = [
    // da sind. Ob sie Vorgänge sind, bleibt offen (Weltbibel Kapitel 16).
    zusatz:[{abAkt:3, zeilen:[
      {z1:'Wir standen nie in einem Bestand.', z2:'Pahl sagt, das sei ein Glück.'},
-     {z1:'Nicht geführt, also noch da.',     z2:'Pahl nickt. Ausnahmsweise.'},
+     {z1:'Nie im Bestand geführt, also noch da.', z2:'Pahl nickt. Ausnahmsweise.'},
    ]},
    {abSchicht:12, zeilen:[
      {z1:'Sie fragen zum zweiten Mal.', z2:'Wir sitzen hier. Wir merken das.'},
@@ -994,14 +1007,14 @@ const DORF_FIGUREN = [
    ]},
    {abRang:6, zeilen:[
      {z1:'Jetzt was Amtliches.', z2:'Wir zwei haben gar nichts.'},
-     {z1:'Ein Titel. Sehr fein.', z2:'Pahl gratuliert. Ich nicke.'},
+     {z1:'Ein Titel. Sehr fein.', z2:'Pahl gratuliert. Zu Protokoll.'},
    ]},
    {phase:'antritt', zeilen:[
      {z1:'Früh unterwegs. Wie immer.', z2:'Wir sitzen schon länger da.'},
      {z1:'Morgen. Von uns beiden.', z2:'Pahl sagt es selten selbst.'},
    ]},
    {abAkt:5, zeilen:[
-     {z1:'Wir haben aufgeräumt.', z2:'Steine sortiert. Das war es.'},
+     {z1:'Wir haben aufgeräumt. Ohne Veranlassung.', z2:'Steine sortiert. Das war es.'},
      {z1:'Man macht das so am Ende.', z2:'Pahl hat rechts gemacht.'},
    ]}
    ],
@@ -1009,7 +1022,7 @@ const DORF_FIGUREN = [
      crit:[
        {z1:'Direkt ins Aktenzeichen.', z2:'Pahl schweigt. Wie erwartet.'},
        {z1:'Kein Zufall. Glaub ich.', z2:'Pahl, klatsch doch mal mit.'},
-       {z1:'Ein Treffer fürs Buch.', z2:'Pahl nickt. Immerhin das.'},
+       {z1:'Ein Treffer fürs Buch. Vermerkt.', z2:'Pahl nickt. Immerhin das.'},
      ],
      levelup:[
        {z1:'Befördert. Von wem?', z2:'Pahl weiß es auch nicht.'},
@@ -1034,12 +1047,12 @@ const DORF_FIGUREN = [
      kammerAbbruch:[
        {z1:'Nichts gefunden. Passiert.', z2:'Pahl zählt trotzdem mit.'},
        {z1:'Leere Kammer. Voller Rückweg.', z2:'Pahl seufzt lauter als ich.'},
-       {z1:'Leer ist auch eine Antwort.', z2:'Pahl widerspricht. Natürlich.'},
+       {z1:'Leer ist auch eine Antwort.', z2:'Pahl legt Widerspruch ein.'},
      ],
      untaetigkeit:[
        {z1:'Der Neue steht. Wie ich.', z2:'Pahl findet das gruselig.'},
        {z1:'Bank ist frei. Willkommen.', z2:'Pahl rückt trotzdem nicht.'},
-       {z1:'Rumstehen ist mein Job.', z2:'Pahl übernimmt notfalls.'},
+       {z1:'Rumstehen ist mein Dienstauftrag.', z2:'Pahl übernimmt notfalls.'},
      ],
      // SZ2: der Nachklang der Szenen 2 und 4. Er faellt genau einmal, weil
      // npcSprechen() letzterAnlass beim Lesen verbraucht.
@@ -1062,6 +1075,9 @@ const DORF_FIGUREN = [
    }},
 
   {key:'pahl', name:'Herr Pahl, auf der Bank am Dorfplatz', kurz:'Herr Pahl', tx:8, ty:54, opt:'fest',
+   // T5e-2: der Ausfuehrlichere bekommt die Fachwoerter (Bewilligung,
+   // ordnungsgemaess, Nebenbestimmung, Bestand) und die Kaskade der Bank: wie
+   // man ein Dorf zuklappt, in vier Zuegen (baumBank, Frage 'zuklappen').
    // rotblond ins Weiße, grauer Mantel mit falschen Knöpfen, gemessen an der
    // rechten Hälfte desselben Doppelporträts. Die beiden unterscheiden sich im
    // Dorf am Mantel, nicht am Haar — auf dem Bild sind beide fast kahl.
@@ -1070,7 +1086,7 @@ const DORF_FIGUREN = [
    // einen Halbsatz mehr als noetig, und in seiner Antwort kommt Lott vor. Die
    // andere Haelfte der Bank, siehe den Kommentar dort.
    grund:[
-     {z1:'Da ist er wieder, unser Neuer. Unterwegs.', z2:'Ich sehe gern zu. Beruflich.'},
+     {z1:'Da ist er wieder, unser Neuer. Unterwegs.', z2:'Ich sehe gern zu. Dienstlich.'},
      {z1:'Sie kämpfen, und ich sehe dabei zu.', z2:'Zwei Berufe. Meiner ist leicht.'},
      {z1:'Die Bank hält warm, wenn man ihr Zeit gibt.', z2:'Ich gebe ihr sehr viel Zeit.'},
      {z1:'So habe ich schon viele genannt, wissen Sie.', z2:'Der Name bleibt. Sie wechseln.'},
@@ -1079,16 +1095,16 @@ const DORF_FIGUREN = [
    ],
    akt:[
      'Wieder einer, der alles ernst nimmt. Schön.',
-     'Ein Fest ohne Erlaubnis. Wie hübsch.',
+     'Ein Fest ohne Bewilligung. Wie hübsch.',
      'Ein Platz bleibt leer, und das fällt auf.',
-     'Ein Brief, den keiner lesen will. Schade.',
+     'Ein Brief, den keiner zustellt. Schade.',
      'Es wird still hier. Auffällig still.',
    ],
    // W11: dieselbe Sache von der anderen Seite der Bank. Hintermühl ist nicht
    // niedergebrannt worden, es ist zugeklappt worden, und das ist das Stillste,
    // was in dieser Welt passieren kann.
    zusatz:[{abAkt:3, zeilen:[
-     {z1:'Man hat unser Dorf zugeklappt, einfach so.', z2:'Lott spricht nicht darüber.'},
+     {z1:'Man hat unseren Bestand geschlossen, einfach so.', z2:'Lott spricht nicht darüber.'},
      {z1:'Kein Feuer. Ein Aktendeckel.',   z2:'Lott war auch dabei.'},
    ]},
    {abSchicht:12, zeilen:[
@@ -1105,14 +1121,14 @@ const DORF_FIGUREN = [
    ]},
    {abRang:6, zeilen:[
      {z1:'Man redet Sie jetzt mit Titel an.', z2:'Uns redet gar niemand an.'},
-     {z1:'Sehr schön für Sie, und das ehrlich.', z2:'Lott meint das auch so.'},
+     {z1:'Sehr schön für Sie, und das ehrlich.', z2:'Lott auch. Zu Protokoll.'},
    ]},
    {phase:'feierabend', zeilen:[
      {z1:'Die Sonne geht, und wir bleiben sitzen.', z2:'Lott zuerst. Er sitzt näher.'},
      {z1:'Abends redet es sich einfach besser.', z2:'Da fragt niemand mehr nach.'},
    ]},
    {abAkt:5, zeilen:[
-     {z1:'Wir haben damals die Steine gelegt.', z2:'Ordentlich. Wie es sich gehört.'},
+     {z1:'Wir haben die Steine gelegt, ordnungsgemäß.', z2:'Ohne Auftrag. Gehört sich so.'},
      {z1:'Danach sind wir losgegangen, wir beide.', z2:'Und dann haben wir uns gesetzt.'},
    ]}
    ],
@@ -1123,18 +1139,18 @@ const DORF_FIGUREN = [
        {z1:'Kritisch, und zwar sehr kritisch sogar.', z2:'Notieren Sie das, Lott.'},
      ],
      levelup:[
-       {z1:'Eine Stufe höher, und das ist zu Recht.', z2:'Lott zählt bestimmt falsch.'},
+       {z1:'Eine Stufe höher, und zwar ordnungsgemäß.', z2:'Lott zählt bestimmt falsch.'},
        {z1:'Sie wachsen, und ich sitze weiter hier.', z2:'Lott klatscht schon wieder.'},
        {z1:'Stufenaufstieg. Herzlichen Glückwunsch.', z2:'Lott, klatschen Sie leiser.'},
      ],
      ultimate:[
        {z1:'Das war groß, und ich sage das selten.', z2:'Lott hat die Augen zugemacht.'},
        {z1:'Ein großer Zauber, wirklich beeindruckend.', z2:'Lott, aufwachen. Das war gut.'},
-       {z1:'So viel Kraft für so wenig Feind, finde ich.', z2:'Lott findet das übertrieben.'},
+       {z1:'So viel Kraft für so wenig Feind, finde ich.', z2:'Lott: unverhältnismäßig.'},
      ],
      fluch:[
        {z1:'Ein Fluch mehr, und er passt zu Ihnen.', z2:'Lott nennt das nur konsequent.'},
-       {z1:'Schon wieder ein Haken, und keiner liest ihn.', z2:'Lott freut sich klammheimlich.'},
+       {z1:'Eine Nebenbestimmung mehr. Keiner liest sie.', z2:'Lott freut sich klammheimlich.'},
        {z1:'Ein Fluch, an den man sich gewöhnen kann.', z2:'Lott gewöhnt sich nie.'},
      ],
      goldfund:[
@@ -1145,7 +1161,7 @@ const DORF_FIGUREN = [
      kammerAbbruch:[
        {z1:'Nichts gefunden, und auch das ist etwas.', z2:'Lott sieht das anders.'},
        {z1:'Leer herausgekommen, aber ehrlich immerhin.', z2:'Lott nennt das Verschwendung.'},
-       {z1:'Keine Beute, und das kommt öfter vor.', z2:'Lott führt da eine Liste.'},
+       {z1:'Keine Beute, und das kommt öfter vor.', z2:'Lott vermerkt es. Listenweise.'},
      ],
      untaetigkeit:[
        {z1:'Der Neue steht, und ich sitze dabei.', z2:'Lott findet das gemütlich.'},
