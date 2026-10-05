@@ -776,6 +776,9 @@ const DORF_FIGUREN = [
    }},
 
   {key:'pommer', name:'Materialausgabe Herr Pommer', kurz:'Herr Pommer', tx:11, ty:54, opt:'wander', sheet:'katy', komposit:true,
+   // T5e-3: Fachwoerter, aber kein Wort mehr je Satz: er bleibt kurz (T1,
+   // ausdruecklich), denn sein Gag ist die falsche Betonung eines kurzen Satzes.
+   // Die Liste in drei Teilen als Kaskade aus kurzen Saetzen (baumPommer, 'fuehren').
    // kurzes blondes Haar (h1 statt der Tolle h2), Khakikittel. G10: #e1ac62
    // statt #b48651. Die Standardzone reichte bis auf seine hohe Stirn, und
    // Blond und Haut sind derselbe Farbton — der Familientest konnte sie nicht
@@ -787,13 +790,13 @@ const DORF_FIGUREN = [
    grund:[
      {z1:'Auf dem Antrag steht Eimer. Nicht Kanne.', z2:'Eimer ist Eimer. Fertig.'},
      {z1:'Auf dem Antrag steht Montag. Nicht heute.', z2:'Kommen Sie am Montag wieder.'},
-     {z1:'Wortlaut ist Wortlaut. Sonst nichts.', z2:'Ich lese nur vor.'},
+     {z1:'Wortlaut ist Wortlaut. Sonst nichts.', z2:'Ich lese nur vor. Vom Vordruck.'},
      {z1:'Steht da leicht, geht leicht heraus.', z2:'Nicht schwer. Leicht.'},
      {z1:'Ich betone nur, was dasteht.', z2:'Manchmal falsch betont.'},
-     {z1:'Kein Antrag, kein Material. So steht es.', z2:'So steht es.'},
+     {z1:'Kein Antrag, kein Material. So steht es.', z2:'So steht es. Im Bestand.'},
    ],
    akt:[
-     'Antrag korrekt, Ausgabe korrekt. Nächster.',
+     'Antrag und Ausgabe ordnungsgemäß. Nächster.',
      'Zwirns Antrag fehlt. Kein Fest ohne Antrag.',
      'Wer unterschreibt jetzt meine Freigaben?',
      'Ein Sack, kein Antrag dazu. Unglaublich.',
@@ -803,15 +806,15 @@ const DORF_FIGUREN = [
    // Liste ist leer. Er ist sehr stolz auf die Liste.
    zusatz:[{abAkt:2, zeilen:[
      {z1:'Ich führe eine Liste. Seit Jahren.',  z2:'Sie ist leer. Das ist die Liste.'},
-     {z1:'Nichts ohne Antrag ausgegeben. Nie.', z2:'Steht alles nicht darin.'},
+     {z1:'Nichts ohne Antrag ausgegeben. Nie.', z2:'Nichts darin. Der Nachweis.'},
    ]},
    {abSchicht:7, zeilen:[
-     {z1:'Sie stehen in meiner Liste. Zweimal.', z2:'Beide Male mit Antrag.'},
-     {z1:'Sie holen ordentlich ab.', z2:'Das sage ich nicht oft.'},
+     {z1:'Sie stehen in meiner Liste. Zweimal.', z2:'Beide Male mit Antrag. Vermerkt.'},
+     {z1:'Sie holen ordnungsgemäß ab.', z2:'Das sage ich nicht oft.'},
    ]},
    {abStufe:9, zeilen:[
      {z1:'Sie tragen mehr. Steht das im Antrag?', z2:'Ich frage das jeden.'},
-     {z1:'Größere Ausrüstung, größerer Antrag.', z2:'So ist die Reihenfolge.'},
+     {z1:'Größere Ausrüstung, größerer Antrag.', z2:'So ist der Dienstweg.'},
    ]},
    {skill:'str', ab:8, zeilen:[
      {z1:'Sie tragen jetzt schwer.', z2:'Auf dem Antrag stand leicht.'},
@@ -822,7 +825,7 @@ const DORF_FIGUREN = [
      {z1:'Ihr Titel steht jetzt oben drauf.', z2:'Der Wortlaut bleibt gleich.'},
    ]},
    {phase:'feierabend', zeilen:[
-     {z1:'Ausgabe schließt. Der Antrag nicht.', z2:'Den können Sie immer stellen.'},
+     {z1:'Ausgabe schließt. Der Antrag nicht.', z2:'Den stellen Sie fristgerecht.'},
      {z1:'Ich räume ein. Sie räumen ab.', z2:'So war das nicht gemeint.'},
    ]},
    {merker:'hatGekocht', zeilen:[
@@ -840,16 +843,16 @@ const DORF_FIGUREN = [
    ],
    anlass:{
      goldfund:[
-       {z1:'Ein Fund. Steht der im Antrag?', z2:'Nein. Also nicht meiner.'},
+       {z1:'Ein Fund. Steht der im Antrag?', z2:'Nein. Also nicht mein Bestand.'},
        {z1:'Gold gebe ich nicht aus.', z2:'Ich gebe aus, was dasteht.'},
      ],
      fluch:[
        {z1:'Sie haben unterschrieben. Wo genau?', z2:'Das würde mich interessieren.'},
-       {z1:'Kleingedrucktes ist auch Wortlaut.', z2:'Sogar besonders.'},
+       {z1:'Kleingedrucktes ist auch Wortlaut.', z2:'Nebenbestimmung heißt das.'},
      ],
      untaetigkeit:[
        {z1:'Sie stehen vor der Ausgabe.', z2:'Ohne Antrag bleibt sie zu.'},
-       {z1:'Ich warte gern. Beruflich.', z2:'Sie offenbar auch.'},
+       {z1:'Ich warte gern. Dienstlich.', z2:'Sie offenbar auch.'},
      ]
    }},
 
@@ -1200,6 +1203,9 @@ const DORF_FIGUREN = [
   // in npcSchildFlush() faengt gleiche Zeilen ab, nicht zwei Figuren, die
   // praktisch am selben Punkt stehen.
   {key:'nieselbeck', name:'Wetterbeauftragter Ferdinand Nieselbeck', kurz:'Herr Nieselbeck', tx:21, ty:42, opt:'fest',
+   // T5e-3: wenige Fachwoerter (Vordruck, Veranlassung, dienstlich); seine
+   // Kuerzel-Familie und die Kaskade der Spalten standen seit T1. Er bleibt der
+   // kuerzeste Sprecher, das ist die Marke (Kapitel 8).
    // G9: die grüne Wetterdienstmütze ist jetzt eine Mütze und deckt sein Haar
    // zu, wie auf dem Bild. Wie bei Trepp teilen sich Haar und Mütze den einen
    // gemessenen Ton — sein graues Haar schaut zu wenig hervor, die
@@ -1219,10 +1225,10 @@ const DORF_FIGUREN = [
    grund:[
      {z1:'Gemeldet wird: TNM negativ.', z2:'Wie gestern. Wie immer.'},
      {z1:'Mg. null. Da. entfällt. Ba. trocken.', z2:'Anm.: keine. Alles bereit.'},
-     {z1:'Eimer: vorhanden. Messstab: vorhanden.', z2:'Für den Fall. Seit immer.'},
+     {z1:'Eimer: vorhanden. Messstab: vorhanden. Vermerkt.', z2:'Für den Fall. Seit immer.'},
      {z1:'Stelle: nie unbesetzt. Dreiundvierzig Jahre.', z2:'Das sagt sonst niemand.'},
      {z1:'Wolken: vorhanden. Vlg.: fehlt.', z2:'Deshalb dürfen sie nicht.'},
-     {z1:'Sie waren im Frostkamm? Dort liegt etwas.', z2:'Von mir. Auf Eis.'},
+     {z1:'Sie waren im Frostkamm? Dort liegt etwas.', z2:'Meine Veranlassung. Auf Eis.'},
    ],
    akt:[
      'Willkommen. Wetterlage: unverändert schön.',
@@ -1253,8 +1259,8 @@ const DORF_FIGUREN = [
      {z1:'Guten Morgen. Der Eimer steht.', z2:'Wie gestern. Wie immer.'},
    ]},
    {abAkt:3, zeilen:[
-     {z1:'Ich führe zwei Tabellen. Eine ist leer.', z2:'Die leere ist die wichtige.'},
-     {z1:'Die Kopfzeile ziehe ich nach.', z2:'Jedes Jahr. Tinte verblasst.'},
+     {z1:'Zwei Tabellen, nach Vordruck. Eine ist leer.', z2:'Die leere ist die wichtige.'},
+     {z1:'Die Kopfzeile ziehe ich nach. Dienstlich.', z2:'Jedes Jahr. Tinte verblasst.'},
    ]},
    // LV11-13: nach dem Eimer. Die Veranlassung ist weitergeleitet, und das ist
    // mehr, als in dreiundvierzig Jahren je in seiner Spalte stand. Der Hut
@@ -1282,6 +1288,9 @@ const DORF_FIGUREN = [
   // Sie bringt die Welt ins Dorf: ueber sie erfaehrt der Spieler zum ersten Mal,
   // dass Oben ein Ort ist. Deshalb abAkt:2 und keine Aktzeile fuer Akt I.
   {key:'umlauf', name:'Reichsbotin Kordula Umlauf', kurz:'Reichsbotin Umlauf', tx:26, ty:42, opt:'fest', abAkt:2,
+   // T5e-3: Fachwoerter aus dem Reich (Umlauf, Dienstweg, nachrichtlich,
+   // Schriftstuecke), keine Kaskade: ihr Gag ist der Abbruch, und ein Abbruch
+   // braucht keine Laenge (T1). Das Werkzeug fuehrt sie unter Sprachmarke amtlich.
    // rotes Haar, aus dem Band geflogen (h5, langes offenes Haar, statt des
    // Seitenscheitels h4 — der war die rothaarige Vorlage und nicht die Form).
    // Am Kragen liegt der graue Reiseumhang, nicht die blaue Uniform darunter:
@@ -1295,13 +1304,13 @@ const DORF_FIGUREN = [
      // ungeduldiger, und das ist bei ihr dasselbe wie eine Sprachmarke.
      {z1:'Oben ist sauber, leise, hell, und dann,', z2:'Verzeihung. Ich muss weiter.'},
      {z1:'Elf Stellen noch, zwölf mit dem Tor, und', z2:'Nein, dreizehn. Muss los.'},
-     {z1:'Die Rohrpost geht nicht. Seit immer.', z2:'Ich laufe. Geht auch.'},
+     {z1:'Die Rohrpost geht nicht. Seit immer.', z2:'Ich laufe. Dienstweg zu Fuß.'},
      {z1:'Ich muss weiter. War nett bei Ihnen.', z2:'Wirklich. Sehr nett.'},
    ],
    akt:[
      '',
      'Sie fragen nach Oben? Oben ist eine Stadt.',
-     'Ihre Stelle ist ausgeschrieben. Jedes Jahr.',
+     'Ihre Stelle ist jedes Jahr im Umlauf.',
      'Ich habe erzählt, dass es hier vorangeht.',
      'Diesmal komme ich mit. Nur bis zum Tor.',
    ],
@@ -1316,11 +1325,11 @@ const DORF_FIGUREN = [
    ]},
    {skill:'agi', ab:7, zeilen:[
      {z1:'Sie sind schnell. Wir zwei also.', z2:'Schnell und trotzdem nie fertig.'},
-     {z1:'Laufen ist kein Beruf, sagt man.', z2:'Doch. Ist es. Meiner.'},
+     {z1:'Laufen ist kein Beruf, sagt man.', z2:'Doch. Ist es. Laut Dienstweg.'},
    ]},
    {abRang:6, zeilen:[
-     {z1:'Ihr Titel wird oben eingetragen.', z2:'Von jemandem. Irgendwann.'},
-     {z1:'Ich melde so etwas gern weiter.', z2:'Erzählen ist mein Beruf.'},
+     {z1:'Ihr Titel wird oben vermerkt.', z2:'Von jemandem. Irgendwann.'},
+     {z1:'Ich gebe so etwas gern nachrichtlich weiter.', z2:'Erzählen ist mein Beruf.'},
    ]},
    {phase:'feierabend', zeilen:[
      {z1:'Ich muss weiter. War nett bei Ihnen.', z2:'Ich bin dann mal weg.'},
@@ -1333,11 +1342,11 @@ const DORF_FIGUREN = [
    ],
    anlass:{
      levelup:[
-       {z1:'Aufstieg! Das erzähle ich weiter.', z2:'Nicht böse gemeint. Nur so.'},
+       {z1:'Aufstieg! Das geht in den Umlauf.', z2:'Nicht böse gemeint. Nur so.'},
        {z1:'Sie kommen voran. Wirklich.', z2:'Ich komme auch voran. Anders.'},
      ],
      goldfund:[
-       {z1:'Gold! Das trage ich nicht.', z2:'Ich trage nur Papier.'},
+       {z1:'Gold! Das trage ich nicht.', z2:'Ich trage nur Schriftstücke.'},
        {z1:'Schwer wird man langsam.', z2:'Ich bleibe leicht. Beruflich.'},
      ],
      untaetigkeit:[
@@ -1439,13 +1448,14 @@ const DORF_FIGUREN = [
   // erst nach dem Schluss (daWenn); seine Kachel im Dorf ist deshalb ein Anker
   // ohne Bedeutung. Gestalt: Hofkleidung wie Vorblatt, graues Haar.
   {key:'randbemerkung', name:'Erzhalter des Hauses Randbemerkung', kurz:'Erzhalter Randbemerkung', tx:11, ty:36, opt:'fest',
+   // T5e-3: ein Wort (Bestand); dreizehn Zeilen, nach dem Schluss, kein Baum.
    abAkt:5, daWenn: () => vorgangGeschlossen(), nurInnen:true,
    // h2 traegt sonst niemand; mit h3 saehe er aus wie Vorblatt mit anderem Haar.
    gestalt:{hair:'h2', haarFarbe:'#71825f', hemd:'hof', hemdFarbe:'#171717', hose:'hof', schuh:'schuh'},
    grund:[
      {z1:'Ich sehe aus dem Fenster. Zum ersten Mal.',  z2:'Da unten ist ein Fluss.'},
      {z1:'Die Lagen sind ab. Ich bin leicht.',          z2:'Ich weiß nicht, wohin damit.'},
-     {z1:'Haus Randbemerkung. Vierhundert Jahre.',      z2:'Seit heute Nachmittag: eines.'},
+     {z1:'Haus Randbemerkung. Vierhundert Jahre Bestand.', z2:'Seit heute Nachmittag: eines.'},
      {z1:'Man hat mich gedreht, wenn jemand sprach.',   z2:'Jetzt drehe ich mich selbst.'},
      {z1:'Unten liegt Konfetti. Bis zu den Knien.',     z2:'Es war einmal unser Bestand.'},
      {z1:'Sie kommen aus Vordermühl. Dem ersten Haus.', z2:'Es gibt kein erstes Haus mehr.'},
