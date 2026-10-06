@@ -96,7 +96,7 @@ braucht.
 
 **Gemessen** (06.10.2026, ohne Grafik, zeitweise zwei Läufe parallel und vier
 Kerne unter Dauerlast): vom Tastendruck bis `gespraechOffen` 7 bis 132 ms,
-meist unter 30. In 2 von 16 Läufen ging die Tafel **auch nach zwei Sekunden
+meist unter 30. In 2 von 28 Läufen ging die Tafel **auch nach zwei Sekunden
 nicht auf**, einmal beim zweiten F („F oeffnet erneut"), einmal beim letzten
 („F oeffnet vor dem Weggehen"). Die Wartezeit war also nicht die Ursache: an
 dieser Stelle wurde F gar nicht angenommen.
@@ -109,12 +109,24 @@ danach über mehrere Sekunden F, allein nach dem Abschieds-F liegen 2600 ms
 Wartezeit. Unter Last vergeht zwischen zwei Schritten mehr Spielzeit. Der
 Diagnoseschnappschuss beim zweiten Fehlgriff, zwei Sekunden nach dem Druck:
 Kontextaktion „Ansprechen" (`aktArt` 11), Zwirn 39 px rechts und 29 px unter
-dem Spieler, rund 49 px, also in Reichweite. Belegt ist damit: im Moment des
-Drucks hatte F kein Gegenüber, sonst stünde die Tafel offen. Dass Zwirn in
-genau diesem Moment außerhalb der 58 px stand, ist bis hier ein Schluss und
-kein Messwert; eine zweite Diagnose, die den Zustand vor dem Druck festhält,
-läuft. Das Spiel tut hier, was es soll: wer F drückt, steht neben der Figur.
-Der Fehler lag im Lauf.
+dem Spieler, rund 49 px, also in Reichweite. Belegt ist damit nur: im Moment
+des Drucks hatte F kein Gegenüber, sonst stünde die Tafel offen.
+
+**Nachgestellt** (06.10.2026, Wegwerfskript mit dem Aufbau des Laufs): Zwirn
+an den Anker, Spieler 24 px daneben wie `hin()`, dann 2600 ms wie nach dem
+Abschieds-F.
+
+| Fall | im Moment des Drucks | nach F |
+|---|---|---|
+| Zwirn steht | 25 px, `aktObj` Zwirn | Tafel offen |
+| Zwirn wandert mit 14 px/s vom Spieler weg | 61 px, `aktObj` leer | Tafel zu; Zwirn ist inzwischen am Rand seines Umkreises umgekehrt und steht wieder 40 px nah |
+
+Der zweite Fall ist der Schnappschuss aus dem Lauf: danach in Reichweite,
+Tafel zu. Dass dort „Ansprechen" stand, obwohl nichts angeboten war, liegt
+an `scanAktion()`: es setzt `aktArt` und `aktObj` je Frame zurück, `aktTxt`
+nicht. Für das Spiel ist das folgenlos (`fuehreAktion()` fragt `aktArt`), für
+eine Diagnose ist es eine Falle. Das Spiel tut hier, was es soll: wer F
+drückt, steht neben der Figur. Der Fehler lag im Lauf.
 
 **Gebaut:** `fDruecken(page, key)` stellt den Spieler vor jedem F neben die
 Figur, wartet, bis die Kontextaktion auf ihr liegt, drückt F und wartet auf
@@ -149,5 +161,7 @@ auch dann, wenn F nie gegriffen hatte. Der Lauf zählt damit 91 statt 89 Zeilen.
 | `node tools/ton-messlauf.mjs` | Figurenrede 2244 Zeilen, 17 Prozent, Dorffiguren 19, unverändert; neue Kennzeichnung wie in Abschnitt 1 |
 | `node tools/ton-messlauf.mjs --eichung` | 42 von 43, 0 Fehlalarme, unverändert |
 | `node tools/mitteilung-pruef.mjs` | 36 von 36 |
-| `node tools/gespraech-pruef.mjs`, alte Fassung mit Diagnose, 16 Läufe | 2 Fehlgriffe bei F (Abschnitt 5), sonst je 88 von 90; die zwei roten Zeilen (zweites Porträt, Nörgels Blatt) brauchen die Grafik |
+| `node tools/gespraech-pruef.mjs`, alte Fassung, 28 Läufe | 2 Fehlgriffe bei F (Abschnitt 5), sonst je 88 von 90; die zwei roten Zeilen (zweites Porträt, Nörgels Blatt) brauchen die Grafik |
+| davon Diagnoseschleife Lauf 9 bis 20, rund die Hälfte unter Dauerlast auf vier Kernen | 1 Fehlgriff in Lauf 13 (unter Last), danach keiner; abgebrochen nach der Nachstellung |
 | `node tools/gespraech-pruef.mjs`, neue Fassung, unter Last | 89 von 91, rot nur die zwei Grafikzeilen |
+| Nachstellung der Wanderung (Abschnitt 5) | steht: Tafel offen; wandert: 61 px, Tafel zu |
