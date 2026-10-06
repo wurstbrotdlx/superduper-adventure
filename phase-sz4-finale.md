@@ -311,3 +311,12 @@ und das ist eine UI-Runde und keine Zeile im Vorbeigehen.
   gespielt wird. Gehört wird er nicht. Der Klangvorrat ist der aus Phase 6 und
   bekommt keinen Zuwachs im Vorbeigehen, und eine Amtshymne, die drei Takte lang
   richtig sein muss, um im vierten zu stimmen, ist kein Nachtrag.
+
+---
+
+## Nachtrag, 06.10.2026 (EF1)
+
+Für die Endfassung gestrichen, auf Entscheidung des Projektinhabers: Konfetti, der Regen als Effekt, die Musik im Abspann und Vorblatts zweite Gestalt.
+Was unter „Bewusst offen" steht, bleibt als Begründung stehen, ist aber kein
+offener Punkt mehr. Weltbibel, Kapitel 14, „Was wir ausdrücklich nicht bauen";
+`phase-ef1-endfassung.md`.

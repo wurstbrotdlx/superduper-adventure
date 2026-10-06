@@ -141,6 +141,31 @@ async function hin(page, key, abstand = 24){
   await page.waitForTimeout(400);
 }
 
+// EF1 (06.10.2026): vor jedem F neben die Figur, und auf die Tafel warten
+// statt auf die Uhr. Bis hierher stand der Spieler einmal neben Zwirn (hin()),
+// und danach wurde ueber mehrere Sekunden hinweg F gedrueckt, mit fest 120 ms
+// Wartezeit. Einmal in zwanzig Laeufen ging die Tafel nicht auf, und das war
+// keine Wartezeit (nachgemessen: auch nach zwei Sekunden nicht). Dorffiguren
+// wandern mit 14 px/s im Umkreis von 40 px um ihren Anker, angeboten wird
+// eine Figur bis 58 px (scanAktion()). Zwischen hin() und dem letzten F lagen
+// allein 2600 ms Wartezeit nach dem Abschieds-F, unter Last mehr Spielzeit,
+// und Zwirn war dann nicht mehr in Reichweite. Im Spiel ist das richtig so:
+// wer F drueckt, steht daneben. Der Lauf stellt das jetzt vor jedem Druck her
+// und wartet, bis die Kontextaktion auf der Figur liegt; kommt die Tafel dann
+// nicht, meldet die naechste Zeile es, statt dass der Lauf an einer
+// Zeitueberschreitung stirbt. Nebenbei pruefen "Auf Wiedersehen" und "wer
+// weggeht" damit eine Tafel, die wirklich offen war; vorher bestanden beide
+// Zeilen auch, wenn F nie gegriffen hatte.
+const fDruecken = async (page, key) => {
+  await page.evaluate(k => {
+    const n = npcs.find(x => x.key === k);
+    player.x = n.x + 24; player.y = n.y + 6; camSnap();
+  }, key);
+  await page.waitForFunction(k => aktObj && aktObj.key === k, key, { timeout: 2000 }).catch(() => {});
+  await page.keyboard.press('f');
+  await page.waitForFunction(() => gespraechOffen, null, { timeout: 2000 }).catch(() => {});
+};
+
 const tafel = page => page.evaluate(() => ({
   offen: gespraechOffen,
   name: el('gespraechNameTxt').textContent,
@@ -197,8 +222,7 @@ const tafel = page => page.evaluate(() => ({
   // --- Gespraech oeffnen ---------------------------------------------------
   await hin(page, 'zwirn');
   pruef('Kontextaktion bietet Ansprechen an', await page.evaluate(() => aktTxt), 'Ansprechen');
-  await page.keyboard.press('f');
-  await page.waitForTimeout(120);
+  await fDruecken(page, 'zwirn');
   let t = await tafel(page);
   pruef('F oeffnet die Tafel', [t.offen, t.sichtbar], [true, true]);
   pruef('Tafel nennt den vollen Namen', t.name, 'Bürgermeister Alfons Zwirn');
@@ -297,21 +321,21 @@ const tafel = page => page.evaluate(() => ({
   pruef('Schleier wieder aus', t.schleier, false);
 
   // --- Esc -----------------------------------------------------------------
-  await page.keyboard.press('f');
-  await page.waitForTimeout(120);
+  await fDruecken(page, 'zwirn');
   pruef('F oeffnet erneut', (await tafel(page)).offen, true);
   await page.keyboard.press('Escape');
   pruef('Esc schliesst die Tafel', (await tafel(page)).offen, false);
 
   // --- Abschied per Klick --------------------------------------------------
-  await page.keyboard.press('f');
+  await fDruecken(page, 'zwirn');
+  pruef('F oeffnet zum Abschied', (await tafel(page)).offen, true);
   await page.waitForTimeout(2600);
   await page.locator('.gwOpt').last().click();
   pruef('"Auf Wiedersehen" schliesst', (await tafel(page)).offen, false);
 
   // --- Weggehen ------------------------------------------------------------
-  await page.keyboard.press('f');
-  await page.waitForTimeout(120);
+  await fDruecken(page, 'zwirn');
+  pruef('F oeffnet vor dem Weggehen', (await tafel(page)).offen, true);
   await page.evaluate(() => { player.x += 400; camSnap(); });
   await page.waitForTimeout(200);
   pruef('wer weggeht, beendet das Gespraech', (await tafel(page)).offen, false);

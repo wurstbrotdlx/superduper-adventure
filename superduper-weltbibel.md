@@ -759,6 +759,8 @@ Persistent wie die Kladde. Jeder endet in einer dauerhaften Kleinigkeit, passt a
 
 *(Nachtrag 04.10.2026, LV11-13, `phase-lv11-13-langvorgaenge.md`.)* **Alle vier sind gebaut**, Nummer 10 mit SZ3, Nummer 11 bis 13 mit LV11-13; der Zusatz „entworfen, nicht gebaut" in der Tabelle ist überholt. Drei Entscheidungen beim Bau, die der Entwurf offen ließ: der Eimer holt die Veranlassung aus einer Kammertruhe im Frostkamm (ab Akt II); die fünfte Antwort in Szene 7 hängt an den **vierzig** Blättern aus der Schublade, weil der einundvierzigste der Stempel ist, den Vorblatt in genau dieser Szene aufdrückt; und die Spielerzeile dazu ist auf den Antwortdeckel gekürzt („Einundvierzig Jahre Arbeit."), Vorblatts drei Sätze stehen wörtlich. Im Code stehen damit zwölf Stränge in `LANGVORGAENGE`; die Zustellung bleibt der Hauptstrang.
 
+*(Bestätigt 06.10.2026, EF1, `phase-ef1-endfassung.md`.)* **Die fünfte Antwort bleibt an den vierzig.** Einundvierzig als Bedingung machte sie unerreichbar, weil das letzte Blatt erst in derselben Szene entsteht.
+
 **Stand im Code: acht Stränge in `LANGVORGAENGE`.** Sieben aus W7, dazu Nummer 4 aus Langvorgang 4 (`phase-lv4-praktikumsbericht.md`, 24.08.2026). Nummer 8, die Zustellung, ist weiterhin der W5-Hauptstrang selbst und kein Tabelleneintrag. Die Zahl neun in der alten Überschrift war schon vorher eine Planungszahl und keine Codezahl.
 
 **Regel für alle Langvorgänge:** Sie dürfen den Spielfluss nie blockieren. Kein Langvorgang darf für den Hauptvorgang notwendig sein, mit genau einer Ausnahme: Nummer 4, und die ist so gebaut, dass sie nebenbei mitläuft.
@@ -811,6 +813,8 @@ Warum das richtig ist:
 **Neun Serien, insgesamt rund 68 Blätter.** Die ersten sechs sind gebaut, die drei letzten sind in `weltgeschichte.md`, Kapitel 9, ausgeschrieben und noch nicht eingebaut. Zwei von ihnen liegen bewusst dort, wo sie inhaltlich hingehören: Serie G im Steinfeld, weil der Altbestand die Ablage aus der Zeit ist, als das Haus noch anders hieß, und Serie H im Lager, weil die Gegenseite diese sechs Schreiben verfasst hat und sie der Beweis sind, dass dort nie jemand angreifen wollte.
 
 *(Nachtrag 04.10.2026, W11-GH, `phase-w11-serien-g-h.md`.)* **Alle neun Serien sind gebaut, der Bestand ist 68.** Serie G liegt in den Kammertruhen des Steinfelds, Serie H in denen des Moorbruchs und zusätzlich im Lager der Beschwerden, wo sie beim Kill einer Lagerwache fällt; das Lager hat keine Kammer, und ohne den zweiten Weg läge die Serie dort, wo sie hingehört, aber nicht dort, wo man sie findet. Wer alle sechs Schreiben hat, sieht die siebte Zeile aus der Weltgeschichte als Vermerk unter dem Stapel. **Zwei Zeilen der Serie G stehen im Spiel anders als in der Weltgeschichte,** weil der Sperrvermerk unten als Guard gebaut ist und drei seiner Prüfwörter trifft, ohne dass die Zeilen Kesselgrammatik wären: G 1, Zeile 2 lautet „Der Rang eines Hauses bemisst sich danach, wie lange sein ältester Vorgang offen ist." (statt „ergibt sich aus dem Alter seines ältesten offenen Vorgangs"), G 6, Zeile 3 „drei Mal angeregt und drei Mal zurückgestellt" (statt „dreimal"). Umformuliert wurde der Text und nicht der Guard, weil beide Kanon sind und der Sinn der Zeilen steht. Zurück zum Wortlaut hieße Guard lockern; das ist eine Entscheidung des Projektinhabers und steht offen.
+
+*(Entschieden 06.10.2026, EF1, `phase-ef1-endfassung.md`.)* **Der Wortlaut im Spiel bleibt, der Guard bleibt.** G 1 und G 6 stehen in der umformulierten Fassung, `PRUEF_GEHEIM` wird nicht gelockert. Die zweite Fassung von G 1 deckt sich ohnehin mit dem Glossar, und eine Ausnahmeliste je Blatt wäre die erste Lücke im Sperrvermerk.
 
 | Serie | Umfang | Fundort | Inhalt |
 |---|---|---|---|
@@ -871,7 +875,7 @@ Die zwölf Regeln, an denen jeder neue Text gemessen wird. Wer eine Zeile schrei
 3. **Amtsdeutsch trifft Alltag, und zwar als Würze statt als Grundton.** *(Geändert am 26.08.2026 auf Ansage des Projektinhabers: „das muss gelockert werden, das ist zu hart, 30% beamtendeutsch 70% normal in konversationen, außer bei einzelnen charakteren". Bis dahin lautete die Regel: „Amtsdeutsch trifft Alltag. Der Kontrast trägt alles. ,Sie verlieren Konfetti. Das ist selten gut.'" Die Nummer bleibt stehen, damit die Verweise in den Phasendokumenten weiter zeigen, wohin sie zeigen.)* Der Kontrast trägt weiterhin alles. Was sich ändert, ist das Mischungsverhältnis: **in einem Gespräch sind rund drei von zehn Sätzen amtlich gefärbt und sieben normales Deutsch.** Der Kontrast entsteht dadurch nicht weniger, sondern zum ersten Mal überhaupt, denn wo alles amtlich klingt, gibt es keinen Kontrast, sondern nur eine Tonlage. Vier Punkte dazu:
 
     1. **Das amtliche Wort steht im normalen Satz, nicht umgekehrt.** „Vorsicht, Sie verlieren Konfetti. Das ist meistens kein gutes Zeichen." trägt, weil der Satz drumherum normal ist. Die alte Beispielzeile trägt nicht, weil beide Hälften amtlich sind und der Spieler nichts hat, woran er den Ton messen könnte.
-    2. **Die Ausnahme ist die Figur, nicht der Anlass.** Einzelne Figuren dürfen fast vollständig amtlich reden, wenn genau das ihre Sprachmarke ist (Kapitel 8): Bramsche liest Klammern mit, Milb stuft ein, Vorblatt ist Reichspapier. Ihr Ton ist dann eine Eigenschaft und keine Hausregel, und er wirkt, weil die anderen anders reden.
+    2. **Die Ausnahme ist die Figur, nicht der Anlass.** Einzelne Figuren dürfen fast vollständig amtlich reden, wenn genau das ihre Sprachmarke ist (Kapitel 8): Bramsche liest Klammern mit, Milb stuft ein, Vorblatt ist Reichspapier. Ihr Ton ist dann eine Eigenschaft und keine Hausregel, und er wirkt, weil die anderen anders reden. *(Nachtrag 06.10.2026, EF1, `phase-ef1-endfassung.md`.)* **Das gilt auch nach unten.** Wirt Fass duzt seine Gäste, Lott und Pahl leben vom Wechselrhythmus, Zapf redet nicht über Arbeit, er arbeitet; alle vier bleiben aus der Figur heraus unter dem Zielwert. Amtlich als Marke sind genau die drei oben, Umlauf und Nieselbeck sind es nicht: sie werden am Zielwert gemessen wie jede andere Figur. `tools/ton-messlauf.mjs` führt beide Listen (`SPRACHMARKE_AMTLICH`, `SPRACHMARKE_NICHT_AMTLICH`).
     3. **Der Zielwert gilt je Gespräch, nicht je Zeile.** Drei amtliche Sätze hintereinander sind erlaubt, wenn danach sieben normale kommen. Was nicht geht, ist der gleichmäßig amtliche Teppich über alles.
     4. **Verständlichkeit schlägt Ton.** Wo ein Kind aussteigt, ist die Zeile falsch, auch wenn sie ein guter Gag wäre. Siehe Regel 6.
 
@@ -923,6 +927,8 @@ Behörden lieben Abkürzungen, und diese hier kürzt ab, seit es sie gibt. Der G
 **Ab T5 ist das kein Randmotiv mehr, sondern der Hauptträger des Amtstons** *(26.08.2026, siehe die Ergänzung an Regel 3).* Wo eine Zeile amtlich klingen soll, klingt sie es über ein Kürzel und nicht über den Satzbau. Und das **Auflösen ist der Gag, nicht das Vermeiden**: dieses Haus erklärt seine Abkürzungen für sein Leben gern, ungefragt, ausführlich und gelegentlich länger als die Sache, um die es geht.
 
 **Die vierte Wurzel, neu mit T5: das Kürzel, das ein Wort ist.** Behörden lieben Abkürzungen, die zufällig ein bestehendes Wort ergeben, und sie sind stolz darauf, als wäre es keine Absicht gewesen. Nach dem Muster **ZET, Zentrales Experten Team**. Für dieses Haus ist das ein Fundus, weil seine Grundbegriffe schon Wörter sind: die **Ablage** ist ein Fluss und eine Behördeneinrichtung, die **Anlage** ist eine Beilage und ein Adelshaus. Wer hier ein neues Kürzel erfindet, prüft zuerst, ob es sich zu einem Wort fügt, das in dieser Welt ohnehin etwas bedeutet. Die Pointe ist dann doppelt und kostet nichts.
+
+*(Entschieden 06.10.2026, EF1, `phase-ef1-endfassung.md`.)* **Die Zwölf bleibt.** Die vierte Wurzel sagt, wie ein Kürzel gebaut wird, und nicht, dass es eines mehr geben darf. Sie gilt für einen Platz, der frei wird, und die Abkürzungstabelle in `figuren-leben.md` bleibt bei zwölf, „mehr nicht". Die drei Entwürfe FEST, PROBE und STUFE bleiben Entwurf (`phase-t5-ton.md`, Abschnitt 5f).
 
 **Drei Grenzen, ohne die der Gag zur Zumutung wird:**
 
@@ -1061,9 +1067,11 @@ Kapitel 0, 2, 4, 5 und 18.3. Der Bauabschnitt, den dieses Kapitel bisher nicht h
 
 **Abnahme:** Kein Wort der Akte wandert nach vorn, kein Questmarker, keine Cutscene, keine Sperre. Wer das Blatt wegklickt, spielt das Spiel unverändert weiter.
 
-### W9: Tooltipps und Mechanikhilfe — OFFEN
+### W9: Tooltipps und Mechanikhilfe — ERLEDIGT (gestrichen mit EF1, 06.10.2026)
 
 W8 beantwortet „was ist das hier und warum", nicht „was macht dieser Knopf, während ich davorstehe". Das ist der nächste Schritt und ein anderer Kanal: `#tooltip` existiert bereits im Markup und trägt bisher nur Gegenstände. Ausbau auf Gürtel, Kesselreiter, Skillzeilen, Zauberknoten, Ausrüstungsplätze und Kammerschilder. Abzustimmen mit Knöterichs Wissenslücken-Schüben (`kn.wissensluecke`), nicht daneben zu bauen. Zu prüfen: ob eine wiederholbare Mechanikübersicht besser als vierter Reiter im Kessel liegt als in einem eigenen Panel.
+
+*(Nachtrag 06.10.2026, EF1, `phase-ef1-endfassung.md`.)* **Gestrichen, auf Entscheidung des Projektinhabers, und nicht gebaut.** Was der Abschnitt beschreibt, bleibt als Entwurf stehen. Seit W8 erklären andere Kanäle die Mechanik: Anlage 2 auf Abruf (T5b), die Hausordnung in Raten (AN7), Knöterichs Schübe beim Steckenbleiben. Der Marker steht auf ERLEDIGT, weil die Statusregel nur zwei kennt und die Frage entschieden ist; die Klammer sagt, wie.
 
 ### W10: Die Wiedereinsetzung — ERLEDIGT (siehe `phase-w10-wiedereinsetzung.md`)
 
@@ -1301,7 +1309,7 @@ Die siebzehnte Figur und die erste, die mitläuft statt dazustehen. Ein Schrifts
 
 T3 hatte die Figur, T4 benennt, was sie im Inneren zusammenhält: die vier Bauteile (Käfig, Preis, Gefälle, Kipppunkt), das auf fünf geschlossene Maskenset, die Bremse und der Umschlag. Gebaut wurden der Schalter `allein`, drei Anlässe und der Kipppunkt an ihrer formlosen Bitte.
 
-### T5: Der Ton — OFFEN (siehe `phase-t5-ton.md`)
+### T5: Der Ton — ERLEDIGT (siehe `phase-t5-ton.md`)
 
 Der Bauabschnitt zur Ansage vom 26.08.2026. **Der Kanon steht seit diesem Datum vollständig**, der Bau ist es nicht, und die Überschrift sagt deshalb OFFEN, bis alle vier Teile stehen.
 
@@ -1318,14 +1326,19 @@ Zu bauen bleiben vier Stücke, und sie sind bewusst getrennt, weil sie verschied
     *(Nachtrag 05.10.2026, T5e-2, `phase-t5-ton.md`, Abschnitt 5g.)* **Zweite Tranche gebaut: Trepp, Lisbeth, Fass, Lott, Pahl.** Trepp von 5 auf 27 Prozent, Lisbeth von 4 auf 23, Lott von 4 auf 13, Pahl von 2 auf 11, Fass bleibt bei 3; dazu vier Kaskaden (Trepps Bezeichnung in drei Teilen, Lisbeths Antrag in vier, der Deckel des Wirts als Vorgang, wie man ein Dorf zuklappt). **Wirt und Chor bleiben unter dem Zielwert, aus der Figur heraus:** „die Ausnahme ist die Figur" gilt auch nach unten. Ob sie dafür eine Sprachmarke „nicht amtlich" bekommen, die der Messlauf kennt, ist eine Entscheidung des Projektinhabers. Die Knappheit der Grundzeilen rührt sich auch hier nicht; sie hängt am Deckel der zweiten Zeile, nicht am Ton.
     *(Nachtrag 05.10.2026, T5e-3, `phase-t5-ton.md`, Abschnitt 5h.)* **Dritte Tranche gebaut: Pommer, Nieselbeck, Umlauf, Randbemerkung; T5e ist in der Breite durch.** Pommer von 18 auf 34 Prozent, kurz wie T1 es verlangt, mit seiner Liste als Kaskade aus kurzen Sätzen; Nieselbeck 11 auf 18, Umlauf 4 auf 16, beide ohne neue Kaskade, weil Melden und Abbruch ihre Marken sind. Bilanz: Dorffiguren von 10 auf 19 Prozent, Figurenrede von 13 auf 17, die Knappheit der Dorffiguren unverändert 77 Prozent, dreimal gemessen. Sie hängt am Deckel der zweiten Zeile (32 Zeichen), und das ist eine Tafelfrage, keine Tonfrage. Fund: das Werkzeug führt Umlauf unter Sprachmarke amtlich, Kapitel 8 nicht; die Liste ist Kanon und steht zur Entscheidung.
     *(Nachtrag 05.10.2026, DZ1, `phase-dz1-zweite-zeile.md`.)* **Der Deckel der zweiten Zeile steht auf 48.** Korrektur zum Satz darüber: die Knappheit „hängt am Deckel der zweiten Zeile" stimmt als Voraussetzung, nicht als Ursache. Gezählt sind die zweiten Zeilen zu 94 Prozent knapp, die ersten (48 Zeichen) zu 65, die Aktzeilen (44) zu 37; der Deckel drückt also. Aber erst Texte, die den Platz nutzen, senken die Zahl, und das ist wieder Textarbeit.
+    *(Nachtrag 06.10.2026, EF1, `phase-ef1-endfassung.md`.)* **T5 ist abgeschlossen.** Die drei offenen Fragen sind entschieden: die Zwölf bleibt (Kapitel 13, vierte Wurzel), die Sprachmarken-Listen des Messlaufs folgen Grundgesetz 3 (Kapitel 13, Punkt 2), und die Knappheit bleibt bei 77 Prozent. Texte, die den Platz der zweiten Zeile nutzen, wären eine neue Tranche und sind kein Teil von T5.
 
 **Die eine Grenze, die durch alle fünf läuft, ist der Sperrvermerk und nicht das Weltgesetz.** *(Geändert am 26.08.2026: hier stand bis dahin, das Weltgesetz bleibe unausgesprochen. Es fällt, siehe Kapitel 1.)* Das Weltgesetz darf in T5b und T5d gesagt, erklärt und als Doktrin zitiert werden, und es soll, denn es ist der kürzeste Weg zu einem Spieler, der versteht, worum es geht. Was weiter gesperrt bleibt, ist der **Fall**: die Akte, Anlage 1 und was in ihr steht (`AKTE_SPERRE`). Wie die Welt funktioniert, darf jeder wissen; was in dieser einen Akte steht, nicht. Wer beim Schreiben unsicher wird, prüft nicht, ob die Zeile das Gesetz nennt, sondern ob sie den Vorgang verrät.
 
-**Reihenfolge und Grund:** T5a zuerst, weil es nichts kaputtmachen kann. T5c vor T5b, weil ihre neuen Erklärzeilen sonst im alten Ton entstünden und zweimal geschrieben werden müssten. T5d nach T5b, weil beide denselben Stoff tragen und der spätere vom früheren lernt. ~~und sich sonst doppeln~~ **Die Doppelung ist ausdrücklich erwünscht** (Ansage vom 26.08.2026): das Intro läuft einmal und ist irgendwann lange her, Anlage 2 ist immer da. Dasselbe zweimal zu hören ist bei einer Welt, die man verstehen muss, kein Fehler, sondern der Sinn. T5e zuletzt, weil es die Zahl aus dem Messlauf braucht und weil jede seiner Änderungen an einem Zeichendeckel und einem Guard vorbeimuss. **T5a bis T5d sind am 26.08.2026 erledigt worden, T5e ist offen.**
+**Reihenfolge und Grund:** T5a zuerst, weil es nichts kaputtmachen kann. T5c vor T5b, weil ihre neuen Erklärzeilen sonst im alten Ton entstünden und zweimal geschrieben werden müssten. T5d nach T5b, weil beide denselben Stoff tragen und der spätere vom früheren lernt. ~~und sich sonst doppeln~~ **Die Doppelung ist ausdrücklich erwünscht** (Ansage vom 26.08.2026): das Intro läuft einmal und ist irgendwann lange her, Anlage 2 ist immer da. Dasselbe zweimal zu hören ist bei einer Welt, die man verstehen muss, kein Fehler, sondern der Sinn. T5e zuletzt, weil es die Zahl aus dem Messlauf braucht und weil jede seiner Änderungen an einem Zeichendeckel und einem Guard vorbeimuss. **T5a bis T5d sind am 26.08.2026 erledigt worden, T5e ist offen.** *(Nachtrag 06.10.2026: T5e ist mit drei Tranchen am 04. und 05.10.2026 gebaut und mit EF1 abgeschlossen.)*
 
 ### T6: Die Entscheidung, die keine ist — ERLEDIGT (siehe `phase-t6-scheinwahl.md`)
 
 Beim Erstkontakt darf der Spieler wählen, ob er Anlage 2 liest, und das Haus nimmt das Nein nicht an. Vier Ablehnungen, dann ist der Knopf ausgegraut und eine Störungsmeldung behauptet einen technischen Fehler. **Überredet wird vom Apparat, nicht von ihr**: sie wird verlegen, distanziert sich und bittet kein einziges Mal. Das ist die Behörde in einem Satz, und es ist dieselbe Pointe wie die Figur selbst, von der anderen Seite gelesen.
+
+### EF1: Die Entscheidungen zur Endfassung — ERLEDIGT (siehe `phase-ef1-endfassung.md`)
+
+Kein Spielcode, nur Kanon und Werkzeug. Vier vorgelegte Entscheidungen sind getroffen (die Zwölf bleibt, die Sprachmarken-Listen folgen Grundgesetz 3, G 1 und G 6 bleiben umformuliert, die fünfte Antwort bleibt an den vierzig), fünf „Bewusst offen" sind für die Endfassung gestrichen (unten unter „Was wir ausdrücklich nicht bauen"), T5 ist abgeschlossen, und zwei Prüfläufe hängen nicht mehr an der Uhr. Offen bis zur Endfassung bleibt die Abnahme auf einem echten Telefon. *(Nachtrag 06.10.2026: W9 ist gestrichen, siehe dort.)*
 
 ### Was wir ausdrücklich nicht bauen
 
@@ -1336,6 +1349,13 @@ Beim Erstkontakt darf der Spieler wählen, ob er Anlage 2 liest, und das Haus ni
 * Keine Vertonung.
 * Keine Questmarker auf der Minimap. Wer suchen soll, bekommt keinen Pfeil. (Ausgenommen die erbraute Wirkung „Aktenlage" aus Phase 3: sie zeigt ungeöffnete Truhen und bereitstehende Kammertüren als Punkte, also Fundorte, keine Ziele, und wird mit dem Fluch „Aktenblindheit" bezahlt.)
 * Keine zweite Währung.
+* **Für die Endfassung gestrichen** *(06.10.2026, EF1, auf Entscheidung des Projektinhabers; vorher je „Bewusst offen" in ihrem Phasendokument)*. Nichts davon ist ein Fehler, alles davon wäre neuer Umfang:
+    * Kein Konfetti und kein Partikelregen im Abspann. Bild 4, 9 und 10 erzählen es (SZ4).
+    * Keine Musik im Abspann. Der vierte Takt läuft im Text durch, nicht im Lautsprecher (SZ4).
+    * Keine zweite Gestalt für Vorblatt (SZ3, SZ4).
+    * Keine erzählte Kutschfahrt. Die Kutsche fährt sofort, vier Tagesreisen sind ein Blatt und ein Schnitt (HO1).
+    * Kein Zugzähler für Konrads Karten im Spielstand. Wer neu lädt, sieht wieder die erste Karte (KA1).
+    * Keine Tooltipps an Gürtel, Kesselreitern, Skillzeilen, Zauberknoten, Ausrüstungsplätzen und Kammerschildern, und keine eigene Mechanikübersicht (W9). `#tooltip` bleibt bei den Gegenständen.
 
 ---
 

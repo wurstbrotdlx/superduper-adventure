@@ -292,3 +292,12 @@ sobald der nächste spricht.
 * **Szene 7 bis 9 bleiben offen.** Die Versuchung im Amtsflur, die Zustellung
   als Ausbau von `vorgangPanel()` und der Abspann als Tafelstapel. Das ist SZ4,
   und Szene 8 und 9 existieren dort bereits in Kurzform.
+
+---
+
+## Nachtrag, 06.10.2026 (EF1)
+
+Für die Endfassung gestrichen, auf Entscheidung des Projektinhabers: Vorblatts zweite Gestalt.
+Was unter „Bewusst offen" steht, bleibt als Begründung stehen, ist aber kein
+offener Punkt mehr. Weltbibel, Kapitel 14, „Was wir ausdrücklich nicht bauen";
+`phase-ef1-endfassung.md`.

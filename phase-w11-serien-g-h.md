@@ -174,3 +174,12 @@ Blätter mit, und `vorgangAssert()` liest `SERIE_AKT` und `BLAETTER` selbst.
   Blatt 1" bis „Blatt 6" mit Nummer, das schwächt den Effekt ein wenig. Die
   Nummer bleibt, weil jede andere Serie sie trägt und eine Ausnahme im Reiter
   mehr erklären würde als sie versteckt.
+
+---
+
+## Nachtrag, 06.10.2026 (EF1)
+
+**Entschieden: der Wortlaut im Spiel bleibt, der Guard bleibt.** G 1 und G 6
+stehen in der Fassung aus Abschnitt 3, `PRUEF_GEHEIM` wird nicht gelockert.
+Auf Entscheidung des Projektinhabers, Begründung in `phase-ef1-endfassung.md`;
+Weltbibel, Kapitel 12, datiert.

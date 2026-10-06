@@ -165,3 +165,11 @@ Wichtige Einschränkung, damit niemand die Konsolenausgabe falsch liest: `assets
 * Nachlesen aus dem Amt mit gesetztem Zwischenstand (`amt.schichten = 7`): Rangzeile, Hebungszeile und Dienstanweisungsknopf korrekt, SCHLIESSEN führt zurück ins Amt, nicht ins Titelbild.
 * Gestandener Spieler simuliert (`amt.schichten = 23`): Standzeile „Monstralobersekretär · 23 Schichten im Dienst · Amtskasse 910", Blättern und Rückkehr unverändert.
 * `dienstAssert()` meldet beim Start „3 Blätter, Formregeln und Sperrvermerk in Ordnung." und sonst nichts. Die sieben bestehenden Guards melden unverändert nichts.
+
+---
+
+## Nachtrag, 06.10.2026 (EF1)
+
+**W9 ist gestrichen**, auf Entscheidung des Projektinhabers. Der Abschnitt
+„Der nächste Bauabschnitt: W9" bleibt als Entwurf stehen. Weltbibel,
+Kapitel 14, und `phase-ef1-endfassung.md`.
