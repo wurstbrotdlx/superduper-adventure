@@ -94,9 +94,12 @@ auf `main` und deployt.
 - **Je Bauabschnitt ein `phase-*.md`** mit Abnahme und Prüfprotokoll.
   Historische Phasendokumente und Messberichte werden **nicht** umgeschrieben;
   sie sind Aufzeichnungen ihres Moments. Korrekturen werden datiert angehängt.
-- **`NEUERUNGEN`** (in `skript/06`) bekommt einen Punkt, wenn eine Änderung für
-  Spieler sichtbar ist. Sichtbar ist das Kriterium, nicht die Größe. Wer einen
-  Bauabschnitt ändert, der dort genannt ist, ändert den Punkt mit.
+- **`NEUERUNGEN`** (in `skript/06`) bekommt einen Punkt, wenn es danach etwas
+  Neues zu spielen gibt: zu tun, zu finden oder zu hören. Darstellung,
+  Bedienung und Fehlerbehebung gehören in das Phasendokument, nicht in die
+  Hausmitteilung, auch wenn Spieler sie sehen (seit 06.10.2026, bis dahin war
+  „sichtbar“ das Kriterium). Wer einen Bauabschnitt ändert, der dort genannt
+  ist, ändert den Punkt mit.
 - **Commits:** deutscher Aussagesatz im Präsens, der sagt, was die Sache jetzt
   tut, mit Phasenkürzel wenn es eine Phase ist. `AN5: die Kladde faengt den
   Anfang auf`, `Der Kammerausgang schneidet, statt quer über die Karte zu
