@@ -1067,9 +1067,11 @@ Kapitel 0, 2, 4, 5 und 18.3. Der Bauabschnitt, den dieses Kapitel bisher nicht h
 
 **Abnahme:** Kein Wort der Akte wandert nach vorn, kein Questmarker, keine Cutscene, keine Sperre. Wer das Blatt wegklickt, spielt das Spiel unverändert weiter.
 
-### W9: Tooltipps und Mechanikhilfe — OFFEN
+### W9: Tooltipps und Mechanikhilfe — ERLEDIGT (gestrichen mit EF1, 06.10.2026)
 
 W8 beantwortet „was ist das hier und warum", nicht „was macht dieser Knopf, während ich davorstehe". Das ist der nächste Schritt und ein anderer Kanal: `#tooltip` existiert bereits im Markup und trägt bisher nur Gegenstände. Ausbau auf Gürtel, Kesselreiter, Skillzeilen, Zauberknoten, Ausrüstungsplätze und Kammerschilder. Abzustimmen mit Knöterichs Wissenslücken-Schüben (`kn.wissensluecke`), nicht daneben zu bauen. Zu prüfen: ob eine wiederholbare Mechanikübersicht besser als vierter Reiter im Kessel liegt als in einem eigenen Panel.
+
+*(Nachtrag 06.10.2026, EF1, `phase-ef1-endfassung.md`.)* **Gestrichen, auf Entscheidung des Projektinhabers, und nicht gebaut.** Was der Abschnitt beschreibt, bleibt als Entwurf stehen. Seit W8 erklären andere Kanäle die Mechanik: Anlage 2 auf Abruf (T5b), die Hausordnung in Raten (AN7), Knöterichs Schübe beim Steckenbleiben. Der Marker steht auf ERLEDIGT, weil die Statusregel nur zwei kennt und die Frage entschieden ist; die Klammer sagt, wie.
 
 ### W10: Die Wiedereinsetzung — ERLEDIGT (siehe `phase-w10-wiedereinsetzung.md`)
 
@@ -1336,7 +1338,7 @@ Beim Erstkontakt darf der Spieler wählen, ob er Anlage 2 liest, und das Haus ni
 
 ### EF1: Die Entscheidungen zur Endfassung — ERLEDIGT (siehe `phase-ef1-endfassung.md`)
 
-Kein Spielcode, nur Kanon und Werkzeug. Vier vorgelegte Entscheidungen sind getroffen (die Zwölf bleibt, die Sprachmarken-Listen folgen Grundgesetz 3, G 1 und G 6 bleiben umformuliert, die fünfte Antwort bleibt an den vierzig), fünf „Bewusst offen" sind für die Endfassung gestrichen (unten unter „Was wir ausdrücklich nicht bauen"), T5 ist abgeschlossen, und zwei Prüfläufe hängen nicht mehr an der Uhr. Offen bis zur Endfassung bleiben die Abnahme auf einem echten Telefon und W9.
+Kein Spielcode, nur Kanon und Werkzeug. Vier vorgelegte Entscheidungen sind getroffen (die Zwölf bleibt, die Sprachmarken-Listen folgen Grundgesetz 3, G 1 und G 6 bleiben umformuliert, die fünfte Antwort bleibt an den vierzig), fünf „Bewusst offen" sind für die Endfassung gestrichen (unten unter „Was wir ausdrücklich nicht bauen"), T5 ist abgeschlossen, und zwei Prüfläufe hängen nicht mehr an der Uhr. Offen bis zur Endfassung bleibt die Abnahme auf einem echten Telefon. *(Nachtrag 06.10.2026: W9 ist gestrichen, siehe dort.)*
 
 ### Was wir ausdrücklich nicht bauen
 
@@ -1353,6 +1355,7 @@ Kein Spielcode, nur Kanon und Werkzeug. Vier vorgelegte Entscheidungen sind getr
     * Keine zweite Gestalt für Vorblatt (SZ3, SZ4).
     * Keine erzählte Kutschfahrt. Die Kutsche fährt sofort, vier Tagesreisen sind ein Blatt und ein Schnitt (HO1).
     * Kein Zugzähler für Konrads Karten im Spielstand. Wer neu lädt, sieht wieder die erste Karte (KA1).
+    * Keine Tooltipps an Gürtel, Kesselreitern, Skillzeilen, Zauberknoten, Ausrüstungsplätzen und Kammerschildern, und keine eigene Mechanikübersicht (W9). `#tooltip` bleibt bei den Gegenständen.
 
 ---
 

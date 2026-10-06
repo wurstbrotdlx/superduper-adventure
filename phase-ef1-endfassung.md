@@ -39,16 +39,20 @@ Eingetragen, je datiert und mit Rückverweis hierher:
 
 ### 2. Was für die Endfassung gestrichen ist
 
-Fünf Punkte aus „Bewusst offen", auf Entscheidung des Projektinhabers. Keiner
-ist ein Fehler, jeder wäre neuer Umfang. Sie stehen jetzt in der Weltbibel
-unter „Was wir ausdrücklich nicht bauen" und in ihren Phasendokumenten als
-datierter Nachtrag. Die Begründungen unter „Bewusst offen" bleiben stehen.
+Fünf Punkte aus „Bewusst offen" und der Bauabschnitt W9, auf Entscheidung
+des Projektinhabers. Keiner ist ein Fehler, jeder wäre neuer Umfang. Sie
+stehen jetzt in der Weltbibel unter „Was wir ausdrücklich nicht bauen" und in
+ihren Phasendokumenten als datierter Nachtrag. Die Begründungen unter „Bewusst offen" bleiben stehen.
 
 * Konfetti und Partikelregen im Abspann (SZ4)
 * Musik im Abspann (SZ4)
 * eine zweite Gestalt für Vorblatt (SZ3, SZ4)
 * die erzählte Kutschfahrt nach Hochablage (HO1)
 * der Zugzähler für Konrads Karten im Spielstand (KA1)
+* W9, Tooltipps und Mechanikhilfe *(nachgereicht am selben Tag, auf Zuruf:
+  „W9 streichen")*. Vorgeschlagen war, erst nach dem Durchspielen auf
+  dem Telefon zu entscheiden. Wer dort an einem Knopf hängen bleibt, baut einen
+  neuen, schmalen Abschnitt und nicht W9 in voller Breite.
 
 ### 3. T5 ist abgeschlossen
 
@@ -142,10 +146,11 @@ auch dann, wenn F nie gegriffen hatte. Der Lauf zählt damit 91 statt 89 Zeilen.
 * **Abnahme auf einem echten Telefon** (EF2). Bisher drei Fenstergrößen im
   Container, Gerätefaktor 1. Dazu der Trennstrich im Amtstitel
   (`hyphens:auto` trennt im Container-Chromium nicht, RL7 Befund 3).
-* **W9, Tooltipps und Mechanikhilfe**, steht in der Weltbibel seit W8 auf
+* ~~**W9, Tooltipps und Mechanikhilfe**, steht in der Weltbibel seit W8 auf
   OFFEN. In der Bestandsaufnahme vom 06.10.2026 übersehen, beim Nachziehen
   der Weltbibel gefunden. Bauen oder streichen ist eine Entscheidung des
-  Projektinhabers und nicht Teil dieses Zurufs.
+  Projektinhabers und nicht Teil dieses Zurufs.~~ **Gestrichen**, auf Zuruf
+  („W9 streichen", 06.10.2026), siehe Abschnitt 2.
 * **Texte, die den Platz der zweiten Zeile nutzen**, und **die Sprechblase
   unter der Statusanzeige im Querformat** (DZ1, „Entscheidungen"): beide
   vorgelegt, keine entschieden. Vorschlag: das erste ist für die Endfassung
