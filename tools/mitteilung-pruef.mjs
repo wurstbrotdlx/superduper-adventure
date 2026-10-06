@@ -197,10 +197,17 @@ pruef('startGame() kommt an der Mitteilung vorbei', await page.evaluate(() => st
 // Der Fund vom Auslieferungstag, s. Kopf. Geprueft wird nicht der Satz, sondern
 // die Stelle: jede Taste und jeder Knopf, den eine wo-Zeile nennt, wird hier
 // wirklich gedrueckt. Wer einen Punkt umschreibt, zieht diese Liste mit.
+//
+// 06.10.2026: die Hausmitteilung traegt nur noch Spielinhalt. Taste C und der
+// Angriffsfaecher standen in Punkten ueber die Bedienung, die dabei gestrichen
+// wurden; genannt sind jetzt Taste I und Taste Z, und genau die werden
+// gedrueckt. Die Zeilen zu C und zur Bedienschicht darunter bleiben stehen:
+// sie pruefen weiter, was das Spiel tut, nur nicht mehr einen Satz der
+// Mitteilung.
 const genannt = await page.evaluate(() => NEUERUNGEN.punkte.map(p => p.wo).join(' '));
-pruef('die Zeilen nennen Taste C, Taste Z und den Fächer',
-      [genannt.includes('Taste C'), genannt.includes('Taste Z'), genannt.includes('Angriffsfächer')],
-      [true, true, true]);
+pruef('die Zeilen nennen Taste I und Taste Z',
+      [genannt.includes('Taste I'), genannt.includes('Taste Z')],
+      [true, true]);
 pruef('den Knopf 🧍 am Guertel gibt es',
       await page.evaluate(() => !!document.getElementById('charBtn')
                               && document.getElementById('charBtn').textContent.includes('🧍')), true);
@@ -221,6 +228,14 @@ await page.keyboard.press('Escape');
 pruef('die vier Ecken der Bedienschicht stehen',
       await page.evaluate(() => ['statusKarte', 'minimap', 'uhrTxt', 'prioBtn']
         .filter(id => !!document.getElementById(id)).length), 4);
+// Taste I zuletzt und mit Anlage 2 in der Tasche: wer sie noch nicht hat,
+// bekommt sie beim ersten Griff in den Rucksack nachgereicht
+// (anlage2Nachholen(), eine Szene), und die sperrt jedes Fenster dahinter.
+// Der Punkt, der Taste I nennt, spricht von jemandem, der sie schon hat.
+await page.evaluate(() => { kn.flags.anlage2Da = true; });
+await page.keyboard.press('i');
+pruef('Taste I oeffnet den Rucksack', await page.evaluate(() => invOpen), true);
+await page.keyboard.press('Escape');
 await ctx.close();
 
 // --- 4. Auf dem Telefon: der Knopf steht im Bild ----------------------------

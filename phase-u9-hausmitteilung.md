@@ -204,3 +204,54 @@ ein, sie hält nichts auf, sie läuft nicht von selbst ab und sie verschwindet n
 Kein neuer Speicherschlüssel im Spielstand, kein neues Panel, kein neuer Guard — der Prüflauf
 steht in `tools/`, aus demselben Grund wie bei U7: was nur im Bild und über zwei Ladevorgänge
 wahr ist, kann ein Guard auf Skriptebene nicht messen.
+
+---
+
+## Nachtrag, 06.10.2026: nur noch Spielinhalt
+
+Ansage des Projektinhabers: „die Hausmitteilung kannst du nur noch auf für
+spieler relevante gaming inhalte kürzen, niemand interessiert den technischen
+krims." Die Regel steht seitdem als Kommentar über `NEUERUNGEN.punkte`: ein
+Punkt gehört nur hierher, wenn es danach etwas Neues zu tun, zu finden oder
+zu hören gibt. Darstellung, Bedienung und Fehlerbehebung stehen in den
+Phasendokumenten.
+
+**Gestrichen, 15 Punkte:** Sprechblasen am Telefon, Räume am Telefon mittig,
+Urkunden im Querformat, Karte aufs Telefon, Titel in der Gesprächstafel,
+geschlossener Vorgang bleibt geschlossen, „Diese Mitteilung ist kürzer",
+Kammerausgang, Bedienschicht, vier große Fenster, Sinnbilder, Knöpfe am
+Telefon, „Die Hinweise reden Deutsch", „Zwei Stimmen statt einer", „Anlage 2
+legt den Amtston ab".
+
+**Zusammengelegt:** die drei Punkte aus T5e-1 bis T5e-3 zu „Das Dorf hat mehr
+zu erzählen". Drei Tranchen sind für den Spieler eine Sache.
+
+**Berichtigt:** „Der Anfang zeigt mehr von der Welt" nannte Karte und Tafel
+als zwei Blätter im Intro. Seit AN3 und der Teilrücknahme von T5d
+(04.10.2026) hängen beide als Requisiten in der Amtsstube, und die
+Wegbeschreibung zeigte ins Leere; der Punkt heißt jetzt „Die Amtsstube zeigt
+die Welt". Das ist ein Verstoß gegen die eigene Regel oben („wer einen
+Bauabschnitt ändert, der in einem Punkt genannt ist, ändert den Punkt mit"),
+der seit AN3 stand.
+
+**Gezählt** (06.10.2026, Titel, Text und Wegbeschreibung):
+
+| | Punkte | Wörter im ganzen Umlauf | Wörter ab 04.10. |
+|---|---|---|---|
+| vorher | 32 | 987 | 350 |
+| nachher | 15 | 511 | 236 |
+
+`stand` ist nicht geändert. Wer die Mitteilung schon weggeklickt hat, sieht
+sie nicht noch einmal, denn es gibt nichts Neues zu spielen.
+
+**`tools/mitteilung-pruef.mjs`:** die Wegbeschreibungen nennen jetzt Taste I
+und Taste Z statt Taste C, Taste Z und den Angriffsfächer; die Liste ist
+mitgezogen, und Taste I wird gedrückt (mit Anlage 2 in der Tasche, sonst
+holt der erste Griff sie als Szene nach). 37 von 37. Ladelauf still,
+`menue-pruef` 78 von 78.
+
+**Nebenwirkung im Ton-Messlauf:** die Hausmitteilung stand vorher bei 21
+Prozent amtlich (62 Zeilen) und steht jetzt bei 26 (31 Zeilen), beide Male
+über dem Zielwert für Spieltext. Gestrichen wurden vor allem die
+Bedienpunkte, und die waren schon normales Deutsch; geändert ist an keinem
+verbliebenen Satz etwas.
