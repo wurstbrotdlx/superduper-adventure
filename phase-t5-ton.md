@@ -1,10 +1,12 @@
-# Bauabschnitt T5: Der Ton — OFFEN
+# Bauabschnitt T5: Der Ton — ERLEDIGT
 
 Amtsdeutsch hört auf, der Grundton zu sein, und wird die Würze. Anlage 2 hört
 auf, ein Schriftstück zu klingen, und fängt an, ein Mensch zu klingen. Und der
 Anfang erzählt nicht mehr nur die vierhundert Jahre, sondern die Welt.
 
-**Stand: der Kanon steht, T5a bis T5d sind gebaut. Offen bleibt T5e.** Deshalb OFFEN.
+~~**Stand: der Kanon steht, T5a bis T5d sind gebaut. Offen bleibt T5e.** Deshalb OFFEN.~~
+**Stand 06.10.2026: T5e ist in drei Tranchen gebaut (Abschnitt 5f bis 5h), die
+offenen Fragen sind mit EF1 entschieden (Abschnitt 8). Deshalb ERLEDIGT.**
 
 ---
 
@@ -755,6 +757,7 @@ Fünf Stücke, Reihenfolge und Begründung stehen im Kanon-Eintrag (Kapitel 14).
   Zeilen zu 94 Prozent knapp, erste zu 65), aber ein höherer Deckel macht
   keine Zeile länger. Seit DZ1 steht er auf 48; die Knappheit sinkt erst,
   wenn die Texte den Platz nutzen. 5h bleibt stehen, wie er war.
+  *(Nachtrag 06.10.2026, EF1: T5e ist abgeschlossen, siehe Abschnitt 8.)*
 
 ## 7. Abnahme
 
@@ -772,3 +775,36 @@ Was dieser Abschnitt liefert, ist nachprüfbar:
   der Sperrvermerk auf die Akte.
 * `index.html` ist unverändert. Kein Guard kann durch diesen Abschnitt anders
   melden als vorher.
+
+---
+
+## 8. Abschluss *(06.10.2026, EF1, `phase-ef1-endfassung.md`)*
+
+Auf Entscheidung des Projektinhabers („1 bis 4 nach deinem Vorschlag"). Die
+drei Fragen, die nach T5e-3 und DZ1 offen standen:
+
+* **Die Zwölf bleibt.** FEST, PROBE und STUFE aus Abschnitt 5f bleiben
+  Entwurf. Die vierte Wurzel ist eine Bauregel für einen Platz, der frei
+  wird, und kein dreizehnter Platz. Weltbibel, Kapitel 13, datiert.
+* **Die Sprachmarken-Listen folgen Grundgesetz 3.** `SPRACHMARKE_AMTLICH`
+  führt Bramsche, Milb und Vorblatt, die drei, die Kapitel 13 nennt; Umlauf
+  ist raus (Fund aus 5h). Neu ist `SPRACHMARKE_NICHT_AMTLICH` mit Fass, Lott,
+  Pahl und Zapf, „die Ausnahme ist die Figur" nach unten (Frage aus 5g).
+  Nieselbeck und Umlauf stehen in keiner Liste und werden am Zielwert
+  gemessen; ihr „TIEF" ist ein Befund über die Figur, keine Ausnahme.
+  Weltbibel, Kapitel 13, Grundgesetz 3, Punkt 2, datiert.
+* **Die Knappheit bleibt bei 77 Prozent.** Texte, die den Platz der zweiten
+  Zeile nutzen, wären eine eigene Tranche und gehören nicht mehr zu T5.
+
+**Berichtigung zum Messlauf.** Der Kopf von `tools/ton-messlauf.mjs` sagte,
+die ausgenommenen Figuren würden „statt in den Schnitt gerechnet" getrennt
+ausgewiesen. Der Code hat sie immer mitgerechnet: die 19 Prozent der
+Dorffiguren und die 17 Prozent der Figurenrede in 5f bis 5h enthalten sie.
+Berichtigt ist der Kommentar, nicht die Rechnung, damit alle Zahlen dieses
+Dokuments vergleichbar bleiben.
+
+**Gemessen** (`tools/ton-messlauf.mjs`, 06.10.2026, Stand `b33f59a` plus EF1):
+Dorffiguren 19 Prozent, Figurenrede 2244 Zeilen, 392 amtlich, 17 Prozent, wie
+nach DZ1; je Figur dieselben Werte, nur die Kennzeichnung ist neu (Lott, Pahl,
+Zapf, Fass: „Sprachmarke, nicht amtlich"; Umlauf 16 Prozent: „TIEF").
+Eichprobe unverändert 42 von 43, 0 Fehlalarme. Kein Spieltext ist geändert.

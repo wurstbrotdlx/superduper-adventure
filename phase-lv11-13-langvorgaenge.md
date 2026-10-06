@@ -218,3 +218,17 @@ nicht verschwiegen wird, und bleibt offen (siehe unten).
   Gutachter steht ein Schichtgatter, weil die Weltbibel „über mehrere
   Schichten" sagt; beim Eimer sagt sie das nicht, und der Weg in den
   Frostkamm ist der Aufwand.
+
+---
+
+## Nachtrag, 06.10.2026 (EF1)
+
+**Vierzig bleibt**, auf Entscheidung des Projektinhabers (Abschnitt 3,
+„Entscheidung, keine Vorgabe"). Begründung und Weltbibel-Eintrag in
+`phase-ef1-endfassung.md`.
+
+**Die 120 ms in `gespraech-pruef` waren nicht die Ursache.** Nachgemessen in
+EF1: die Tafel steht nach 7 bis 132 ms, aber in einem von fünf Läufen ging sie
+beim zweiten F auch nach zwei Sekunden nicht auf. Der Punkt unter „Bewusst
+offen" ist damit falsch beschrieben, nicht nur knapp bemessen. Weiter in
+`phase-ef1-endfassung.md`, Abschnitt 5.

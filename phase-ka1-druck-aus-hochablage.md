@@ -122,3 +122,12 @@ die Wand zurückkommt.
   die erste Karte. Bei sechs Karten ist das kein Verlust; wer es persistent
   will, hängt den Zähler an `kn`.
 * **Hochablage als Ort** (Weg B), siehe Abschnitt 4.
+
+---
+
+## Nachtrag, 06.10.2026 (EF1)
+
+Für die Endfassung gestrichen, auf Entscheidung des Projektinhabers: der Zugzähler im Spielstand.
+Was unter „Bewusst offen" steht, bleibt als Begründung stehen, ist aber kein
+offener Punkt mehr. Weltbibel, Kapitel 14, „Was wir ausdrücklich nicht bauen";
+`phase-ef1-endfassung.md`.

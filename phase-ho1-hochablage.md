@@ -177,3 +177,12 @@ bekommen (h2 statt h3, siehe `figuren-dorf.md`); `hochablage-pruef` und
 * **Der Erzhalter hat keinen Baum**, nur Grundzeilen und eine Aktzeile. Er
   hat nichts zu fragen und nichts zu beantworten; wer ihm Fragen gibt, gibt
   ihm einen Vorgang, und er hat gerade keinen mehr.
+
+---
+
+## Nachtrag, 06.10.2026 (EF1)
+
+Für die Endfassung gestrichen, auf Entscheidung des Projektinhabers: die erzählte Kutschfahrt.
+Was unter „Bewusst offen" steht, bleibt als Begründung stehen, ist aber kein
+offener Punkt mehr. Weltbibel, Kapitel 14, „Was wir ausdrücklich nicht bauen";
+`phase-ef1-endfassung.md`.

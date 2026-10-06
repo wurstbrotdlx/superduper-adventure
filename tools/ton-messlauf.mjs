@@ -32,9 +32,14 @@
 // gegen die handbewerteten 43 Zeilen danebenliegt.
 //
 // AUSGENOMMENE FIGUREN. Grundgesetz 3 nimmt Figuren aus, deren Sprachmarke der
-// Amtston selbst ist (Kapitel 8). Sie stehen unten in SPRACHMARKE_AMTLICH und
-// werden getrennt ausgewiesen statt in den Schnitt gerechnet. Wer diese Liste
-// aendert, aendert eine Kanon-Aussage und nicht eine Einstellung.
+// Amtston selbst ist (Kapitel 8), und seit EF1 auch die, deren Marke das
+// Gegenteil ist. Sie stehen unten in SPRACHMARKE_AMTLICH und
+// SPRACHMARKE_NICHT_AMTLICH und werden je Figur gekennzeichnet statt am
+// Zielwert gemessen. In den Schnitt der Quelle und der Figurenrede gehen sie
+// trotzdem ein. *(Berichtigt 06.10.2026, EF1: hier stand bis dahin "statt in
+// den Schnitt gerechnet", und das hat der Code nie getan. Gelassen, wie er
+// rechnet, damit die Zahlen aus T5 bis DZ1 vergleichbar bleiben.)* Wer diese
+// Listen aendert, aendert eine Kanon-Aussage und nicht eine Einstellung.
 import { readFileSync } from 'node:fs';
 
 const args = process.argv.slice(2);
@@ -46,7 +51,20 @@ const ZIEL = 0.30;          // Grundgesetz 3: rund drei von zehn
 const TOLERANZ = 0.08;      // "rund" ist keine Nachkommastelle
 
 // Figuren, deren Sprachmarke der Amtston ist. Kapitel 8, nicht Geschmack.
-const SPRACHMARKE_AMTLICH = ['bramsche', 'milb', 'vorblatt', 'umlauf'];
+// EF1 (06.10.2026): Umlauf ist raus. Grundgesetz 3 nennt genau diese drei,
+// und Kapitel 8 gibt Umlauf Aufzaehlung und Abbruch, keinen Amtston. Sie und
+// Nieselbeck stehen in keiner der beiden Listen und werden am Zielwert
+// gemessen wie jede andere Figur; dass sie darunter liegen, ist dann ein
+// gemessener Befund und keine Ausnahme.
+const SPRACHMARKE_AMTLICH = ['bramsche', 'milb', 'vorblatt'];
+
+// EF1 (06.10.2026): das Gegenstueck, "die Ausnahme ist die Figur" nach unten.
+// Der Wirt duzt seine Gaeste, der Chor lebt vom Wechselrhythmus, Zapf redet
+// nicht ueber Arbeit, er arbeitet. Alle vier liegen aus der Figur heraus
+// unter dem Zielwert und standen bis hier als "TIEF" da, ein Befund, der nie
+// einer war. Auch diese Liste ist eine Kanon-Aussage (Kapitel 13, Grundgesetz
+// 3, Punkt 2), keine Einstellung.
+const SPRACHMARKE_NICHT_AMTLICH = ['fass', 'lott', 'pahl', 'zapf'];
 
 // ---------------------------------------------------------------------------
 // Die Quellen. Zwei Klassen, und die Trennung ist die Formregel "Das Register
@@ -537,8 +555,9 @@ for (const q of QUELLEN) {
       .map(([k, v]) => [k, v.filter(r => r.gruende.length).length / v.length, v.length])
       .sort((a, b) => b[1] - a[1]);
     for (const [k, a, n] of sortiert) {
-      const aus = SPRACHMARKE_AMTLICH.includes(k);
-      const m = aus ? ' Sprachmarke' : (Math.abs(a - ZIEL) <= TOLERANZ ? ' ok' : (a > ZIEL ? ' HOCH' : ' TIEF'));
+      const m = SPRACHMARKE_AMTLICH.includes(k) ? ' Sprachmarke'
+              : SPRACHMARKE_NICHT_AMTLICH.includes(k) ? ' Sprachmarke, nicht amtlich'
+              : (Math.abs(a - ZIEL) <= TOLERANZ ? ' ok' : (a > ZIEL ? ' HOCH' : ' TIEF'));
       console.log(`      ${k.padEnd(18)} ${String(n).padStart(4)}  ${pro(a)}${m}`);
     }
   }

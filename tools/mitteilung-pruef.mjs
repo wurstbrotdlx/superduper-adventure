@@ -146,9 +146,24 @@ pruef('Nachlesen zeigt den ganzen Umlauf',
 // HM-kurz: die Wand ist gemessen. Ein alter Stempel vom 25.08. laesst alles
 // seit dem 25.08. wiederkommen, also den ganzen Umlauf; ein Stempel von gestern
 // nur den heutigen Tag. Beide Faelle, mit Zahl.
-await page.evaluate(() => localStorage.setItem('sda_neuerungen', '2026-10-03-x'));
+//
+// EF1 (06.10.2026): "gestern" haengt am juengsten Punkt, nicht am Kalender.
+// Bis hierher stand der Stempel fest auf 2026-10-03, und jeder neue Punkt nach
+// dem 03.10. lief in dieselbe Zaehlung: die 500 Woerter waren damit kein Mass
+// fuer einen Morgen mehr, sondern fuer alles seit einem festen Tag, und die
+// Hausmitteilung wurde dreimal gekuerzt, ohne dass ein einzelner Morgen zu
+// lang gewesen waere. Gemessen wird jetzt, was jemand sieht, der am Tag vor
+// dem letzten Stand gespielt hat: der letzte Stand und der Tag davor. Nicht
+// die Uhr des Rechners, denn dann haengt das Ergebnis am Tag des Laufs.
+const gestern = await page.evaluate(() => {
+  const juengster = NEUERUNGEN.punkte.map(p => p.am).sort().pop();
+  const d = new Date(juengster + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+});
+await page.evaluate(g => localStorage.setItem('sda_neuerungen', g + '-x'), gestern);
 const seitGestern = await page.evaluate(() => neuerungenNeu());
-pruef('Stempel von gestern: nur Punkte ab gestern', seitGestern.every(p => p.am >= '2026-10-03'), true);
+pruef('Stempel von gestern: nur Punkte ab gestern', seitGestern.every(p => p.am >= gestern), true);
 pruef('und das sind weniger als der ganze Umlauf', seitGestern.length < (await sollAlle()), true);
 const woerter = seitGestern.map(p => p.titel + ' ' + p.was + ' ' + p.wo).join(' ').split(/\s+/).length;
 pruef('die Startmitteilung bleibt unter 500 Woertern', woerter < 500, true);

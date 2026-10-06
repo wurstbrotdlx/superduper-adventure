@@ -141,6 +141,22 @@ async function hin(page, key, abstand = 24){
   await page.waitForTimeout(400);
 }
 
+// EF1 (06.10.2026): auf die Tafel warten, nicht auf die Uhr. Bis hierher
+// wartete der Lauf nach F fest 120 ms, und einmal in zwanzig Laeufen reichte
+// das nicht (phase-lv11-13-langvorgaenge.md, "Bewusst offen"). Jetzt wartet er,
+// bis gespraechOffen steht, hoechstens zwei Sekunden. Kommt die Tafel nicht,
+// laeuft er weiter und die naechste Zeile meldet es, statt dass der Lauf an
+// einer Zeitueberschreitung stirbt. Nebenbei prueft "wer weggeht" damit eine
+// Tafel, die wirklich offen war; vorher bestand die Zeile auch, wenn F nie
+// gegriffen hatte.
+const fWarte = [];
+const fDruecken = async page => {
+  const t0 = Date.now();
+  await page.keyboard.press('f');
+  await page.waitForFunction(() => gespraechOffen, null, { timeout: 2000 }).catch(() => {});
+  fWarte.push(Date.now() - t0);
+};
+
 const tafel = page => page.evaluate(() => ({
   offen: gespraechOffen,
   name: el('gespraechNameTxt').textContent,
@@ -197,8 +213,7 @@ const tafel = page => page.evaluate(() => ({
   // --- Gespraech oeffnen ---------------------------------------------------
   await hin(page, 'zwirn');
   pruef('Kontextaktion bietet Ansprechen an', await page.evaluate(() => aktTxt), 'Ansprechen');
-  await page.keyboard.press('f');
-  await page.waitForTimeout(120);
+  await fDruecken(page);
   let t = await tafel(page);
   pruef('F oeffnet die Tafel', [t.offen, t.sichtbar], [true, true]);
   pruef('Tafel nennt den vollen Namen', t.name, 'Bürgermeister Alfons Zwirn');
@@ -297,8 +312,7 @@ const tafel = page => page.evaluate(() => ({
   pruef('Schleier wieder aus', t.schleier, false);
 
   // --- Esc -----------------------------------------------------------------
-  await page.keyboard.press('f');
-  await page.waitForTimeout(120);
+  await fDruecken(page);
   pruef('F oeffnet erneut', (await tafel(page)).offen, true);
   await page.keyboard.press('Escape');
   pruef('Esc schliesst die Tafel', (await tafel(page)).offen, false);
@@ -310,8 +324,8 @@ const tafel = page => page.evaluate(() => ({
   pruef('"Auf Wiedersehen" schliesst', (await tafel(page)).offen, false);
 
   // --- Weggehen ------------------------------------------------------------
-  await page.keyboard.press('f');
-  await page.waitForTimeout(120);
+  await fDruecken(page);
+  pruef('F oeffnet vor dem Weggehen', (await tafel(page)).offen, true);
   await page.evaluate(() => { player.x += 400; camSnap(); });
   await page.waitForTimeout(200);
   pruef('wer weggeht, beendet das Gespraech', (await tafel(page)).offen, false);
