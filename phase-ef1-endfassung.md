@@ -94,17 +94,36 @@ den Lauf rot gemacht.
 nicht reichte. Die Vorgabe dort: erst messen, wie lange die Tafel wirklich
 braucht.
 
-**Gemessen** (06.10.2026, ohne Grafik, zwei Läufe parallel auf demselben
-Rechner): vom Tastendruck bis `gespraechOffen` 7 bis 132 ms, meist unter 30.
-In einem von fünf Läufen ging die Tafel beim zweiten F („F oeffnet erneut")
-**auch nach 2 Sekunden nicht auf**. Die Wartezeit war also nicht die Ursache:
-an dieser Stelle wird F manchmal gar nicht angenommen. Die Ursache ist zum
-Zeitpunkt dieses Eintrags noch nicht gefunden.
+**Gemessen** (06.10.2026, ohne Grafik, zeitweise zwei Läufe parallel und vier
+Kerne unter Dauerlast): vom Tastendruck bis `gespraechOffen` 7 bis 132 ms,
+meist unter 30. In 2 von 16 Läufen ging die Tafel **auch nach zwei Sekunden
+nicht auf**, einmal beim zweiten F („F oeffnet erneut"), einmal beim letzten
+(„F oeffnet vor dem Weggehen"). Die Wartezeit war also nicht die Ursache: an
+dieser Stelle wurde F gar nicht angenommen.
 
-**Gebaut ist bis hier:** der Lauf wartet auf die Tafel (`fDruecken()`,
-höchstens zwei Sekunden) statt auf die Uhr, und vor dem Weggehen prüft eine
-neue Zeile, dass die Tafel wirklich offen war. Vorher bestand „wer weggeht,
-beendet das Gespraech" auch dann, wenn F nie gegriffen hatte.
+**Die Ursache: Zwirn wandert.** Dorffiguren laufen mit 14 px/s im Umkreis von
+40 px um ihren Anker (`NPC_HOME_R`), auch während ein Gespräch läuft;
+angeboten wird eine Figur bis 58 px (`aktD2` in `scanAktion()`). Der Lauf
+stellte den Spieler ein einziges Mal 24 px neben Zwirn (`hin()`) und drückte
+danach über mehrere Sekunden F, allein nach dem Abschieds-F liegen 2600 ms
+Wartezeit. Unter Last vergeht zwischen zwei Schritten mehr Spielzeit. Der
+Diagnoseschnappschuss beim zweiten Fehlgriff, zwei Sekunden nach dem Druck:
+Kontextaktion „Ansprechen" (`aktArt` 11), Zwirn 39 px rechts und 29 px unter
+dem Spieler, rund 49 px, also in Reichweite. Belegt ist damit: im Moment des
+Drucks hatte F kein Gegenüber, sonst stünde die Tafel offen. Dass Zwirn in
+genau diesem Moment außerhalb der 58 px stand, ist bis hier ein Schluss und
+kein Messwert; eine zweite Diagnose, die den Zustand vor dem Druck festhält,
+läuft. Das Spiel tut hier, was es soll: wer F drückt, steht neben der Figur.
+Der Fehler lag im Lauf.
+
+**Gebaut:** `fDruecken(page, key)` stellt den Spieler vor jedem F neben die
+Figur, wartet, bis die Kontextaktion auf ihr liegt, drückt F und wartet auf
+die Tafel, jeweils höchstens zwei Sekunden. Kommt sie nicht, meldet die
+nächste Zeile es, statt dass der Lauf an einer Zeitüberschreitung stirbt. Zwei
+neue Zeilen („F oeffnet zum Abschied", „F oeffnet vor dem Weggehen") prüfen,
+dass die Tafel wirklich offen war, bevor ihr Schließen geprüft wird. Vorher
+bestanden „Auf Wiedersehen schliesst" und „wer weggeht, beendet das Gespraech"
+auch dann, wenn F nie gegriffen hatte. Der Lauf zählt damit 91 statt 89 Zeilen.
 
 ### 6. Was bis zur Endfassung bleibt
 
@@ -130,4 +149,5 @@ beendet das Gespraech" auch dann, wenn F nie gegriffen hatte.
 | `node tools/ton-messlauf.mjs` | Figurenrede 2244 Zeilen, 17 Prozent, Dorffiguren 19, unverändert; neue Kennzeichnung wie in Abschnitt 1 |
 | `node tools/ton-messlauf.mjs --eichung` | 42 von 43, 0 Fehlalarme, unverändert |
 | `node tools/mitteilung-pruef.mjs` | 36 von 36 |
-| `node tools/gespraech-pruef.mjs` | 88 von 90; die zwei roten Zeilen (zweites Porträt, Nörgels Blatt) brauchen die Grafik |
+| `node tools/gespraech-pruef.mjs`, alte Fassung mit Diagnose, 16 Läufe | 2 Fehlgriffe bei F (Abschnitt 5), sonst je 88 von 90; die zwei roten Zeilen (zweites Porträt, Nörgels Blatt) brauchen die Grafik |
+| `node tools/gespraech-pruef.mjs`, neue Fassung, unter Last | 89 von 91, rot nur die zwei Grafikzeilen |
