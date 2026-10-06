@@ -3648,29 +3648,19 @@ const NEUERUNGEN = {
   // neu". Vorher standen hier beim Start vierundzwanzig Punkte mit 1486
   // Woertern (gezaehlt am 04.10.2026), und das war eine Wand. Die Texte sind
   // zugleich auf das gekuerzt, was man sieht und wo: ein, zwei Saetze je Punkt.
+  // Seit dem 06.10.2026 steht hier nur, was man spielt: neue Orte, Figuren,
+  // Blaetter, Straenge, Ablaeufe. Darstellung, Bedienung und Fehlerbehebung
+  // stehen in den Phasendokumenten und nicht mehr hier (Ansage des
+  // Projektinhabers: "niemand interessiert den technischen Krims"). Wer einen
+  // Punkt eintraegt, fragt zuerst: gibt es danach etwas Neues zu tun, zu
+  // finden oder zu hoeren? Wenn nicht, gehoert er nicht hierher.
   punkte: [
-    // --- DZ1, die zweite Zeile, 05.10.2026 --------------------------------------
+    // --- T5e-1 bis T5e-3, der Ton, 04. und 05.10.2026 ---------------------------
+    // Drei Punkte, zusammengelegt am 06.10.2026: drei Tranchen sind fuer den
+    // Spieler eine Sache.
     {am:'2026-10-05',
-      titel: 'Sprechblasen bleiben im Bild',
-      was: 'Am Telefon bricht eine lange Blase um, statt am Rand abzureißen.',
-      wo: 'Dorf.',
-    },
-    // --- T5e-3, der Ton, dritte Tranche, 05.10.2026 -----------------------------
-    {am:'2026-10-05',
-      titel: 'Pommer, Nieselbeck und die Botin reden amtlicher',
-      was: 'Fachwörter, und Pommer erklärt seine Liste in drei Teilen.',
-      wo: 'Dorf, „Erzählen Sie von früher".',
-    },
-    // --- T5e-2, der Ton, zweite Tranche, 05.10.2026 -----------------------------
-    {am:'2026-10-05',
-      titel: 'Trepp, Lisbeth, Fass und die Bank reden ausführlicher',
-      was: 'Mehr Fachwörter und je eine Nachfrage mehr im Gespräch.',
-      wo: 'Dorf, „Erzählen Sie von früher".',
-    },
-    // --- T5e-1, der Ton, erste Tranche, 04.10.2026 ------------------------------
-    {am:'2026-10-04',
-      titel: 'Zwirn, Nörgel und Milb reden ausführlicher',
-      was: 'Fachwörter und je eine Nachfrage mehr.',
+      titel: 'Das Dorf hat mehr zu erzählen',
+      was: 'Zwirn, Nörgel, Milb, Trepp, Lisbeth, Fass, die Bank, Pommer, Nieselbeck und die Botin haben neue Nachfragen. Pommer erklärt seine Liste in drei Teilen.',
       wo: 'Dorf, „Erzählen Sie von früher".',
     },
     // --- HO1, Hochablage, 04.10.2026 --------------------------------------------
@@ -3685,28 +3675,17 @@ const NEUERUNGEN = {
       was: 'Rechts neben der Karte: die Tür mit dem Schild IM TERMIN, die Bank, der Vierte Wartende. Die Karte darunter wechselt.',
       wo: 'Amtsstube, Nordwand, Ansehen.',
     },
-    // --- LV11-13 und die Hausmitteilung, 04.10.2026 -----------------------------
+    // --- LV11-13, 04.10.2026 ----------------------------------------------------
     {am:'2026-10-04',
       titel: 'Drei Nebenstränge mehr: Eimer, Wortlaut, einundvierzig Blätter',
       was: 'Nieselbeck weiß, wo die Veranlassung für Regen liegt. Bramsche und Pommer geben die Archivausfertigung heraus. Wer die vierzig Zwischenbescheide kennt, hat bei Vorblatt eine Antwort mehr.',
       wo: 'Nieselbeck ab Schicht 11, Registratur ab 21.',
-    },
-    {am:'2026-10-04',
-      titel: 'Diese Mitteilung ist kürzer',
-      was: 'Beim Start steht nur, was seit Ihrem letzten Stand neu ist.',
-      wo: 'Startbild, Knopf „Was ist neu".',
     },
     // --- W11-GH, 04.10.2026 -----------------------------------------------------
     {am:'2026-10-04',
       titel: 'Vierzehn neue Blätter: aus Hochablage und sechs Schreiben',
       was: 'Acht Blätter aus Hochablage in den Kammertruhen des Steinfelds, sechs Schreiben der Gegenseite im Lager und im Moorbruch. Die Kladde zählt jetzt bis 68.',
       wo: 'Steinfeld ab Schicht 21, Lager und Moorbruch ab Schicht 11.',
-    },
-    // --- RL7, Befund 8 und 9, 04.10.2026 ----------------------------------------
-    {am:'2026-10-04',
-      titel: 'Die Räume stehen am Telefon mittig',
-      was: 'In den drei Häusern steht der Raum am Telefon mittig statt oben.',
-      wo: 'Die drei Häuser und jede Kammer.',
     },
     // --- Ernennung, 04.10.2026 --------------------------------------------------
     {am:'2026-10-04',
@@ -3720,92 +3699,37 @@ const NEUERUNGEN = {
       was: 'Ab der sechsten Schicht liegt beim Dienstantritt je ein Punkt der Dienstanweisung bereit, elf Morgen lang. Der Vordruck bleibt.',
       wo: 'Dienstantritt der Schichten 6 bis 16; Zähler in der Kladde unter Akten.',
     },
-    // --- RL7, 04.10.2026 --------------------------------------------------------
-    {am:'2026-10-04',
-      titel: 'Die Urkunden zeigen auf dem liegenden Telefon die ganze Szene',
-      was: 'Ernennung und Abspann zeigen auf dem liegenden Telefon wieder alle Zeilen.',
-      wo: 'Telefon im Querformat: Ernennung, Abspann, Zauberbaum, Dienstausweis.',
-    },
     // --- RL6, 03.10.2026 --------------------------------------------------------
     {am:'2026-10-03',
       titel: 'Der Anfang kommt in Raten',
       was: 'Die vier Chronikblätter liegen an den Morgen der Schichten 2 bis 5 bereit, je eines. Wer das Haus kennt, sagt es Knöterich.',
       wo: 'Dienstantritt der nächsten vier Schichten; Kladde unter Akten.',
     },
-    // --- RL4, 03.10.2026 --------------------------------------------------------
-    {am:'2026-10-03',
-      titel: 'Die Karte passt aufs Telefon',
-      was: 'Die Kartenmappe bleibt am Telefon im Fenster. Im Amt steht unter dem Kasten, dass ganz unten das Schwarze Brett hängt.',
-      wo: 'Taste L oder Kartenknopf; im Amt unter den Ausbauten.',
-    },
-    // --- RL2, 03.10.2026 --------------------------------------------------------
-    {am:'2026-10-03',
-      titel: 'Die Gesprächstafel schneidet keinen Titel mehr ab',
-      was: 'Lange Titel in der Kopfzeile brechen um, statt das Schließkreuz zu verdrängen. Während einer Szene bleiben die übrigen Fenster zu.',
-      wo: 'Gespräch mit zu Händen Vorblatt, am Telefon.',
-    },
-    // --- RL1, 03.10.2026 --------------------------------------------------------
-    {am:'2026-10-03',
-      titel: 'Ein geschlossener Vorgang bleibt geschlossen',
-      was: 'Ein zugestellter Vorgang 1 bleibt geschlossen: Startbild, Bestand und Jahresgespräch sagen es, der Fürst bekommt keinen zweiten Umschlag. Der Abspann läuft ohne Musik bis zur Hymne.',
-      wo: 'Nach dem Abspann: Startbild, Rucksack bei der Anschrift, Jahresgespräch.',
-    },
-    // --- T3, U8 bis U10, 25.08.2026 ---------------------------------------------
+    // --- T3 und K1-Karten, 25.08.2026 -------------------------------------------
     {am:'2026-08-25',
       titel: 'Anlage 2 ist Ihnen beigefügt worden',
       was: 'An Ihrer Ernennungsurkunde hängt ein Blatt, das zu allem eine Auskunft hat und bei Ihnen bleibt. Ausheften geht nicht.',
       wo: 'Rucksack, erstes Feld. Anklicken heißt ansprechen. Taste I.',
     },
     {am:'2026-08-25',
-      titel: 'Zwei Stimmen statt einer',
-      was: 'Knöterich erklärt Tasten und Gerät, Anlage 2 die Welt. Das Zeichen vor der Zeile sagt, wer spricht.',
-      wo: 'Band unter der Statusleiste; wie gesprächig, steht in den Optionen.',
-    },
-    {am:'2026-08-25',
-      titel: 'Vier große Fenster statt acht Kästen',
-      was: 'Charakter, Rucksack, Kochen und Zauber füllen den Schirm, ein Reiterband führt von einem zum nächsten.',
-      wo: 'Taste C oder der Knopf 🧍 am Gürtel, dann das Reiterband oben.',
-    },
-    {am:'2026-08-25',
-      titel: 'Die Bedienschicht hat sich sortiert',
-      was: 'Leben, Mana und Erfahrung liegen als eine Karte beieinander. Die Dienstuhr steht fest, am Telefon sind die Daumen frei.',
-      wo: 'Statuskarte oben links, Uhr unter der Karte; am Telefon Ruhering, Knopfspalte, Zielwahl 🎯 am Angriffsfächer.',
-    },
-    {am:'2026-08-25',
       titel: 'Die Zulagen sind Sammelkarten geworden',
       was: 'Jede Zulage ist eine Sammelkarte mit Stufe, Bild und Text, fünfundvierzig Motive.',
       wo: 'Charakterfenster, Blatt „Kartenmappe", oder Taste Z.',
     },
-    {am:'2026-08-25',
-      titel: 'Das Haus zeichnet seine Sinnbilder selbst',
-      was: 'Schwert, Trank, Rucksack, Zielkreuz, Münzen und die übrigen Zeichen sind die des Spiels, nicht die Ihres Telefons.',
-      wo: 'Gürtel, Reiterband, Fensterköpfe, Boden.',
-    },
-    {am:'2026-08-25',
-      titel: 'Am Telefon sind die Knöpfe Knöpfe geworden',
-      was: 'Angriffsfächer und Knopfspalte haben die gezeichnete Achteckform. Ein gesperrter Knopf zeigt nur sein Schloss.',
-      wo: 'Nur am Finger: Fächer unten rechts, Knopfspalte links.',
-    },
     // --- T5, 26.08.2026 ---------------------------------------------------------
-    {am:'2026-08-26',
-      titel: 'Die Hinweise reden Deutsch',
-      was: 'Elf Hinweise im Band sagen jetzt, was los ist und was Sie tun können. Aus „Sie verlieren Konfetti." wurde „Sie haben kaum noch Kraft übrig. Ein Trank hilft."',
-      wo: 'Band unter der Statusleiste.',
-    },
-    {am:'2026-08-26',
-      titel: 'Anlage 2 legt den Amtston ab',
-      was: 'Anlage 2 beginnt wie ein Schriftstück, hört nach fünf Sätzen damit auf und sagt, warum.',
-      wo: 'Bei ihrer Vorstellung; im Dienst im Band.',
-    },
     {am:'2026-08-26',
       titel: 'Anlage 2 erklärt Ihnen die Welt',
       was: 'Neue Frage „Erklären Sie mir diese Welt." mit drei Themen: was hier los ist, warum es das Amt gibt, wo Sie sind.',
       wo: 'Rucksack, Anlage 2 anklicken, Frage wählen.',
     },
+    // Berichtigt am 06.10.2026: der Punkt nannte Karte und Tafel als zwei
+    // Blaetter im Intro. Seit AN3 und der Teilruecknahme von T5d (04.10.2026)
+    // haengen beide als Requisiten in der Amtsstube (REQUISITEN.karte,
+    // REQUISITEN.gesetz), und die Wegbeschreibung zeigte ins Leere.
     {am:'2026-08-26',
-      titel: 'Der Anfang zeigt mehr von der Welt',
-      was: 'Zwei Blätter mehr im Intro: die Landkarte mit Buchstaben statt Namen und die Tafel über der Amtstür. Das Einstellungsformular sagt, was der Außendienst ist.',
-      wo: 'Beim ersten Dienstantritt, einmal.',
+      titel: 'Die Amtsstube zeigt die Welt',
+      was: 'Die Landkarte an der Wand trägt Buchstaben statt Namen, die Tafel über der Tür das Gesetz dieser Welt. Beide lassen sich ansehen.',
+      wo: 'Amtsstube: vor der Karte, oder einen Schritt vor der Tür unter der Tafel.',
     },
     // --- T6, 26.08.2026 ---------------------------------------------------------
     {am:'2026-08-26',
@@ -3823,12 +3747,6 @@ const NEUERUNGEN = {
       titel: 'Zum Feierabend geht das Dorf hinein',
       was: 'Im letzten Viertel der Schicht stehen Fass, Bramsche und Nörgel in ihren Häusern. Wer sie abends sprechen will, geht ihnen nach.',
       wo: 'In den drei Häusern, sobald die Dienstuhr unter ein Viertel fällt.',
-    },
-    // --- Kammerausgang, 27.08.2026 ----------------------------------------------
-    {am:'2026-08-27',
-      titel: 'Der Weg aus der Kammer führt wieder ins Bild',
-      was: 'Wer eine Kammer verlässt, steht ohne Flug über die Karte vor der Tür, und der Boden steht mit.',
-      wo: 'An jeder Kammertür, über die Ausgangsrune oder 🏳️ Abbruch.',
     },
   ],
 };
