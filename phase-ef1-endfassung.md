@@ -170,3 +170,33 @@ auch dann, wenn F nie gegriffen hatte. Der Lauf zählt damit 91 statt 89 Zeilen.
 | davon Diagnoseschleife Lauf 9 bis 20, rund die Hälfte unter Dauerlast auf vier Kernen | 1 Fehlgriff in Lauf 13 (unter Last), danach keiner; abgebrochen nach der Nachstellung |
 | `node tools/gespraech-pruef.mjs`, neue Fassung, unter Last | 89 von 91, rot nur die zwei Grafikzeilen |
 | Nachstellung der Wanderung (Abschnitt 5) | steht: Tafel offen; wandert: 61 px, Tafel zu |
+
+06.10.2026, mit der lizenzierten Grafik aus `superduper-adventure-assets`
+(nur in den ignorierten Ordnern unter `assets/cf/`), Stand `536fb83`, alle 23
+`tools/*-pruef.mjs` nacheinander, alle mit Exit-Code 0:
+
+| Lauf | Ergebnis |
+|---|---|
+| anlage2 | 123 von 123 |
+| aufschub | 24 von 24 |
+| blase | 28 von 28 |
+| ebene | 54 von 54 |
+| empfang | 190 von 190 |
+| gespraech | **91 von 91** (neue Fassung, mit den zwei Grafikzeilen) |
+| hochablage | 29 von 29 |
+| innen | 27 von 27 |
+| intro | Pflicht 648 Wörter, unverändert |
+| ladelauf | 12 „in Ordnung", 0 Warnungen, Konsole still |
+| langvorgang | 58 von 58 |
+| lv11-13 | 58 von 58 |
+| menue | 78 von 78 |
+| mitteilung | 36 von 36 |
+| reich | 59 von 59 |
+| schluss | 36 von 36 |
+| serien | 36 von 36 |
+| speicher | 38 von 38 |
+| steuerung | in Ordnung |
+| stopfen | 43 von 43 |
+| szene | 50 von 50 |
+| versuchung | 67 von 67 |
+| zulagen | 50 von 50 |
